@@ -180,3 +180,9 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ## Migracion SQL
 - Ver `Docs/GUIA_MIGRACION_SQL.md`.
+
+## Bridge en Raspberry
+- Ver `Docs/RASPBERRY_BRIDGE.md` para despliegue 24/7 del puente MQTT.
+
+## Pruebas E2E
+- Ver `Docs/PRUEBAS_E2E.md` para validar el flujo completo.

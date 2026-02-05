@@ -17,6 +17,12 @@ Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
 2. **systemd** para servicio 24/7
 3. **Logs** locales (journald)
 
+## Pruebas de funcionamiento
+1. Verificar conexion MQTT (logs de bridge).
+2. Enviar mensaje desde el ESP32.
+3. Confirmar insercion en `readings` (Supabase).
+4. Confirmar actualizacion de `devices.last_seen`.
+
 ---
 
 ## Variables de entorno del bridge

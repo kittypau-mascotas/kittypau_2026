@@ -20,6 +20,11 @@
 4. Activar Realtime en dashboard.
 5. Definir y construir pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
 
+## Arquitectura de pruebas (E2E)
+- Raspberry Bridge operativo (MQTT -> API).
+- Vercel API en produccion.
+- Supabase guardando lecturas.
+
 ## Pendiente de infraestructura
 1. Deploy en Vercel.
 2. Configurar variables en Vercel.

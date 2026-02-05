@@ -5,6 +5,7 @@
 - **Backend**: API Routes de Next.js (sin servicio extra para mantener $0).
 - **DB/Auth/Realtime**: Supabase.
 - **MQTT**: HiveMQ Cloud -> webhook a `/api/mqtt/webhook`.
+ - **Bridge**: Raspberry Pi Zero 2 W (porque HiveMQ Free no ofrece webhooks).
 
 ## Que se despliega en Vercel
 En este proyecto, **el deploy en Vercel incluye todo**:

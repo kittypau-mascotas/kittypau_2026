@@ -13,6 +13,7 @@ Tener un MVP funcional donde el usuario:
 1. **Frontend + API**: Next.js (App Router) en Vercel.
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
+4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
 
 ---
 
@@ -31,7 +32,7 @@ ESP32 -> HiveMQ -> Webhook (/api/mqtt/webhook) -> Supabase (DB)
 
 ## Flujo de datos (telemetria)
 1. ESP32 publica MQTT en HiveMQ.
-2. HiveMQ dispara webhook hacia Vercel.
+2. Raspberry Bridge escucha MQTT y reenvia a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 

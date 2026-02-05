@@ -30,3 +30,9 @@
 
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
+
+## Infraestructura Edge
+- `Docs/RASPBERRY_BRIDGE.md`
+
+## Pruebas
+- `Docs/PRUEBAS_E2E.md`

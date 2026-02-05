@@ -12,6 +12,7 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 
 ## 1.1) Puente MQTT (plan Free)
 - Si HiveMQ no ofrece webhooks, usar `bridge/` para reenviar MQTT -> API.
+ - Despliegue recomendado: Raspberry Pi Zero 2 W 24/7.
 
 ## 2) Registro de usuario (visual)
 - Guardar `auth_provider`, `user_name`, `is_owner`, `owner_name`.

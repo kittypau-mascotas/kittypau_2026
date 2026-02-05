@@ -23,15 +23,14 @@ Agregar en **Settings -> Environment Variables**:
 - [ ] Deploy exitoso.
 
 ## 4) Webhook en HiveMQ
-- [ ] URL: `https://TU_PROYECTO.vercel.app/api/mqtt/webhook`
-- [ ] Header: `x-webhook-token: TU_SECRETO`
-- [ ] Topic filter: `kittypau/+/telemetry`
+- [ ] HiveMQ Free no ofrece webhook nativo.
+- [ ] Usar Raspberry Bridge para reenviar MQTT -> API.
 
 ## 5) Prueba de extremo a extremo
 - [ ] Enviar POST de prueba al webhook.
 - [ ] Verificar insercion en `readings`.
 - [ ] Confirmar `devices.last_seen` actualizado.
- - [ ] Registrar dispositivo desde app con QR y asociarlo a una mascota.
+- [ ] Registrar dispositivo desde app con QR y asociarlo a una mascota.
 
 ## 6) Realtime (opcional)
 - [ ] Suscripcion activa en frontend.
