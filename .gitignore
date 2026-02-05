@@ -8,3 +8,4 @@ node_modules/
 kittypau_app/node_modules/
 .next/
 kittypau_app/.next/
+bridge/.env

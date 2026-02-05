@@ -10,6 +10,9 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 - Si hay datos existentes, crear **script de migracion** (no destruir).
 - Si es proyecto nuevo, aplicar SQL completo desde cero.
 
+## 1.1) Puente MQTT (plan Free)
+- Si HiveMQ no ofrece webhooks, usar `bridge/` para reenviar MQTT -> API.
+
 ## 2) Registro de usuario (visual)
 - Guardar `auth_provider`, `user_name`, `is_owner`, `owner_name`.
 - Validar `care_rating` 1-10.
