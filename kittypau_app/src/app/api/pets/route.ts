@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const { data, error } = await supabase
     .from("pets")
     .select("*")
-    .eq("owner_id", user.id)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -31,16 +31,27 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   const payload = {
-    owner_id: user.id,
+    user_id: user.id,
     name: body?.name,
-    species: body?.species,
-    birth_date: body?.birth_date ?? null,
-    notes: body?.notes ?? null,
+    type: body?.type,
+    origin: body?.origin ?? null,
+    is_neutered: body?.is_neutered ?? null,
+    has_neuter_tattoo: body?.has_neuter_tattoo ?? null,
+    has_microchip: body?.has_microchip ?? null,
+    living_environment: body?.living_environment ?? null,
+    size: body?.size ?? null,
+    age_range: body?.age_range ?? null,
+    weight_kg: body?.weight_kg ?? null,
+    activity_level: body?.activity_level ?? null,
+    alone_time: body?.alone_time ?? null,
+    has_health_condition: body?.has_health_condition ?? null,
+    health_notes: body?.health_notes ?? null,
+    photo_url: body?.photo_url ?? null,
   };
 
-  if (!payload.name || !payload.species) {
+  if (!payload.name || !payload.type) {
     return NextResponse.json(
-      { error: "name and species are required" },
+      { error: "name and type are required" },
       { status: 400 }
     );
   }
