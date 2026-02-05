@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+kittypau_app/.env.local
+kittypau_app/.env.*
+!kittypau_app/.env.example
+node_modules/
+kittypau_app/node_modules/
+.next/
+kittypau_app/.next/

@@ -1,0 +1,43 @@
+# Checklist de Deploy (Kittypau)
+
+## 1) Supabase listo
+- [ ] Proyecto creado en Supabase.
+- [ ] Ejecutar `Docs/SQL_SCHEMA.sql` en SQL Editor.
+- [ ] Auth habilitado (email/password).
+- [ ] Obtener `SUPABASE_URL` y keys.
+- [ ] Crear al menos 1 dispositivo en `devices` con `device_code`.
+
+## 2) Variables de entorno en Vercel
+Agregar en **Settings -> Environment Variables**:
+- [ ] `SUPABASE_URL`
+- [ ] `SUPABASE_ANON_KEY`
+- [ ] `SUPABASE_SERVICE_ROLE_KEY`
+- [ ] `MQTT_WEBHOOK_SECRET`
+- [ ] `NEXT_PUBLIC_SUPABASE_URL`
+- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+## 3) Deploy en Vercel
+- [ ] Crear proyecto en Vercel.
+- [ ] Seleccionar carpeta `kittypau_app`.
+- [ ] Framework detectado: Next.js.
+- [ ] Deploy exitoso.
+
+## 4) Webhook en HiveMQ
+- [ ] URL: `https://TU_PROYECTO.vercel.app/api/mqtt/webhook`
+- [ ] Header: `x-webhook-token: TU_SECRETO`
+- [ ] Topic filter: `kittypau/+/telemetry`
+
+## 5) Prueba de extremo a extremo
+- [ ] Enviar POST de prueba al webhook.
+- [ ] Verificar insercion en `readings`.
+- [ ] Confirmar `devices.last_seen` actualizado.
+ - [ ] Registrar dispositivo desde app con QR y asociarlo a una mascota.
+
+## 6) Realtime (opcional)
+- [ ] Suscripcion activa en frontend.
+- [ ] Ver datos en vivo al insertar lecturas.
+
+## Estado local (hasta 2026-02-03)
+- [x] Endpoint `/api/mqtt/webhook` creado.
+- [x] Script local `scripts/test-webhook.ps1` funciona.
+- [x] Prueba local con `success: true`.
