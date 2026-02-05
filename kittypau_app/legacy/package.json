@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
+    "dotenv": "^17.2.3"
+  },
+  "name": "kittypau-iot",
+  "version": "1.0.0",
+  "main": "test-supabase.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
