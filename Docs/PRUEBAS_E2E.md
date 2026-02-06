@@ -20,9 +20,11 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 1. Obtener `access_token` desde Supabase Auth.
 2. Crear fila en `public.profiles` (si no existe).
 3. `GET /api/pets` (debe responder 200, aunque vacio).
-4. `POST /api/devices` (crear dispositivo).
-5. `POST /api/mqtt/webhook` (insertar lectura de prueba).
-6. `GET /api/readings?device_id=<UUID>` (leer lecturas).
+4. `POST /api/pets` (crear mascota).
+5. `PATCH /api/pets/:id` (actualizar mascota).
+6. `POST /api/devices` (crear dispositivo).
+7. `POST /api/mqtt/webhook` (insertar lectura de prueba).
+8. `GET /api/readings?device_id=<UUID>` (leer lecturas).
 
 **Esperado**
 - `devices` contiene el `device_code` creado.

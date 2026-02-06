@@ -158,3 +158,13 @@ Reglas comunes:
 Errores por endpoint:
 1. GET /api/devices`n   - 401 si falta token.
 2. PATCH /api/devices/:id`n   - 400 Invalid status | Invalid device_state | Invalid device_type | No fields to update`n   - 403 Forbidden`n   - 404 Device not found`n3. POST /api/mqtt/webhook`n   - 401 Unauthorized`n   - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range`n   - 404 Device not found`n
+
+## Endpoint adicional
+6. `PATCH /api/pets/:id`
+   - Actualiza datos de mascota.
+   - Requiere `Authorization: Bearer <access_token>`.
+
+Errores esperados:
+- `400` `Invalid type` | `Invalid pet_state` | `weight_kg must be a number` | `No fields to update`
+- `403` `Forbidden`
+- `404` `Pet not found`
