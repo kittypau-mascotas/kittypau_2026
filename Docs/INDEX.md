@@ -5,6 +5,7 @@
 - `Docs/ESTADO_AVANCE.md`
 - `Docs/NOTAS_IMPLEMENTACION.md`
 - `Docs/MAPA_ECOSISTEMA.md`
+- `Docs/PLAN_IMPLEMENTACION.md`
 
 ## Arquitectura
 - `Docs/ARQUITECTURA_PROYECTO.md`

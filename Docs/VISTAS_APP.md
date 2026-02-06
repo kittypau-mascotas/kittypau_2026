@@ -115,7 +115,7 @@ por "eventos / interpretaciones / historia".
 - Bateria, conexion, calibracion, firmware.
 **Datos / API**
 - `GET /api/devices`
-- `PATCH /api/devices/:id` (pendiente de definir)
+- `PATCH /api/devices/:id` (propuesto, ver `Docs/FRONT_BACK_APIS.md`)
 
 ### /settings
 - Perfil usuario

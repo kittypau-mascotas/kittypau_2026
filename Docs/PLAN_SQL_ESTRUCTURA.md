@@ -31,6 +31,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - phone_number (si incluye WhatsApp)
 - city
 - country
+- user_onboarding_step
 
 **Modelo de datos final (users/profiles)**
 - id
@@ -44,6 +45,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - notification_channel
 - city
 - country
+- user_onboarding_step
 - created_at
 
 **Origen**: flujo de registro visual.
@@ -86,6 +88,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - has_health_condition
 - health_notes
 - photo_url
+- pet_onboarding_step
 - created_at
 
 **Modelo de datos final (breeds)**
@@ -223,6 +226,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `notification_channel` text
 - `city` text
 - `country` text
+- `user_onboarding_step` text
 - `created_at` timestamp
 
 ### `pets`
@@ -243,6 +247,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `has_health_condition` boolean
 - `health_notes` text
 - `photo_url` text
+- `pet_onboarding_step` text
 - `created_at` timestamp
 
 ### `breeds`

@@ -62,6 +62,19 @@ src/app/
 4. `GET /api/readings?device_id=...`
    - Lecturas recientes para graficos.
 
+5. `PATCH /api/devices/:id` (propuesto)
+   - Actualizar estado del dispositivo o re-vincular mascota.
+   - Requiere `Authorization: Bearer <access_token>`.
+
+Payload propuesto:
+```json
+{
+  "status": "maintenance",
+  "device_state": "offline",
+  "pet_id": "uuid-opcional"
+}
+```
+
 ## Autenticacion para CRUD
 Los endpoints `/api/pets`, `/api/devices` y `/api/readings` requieren:
 ```

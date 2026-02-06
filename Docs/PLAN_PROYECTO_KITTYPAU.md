@@ -3,7 +3,7 @@
 ## Objetivo MVP
 Un usuario se registra, agrega una mascota, registra un dispositivo (plato inteligente de comida o de agua) y ve datos en vivo desde la app web (y base lista para movil).
 
-## Estado actual del repo (2026-02-03)
+## Estado actual del repo (2026-02-06)
 - Next.js creado en `kittypau_app/` con TypeScript y App Router.
 - Archivos anteriores movidos a `kittypau_app/legacy/`.
 - `Docs/` se mantiene en la raiz para documentacion.
@@ -14,9 +14,10 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 1. **Frontend + API**: Next.js (Vercel Free)
 2. **DB + Auth + Realtime**: Supabase Free
 3. **MQTT**: HiveMQ Cloud Free
-4. **Flujo**:
+4. **Bridge**: Raspberry Pi Zero 2 W (MQTT -> API)
+5. **Flujo**:
    - ESP32 -> HiveMQ (MQTT)
-   - HiveMQ -> Webhook -> Next.js API
+   - HiveMQ -> Raspberry Bridge -> Next.js API
    - API guarda en Supabase
    - Frontend escucha Supabase Realtime
 
@@ -55,19 +56,21 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 2. **pets**
    - `id` (uuid, PK)
-   - `owner_id` (uuid, FK -> profiles.id)
+   - `user_id` (uuid, FK -> profiles.id)
    - `name`
-   - `species` (cat/dog/other)
-   - `birth_date` (date, nullable)
+   - `type` (cat/dog)
+   - `origin`
+   - `pet_state`
    - `created_at`
 
 3. **devices**
    - `id` (uuid, PK)
    - `owner_id` (uuid, FK -> profiles.id)
-   - `pet_id` (uuid, FK -> pets.id, nullable)
+   - `pet_id` (uuid, FK -> pets.id, NOT NULL)
    - `device_code` (string, unique, ej: KPCL0001)
    - `device_type` (enum: food_bowl | water_bowl)
-   - `status` (active | inactive)
+   - `status` (active | inactive | maintenance)
+   - `device_state` (factory | claimed | linked | offline | lost | error)
    - `battery_level` (int)
    - `last_seen` (timestamp)
    - `created_at`
@@ -78,6 +81,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
    - `pet_id` (uuid, FK -> pets.id, nullable)
    - `weight_grams` (int, nullable)  # comida
    - `water_ml` (int, nullable)      # agua
+   - `flow_rate` (numeric, nullable)
    - `temperature` (float, nullable)
    - `humidity` (float, nullable)
    - `battery_level` (int, nullable)
@@ -85,7 +89,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 ### Reglas RLS (resumen)
 - `profiles`: cada usuario solo ve su perfil.
-- `pets`: `owner_id = auth.uid()`
+- `pets`: `user_id = auth.uid()`
 - `devices`: `owner_id = auth.uid()`
 - `readings`: se validan via join a devices/pets del usuario.
 
@@ -101,7 +105,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 3. **GET/POST `/api/devices`**
    - Lista dispositivos.
-   - Registra dispositivo (device_code, tipo, mascota opcional).
+   - Registra dispositivo (device_code, tipo, pet_id obligatorio).
 
 4. **GET `/api/readings?device_id=...`**
    - Devuelve lecturas recientes para graficos.
@@ -131,7 +135,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 5. Crear endpoints `/api/*`.
 6. Crear UI base y flujo de onboarding.
 7. Integrar Realtime en Dashboard.
-8. Configurar HiveMQ webhook -> `/api/mqtt/webhook`.
+8. Configurar Raspberry Bridge -> `/api/mqtt/webhook`.
 9. Deploy en Vercel con variables de entorno.
 
 ## Nota sobre el deploy

@@ -24,8 +24,8 @@ Tener un MVP funcional donde el usuario:
 
 ## Diagrama de alto nivel
 ```
-ESP32 -> HiveMQ -> Webhook (/api/mqtt/webhook) -> Supabase (DB)
-                                          \-> Realtime -> App Web
+ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
+                                                    \-> Realtime -> App Web
 ```
 
 ---

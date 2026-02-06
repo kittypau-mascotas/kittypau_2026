@@ -30,6 +30,12 @@ Fuente unica de verdad para valores permitidos en frontend y backend.
 
 ---
 
+## Onboarding
+- `user_onboarding_step`: `not_started` | `user_profile` | `pet_profile` | `device_link` | `completed`
+- `pet_onboarding_step`: `not_started` | `pet_type` | `pet_profile` | `pet_health` | `pet_confirm`
+
+---
+
 ## Salud
 - `has_health_condition`: `true` | `false`
 - `has_neuter_tattoo`: `true` | `false`

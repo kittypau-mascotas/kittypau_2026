@@ -17,6 +17,7 @@ create table if not exists public.profiles (
   notification_channel text,
   city text,
   country text,
+  user_onboarding_step text,
   created_at timestamptz not null default now()
 );
 
@@ -40,6 +41,7 @@ create table if not exists public.pets (
   health_notes text,
   photo_url text,
   pet_state text default 'created' check (pet_state in ('created','completed_profile','device_pending','device_linked','inactive','archived')),
+  pet_onboarding_step text,
   created_at timestamptz not null default now()
 );
 
@@ -113,6 +115,12 @@ drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own"
   on public.profiles for update
   using (id = auth.uid());
+
+-- Policies: profiles (insert)
+drop policy if exists "profiles_insert_own" on public.profiles;
+create policy "profiles_insert_own"
+  on public.profiles for insert
+  with check (id = auth.uid());
 
 -- Policies: pets
 drop policy if exists "pets_select_own" on public.pets;

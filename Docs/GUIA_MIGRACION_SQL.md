@@ -22,7 +22,21 @@ Actualizar esquema sin perder datos existentes.
      - Asignar `pet_id` a todos los `devices` existentes.
      - Luego aplicar `ALTER TABLE devices ALTER COLUMN pet_id SET NOT NULL`.
    - Crear trigger `update_device_from_reading`.
+   - Agregar campos de onboarding:
+     - `profiles.user_onboarding_step`
+     - `pets.pet_onboarding_step`
 3. Ejecutar migracion por pasos y validar.
+
+---
+
+## SQL propuesto (onboarding)
+```sql
+alter table public.profiles
+  add column if not exists user_onboarding_step text default 'not_started';
+
+alter table public.pets
+  add column if not exists pet_onboarding_step text default 'not_started';
+```
 
 ---
 

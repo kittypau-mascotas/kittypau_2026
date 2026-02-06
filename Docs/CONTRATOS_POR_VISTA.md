@@ -49,6 +49,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - phone_number (si incluye WhatsApp)
 - city
 - country
+- user_onboarding_step
 
 **Output**
 - profile actualizado
@@ -78,6 +79,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - has_health_condition
 - health_notes (opcional)
 - photo_url
+- pet_onboarding_step
 
 **Output**
 - pet_id
@@ -161,6 +163,22 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Errores**
 - sesion expirada
+
+---
+
+## /bowl (update)
+**Input**
+- device_id
+- status (active | inactive | maintenance)
+- device_state (factory | claimed | linked | offline | lost | error)
+- pet_id (opcional, para re-vincular)
+
+**Output**
+- device actualizado
+
+**Errores**
+- device_id requerido
+- device no encontrado
 
 ---
 

@@ -1,42 +1,44 @@
-# Estado del Proyecto y Proximos Pasos (2026-02-03)
+# Estado del Proyecto y Proximos Pasos (2026-02-06)
 
 ## Resumen de avance
-- Proyecto Next.js creado en `kittypau_app/` (TypeScript + App Router).
-- Endpoint webhook listo: `src/app/api/mqtt/webhook/route.ts`.
-- Cliente Supabase server listo: `src/lib/supabase/server.ts`.
-- `.env.local` creado en `kittypau_app/`.
-- Script de prueba: `scripts/test-webhook.ps1`.
-- Prueba local del webhook exitosa (respuesta `success: true`).
-- SQL base generado en `Docs/SQL_SCHEMA.sql`.
+- Proyecto Next.js en `kittypau_app/` (TypeScript + App Router) desplegado en Vercel.
+- Endpoints API listos: `/api/pets`, `/api/devices`, `/api/readings`, `/api/mqtt/webhook`.
+- Esquema SQL actualizado en `Docs/SQL_SCHEMA.sql` con:
+  - `devices.pet_id` obligatorio
+  - `flow_rate` en `readings`
+  - nuevos estados en `pet_state`, `device_state`, `status`
+  - trigger `update_device_from_reading`
+- Pruebas E2E completas y documentadas en `Docs/PRUEBAS_E2E.md`.
+- Documentacion de login parallax cerrada en `Docs/IMAGENES_LOGIN.md`.
 
 ## Lo que ya funciona
-1. Webhook recibe datos y guarda en Supabase (local).
-2. Dispositivo creado con `device_code` (ej: `KPCL0001`).
+1. Webhook recibe datos y guarda en Supabase (produccion).
+2. CRUD de `pets` y `devices` funcionando con Auth.
+3. Lecturas (`readings`) consultables por `device_id`.
+4. Trigger actualiza `devices.last_seen` y `battery_level`.
 
-## Pendiente inmediato
-1. Confirmar data en tabla `readings`.
-2. Crear UI base (login, mascotas, dispositivos, dashboard).
-3. Implementar CRUD de mascotas y dispositivos.
-4. Activar Realtime en dashboard.
-5. Definir y construir pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
+## Pendiente inmediato (implementacion)
+1. Implementar login parallax (UI real en codigo).
+2. Aplicar Design Tokens + componentes base (`Button`, `Card`, `Input`).
+3. Conectar frontend con APIs reales (pets/devices/readings).
+4. Realtime en dashboard (suscripcion a `readings`).
+5. Pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
+6. Bridge en Raspberry como servicio 24/7 (systemd + auto-restart).
 
 ## Arquitectura de pruebas (E2E)
-- Raspberry Bridge operativo (MQTT -> API).
-- Vercel API en produccion.
-- Supabase guardando lecturas.
+- Vercel API en produccion: OK
+- Supabase guardando lecturas: OK
+- Raspberry Bridge: pendiente de validar 24/7 (systemd)
 
 ## Pendiente de infraestructura
-1. Deploy en Vercel.
-2. Configurar variables en Vercel.
-3. Configurar webhook en HiveMQ con URL publica.
-4. Probar end-to-end en produccion.
+1. Validar servicio systemd del bridge.
+2. Configurar alertas / watchdog en Raspberry.
 
 ## Implementado hoy
-- API Routes para CRUD:
-  - `GET/POST /api/pets`
-  - `GET/POST /api/devices`
-  - `GET /api/readings?device_id=...`
-- Autenticacion por `Authorization: Bearer <access_token>`.
+- SQL actualizado y aplicado.
+- E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
+- Documentacion del login parallax cerrada.
 
 ## Riesgos conocidos
-- `ARQUITECTURA_COMPLETA.md` tiene texto con codificacion antigua (mojibake). No afecta el MVP, pero conviene normalizarlo luego.
+- Falta implementar UI real (login y dashboard).
+- Realtime no esta integrado aun en frontend.

@@ -1,0 +1,67 @@
+# Plan de Implementacion (Solo Documentacion)
+
+## Objetivo
+Definir las tareas de implementacion para cerrar el MVP sin tocar codigo.
+
+---
+
+## 1) Login Parallax (UI)
+Documento fuente: `Docs/IMAGENES_LOGIN.md`
+
+Tareas:
+- Construir layout (grid + overlay).
+- Integrar capas parallax con las imagenes.
+- Ajustar blur/opacidad y contraste.
+- Validar responsivo (desktop/tablet/mobile).
+
+---
+
+## 2) Design System Base
+Documento fuente: `Docs/estilos y diseños.md`
+
+Tareas:
+- Implementar `tokens.css`.
+- Crear `Button`, `Card`, `Input` base.
+- Definir `Container`, `Section`, `Grid`, `Stack`.
+- Construir `FormField` con error.
+
+---
+
+## 3) Conectar Frontend con APIs
+Documento fuente: `Docs/FRONT_BACK_APIS.md`
+
+Tareas:
+- Login con Supabase Auth.
+- Listar mascotas y dispositivos.
+- Crear mascota y dispositivo (con `pet_id` obligatorio).
+- Mostrar lecturas por `device_id`.
+
+---
+
+## 4) Realtime
+Documento fuente: `Docs/PRUEBAS_E2E.md`
+
+Tareas:
+- Suscripcion a `readings` por `device_id`.
+- Actualizar UI sin refresh.
+- Fallback a polling.
+
+---
+
+## 5) Bridge 24/7 (Raspberry)
+Documento fuente: `Docs/RASPBERRY_BRIDGE.md`
+
+Tareas:
+- Crear servicio systemd.
+- Auto-restart y logs.
+- Validar reconexion MQTT.
+
+---
+
+## 6) Checklist de deploy final
+Documento fuente: `Docs/CHECKLIST_DEPLOY.md`
+
+Tareas:
+- Revisar variables de entorno.
+- Re-validar endpoints.
+- Confirmar webhook y bridge.
