@@ -11,6 +11,20 @@ Convertir lecturas crudas en eventos e interpretaciones utiles para el usuario.
 
 ---
 
+## Validaciones y rangos oficiales (payload)
+Estos limites se aplican en el webhook:
+- `temperature`: -10 a 60
+- `humidity`: 0 a 100
+- `battery_level`: 0 a 100
+- `weight_grams`: 0 a 20000
+- `water_ml`: 0 a 5000
+- `flow_rate`: 0 a 1000
+- `device_code`: formato `KPCL0000`
+
+Si falta `device_code` en el payload, el Bridge debe inyectarlo.
+
+---
+
 ## Reglas base (agua + comida)
 | Patron detectado | Interpretacion UX |
 |---|---|

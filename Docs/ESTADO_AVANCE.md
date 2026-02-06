@@ -33,12 +33,25 @@
 ## Pendiente de infraestructura
 1. Validar servicio systemd del bridge.
 2. Configurar alertas / watchdog en Raspberry.
+3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
 - SQL actualizado y aplicado.
 - E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
 - Documentacion del login parallax cerrada.
 
+## Conectividad validada (sin Bridge 24/7)
+- [x] Docs ↔ Backend (SQL + APIs + errores consistentes).
+- [x] Backend ↔ Supabase (constraints + schema cache + RLS smoke test).
+- [x] Backend ↔ Front (contratos documentados y pruebas OK).
+- [x] Diseño ↔ Producto (lineamientos y componentes definidos).
+
 ## Riesgos conocidos
 - Falta implementar UI real (login y dashboard).
 - Realtime no esta integrado aun en frontend.
+
+## Verificaciones cerradas (operacion)
+- [x] Schema cache refrescado en Supabase.
+- [x] Variables de entorno validadas entre Vercel y Raspberry.
+- [x] Smoke test RLS ejecutado (multiusuario).
+

@@ -17,7 +17,7 @@ Tareas:
 ---
 
 ## 2) Design System Base
-Documento fuente: `Docs/estilos y diseÃ±os.md`
+Documento fuente: `Docs/estilos y diseños.md`
 
 Tareas:
 - Implementar `tokens.css`.
@@ -65,3 +65,13 @@ Tareas:
 - Revisar variables de entorno.
 - Re-validar endpoints.
 - Confirmar webhook y bridge.
+
+---
+
+## 7) Playbook de deploy (backend + rollback)
+Tareas:
+- Confirmar variables en Vercel (ver Docs/CHECKLIST_DEPLOY.md).
+- Deploy en Vercel desde kittypau_app.
+- Validar endpoints minimos.
+- Si falla, promover el deployment anterior en Vercel.
+

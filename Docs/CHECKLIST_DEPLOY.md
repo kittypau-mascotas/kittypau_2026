@@ -3,6 +3,7 @@
 ## 1) Supabase listo
 - [ ] Proyecto creado en Supabase.
 - [ ] Ejecutar `Docs/SQL_SCHEMA.sql` en SQL Editor.
+- [ ] Refresh de **Schema Cache** en Supabase (API -> Schema -> Refresh cache).
 - [ ] Auth habilitado (email/password).
 - [ ] Obtener `SUPABASE_URL` y keys.
 - [ ] Crear al menos 1 mascota en `pets`.
@@ -16,6 +17,11 @@ Agregar en **Settings -> Environment Variables**:
 - [ ] `MQTT_WEBHOOK_SECRET`
 - [ ] `NEXT_PUBLIC_SUPABASE_URL`
 - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+## 2.1) Verificacion cruzada de variables (Vercel + Raspberry)
+- [ ] `MQTT_WEBHOOK_SECRET` es el mismo en Vercel y en la Raspberry.
+- [ ] `WEBHOOK_URL` en la Raspberry apunta a `https://kittypau-app.vercel.app/api/mqtt/webhook`.
+- [ ] `SUPABASE_URL` y keys correctas en Vercel (coinciden con el proyecto activo).
 
 ## 3) Deploy en Vercel
 - [ ] Crear proyecto en Vercel.
@@ -32,10 +38,14 @@ Agregar en **Settings -> Environment Variables**:
 - [ ] Verificar insercion en `readings`.
 - [ ] Confirmar `devices.last_seen` actualizado.
 - [ ] Registrar dispositivo desde app con QR y asociarlo a una mascota.
+- [ ] Nota: `access_token` de Supabase expira ~1h, regenerar durante pruebas largas.
 
 ## 6) Realtime (opcional)
 - [ ] Suscripcion activa en frontend.
 - [ ] Ver datos en vivo al insertar lecturas.
+
+## 7) Rollback (si falla el deploy)
+- [ ] En Vercel -> Deployments -> Promote el deploy anterior.
 
 ## Estado local (hasta 2026-02-03)
 - [x] Endpoint `/api/mqtt/webhook` creado.

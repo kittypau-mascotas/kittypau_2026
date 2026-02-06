@@ -50,7 +50,7 @@ Docs clave:
 ---
 
 ## 5) Frontend + Design System
-- Tokens + UI base en `Docs/estilos y diseÃ±os.md`
+- Tokens + UI base en `Docs/estilos y diseños.md`
 - Login parallax: `Docs/IMAGENES_LOGIN.md`
 
 ---
@@ -66,3 +66,12 @@ Docs clave:
 2. Leer `Docs/ARQUITECTURA_PROYECTO.md`
 3. Ejecutar `Docs/SQL_SCHEMA.sql`
 4. Probar endpoints con `Docs/PRUEBAS_E2E.md`
+
+
+## 8) Primer dia del dev (script rapido)
+1. Clonar repo y abrir kittypau_2026_hivemq.
+2. Configurar .env.local con variables de Vercel (solo frontend).
+3. Verificar Docs/CHECKLIST_DEPLOY.md (envs + schema cache).
+4. Generar ccess_token en Supabase Auth.
+5. Ejecutar pruebas minimas en Docs/PRUEBAS_E2E.md (API directa).
+

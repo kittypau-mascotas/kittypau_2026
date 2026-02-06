@@ -9,7 +9,7 @@ Guiar al usuario en un solo flujo visual con progreso persistente hasta completa
 ## Comportamiento general
 - Se abre al click de "Registrarse".
 - Modal/popup bloqueante (no permite navegar fuera del flujo).
-- Puede cerrarse con confirmacion, pero **guarda progreso**.
+- Puede cerrarse con confirmación, pero **guarda progreso**.
 - Reanudacion automatica al volver a abrir la app.
 
 ---
@@ -93,3 +93,4 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
 
 ## Persistencia
 - Guardar `first_time_guide_seen` en perfil de usuario.
+

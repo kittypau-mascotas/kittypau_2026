@@ -580,3 +580,188 @@ export function Input({
   );
 }
 ```
+
+## Estilos de Diseño Web Mejor Evaluados (2025-2026)
+1) Soft Minimalism (estandar SaaS)
+- Fondos off-white / gris calido.
+- Sombras muy suaves.
+- Tipografia base 14-18.
+- Bordes 10-18px.
+- Separaciones amplias.
+- Iconos finos.
+- Nada grita visualmente.
+
+2) Layered Depth (glassmorphism usable)
+- Capas translucidas para jerarquia.
+- Tarjetas flotantes.
+- Blur suave.
+- Overlays claros.
+- Contraste controlado.
+
+3) Editorial Layout (estilo revista digital)
+- Titulos grandes.
+- Bloques verticales.
+- Fotos protagonistas.
+- UI minima.
+
+---
+
+## Estilos Mobile Mejor Evaluados (2025-2026)
+1) Single-Column Flow Apps
+- Feed vertical inteligente.
+- Acciones inline.
+- Sin dashboards densos.
+
+2) Card-Driven UI
+- Cada accion es una tarjeta.
+- Modulos reutilizables.
+
+3) Thumb-Zone First Layout
+- Acciones principales abajo.
+- Nada critico arriba.
+
+---
+
+## Lo que evitar (mal feedback)
+- Sidebars complejas.
+- Dashboards con muchos widgets.
+- Menus hamburguesa profundos.
+- Colores saturados.
+- Tipografia pequena.
+- Demasiados iconos.
+- Pantallas con muchas decisiones.
+
+---
+
+## Resumen claro
+- Web: Soft minimal + tipografia editorial + capas suaves.
+- Mobile: Feed vertical + tarjetas + pulgar primero.
+
+
+## Cambio Grande del Mundo UI (2026)
+Antes: se instalaba una libreria completa (Bootstrap/MUI) y se vivia dentro de ella.
+Ahora: se construye un design system con piezas headless + copy-paste.
+Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componentes copiados (shadcn/custom).
+
+---
+
+## Librerias con Mejor Diseño (Next.js 2025-2026)
+**Tier S (premium)**
+- shadcn/ui: estandar actual (Tailwind + Radix).
+- Radix UI: primitivas accesibles sin estilos.
+- React Aria / Headless UI: interacciones complejas y mobile feel.
+
+**Tier A (bonitas pero mas "libreria")**
+- HeroUI (NextUI v2).
+- Mantine.
+- Chakra UI.
+
+**Tier B (paradigma antiguo)**
+- Material UI (MUI).
+- Ant Design.
+
+---
+
+## Componentes Visuales para Landing Premium
+- Magic UI (hero sections premium).
+- Aceternity UI (efectos modernos).
+- Tremor (dashboards analiticos).
+- Modern UI (alternativa shadcn).
+
+---
+
+## Decision por posicionamiento
+- SaaS corporativo: Mantine/Chakra/MUI.
+- Startup moderna: shadcn + Radix + Tailwind.
+- Producto premium tipo Apple: shadcn + Radix + custom + animaciones suaves.
+
+---
+
+## Recomendacion KittyPau
+- Usar: shadcn/ui + Radix + Tailwind + componentes custom.
+- Evitar: Material UI, Ant Design.
+
+## Set de Componentes KittyPau (Web + Mobile, 2026)
+
+### Stack base (cerrado)
+- Next.js (App Router)
+- Tailwind CSS
+- shadcn/ui
+- Radix UI
+- lucide-react (iconos)
+- framer-motion (animaciones)
+
+### Componentes core (100% necesarios)
+1) Layout & Shell
+- AppLayout
+- Header flotante (glass suave)
+- Contenido centrado (max-width)
+- Mobile-first
+- shadcn/Radix: Sheet (menu mobile), DropdownMenu (user menu), Separator
+
+2) Navigation (minima)
+- TopNav (desktop): Logo, estado general, avatar usuario
+- BottomBar (mobile): Home, Mascotas, Dispositivo, Perfil
+- Componentes: NavigationMenu, Button (icon), Avatar
+
+3) Cards (corazon del diseño)
+- PetCard: foto real edge-to-edge, nombre + estado, CTA sutil
+- DeviceStatusCard: nivel agua/comida, ultima actividad, estado visual (ok/alerta)
+- InsightCard (feed principal): mensaje humano + accion rapida
+- Componentes: Card, AspectRatio, Badge, Progress, Tooltip, Alert, Button
+
+4) Feed principal (mobile-first)
+- DailyFeed: scroll vertical unico (sin dashboards)
+- Componentes: Card, Separator, Skeleton
+
+5) Estados & Feedback
+- Alertas suaves (no rojas agresivas)
+- Empty states premium (imagen lifestyle + texto corto + CTA unico)
+- Componentes: Alert, Badge, Toast, Button, Card
+
+6) Formularios (minimos y humanos)
+- PetForm: nombre, tipo, foto
+- DeviceLinkForm: codigo corto + confirmacion visual
+- Componentes: Input, Select, RadioGroup, Form, Button, Dialog
+
+7) Autenticacion (limpia y premium)
+- Login/Register: card centrada, fondo lifestyle
+- Componentes: Card, Input, Button, Separator
+
+8) Profile & Settings (light)
+- ProfileCard: avatar, email, logout
+- Componentes: Avatar, DropdownMenu, Button
+
+9) Charts (solo cuando aportan valor)
+- Evitar dashboards complejos
+- Si se usan: consumo agua 7 dias (1 grafico)
+- Stack: Tremor + shadcn (AreaChart / LineChart)
+
+### Motion & Micro-interactions
+- Animaciones suaves
+- Hover cards
+- Transitions
+- Feed loading
+- framer-motion: motion.div + layout animations
+
+### Componentes que NO usamos
+- Tables
+- Sidebars grandes
+- Modals pesados
+- Tabs infinitos
+- Mega-dashboards
+
+### Mapa final de componentes
+- Layout: Card, Sheet, Separator
+- Navegacion: NavigationMenu, Button
+- Contenido: Card, Badge, Alert
+- Inputs: Input, Select, Radio
+- Feedback: Toast, Tooltip
+- Visual: Progress, Skeleton
+- Motion: framer-motion
+
+### Resultado visual esperado
+- Estilo Apple / Vercel
+- Sensacion de calma
+- Foco en mascotas, no sensores
+- UX clara en 3 segundos

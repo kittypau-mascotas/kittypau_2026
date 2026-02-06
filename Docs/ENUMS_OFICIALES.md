@@ -28,6 +28,8 @@ Fuente unica de verdad para valores permitidos en frontend y backend.
 - `device_state`: `factory` | `claimed` | `linked` | `offline` | `lost` | `error`
 - `status`: `active` | `inactive` | `maintenance`
 
+> Verificado contra `Docs/SQL_SCHEMA.sql`.
+
 ---
 
 ## Onboarding

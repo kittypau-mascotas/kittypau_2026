@@ -1,6 +1,6 @@
 # Frontend, Backend y APIs (MVP Kittypau)
 
-## Decision tecnica
+## Decisión técnica
 - **Frontend**: Next.js (App Router) en Vercel.
 - **Backend**: API Routes de Next.js (sin servicio extra para mantener $0).
 - **DB/Auth/Realtime**: Supabase.
@@ -11,12 +11,12 @@
 En este proyecto, **el deploy en Vercel incluye todo**:
 1. **Frontend** (UI web).
 2. **API** (`/api/*`), incluyendo el webhook de HiveMQ.
-3. **Backend ligero** (logica serverless dentro de esas rutas).
+3. **Backend ligero** (lógica serverless dentro de esas rutas).
 
 No hay backend separado en otro servidor. La base de datos vive en Supabase.
 
 ## Objetivo funcional
-1. Registro e inicio de sesion.
+1. Registro e inicio de sesión.
 2. Crear mascota.
 3. Registrar dispositivo (plato comida/agua) con QR.
 4. Ver datos en vivo (streaming) en la app.
@@ -43,7 +43,7 @@ src/app/
     readings/
 ```
 
-## Endpoints minimos (API Routes)
+## Endpoints mínimos (API Routes)
 1. `POST /api/mqtt/webhook`
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
@@ -60,10 +60,10 @@ src/app/
    - `device_code` se obtiene del QR del plato.
 
 4. `GET /api/readings?device_id=...`
-   - Lecturas recientes para graficos.
+   - Lecturas recientes para gráficos.
 
-5. `PATCH /api/devices/:id` (propuesto)
-   - Actualizar estado del dispositivo o re-vincular mascota.
+5. `PATCH /api/devices/:id`
+   - Actualiza estado del dispositivo o re-vincula mascota.
    - Requiere `Authorization: Bearer <access_token>`.
 
 Payload propuesto:
@@ -135,9 +135,9 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 - Fallback: polling cada X segundos si Realtime falla.
 
 ## Notas sobre Vercel Free
-- Mantener el API liviano (validacion y escritura en DB).
-- Evitar tareas pesadas o de larga duracion en serverless.
-- Revisar limites actuales del plan Free en la documentacion oficial antes de escalar.
+- Mantener el API liviano (validación y escritura en DB).
+- Evitar tareas pesadas o de larga duración en serverless.
+- Revisar limites actuales del plan Free en la documentación oficial antes de escalar.
 
 ## Checklist MVP
 - [ ] Auth funcionando (Supabase)
@@ -145,3 +145,16 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 - [ ] CRUD dispositivos
 - [ ] Webhook MQTT insertando en DB
 - [ ] Dashboard con Realtime
+
+
+## Contrato de errores (resumen)
+Reglas comunes:
+- 401 si falta o es invalido Authorization (o x-webhook-token).
+- 403 si el recurso no pertenece al usuario.
+- 404 si el recurso no existe.
+- 400 si payload es invalido o falla una validacion.
+- 500 si Supabase o servidor fallan.
+
+Errores por endpoint:
+1. GET /api/devices`n   - 401 si falta token.
+2. PATCH /api/devices/:id`n   - 400 Invalid status | Invalid device_state | Invalid device_type | No fields to update`n   - 403 Forbidden`n   - 404 Device not found`n3. POST /api/mqtt/webhook`n   - 401 Unauthorized`n   - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range`n   - 404 Device not found`n

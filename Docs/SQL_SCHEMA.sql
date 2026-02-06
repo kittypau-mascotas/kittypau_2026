@@ -1,5 +1,5 @@
 -- Kittypau IoT - SQL Schema (MVP)
--- Objetivo: Usuario → Mascota → Dispositivo → Lecturas (streaming)
+-- Objetivo: Usuario ? Mascota ? Dispositivo ? Lecturas (streaming)
 
 -- Extensions
 create extension if not exists "pgcrypto";
@@ -164,7 +164,7 @@ create policy "devices_delete_own"
   on public.devices for delete
   using (owner_id = auth.uid());
 
--- Policies: readings (solo lectura del dueño vía join con devices)
+-- Policies: readings (solo lectura del due�o v�a join con devices)
 drop policy if exists "readings_select_own" on public.readings;
 create policy "readings_select_own"
   on public.readings for select
@@ -234,4 +234,5 @@ create trigger trg_update_device_from_reading
 after insert on public.readings
 for each row execute function public.update_device_from_reading();
 
--- Inserciones de readings se harán con service role (webhook)
+-- Inserciones de readings se har�n con service role (webhook)
+

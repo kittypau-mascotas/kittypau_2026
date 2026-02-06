@@ -93,7 +93,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 - `devices`: `owner_id = auth.uid()`
 - `readings`: se validan via join a devices/pets del usuario.
 
-## API endpoints minimos (Next.js)
+## API endpoints mínimos (Next.js)
 1. **POST `/api/mqtt/webhook`**
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
@@ -190,3 +190,4 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ## Pruebas E2E
 - Ver `Docs/PRUEBAS_E2E.md` para validar el flujo completo.
+

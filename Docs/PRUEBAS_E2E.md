@@ -122,14 +122,15 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 ---
 
 ## 6) Prueba de integridad de device_code
-**Objetivo:** validar que el codigo se extrae del topic si no viene en payload.
+**Objetivo:** validar que el `device_code` llegue en el payload (lo inyecta el Bridge).
 
 **Pasos**
 1. Publicar mensaje con topic `kittypau/KPCL001/telemetry`
-2. Enviar payload sin device_code.
+2. Verificar que el Bridge agregue `deviceCode` en el payload hacia `/api/mqtt/webhook`.
 
 **Esperado**
 - Se crea lectura asociada a `KPCL001`.
+- Si el Bridge no agrega `deviceCode`, el webhook debe responder `400`.
 
 ---
 
@@ -145,6 +146,23 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 **Vercel ok pero no guarda en Supabase**
 - `device_code` no existe en `devices`.
 - `SUPABASE_SERVICE_ROLE_KEY` incorrecta.
+
+---
+
+## 8) Smoke test RLS (multiusuario)
+**Objetivo:** verificar que un usuario no puede leer datos de otro.
+
+**Pasos**
+1. Crear usuario B en Supabase Auth.
+2. Obtener `access_token` del usuario B.
+3. Con token B ejecutar:
+   - `GET /api/devices` (debe devolver array vacio o 403).
+   - `GET /api/pets` (debe devolver array vacio o 403).
+4. Intentar `GET /api/readings?device_id=<UUID de usuario A>`.
+
+**Esperado**
+- No hay datos de usuario A.
+- No se filtra ningun `device_id` ajeno.
 
 ---
 

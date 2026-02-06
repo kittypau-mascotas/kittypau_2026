@@ -1,4 +1,4 @@
-# Indice de Documentacion (Kittypau)
+# Índice de Documentación (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -31,7 +31,7 @@
 ## Flujos UX
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
 - `Docs/IMAGENES_LOGIN.md`
-- `Docs/estilos y diseÃ±os.md`
+- `Docs/estilos y diseños.md`
 
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
@@ -41,3 +41,4 @@
 
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
+

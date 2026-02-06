@@ -117,7 +117,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - El QR entrega el `device_code`.
 - El dispositivo se asocia a una mascota para activar envio de datos.
 
-**Datos minimos**
+**Datos mínimos**
 - id
 - owner_id (usuario)
 - pet_id (obligatorio)
@@ -132,7 +132,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 **Origen**: formulario "Registro de Kittypau".
 
 ### D. Lecturas (streaming)
-**Datos minimos**
+**Datos mínimos**
 - id
 - device_id
 - pet_id (opcional)
@@ -310,3 +310,4 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 ## Proximo paso
 Cuando confirmes este plan, generamos el **script SQL final** y lo guardamos en `Docs/SQL_SCHEMA.sql` antes de tocar codigo.
+
