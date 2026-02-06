@@ -1,4 +1,4 @@
-# Estilos y Diseños (Kittypau)
+# Estilos y Disenos (Kittypau)
 
 ## Principio base
 Kittypau no debe verse como un dashboard tecnico. Debe contar una historia.
@@ -19,10 +19,10 @@ Tres reglas de las webs premiadas de data:
 
 ### 2) Scrollytelling narrativo
 - El dia se cuenta como historia:
-  - 06:10 despierto
-  - 07:20 comio
-  - 14:30 siesta
-  - 03:12 actividad nocturna
+- 06:10 despierto
+- 07:20 comio
+- 14:30 siesta
+- 03:12 actividad nocturna
 
 ### 3) Data emocional (clave)
 - No buscamos metricas veterinarias.
@@ -79,7 +79,7 @@ Kittypau es:
 ---
 
 ## Estilo visual recomendado
-**Calmo + nocturno + organico + calido**
+Calmo + nocturno + organico + calido
 
 No:
 - veterinario
@@ -101,38 +101,38 @@ Elegir una:
 ---
 
 ## Paleta base (Kittypau)
-**Ivory (fondo principal)**
+Ivory (fondo principal)
 - `#F6F1E9`
 - Alternativa: `#FBF8F3`
 
-**Rosewater (fondos suaves, cards, hover)**
+Rosewater (fondos suaves, cards, hover)
 - `#F2D7D9`
 
-**Dusty Rose (secundario, botones suaves)**
+Dusty Rose (secundario, botones suaves)
 - `#C8A2A6`
 
-**Marsala (acento fuerte, CTA, titulos)**
+Marsala (acento fuerte, CTA, titulos)
 - `#7A2E3A`
 - Alternativa: `#6B2632`
 
-**Texto principal**
+Texto principal
 - Charcoal soft: `#2E2A28`
 
 ---
 
 ## Colores funcionales (avisos / estados)
-**Warning**
+Warning
 - Muted Gold: `#C2A45D`
 
-**Error / Alarma**
+Error / Alarma
 - Deep Marsala Red: `#8C2F39`
 - Fondo recomendado: `#F4E1E3`
 
-**Success / OK**
+Success / OK
 - Sage Soft: `#7F9C8A`
 - Fondo recomendado: `#EAF2ED`
 
-**Info / Notificacion**
+Info / Notificacion
 - Dusty Blue-Grey: `#6F8597`
 - Fondo recomendado: `#EDF1F5`
 
@@ -165,19 +165,19 @@ Elegir una:
 ---
 
 ## Paleta final (tablero)
-### Colores base
+Colores base
 - Ivory (fondo principal): `#F6F1E9`
 - Ivory claro (cards/paneles): `#FBF8F3`
 - Texto principal (charcoal): `#2E2A28`
 - Texto secundario: `#5E5653`
 
-### Colores de marca
+Colores de marca
 - Marca / Logo / H1 suave: `#EBB7AA`
 - Dusty Rose (secundario): `#C8A2A6`
 - Marsala (acento fuerte/CTA): `#7A2E3A`
 - Marsala profundo (alertas): `#8C2F39`
 
-### Estados / Notificaciones
+Estados / Notificaciones
 | Estado | Texto | Fondo |
 |---|---|---|
 | Exito | `#4E6B5B` | `#E6EFE9` |
@@ -188,50 +188,50 @@ Elegir una:
 ---
 
 ## Tipografia
-### Titulos / Marca
-- Fuente: **Titan One**
+Titulos / Marca
+- Fuente: Titan One
 - Uso: Logo, H1, CTA clave
 - Peso: Bold
-- Tamaño:
-  - H1: 36-40px
-  - H2: 26-30px
+- Tamano:
+- H1: 36-40px
+- H2: 26-30px
 - Color: `#EBB7AA` o `#7A2E3A`
 
-### Texto funcional
-- Fuente: **Inter** / **Poppins** / **Nunito**
+Texto funcional
+- Fuente: Inter / Poppins / Nunito
 - Peso: Regular / Medium
-- Tamaño:
-  - Texto base: 15-16px
-  - Labels: 13-14px
+- Tamano:
+- Texto base: 15-16px
+- Labels: 13-14px
 - Color: `#2E2A28`
 
 ---
 
 ## Estructura del tablero
-### Header superior
+Header superior
 - Altura: 72px
 - Fondo: `#FBF8F3`
 - Logo izquierda
 - Navegacion centrada
 - Usuario derecha (avatar circular 32px)
 
-### Sidebar (izquierda)
+Sidebar (izquierda)
 - Ancho: 240px
 - Fondo: `#F1E6DE`
 - Iconos monocromos
 - Item activo:
-  - Fondo: `#EBD6CE`
-  - Texto: `#7A2E3A`
+- Fondo: `#EBD6CE`
+- Texto: `#7A2E3A`
 
-### Hero / Bienvenida
+Hero / Bienvenida
 - Fondo: degradado suave Ivory -> Rosewater
 - H1 en Marsala suave
 - CTA principal:
-  - Fondo: `#7A2E3A`
-  - Texto: `#FFFFFF`
-  - Border-radius: 10px
+- Fondo: `#7A2E3A`
+- Texto: `#FFFFFF`
+- Border-radius: 10px
 
-### Cards de Resumen
+Cards de Resumen
 - Altura: 90-110px
 - Fondo: `#FBF8F3`
 - Sombra: `0 8px 24px rgba(0,0,0,0.08)`
@@ -258,9 +258,48 @@ Elegir una:
 
 ---
 
-## Reglas clave de diseño
+## Reglas clave de diseno
 - Nada de colores puros (rojo/verde/azul)
 - Nada pastel infantil
 - Todo ligeramente apagado
 - Mas espacio que decoracion
 - Contraste > saturacion
+
+---
+
+# Stack de UI y Motion (landing Apple-like)
+
+## Filosofia
+Landing moderna tipo startup hardware / Apple-like / storytelling.
+No dashboard corporativo, no Material UI.
+
+Principio:
+- UI minimalista + motion fuerte + componentes simples + scroll animado
+- Sin librerias pesadas
+
+---
+
+## Stack recomendada (Next.js)
+UI base
+- shadcn/ui
+- tailwindcss
+
+Estetica startup
+- magicui
+- aceternity-ui
+
+Animaciones
+- framer-motion
+- gsap
+- @studio-freight/lenis
+
+Opcional premium
+- react-three-fiber
+
+---
+
+## Regla de oro
+- Libreria UI = estructura
+- Motion = experiencia
+- Scroll = storytelling
+- Visual FX = percepcion de calidad
