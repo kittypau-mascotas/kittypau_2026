@@ -308,6 +308,47 @@ Opcional premium
 
 # Core Design System (Base obligatorio)
 
+## 0) Design Tokens (identidad del producto)
+No empezamos con CSS suelto. Empezamos con tokens.
+
+Ruta sugerida:
+`/styles/tokens.css`
+
+Paleta operativa: esta es la fuente de verdad para UI del producto.
+La paleta anterior queda como referencia de marca y narrativa.
+
+```css
+:root {
+  /* Brand */
+  --primary: 222 84% 56%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Superficie */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  /* Estados */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+
+  --border: 214 32% 91%;
+  --ring: 222 84% 56%;
+
+  /* Feedback IoT */
+  --success: 142 71% 45%;
+  --warning: 38 92% 50%;
+  --danger: 0 72% 51%;
+
+  /* Radio moderno */
+  --radius: 1.2rem;
+}
+```
+
+---
+
 ## 1) Inputs & Actions
 Todo lo que el usuario puede presionar o completar
 - Button (primary / secondary / ghost / link)
@@ -324,6 +365,50 @@ Todo lo que el usuario puede presionar o completar
 
 Regla startup:
 Los botones deben verse grandes, respirables y tactiles.
+
+Boton base recomendado:
+`components/ui/button.tsx`
+
+```tsx
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-[var(--radius)] text-sm font-medium transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        primary: "bg-primary text-primary-foreground shadow hover:opacity-90",
+        secondary: "bg-muted text-foreground hover:bg-muted/80",
+        ghost: "hover:bg-muted",
+        outline: "border border-border hover:bg-muted",
+      },
+      size: {
+        sm: "h-9 px-3",
+        md: "h-11 px-5",
+        lg: "h-14 px-8 text-base",
+      },
+    },
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+    },
+  }
+);
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {}
+
+export function Button({ className, variant, size, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+}
+```
 
 ---
 
@@ -365,6 +450,25 @@ Donde vive la informacion
 - Accordion
 
 El 70% de la UI moderna son variaciones de Card.
+
+Card base recomendado:
+`components/ui/card.tsx`
+
+```tsx
+import { cn } from "@/lib/utils";
+
+export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "rounded-[calc(var(--radius)+4px)] border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
 
 ---
 
@@ -416,3 +520,25 @@ No construyas paginas primero.
 Primero construyes:
 1 boton + 1 card + 1 input perfectos.
 Despues todo el sitio se arma solo.
+
+Input base recomendado:
+`components/ui/input.tsx`
+
+```tsx
+import { cn } from "@/lib/utils";
+
+export function Input({
+  className,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      className={cn(
+        "flex h-11 w-full rounded-[var(--radius)] border border-border bg-background px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
