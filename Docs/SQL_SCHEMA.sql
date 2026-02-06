@@ -39,7 +39,7 @@ create table if not exists public.pets (
   has_health_condition boolean,
   health_notes text,
   photo_url text,
-  pet_state text default 'created' check (pet_state in ('created','completed_profile','device_pending','device_linked','inactive')),
+  pet_state text default 'created' check (pet_state in ('created','completed_profile','device_pending','device_linked','inactive','archived')),
   created_at timestamptz not null default now()
 );
 
@@ -63,11 +63,11 @@ create table if not exists public.pet_breeds (
 create table if not exists public.devices (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references public.profiles(id) on delete cascade,
-  pet_id uuid references public.pets(id) on delete set null,
+  pet_id uuid not null references public.pets(id) on delete restrict,
   device_code text not null unique,
   device_type text not null check (device_type in ('food_bowl','water_bowl')),
-  status text not null default 'active' check (status in ('active','inactive')),
-  device_state text default 'factory' check (device_state in ('factory','claimed','linked','offline','lost')),
+  status text not null default 'active' check (status in ('active','inactive','maintenance')),
+  device_state text default 'factory' check (device_state in ('factory','claimed','linked','offline','lost','error')),
   battery_level int,
   last_seen timestamptz,
   created_at timestamptz not null default now()
@@ -80,6 +80,7 @@ create table if not exists public.readings (
   pet_id uuid references public.pets(id) on delete set null,
   weight_grams int,
   water_ml int,
+  flow_rate numeric,
   temperature numeric,
   humidity numeric,
   battery_level int,
@@ -92,6 +93,7 @@ create index if not exists idx_devices_owner_id on public.devices(owner_id);
 create index if not exists idx_readings_device_id on public.readings(device_id);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
+create index if not exists idx_devices_pet_id on public.devices(pet_id);
 
 -- RLS
 alter table public.profiles enable row level security;
@@ -202,4 +204,26 @@ create policy "pet_breeds_delete_own"
     )
   );
 
--- Inserciones de readings se harán con service role (webhook)
+-- Triggers
+create or replace function public.update_device_from_reading()
+returns trigger as $$
+begin
+  update public.devices
+  set last_seen = new.recorded_at,
+      battery_level = coalesce(new.battery_level, battery_level),
+      status = 'active',
+      device_state = case
+        when device_state = 'factory' then 'linked'
+        else device_state
+      end
+  where id = new.device_id;
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists trg_update_device_from_reading on public.readings;
+create trigger trg_update_device_from_reading
+after insert on public.readings
+for each row execute function public.update_device_from_reading();
+
+-- Inserciones de readings se haran con service role (webhook)
