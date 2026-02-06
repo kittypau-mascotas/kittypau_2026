@@ -171,6 +171,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - device_id
 - status (active | inactive | maintenance)
 - device_state (factory | claimed | linked | offline | lost | error)
+- device_type (food_bowl | water_bowl)
 - pet_id (opcional, para re-vincular)
 
 **Output**

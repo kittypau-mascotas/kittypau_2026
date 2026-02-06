@@ -46,6 +46,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (!/^KPCL\d{4}$/.test(payload.device_code)) {
+    return NextResponse.json(
+      { error: "device_code must match KPCL0000 format" },
+      { status: 400 }
+    );
+  }
+
   const { data, error } = await supabase
     .from("devices")
     .insert(payload)

@@ -71,6 +71,7 @@ Payload propuesto:
 {
   "status": "maintenance",
   "device_state": "offline",
+  "device_type": "food_bowl",
   "pet_id": "uuid-opcional"
 }
 ```
@@ -100,6 +101,7 @@ Ejemplo:
   "humidity": 65,
   "weight_grams": 3500,
   "battery_level": 85,
+  "flow_rate": 120,
   "timestamp": "2026-02-03T18:30:00Z"
 }
 ```

@@ -306,6 +306,44 @@ Opcional premium
 
 ---
 
+# Politica de Stack (2024-2026)
+
+## Objetivo
+Evitar librerias antiguas. Solo se aceptan tecnologias con uso real y activo en 2024-2026.
+
+## Regla de aceptacion
+- La libreria debe mostrar adopcion fuerte en 2024-2026.
+- Debe tener actividad reciente (release en los ultimos 12-18 meses).
+- Debe ser compatible con Next.js App Router.
+
+## Permitidas (core UI)
+- Tailwind CSS
+- shadcn/ui
+- Radix UI
+- Headless UI
+- MUI (solo si se requiere algo enterprise)
+
+## Permitidas (motion / scroll)
+- Framer Motion
+- GSAP + ScrollTrigger
+- Lenis
+
+## Permitidas (marketing blocks)
+- Magic UI
+- Aceternity UI
+- Motion Primitives
+
+## Bloqueadas (legacy / look antiguo)
+- Bootstrap
+- Semantic UI / Fomantic
+- React Bootstrap
+- AdminLTE
+
+## Nota de uso real (2024)
+Segun State of React 2024, MUI sigue liderando en uso y shadcn/ui muestra el mayor crecimiento.
+
+---
+
 # Core Design System (Base obligatorio)
 
 ## 0) Design Tokens (identidad del producto)
