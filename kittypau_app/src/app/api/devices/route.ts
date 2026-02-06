@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
     battery_level: body?.battery_level ?? null,
   };
 
-  if (!payload.device_code || !payload.device_type) {
+  if (!payload.device_code || !payload.device_type || !payload.pet_id) {
     return NextResponse.json(
-      { error: "device_code and device_type are required" },
+      { error: "device_code, device_type, and pet_id are required" },
       { status: 400 }
     );
   }
