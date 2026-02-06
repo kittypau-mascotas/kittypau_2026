@@ -44,6 +44,10 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 - `device_id` (UUID) **no** es `device_code` (KPCLxxxx).
 - `/api/readings` requiere `device_id`.
 
+**Cambio confirmado (2026-02-06)**
+- `POST /api/devices` ahora exige `pet_id` (schema lo requiere).
+- Prueba OK con `pet_id` valido.
+
 ---
 
 ## 1) Prueba de conexion MQTT (HiveMQ)
