@@ -14,7 +14,7 @@ const ALLOWED_DEVICE_STATE = new Set([
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
@@ -22,7 +22,7 @@ export async function PATCH(
   }
 
   const { supabase, user } = auth;
-  const deviceId = context.params.id;
+  const { id: deviceId } = await context.params;
 
   if (!deviceId) {
     return NextResponse.json({ error: "device_id is required" }, { status: 400 });
