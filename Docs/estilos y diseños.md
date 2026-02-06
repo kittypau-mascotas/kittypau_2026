@@ -303,3 +303,116 @@ Opcional premium
 - Motion = experiencia
 - Scroll = storytelling
 - Visual FX = percepcion de calidad
+
+---
+
+# Core Design System (Base obligatorio)
+
+## 1) Inputs & Actions
+Todo lo que el usuario puede presionar o completar
+- Button (primary / secondary / ghost / link)
+- IconButton
+- Input
+- Textarea
+- Select
+- Switch / Toggle
+- Checkbox
+- RadioGroup
+- Slider
+- FormField (wrapper con label + error)
+- Command palette (CMD+K)
+
+Regla startup:
+Los botones deben verse grandes, respirables y tactiles.
+
+---
+
+## 2) Feedback
+Comunicacion con el usuario
+- Alert
+- Toast
+- Badge
+- Tooltip
+- Popover
+- Dialog / Modal
+- Loading spinner
+- Skeleton loader
+- Progress bar
+
+En SaaS hardware esto es critico: estado del dispositivo.
+
+---
+
+## 3) Layout
+La estructura visual (estos no vienen listos, se crean)
+- Container
+- Section
+- Grid
+- Stack (vertical spacing)
+- Divider
+- Spacer
+
+---
+
+## 4) Surface Components
+Donde vive la informacion
+- Card
+- Feature Card
+- Stat Card
+- Device Card
+- Bento Grid
+- Table
+- Accordion
+
+El 70% de la UI moderna son variaciones de Card.
+
+---
+
+## 5) Navigation
+Movimiento dentro de la app
+- Navbar
+- Sidebar
+- Tabs
+- Breadcrumbs
+- Pagination
+- Stepper (onboarding)
+
+---
+
+## 6) Data Visualization (IoT)
+- Metric widget
+- Chart container
+- Empty state
+- Device status indicator
+
+---
+
+## Variantes por componente
+Ejemplo:
+- Card
+- FeatureCard (landing)
+- DeviceCard (dashboard)
+- StatCard (metrics)
+- PricingCard (marketing)
+
+Apple / Stripe / Helium hacen esto.
+
+---
+
+## Estructura recomendada en Next.js
+components/
+  ui/              <- shadcn base
+  layout/
+  marketing/
+  dashboard/
+  device/
+  charts/
+  feedback/
+
+---
+
+## Regla importante
+No construyas paginas primero.
+Primero construyes:
+1 boton + 1 card + 1 input perfectos.
+Despues todo el sitio se arma solo.
