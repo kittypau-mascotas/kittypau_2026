@@ -18,7 +18,7 @@ type WebhookPayload = {
   timestamp?: string;
 };
 
-function isFiniteNumber(value: unknown) {
+function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
