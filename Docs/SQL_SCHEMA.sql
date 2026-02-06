@@ -234,4 +234,4 @@ create trigger trg_update_device_from_reading
 after insert on public.readings
 for each row execute function public.update_device_from_reading();
 
--- Inserciones de readings se haran con service role (webhook)
+-- Inserciones de readings se harán con service role (webhook)
