@@ -18,12 +18,14 @@ Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`
    - `pets`
    - `devices`
    - `readings`
-3. Abre `devices` y crea un registro de prueba con un `device_code`.
-4. Inserta una lectura manual en `readings` para confirmar que guarda bien.
+3. Crea una mascota en `pets` (necesario para `devices.pet_id`).
+4. Abre `devices` y crea un registro con `device_code`, `device_type` y `pet_id`.
+5. Inserta una lectura manual en `readings` para confirmar que guarda bien.
 
 ## Notas importantes
 - Si ya ejecutaste un SQL anterior, primero limpia con el script de borrado.
 - RLS esta habilitado: necesitaras usar el **service role** para inserciones desde el webhook.
+- `devices.pet_id` es obligatorio.
 
 ## Errores comunes
 - **Permisos**: revisar que las policies esten creadas correctamente.

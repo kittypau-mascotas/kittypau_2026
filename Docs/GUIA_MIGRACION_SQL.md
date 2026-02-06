@@ -14,9 +14,14 @@ Actualizar esquema sin perder datos existentes.
 ## Escenario B: proyecto con datos
 1. No ejecutar SQL completo directo.
 2. Crear un script de migracion:
-   - Agregar nuevas columnas en `profiles`, `pets`, `devices`.
-   - Crear tablas `breeds` y `pet_breeds`.
-   - Agregar enums y estados faltantes.
+   - Agregar columnas nuevas en `readings` (ej. `flow_rate`).
+   - Crear tablas `breeds` y `pet_breeds` (si no existen).
+   - Agregar estados nuevos en checks (`pet_state`, `device_state`, `status`).
+   - Preparar `devices.pet_id` obligatorio:
+     - Crear al menos 1 `pet` por usuario.
+     - Asignar `pet_id` a todos los `devices` existentes.
+     - Luego aplicar `ALTER TABLE devices ALTER COLUMN pet_id SET NOT NULL`.
+   - Crear trigger `update_device_from_reading`.
 3. Ejecutar migracion por pasos y validar.
 
 ---

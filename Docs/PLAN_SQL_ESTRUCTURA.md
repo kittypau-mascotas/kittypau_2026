@@ -117,10 +117,11 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 **Datos minimos**
 - id
 - owner_id (usuario)
-- pet_id (opcional)
+- pet_id (obligatorio)
 - device_code (ej: KPCL0001)
 - tipo (food_bowl / water_bowl)
-- estado (active / inactive)
+- estado (active / inactive / maintenance)
+- device_state (factory / claimed / linked / offline / lost / error)
 - bateria (opcional)
 - last_seen
 - fecha de creacion
@@ -134,6 +135,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - pet_id (opcional)
 - weight_grams (si es plato comida)
 - water_ml (si es plato agua)
+- flow_rate (opcional)
 - temperature (opcional)
 - humidity (opcional)
 - battery_level (opcional)
@@ -188,7 +190,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 ## Paso 3: Definir relaciones
 1. Usuario **1:N** Mascotas
 2. Usuario **1:N** Dispositivos
-3. Mascota **1:N** Dispositivos (opcional)
+3. Mascota **1:N** Dispositivos (obligatorio)
 4. Dispositivo **1:N** Lecturas
 
 ---
@@ -197,7 +199,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 1. `device_code` debe ser unico.
 2. Un usuario solo puede ver/editar su data.
 3. Lecturas solo se insertan via webhook autenticado.
-4. Dispositivo puede no estar asignado a mascota al inicio.
+4. Dispositivo debe estar asignado a mascota.
 
 ---
 
@@ -258,6 +260,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `id` uuid PK
 - `owner_id` uuid FK -> profiles.id
 - `pet_id` uuid FK -> pets.id (nullable)
+- `pet_id` uuid FK -> pets.id (not null)
 - `device_code` text UNIQUE
 - `device_type` text
 - `status` text
@@ -273,6 +276,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `water_ml` int
 - `temperature` numeric
 - `humidity` numeric
+- `flow_rate` numeric
 - `battery_level` int
 - `recorded_at` timestamp (default now())
 
@@ -284,7 +288,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - API server puede insertar lecturas con service role.
 
 ### Ejemplo de politicas
-- `pets`: `owner_id = auth.uid()`
+- `pets`: `user_id = auth.uid()`
 - `devices`: `owner_id = auth.uid()`
 - `readings`: join por `devices.owner_id = auth.uid()`
 

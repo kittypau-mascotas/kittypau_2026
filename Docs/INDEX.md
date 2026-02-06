@@ -4,10 +4,12 @@
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
 - `Docs/ESTADO_AVANCE.md`
 - `Docs/NOTAS_IMPLEMENTACION.md`
+- `Docs/MAPA_ECOSISTEMA.md`
 
 ## Arquitectura
 - `Docs/ARQUITECTURA_PROYECTO.md`
 - `Docs/ARQUITECTURA_COMPLETA.md`
+- `Docs/DIAGRAMA_ARQUITECTURA_ACTUAL.md`
 
 ## Dominio y reglas
 - `Docs/DOC_MAESTRO_DOMINIO.md`
@@ -26,6 +28,7 @@
 
 ## Flujos UX
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
+- `Docs/IMAGENES_LOGIN.md`
 - `Docs/estilos y diseños.md`
 
 ## Deploy

@@ -105,7 +105,7 @@ ESP32 -> HiveMQ Cloud
 **Body (ejemplo)**
 ```json
 {
-  "deviceId": "KPCL0001",
+  "deviceCode": "KPCL0001",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -113,6 +113,9 @@ ESP32 -> HiveMQ Cloud
   "timestamp": "2026-02-03T18:30:00Z"
 }
 ```
+**Notas**
+- La API acepta `deviceCode`, `deviceId` o `device_id`.
+- El `device_code` es el codigo humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -125,14 +128,14 @@ ESP32 -> HiveMQ Cloud
 **Response**
 ```json
 [
-  { "id": "uuid", "name": "Michi", "species": "cat" }
+  { "id": "uuid", "name": "Michi", "type": "cat" }
 ]
 ```
 
 ### 3) `POST /api/pets`
 **Body**
 ```json
-{ "name": "Michi", "species": "cat", "birth_date": "2024-01-01" }
+{ "name": "Michi", "type": "cat", "origin": "rescatado" }
 ```
 **Response**
 ```json

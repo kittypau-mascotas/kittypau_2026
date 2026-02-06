@@ -10,7 +10,7 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 - Un usuario puede tener multiples mascotas.
 - Una mascota tiene un solo propietario por ahora (cuidadores en fase futura).
 - Puede existir mascota sin dispositivo: **si**.
-- Puede existir dispositivo sin mascota: **si, temporalmente** (fase de instalacion).
+- Puede existir dispositivo sin mascota: **no** (requerido por esquema).
 
 ### Mascota
 - `name` editable.
@@ -22,7 +22,7 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 ### Dispositivo
 - Un solo dispositivo activo por mascota.
 - Reasignar dispositivo libera el anterior.
-- Si se elimina mascota -> dispositivo queda huerfano.
+- Si se elimina mascota -> dispositivo se bloquea (FK restrict). Se recomienda `pet_state = archived`.
 
 ---
 
@@ -33,6 +33,7 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 - `device_pending`
 - `device_linked`
 - `inactive`
+- `archived`
 
 ### Dispositivo (`device_state`)
 - `factory`
@@ -40,6 +41,7 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 - `linked`
 - `offline`
 - `lost`
+- `error`
 
 ---
 

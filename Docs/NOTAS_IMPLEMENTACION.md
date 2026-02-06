@@ -31,6 +31,7 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 - QR es obligatorio para obtener `device_code`.
 - Asociar siempre a una mascota para activar envio de datos.
 - `device_type` solo `food_bowl` o `water_bowl`.
+- `pet_id` es obligatorio (schema actual).
 
 ## 5) Estados del sistema
 - Respetar `pet_state` y `device_state` definidos.

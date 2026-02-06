@@ -82,7 +82,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 Ejemplo:
 ```json
 {
-  "deviceId": "KPCL0001",
+  "deviceCode": "KPCL0001",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -90,6 +90,9 @@ Ejemplo:
   "timestamp": "2026-02-03T18:30:00Z"
 }
 ```
+Notas:
+- La API acepta `deviceCode`, `deviceId` o `device_id`.
+- El `device_code` es el codigo humano (KPCLxxxx).
 
 ## Endpoint de prueba (local)
 1. Arranca el servidor:
@@ -101,7 +104,7 @@ npm run dev
 curl -X POST http://localhost:3000/api/mqtt/webhook \
   -H "Content-Type: application/json" \
   -H "x-webhook-token: TU_SECRETO" \
-  -d "{\"deviceId\":\"KPCL0001\",\"temperature\":23.5,\"humidity\":65,\"weight_grams\":3500,\"battery_level\":85}"
+  -d "{\"deviceCode\":\"KPCL0001\",\"temperature\":23.5,\"humidity\":65,\"weight_grams\":3500,\"battery_level\":85}"
 ```
 
 ## Script local (PowerShell)

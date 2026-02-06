@@ -5,7 +5,8 @@
 - [ ] Ejecutar `Docs/SQL_SCHEMA.sql` en SQL Editor.
 - [ ] Auth habilitado (email/password).
 - [ ] Obtener `SUPABASE_URL` y keys.
-- [ ] Crear al menos 1 dispositivo en `devices` con `device_code`.
+- [ ] Crear al menos 1 mascota en `pets`.
+- [ ] Crear al menos 1 dispositivo en `devices` con `device_code` y `pet_id`.
 
 ## 2) Variables de entorno en Vercel
 Agregar en **Settings -> Environment Variables**:

@@ -12,20 +12,21 @@ Fuente unica de verdad para valores permitidos en frontend y backend.
 ---
 
 ## Mascota
-- `pet_type`: `cat` | `dog`
+- `type`: `cat` | `dog`
 - `origin`: `comprado` | `rescatado` | `llego_solo` | `regalado`
 - `living_environment`: `departamento` | `casa` | `patio` | `exterior`
 - `size`: `pequeno` | `mediano` | `grande` | `gigante`
 - `age_range`: `cachorro` | `adulto` | `senior`
 - `activity_level`: `bajo` | `normal` | `activo` | `muy_activo`
 - `alone_time`: `casi_nunca` | `algunas_horas` | `medio_dia` | `todo_el_dia`
-- `pet_state`: `created` | `completed_profile` | `device_pending` | `device_linked` | `inactive`
+- `pet_state`: `created` | `completed_profile` | `device_pending` | `device_linked` | `inactive` | `archived`
 
 ---
 
 ## Dispositivo
 - `device_type`: `food_bowl` | `water_bowl`
-- `device_state`: `factory` | `claimed` | `linked` | `offline` | `lost`
+- `device_state`: `factory` | `claimed` | `linked` | `offline` | `lost` | `error`
+- `status`: `active` | `inactive` | `maintenance`
 
 ---
 

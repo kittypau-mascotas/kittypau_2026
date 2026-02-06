@@ -27,14 +27,15 @@ Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
 
 ## Variables de entorno del bridge
 ```
-MQTT_HOST=cf8e2e9138234a86b5d9ff9332cfac63.s1.eu.hivemq.cloud
+MQTT_HOST=<TU_HOST_HIVEMQ>
 MQTT_PORT=8883
-MQTT_USERNAME=Kittypau
-MQTT_PASSWORD=Kittypau1234
+MQTT_USERNAME=<TU_USUARIO>
+MQTT_PASSWORD=<TU_PASSWORD>
 MQTT_TOPIC=kittypau/+/telemetry
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
-WEBHOOK_TOKEN=3f8c9d6a7b4e2f1d0c9a8b7e6d5c4f3a
+WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
 ```
+Nota: no guardar credenciales reales en Git. Usar `.env` local en la Raspberry.
 
 ---
 
