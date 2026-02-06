@@ -6,6 +6,7 @@
 - `Docs/NOTAS_IMPLEMENTACION.md`
 - `Docs/MAPA_ECOSISTEMA.md`
 - `Docs/PLAN_IMPLEMENTACION.md`
+- `Docs/CIBERSEGURIDAD.md`
 
 ## Arquitectura
 - `Docs/ARQUITECTURA_PROYECTO.md`
