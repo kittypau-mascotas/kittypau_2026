@@ -13,6 +13,30 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 
 ---
 
+## 0) Prueba API directa (sin Bridge) - OK
+**Objetivo:** validar Auth + API + Supabase sin depender de IoT.
+
+**Pasos**
+1. Obtener `access_token` desde Supabase Auth.
+2. Crear fila en `public.profiles` (si no existe).
+3. `GET /api/pets` (debe responder 200, aunque vacio).
+4. `POST /api/devices` (crear dispositivo).
+5. `POST /api/mqtt/webhook` (insertar lectura de prueba).
+6. `GET /api/readings?device_id=<UUID>` (leer lecturas).
+
+**Esperado**
+- `devices` contiene el `device_code` creado.
+- `readings` contiene la lectura insertada.
+
+**Resultado (2026-02-06)**
+- OK Auth
+- OK Profiles
+- OK Devices
+- OK Webhook
+- OK Readings
+
+---
+
 ## 1) Prueba de conexion MQTT (HiveMQ)
 **Objetivo:** confirmar que el dispositivo publica.
 
@@ -85,7 +109,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 ---
 
 ## 6) Prueba de integridad de device_code
-**Objetivo:** validar que el código se extrae del topic si no viene en payload.
+**Objetivo:** validar que el codigo se extrae del topic si no viene en payload.
 
 **Pasos**
 1. Publicar mensaje con topic `kittypau/KPCL001/telemetry`
@@ -96,13 +120,13 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 
 ---
 
-## 7) Errores comunes y solución
+## 7) Errores comunes y solucion
 **No llega a HiveMQ**
 - Revisar credenciales MQTT.
 - Verificar topic.
 
 **HiveMQ ok pero no llega a Vercel**
-- Bridge caído.
+- Bridge caido.
 - `WEBHOOK_URL` mal.
 
 **Vercel ok pero no guarda en Supabase**
