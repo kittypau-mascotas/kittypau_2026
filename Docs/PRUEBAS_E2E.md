@@ -35,6 +35,15 @@ Validar el flujo completo: IoT -> HiveMQ -> Raspberry Bridge -> Vercel API -> Su
 - OK Webhook
 - OK Readings
 
+**IDs generados (ejemplo de prueba global)**
+- pet_id: `02576c11-84a1-4b78-98f8-a2568fc7e179`
+- device_id: `11b5b64b-f212-4527-a9e7-c323ad59ba5c`
+- reading_id: `35b5f976-abff-40a4-a673-bc5afcdec46e`
+
+**Recordatorio clave**
+- `device_id` (UUID) **no** es `device_code` (KPCLxxxx).
+- `/api/readings` requiere `device_id`.
+
 ---
 
 ## 1) Prueba de conexion MQTT (HiveMQ)
