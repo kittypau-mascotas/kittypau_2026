@@ -175,3 +175,8 @@ Uso
 ```powershell
 .\Docs\TEST_ONBOARDING_BACKEND.ps1
 ```
+
+
+## Archivo de entorno para pruebas
+- Docs/.env.test.example (placeholders, no incluir secretos reales)
+

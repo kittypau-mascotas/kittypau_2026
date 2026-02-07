@@ -51,3 +51,5 @@
 - Docs/TEST_DB_API.ps1
 
 - Docs/TEST_ONBOARDING_BACKEND.ps1
+
+- Docs/.env.test.example
