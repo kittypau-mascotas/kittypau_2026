@@ -170,6 +170,16 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 - No hay datos de usuario A.
 - No se filtra ningun `device_id` ajeno.
 
+**Resultado (2026-02-07)**
+- Usuario A: `c0926551-11e9-48cd-b24f-23d009f85cb6`
+- Usuario B: `1f1c1467-60ad-44e3-88fc-bc8dc9785bea`
+- pet_id B: `709afc2d-bfe1-49b1-a377-70cb366f8a8a`
+- device_id B: `edd4e20f-afca-4b49-ab9f-dc5f345093fc`
+- `GET /api/pets` con token A -> OK (solo mascotas de A)
+- `GET /api/pets` con token B -> OK (solo mascotas de B)
+- `PATCH /api/devices/:id` sobre device de B con token A -> `404` (row no visible, RLS ok)
+- `GET /api/readings?device_id=<device B>` con token A -> `404` (row no visible, RLS ok)
+
 ---
 
 ## Automatizacion

@@ -54,6 +54,6 @@
 ## Verificaciones cerradas (operacion)
 - [x] Schema cache refrescado en Supabase.
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
-- [x] Smoke test RLS ejecutado (multiusuario).
+- [x] Smoke test RLS ejecutado (multiusuario, 2026-02-07). Accesos cruzados devuelven 404 (esperado por RLS).
 
 
