@@ -120,6 +120,8 @@ Ejemplo:
 Notas:
 - La API acepta `deviceCode`, `deviceId` o `device_id`.
 - El `device_code` es el codigo humano (KPCLxxxx).
+- Si se envía `deviceId` (UUID), se busca por `devices.id`.
+- Los campos numéricos pueden llegar como string y se normalizan.
 
 ## Endpoint de prueba (local)
 1. Arranca el servidor:

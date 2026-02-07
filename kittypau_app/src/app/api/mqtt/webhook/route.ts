@@ -22,6 +22,16 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function parseNumber(value: unknown): number | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 function validateRange(
   value: unknown,
   name: string,
@@ -35,12 +45,16 @@ function validateRange(
 }
 
 function getDeviceCode(payload: WebhookPayload): string | null {
-  return (
-    payload.deviceCode ??
-    payload.deviceId ??
-    payload.device_id ??
-    null
-  );
+  return payload.deviceCode ?? null;
+}
+
+function getDeviceId(payload: WebhookPayload): string | null {
+  const candidate = payload.deviceId ?? payload.device_id ?? null;
+  if (!candidate) return null;
+  if (/^[0-9a-fA-F-]{36}$/.test(candidate)) {
+    return candidate;
+  }
+  return null;
 }
 
 export async function POST(req: NextRequest) {
@@ -56,35 +70,46 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  const deviceId = getDeviceId(payload);
   const deviceCode = getDeviceCode(payload);
-  if (!deviceCode) {
+  if (!deviceId && !deviceCode) {
     return NextResponse.json({ error: "Missing device code" }, { status: 400 });
   }
 
-  if (!/^KPCL\d{4}$/.test(deviceCode)) {
+  if (deviceCode && !/^KPCL\d{4}$/.test(deviceCode)) {
     return NextResponse.json(
       { error: "device_code must match KPCL0000 format" },
       { status: 400 }
     );
   }
 
+  const weightGrams = parseNumber(payload.weight ?? payload.weight_grams);
+  const waterMl = parseNumber(payload.water ?? payload.water_ml);
+  const flowRate = parseNumber(payload.flowRate ?? payload.flow_rate);
+  const temperature = parseNumber(payload.temperature);
+  const humidity = parseNumber(payload.humidity);
+  const batteryLevel = parseNumber(payload.batteryLevel ?? payload.battery_level);
+
   const rangeError =
-    validateRange(payload.temperature, "temperature", -10, 60) ??
-    validateRange(payload.humidity, "humidity", 0, 100) ??
-    validateRange(payload.batteryLevel ?? payload.battery_level, "battery_level", 0, 100) ??
-    validateRange(payload.weight ?? payload.weight_grams, "weight_grams", 0, 20000) ??
-    validateRange(payload.water ?? payload.water_ml, "water_ml", 0, 5000) ??
-    validateRange(payload.flowRate ?? payload.flow_rate, "flow_rate", 0, 1000);
+    validateRange(temperature, "temperature", -10, 60) ??
+    validateRange(humidity, "humidity", 0, 100) ??
+    validateRange(batteryLevel, "battery_level", 0, 100) ??
+    validateRange(weightGrams, "weight_grams", 0, 20000) ??
+    validateRange(waterMl, "water_ml", 0, 5000) ??
+    validateRange(flowRate, "flow_rate", 0, 1000);
 
   if (rangeError) {
     return NextResponse.json({ error: rangeError }, { status: 400 });
   }
 
-  const { data: device, error: deviceError } = await supabaseServer
-    .from("devices")
-    .select("id, pet_id")
-    .eq("device_code", deviceCode)
-    .single();
+  let deviceQuery = supabaseServer.from("devices").select("id, pet_id");
+  if (deviceId) {
+    deviceQuery = deviceQuery.eq("id", deviceId);
+  } else {
+    deviceQuery = deviceQuery.eq("device_code", deviceCode);
+  }
+
+  const { data: device, error: deviceError } = await deviceQuery.single();
 
   if (deviceError || !device) {
     return NextResponse.json(
@@ -93,7 +118,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const batteryLevel = payload.batteryLevel ?? payload.battery_level ?? null;
   const recordedAt = payload.timestamp
     ? new Date(payload.timestamp).toISOString()
     : new Date().toISOString();
@@ -101,11 +125,11 @@ export async function POST(req: NextRequest) {
   const { error: insertError } = await supabaseServer.from("readings").insert({
     device_id: device.id,
     pet_id: device.pet_id ?? null,
-    weight_grams: payload.weight ?? payload.weight_grams ?? null,
-    water_ml: payload.water ?? payload.water_ml ?? null,
-    flow_rate: payload.flowRate ?? payload.flow_rate ?? null,
-    temperature: payload.temperature ?? null,
-    humidity: payload.humidity ?? null,
+    weight_grams: weightGrams,
+    water_ml: waterMl,
+    flow_rate: flowRate,
+    temperature,
+    humidity,
     battery_level: batteryLevel,
     recorded_at: recordedAt,
   });
