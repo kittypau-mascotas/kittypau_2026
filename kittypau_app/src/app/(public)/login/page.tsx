@@ -1,4 +1,43 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import type { FormEvent } from "react";
+import { useState } from "react";
+import { setTokens } from "@/lib/auth/token";
+import { supabaseBrowser } from "@/lib/supabase/browser";
+
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    const { data, error: signInError } =
+      await supabaseBrowser.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+    if (signInError || !data.session?.access_token) {
+      setError(signInError?.message ?? "No se pudo iniciar sesión.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setTokens({
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    });
+
+    router.push("/today");
+  };
+
   return (
     <div className="login-bg">
       <div className="login-layer">
@@ -51,13 +90,17 @@ export default function LoginPage() {
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Última lectura
               </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">Hace 3 min</p>
+              <p className="mt-2 text-lg font-semibold text-slate-900">
+                Hace 3 min
+              </p>
             </div>
             <div className="surface-card px-4 py-3">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Estado general
               </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">Todo normal</p>
+              <p className="mt-2 text-lg font-semibold text-slate-900">
+                Todo normal
+              </p>
             </div>
           </div>
         </div>
@@ -73,7 +116,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={onSubmit}>
               <div className="space-y-2">
                 <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
                   Email
@@ -81,6 +124,8 @@ export default function LoginPage() {
                 <input
                   type="email"
                   placeholder="tu@email.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
@@ -91,14 +136,22 @@ export default function LoginPage() {
                 <input
                   type="password"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
+              {error ? (
+                <p className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                  {error}
+                </p>
+              ) : null}
               <button
-                type="button"
-                className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.99]"
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Continuar
+                {isSubmitting ? "Conectando..." : "Continuar"}
               </button>
             </form>
 

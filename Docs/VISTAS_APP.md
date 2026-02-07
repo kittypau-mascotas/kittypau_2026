@@ -6,8 +6,8 @@ Definir la estructura de vistas antes de implementar UI o routing.
 ---
 
 ## Implementacion actual (2026-02-07)
-- /login implementado con layout parallax (placeholder visual).
-- /today implementado como feed vertical interpretado (UI base).
+- /login implementado con layout parallax + login real (Supabase Auth).
+- /today implementado como feed vertical interpretado conectado a APIs.
 - / redirige a /login.
 
 ---

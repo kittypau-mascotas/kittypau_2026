@@ -19,10 +19,9 @@
 
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).
-2. Conectar frontend con APIs reales (pets/devices/readings).
-3. Realtime en dashboard (suscripcion a readings).
-4. Pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
-5. Bridge en Raspberry como servicio 24/7 (systemd + auto-restart).
+2. Realtime en dashboard (suscripcion a readings).
+3. Pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
+4. Bridge en Raspberry como servicio 24/7 (systemd + auto-restart).
 
 ## Arquitectura de pruebas (E2E)
 - Vercel API en produccion: OK
@@ -40,6 +39,7 @@
 - E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
 - UI base login/today implementada (skeleton + estilos).
 - Documentacion del login parallax cerrada.
+- UI conectada a datos reales (login Supabase + feed con pets/devices/readings).
 
 ## Conectividad validada (sin Bridge 24/7)
 - [x] Docs ↔ Backend (SQL + APIs + errores consistentes).
@@ -48,7 +48,6 @@
 - [x] Diseño ↔ Producto (lineamientos y componentes definidos).
 
 ## Riesgos conocidos
-- Falta integrar datos reales en UI (login/today sin l?gica).
 - Realtime no esta integrado aun en frontend.
 
 ## Verificaciones cerradas (operacion)
