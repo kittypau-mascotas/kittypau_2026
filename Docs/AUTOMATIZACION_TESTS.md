@@ -152,3 +152,26 @@ Uso
 ```powershell
 .\Docs\TEST_DB_API.ps1
 ```
+
+---
+
+## Script onboarding backend (PowerShell)
+Archivo: `Docs/TEST_ONBOARDING_BACKEND.ps1`
+
+Que hace
+- Auth
+- PUT /api/profiles (user onboarding step)
+- POST /api/pets
+- POST /api/devices
+- Verifica `pet_state`
+
+Variables a completar
+- SUPABASE_ANON_KEY
+- KITTYPAU_PASSWORD
+- PET_NAME
+- PET_TYPE
+
+Uso
+```powershell
+.\Docs\TEST_ONBOARDING_BACKEND.ps1
+```
