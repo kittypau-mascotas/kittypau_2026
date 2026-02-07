@@ -46,6 +46,46 @@ WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
 
 ---
 
+## Certificados, accesos y manejo seguro (sin exponer secretos)
+Este bloque define **que debe tener el codigo** del bridge respecto a certificados, accesos y envs.
+
+### 1) Certificado TLS (HiveMQ)
+- El cliente MQTT debe usar TLS y confiar en el CA (ej. ISRG Root X1).
+- Se puede cargar el CA via archivo (`ca.crt`) o embebido en codigo.
+- **No** hardcodear credenciales MQTT en el codigo.
+
+### 2) Accesos y archivos locales
+- `.env` vive en `/home/kittypau/kittypau-bridge/.env` (fuera de git).
+- Permisos recomendados: `chmod 600 .env`.
+- Usuario del proceso: `kittypau` (systemd).
+
+### 3) Variables obligatorias (placeholders)
+```
+MQTT_HOST=<TU_HOST_HIVEMQ>
+MQTT_PORT=8883
+MQTT_USERNAME=<TU_USUARIO>
+MQTT_PASSWORD=<TU_PASSWORD>
+MQTT_TOPIC=+/SENSORS
+WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
+WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+```
+- `WEBHOOK_TOKEN` = `MQTT_WEBHOOK_SECRET` (Vercel).
+
+### 4) Reglas de no exposicion
+- Nunca versionar `.env` ni claves.
+- No copiar credenciales en documentación.
+- Si se comparte el repo, usar placeholders.
+
+### 5) Rotacion y cambios
+- Cambiar credenciales HiveMQ y `WEBHOOK_TOKEN` si se sospecha fuga.
+- Al rotar, actualizar `.env` en la Pi y variables en Vercel.
+
+### 6) Validaciones minimas en runtime
+- Verificar que envs existan al iniciar (fail fast).
+- Loggear error claro si falta alguna variable.
+
+---
+
 ## Contrato de datos (Bridge -> API)
 **Endpoint**
 ```
