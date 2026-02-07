@@ -1,4 +1,4 @@
-# Guia de Migracion SQL (Kittypau)
+﻿# Guia de Migracion SQL (Kittypau)
 
 ## Objetivo
 Actualizar esquema sin perder datos existentes.
@@ -51,3 +51,12 @@ alter table public.pets
 
 ## Nota
 Hasta que se decida migracion, no aplicar el SQL completo.
+
+## 2026-02-07 - Constraints de onboarding
+Ejecutar en Supabase SQL Editor:
+- `Docs/SQL_SCHEMA.sql` (al final incluye DO $$ ... $$ con nuevos checks)
+
+Checks agregados:
+- `devices_device_code_format_check`
+- `profiles_onboarding_step_check`
+- `pets_onboarding_step_check`

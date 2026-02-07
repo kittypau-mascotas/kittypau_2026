@@ -249,3 +249,35 @@ for each row execute function public.update_device_from_reading();
 
 
 
+
+-- Constraints (idempotent)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'devices_device_code_format_check'
+  ) THEN
+    ALTER TABLE public.devices
+      ADD CONSTRAINT devices_device_code_format_check
+      CHECK (device_code ~ '^KPCL\d{4}$');
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'profiles_onboarding_step_check'
+  ) THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_onboarding_step_check
+      CHECK (user_onboarding_step IS NULL OR user_onboarding_step IN (
+        'not_started','user_profile','pet_profile','device_link','completed'
+      ));
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'pets_onboarding_step_check'
+  ) THEN
+    ALTER TABLE public.pets
+      ADD CONSTRAINT pets_onboarding_step_check
+      CHECK (pet_onboarding_step IS NULL OR pet_onboarding_step IN (
+        'not_started','pet_type','pet_profile','pet_health','pet_confirm'
+      ));
+  END IF;
+END $$;
