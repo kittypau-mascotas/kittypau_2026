@@ -145,6 +145,9 @@ Variables a completar
 - KITTYPAU_PASSWORD
 - PEGA_AQUI_PET_ID
 
+Nota
+- El script genera un `device_code` unico para evitar colisiones.
+
 Uso
 ```powershell
 .\Docs\TEST_DB_API.ps1

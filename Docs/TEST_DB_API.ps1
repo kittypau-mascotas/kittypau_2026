@@ -3,17 +3,22 @@
 
 # === Configuracion ===
 $supabaseUrl = "https://zgwqtzazvkjkfocxnxsh.supabase.co"
-$anonKey = "TU_SUPABASE_ANON_KEY"
+$anonKey = $env:SUPABASE_ANON_KEY
 $apiBase = "https://kittypau-app.vercel.app"
-$webhook = "TU_WEBHOOK_TOKEN"
+$webhook = $env:MQTT_WEBHOOK_SECRET
 
 # Usuario B (para pruebas)
 $emailB = "kittypau.mascotas@gmail.com"
-$passwordB = "KITTYPAU_PASSWORD"
+$passwordB = $env:KITTYPAU_PASSWORD
 
 # Pet y device
-$petIdB = "PEGA_AQUI_PET_ID"
-$deviceCode = "KPCL0300"
+$petIdB = $env:PET_ID
+$deviceCode = "KPCL" + (Get-Date -Format "mmss")
+
+if (-not $anonKey) { throw "Falta SUPABASE_ANON_KEY en entorno." }
+if (-not $webhook) { throw "Falta MQTT_WEBHOOK_SECRET en entorno." }
+if (-not $passwordB) { throw "Falta KITTYPAU_PASSWORD en entorno." }
+if (-not $petIdB) { throw "Falta PET_ID en entorno." }
 
 # === Auth ===
 $tokenB = (Invoke-RestMethod -Method Post `
@@ -32,12 +37,16 @@ Invoke-RestMethod -Method Get `
 Write-Host "GET /api/pets OK"
 
 # === Device ===
-$device = Invoke-RestMethod -Method Post `
-  -Uri "$apiBase/api/devices" `
-  -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
-  -Body "{`"device_code`":`"$deviceCode`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$petIdB`"}"
+try {
+  $device = Invoke-RestMethod -Method Post `
+    -Uri "$apiBase/api/devices" `
+    -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
+    -Body "{`"device_code`":`"$deviceCode`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$petIdB`"}"
+} catch {
+  throw "POST /api/devices fallo. Revisa pet_id o duplicado device_code."
+}
 
-Write-Host "POST /api/devices OK -> $($device.id)"
+Write-Host "POST /api/devices OK -> $($device.id) ($deviceCode)"
 
 # === Webhook ===
 Invoke-RestMethod -Method Post `
