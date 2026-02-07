@@ -1,5 +1,5 @@
--- Kittypau IoT - SQL Schema (MVP)
--- Objetivo: Usuario ? Mascota ? Dispositivo ? Lecturas (streaming)
+Ôªø-- Kittypau IoT - SQL Schema (MVP)
+-- Objetivo: Usuario -> Mascota -> Dispositivo -> Lecturas (streaming)
 
 -- Extensions
 create extension if not exists "pgcrypto";
@@ -89,6 +89,17 @@ create table if not exists public.readings (
   recorded_at timestamptz not null default now()
 );
 
+-- Migration helpers (idempotent)
+-- These keep existing databases in sync when rerunning this file.
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS user_onboarding_step text;
+
+ALTER TABLE public.pets
+  ADD COLUMN IF NOT EXISTS pet_onboarding_step text;
+
+ALTER TABLE public.readings
+  ADD COLUMN IF NOT EXISTS flow_rate numeric;
+
 -- Indexes
 create index if not exists idx_pets_user_id on public.pets(user_id);
 create index if not exists idx_devices_owner_id on public.devices(owner_id);
@@ -164,7 +175,7 @@ create policy "devices_delete_own"
   on public.devices for delete
   using (owner_id = auth.uid());
 
--- Policies: readings (solo lectura del dueÒo vÌa join con devices)
+-- Policies: readings (solo lectura del due√±o v√≠a join con devices)
 drop policy if exists "readings_select_own" on public.readings;
 create policy "readings_select_own"
   on public.readings for select
@@ -234,6 +245,7 @@ create trigger trg_update_device_from_reading
 after insert on public.readings
 for each row execute function public.update_device_from_reading();
 
--- Inserciones de readings se har·n con service role (webhook)
+-- Inserciones de readings se har√°n con service role (webhook)
+
 
 
