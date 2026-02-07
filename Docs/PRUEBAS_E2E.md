@@ -207,3 +207,7 @@ Ver `Docs/AUTOMATIZACION_TESTS.md`.
 - Device creado: `KPCL0300`
 - Webhook: OK
 - Readings: OK
+
+**Resultado (2026-02-07, TEST_DB_API.ps1 ok)**
+- Script inmediato ejecutado sin errores.
+- Auth, Pets, Devices, Webhook y Readings: OK.
