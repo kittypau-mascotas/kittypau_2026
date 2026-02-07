@@ -1,28 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --primary: 222 84% 56%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Surface */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  /* States */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 91%;
+  --ring: 222 84% 56%;
+
+  /* Feedback */
+  --success: 142 71% 45%;
+  --warning: 38 92% 50%;
+  --danger: 0 72% 51%;
+
+  --radius: 1.2rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-border: hsl(var(--border));
+  --color-ring: hsl(var(--ring));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 10%;
+    --card-foreground: 210 40% 98%;
+    --muted: 223 29% 14%;
+    --muted-foreground: 215 16% 70%;
+    --border: 223 29% 18%;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+.surface-card {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: 0 14px 40px -28px rgba(15, 23, 42, 0.55);
+}
+
+.glass-panel {
+  background: color-mix(in oklab, hsl(var(--card)) 75%, transparent);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  border-radius: calc(var(--radius) + 10px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 28px 80px -56px rgba(15, 23, 42, 0.75);
+}
+
+.login-bg {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px circle at 10% 10%, rgba(79, 140, 255, 0.18), transparent 55%),
+    radial-gradient(900px circle at 90% 20%, rgba(255, 196, 124, 0.22), transparent 60%),
+    linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%);
+  overflow: hidden;
+}
+
+.login-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.login-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(1px);
+  opacity: 0.7;
 }
 
 .route-loading-page {
