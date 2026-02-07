@@ -12,10 +12,31 @@ Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructu
 
 ---
 
+## Herramienta recomendada
+**Opción A (rápida y portable): Newman + Postman Collection**
+- Pros: fácil de compartir con equipo, ejecución en CI.
+- Contras: depende de colección externa.
+
+**Opción B (sencilla y nativa): PowerShell**
+- Pros: no requiere tooling extra.
+- Contras: menos reportes.
+
+Para este proyecto, empezar con **PowerShell** y luego migrar a **Newman** si el equipo crece.
+
+---
+
 ## Prerrequisitos
 - Token Supabase valido (Auth).
 - `MQTT_WEBHOOK_SECRET` correcto en Vercel.
 - `device_code` existente para pruebas webhook.
+
+Variables esperadas (no incluir valores reales en docs):
+```
+ACCESS_TOKEN=
+MQTT_WEBHOOK_SECRET=
+PET_ID=
+BASE_URL=https://kittypau-app.vercel.app
+```
 
 ---
 
@@ -47,26 +68,27 @@ Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructu
 
 ```powershell
 # Variables
+$baseUrl = "https://kittypau-app.vercel.app"
 $token = "<ACCESS_TOKEN>"
 $webhook = "<MQTT_WEBHOOK_SECRET>"
 $petId = "<PET_UUID>"
 
 # 1) Crear device
 $device = Invoke-RestMethod -Method Post `
-  -Uri "https://kittypau-app.vercel.app/api/devices" `
+  -Uri "$baseUrl/api/devices" `
   -Headers @{Authorization="Bearer $token"; "Content-Type"="application/json"} `
   -Body "{\"device_code\":\"KPCL0100\",\"device_type\":\"food_bowl\",\"status\":\"active\",\"pet_id\":\"$petId\"}"
 
 # 2) Enviar lectura
 $payload = @{ deviceCode=$device.device_code; temperature=23.5; humidity=65; weight_grams=3500; battery_level=85; flow_rate=120 } | ConvertTo-Json
 Invoke-RestMethod -Method Post `
-  -Uri "https://kittypau-app.vercel.app/api/mqtt/webhook" `
+  -Uri "$baseUrl/api/mqtt/webhook" `
   -Headers @{ "x-webhook-token"=$webhook; "Content-Type"="application/json" } `
   -Body $payload
 
 # 3) Leer lecturas
 Invoke-RestMethod -Method Get `
-  -Uri "https://kittypau-app.vercel.app/api/readings?device_id=$($device.id)" `
+  -Uri "$baseUrl/api/readings?device_id=$($device.id)" `
   -Headers @{Authorization="Bearer $token"}
 ```
 
@@ -84,6 +106,14 @@ Invoke-RestMethod -Method Get `
 1. Usuario A crea recursos.
 2. Usuario B intenta leer `devices` o `readings` de A.
 3. Esperado: no accede.
+
+---
+
+## Reporte esperado (mínimo)
+- Salida de consola con:
+  - `200` para flujo base
+  - `400/404/403` para casos negativos
+- Si se usa Newman, exportar `junit.xml` para CI.
 
 ---
 
