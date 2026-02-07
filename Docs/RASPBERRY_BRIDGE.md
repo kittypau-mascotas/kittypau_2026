@@ -16,6 +16,7 @@ Esta documentacion integra la construccion IoT actual (MQTT/HiveMQ) y deja prepa
 - No consulta datos (no hace `GET`).
 - No almacena datos finales (solo reenvia).
 - No reemplaza la API ni la DB.
+- No se conecta directamente a Supabase en produccion (el backend en Vercel es el unico que escribe en DB).
 
 ---
 
@@ -107,6 +108,35 @@ El bridge debe traducir los mensajes de `SENSORS` al contrato del webhook:
 Para `STATUS`, hoy **no** se guarda un payload separado en la DB. Si se necesita, se recomienda:
 - Usar `devices` para `last_seen` y `battery_level` (ya existe trigger).
 - Extender schema con columnas de `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`.
+
+---
+
+## Requisitos del codigo del Bridge (Raspberry)
+El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Vercel y Supabase:
+
+### 1) Conexion HiveMQ
+- Conectar por TLS a `MQTT_HOST:MQTT_PORT`.
+- Suscribirse al topic configurable `MQTT_TOPIC`.
+- Reconectar automaticamente con backoff.
+
+### 2) Normalizacion del payload
+- Convertir el payload IoT (`SENSORS`) al contrato del webhook.
+- Inyectar `deviceCode` desde el topic (`KPCLXXXX`).
+- Validar que `deviceCode` respete formato `KPCL0000`.
+
+### 3) Integracion con Vercel (API)
+- Enviar `POST` a `WEBHOOK_URL` con header `x-webhook-token`.
+- Manejar respuestas `200/400/401/404` y loggear errores.
+- Reintentar en errores transitorios.
+
+### 4) Supabase (relacion indirecta)
+- El bridge **no** escribe en Supabase directamente.
+- Toda escritura pasa por `/api/mqtt/webhook`.
+- Esto permite mantener RLS/validaciones centralizadas.
+
+### 5) Observabilidad minima
+- Logs para: conecto MQTT, recibio mensaje, envio webhook, respuesta.
+- Si falla, dejar codigo/razon en log.
 
 ---
 

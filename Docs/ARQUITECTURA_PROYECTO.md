@@ -30,6 +30,15 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ---
 
+## Regla de conexion (importante)
+- **La app web NO se conecta a HiveMQ**.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvia a Vercel.
+- **La app web solo consume Supabase** (Auth + DB + Realtime).
+
+Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
+
+---
+
 ## Flujo de datos (telemetria)
 1. ESP32 publica MQTT en HiveMQ.
 2. Raspberry Bridge escucha MQTT y reenvia a Vercel.
