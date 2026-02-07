@@ -52,11 +52,14 @@ src/app/
 
 2. `GET/PUT /api/profiles`
    - Lee/actualiza perfil del usuario.
-   - Incluye `user_onboarding_step`.
+   - Campos soportados: `auth_provider`, `user_name`, `is_owner`, `owner_name`,
+     `care_rating`, `phone_number`, `notification_channel`, `city`, `country`,
+     `user_onboarding_step`.
 
 3. `GET/POST /api/pets`
    - Lista mascotas del usuario.
    - Crea nueva mascota.
+   - Campos extra: `pet_state`, `pet_onboarding_step`.
 
 4. `PATCH /api/pets/:id`
    - Actualiza datos de mascota.
@@ -66,6 +69,7 @@ src/app/
    - Lista dispositivos.
    - Registra y asigna dispositivo a mascota.
    - `device_code` se obtiene del QR del plato.
+   - Al crear dispositivo, actualiza `pet_state` a `device_linked`.
 
 6. `GET /api/readings?device_id=...`
    - Lecturas recientes para gráficos.
@@ -170,6 +174,7 @@ Errores por endpoint:
    - 400 device_code must match KPCL0000 format
    - 400 Invalid device_type
    - 400 Invalid status
+   - 404 Pet not found
    - 401 si falta token.
 3. PATCH /api/devices/:id
    - 400 Invalid status | Invalid device_state | Invalid device_type | No fields to update
@@ -180,13 +185,14 @@ Errores por endpoint:
    - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range
    - 404 Device not found
 5. PATCH /api/pets/:id
-   - 400 Invalid type | Invalid pet_state | weight_kg must be a number | No fields to update
+   - 400 Invalid type | Invalid pet_state | Invalid pet_onboarding_step | weight_kg must be a number | No fields to update
    - 403 Forbidden
    - 404 Pet not found
 6. POST /api/pets
-   - 400 
-ame and type are required
+   - 400 name and type are required
    - 400 Invalid type
+   - 400 Invalid pet_state
+   - 400 Invalid pet_onboarding_step
    - 400 weight_kg must be a number
    - 401 si falta token.
 ## Nota sobre validaciones

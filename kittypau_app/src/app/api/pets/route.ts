@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { getUserClient } from "../_utils";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
+const ALLOWED_PET_STATE = new Set([
+  "created",
+  "completed_profile",
+  "device_pending",
+  "device_linked",
+  "inactive",
+  "archived",
+]);
+const ALLOWED_PET_STEP = new Set([
+  "not_started",
+  "pet_type",
+  "pet_profile",
+  "pet_health",
+  "pet_confirm",
+]);
 
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
@@ -54,6 +69,8 @@ export async function POST(req: NextRequest) {
     has_health_condition: body?.has_health_condition ?? null,
     health_notes: body?.health_notes ?? null,
     photo_url: body?.photo_url ?? null,
+    pet_state: body?.pet_state ?? "created",
+    pet_onboarding_step: body?.pet_onboarding_step ?? null,
   };
 
   if (!payload.name || !payload.type) {
@@ -70,6 +87,20 @@ export async function POST(req: NextRequest) {
   if (body?.weight_kg !== undefined && typeof body.weight_kg !== "number") {
     return NextResponse.json(
       { error: "weight_kg must be a number" },
+      { status: 400 }
+    );
+  }
+
+  if (payload.pet_state && !ALLOWED_PET_STATE.has(String(payload.pet_state))) {
+    return NextResponse.json({ error: "Invalid pet_state" }, { status: 400 });
+  }
+
+  if (
+    payload.pet_onboarding_step &&
+    !ALLOWED_PET_STEP.has(String(payload.pet_onboarding_step))
+  ) {
+    return NextResponse.json(
+      { error: "Invalid pet_onboarding_step" },
       { status: 400 }
     );
   }

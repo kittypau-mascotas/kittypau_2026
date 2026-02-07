@@ -10,6 +10,13 @@ const ALLOWED_PET_STATE = new Set([
   "inactive",
   "archived",
 ]);
+const ALLOWED_PET_STEP = new Set([
+  "not_started",
+  "pet_type",
+  "pet_profile",
+  "pet_health",
+  "pet_confirm",
+]);
 
 export async function PATCH(
   req: NextRequest,
@@ -40,6 +47,16 @@ export async function PATCH(
 
   if (body.pet_state && !ALLOWED_PET_STATE.has(String(body.pet_state))) {
     return NextResponse.json({ error: "Invalid pet_state" }, { status: 400 });
+  }
+
+  if (
+    body.pet_onboarding_step &&
+    !ALLOWED_PET_STEP.has(String(body.pet_onboarding_step))
+  ) {
+    return NextResponse.json(
+      { error: "Invalid pet_onboarding_step" },
+      { status: 400 }
+    );
   }
 
   if (body.weight_kg !== undefined && typeof body.weight_kg !== "number") {

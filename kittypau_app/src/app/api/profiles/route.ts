@@ -36,18 +36,75 @@ export async function PUT(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  let body: { user_onboarding_step?: string };
+  let body: Record<string, unknown>;
 
   try {
-    body = (await req.json()) as typeof body;
+    body = (await req.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
   const step = body.user_onboarding_step;
-  if (!step || !ALLOWED_USER_STEPS.has(step)) {
+  if (step && !ALLOWED_USER_STEPS.has(String(step))) {
     return NextResponse.json(
       { error: "Invalid user_onboarding_step" },
+      { status: 400 }
+    );
+  }
+
+  const updatePayload: Record<string, unknown> = {};
+  const allowedFields = [
+    "auth_provider",
+    "user_name",
+    "is_owner",
+    "owner_name",
+    "care_rating",
+    "phone_number",
+    "notification_channel",
+    "city",
+    "country",
+    "user_onboarding_step",
+  ];
+
+  for (const key of allowedFields) {
+    if (Object.prototype.hasOwnProperty.call(body, key)) {
+      updatePayload[key] = body[key];
+    }
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+  }
+
+  if (
+    updatePayload.user_name !== undefined &&
+    updatePayload.user_name !== null &&
+    typeof updatePayload.user_name !== "string"
+  ) {
+    return NextResponse.json(
+      { error: "user_name must be a string" },
+      { status: 400 }
+    );
+  }
+
+  if (
+    updatePayload.is_owner !== undefined &&
+    updatePayload.is_owner !== null &&
+    typeof updatePayload.is_owner !== "boolean"
+  ) {
+    return NextResponse.json(
+      { error: "is_owner must be a boolean" },
+      { status: 400 }
+    );
+  }
+
+  if (
+    updatePayload.care_rating !== undefined &&
+    updatePayload.care_rating !== null &&
+    typeof updatePayload.care_rating !== "number"
+  ) {
+    return NextResponse.json(
+      { error: "care_rating must be a number" },
       { status: 400 }
     );
   }
@@ -61,11 +118,16 @@ export async function PUT(req: NextRequest) {
   const payload = {
     id: user.id,
     email: user.email ?? null,
-    user_onboarding_step: step,
+    ...updatePayload,
   };
 
   const { data, error } = existing
-    ? await supabase.from("profiles").update(payload).eq("id", user.id).select().single()
+    ? await supabase
+        .from("profiles")
+        .update(payload)
+        .eq("id", user.id)
+        .select()
+        .single()
     : await supabase.from("profiles").insert(payload).select().single();
 
   if (error) {

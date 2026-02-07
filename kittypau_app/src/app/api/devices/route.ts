@@ -80,6 +80,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
+  const { data: pet, error: petError } = await supabase
+    .from("pets")
+    .select("id")
+    .eq("id", payload.pet_id)
+    .single();
+
+  if (petError || !pet) {
+    return NextResponse.json({ error: "Pet not found" }, { status: 404 });
+  }
+
   const { data, error } = await supabase
     .from("devices")
     .insert(payload)
@@ -89,6 +99,11 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  await supabase
+    .from("pets")
+    .update({ pet_state: "device_linked" })
+    .eq("id", payload.pet_id);
 
   return NextResponse.json(data, { status: 201 });
 }
