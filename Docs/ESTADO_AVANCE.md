@@ -1,4 +1,4 @@
-# Estado del Proyecto y Proximos Pasos (2026-02-06)
+﻿# Estado del Proyecto y Proximos Pasos (2026-02-07)
 
 ## Resumen de avance
 - Proyecto Next.js en `kittypau_app/` (TypeScript + App Router) desplegado en Vercel.
@@ -37,6 +37,7 @@
 
 ## Implementado hoy
 - SQL actualizado y aplicado.
+- Validaciones backend en POST /api/pets y POST /api/devices.
 - E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
 - Documentacion del login parallax cerrada.
 
@@ -54,4 +55,5 @@
 - [x] Schema cache refrescado en Supabase.
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
 - [x] Smoke test RLS ejecutado (multiusuario).
+
 

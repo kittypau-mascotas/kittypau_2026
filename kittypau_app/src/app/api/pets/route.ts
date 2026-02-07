@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserClient } from "../_utils";
 
+const ALLOWED_TYPE = new Set(["cat", "dog"]);
+
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
@@ -28,7 +30,12 @@ export async function POST(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  const body = await req.json();
+  let body: Record<string, unknown>;
+  try {
+    body = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 
   const payload = {
     user_id: user.id,
@@ -52,6 +59,17 @@ export async function POST(req: NextRequest) {
   if (!payload.name || !payload.type) {
     return NextResponse.json(
       { error: "name and type are required" },
+      { status: 400 }
+    );
+  }
+
+  if (!ALLOWED_TYPE.has(String(payload.type))) {
+    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+  }
+
+  if (body?.weight_kg !== undefined && typeof body.weight_kg !== "number") {
+    return NextResponse.json(
+      { error: "weight_kg must be a number" },
       { status: 400 }
     );
   }

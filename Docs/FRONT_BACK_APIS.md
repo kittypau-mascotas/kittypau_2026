@@ -1,6 +1,6 @@
-# Frontend, Backend y APIs (MVP Kittypau)
+Ôªø# Frontend, Backend y APIs (MVP Kittypau)
 
-## DecisiÛn tÈcnica
+## Decisi√≥n t√©cnica
 - **Frontend**: Next.js (App Router) en Vercel.
 - **Backend**: API Routes de Next.js (sin servicio extra para mantener $0).
 - **DB/Auth/Realtime**: Supabase.
@@ -11,12 +11,12 @@
 En este proyecto, **el deploy en Vercel incluye todo**:
 1. **Frontend** (UI web).
 2. **API** (`/api/*`), incluyendo el webhook de HiveMQ.
-3. **Backend ligero** (lÛgica serverless dentro de esas rutas).
+3. **Backend ligero** (l√≥gica serverless dentro de esas rutas).
 
 No hay backend separado en otro servidor. La base de datos vive en Supabase.
 
 ## Objetivo funcional
-1. Registro e inicio de sesiÛn.
+1. Registro e inicio de sesi√≥n.
 2. Crear mascota.
 3. Registrar dispositivo (plato comida/agua) con QR.
 4. Ver datos en vivo (streaming) en la app.
@@ -43,7 +43,7 @@ src/app/
     readings/
 ```
 
-## Endpoints mÌnimos (API Routes)
+## Endpoints m√≠nimos (API Routes)
 1. `POST /api/mqtt/webhook`
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
@@ -68,7 +68,7 @@ src/app/
    - `device_code` se obtiene del QR del plato.
 
 6. `GET /api/readings?device_id=...`
-   - Lecturas recientes para gr·ficos.
+   - Lecturas recientes para gr√°ficos.
 
 7. `PATCH /api/devices/:id`
    - Actualiza estado del dispositivo o re-vincula mascota.
@@ -143,9 +143,9 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 - Fallback: polling cada X segundos si Realtime falla.
 
 ## Notas sobre Vercel Free
-- Mantener el API liviano (validaciÛn y escritura en DB).
-- Evitar tareas pesadas o de larga duraciÛn en serverless.
-- Revisar limites actuales del plan Free en la documentaciÛn oficial antes de escalar.
+- Mantener el API liviano (validaci√≥n y escritura en DB).
+- Evitar tareas pesadas o de larga duraci√≥n en serverless.
+- Revisar limites actuales del plan Free en la documentaci√≥n oficial antes de escalar.
 
 ## Checklist MVP
 - [ ] Auth funcionando (Supabase)
@@ -163,21 +163,33 @@ Reglas comunes:
 - 500 si Supabase o servidor fallan.
 
 Errores por endpoint:
-1. `GET /api/devices`
-   - `401` si falta token.
-2. `PATCH /api/devices/:id`
-   - `400` `Invalid status` | `Invalid device_state` | `Invalid device_type` | `No fields to update`
-   - `403` `Forbidden`
-   - `404` `Device not found`
-3. `POST /api/mqtt/webhook`
-   - `401` `Unauthorized`
-   - `400` `Invalid JSON` | `Missing device code` | `device_code must match KPCL0000 format` | `<campo> out of range`
-   - `404` `Device not found`
-4. `PATCH /api/pets/:id`
-   - `400` `Invalid type` | `Invalid pet_state` | `weight_kg must be a number` | `No fields to update`
-   - `403` `Forbidden`
-   - `404` `Pet not found`
-
+1. GET /api/devices
+   - 401 si falta token.
+2. POST /api/devices
+   - 400 device_code, device_type, and pet_id are required
+   - 400 device_code must match KPCL0000 format
+   - 400 Invalid device_type
+   - 400 Invalid status
+   - 401 si falta token.
+3. PATCH /api/devices/:id
+   - 400 Invalid status | Invalid device_state | Invalid device_type | No fields to update
+   - 403 Forbidden
+   - 404 Device not found
+4. POST /api/mqtt/webhook
+   - 401 Unauthorized
+   - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range
+   - 404 Device not found
+5. PATCH /api/pets/:id
+   - 400 Invalid type | Invalid pet_state | weight_kg must be a number | No fields to update
+   - 403 Forbidden
+   - 404 Pet not found
+6. POST /api/pets
+   - 400 
+ame and type are required
+   - 400 Invalid type
+   - 400 weight_kg must be a number
+   - 401 si falta token.
 ## Nota sobre validaciones
 Los enums de `origin`, `living_environment`, `size`, `activity_level`, `age_range`, `alone_time` se validan en frontend/backend.
 El SQL actual solo impone constraints en `type` y `pet_state` para `pets`.
+

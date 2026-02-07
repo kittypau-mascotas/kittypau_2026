@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUserClient } from "../_utils";
 
+const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
+const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
+
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
@@ -28,7 +31,19 @@ export async function POST(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  const body = await req.json();
+  let body: {
+    pet_id?: string;
+    device_code?: string;
+    device_type?: string;
+    status?: string;
+    battery_level?: number;
+  };
+
+  try {
+    body = (await req.json()) as typeof body;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 
   const payload = {
     owner_id: user.id,
@@ -38,6 +53,10 @@ export async function POST(req: NextRequest) {
     status: body?.status ?? "active",
     battery_level: body?.battery_level ?? null,
   };
+
+  if (payload.pet_id && typeof payload.pet_id !== "string") {
+    return NextResponse.json({ error: "pet_id must be a string" }, { status: 400 });
+  }
 
   if (!payload.device_code || !payload.device_type || !payload.pet_id) {
     return NextResponse.json(
@@ -51,6 +70,14 @@ export async function POST(req: NextRequest) {
       { error: "device_code must match KPCL0000 format" },
       { status: 400 }
     );
+  }
+
+  if (!ALLOWED_DEVICE_TYPE.has(payload.device_type)) {
+    return NextResponse.json({ error: "Invalid device_type" }, { status: 400 });
+  }
+
+  if (payload.status && !ALLOWED_STATUS.has(payload.status)) {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
   const { data, error } = await supabase
