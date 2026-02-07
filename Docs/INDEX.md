@@ -38,7 +38,9 @@
 
 ## Infraestructura Edge
 - `Docs/RASPBERRY_BRIDGE.md`
+- `Docs/TOPICOS_MQTT.md`
 
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
+
 

@@ -2,26 +2,28 @@
 
 ## Objetivo
 Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
+Esta documentacion integra la construccion IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
 
 ---
 
-## Requisitos
+## Alcance (lo que hace y lo que NO hace)
+**Hace**
+- Se conecta a HiveMQ (MQTT).
+- Escucha topics IoT (ver `Docs/TOPICOS_MQTT.md`).
+- Normaliza payloads y envia `POST` a `/api/mqtt/webhook`.
+
+**No hace**
+- No consulta datos (no hace `GET`).
+- No almacena datos finales (solo reenvia).
+- No reemplaza la API ni la DB.
+
+---
+
+## Dependencias
 - Raspberry Pi Zero 2 W con Raspberry Pi OS (Lite recomendado)
 - Acceso SSH
 - Conexion Wi-Fi estable
-
----
-
-## Stack en la Raspberry
-1. **Bridge MQTT -> API** (carpeta `bridge/`)
-2. **systemd** para servicio 24/7
-3. **Logs** locales (journald)
-
-## Pruebas de funcionamiento
-1. Verificar conexion MQTT (logs de bridge).
-2. Enviar mensaje desde el ESP32.
-3. Confirmar insercion en `readings` (Supabase).
-4. Confirmar actualizacion de `devices.last_seen`.
+- Node.js 18+
 
 ---
 
@@ -31,31 +33,121 @@ MQTT_HOST=<TU_HOST_HIVEMQ>
 MQTT_PORT=8883
 MQTT_USERNAME=<TU_USUARIO>
 MQTT_PASSWORD=<TU_PASSWORD>
-MQTT_TOPIC=kittypau/+/telemetry
+MQTT_TOPIC=+/SENSORS
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
 WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
 ```
-Nota: no guardar credenciales reales en Git. Usar `.env` local en la Raspberry.
+**Regla**: `WEBHOOK_TOKEN` debe ser igual a `MQTT_WEBHOOK_SECRET` en Vercel.
+
+**Nota**: si el firmware publica en otro patron (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
+
+**Nota de seguridad**: las credenciales reales (WiFi, HiveMQ, Supabase) se guardan en `.env` local del bridge y no se documentan aqui.
 
 ---
 
-## Instalacion (resumen)
-1. Instalar Node.js 18+
-2. Clonar repo `kittypau_2026`
-3. Entrar a `bridge/` y crear `.env`
-4. `npm install`
-5. Ejecutar `npm start` para prueba
+## Contrato de datos (Bridge -> API)
+**Endpoint**
+```
+POST /api/mqtt/webhook
+Headers:
+  x-webhook-token: <WEBHOOK_TOKEN>
+  Content-Type: application/json
+```
+
+**Payload obligatorio**
+```json
+{
+  "deviceCode": "KPCL0001",
+  "temperature": 23.5,
+  "humidity": 65,
+  "weight_grams": 3500,
+  "battery_level": 85,
+  "water_ml": 120,
+  "flow_rate": 120,
+  "timestamp": "2026-02-03T18:30:00Z"
+}
+```
+Notas:
+- `deviceCode` **es obligatorio**. Si el payload del IoT no lo trae, el Bridge debe inferirlo del topic y agregarlo.
+- `timestamp` es opcional. Si no se envia, la API usa hora actual.
+- La API acepta `deviceCode`, `deviceId` o `device_id`, pero **recomendacion oficial**: enviar `deviceCode`.
+
+**Validaciones de rango (API)**
+- `temperature`: -10 a 60
+- `humidity`: 0 a 100
+- `battery_level`: 0 a 100
+- `weight_grams`: 0 a 20000
+- `water_ml`: 0 a 5000
+- `flow_rate`: 0 a 1000
+- `deviceCode`: formato `KPCL0000`
+
+**Errores esperados**
+- `401 Unauthorized`: token invalido o faltante.
+- `400 Bad Request`: payload invalido (campos faltantes o fuera de rango).
+- `404 Not Found`: `deviceCode` no existe en `devices`.
 
 ---
 
-## Servicio 24/7 (systemd)
-- Crear servicio `kittypau-bridge.service`
-- Habilitar auto-restart
-- Ver logs con `journalctl -u kittypau-bridge -f`
+## Mapeo de topics IoT -> payload API
+El firmware actual publica en:
+- `KPCLXXXX/SENSORS` (sensores)
+- `KPCLXXXX/STATUS` (estado)
+- `KPCLXXXX/cmd` (comandos)
+
+El bridge debe traducir los mensajes de `SENSORS` al contrato del webhook:
+
+| IoT (SENSORS) | API (webhook) |
+|---|---|
+| `weight` | `weight_grams` |
+| `temp` | `temperature` |
+| `hum` | `humidity` |
+| `ldr` | (opcional, no se persiste hoy) |
+| `timestamp` | `timestamp` |
+
+Para `STATUS`, hoy **no** se guarda un payload separado en la DB. Si se necesita, se recomienda:
+- Usar `devices` para `last_seen` y `battery_level` (ya existe trigger).
+- Extender schema con columnas de `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`.
 
 ---
 
-## Extras recomendados (futuro)
-- Buffer offline (guardar mensajes si se cae internet)
-- Watchdog (reinicio si se cuelga)
-- Mosquitto local para pruebas
+## Flujo completo
+1. Dispositivo publica MQTT en HiveMQ.
+2. Bridge recibe mensaje.
+3. Bridge construye payload y agrega `deviceCode`.
+4. Bridge hace `POST` a `/api/mqtt/webhook`.
+5. API guarda en `readings` y actualiza `devices.last_seen`.
+
+---
+
+## Estrategia para cambios futuros
+**Si cambia el firmware o el payload IoT**:
+- Actualizar el mapeo de payload en el Bridge.
+- Mantener estable el contrato hacia la API.
+
+**Si cambia la API**:
+- Ajustar el Bridge para cumplir el nuevo contrato.
+- Versionar el payload en docs si se rompe compatibilidad.
+
+---
+
+## Observabilidad
+- Logs del Bridge (journald):
+  `journalctl -u kittypau-bridge -f`
+- Logs en Vercel: buscar POST a `/api/mqtt/webhook`
+- Supabase: tabla `readings`
+
+---
+
+## Service 24/7 (referencia)
+> Esta parte queda para el equipo de infraestructura.
+- `systemd` con auto-restart.
+- watchdog opcional.
+- buffer offline opcional.
+
+---
+
+## Pruebas de funcionamiento (minimas)
+1. Enviar mensaje MQTT desde un simulador.
+2. Ver log de POST exitoso.
+3. Ver nueva fila en `readings`.
+
