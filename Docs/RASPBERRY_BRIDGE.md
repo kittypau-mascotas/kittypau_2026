@@ -20,6 +20,13 @@ Esta documentacion integra la construccion IoT actual (MQTT/HiveMQ) y deja prepa
 
 ---
 
+## Estado del bridge en el proyecto
+- El codigo fuente del bridge vive en `/bridge` dentro del repo.
+- El **runtime** del bridge corre en la Raspberry (externo al repo).
+- El `.env` del bridge **no se versiona** (ver `.gitignore`).
+
+---
+
 ## Dependencias
 - Raspberry Pi Zero 2 W con Raspberry Pi OS (Lite recomendado)
 - Acceso SSH
@@ -83,6 +90,52 @@ WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
 ### 6) Validaciones minimas en runtime
 - Verificar que envs existan al iniciar (fail fast).
 - Loggear error claro si falta alguna variable.
+
+---
+
+## Checklist de conexion (cuando haya acceso a la Raspberry)
+Este bloque sirve para validar que la Raspberry esta operativa como bridge.
+
+### 1) Conectividad basica
+```bash
+ping <IP_DE_LA_PI>
+```
+Esperado: respuestas sin perdida.
+
+### 2) Acceso SSH
+```bash
+ssh kittypau@<IP_DE_LA_PI>
+# o con key:
+ssh -i <RUTA_KEY> kittypau@<IP_DE_LA_PI>
+```
+Esperado: login exitoso.
+
+### 3) Estado del servicio
+```bash
+sudo systemctl status kittypau-bridge
+```
+Esperado: `active (running)`.
+
+### 4) Logs en vivo
+```bash
+journalctl -u kittypau-bridge -f
+```
+Esperado:
+- `MQTT connected`
+- `Subscribed to: +/SENSORS`
+- `Webhook ok` (cuando hay mensajes)
+
+### 5) Verificar envs
+```bash
+cat /home/kittypau/kittypau-bridge/.env
+```
+Esperado: todas las variables definidas (sin exponerlas en docs).
+
+### 6) Prueba manual (simulada)
+Si se tiene un publicador MQTT, enviar un mensaje de prueba al broker y revisar:
+- Logs del bridge.
+- `/api/mqtt/webhook` en Vercel.
+- nueva fila en `readings`.
 
 ---
 

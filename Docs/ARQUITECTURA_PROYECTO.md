@@ -14,6 +14,8 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
+   - El codigo fuente vive en el repo (`/bridge`).
+   - El runtime real esta fuera del repo (Raspberry).
 
 ---
 
