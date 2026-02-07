@@ -1,4 +1,4 @@
-# Automatizacion de Tests (Kittypau)
+﻿# Automatizacion de Tests (Kittypau)
 
 ## Objetivo
 Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructura ni credenciales reales en docs.
@@ -13,11 +13,11 @@ Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructu
 ---
 
 ## Herramienta recomendada
-**Opción A (rápida y portable): Newman + Postman Collection**
-- Pros: fácil de compartir con equipo, ejecución en CI.
-- Contras: depende de colección externa.
+**OpciÃ³n A (rÃ¡pida y portable): Newman + Postman Collection**
+- Pros: fÃ¡cil de compartir con equipo, ejecuciÃ³n en CI.
+- Contras: depende de colecciÃ³n externa.
 
-**Opción B (sencilla y nativa): PowerShell**
+**OpciÃ³n B (sencilla y nativa): PowerShell**
 - Pros: no requiere tooling extra.
 - Contras: menos reportes.
 
@@ -109,7 +109,7 @@ Invoke-RestMethod -Method Get `
 
 ---
 
-## Reporte esperado (mínimo)
+## Reporte esperado (mÃ­nimo)
 - Salida de consola con:
   - `200` para flujo base
   - `400/404/403` para casos negativos
@@ -126,3 +126,26 @@ Invoke-RestMethod -Method Get `
 ## Notas
 - No registrar credenciales reales en docs.
 - Si se cambia el contrato del webhook, actualizar este documento y `Docs/PRUEBAS_E2E.md`.
+
+---
+
+## Script inmediato (PowerShell)
+Archivo: `Docs/TEST_DB_API.ps1`
+
+Que hace
+- Login con usuario de prueba
+- GET pets
+- POST device
+- POST webhook
+- GET readings
+
+Variables a completar
+- TU_SUPABASE_ANON_KEY
+- TU_WEBHOOK_TOKEN
+- KITTYPAU_PASSWORD
+- PEGA_AQUI_PET_ID
+
+Uso
+```powershell
+.\Docs\TEST_DB_API.ps1
+```

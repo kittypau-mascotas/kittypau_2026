@@ -1,4 +1,4 @@
-# Õndice de DocumentaciÛn (Kittypau)
+Ôªø# √çndice de Documentaci√≥n (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -31,7 +31,7 @@
 ## Flujos UX
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
 - `Docs/IMAGENES_LOGIN.md`
-- `Docs/estilos y diseÒos.md`
+- `Docs/estilos y dise√±os.md`
 
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
@@ -46,3 +46,6 @@
 
 
 
+
+## Scripts
+- Docs/TEST_DB_API.ps1
