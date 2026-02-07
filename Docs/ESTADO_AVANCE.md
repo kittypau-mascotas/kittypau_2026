@@ -54,9 +54,10 @@
 - Realtime no esta integrado aun en frontend.
 
 ## Verificaciones cerradas (operacion)
-- [x] Schema cache refrescado en Supabase.
+- [x] Schema cache refrescado en Supabase.\n- [x] Constraints de onboarding aplicadas (2026-02-07).
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
 - [x] Smoke test RLS ejecutado (multiusuario, 2026-02-07). Accesos cruzados devuelven 404 (esperado por RLS).
+
 
 
 
