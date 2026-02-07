@@ -42,5 +42,7 @@
 
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
+- `Docs/AUTOMATIZACION_TESTS.md`
+
 
 
