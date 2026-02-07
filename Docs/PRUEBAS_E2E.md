@@ -217,3 +217,9 @@ Ver `Docs/AUTOMATIZACION_TESTS.md`.
 - POST /api/pets OK -> `351bf470-c64d-4cc8-b490-eac30544627f`
 - POST /api/devices OK -> `db4ab517-ba80-43dd-865f-3207354d4b18` (KPCL3755)
 - pet_state -> `device_linked`
+
+**Resultado (2026-02-07, webhook deviceId + strings OK)**
+- POST /api/mqtt/webhook con `deviceId` (UUID) y valores numéricos como string: OK
+- Reading creado: `dcb9e265-c825-4acb-9516-e1a77187d9f0`
+- device_id: `db4ab517-ba80-43dd-865f-3207354d4b18`
+- recorded_at: `2026-02-07T23:45:14.002+00:00`
