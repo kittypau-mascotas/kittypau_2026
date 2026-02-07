@@ -5,7 +5,7 @@
 - **Backend**: API Routes de Next.js (sin servicio extra para mantener $0).
 - **DB/Auth/Realtime**: Supabase.
 - **MQTT**: HiveMQ Cloud -> webhook a `/api/mqtt/webhook`.
- - **Bridge**: Raspberry Pi Zero 2 W (porque HiveMQ Free no ofrece webhooks).
+- **Bridge**: Raspberry Pi Zero 2 W (porque HiveMQ Free no ofrece webhooks).
 
 ## Que se despliega en Vercel
 En este proyecto, **el deploy en Vercel incluye todo**:
@@ -50,19 +50,27 @@ src/app/
    - Inserta lectura y actualiza `devices`.
    - Busca el dispositivo por `device_code`.
 
-2. `GET/POST /api/pets`
+2. `GET/PUT /api/profiles`
+   - Lee/actualiza perfil del usuario.
+   - Incluye `user_onboarding_step`.
+
+3. `GET/POST /api/pets`
    - Lista mascotas del usuario.
    - Crea nueva mascota.
 
-3. `GET/POST /api/devices`
+4. `PATCH /api/pets/:id`
+   - Actualiza datos de mascota.
+   - Requiere `Authorization: Bearer <access_token>`.
+
+5. `GET/POST /api/devices`
    - Lista dispositivos.
    - Registra y asigna dispositivo a mascota.
    - `device_code` se obtiene del QR del plato.
 
-4. `GET /api/readings?device_id=...`
+6. `GET /api/readings?device_id=...`
    - Lecturas recientes para gráficos.
 
-5. `PATCH /api/devices/:id`
+7. `PATCH /api/devices/:id`
    - Actualiza estado del dispositivo o re-vincula mascota.
    - Requiere `Authorization: Bearer <access_token>`.
 
@@ -77,7 +85,7 @@ Payload propuesto:
 ```
 
 ## Autenticacion para CRUD
-Los endpoints `/api/pets`, `/api/devices` y `/api/readings` requieren:
+Los endpoints `/api/profiles`, `/api/pets`, `/api/devices` y `/api/readings` requieren:
 ```
 Authorization: Bearer <access_token>
 ```
@@ -146,7 +154,6 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 - [ ] Webhook MQTT insertando en DB
 - [ ] Dashboard con Realtime
 
-
 ## Contrato de errores (resumen)
 Reglas comunes:
 - 401 si falta o es invalido Authorization (o x-webhook-token).
@@ -156,15 +163,21 @@ Reglas comunes:
 - 500 si Supabase o servidor fallan.
 
 Errores por endpoint:
-1. GET /api/devices`n   - 401 si falta token.
-2. PATCH /api/devices/:id`n   - 400 Invalid status | Invalid device_state | Invalid device_type | No fields to update`n   - 403 Forbidden`n   - 404 Device not found`n3. POST /api/mqtt/webhook`n   - 401 Unauthorized`n   - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range`n   - 404 Device not found`n
+1. `GET /api/devices`
+   - `401` si falta token.
+2. `PATCH /api/devices/:id`
+   - `400` `Invalid status` | `Invalid device_state` | `Invalid device_type` | `No fields to update`
+   - `403` `Forbidden`
+   - `404` `Device not found`
+3. `POST /api/mqtt/webhook`
+   - `401` `Unauthorized`
+   - `400` `Invalid JSON` | `Missing device code` | `device_code must match KPCL0000 format` | `<campo> out of range`
+   - `404` `Device not found`
+4. `PATCH /api/pets/:id`
+   - `400` `Invalid type` | `Invalid pet_state` | `weight_kg must be a number` | `No fields to update`
+   - `403` `Forbidden`
+   - `404` `Pet not found`
 
-## Endpoint adicional
-6. `PATCH /api/pets/:id`
-   - Actualiza datos de mascota.
-   - Requiere `Authorization: Bearer <access_token>`.
-
-Errores esperados:
-- `400` `Invalid type` | `Invalid pet_state` | `weight_kg must be a number` | `No fields to update`
-- `403` `Forbidden`
-- `404` `Pet not found`
+## Nota sobre validaciones
+Los enums de `origin`, `living_environment`, `size`, `activity_level`, `age_range`, `alone_time` se validan en frontend/backend.
+El SQL actual solo impone constraints en `type` y `pet_state` para `pets`.

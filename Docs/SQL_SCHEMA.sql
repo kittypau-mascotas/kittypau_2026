@@ -236,3 +236,4 @@ for each row execute function public.update_device_from_reading();
 
 -- Inserciones de readings se harán con service role (webhook)
 
+
