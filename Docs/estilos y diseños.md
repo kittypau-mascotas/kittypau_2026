@@ -1,4 +1,4 @@
-# Estilos y Disenos (Kittypau)
+ï»¿# Estilos y Disenos (Kittypau)
 
 ## Principio base
 Kittypau no debe verse como un dashboard tecnico. Debe contar una historia.
@@ -581,7 +581,7 @@ export function Input({
 }
 ```
 
-## Estilos de Diseño Web Mejor Evaluados (2025-2026)
+## Estilos de DiseÃ±o Web Mejor Evaluados (2025-2026)
 1) Soft Minimalism (estandar SaaS)
 - Fondos off-white / gris calido.
 - Sombras muy suaves.
@@ -645,7 +645,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 ---
 
-## Librerias con Mejor Diseño (Next.js 2025-2026)
+## Librerias con Mejor DiseÃ±o (Next.js 2025-2026)
 **Tier S (premium)**
 - shadcn/ui: estandar actual (Tailwind + Radix).
 - Radix UI: primitivas accesibles sin estilos.
@@ -704,7 +704,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 - BottomBar (mobile): Home, Mascotas, Dispositivo, Perfil
 - Componentes: NavigationMenu, Button (icon), Avatar
 
-3) Cards (corazon del diseño)
+3) Cards (corazon del diseÃ±o)
 - PetCard: foto real edge-to-edge, nombre + estado, CTA sutil
 - DeviceStatusCard: nivel agua/comida, ultima actividad, estado visual (ok/alerta)
 - InsightCard (feed principal): mensaje humano + accion rapida
@@ -765,3 +765,72 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 - Sensacion de calma
 - Foco en mascotas, no sensores
 - UX clara en 3 segundos
+
+---
+
+# Tokens y Componentes Base (MVP UI)
+
+## Tokens oficiales (aplicacion)
+Estos tokens son la fuente de verdad para todas las vistas (login, registro, onboarding).
+
+Color (HSL)
+```
+:root {
+  --background: 30 38% 97%;
+  --foreground: 20 12% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 12% 18%;
+  --primary: 348 45% 33%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 24 20% 92%;
+  --muted-foreground: 20 9% 40%;
+  --border: 24 18% 85%;
+  --ring: 348 45% 33%;
+  --success: 145 22% 46%;
+  --warning: 38 40% 48%;
+  --danger: 350 45% 42%;
+  --radius: 18px;
+}
+```
+
+Tipografia
+- Titulo: Manrope 600-700
+- Texto: Inter 400-500
+- Base: 15-16px
+- Labels: 12-13px
+- H1: 36-40px, H2: 26-30px
+
+Espaciado
+- Base 4px
+- Secciones: 24-32px
+- Cards: 16-20px padding
+
+---
+
+## Componentes base (obligatorios)
+1. Button
+   - Variantes: primary / secondary / ghost / outline
+2. Input
+   - Altura 44px, foco suave
+3. Card
+   - Borde suave + sombra ligera
+4. Badge
+   - Estado: ok / warning / info
+5. Alert
+   - Mensajes de sistema
+6. Skeleton
+   - Loading de feed
+
+---
+
+## Vistas que deben usar estos tokens
+- /login: login email/password
+- /register: registro usuario
+- /onboarding/user: datos de usuario
+- /onboarding/pet: datos de mascota
+- /onboarding/device: vincular dispositivo
+
+---
+
+## Regla de consistencia
+Si un componente no existe en esta lista, primero se agrega aqui y luego se implementa en UI.
