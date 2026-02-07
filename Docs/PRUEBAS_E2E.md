@@ -1,4 +1,4 @@
-# Pruebas End-to-End (Kittypau)
+﻿# Pruebas End-to-End (Kittypau)
 
 ## Objetivo
 Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> Realtime.
@@ -200,3 +200,10 @@ Ver `Docs/AUTOMATIZACION_TESTS.md`.
 - [ ] Webhook ok
 - [ ] Supabase ok
 - [ ] Realtime ok
+
+**Resultado (corrida real 2026-02-07, KPCL0300)**
+- Token A y B: OK
+- `GET /api/pets` A/B: OK (RLS correcto)
+- Device creado: `KPCL0300`
+- Webhook: OK
+- Readings: OK
