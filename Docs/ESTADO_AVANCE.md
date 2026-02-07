@@ -18,12 +18,11 @@
 4. Trigger actualiza `devices.last_seen` y `battery_level`.
 
 ## Pendiente inmediato (implementacion)
-1. Implementar login parallax (UI real en codigo).
-2. Aplicar Design Tokens + componentes base (`Button`, `Card`, `Input`).
-3. Conectar frontend con APIs reales (pets/devices/readings).
-4. Realtime en dashboard (suscripcion a `readings`).
-5. Pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
-6. Bridge en Raspberry como servicio 24/7 (systemd + auto-restart).
+1. Aplicar Design Tokens + componentes base (Button, Card, Input).
+2. Conectar frontend con APIs reales (pets/devices/readings).
+3. Realtime en dashboard (suscripcion a readings).
+4. Pop-up de registro con progreso (Usuario -> Mascota -> Dispositivo).
+5. Bridge en Raspberry como servicio 24/7 (systemd + auto-restart).
 
 ## Arquitectura de pruebas (E2E)
 - Vercel API en produccion: OK
@@ -39,6 +38,7 @@
 - SQL actualizado y aplicado.
 - Validaciones backend en POST /api/pets y POST /api/devices.
 - E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
+- UI base login/today implementada (skeleton + estilos).
 - Documentacion del login parallax cerrada.
 
 ## Conectividad validada (sin Bridge 24/7)
@@ -48,12 +48,16 @@
 - [x] Diseño ↔ Producto (lineamientos y componentes definidos).
 
 ## Riesgos conocidos
-- Falta implementar UI real (login y dashboard).
+- Falta integrar datos reales en UI (login/today sin l?gica).
 - Realtime no esta integrado aun en frontend.
 
 ## Verificaciones cerradas (operacion)
 - [x] Schema cache refrescado en Supabase.
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
 - [x] Smoke test RLS ejecutado (multiusuario, 2026-02-07). Accesos cruzados devuelven 404 (esperado por RLS).
+
+
+
+
 
 

@@ -1,7 +1,14 @@
-# Vistas y Pages de la App (Kittypau)
+﻿# Vistas y Pages de la App (Kittypau)
 
 ## Objetivo
 Definir la estructura de vistas antes de implementar UI o routing.
+
+---
+
+## Implementacion actual (2026-02-07)
+- /login implementado con layout parallax (placeholder visual).
+- /today implementado como feed vertical interpretado (UI base).
+- / redirige a /login.
 
 ---
 
@@ -185,7 +192,7 @@ pet_onboarding_step:
 ---
 
 ## Referencia visual del tablero
-- Ver `Docs/estilos y dise�os.md` (paleta final, tipografia y estructura del tablero).
+- Ver `Docs/estilos y diseños.md` (paleta final, tipografia y estructura del tablero).
 
 ---
 
@@ -314,3 +321,4 @@ Los numeros existen, pero como evidencia secundaria.
 - Loading: `app/loading.tsx` + overlay global.
 - Empty: tarjetas con CTA.
 - Error: mensaje corto y accion de reintento.
+
