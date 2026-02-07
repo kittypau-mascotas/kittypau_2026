@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Test onboarding backend OK (profiles -> pets -> devices) via TEST_ONBOARDING_BACKEND.ps1.
 - Test inmediato TEST_DB_API.ps1 ejecutado OK (Auth, Pets, Devices, Webhook, Readings).
 - DB/API smoke test real con KPCL0300 (Auth, RLS, Devices, Webhook, Readings).
 - Constraints de onboarding y device_code agregados en SQL.
@@ -59,6 +60,7 @@
 - [x] Schema cache refrescado en Supabase.\n- [x] Constraints de onboarding aplicadas (2026-02-07).
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
 - [x] Smoke test RLS ejecutado (multiusuario, 2026-02-07). Accesos cruzados devuelven 404 (esperado por RLS).
+
 
 
 

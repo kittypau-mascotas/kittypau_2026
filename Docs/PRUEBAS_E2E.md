@@ -211,3 +211,9 @@ Ver `Docs/AUTOMATIZACION_TESTS.md`.
 **Resultado (2026-02-07, TEST_DB_API.ps1 ok)**
 - Script inmediato ejecutado sin errores.
 - Auth, Pets, Devices, Webhook y Readings: OK.
+
+**Resultado (2026-02-07, TEST_ONBOARDING_BACKEND.ps1 OK)**
+- PUT /api/profiles OK -> `1f1c1467-60ad-44e3-88fc-bc8dc9785bea`
+- POST /api/pets OK -> `351bf470-c64d-4cc8-b490-eac30544627f`
+- POST /api/devices OK -> `db4ab517-ba80-43dd-865f-3207354d4b18` (KPCL3755)
+- pet_state -> `device_linked`
