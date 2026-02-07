@@ -18,6 +18,14 @@ const ALLOWED_PET_STEP = new Set([
   "pet_confirm",
 ]);
 
+function normalizeString(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== "string") return value as string;
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -104,6 +112,23 @@ export async function PATCH(
   for (const key of allowedFields) {
     if (Object.prototype.hasOwnProperty.call(body, key)) {
       updatePayload[key] = body[key];
+    }
+  }
+
+  for (const key of [
+    "name",
+    "type",
+    "origin",
+    "living_environment",
+    "size",
+    "age_range",
+    "activity_level",
+    "alone_time",
+    "health_notes",
+    "photo_url",
+  ]) {
+    if (key in updatePayload) {
+      updatePayload[key] = normalizeString(updatePayload[key]);
     }
   }
 

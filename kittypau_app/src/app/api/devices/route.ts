@@ -100,10 +100,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await supabase
+  const { error: petUpdateError } = await supabase
     .from("pets")
     .update({ pet_state: "device_linked" })
     .eq("id", payload.pet_id);
+
+  if (petUpdateError) {
+    await supabase.from("devices").delete().eq("id", data.id);
+    return NextResponse.json(
+      { error: "Failed to update pet_state after device create" },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json(data, { status: 201 });
 }

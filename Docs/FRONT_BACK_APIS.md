@@ -74,7 +74,11 @@ src/app/
 6. `GET /api/readings?device_id=...`
    - Lecturas recientes para gráficos.
 
-7. `PATCH /api/devices/:id`
+7. `GET /api/onboarding/status`
+   - Resumen de onboarding para UI.
+   - Retorna: `userStep`, `hasPet`, `hasDevice`, `petCount`, `deviceCount`.
+
+8. `PATCH /api/devices/:id`
    - Actualiza estado del dispositivo o re-vincula mascota.
    - Requiere `Authorization: Bearer <access_token>`.
 
