@@ -40,6 +40,7 @@
 - UI base login/today implementada (skeleton + estilos).
 - Documentacion del login parallax cerrada.
 - UI conectada a datos reales (login Supabase + feed con pets/devices/readings).
+- UI validada con datos reales (Mishu + KPCL0200).
 
 ## Conectividad validada (sin Bridge 24/7)
 - [x] Docs ↔ Backend (SQL + APIs + errores consistentes).

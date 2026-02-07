@@ -47,6 +47,13 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 - reading_id: `039f5519-0c16-48bd-a074-a2537cd7b387`
 - recorded_at: `2026-02-06T19:41:51.147+00:00`
 
+**IDs generados (corrida UI real 2026-02-07)**
+- pet_id: `edd4e20f-afca-4b49-ab9f-dc5f345093fc`
+- device_id: `7086b60a-9f1a-489b-9368-06fe373181eb`
+- device_code: `KPCL0200`
+- reading_id: `5ccda865-0276-4248-9767-eb2ec8b17efe`
+- recorded_at: `2026-02-07T22:35:39.802+00:00`
+
 **Recordatorio clave**
 - `device_id` (UUID) **no** es `device_code` (KPCLxxxx).
 - `/api/readings` requiere `device_id`.
