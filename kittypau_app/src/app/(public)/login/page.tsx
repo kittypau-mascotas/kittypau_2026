@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { setTokens } from "@/lib/auth/token";
-import { supabaseBrowser } from "@/lib/supabase/browser";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,8 +18,15 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
 
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setError("Faltan variables públicas de Supabase en el entorno.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const { data, error: signInError } =
-      await supabaseBrowser.auth.signInWithPassword({
+      await supabase.auth.signInWithPassword({
         email,
         password,
       });

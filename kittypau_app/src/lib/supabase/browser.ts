@@ -1,14 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing env var: ${name}`);
+let cachedClient: ReturnType<typeof createClient> | null = null;
+
+export function getSupabaseBrowser() {
+  if (cachedClient) return cachedClient;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
   }
-  return value;
+
+  cachedClient = createClient(supabaseUrl, supabaseAnonKey);
+  return cachedClient;
 }
-
-const supabaseUrl = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
-const supabaseAnonKey = requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
-
-export const supabaseBrowser = createClient(supabaseUrl, supabaseAnonKey);
