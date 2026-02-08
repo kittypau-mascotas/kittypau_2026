@@ -13,6 +13,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - /story implementado como timeline narrativo básico.
 - /pet implementado como perfil conductual básico con insights.
 - /bowl implementado como estado técnico del plato.
+- /settings implementado como ajustes de perfil y notificaciones.
 
 ---
 

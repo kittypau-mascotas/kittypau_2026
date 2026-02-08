@@ -39,6 +39,7 @@
 - UI story: timeline narrativo básico con selector de dispositivo.
 - UI pet: perfil conductual básico con insights y selector de mascota.
 - UI bowl: estado técnico del plato con batería y última conexión.
+- UI settings: ajustes de perfil y notificaciones.
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
 - Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
