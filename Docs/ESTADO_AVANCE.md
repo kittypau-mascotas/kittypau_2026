@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Errores API estandarizados con `code` y `request_id`.
 - Rate limiting basico aplicado (webhook y endpoints mutables).
 - Limites de payload y rangos validados (weight_kg, battery_level, readings limit).
