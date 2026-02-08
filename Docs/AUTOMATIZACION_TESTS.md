@@ -139,6 +139,7 @@ Que hace
 - GET pets
 - POST device
 - POST webhook
+- POST webhook con timestamp viejo (clock drift)
 - GET readings
 
 Variables a completar

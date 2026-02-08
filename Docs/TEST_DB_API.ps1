@@ -66,6 +66,15 @@ Invoke-RestMethod -Method Post `
 
 Write-Host "POST /api/mqtt/webhook OK"
 
+# === Webhook clock drift (timestamp fuera de ±10 min) ===
+$oldTimestamp = (Get-Date).AddHours(-2).ToString("o")
+Invoke-RestMethod -Method Post `
+  -Uri "$apiBase/api/mqtt/webhook" `
+  -Headers @{ "x-webhook-token"=$webhook; "Content-Type"="application/json"} `
+  -Body "{`"deviceCode`":`"$deviceCode`",`"temperature`":23.5,`"humidity`":65,`"weight_grams`":3500,`"battery_level`":85,`"flow_rate`":120,`"timestamp`":`"$oldTimestamp`"}" | Out-Null
+
+Write-Host "POST /api/mqtt/webhook drift OK"
+
 # === Readings ===
 Invoke-RestMethod -Method Get `
   -Uri "$apiBase/api/readings?device_id=$($device.id)" `
