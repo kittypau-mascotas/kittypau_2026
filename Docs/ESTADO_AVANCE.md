@@ -33,7 +33,7 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy
+## Implementado hoy\n- UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.\n- UI today: selector de device, refresco con timestamp y badge de frescura.\n- Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).\n- Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
 - Webhook hardening: si se envían `deviceId` y `deviceCode`, deben coincidir.
 - Clock drift: cálculo usa `serverTimeMs` consistente y registra `delta_ms`.
@@ -110,6 +110,7 @@
 - [x] Constraints de onboarding aplicadas (2026-02-07).
 - [x] Variables de entorno validadas entre Vercel y Raspberry.
 - [x] Smoke test RLS ejecutado (multiusuario, 2026-02-07). Accesos cruzados devuelven 404 (esperado por RLS).
+
 
 
 
