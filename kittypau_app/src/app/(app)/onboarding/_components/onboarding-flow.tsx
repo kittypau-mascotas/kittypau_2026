@@ -430,6 +430,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Nombre visible en la app.
+              </p>
               <input
                 className={inputClass(!profileForm.city.trim())}
                 placeholder="Ciudad"
@@ -441,6 +444,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Úsalo para personalizar alertas.
+              </p>
               <input
                 className={inputClass(!profileForm.country.trim())}
                 placeholder="País"
@@ -452,6 +458,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Define tu región principal.
+              </p>
               <select
                 className={inputClass(false)}
                 value={profileForm.notification_channel}
@@ -507,6 +516,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }
                 />
               ) : null}
+              {profileForm.notification_channel === "whatsapp" ? (
+                <p className="text-[11px] text-slate-500">
+                  Incluye prefijo de país si aplica.
+                </p>
+              ) : null}
             </div>
             <button
               type="button"
@@ -546,6 +560,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   setPetForm((prev) => ({ ...prev, name: event.target.value }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Nombre que verás en el feed.
+              </p>
               <select
                 className={inputClass(!petForm.type.trim())}
                 value={petForm.type}
@@ -564,6 +581,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   setPetForm((prev) => ({ ...prev, origin: event.target.value }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Ayuda a personalizar los insights.
+              </p>
             </div>
             <button
               type="button"
@@ -626,6 +646,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              <p className="text-[11px] text-slate-500">
+                Formato esperado: KPCL0000.
+              </p>
               <select
                 className={inputClass(!deviceForm.device_type.trim())}
                 value={deviceForm.device_type}
