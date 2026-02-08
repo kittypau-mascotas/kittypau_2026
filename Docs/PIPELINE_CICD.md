@@ -3,6 +3,21 @@
 ## Objetivo
 Documentar el flujo completo de despliegue y validación del proyecto.
 
+## Diagrama (pipeline)
+```mermaid
+flowchart LR
+  A[GitHub main] --> B[Vercel Deploy]
+  B --> C[Frontend + API Routes]
+  C --> D[Supabase DB/Auth]
+  E[ESP32] --> F[HiveMQ]
+  F --> G[Raspberry Bridge]
+  G --> C
+  H[Supabase CLI] --> D
+  I[Tests PS] --> C
+  I --> D
+  J[Upstash Redis] --> C
+```
+
 ## 1. Repositorio
 - Repositorio principal en GitHub: `kittypau_2026`.
 - Rama principal: `main`.
@@ -51,4 +66,3 @@ Documentar el flujo completo de despliegue y validación del proyecto.
 ## 8. Riesgos conocidos
 - Realtime aún no integrado en frontend.
 - Refresh token no implementado en UI.
-
