@@ -67,6 +67,7 @@ function formatTimestamp(value?: string | null) {
 
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const token = useMemo(() => getAccessToken(), []);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
@@ -153,8 +154,10 @@ export default function TodayPage() {
 
         let readings: ApiReading[] = [];
         let readingsCursor: string | null = null;
-        if (primaryDevice?.id) {
-          const result = await loadReadings(primaryDevice.id);
+        const initialDeviceId = primaryDevice?.id ?? null;
+        setSelectedDeviceId(initialDeviceId);
+        if (initialDeviceId) {
+          const result = await loadReadings(initialDeviceId);
           readings = result.data;
           readingsCursor = result.nextCursor;
         }
@@ -188,15 +191,13 @@ export default function TodayPage() {
   }, []);
 
   const loadMoreReadings = async () => {
-    const primaryDevice =
-      state.devices.find((device) => device.pet_id === state.pets[0]?.id) ??
-      state.devices[0];
-    if (!primaryDevice?.id || !state.readingsCursor || state.isLoadingMore) {
+    const deviceId = selectedDeviceId;
+    if (!deviceId || !state.readingsCursor || state.isLoadingMore) {
       return;
     }
     setState((prev) => ({ ...prev, isLoadingMore: true }));
     try {
-      const result = await loadReadings(primaryDevice.id, state.readingsCursor);
+      const result = await loadReadings(deviceId, state.readingsCursor);
       setState((prev) => ({
         ...prev,
         readings: [...prev.readings, ...result.data],
@@ -217,6 +218,7 @@ export default function TodayPage() {
 
   const primaryPet = state.pets[0];
   const primaryDevice =
+    state.devices.find((device) => device.id === selectedDeviceId) ??
     state.devices.find((device) => device.pet_id === primaryPet?.id) ??
     state.devices[0];
   const latestReading = state.readings[0] ?? null;
@@ -283,6 +285,39 @@ export default function TodayPage() {
                     ? `${primaryDevice.device_type} · ${primaryDevice.device_code}`
                     : "Sin dispositivo"}
                 </p>
+                {state.devices.length > 1 ? (
+                  <select
+                    className="mt-2 h-8 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-2 text-[11px] text-slate-600"
+                    value={primaryDevice?.id ?? ""}
+                    onChange={async (event) => {
+                      const nextId = event.target.value || null;
+                      setSelectedDeviceId(nextId);
+                      if (!nextId) return;
+                      try {
+                        const result = await loadReadings(nextId);
+                        setState((prev) => ({
+                          ...prev,
+                          readings: result.data,
+                          readingsCursor: result.nextCursor,
+                        }));
+                      } catch (err) {
+                        setState((prev) => ({
+                          ...prev,
+                          error:
+                            err instanceof Error
+                              ? err.message
+                              : "No se pudieron cargar las lecturas.",
+                        }));
+                      }
+                    }}
+                  >
+                    {state.devices.map((device) => (
+                      <option key={device.id} value={device.id}>
+                        {device.device_code}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
               </div>
             </div>
           </div>
