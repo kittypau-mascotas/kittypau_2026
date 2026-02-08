@@ -43,6 +43,7 @@
 - Tests post-migracion OK (2026-02-08): DB/API KPCL0159 + onboarding KPCL0208.
 - UTF-8 corregido en UI (login + today).
 - Onboarding UI basico implementado (perfil + mascota + dispositivo).
+- Onboarding UI ajustado: user_step -> pet_profile al guardar perfil; pet_state usa default device_pending.
 - Tipografia actualizada: Titan One (marca), Fraunces (titulos), Inter (texto).
 - Prueba end-to-end Raspberry/HiveMQ documentada (simulada con MQTT CLI).
 - Docs MQTT alineados a topics `+/SENSORS` (arquitectura y Raspberry CLI).

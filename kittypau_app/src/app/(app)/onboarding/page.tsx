@@ -114,7 +114,7 @@ export default function OnboardingPage() {
         },
         body: JSON.stringify({
           ...profileForm,
-          user_onboarding_step: "user_profile",
+          user_onboarding_step: "pet_profile",
         }),
       });
 
@@ -146,7 +146,6 @@ export default function OnboardingPage() {
         },
         body: JSON.stringify({
           ...petForm,
-          pet_state: "created",
           pet_onboarding_step: "pet_profile",
         }),
       });
