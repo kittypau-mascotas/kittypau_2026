@@ -12,6 +12,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - / redirige a /login.
 - /story implementado como timeline narrativo básico.
 - /pet implementado como perfil conductual básico con insights.
+- /bowl implementado como estado técnico del plato.
 
 ---
 
