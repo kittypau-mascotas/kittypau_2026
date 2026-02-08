@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return apiError(req, 401, "AUTH_INVALID", auth.error);
+    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
   }
 
   const { supabase, user } = auth;
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return apiError(req, 401, "AUTH_INVALID", auth.error);
+    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
   }
 
   const { supabase, user } = auth;
