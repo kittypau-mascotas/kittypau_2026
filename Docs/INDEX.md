@@ -47,6 +47,9 @@
 - `Docs/RASPBERRY_BRIDGE.md`
 - `Docs/TOPICOS_MQTT.md`
 
+## Infraestructura Cloud
+- `Docs/VERCEL_UPSTASH_CHECKLIST.md`
+
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
 - `Docs/AUTOMATIZACION_TESTS.md`

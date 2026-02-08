@@ -365,6 +365,10 @@ export default function TodayPage() {
               Últimas 24h
             </span>
           </div>
+          <p className="text-xs text-slate-400">
+            Las lecturas duplicadas se ignoran (idempotencia por dispositivo y
+            timestamp).
+          </p>
           <div className="grid gap-4">
             {state.isLoading ? (
               <div className="surface-card px-6 py-5 text-sm text-slate-500">
