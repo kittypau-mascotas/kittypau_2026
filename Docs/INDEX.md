@@ -37,6 +37,12 @@
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
 
+## CLI
+- `Docs/VERCEL_CLI.md`
+- `Docs/SUPABASE_CLI.md`
+- `Docs/HIVEMQ_MQTT_CLI.md`
+- `Docs/RASPBERRY_CLI.md`
+
 ## Infraestructura Edge
 - `Docs/RASPBERRY_BRIDGE.md`
 - `Docs/TOPICOS_MQTT.md`
