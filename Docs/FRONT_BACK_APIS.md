@@ -171,6 +171,7 @@ Reglas comunes:
 - 404 si el recurso no existe.
 - 400 si payload es invalido o falla una validacion.
 - 500 si Supabase o servidor fallan.
+- 429 si supera rate limit.
 
 Formato estandar:
 ```json
@@ -181,6 +182,10 @@ Formato estandar:
   "details": "opcional"
 }
 ```
+
+Rate limits actuales (best effort):
+- `/api/mqtt/webhook`: 60 req/min por IP.
+- Mutaciones (`PUT /api/profiles`, `POST/PATCH /api/pets`, `POST/PATCH /api/devices`): 30 req/min por usuario.
 
 Errores por endpoint:
 1. GET /api/devices

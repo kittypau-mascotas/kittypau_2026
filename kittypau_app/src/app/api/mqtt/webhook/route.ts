@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError } from "../../_utils";
+import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 type WebhookPayload = {
   deviceId?: string;
@@ -62,6 +63,19 @@ export async function POST(req: NextRequest) {
   const token = req.headers.get("x-webhook-token");
   if (!token || token !== process.env.MQTT_WEBHOOK_SECRET) {
     return apiError(req, 401, "UNAUTHORIZED", "Unauthorized");
+  }
+
+  const rateKey = `${getRateKeyFromRequest(req)}:webhook`;
+  const rate = checkRateLimit(rateKey, 60, 60_000);
+  if (!rate.ok) {
+    return apiError(
+      req,
+      429,
+      "RATE_LIMITED",
+      "Too many requests",
+      undefined,
+      { "Retry-After": String(rate.retryAfter) }
+    );
   }
 
   let payload: WebhookPayload;

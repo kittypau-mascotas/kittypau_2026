@@ -10,7 +10,8 @@ export function apiError(
   status: number,
   code: string,
   message: string,
-  details?: string
+  details?: string,
+  headers?: Record<string, string>
 ) {
   const payload: Record<string, unknown> = {
     error: message,
@@ -22,7 +23,7 @@ export function apiError(
     payload.details = details;
   }
 
-  return NextResponse.json(payload, { status });
+  return NextResponse.json(payload, { status, headers });
 }
 
 export async function getUserClient(req: NextRequest) {

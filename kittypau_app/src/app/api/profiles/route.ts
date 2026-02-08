@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiError, getUserClient } from "../_utils";
+import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_USER_STEPS = new Set([
   "not_started",
@@ -24,6 +25,20 @@ export async function GET(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
+  if (req.method === "PUT") {
+    const rateKey = `${getRateKeyFromRequest(req, user.id)}:profiles_put`;
+    const rate = checkRateLimit(rateKey, 30, 60_000);
+    if (!rate.ok) {
+      return apiError(
+        req,
+        429,
+        "RATE_LIMITED",
+        "Too many requests",
+        undefined,
+        { "Retry-After": String(rate.retryAfter) }
+      );
+    }
+  }
   const { data, error } = await supabase
     .from("profiles")
     .select("*")

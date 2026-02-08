@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiError, getUserClient } from "../../_utils";
+import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
 const ALLOWED_PET_STATE = new Set([
@@ -36,6 +37,18 @@ export async function PATCH(
   }
 
   const { supabase, user } = auth;
+  const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_patch`;
+  const rate = checkRateLimit(rateKey, 30, 60_000);
+  if (!rate.ok) {
+    return apiError(
+      req,
+      429,
+      "RATE_LIMITED",
+      "Too many requests",
+      undefined,
+      { "Retry-After": String(rate.retryAfter) }
+    );
+  }
   const { id: petId } = await context.params;
 
   if (!petId) {
