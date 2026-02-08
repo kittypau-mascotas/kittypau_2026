@@ -66,6 +66,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   });
 
   const token = useMemo(() => getAccessToken(), []);
+  const completedSteps = useMemo(() => {
+    return {
+      profile: status.userStep === "pet_profile" || status.userStep === "completed",
+      pet: status.hasPet,
+      device: status.hasDevice,
+    };
+  }, [status]);
   const profileValidation = useMemo(() => {
     const issues: string[] = [];
     if (!profileForm.user_name.trim()) issues.push("Nombre requerido.");
@@ -367,6 +374,26 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               style={{ width: `${Math.min(currentStep, 3) * 33.33}%` }}
             />
           </div>
+          <div className="mt-4 grid gap-2 text-xs text-slate-500 md:grid-cols-3">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
+                {completedSteps.profile ? "✓" : "1"}
+              </span>
+              Perfil de usuario
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
+                {completedSteps.pet ? "✓" : "2"}
+              </span>
+              Mascota
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
+                {completedSteps.device ? "✓" : "3"}
+              </span>
+              Dispositivo
+            </div>
+          </div>
         </section>
 
         {currentStep === 1 && (
@@ -623,6 +650,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             <p className="text-sm text-slate-500">
               Ya completaste el registro. Puedes ir al feed.
             </p>
+            <div className="mt-4 grid gap-3 text-xs text-slate-600 md:grid-cols-3">
+              <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
+                Perfil: {status.userStep ?? "completado"}
+              </div>
+              <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
+                Mascotas: {status.petCount}
+              </div>
+              <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
+                Dispositivos: {status.deviceCount}
+              </div>
+            </div>
             <Link
               href="/today"
               className="mt-4 inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
