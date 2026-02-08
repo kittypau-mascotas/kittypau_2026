@@ -113,9 +113,12 @@ ALTER TABLE public.readings
 
 -- Indexes
 create index if not exists idx_pets_user_id on public.pets(user_id);
+create index if not exists idx_pets_user_id_created_at on public.pets(user_id, created_at desc);
 create index if not exists idx_devices_owner_id on public.devices(owner_id);
+create index if not exists idx_devices_owner_id_created_at on public.devices(owner_id, created_at desc);
 create index if not exists idx_readings_device_id on public.readings(device_id);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
+create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);
 create index if not exists idx_audit_events_actor_id on public.audit_events(actor_id);
