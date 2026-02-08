@@ -8,6 +8,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 ## Implementacion actual (2026-02-07)
 - /login implementado con layout parallax + login real (Supabase Auth).
 - /today implementado como feed vertical interpretado conectado a APIs.
+- /onboarding implementado en una sola vista (perfil + mascota + dispositivo).
 - / redirige a /login.
 
 ---
@@ -33,6 +34,7 @@ por "eventos / interpretaciones / historia".
   /pet
   /device
 /(app)
+  /onboarding
   /today
   /story
   /pet
@@ -63,6 +65,14 @@ por "eventos / interpretaciones / historia".
 ---
 
 ## Vistas de onboarding
+### /onboarding (single view)
+- Flujo basico en una sola pagina con 3 pasos.
+- Perfil -> Mascota -> Dispositivo.
+**Datos / API**
+- `PUT /api/profiles`
+- `POST /api/pets`
+- `POST /api/devices`
+
 ### /onboarding/user
 - Registro usuario (visual)
 - Guarda `auth_provider`, `user_name`, `is_owner`, etc.

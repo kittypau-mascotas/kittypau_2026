@@ -142,7 +142,7 @@ export default function LoginPage() {
                 </label>
                 <input
                   type="password"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
@@ -164,7 +164,7 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between text-xs text-slate-500">
               <button type="button" className="hover:text-slate-900">
-                OlvidÃ© mi clave
+                Olvidé mi clave
               </button>
               <button type="button" className="hover:text-slate-900">
                 Crear cuenta

@@ -128,7 +128,7 @@ export default function TodayPage() {
           error:
             err instanceof Error
               ? err.message
-              : "No se pudo cargar la informaciÃ³n.",
+              : "No se pudo cargar la información.",
           pets: [],
           devices: [],
           reading: null,
@@ -152,7 +152,7 @@ export default function TodayPage() {
         title: "HidrataciÃ³n",
         description:
           state.reading.flow_rate !== null
-            ? `Flujo ${state.reading.flow_rate} ml/h en la Ãºltima lectura.`
+            ? `Flujo ${state.reading.flow_rate} ml/h en la última lectura.`
             : `Consumo registrado: ${state.reading.water_ml ?? 0} ml.`,
         tone: "info",
       });
@@ -167,7 +167,7 @@ export default function TodayPage() {
     if (state.reading.temperature !== null || state.reading.humidity !== null) {
       items.push({
         title: "Ambiente",
-        description: `Temp ${state.reading.temperature ?? "-"}Â° Â· Humedad ${
+        description: `Temp ${state.reading.temperature ?? "-"}° · Humedad ${
           state.reading.humidity ?? "-"
         }%.`,
         tone: "warning",
@@ -203,7 +203,7 @@ export default function TodayPage() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {primaryDevice
-                    ? `${primaryDevice.device_type} Â· ${primaryDevice.device_code}`
+                    ? `${primaryDevice.device_type} · ${primaryDevice.device_code}`
                     : "Sin dispositivo"}
                 </p>
               </div>
@@ -261,6 +261,23 @@ export default function TodayPage() {
                 Limpiar sesión
               </button>
             </div>
+          </section>
+        ) : null}
+
+        {!state.isLoading &&
+        !state.error &&
+        (!primaryPet || !primaryDevice) ? (
+          <section className="surface-card px-6 py-5 text-sm text-slate-600">
+            <p className="mb-3">
+              Aún no tienes todo el onboarding completo. Completa perfil,
+              mascota y dispositivo para ver el feed.
+            </p>
+            <Link
+              href="/onboarding"
+              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+            >
+              Ir al onboarding
+            </Link>
           </section>
         ) : null}
 
