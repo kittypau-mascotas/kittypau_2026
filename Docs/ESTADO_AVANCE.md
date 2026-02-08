@@ -41,6 +41,7 @@
 - Índice cubriente para readings (device_id, recorded_at) con INCLUDE de métricas.
 - Algoritmos de interpretación documentados (baseline, ventanas, guardrails).
 - Health check del bridge documentado (heartbeat + cron + alertas).
+- Plan de particionado de `readings` documentado (Postgres nativo + Timescale).
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Reglas de negocio aplicadas: `pet_state` default `device_pending`, `type` no editable, `care_rating` 1-10.
 - Un solo device activo por mascota (indice parcial) y link setea `device_state = linked`.
