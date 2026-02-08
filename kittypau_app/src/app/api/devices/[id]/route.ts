@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../../_utils";
+import { apiError, enforceBodySize, getUserClient } from "../../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
@@ -49,6 +49,8 @@ export async function PATCH(
   };
 
   try {
+    const sizeError = enforceBodySize(req, 8_000);
+    if (sizeError) return sizeError;
     body = (await req.json()) as typeof body;
   } catch {
     return apiError(req, 400, "INVALID_JSON", "Invalid JSON");

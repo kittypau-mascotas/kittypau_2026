@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../_utils";
+import { apiError, enforceBodySize, getUserClient } from "../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
   const { supabase, user } = auth;
   let body: Record<string, unknown>;
   try {
+    const sizeError = enforceBodySize(req, 8_000);
+    if (sizeError) return sizeError;
     body = (await req.json()) as Record<string, unknown>;
   } catch {
     return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
@@ -115,6 +117,17 @@ export async function POST(req: NextRequest) {
 
   if (body?.weight_kg !== undefined && typeof body.weight_kg !== "number") {
     return apiError(req, 400, "INVALID_WEIGHT", "weight_kg must be a number");
+  }
+
+  if (typeof body?.weight_kg === "number") {
+    if (body.weight_kg < 0 || body.weight_kg > 50) {
+      return apiError(
+        req,
+        400,
+        "WEIGHT_OUT_OF_RANGE",
+        "weight_kg must be between 0 and 50"
+      );
+    }
   }
 
   if (payload.pet_state && !ALLOWED_PET_STATE.has(String(payload.pet_state))) {

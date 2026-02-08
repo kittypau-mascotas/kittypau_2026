@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../_utils";
+import { apiError, enforceBodySize, getUserClient } from "../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_USER_STEPS = new Set([
@@ -60,6 +60,9 @@ export async function PUT(req: NextRequest) {
 
   const { supabase, user } = auth;
   let body: Record<string, unknown>;
+
+  const sizeError = enforceBodySize(req, 8_000);
+  if (sizeError) return sizeError;
 
   try {
     body = (await req.json()) as Record<string, unknown>;
@@ -141,6 +144,18 @@ export async function PUT(req: NextRequest) {
       400,
       "INVALID_CARE_RATING",
       "care_rating must be a number"
+    );
+  }
+
+  if (
+    typeof updatePayload.care_rating === "number" &&
+    (updatePayload.care_rating < 0 || updatePayload.care_rating > 5)
+  ) {
+    return apiError(
+      req,
+      400,
+      "CARE_RATING_OUT_OF_RANGE",
+      "care_rating must be between 0 and 5"
     );
   }
 

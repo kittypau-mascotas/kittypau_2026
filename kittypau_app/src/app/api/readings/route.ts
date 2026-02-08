@@ -17,6 +17,17 @@ export async function GET(req: NextRequest) {
     return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
   }
 
+  if (limitParam) {
+    if (!Number.isFinite(limit) || limit < 1 || limit > 200) {
+      return apiError(
+        req,
+        400,
+        "INVALID_LIMIT",
+        "limit must be between 1 and 200"
+      );
+    }
+  }
+
   const { data: device, error: deviceError } = await supabase
     .from("devices")
     .select("id, owner_id")

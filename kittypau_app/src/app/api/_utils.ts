@@ -26,6 +26,22 @@ export function apiError(
   return NextResponse.json(payload, { status, headers });
 }
 
+export function enforceBodySize(req: NextRequest, maxBytes: number) {
+  const length = req.headers.get("content-length");
+  if (!length) return null;
+  const size = Number(length);
+  if (!Number.isFinite(size)) return null;
+  if (size > maxBytes) {
+    return apiError(
+      req,
+      413,
+      "PAYLOAD_TOO_LARGE",
+      `Payload exceeds ${maxBytes} bytes`
+    );
+  }
+  return null;
+}
+
 export async function getUserClient(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {

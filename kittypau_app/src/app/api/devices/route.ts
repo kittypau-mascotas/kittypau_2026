@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../_utils";
+import { apiError, enforceBodySize, getUserClient } from "../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
@@ -53,6 +53,8 @@ export async function POST(req: NextRequest) {
   };
 
   try {
+    const sizeError = enforceBodySize(req, 8_000);
+    if (sizeError) return sizeError;
     body = (await req.json()) as typeof body;
   } catch {
     return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
@@ -95,6 +97,19 @@ export async function POST(req: NextRequest) {
 
   if (payload.status && !ALLOWED_STATUS.has(payload.status)) {
     return apiError(req, 400, "INVALID_STATUS", "Invalid status");
+  }
+
+  if (
+    payload.battery_level !== null &&
+    payload.battery_level !== undefined &&
+    (payload.battery_level < 0 || payload.battery_level > 100)
+  ) {
+    return apiError(
+      req,
+      400,
+      "BATTERY_OUT_OF_RANGE",
+      "battery_level must be between 0 and 100"
+    );
   }
 
   const { data: pet, error: petError } = await supabase

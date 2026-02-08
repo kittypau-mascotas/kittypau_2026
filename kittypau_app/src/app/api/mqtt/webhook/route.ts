@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError } from "../../_utils";
+import { apiError, enforceBodySize } from "../../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 type WebhookPayload = {
@@ -80,6 +80,8 @@ export async function POST(req: NextRequest) {
 
   let payload: WebhookPayload;
   try {
+    const sizeError = enforceBodySize(req, 10_000);
+    if (sizeError) return sizeError;
     payload = (await req.json()) as WebhookPayload;
   } catch {
     return apiError(req, 400, "INVALID_JSON", "Invalid JSON");

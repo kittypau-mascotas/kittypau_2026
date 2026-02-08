@@ -172,6 +172,7 @@ Reglas comunes:
 - 400 si payload es invalido o falla una validacion.
 - 500 si Supabase o servidor fallan.
 - 429 si supera rate limit.
+- 413 si payload supera el limite permitido.
 
 Formato estandar:
 ```json
@@ -186,6 +187,15 @@ Formato estandar:
 Rate limits actuales (best effort):
 - `/api/mqtt/webhook`: 60 req/min por IP.
 - Mutaciones (`PUT /api/profiles`, `POST/PATCH /api/pets`, `POST/PATCH /api/devices`): 30 req/min por usuario.
+
+Limites de payload:
+- Mutaciones JSON: ~8 KB.
+- Webhook MQTT: ~10 KB.
+
+Rangos validados (server):
+- `weight_kg`: 0–50
+- `battery_level`: 0–100
+- `readings?limit`: 1–200
 
 Errores por endpoint:
 1. GET /api/devices
