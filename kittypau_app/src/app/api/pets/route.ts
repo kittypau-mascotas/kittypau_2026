@@ -26,10 +26,9 @@ const ALLOWED_PET_STEP = new Set([
   "pet_confirm",
 ]);
 
-function normalizeString(value: unknown): string | null | undefined {
-  if (value === undefined) return undefined;
-  if (value === null) return null;
-  if (typeof value !== "string") return value as string;
+function normalizeString(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed.length ? trimmed : null;
 }
