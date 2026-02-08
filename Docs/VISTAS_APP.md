@@ -11,6 +11,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
 - /story implementado como timeline narrativo básico.
+- /pet implementado como perfil conductual básico con insights.
 
 ---
 

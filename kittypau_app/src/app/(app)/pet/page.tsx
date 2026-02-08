@@ -1,0 +1,369 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { clearTokens, getAccessToken } from "@/lib/auth/token";
+
+type ApiPet = {
+  id: string;
+  name: string;
+  type?: string | null;
+  origin?: string | null;
+  age_range?: string | null;
+  weight_kg?: number | null;
+  activity_level?: string | null;
+  pet_state?: string | null;
+};
+
+type ApiDevice = {
+  id: string;
+  pet_id: string;
+  device_code: string;
+  device_type: string;
+  status: string;
+  device_state: string | null;
+};
+
+type ApiReading = {
+  id: string;
+  device_id: string;
+  recorded_at: string;
+  weight_grams: number | null;
+  water_ml: number | null;
+  flow_rate: number | null;
+  temperature: number | null;
+  humidity: number | null;
+};
+
+type LoadState = {
+  isLoading: boolean;
+  error: string | null;
+  pets: ApiPet[];
+  devices: ApiDevice[];
+  readings: ApiReading[];
+};
+
+const defaultState: LoadState = {
+  isLoading: true,
+  error: null,
+  pets: [],
+  devices: [],
+  readings: [],
+};
+
+const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
+const formatTimestamp = (value: string) => {
+  const ts = new Date(value);
+  if (Number.isNaN(ts.getTime())) return value;
+  return ts.toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+export default function PetPage() {
+  const [state, setState] = useState<LoadState>(defaultState);
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+
+  const loadPets = async (token: string) => {
+    const res = await fetch(`${apiBase}/api/pets`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("No se pudieron cargar las mascotas.");
+    return (await res.json()) as ApiPet[];
+  };
+
+  const loadDevices = async (token: string) => {
+    const res = await fetch(`${apiBase}/api/devices`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("No se pudieron cargar los dispositivos.");
+    return (await res.json()) as ApiDevice[];
+  };
+
+  const loadReadings = async (token: string, deviceId: string) => {
+    const res = await fetch(
+      `${apiBase}/api/readings?device_id=${deviceId}&limit=80`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      }
+    );
+    if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
+    const payload = await res.json();
+    return Array.isArray(payload) ? payload : payload.data ?? [];
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      const token = await getAccessToken();
+      if (!token) {
+        clearTokens();
+        if (mounted) {
+          setState((prev) => ({
+            ...prev,
+            isLoading: false,
+            error: "Sesión no válida. Vuelve a iniciar sesión.",
+          }));
+        }
+        return;
+      }
+
+      try {
+        const [pets, devices] = await Promise.all([
+          loadPets(token),
+          loadDevices(token),
+        ]);
+        const storedPetId =
+          typeof window !== "undefined"
+            ? window.localStorage.getItem("kittypau_pet_id")
+            : null;
+        const primaryPet = pets.find((pet) => pet.id === storedPetId) ?? pets[0];
+        const initialPetId = primaryPet?.id ?? null;
+        if (initialPetId && typeof window !== "undefined") {
+          window.localStorage.setItem("kittypau_pet_id", initialPetId);
+        }
+        setSelectedPetId(initialPetId);
+
+        const primaryDevice =
+          devices.find((device) => device.pet_id === initialPetId) ??
+          devices[0];
+        const readings =
+          primaryDevice && initialPetId
+            ? await loadReadings(token, primaryDevice.id)
+            : [];
+
+        if (!mounted) return;
+        setState({
+          isLoading: false,
+          error: null,
+          pets,
+          devices,
+          readings,
+        });
+      } catch (err) {
+        if (!mounted) return;
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error:
+            err instanceof Error
+              ? err.message
+              : "No se pudo cargar el perfil.",
+        }));
+      }
+    };
+
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const selectedPet = state.pets.find((pet) => pet.id === selectedPetId);
+  const petDevices = state.devices.filter(
+    (device) => device.pet_id === selectedPetId
+  );
+  const latestReading = state.readings[0] ?? null;
+
+  const insights = useMemo(() => {
+    if (!latestReading) {
+      return [
+        {
+          title: "Ritmo general",
+          detail: "Sin lecturas suficientes aún.",
+        },
+        {
+          title: "Hidratación",
+          detail: "Sin datos recientes.",
+        },
+        {
+          title: "Ambiente",
+          detail: "Sin datos recientes.",
+        },
+      ];
+    }
+
+    const hydration =
+      latestReading.flow_rate !== null
+        ? `Flujo ${Math.round(latestReading.flow_rate)} ml/h en la última lectura.`
+        : "Sin flujo registrado.";
+    const rhythm =
+      latestReading.weight_grams !== null
+        ? `Peso detectado: ${latestReading.weight_grams} g.`
+        : "Sin peso registrado.";
+    const ambient =
+      latestReading.temperature !== null && latestReading.humidity !== null
+        ? `Temp ${latestReading.temperature}° · Humedad ${latestReading.humidity}%.`
+        : "Sin mediciones ambientales.";
+
+    return [
+      { title: "Ritmo general", detail: rhythm },
+      { title: "Hidratación", detail: hydration },
+      { title: "Ambiente", detail: ambient },
+    ];
+  }, [latestReading]);
+
+  return (
+    <main className="page-shell">
+      <div className="page-header">
+        <div>
+          <p className="eyebrow">Perfil conductual</p>
+          <h1>Mascota</h1>
+        </div>
+        <Link href="/today" className="ghost-link">
+          Volver a hoy
+        </Link>
+      </div>
+
+      {state.error && (
+        <div className="alert alert-error">{state.error}</div>
+      )}
+
+      {state.isLoading ? (
+        <div className="surface-card px-6 py-6">Cargando perfil...</div>
+      ) : (
+        <>
+          <section className="surface-card px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-slate-500">Mascota seleccionada</p>
+                <p className="text-xl font-semibold text-slate-900">
+                  {selectedPet?.name ?? "Sin mascota"}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {selectedPet?.type ?? "sin tipo"} ·{" "}
+                  {selectedPet?.origin ?? "sin origen"}
+                </p>
+              </div>
+              {state.pets.length > 1 && (
+                <label className="flex flex-col text-xs text-slate-500">
+                  Cambiar mascota
+                  <select
+                    className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                    value={selectedPetId ?? ""}
+                    onChange={async (event) => {
+                      const nextId = event.target.value || null;
+                      setSelectedPetId(nextId);
+                      if (nextId && typeof window !== "undefined") {
+                        window.localStorage.setItem(
+                          "kittypau_pet_id",
+                          nextId
+                        );
+                      }
+                      const token = await getAccessToken();
+                      if (!token || !nextId) return;
+                      const device =
+                        state.devices.find((item) => item.pet_id === nextId) ??
+                        null;
+                      if (!device) {
+                        setState((prev) => ({ ...prev, readings: [] }));
+                        return;
+                      }
+                      try {
+                        const readings = await loadReadings(token, device.id);
+                        setState((prev) => ({ ...prev, readings }));
+                      } catch (err) {
+                        setState((prev) => ({
+                          ...prev,
+                          error:
+                            err instanceof Error
+                              ? err.message
+                              : "No se pudieron cargar las lecturas.",
+                        }));
+                      }
+                    }}
+                  >
+                    {state.pets.map((pet) => (
+                      <option key={pet.id} value={pet.id}>
+                        {pet.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          </section>
+
+          <section className="surface-card px-6 py-5">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Edad
+                </p>
+                <p className="text-lg font-semibold text-slate-900">
+                  {selectedPet?.age_range ?? "Sin datos"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Peso
+                </p>
+                <p className="text-lg font-semibold text-slate-900">
+                  {selectedPet?.weight_kg
+                    ? `${selectedPet.weight_kg} kg`
+                    : "Sin datos"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  Actividad
+                </p>
+                <p className="text-lg font-semibold text-slate-900">
+                  {selectedPet?.activity_level ?? "Sin datos"}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="surface-card px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm text-slate-500">Dispositivo asociado</p>
+                <p className="text-lg font-semibold text-slate-900">
+                  {petDevices[0]?.device_code ?? "Sin dispositivo"}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {petDevices[0]
+                    ? `${petDevices[0].device_type} · ${petDevices[0].status}`
+                    : "Conecta un dispositivo para completar el perfil."}
+                </p>
+              </div>
+              <div className="text-xs text-slate-500">
+                Última lectura:{" "}
+                {latestReading?.recorded_at
+                  ? formatTimestamp(latestReading.recorded_at)
+                  : "Sin datos"}
+              </div>
+            </div>
+          </section>
+
+          <section className="surface-card px-6 py-5">
+            <h2 className="text-lg font-semibold text-slate-900">
+              Insights recientes
+            </h2>
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              {insights.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600"
+                >
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                    {item.title}
+                  </p>
+                  <p className="mt-2 text-slate-700">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+    </main>
+  );
+}
