@@ -33,7 +33,12 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.\n- UI today: selector de device, refresco con timestamp y badge de frescura.\n- Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).\n- Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
+## Implementado hoy
+- UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.
+- UI today: selector de device, refresco con timestamp y badge de frescura.
+- UI story: timeline narrativo básico con selector de dispositivo.
+- Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
+- Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
 - Webhook hardening: si se envían `deviceId` y `deviceCode`, deben coincidir.
 - Clock drift: cálculo usa `serverTimeMs` consistente y registra `delta_ms`.
@@ -133,5 +138,8 @@
 
 
 ## Pendientes prioritarios
+- Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
+- Front: integrar Realtime en `/today` y `/story`.
+- Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
 
 

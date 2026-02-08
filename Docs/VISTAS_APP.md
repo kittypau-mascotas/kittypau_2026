@@ -10,6 +10,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - /today implementado como feed vertical interpretado conectado a APIs.
 - /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
+- /story implementado como timeline narrativo básico.
 
 ---
 
@@ -331,4 +332,13 @@ Los numeros existen, pero como evidencia secundaria.
 - Loading: `app/loading.tsx` + overlay global.
 - Empty: tarjetas con CTA.
 - Error: mensaje corto y accion de reintento.
+
+---
+
+## Plan de implementación front (pasos)
+1. **/story**: timeline narrativo del día (lecturas → interpretaciones).
+2. **/pet**: perfil conductual con insights y edición básica.
+3. **/bowl**: estado técnico del plato + acciones.
+4. **/settings**: ajustes de usuario y notificaciones.
+5. **/register**: ruta pública (además del popup) + reenvío de confirmación.
 
