@@ -39,6 +39,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingPet, setIsSavingPet] = useState(false);
   const [isSavingDevice, setIsSavingDevice] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [petError, setPetError] = useState<string | null>(null);
+  const [deviceError, setDeviceError] = useState<string | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -63,6 +66,42 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   });
 
   const token = useMemo(() => getAccessToken(), []);
+  const profileValidation = useMemo(() => {
+    const issues: string[] = [];
+    if (!profileForm.user_name.trim()) issues.push("Nombre requerido.");
+    if (!profileForm.city.trim()) issues.push("Ciudad requerida.");
+    if (!profileForm.country.trim()) issues.push("País requerido.");
+    if (!profileForm.is_owner && !profileForm.owner_name.trim()) {
+      issues.push("Nombre del dueño requerido.");
+    }
+    if (
+      (profileForm.notification_channel === "whatsapp" ||
+        profileForm.notification_channel === "sms") &&
+      !profileForm.phone_number.trim()
+    ) {
+      issues.push("Número de contacto requerido.");
+    }
+    return { ok: issues.length === 0, issues };
+  }, [profileForm]);
+
+  const petValidation = useMemo(() => {
+    const issues: string[] = [];
+    if (!petForm.name.trim()) issues.push("Nombre de mascota requerido.");
+    if (!petForm.type.trim()) issues.push("Tipo de mascota requerido.");
+    return { ok: issues.length === 0, issues };
+  }, [petForm]);
+
+  const deviceValidation = useMemo(() => {
+    const issues: string[] = [];
+    if (!deviceForm.pet_id) issues.push("Selecciona una mascota.");
+    if (!deviceForm.device_code.trim()) {
+      issues.push("Código de dispositivo requerido.");
+    } else if (!/^KPCL\d{4}$/.test(deviceForm.device_code.trim())) {
+      issues.push("Código debe ser KPCL0000.");
+    }
+    if (!deviceForm.device_type.trim()) issues.push("Tipo de dispositivo requerido.");
+    return { ok: issues.length === 0, issues };
+  }, [deviceForm]);
   const currentStep = useMemo(() => {
     if (
       status.userStep !== "completed" &&
@@ -125,6 +164,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!token) return;
     setIsSavingProfile(true);
     setError(null);
+    setProfileError(null);
+    if (!profileValidation.ok) {
+      setProfileError(profileValidation.issues.join(" "));
+      setIsSavingProfile(false);
+      return;
+    }
     try {
       const res = await fetch("/api/profiles", {
         method: "PUT",
@@ -157,6 +202,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!token) return;
     setIsSavingPet(true);
     setError(null);
+    setPetError(null);
+    if (!petValidation.ok) {
+      setPetError(petValidation.issues.join(" "));
+      setIsSavingPet(false);
+      return;
+    }
     try {
       const res = await fetch("/api/pets", {
         method: "POST",
@@ -191,6 +242,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!token) return;
     setIsSavingDevice(true);
     setError(null);
+    setDeviceError(null);
+    if (!deviceValidation.ok) {
+      setDeviceError(deviceValidation.issues.join(" "));
+      setIsSavingDevice(false);
+      return;
+    }
     try {
       const res = await fetch("/api/devices", {
         method: "POST",
@@ -420,11 +477,14 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             <button
               type="button"
               onClick={saveProfile}
-              disabled={isSavingProfile}
+              disabled={isSavingProfile || !profileValidation.ok}
               className="mt-4 h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
             >
               {isSavingProfile ? "Guardando..." : "Guardar perfil"}
             </button>
+            {profileError ? (
+              <p className="mt-2 text-xs text-rose-600">{profileError}</p>
+            ) : null}
           </section>
         )}
 
@@ -474,11 +534,14 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             <button
               type="button"
               onClick={savePet}
-              disabled={isSavingPet}
+              disabled={isSavingPet || !petValidation.ok}
               className="mt-4 h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
             >
               {isSavingPet ? "Guardando..." : "Crear mascota"}
             </button>
+            {petError ? (
+              <p className="mt-2 text-xs text-rose-600">{petError}</p>
+            ) : null}
           </section>
         )}
 
@@ -543,11 +606,14 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             <button
               type="button"
               onClick={saveDevice}
-              disabled={isSavingDevice}
+              disabled={isSavingDevice || !deviceValidation.ok}
               className="mt-4 h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
             >
               {isSavingDevice ? "Guardando..." : "Registrar dispositivo"}
             </button>
+            {deviceError ? (
+              <p className="mt-2 text-xs text-rose-600">{deviceError}</p>
+            ) : null}
           </section>
         )}
 
