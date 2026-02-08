@@ -19,6 +19,7 @@
 - `Docs/CONTRATOS_POR_VISTA.md`
 - `Docs/ENUMS_OFICIALES.md`
 - `Docs/REGLAS_INTERPRETACION_IOT.md`
+- `Docs/ALGORITMOS_INTERPRETACION.md`
 
 ## Base de datos
 - `Docs/SQL_SCHEMA.sql`
