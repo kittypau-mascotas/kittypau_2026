@@ -153,24 +153,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const ingestedAt = new Date().toISOString();
-  let recordedAt = payload.timestamp
-    ? new Date(payload.timestamp).toISOString()
-    : ingestedAt;
-
+  const serverTimeMs = Date.now();
+  const ingestedAt = new Date(serverTimeMs).toISOString();
+  let recordedAt = ingestedAt;
   let clockInvalid = false;
+  let deviceTimeMs: number | null = null;
+  let deltaMs: number | null = null;
+
   if (payload.timestamp) {
-    const deviceTime = new Date(payload.timestamp).getTime();
-    const serverTime = Date.now();
-    if (Number.isFinite(deviceTime)) {
-      const deltaMs = Math.abs(serverTime - deviceTime);
+    const parsed = Date.parse(payload.timestamp);
+    if (Number.isFinite(parsed)) {
+      deviceTimeMs = parsed;
+      deltaMs = Math.abs(serverTimeMs - parsed);
       if (deltaMs > 10 * 60 * 1000) {
-        recordedAt = ingestedAt;
         clockInvalid = true;
+        recordedAt = ingestedAt;
+      } else {
+        recordedAt = new Date(parsed).toISOString();
       }
     } else {
-      recordedAt = ingestedAt;
       clockInvalid = true;
+      recordedAt = ingestedAt;
     }
   }
 
@@ -230,6 +233,8 @@ export async function POST(req: NextRequest) {
     recorded_at: recordedAt,
     ingested_at: ingestedAt,
     clock_invalid: clockInvalid,
+    delta_ms: deltaMs,
+    device_time_ms: deviceTimeMs,
   });
 
   logRequestEnd(req, startedAt, 200, {
