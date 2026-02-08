@@ -37,6 +37,7 @@
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Reglas de negocio aplicadas: `pet_state` default `device_pending`, `type` no editable, `care_rating` 1-10.
 - Un solo device activo por mascota (indice parcial) y link setea `device_state = linked`.
+- Migracion SQL aplicada via Supabase CLI (cleanup + indice unico active per pet).
 - Documentacion CLI completada (Vercel, Supabase, HiveMQ, Raspberry) con ejemplos.
 - Tests post-migracion OK (2026-02-08): DB/API KPCL0159 + onboarding KPCL0208.
 - UTF-8 corregido en UI (login + today).
