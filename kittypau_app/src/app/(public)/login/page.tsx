@@ -71,9 +71,15 @@ export default function LoginPage() {
       return;
     }
 
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: registerEmail,
       password: registerPassword,
+      options: {
+        emailRedirectTo: `${siteUrl}/login?verified=1`,
+      },
     });
 
     if (signUpError) {
@@ -84,7 +90,7 @@ export default function LoginPage() {
 
     if (!data.session?.access_token) {
       setRegisterError(
-        "Revisa tu correo para confirmar la cuenta antes de continuar."
+        "Revisa tu correo (y spam) para confirmar la cuenta antes de continuar."
       );
       setIsRegistering(false);
       return;
