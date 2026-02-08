@@ -18,11 +18,13 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 - `breeds` editable (max 3).
 - `photo_url` reemplazable (se sobreescribe).
 - Eliminar mascota = **soft delete**.
+- Al crear: `pet_state = device_pending` por defecto.
 
 ### Dispositivo
 - Un solo dispositivo activo por mascota.
 - Reasignar dispositivo libera el anterior.
 - Si se elimina mascota -> dispositivo se bloquea (FK restrict). Se recomienda `pet_state = archived`.
+- Al vincular: `device_state = linked`.
 
 ---
 
@@ -119,7 +121,14 @@ El frontend no inventa valores.
 ---
 
 ## 8. Eventos del sistema (para IoT y analytics)
+**Audit events actuales (server-only)**
+- `profile_created`
+- `profile_updated`
 - `pet_created`
+- `device_created`
+- `reading_ingested`
+
+**Eventos futuros**
 - `pet_updated`
 - `device_linked`
 - `device_unlinked`

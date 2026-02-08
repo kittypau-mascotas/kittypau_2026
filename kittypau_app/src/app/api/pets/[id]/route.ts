@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiError, enforceBodySize, getUserClient } from "../../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
-const ALLOWED_TYPE = new Set(["cat", "dog"]);
 const ALLOWED_PET_STATE = new Set([
   "created",
   "completed_profile",
@@ -64,8 +63,8 @@ export async function PATCH(
     return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
-  if (body.type && !ALLOWED_TYPE.has(String(body.type))) {
-    return apiError(req, 400, "INVALID_TYPE", "Invalid type");
+  if (Object.prototype.hasOwnProperty.call(body, "type")) {
+    return apiError(req, 400, "TYPE_IMMUTABLE", "type cannot be updated");
   }
 
   if (body.pet_state && !ALLOWED_PET_STATE.has(String(body.pet_state))) {

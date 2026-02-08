@@ -85,6 +85,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - pet_id
 - pet_onboarding_step = pet_confirm
 - pet_state = device_pending
+  - por defecto si no se envia pet_state
 
 **Errores**
 - breeds > 3
@@ -104,6 +105,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - device_state = linked
 - pet_state = device_linked
 - user_onboarding_step = completed
+  - si habia un device activo para esa mascota, pasa a inactive
 
 **Errores**
 - device_code ya vinculado
@@ -176,6 +178,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Output**
 - device actualizado
+  - re-vinculo: device_state = linked y desactiva el device activo previo
 
 **Errores**
 - device_id requerido

@@ -148,13 +148,13 @@ export async function PUT(req: NextRequest) {
 
   if (
     typeof updatePayload.care_rating === "number" &&
-    (updatePayload.care_rating < 0 || updatePayload.care_rating > 5)
+    (updatePayload.care_rating < 1 || updatePayload.care_rating > 10)
   ) {
     return apiError(
       req,
       400,
       "CARE_RATING_OUT_OF_RANGE",
-      "care_rating must be between 0 and 5"
+      "care_rating must be between 1 and 10"
     );
   }
 

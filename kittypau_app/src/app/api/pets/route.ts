@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     has_health_condition: body?.has_health_condition ?? null,
     health_notes: body?.health_notes ?? null,
     photo_url: body?.photo_url ?? null,
-    pet_state: body?.pet_state ?? "created",
+    pet_state: body?.pet_state ?? "device_pending",
     pet_onboarding_step: body?.pet_onboarding_step ?? null,
   };
 

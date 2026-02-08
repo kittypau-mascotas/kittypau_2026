@@ -116,6 +116,9 @@ create index if not exists idx_pets_user_id on public.pets(user_id);
 create index if not exists idx_pets_user_id_created_at on public.pets(user_id, created_at desc);
 create index if not exists idx_devices_owner_id on public.devices(owner_id);
 create index if not exists idx_devices_owner_id_created_at on public.devices(owner_id, created_at desc);
+create unique index if not exists idx_devices_active_per_pet
+  on public.devices(pet_id)
+  where status = 'active';
 create index if not exists idx_readings_device_id on public.readings(device_id);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
 create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
@@ -288,10 +291,15 @@ begin
     raise exception 'Forbidden';
   end if;
 
+  update public.devices
+  set status = 'inactive'
+  where pet_id = p_pet_id
+    and status = 'active';
+
   insert into public.devices (
-    owner_id, pet_id, device_code, device_type, status, battery_level
+    owner_id, pet_id, device_code, device_type, status, device_state, battery_level
   ) values (
-    p_owner_id, p_pet_id, p_device_code, p_device_type, p_status, p_battery_level
+    p_owner_id, p_pet_id, p_device_code, p_device_type, p_status, 'linked', p_battery_level
   )
   returning * into v_device;
 
@@ -332,6 +340,14 @@ BEGIN
       CHECK (user_onboarding_step IS NULL OR user_onboarding_step IN (
         'not_started','user_profile','pet_profile','device_link','completed'
       ));
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'profiles_care_rating_check'
+  ) THEN
+    ALTER TABLE public.profiles
+      ADD CONSTRAINT profiles_care_rating_check
+      CHECK (care_rating IS NULL OR (care_rating >= 1 AND care_rating <= 10));
   END IF;
 
   IF NOT EXISTS (
