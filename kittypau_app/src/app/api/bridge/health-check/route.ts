@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, logRequestEnd, startRequestTimer } from "../_utils";
+import { apiError, logRequestEnd, startRequestTimer } from "../../_utils";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, enforceBodySize, logRequestEnd, startRequestTimer } from "../_utils";
+import { apiError, enforceBodySize, logRequestEnd, startRequestTimer } from "../../_utils";
 
 type HeartbeatPayload = {
   bridge_id?: string;
