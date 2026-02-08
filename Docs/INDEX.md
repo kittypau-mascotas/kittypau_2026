@@ -49,6 +49,7 @@
 
 ## Infraestructura Cloud
 - `Docs/VERCEL_UPSTASH_CHECKLIST.md`
+- `Docs/PIPELINE_CICD.md`
 
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
