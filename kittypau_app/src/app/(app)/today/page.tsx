@@ -68,6 +68,7 @@ function formatTimestamp(value?: string | null) {
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const token = useMemo(() => getAccessToken(), []);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
@@ -160,6 +161,7 @@ export default function TodayPage() {
           const result = await loadReadings(initialDeviceId);
           readings = result.data;
           readingsCursor = result.nextCursor;
+          setLastRefreshAt(new Date().toISOString());
         }
 
         setState({
@@ -300,6 +302,7 @@ export default function TodayPage() {
                           readings: result.data,
                           readingsCursor: result.nextCursor,
                         }));
+                        setLastRefreshAt(new Date().toISOString());
                       } catch (err) {
                         setState((prev) => ({
                           ...prev,
@@ -351,6 +354,41 @@ export default function TodayPage() {
             </div>
           </div>
         </header>
+
+        <section className="surface-card px-6 py-4 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span>
+              Última actualización:{" "}
+              {lastRefreshAt ? formatTimestamp(lastRefreshAt) : "Sin datos"}
+            </span>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!selectedDeviceId) return;
+                try {
+                  const result = await loadReadings(selectedDeviceId);
+                  setState((prev) => ({
+                    ...prev,
+                    readings: result.data,
+                    readingsCursor: result.nextCursor,
+                  }));
+                  setLastRefreshAt(new Date().toISOString());
+                } catch (err) {
+                  setState((prev) => ({
+                    ...prev,
+                    error:
+                      err instanceof Error
+                        ? err.message
+                        : "No se pudieron cargar las lecturas.",
+                  }));
+                }
+              }}
+              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+            >
+              Actualizar lecturas
+            </button>
+          </div>
+        </section>
 
         {state.error ? (
           <section className="surface-card px-6 py-6 text-sm text-slate-600">
