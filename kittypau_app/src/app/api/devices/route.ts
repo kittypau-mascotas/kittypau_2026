@@ -2,11 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiError, enforceBodySize, getUserClient } from "../_utils";
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
+import { supabaseServer } from "@/lib/supabase/server";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
 
 export async function GET(req: NextRequest) {
+  const auth = await getUserClient(req);
+  if ("error" in auth) {
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
+  }
+
+  const { user } = auth;
+  const { data, error } = await supabase
+    .from("devices")
+    .select("*")
+    .eq("owner_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
+  }
+
+  return NextResponse.json(data ?? []);
+}
+
+export async function POST(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -25,26 +46,6 @@ export async function GET(req: NextRequest) {
       { "Retry-After": String(rate.retryAfter) }
     );
   }
-  const { data, error } = await supabase
-    .from("devices")
-    .select("*")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return apiError(req, 500, "SUPABASE_ERROR", error.message);
-  }
-
-  return NextResponse.json(data ?? []);
-}
-
-export async function POST(req: NextRequest) {
-  const auth = await getUserClient(req);
-  if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
-  }
-
-  const { supabase, user } = auth;
   let body: {
     pet_id?: string;
     device_code?: string;
@@ -113,39 +114,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data: pet, error: petError } = await supabase
-    .from("pets")
-    .select("id")
-    .eq("id", payload.pet_id)
-    .single();
+  const { data, error } = await supabaseServer.rpc("link_device_to_pet", {
+    p_owner_id: user.id,
+    p_pet_id: payload.pet_id,
+    p_device_code: payload.device_code,
+    p_device_type: payload.device_type,
+    p_status: payload.status,
+    p_battery_level: payload.battery_level,
+  });
 
-  if (petError || !pet) {
-    return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
-  }
-
-  const { data, error } = await supabase
-    .from("devices")
-    .insert(payload)
-    .select()
-    .single();
-
-  if (error) {
-    return apiError(req, 500, "SUPABASE_ERROR", error.message);
-  }
-
-  const { error: petUpdateError } = await supabase
-    .from("pets")
-    .update({ pet_state: "device_linked" })
-    .eq("id", payload.pet_id);
-
-  if (petUpdateError) {
-    await supabase.from("devices").delete().eq("id", data.id);
-    return apiError(
-      req,
-      500,
-      "PET_STATE_UPDATE_FAILED",
-      "Failed to update pet_state after device create"
-    );
+  if (error || !data) {
+    const message = error?.message ?? "RPC failed";
+    if (message.toLowerCase().includes("pet not found")) {
+      return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
+    }
+    if (message.toLowerCase().includes("forbidden")) {
+      return apiError(req, 403, "FORBIDDEN", "Forbidden");
+    }
+    return apiError(req, 500, "SUPABASE_ERROR", message);
   }
 
   await logAudit({

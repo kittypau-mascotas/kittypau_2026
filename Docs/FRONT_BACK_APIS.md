@@ -70,6 +70,7 @@ src/app/
    - Registra y asigna dispositivo a mascota.
    - `device_code` se obtiene del QR del plato.
    - Al crear dispositivo, actualiza `pet_state` a `device_linked`.
+   - Internamente usa RPC `link_device_to_pet` (operacion atomica).
 
 6. `GET /api/readings?device_id=...`
    - Lecturas recientes para gráficos.
