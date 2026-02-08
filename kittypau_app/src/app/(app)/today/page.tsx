@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
   id: string;
@@ -201,6 +202,48 @@ export default function TodayPage() {
 
     void load();
   }, []);
+
+  useEffect(() => {
+    if (!selectedDeviceId) return;
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      supabase.realtime.setAuth(accessToken);
+    }
+
+    const channel = supabase
+      .channel(`readings:${selectedDeviceId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "readings",
+          filter: `device_id=eq.${selectedDeviceId}`,
+        },
+        (payload) => {
+          const nextReading = payload.new as ApiReading;
+          setState((prev) => {
+            const exists = prev.readings.some(
+              (reading) => reading.id === nextReading.id
+            );
+            if (exists) return prev;
+            return {
+              ...prev,
+              readings: [nextReading, ...prev.readings].slice(0, 120),
+            };
+          });
+          setLastRefreshAt(new Date().toISOString());
+          setRefreshError(null);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedDeviceId]);
 
   const loadMoreReadings = async () => {
     const deviceId = selectedDeviceId;

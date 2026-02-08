@@ -114,7 +114,7 @@ por "eventos / interpretaciones / historia".
 - Primer ingreso: mostrar **modo guia** (popup con fondo difuminado).
 **Datos / API**
 - `GET /api/readings?device_id=...` (historial)
-- Supabase Realtime (`readings`)
+- Supabase Realtime (`readings`) integrado.
 - `devices` (estado, bateria, last_seen)
 - `profiles.first_time_guide_seen` (flag)
 
@@ -124,6 +124,7 @@ por "eventos / interpretaciones / historia".
 **Datos / API**
 - `GET /api/readings?device_id=...`
 - Interpretaciones a partir de lecturas
+- Realtime `readings` integrado.
 
 ### /pet (antes /pets)
 - Perfil conductual y personalidad alimentaria.
