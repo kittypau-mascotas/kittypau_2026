@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
     [registerStep]
@@ -95,6 +96,32 @@ export default function LoginPage() {
     });
     setRegisterStep("onboarding");
     setIsRegistering(false);
+  };
+
+  const resendConfirmation = async () => {
+    setRegisterError(null);
+    setIsResending(true);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setRegisterError("Faltan variables públicas de Supabase en el entorno.");
+      setIsResending(false);
+      return;
+    }
+    if (!registerEmail) {
+      setRegisterError("Ingresa un email para reenviar la confirmación.");
+      setIsResending(false);
+      return;
+    }
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: registerEmail,
+    });
+    if (resendError) {
+      setRegisterError(resendError.message);
+    } else {
+      setRegisterError("Te enviamos el correo de confirmación nuevamente.");
+    }
+    setIsResending(false);
   };
 
   const closeRegister = () => {
@@ -305,6 +332,23 @@ export default function LoginPage() {
                     >
                       {isRegistering ? "Creando..." : "Continuar"}
                     </button>
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                      <button
+                        type="button"
+                        onClick={resendConfirmation}
+                        disabled={isResending}
+                        className="font-semibold text-slate-600 hover:text-slate-900"
+                      >
+                        {isResending ? "Reenviando..." : "Reenviar confirmación"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={closeRegister}
+                        className="font-semibold text-slate-600 hover:text-slate-900"
+                      >
+                        Volver al login
+                      </button>
+                    </div>
                   </form>
                 ) : (
                   <OnboardingFlow mode="modal" onClose={closeRegister} />
