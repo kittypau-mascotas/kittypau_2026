@@ -180,3 +180,18 @@ Uso
 ## Archivo de entorno para pruebas
 - Docs/.env.test.example (placeholders, no incluir secretos reales)
 
+## Cargar entorno local (no versionado)
+Si tienes `Docs/.env.test.local`, puedes cargarlo antes de ejecutar scripts:
+
+```powershell
+# Carga variables de entorno desde Docs/.env.test.local
+Get-Content -Path ".\\Docs\\.env.test.local" |
+  Where-Object { $_ -match "=" -and $_ -notmatch "^\s*#" } |
+  ForEach-Object {
+    $pair = $_ -split "=", 2
+    $env:$($pair[0]) = $pair[1]
+  }
+
+# Ejecuta test inmediato
+.\Docs\TEST_DB_API.ps1
+```

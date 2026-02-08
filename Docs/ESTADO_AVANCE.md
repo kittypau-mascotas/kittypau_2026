@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Archivo local de entorno de pruebas creado (Docs/.env.test.local, no versionado).
 - Endpoint onboarding status (`GET /api/onboarding/status`) listo.
 - Normalizacion de strings en PATCH /api/pets/:id.
 - POST /api/devices ahora revierte si falla update de pet_state.

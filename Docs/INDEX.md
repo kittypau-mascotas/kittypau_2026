@@ -53,3 +53,4 @@
 - Docs/TEST_ONBOARDING_BACKEND.ps1
 
 - Docs/.env.test.example
+- Docs/.env.test.local (no versionado)
