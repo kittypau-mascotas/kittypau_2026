@@ -419,6 +419,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </span>
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Nombre
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Nombre visible en la app."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(!profileForm.user_name.trim())}
                 placeholder="Nombre"
@@ -433,6 +444,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-[11px] text-slate-500">
                 Nombre visible en la app.
               </p>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Ciudad
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Úsalo para personalizar alertas."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(!profileForm.city.trim())}
                 placeholder="Ciudad"
@@ -447,6 +469,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-[11px] text-slate-500">
                 Úsalo para personalizar alertas.
               </p>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  País
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Define tu región principal."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(!profileForm.country.trim())}
                 placeholder="País"
@@ -461,6 +494,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-[11px] text-slate-500">
                 Define tu región principal.
               </p>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Canal
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Elige cómo recibir alertas."
+                >
+                  ⓘ
+                </span>
+              </div>
               <select
                 className={inputClass(false)}
                 value={profileForm.notification_channel}
@@ -552,6 +596,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </span>
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Nombre
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Nombre que verás en el feed."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(!petForm.name.trim())}
                 placeholder="Nombre"
@@ -563,6 +618,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-[11px] text-slate-500">
                 Nombre que verás en el feed.
               </p>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Tipo
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Gato o perro."
+                >
+                  ⓘ
+                </span>
+              </div>
               <select
                 className={inputClass(!petForm.type.trim())}
                 value={petForm.type}
@@ -573,6 +639,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <option value="cat">Gato</option>
                 <option value="dog">Perro</option>
               </select>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Origen
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Ayuda a personalizar los insights."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(false)}
                 placeholder="Origen (rescatado, casa, etc.)"
@@ -615,6 +692,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </span>
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Mascota
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Selecciona la mascota a vincular."
+                >
+                  ⓘ
+                </span>
+              </div>
               <select
                 className={inputClass(!deviceForm.pet_id)}
                 value={deviceForm.pet_id}
@@ -632,6 +720,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   </option>
                 ))}
               </select>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Código
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Formato esperado: KPCL0000."
+                >
+                  ⓘ
+                </span>
+              </div>
               <input
                 className={inputClass(
                   !deviceForm.device_code.trim() ||
@@ -649,6 +748,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-[11px] text-slate-500">
                 Formato esperado: KPCL0000.
               </p>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Tipo de dispositivo
+                </label>
+                <span
+                  className="text-[11px] text-slate-400"
+                  title="Food bowl o water bowl."
+                >
+                  ⓘ
+                </span>
+              </div>
               <select
                 className={inputClass(!deviceForm.device_type.trim())}
                 value={deviceForm.device_type}
