@@ -8,7 +8,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 ## Implementacion actual (2026-02-07)
 - /login implementado con layout parallax + login real (Supabase Auth).
 - /today implementado como feed vertical interpretado conectado a APIs.
-- /onboarding implementado en una sola vista (perfil + mascota + dispositivo).
+- /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
 
 ---

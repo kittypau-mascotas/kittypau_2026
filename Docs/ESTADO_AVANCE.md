@@ -43,6 +43,7 @@
 - Health check del bridge documentado (heartbeat + cron + alertas).
 - Plan de particionado de `readings` documentado (Postgres nativo + Timescale).
 - Endpoints bridge/heartbeat y bridge/health-check implementados.
+- Onboarding UI en una sola vista con pasos guiados y validaciones de perfil.
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Reglas de negocio aplicadas: `pet_state` default `device_pending`, `type` no editable, `care_rating` 1-10.
 - Un solo device activo por mascota (indice parcial) y link setea `device_state = linked`.
