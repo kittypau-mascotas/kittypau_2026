@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../_utils";
+import {
+  apiError,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../_utils";
 
 export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -62,11 +68,16 @@ export async function GET(req: NextRequest) {
   }
 
   if (!paginate) {
+    logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
     return NextResponse.json(data ?? []);
   }
 
   const nextCursor =
     data && data.length > 0 ? data[data.length - 1]?.recorded_at ?? null : null;
 
+  logRequestEnd(req, startedAt, 200, {
+    count: data?.length ?? 0,
+    next_cursor: nextCursor,
+  });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
 }

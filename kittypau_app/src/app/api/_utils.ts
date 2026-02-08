@@ -51,6 +51,21 @@ export function logInfo(
   });
 }
 
+export function startRequestTimer(req: NextRequest) {
+  logInfo(req, "request_start");
+  return Date.now();
+}
+
+export function logRequestEnd(
+  req: NextRequest,
+  startedAt: number,
+  status: number,
+  meta?: Record<string, unknown>
+) {
+  const durationMs = Date.now() - startedAt;
+  logInfo(req, "request_end", { status, duration_ms: durationMs, ...meta });
+}
+
 export function enforceBodySize(req: NextRequest, maxBytes: number) {
   const length = req.headers.get("content-length");
   if (!length) return null;

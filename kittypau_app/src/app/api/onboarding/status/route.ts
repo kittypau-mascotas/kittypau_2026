@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient } from "../../_utils";
+import {
+  apiError,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 
 export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -40,6 +46,7 @@ export async function GET(req: NextRequest) {
   const pets = petCount ?? 0;
   const devices = deviceCount ?? 0;
 
+  logRequestEnd(req, startedAt, 200, { petCount: pets, deviceCount: devices });
   return NextResponse.json(
     {
       userStep: profile?.user_onboarding_step ?? null,

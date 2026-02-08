@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, enforceBodySize, getUserClient } from "../../_utils";
+import {
+  apiError,
+  enforceBodySize,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
@@ -17,6 +23,7 @@ export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -24,7 +31,7 @@ export async function PATCH(
 
   const { supabase, user } = auth;
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:devices_patch`;
-  const rate = checkRateLimit(rateKey, 30, 60_000);
+  const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
     return apiError(
       req,
@@ -107,5 +114,6 @@ export async function PATCH(
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  logRequestEnd(req, startedAt, 200, { device_id: deviceId });
   return NextResponse.json(data, { status: 200 });
 }

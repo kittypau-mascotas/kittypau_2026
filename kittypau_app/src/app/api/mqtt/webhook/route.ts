@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, enforceBodySize, logInfo } from "../../_utils";
+import {
+  apiError,
+  enforceBodySize,
+  logInfo,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
@@ -61,6 +67,7 @@ function getDeviceId(payload: WebhookPayload): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const token = req.headers.get("x-webhook-token");
   if (!token || token !== process.env.MQTT_WEBHOOK_SECRET) {
     return apiError(req, 401, "UNAUTHORIZED", "Unauthorized");
@@ -214,5 +221,9 @@ export async function POST(req: NextRequest) {
     clock_invalid: clockInvalid,
   });
 
+  logRequestEnd(req, startedAt, 200, {
+    device_id: device.id,
+    clock_invalid: clockInvalid,
+  });
   return NextResponse.json({ success: true });
 }

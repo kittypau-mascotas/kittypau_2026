@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, enforceBodySize, getUserClient } from "../_utils";
+import {
+  apiError,
+  enforceBodySize,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../_utils";
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -8,6 +14,7 @@ const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
 
 export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -38,16 +45,22 @@ export async function GET(req: NextRequest) {
   }
 
   if (!paginate) {
+    logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
     return NextResponse.json(data ?? []);
   }
 
   const nextCursor =
     data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
 
+  logRequestEnd(req, startedAt, 200, {
+    count: data?.length ?? 0,
+    next_cursor: nextCursor,
+  });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
 }
 
 export async function POST(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -185,6 +198,7 @@ export async function POST(req: NextRequest) {
         payload: { device_code: retry.data.device_code, pet_id: retry.data.pet_id },
       });
 
+      logRequestEnd(req, startedAt, 201, { device_id: retry.data.id });
       return NextResponse.json(retry.data, { status: 201 });
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);
@@ -198,5 +212,6 @@ export async function POST(req: NextRequest) {
     payload: { device_code: data.device_code, pet_id: data.pet_id },
   });
 
+  logRequestEnd(req, startedAt, 201, { device_id: data.id });
   return NextResponse.json(data, { status: 201 });
 }

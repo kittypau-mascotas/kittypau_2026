@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, enforceBodySize, getUserClient } from "../_utils";
+import {
+  apiError,
+  enforceBodySize,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../_utils";
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
@@ -20,6 +26,7 @@ function normalizeString(value: unknown): string | null | undefined {
 }
 
 export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -36,10 +43,12 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  logRequestEnd(req, startedAt, 200);
   return NextResponse.json(data, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -47,7 +56,7 @@ export async function PUT(req: NextRequest) {
 
   const { supabase, user } = auth;
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:profiles_put`;
-  const rate = checkRateLimit(rateKey, 30, 60_000);
+  const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
     return apiError(
       req,
@@ -191,5 +200,6 @@ export async function PUT(req: NextRequest) {
     payload: { fields: Object.keys(updatePayload) },
   });
 
+  logRequestEnd(req, startedAt, 200, { profile_id: user.id });
   return NextResponse.json(data, { status: 200 });
 }

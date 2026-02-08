@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, enforceBodySize, getUserClient } from "../_utils";
+import {
+  apiError,
+  enforceBodySize,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../_utils";
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
@@ -29,6 +35,7 @@ function normalizeString(value: unknown): string | null | undefined {
 }
 
 export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -59,16 +66,22 @@ export async function GET(req: NextRequest) {
   }
 
   if (!paginate) {
+    logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
     return NextResponse.json(data ?? []);
   }
 
   const nextCursor =
     data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
 
+  logRequestEnd(req, startedAt, 200, {
+    count: data?.length ?? 0,
+    next_cursor: nextCursor,
+  });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
 }
 
 export async function POST(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
@@ -185,5 +198,6 @@ export async function POST(req: NextRequest) {
     payload: { pet_state: data.pet_state },
   });
 
+  logRequestEnd(req, startedAt, 201, { pet_id: data.id });
   return NextResponse.json(data, { status: 201 });
 }
