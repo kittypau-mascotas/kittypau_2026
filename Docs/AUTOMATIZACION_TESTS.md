@@ -157,6 +157,27 @@ Uso
 
 ---
 
+## Script negativo (PowerShell)
+Archivo: `Docs/TEST_DB_API_NEGATIVE.ps1`
+
+Que hace
+- Webhook sin device -> 400
+- Webhook con device inexistente -> 404
+- PATCH /api/devices con status invalido -> 400
+- GET /api/readings con device ajeno -> 403/404
+
+Variables requeridas
+- ACCESS_TOKEN
+- MQTT_WEBHOOK_SECRET
+- BASE_URL (opcional)
+
+Uso
+```powershell
+.\Docs\TEST_DB_API_NEGATIVE.ps1
+```
+
+---
+
 ## Script onboarding backend (PowerShell)
 Archivo: `Docs/TEST_ONBOARDING_BACKEND.ps1`
 

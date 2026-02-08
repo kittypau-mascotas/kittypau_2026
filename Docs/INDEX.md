@@ -61,3 +61,5 @@
 
 - Docs/.env.test.example
 - Docs/.env.test.local (no versionado)
+
+- Docs/TEST_DB_API_NEGATIVE.ps1
