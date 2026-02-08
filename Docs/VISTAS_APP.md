@@ -14,6 +14,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - /pet implementado como perfil conductual básico con insights.
 - /bowl implementado como estado técnico del plato.
 - /settings implementado como ajustes de perfil y notificaciones.
+- /register implementado como ruta pública con reenvío de confirmación.
 
 ---
 
