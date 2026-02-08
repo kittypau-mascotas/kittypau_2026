@@ -23,6 +23,21 @@ type OnboardingFlowProps = {
   onClose?: () => void;
 };
 
+type TooltipIconProps = {
+  text: string;
+};
+
+function TooltipIcon({ text }: TooltipIconProps) {
+  return (
+    <span className="relative group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[11px] text-slate-500">
+      ⓘ
+      <span className="pointer-events-none absolute right-0 top-6 z-10 w-48 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600 opacity-0 shadow-lg transition group-hover:opacity-100">
+        {text}
+      </span>
+    </span>
+  );
+}
+
 const defaultStatus: OnboardingStatus = {
   userStep: null,
   hasPet: false,
@@ -423,12 +438,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Nombre
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Nombre visible en la app."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Nombre visible en la app." />
               </div>
               <input
                 className={inputClass(!profileForm.user_name.trim())}
@@ -448,12 +458,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Ciudad
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Úsalo para personalizar alertas."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Úsalo para personalizar alertas." />
               </div>
               <input
                 className={inputClass(!profileForm.city.trim())}
@@ -473,12 +478,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   País
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Define tu región principal."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Define tu región principal." />
               </div>
               <input
                 className={inputClass(!profileForm.country.trim())}
@@ -498,12 +498,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Canal
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Elige cómo recibir alertas."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Elige cómo recibir alertas." />
               </div>
               <select
                 className={inputClass(false)}
@@ -600,12 +595,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Nombre
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Nombre que verás en el feed."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Nombre que verás en el feed." />
               </div>
               <input
                 className={inputClass(!petForm.name.trim())}
@@ -622,12 +612,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Tipo
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Gato o perro."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Gato o perro." />
               </div>
               <select
                 className={inputClass(!petForm.type.trim())}
@@ -643,12 +628,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Origen
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Ayuda a personalizar los insights."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Ayuda a personalizar los insights." />
               </div>
               <input
                 className={inputClass(false)}
@@ -696,12 +676,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Mascota
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Selecciona la mascota a vincular."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Selecciona la mascota a vincular." />
               </div>
               <select
                 className={inputClass(!deviceForm.pet_id)}
@@ -724,12 +699,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Código
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Formato esperado: KPCL0000."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Formato esperado: KPCL0000." />
               </div>
               <input
                 className={inputClass(
@@ -752,12 +722,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Tipo de dispositivo
                 </label>
-                <span
-                  className="text-[11px] text-slate-400"
-                  title="Food bowl o water bowl."
-                >
-                  ⓘ
-                </span>
+                <TooltipIcon text="Food bowl o water bowl." />
               </div>
               <select
                 className={inputClass(!deviceForm.device_type.trim())}
