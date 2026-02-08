@@ -37,6 +37,7 @@
 - Errores API estandarizados con `code` y `request_id`.
 - Rate limiting basico aplicado (webhook y endpoints mutables).
 - Limites de payload y rangos validados (weight_kg, battery_level, readings limit).
+- Auditoria basica agregada (tabla `audit_events` + inserciones).
 - Vercel CLI: `vercel link --yes` ejecutado. Vinculado a `kittypaus-projects/kittypau_2026_hivemq` y descargadas envs (sobrescribe `.env.local` local).
 - Onboarding backend test OK (2026-02-08): pet `55a0bb9e-2084-4131-9ef9-aaf5327bd08e`, device `e986136d-dd58-43d7-bafc-71406c1810a0` (KPCL0407).
 - GET /api/onboarding/status OK (2026-02-08): userStep `pet_profile`, petCount `4`, deviceCount `6`.

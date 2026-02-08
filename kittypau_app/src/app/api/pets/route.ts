@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiError, enforceBodySize, getUserClient } from "../_utils";
+import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
@@ -155,6 +156,14 @@ export async function POST(req: NextRequest) {
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
+
+  await logAudit({
+    event_type: "pet_created",
+    actor_id: user.id,
+    entity_type: "pet",
+    entity_id: data.id,
+    payload: { pet_state: data.pet_state },
+  });
 
   return NextResponse.json(data, { status: 201 });
 }

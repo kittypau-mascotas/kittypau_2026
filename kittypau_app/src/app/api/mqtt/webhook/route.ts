@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, enforceBodySize } from "../../_utils";
+import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
 type WebhookPayload = {
@@ -159,6 +160,19 @@ export async function POST(req: NextRequest) {
       insertError.message
     );
   }
+
+  await logAudit({
+    event_type: "reading_ingested",
+    actor_id: null,
+    entity_type: "device",
+    entity_id: device.id,
+    payload: {
+      device_code: deviceCode ?? null,
+      weight_grams: weightGrams,
+      water_ml: waterMl,
+      flow_rate: flowRate,
+    },
+  });
 
   await supabaseServer
     .from("devices")

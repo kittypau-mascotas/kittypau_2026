@@ -89,6 +89,17 @@ create table if not exists public.readings (
   recorded_at timestamptz not null default now()
 );
 
+-- Audit events (server-only)
+create table if not exists public.audit_events (
+  id uuid primary key default gen_random_uuid(),
+  event_type text not null,
+  actor_id uuid,
+  entity_type text,
+  entity_id uuid,
+  payload jsonb,
+  created_at timestamptz not null default now()
+);
+
 -- Migration helpers (idempotent)
 -- These keep existing databases in sync when rerunning this file.
 ALTER TABLE public.profiles
@@ -107,12 +118,16 @@ create index if not exists idx_readings_device_id on public.readings(device_id);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);
+create index if not exists idx_audit_events_actor_id on public.audit_events(actor_id);
+create index if not exists idx_audit_events_event_type on public.audit_events(event_type);
+create index if not exists idx_audit_events_created_at on public.audit_events(created_at desc);
 
 -- RLS
 alter table public.profiles enable row level security;
 alter table public.pets enable row level security;
 alter table public.devices enable row level security;
 alter table public.readings enable row level security;
+alter table public.audit_events enable row level security;
 alter table public.breeds enable row level security;
 alter table public.pet_breeds enable row level security;
 

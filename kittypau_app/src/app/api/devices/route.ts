@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiError, enforceBodySize, getUserClient } from "../_utils";
+import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
@@ -146,6 +147,14 @@ export async function POST(req: NextRequest) {
       "Failed to update pet_state after device create"
     );
   }
+
+  await logAudit({
+    event_type: "device_created",
+    actor_id: user.id,
+    entity_type: "device",
+    entity_id: data.id,
+    payload: { device_code: data.device_code, pet_id: data.pet_id },
+  });
 
   return NextResponse.json(data, { status: 201 });
 }

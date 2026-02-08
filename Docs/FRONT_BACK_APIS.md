@@ -152,6 +152,10 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 - Suscribirse por `device_id` en el dashboard.
 - Fallback: polling cada X segundos si Realtime falla.
 
+## Auditoria
+- Tabla `audit_events` (server-only).
+- Eventos actuales: `profile_created`, `profile_updated`, `pet_created`, `device_created`, `reading_ingested`.
+
 ## Notas sobre Vercel Free
 - Mantener el API liviano (validación y escritura en DB).
 - Evitar tareas pesadas o de larga duración en serverless.
