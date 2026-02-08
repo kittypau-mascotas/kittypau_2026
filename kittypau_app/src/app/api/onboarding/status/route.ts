@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../../_utils";
+import { apiError, getUserClient } from "../../_utils";
 
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     .maybeSingle();
 
   if (profileError) {
-    return NextResponse.json({ error: profileError.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", profileError.message);
   }
 
   const { count: petCount, error: petError } = await supabase
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     .eq("user_id", user.id);
 
   if (petError) {
-    return NextResponse.json({ error: petError.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", petError.message);
   }
 
   const { count: deviceCount, error: deviceError } = await supabase
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     .eq("owner_id", user.id);
 
   if (deviceError) {
-    return NextResponse.json({ error: deviceError.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", deviceError.message);
   }
 
   const pets = petCount ?? 0;

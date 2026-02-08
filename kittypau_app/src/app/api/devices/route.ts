@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../_utils";
+import { apiError, getUserClient } from "../_utils";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
@@ -7,7 +7,7 @@ const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data ?? []);
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
   try {
     body = (await req.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   const payload = {
@@ -55,29 +55,33 @@ export async function POST(req: NextRequest) {
   };
 
   if (payload.pet_id && typeof payload.pet_id !== "string") {
-    return NextResponse.json({ error: "pet_id must be a string" }, { status: 400 });
+    return apiError(req, 400, "INVALID_PET_ID", "pet_id must be a string");
   }
 
   if (!payload.device_code || !payload.device_type || !payload.pet_id) {
-    return NextResponse.json(
-      { error: "device_code, device_type, and pet_id are required" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "MISSING_FIELDS",
+      "device_code, device_type, and pet_id are required"
     );
   }
 
   if (!/^KPCL\d{4}$/.test(payload.device_code)) {
-    return NextResponse.json(
-      { error: "device_code must match KPCL0000 format" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_DEVICE_CODE",
+      "device_code must match KPCL0000 format"
     );
   }
 
   if (!ALLOWED_DEVICE_TYPE.has(payload.device_type)) {
-    return NextResponse.json({ error: "Invalid device_type" }, { status: 400 });
+    return apiError(req, 400, "INVALID_DEVICE_TYPE", "Invalid device_type");
   }
 
   if (payload.status && !ALLOWED_STATUS.has(payload.status)) {
-    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    return apiError(req, 400, "INVALID_STATUS", "Invalid status");
   }
 
   const { data: pet, error: petError } = await supabase
@@ -87,7 +91,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (petError || !pet) {
-    return NextResponse.json({ error: "Pet not found" }, { status: 404 });
+    return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
   }
 
   const { data, error } = await supabase
@@ -97,7 +101,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   const { error: petUpdateError } = await supabase
@@ -107,9 +111,11 @@ export async function POST(req: NextRequest) {
 
   if (petUpdateError) {
     await supabase.from("devices").delete().eq("id", data.id);
-    return NextResponse.json(
-      { error: "Failed to update pet_state after device create" },
-      { status: 500 }
+    return apiError(
+      req,
+      500,
+      "PET_STATE_UPDATE_FAILED",
+      "Failed to update pet_state after device create"
     );
   }
 

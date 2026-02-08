@@ -172,6 +172,16 @@ Reglas comunes:
 - 400 si payload es invalido o falla una validacion.
 - 500 si Supabase o servidor fallan.
 
+Formato estandar:
+```json
+{
+  "error": "Mensaje",
+  "code": "CODIGO_ERROR",
+  "request_id": "uuid",
+  "details": "opcional"
+}
+```
+
 Errores por endpoint:
 1. GET /api/devices
    - 401 si falta token.

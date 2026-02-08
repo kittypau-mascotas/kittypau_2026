@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../_utils";
+import { apiError, getUserClient } from "../_utils";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
 const ALLOWED_PET_STATE = new Set([
@@ -18,10 +18,18 @@ const ALLOWED_PET_STEP = new Set([
   "pet_confirm",
 ]);
 
+function normalizeString(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== "string") return value as string;
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
@@ -32,7 +40,7 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data ?? []);
@@ -49,7 +57,7 @@ export async function POST(req: NextRequest) {
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   const payload = {
@@ -73,35 +81,42 @@ export async function POST(req: NextRequest) {
     pet_onboarding_step: body?.pet_onboarding_step ?? null,
   };
 
+  payload.name = normalizeString(payload.name);
+  payload.type = normalizeString(payload.type);
+  payload.origin = normalizeString(payload.origin);
+  payload.living_environment = normalizeString(payload.living_environment);
+  payload.size = normalizeString(payload.size);
+  payload.age_range = normalizeString(payload.age_range);
+  payload.activity_level = normalizeString(payload.activity_level);
+  payload.alone_time = normalizeString(payload.alone_time);
+  payload.health_notes = normalizeString(payload.health_notes);
+  payload.photo_url = normalizeString(payload.photo_url);
+
   if (!payload.name || !payload.type) {
-    return NextResponse.json(
-      { error: "name and type are required" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "MISSING_FIELDS", "name and type are required");
   }
 
   if (!ALLOWED_TYPE.has(String(payload.type))) {
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    return apiError(req, 400, "INVALID_TYPE", "Invalid type");
   }
 
   if (body?.weight_kg !== undefined && typeof body.weight_kg !== "number") {
-    return NextResponse.json(
-      { error: "weight_kg must be a number" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "INVALID_WEIGHT", "weight_kg must be a number");
   }
 
   if (payload.pet_state && !ALLOWED_PET_STATE.has(String(payload.pet_state))) {
-    return NextResponse.json({ error: "Invalid pet_state" }, { status: 400 });
+    return apiError(req, 400, "INVALID_PET_STATE", "Invalid pet_state");
   }
 
   if (
     payload.pet_onboarding_step &&
     !ALLOWED_PET_STEP.has(String(payload.pet_onboarding_step))
   ) {
-    return NextResponse.json(
-      { error: "Invalid pet_onboarding_step" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_PET_STEP",
+      "Invalid pet_onboarding_step"
     );
   }
 
@@ -112,7 +127,7 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data, { status: 201 });

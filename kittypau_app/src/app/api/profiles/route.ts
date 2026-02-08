@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../_utils";
+import { apiError, getUserClient } from "../_utils";
 
 const ALLOWED_USER_STEPS = new Set([
   "not_started",
@@ -9,10 +9,18 @@ const ALLOWED_USER_STEPS = new Set([
   "completed",
 ]);
 
+function normalizeString(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== "string") return value as string;
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
@@ -23,7 +31,7 @@ export async function GET(req: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data, { status: 200 });
@@ -41,14 +49,16 @@ export async function PUT(req: NextRequest) {
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   const step = body.user_onboarding_step;
   if (step && !ALLOWED_USER_STEPS.has(String(step))) {
-    return NextResponse.json(
-      { error: "Invalid user_onboarding_step" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_USER_STEP",
+      "Invalid user_onboarding_step"
     );
   }
 
@@ -72,8 +82,22 @@ export async function PUT(req: NextRequest) {
     }
   }
 
+  for (const key of [
+    "auth_provider",
+    "user_name",
+    "owner_name",
+    "phone_number",
+    "notification_channel",
+    "city",
+    "country",
+  ]) {
+    if (key in updatePayload) {
+      updatePayload[key] = normalizeString(updatePayload[key]);
+    }
+  }
+
   if (Object.keys(updatePayload).length === 0) {
-    return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+    return apiError(req, 400, "NO_FIELDS", "No fields to update");
   }
 
   if (
@@ -81,10 +105,7 @@ export async function PUT(req: NextRequest) {
     updatePayload.user_name !== null &&
     typeof updatePayload.user_name !== "string"
   ) {
-    return NextResponse.json(
-      { error: "user_name must be a string" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "INVALID_USER_NAME", "user_name must be a string");
   }
 
   if (
@@ -92,10 +113,7 @@ export async function PUT(req: NextRequest) {
     updatePayload.is_owner !== null &&
     typeof updatePayload.is_owner !== "boolean"
   ) {
-    return NextResponse.json(
-      { error: "is_owner must be a boolean" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "INVALID_IS_OWNER", "is_owner must be a boolean");
   }
 
   if (
@@ -103,9 +121,11 @@ export async function PUT(req: NextRequest) {
     updatePayload.care_rating !== null &&
     typeof updatePayload.care_rating !== "number"
   ) {
-    return NextResponse.json(
-      { error: "care_rating must be a number" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_CARE_RATING",
+      "care_rating must be a number"
     );
   }
 
@@ -131,7 +151,7 @@ export async function PUT(req: NextRequest) {
     : await supabase.from("profiles").insert(payload).select().single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data, { status: 200 });

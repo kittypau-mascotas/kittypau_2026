@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
+import { apiError } from "../../_utils";
 
 type WebhookPayload = {
   deviceId?: string;
@@ -60,26 +61,28 @@ function getDeviceId(payload: WebhookPayload): string | null {
 export async function POST(req: NextRequest) {
   const token = req.headers.get("x-webhook-token");
   if (!token || token !== process.env.MQTT_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return apiError(req, 401, "UNAUTHORIZED", "Unauthorized");
   }
 
   let payload: WebhookPayload;
   try {
     payload = (await req.json()) as WebhookPayload;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   const deviceId = getDeviceId(payload);
   const deviceCode = getDeviceCode(payload);
   if (!deviceId && !deviceCode) {
-    return NextResponse.json({ error: "Missing device code" }, { status: 400 });
+    return apiError(req, 400, "MISSING_DEVICE", "Missing device code");
   }
 
   if (deviceCode && !/^KPCL\d{4}$/.test(deviceCode)) {
-    return NextResponse.json(
-      { error: "device_code must match KPCL0000 format" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_DEVICE_CODE",
+      "device_code must match KPCL0000 format"
     );
   }
 
@@ -99,7 +102,7 @@ export async function POST(req: NextRequest) {
     validateRange(flowRate, "flow_rate", 0, 1000);
 
   if (rangeError) {
-    return NextResponse.json({ error: rangeError }, { status: 400 });
+    return apiError(req, 400, "OUT_OF_RANGE", rangeError);
   }
 
   let deviceQuery = supabaseServer.from("devices").select("id, pet_id");
@@ -112,10 +115,7 @@ export async function POST(req: NextRequest) {
   const { data: device, error: deviceError } = await deviceQuery.single();
 
   if (deviceError || !device) {
-    return NextResponse.json(
-      { error: "Device not found" },
-      { status: 404 }
-    );
+    return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
   const recordedAt = payload.timestamp
@@ -135,9 +135,12 @@ export async function POST(req: NextRequest) {
   });
 
   if (insertError) {
-    return NextResponse.json(
-      { error: "Insert failed", details: insertError.message },
-      { status: 500 }
+    return apiError(
+      req,
+      500,
+      "INSERT_FAILED",
+      "Insert failed",
+      insertError.message
     );
   }
 

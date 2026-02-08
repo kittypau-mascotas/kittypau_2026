@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../../_utils";
+import { apiError, getUserClient } from "../../_utils";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
 const ALLOWED_PET_STATE = new Set([
@@ -32,46 +32,45 @@ export async function PATCH(
 ) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
   const { id: petId } = await context.params;
 
   if (!petId) {
-    return NextResponse.json({ error: "pet_id is required" }, { status: 400 });
+    return apiError(req, 400, "MISSING_PET_ID", "pet_id is required");
   }
 
   let body: Record<string, unknown>;
   try {
     body = (await req.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   if (body.type && !ALLOWED_TYPE.has(String(body.type))) {
-    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+    return apiError(req, 400, "INVALID_TYPE", "Invalid type");
   }
 
   if (body.pet_state && !ALLOWED_PET_STATE.has(String(body.pet_state))) {
-    return NextResponse.json({ error: "Invalid pet_state" }, { status: 400 });
+    return apiError(req, 400, "INVALID_PET_STATE", "Invalid pet_state");
   }
 
   if (
     body.pet_onboarding_step &&
     !ALLOWED_PET_STEP.has(String(body.pet_onboarding_step))
   ) {
-    return NextResponse.json(
-      { error: "Invalid pet_onboarding_step" },
-      { status: 400 }
+    return apiError(
+      req,
+      400,
+      "INVALID_PET_STEP",
+      "Invalid pet_onboarding_step"
     );
   }
 
   if (body.weight_kg !== undefined && typeof body.weight_kg !== "number") {
-    return NextResponse.json(
-      { error: "weight_kg must be a number" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "INVALID_WEIGHT", "weight_kg must be a number");
   }
 
   const { data: pet, error: petError } = await supabase
@@ -81,11 +80,11 @@ export async function PATCH(
     .single();
 
   if (petError || !pet) {
-    return NextResponse.json({ error: "Pet not found" }, { status: 404 });
+    return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
   }
 
   if (pet.user_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
   const updatePayload: Record<string, unknown> = {};
@@ -133,10 +132,7 @@ export async function PATCH(
   }
 
   if (Object.keys(updatePayload).length === 0) {
-    return NextResponse.json(
-      { error: "No fields to update" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "NO_FIELDS", "No fields to update");
   }
 
   const { data, error } = await supabase
@@ -147,7 +143,7 @@ export async function PATCH(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data, { status: 200 });

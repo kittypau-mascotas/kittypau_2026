@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../../_utils";
+import { apiError, getUserClient } from "../../_utils";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
@@ -18,14 +18,14 @@ export async function PATCH(
 ) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
   const { id: deviceId } = await context.params;
 
   if (!deviceId) {
-    return NextResponse.json({ error: "device_id is required" }, { status: 400 });
+    return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
   }
 
   let body: {
@@ -38,23 +38,23 @@ export async function PATCH(
   try {
     body = (await req.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(req, 400, "INVALID_JSON", "Invalid JSON");
   }
 
   if (body.status && !ALLOWED_STATUS.has(body.status)) {
-    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    return apiError(req, 400, "INVALID_STATUS", "Invalid status");
   }
 
   if (body.device_type && !ALLOWED_DEVICE_TYPE.has(body.device_type)) {
-    return NextResponse.json({ error: "Invalid device_type" }, { status: 400 });
+    return apiError(req, 400, "INVALID_DEVICE_TYPE", "Invalid device_type");
   }
 
   if (body.device_state && !ALLOWED_DEVICE_STATE.has(body.device_state)) {
-    return NextResponse.json({ error: "Invalid device_state" }, { status: 400 });
+    return apiError(req, 400, "INVALID_DEVICE_STATE", "Invalid device_state");
   }
 
   if (body.pet_id === null) {
-    return NextResponse.json({ error: "pet_id cannot be null" }, { status: 400 });
+    return apiError(req, 400, "INVALID_PET_ID", "pet_id cannot be null");
   }
 
   const { data: device, error: deviceError } = await supabase
@@ -64,11 +64,11 @@ export async function PATCH(
     .single();
 
   if (deviceError || !device) {
-    return NextResponse.json({ error: "Device not found" }, { status: 404 });
+    return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
   if (device.owner_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
   const updatePayload: Record<string, unknown> = {};
@@ -78,10 +78,7 @@ export async function PATCH(
   if (body.pet_id) updatePayload.pet_id = body.pet_id;
 
   if (Object.keys(updatePayload).length === 0) {
-    return NextResponse.json(
-      { error: "No fields to update" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "NO_FIELDS", "No fields to update");
   }
 
   const { data, error } = await supabase
@@ -92,7 +89,7 @@ export async function PATCH(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data, { status: 200 });

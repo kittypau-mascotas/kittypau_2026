@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient } from "../_utils";
+import { apiError, getUserClient } from "../_utils";
 
 export async function GET(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
@@ -14,10 +14,7 @@ export async function GET(req: NextRequest) {
   const limit = limitParam ? Number(limitParam) : 50;
 
   if (!deviceId) {
-    return NextResponse.json(
-      { error: "device_id is required" },
-      { status: 400 }
-    );
+    return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
   }
 
   const { data: device, error: deviceError } = await supabase
@@ -27,11 +24,11 @@ export async function GET(req: NextRequest) {
     .single();
 
   if (deviceError || !device) {
-    return NextResponse.json({ error: "Device not found" }, { status: 404 });
+    return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
   if (device.owner_id !== user.id) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
   const { data, error } = await supabase
@@ -42,7 +39,7 @@ export async function GET(req: NextRequest) {
     .limit(Number.isFinite(limit) ? limit : 50);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   return NextResponse.json(data ?? []);
