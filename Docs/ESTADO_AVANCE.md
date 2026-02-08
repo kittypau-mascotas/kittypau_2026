@@ -131,3 +131,7 @@
 - Infra: Vercel + Supabase CLI documentados, Upstash Redis integrado.
 - Tests: scripts DB/API y onboarding backend, checklist Postman/Newman.
 
+
+## Pendientes prioritarios
+
+
