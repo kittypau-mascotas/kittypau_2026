@@ -31,7 +31,7 @@ function TooltipIcon({ text }: TooltipIconProps) {
   return (
     <span className="relative group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[11px] text-slate-500">
       ⓘ
-      <span className="pointer-events-none absolute right-0 top-6 z-10 w-48 rounded-[10px] border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600 opacity-0 shadow-lg transition group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-1/2 top-7 z-10 w-56 -translate-x-1/2 rounded-[12px] border border-slate-900/10 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 opacity-0 shadow-lg transition duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
         {text}
       </span>
     </span>
