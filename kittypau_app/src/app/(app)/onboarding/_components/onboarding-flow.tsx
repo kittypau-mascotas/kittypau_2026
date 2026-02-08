@@ -109,6 +109,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!deviceForm.device_type.trim()) issues.push("Tipo de dispositivo requerido.");
     return { ok: issues.length === 0, issues };
   }, [deviceForm]);
+
+  const inputClass = (hasError: boolean) =>
+    `h-11 rounded-[var(--radius)] border px-4 text-sm text-slate-900 outline-none ${
+      hasError
+        ? "border-rose-300 bg-rose-50/40 focus:ring-2 focus:ring-rose-200"
+        : "border-border bg-white/90 focus:ring-2 focus:ring-ring"
+    }`;
   const currentStep = useMemo(() => {
     if (
       status.userStep !== "completed" &&
@@ -413,7 +420,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!profileForm.user_name.trim())}
                 placeholder="Nombre"
                 value={profileForm.user_name}
                 onChange={(event) =>
@@ -424,7 +431,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 }
               />
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!profileForm.city.trim())}
                 placeholder="Ciudad"
                 value={profileForm.city}
                 onChange={(event) =>
@@ -435,7 +442,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 }
               />
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!profileForm.country.trim())}
                 placeholder="País"
                 value={profileForm.country}
                 onChange={(event) =>
@@ -446,7 +453,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 }
               />
               <select
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(false)}
                 value={profileForm.notification_channel}
                 onChange={(event) =>
                   setProfileForm((prev) => ({
@@ -476,7 +483,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </label>
               {!profileForm.is_owner ? (
                 <input
-                  className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                  className={inputClass(!profileForm.owner_name.trim())}
                   placeholder="Nombre del dueño"
                   value={profileForm.owner_name}
                   onChange={(event) =>
@@ -489,7 +496,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               ) : null}
               {profileForm.notification_channel === "whatsapp" ? (
                 <input
-                  className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                  className={inputClass(!profileForm.phone_number.trim())}
                   placeholder="Número WhatsApp"
                   value={profileForm.phone_number}
                   onChange={(event) =>
@@ -532,7 +539,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!petForm.name.trim())}
                 placeholder="Nombre"
                 value={petForm.name}
                 onChange={(event) =>
@@ -540,7 +547,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 }
               />
               <select
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!petForm.type.trim())}
                 value={petForm.type}
                 onChange={(event) =>
                   setPetForm((prev) => ({ ...prev, type: event.target.value }))
@@ -550,7 +557,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <option value="dog">Perro</option>
               </select>
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(false)}
                 placeholder="Origen (rescatado, casa, etc.)"
                 value={petForm.origin}
                 onChange={(event) =>
@@ -589,7 +596,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               <select
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!deviceForm.pet_id)}
                 value={deviceForm.pet_id}
                 onChange={(event) =>
                   setDeviceForm((prev) => ({
@@ -606,7 +613,10 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 ))}
               </select>
               <input
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(
+                  !deviceForm.device_code.trim() ||
+                    !/^KPCL\\d{4}$/.test(deviceForm.device_code.trim())
+                )}
                 placeholder="Código KPCL0000"
                 value={deviceForm.device_code}
                 onChange={(event) =>
@@ -617,7 +627,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 }
               />
               <select
-                className="h-11 rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900"
+                className={inputClass(!deviceForm.device_type.trim())}
                 value={deviceForm.device_type}
                 onChange={(event) =>
                   setDeviceForm((prev) => ({
