@@ -123,3 +123,11 @@
 
 
 
+
+## Resumen por módulo
+- UI: onboarding guiado con validaciones, tooltips visuales, popup de registro y mejoras en today (selector device + refresh + frescura).
+- API: endpoints estandarizados con request_id, rate limit distribuido, idempotencia en webhook, bridge healthcheck y onboarding status.
+- DB: SQL con helpers idempotentes, índices clave y ajustes de lecturas (ingested_at, clock_invalid).
+- Infra: Vercel + Supabase CLI documentados, Upstash Redis integrado.
+- Tests: scripts DB/API y onboarding backend, checklist Postman/Newman.
+
