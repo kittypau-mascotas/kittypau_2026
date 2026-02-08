@@ -136,6 +136,8 @@ Notas:
 - Si se envía `deviceId` (UUID), se busca por `devices.id`.
 - Los campos numéricos pueden llegar como string y se normalizan.
 - La insercion de readings es idempotente por `device_id + recorded_at`.
+- Se guardan dos tiempos: `recorded_at` (dispositivo) y `ingested_at` (servidor).
+- Si `recorded_at` difiere más de ±10 min del servidor, se reemplaza por `ingested_at` y se marca `clock_invalid = true`.
 
 ## Endpoint de prueba (local)
 1. Arranca el servidor:

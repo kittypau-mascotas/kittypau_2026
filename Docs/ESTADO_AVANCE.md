@@ -41,6 +41,7 @@
 - Tests locales OK (2026-02-08): TEST_DB_API.ps1 + TEST_ONBOARDING_BACKEND.ps1.
 - Rate limit distribuido (Upstash) con fallback local.
 - Validacion Upstash OK (429 esperado al exceder 60 req/min en webhook).
+- Webhook con doble timestamp (recorded_at + ingested_at) y flag clock_invalid.
 - Webhook idempotente por `device_id + recorded_at`.
 - Paginacion en GET /api/pets, /api/devices, /api/readings.
 - Logs server-side con `request_id` (errores + webhook success).

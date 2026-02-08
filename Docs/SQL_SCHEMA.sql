@@ -86,7 +86,9 @@ create table if not exists public.readings (
   temperature numeric,
   humidity numeric,
   battery_level int,
-  recorded_at timestamptz not null default now()
+  recorded_at timestamptz not null default now(),
+  ingested_at timestamptz not null default now(),
+  clock_invalid boolean not null default false
 );
 
 -- Audit events (server-only)
@@ -110,6 +112,12 @@ ALTER TABLE public.pets
 
 ALTER TABLE public.readings
   ADD COLUMN IF NOT EXISTS flow_rate numeric;
+
+ALTER TABLE public.readings
+  ADD COLUMN IF NOT EXISTS ingested_at timestamptz not null default now();
+
+ALTER TABLE public.readings
+  ADD COLUMN IF NOT EXISTS clock_invalid boolean not null default false;
 
 -- Data cleanup (idempotent)
 -- Ensure only one active device per pet before adding unique index.

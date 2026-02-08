@@ -135,9 +135,26 @@ export async function POST(req: NextRequest) {
     return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
-  const recordedAt = payload.timestamp
+  const ingestedAt = new Date().toISOString();
+  let recordedAt = payload.timestamp
     ? new Date(payload.timestamp).toISOString()
-    : new Date().toISOString();
+    : ingestedAt;
+
+  let clockInvalid = false;
+  if (payload.timestamp) {
+    const deviceTime = new Date(payload.timestamp).getTime();
+    const serverTime = Date.now();
+    if (Number.isFinite(deviceTime)) {
+      const deltaMs = Math.abs(serverTime - deviceTime);
+      if (deltaMs > 10 * 60 * 1000) {
+        recordedAt = ingestedAt;
+        clockInvalid = true;
+      }
+    } else {
+      recordedAt = ingestedAt;
+      clockInvalid = true;
+    }
+  }
 
   const { error: insertError } = await supabaseServer
     .from("readings")
@@ -152,6 +169,8 @@ export async function POST(req: NextRequest) {
         humidity,
         battery_level: batteryLevel,
         recorded_at: recordedAt,
+        ingested_at: ingestedAt,
+        clock_invalid: clockInvalid,
       },
       { onConflict: "device_id,recorded_at", ignoreDuplicates: true }
     );
@@ -191,6 +210,8 @@ export async function POST(req: NextRequest) {
   logInfo(req, "reading_ingested", {
     device_id: device.id,
     recorded_at: recordedAt,
+    ingested_at: ingestedAt,
+    clock_invalid: clockInvalid,
   });
 
   return NextResponse.json({ success: true });
