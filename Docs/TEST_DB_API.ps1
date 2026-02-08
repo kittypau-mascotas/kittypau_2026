@@ -13,7 +13,7 @@ $passwordB = $env:KITTYPAU_PASSWORD
 
 # Pet y device
 $petIdB = $env:PET_ID
-$deviceCode = "KPCL" + (Get-Date -Format "mmss")
+$deviceCode = "KPCL" + (Get-Random -Minimum 1000 -Maximum 9999)
 
 if (-not $anonKey) { throw "Falta SUPABASE_ANON_KEY en entorno." }
 if (-not $webhook) { throw "Falta MQTT_WEBHOOK_SECRET en entorno." }

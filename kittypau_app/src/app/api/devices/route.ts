@@ -125,11 +125,47 @@ export async function POST(req: NextRequest) {
 
   if (error || !data) {
     const message = error?.message ?? "RPC failed";
-    if (message.toLowerCase().includes("pet not found")) {
+    const lower = message.toLowerCase();
+    if (lower.includes("pet not found")) {
       return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
     }
-    if (message.toLowerCase().includes("forbidden")) {
+    if (lower.includes("forbidden")) {
       return apiError(req, 403, "FORBIDDEN", "Forbidden");
+    }
+    if (lower.includes("idx_devices_active_per_pet")) {
+      await supabaseServer
+        .from("devices")
+        .update({ status: "inactive" })
+        .eq("pet_id", payload.pet_id)
+        .eq("status", "active");
+
+      const retry = await supabaseServer.rpc("link_device_to_pet", {
+        p_owner_id: user.id,
+        p_pet_id: payload.pet_id,
+        p_device_code: payload.device_code,
+        p_device_type: payload.device_type,
+        p_status: payload.status,
+        p_battery_level: payload.battery_level,
+      });
+
+      if (retry.error || !retry.data) {
+        return apiError(
+          req,
+          500,
+          "SUPABASE_ERROR",
+          retry.error?.message ?? "RPC failed"
+        );
+      }
+
+      await logAudit({
+        event_type: "device_created",
+        actor_id: user.id,
+        entity_type: "device",
+        entity_id: retry.data.id,
+        payload: { device_code: retry.data.device_code, pet_id: retry.data.pet_id },
+      });
+
+      return NextResponse.json(retry.data, { status: 201 });
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);
   }
