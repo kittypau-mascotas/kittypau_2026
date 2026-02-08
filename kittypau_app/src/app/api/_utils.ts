@@ -13,17 +13,42 @@ export function apiError(
   details?: string,
   headers?: Record<string, string>
 ) {
+  const requestId = getRequestId(req);
   const payload: Record<string, unknown> = {
     error: message,
     code,
-    request_id: getRequestId(req),
+    request_id: requestId,
   };
+
+  console.error("[api_error]", {
+    request_id: requestId,
+    method: req.method,
+    path: req.nextUrl.pathname,
+    status,
+    code,
+    message,
+    details: details ?? null,
+  });
 
   if (details) {
     payload.details = details;
   }
 
   return NextResponse.json(payload, { status, headers });
+}
+
+export function logInfo(
+  req: NextRequest,
+  message: string,
+  meta?: Record<string, unknown>
+) {
+  console.info("[api_info]", {
+    request_id: getRequestId(req),
+    method: req.method,
+    path: req.nextUrl.pathname,
+    message,
+    ...meta,
+  });
 }
 
 export function enforceBodySize(req: NextRequest, maxBytes: number) {

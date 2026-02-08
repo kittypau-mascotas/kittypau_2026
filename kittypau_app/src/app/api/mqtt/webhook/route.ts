@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, enforceBodySize } from "../../_utils";
+import { apiError, enforceBodySize, logInfo } from "../../_utils";
 import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   }
 
   const rateKey = `${getRateKeyFromRequest(req)}:webhook`;
-  const rate = checkRateLimit(rateKey, 60, 60_000);
+  const rate = await checkRateLimit(rateKey, 60, 60_000);
   if (!rate.ok) {
     return apiError(
       req,
@@ -139,17 +139,22 @@ export async function POST(req: NextRequest) {
     ? new Date(payload.timestamp).toISOString()
     : new Date().toISOString();
 
-  const { error: insertError } = await supabaseServer.from("readings").insert({
-    device_id: device.id,
-    pet_id: device.pet_id ?? null,
-    weight_grams: weightGrams,
-    water_ml: waterMl,
-    flow_rate: flowRate,
-    temperature,
-    humidity,
-    battery_level: batteryLevel,
-    recorded_at: recordedAt,
-  });
+  const { error: insertError } = await supabaseServer
+    .from("readings")
+    .upsert(
+      {
+        device_id: device.id,
+        pet_id: device.pet_id ?? null,
+        weight_grams: weightGrams,
+        water_ml: waterMl,
+        flow_rate: flowRate,
+        temperature,
+        humidity,
+        battery_level: batteryLevel,
+        recorded_at: recordedAt,
+      },
+      { onConflict: "device_id,recorded_at", ignoreDuplicates: true }
+    );
 
   if (insertError) {
     return apiError(
@@ -182,6 +187,11 @@ export async function POST(req: NextRequest) {
       status: "active",
     })
     .eq("id", device.id);
+
+  logInfo(req, "reading_ingested", {
+    device_id: device.id,
+    recorded_at: recordedAt,
+  });
 
   return NextResponse.json({ success: true });
 }

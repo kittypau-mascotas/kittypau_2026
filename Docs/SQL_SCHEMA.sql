@@ -135,7 +135,10 @@ create unique index if not exists idx_devices_active_per_pet
   on public.devices(pet_id)
   where status = 'active';
 create index if not exists idx_readings_device_id on public.readings(device_id);
+create index if not exists idx_readings_device_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
+create unique index if not exists idx_readings_device_recorded_at_unique
+  on public.readings(device_id, recorded_at);
 create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);

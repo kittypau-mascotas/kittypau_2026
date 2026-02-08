@@ -35,17 +35,37 @@ export async function GET(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  const { data, error } = await supabase
+  const url = new URL(req.url);
+  const limitParam = url.searchParams.get("limit");
+  const cursor = url.searchParams.get("cursor");
+  const limit = Math.min(Math.max(Number(limitParam ?? 20), 1), 100);
+  const paginate = Boolean(limitParam || cursor);
+
+  let query = supabase
     .from("pets")
     .select("*")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (cursor) {
+    query = query.lt("created_at", cursor);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
-  return NextResponse.json(data ?? []);
+  if (!paginate) {
+    return NextResponse.json(data ?? []);
+  }
+
+  const nextCursor =
+    data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
+
+  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
 }
 
 export async function POST(req: NextRequest) {
@@ -56,7 +76,7 @@ export async function POST(req: NextRequest) {
 
   const { supabase, user } = auth;
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_post`;
-  const rate = checkRateLimit(rateKey, 30, 60_000);
+  const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
     return apiError(
       req,

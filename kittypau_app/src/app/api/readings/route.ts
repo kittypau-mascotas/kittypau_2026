@@ -11,7 +11,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const deviceId = searchParams.get("device_id");
   const limitParam = searchParams.get("limit");
+  const cursor = searchParams.get("cursor");
   const limit = limitParam ? Number(limitParam) : 50;
+  const paginate = Boolean(limitParam || cursor);
 
   if (!deviceId) {
     return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
@@ -42,16 +44,29 @@ export async function GET(req: NextRequest) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("readings")
     .select("*")
     .eq("device_id", deviceId)
     .order("recorded_at", { ascending: false })
     .limit(Number.isFinite(limit) ? limit : 50);
 
+  if (cursor) {
+    query = query.lt("recorded_at", cursor);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
-  return NextResponse.json(data ?? []);
+  if (!paginate) {
+    return NextResponse.json(data ?? []);
+  }
+
+  const nextCursor =
+    data && data.length > 0 ? data[data.length - 1]?.recorded_at ?? null : null;
+
+  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
 }

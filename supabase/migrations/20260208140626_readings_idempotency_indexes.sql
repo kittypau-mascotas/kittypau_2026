@@ -1,0 +1,2 @@
+create index if not exists idx_readings_device_recorded_at on public.readings(device_id, recorded_at desc);
+create unique index if not exists idx_readings_device_recorded_at_unique on public.readings(device_id, recorded_at);

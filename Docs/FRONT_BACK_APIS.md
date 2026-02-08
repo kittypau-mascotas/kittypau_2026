@@ -60,6 +60,8 @@ src/app/
    - Lista mascotas del usuario.
    - Crea nueva mascota.
    - Campos extra: `pet_state`, `pet_onboarding_step`.
+   - Paginacion opcional: `?limit=20&cursor=2026-02-08T00:00:00Z`.
+     - Si hay `limit` o `cursor`, respuesta: `{ data, next_cursor }`.
 
 4. `PATCH /api/pets/:id`
    - Actualiza datos de mascota.
@@ -71,9 +73,13 @@ src/app/
    - `device_code` se obtiene del QR del plato.
    - Al crear dispositivo, actualiza `pet_state` a `device_linked`.
    - Internamente usa RPC `link_device_to_pet` (operacion atomica).
+   - Paginacion opcional: `?limit=20&cursor=2026-02-08T00:00:00Z`.
+     - Si hay `limit` o `cursor`, respuesta: `{ data, next_cursor }`.
 
 6. `GET /api/readings?device_id=...`
    - Lecturas recientes para gráficos.
+   - Paginacion opcional: `&limit=50&cursor=2026-02-08T00:00:00Z`.
+     - Si hay `limit` o `cursor`, respuesta: `{ data, next_cursor }`.
 
 7. `GET /api/onboarding/status`
    - Resumen de onboarding para UI.
@@ -107,6 +113,8 @@ SUPABASE_SERVICE_ROLE_KEY=   # Solo server
 MQTT_WEBHOOK_SECRET=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 ## Payload esperado (webhook)
@@ -127,6 +135,7 @@ Notas:
 - El `device_code` es el codigo humano (KPCLxxxx).
 - Si se envía `deviceId` (UUID), se busca por `devices.id`.
 - Los campos numéricos pueden llegar como string y se normalizan.
+- La insercion de readings es idempotente por `device_id + recorded_at`.
 
 ## Endpoint de prueba (local)
 1. Arranca el servidor:
@@ -189,10 +198,13 @@ Formato estandar:
   "details": "opcional"
 }
 ```
+Notas:
+- El backend registra `request_id` en logs server-side (errores y webhook OK).
 
 Rate limits actuales (best effort):
 - `/api/mqtt/webhook`: 60 req/min por IP.
 - Mutaciones (`PUT /api/profiles`, `POST/PATCH /api/pets`, `POST/PATCH /api/devices`): 30 req/min por usuario.
+- Distribuido si existe Upstash (envs `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`).
 
 Limites de payload:
 - Mutaciones JSON: ~8 KB.
