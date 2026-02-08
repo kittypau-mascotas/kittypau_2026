@@ -89,6 +89,14 @@ src/app/
    - Actualiza estado del dispositivo o re-vincula mascota.
    - Requiere `Authorization: Bearer <access_token>`.
 
+9. `POST /api/bridge/heartbeat`
+   - Heartbeat del bridge (server-only).
+   - Requiere `x-bridge-token`.
+
+10. `GET /api/bridge/health-check`
+   - Health check del bridge para cron (server-only).
+   - Requiere `x-bridge-token`.
+
 Payload propuesto:
 ```json
 {
@@ -111,6 +119,7 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=   # Solo server
 MQTT_WEBHOOK_SECRET=
+BRIDGE_HEARTBEAT_SECRET=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 UPSTASH_REDIS_REST_URL=

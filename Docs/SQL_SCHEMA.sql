@@ -103,6 +103,17 @@ create table if not exists public.audit_events (
   created_at timestamptz not null default now()
 );
 
+-- Bridge heartbeats (server-only)
+create table if not exists public.bridge_heartbeats (
+  bridge_id text primary key,
+  ip text,
+  uptime_sec int,
+  mqtt_connected boolean,
+  last_mqtt_at timestamptz,
+  last_seen timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
 -- Migration helpers (idempotent)
 -- These keep existing databases in sync when rerunning this file.
 ALTER TABLE public.profiles
@@ -157,6 +168,7 @@ create index if not exists idx_devices_pet_id on public.devices(pet_id);
 create index if not exists idx_audit_events_actor_id on public.audit_events(actor_id);
 create index if not exists idx_audit_events_event_type on public.audit_events(event_type);
 create index if not exists idx_audit_events_created_at on public.audit_events(created_at desc);
+create index if not exists idx_bridge_heartbeats_last_seen on public.bridge_heartbeats(last_seen desc);
 
 -- RLS
 alter table public.profiles enable row level security;
@@ -164,6 +176,7 @@ alter table public.pets enable row level security;
 alter table public.devices enable row level security;
 alter table public.readings enable row level security;
 alter table public.audit_events enable row level security;
+alter table public.bridge_heartbeats enable row level security;
 alter table public.breeds enable row level security;
 alter table public.pet_breeds enable row level security;
 
