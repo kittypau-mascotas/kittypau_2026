@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
-  const { user } = auth;
+  const { supabase, user } = auth;
   const { data, error } = await supabase
     .from("devices")
     .select("*")

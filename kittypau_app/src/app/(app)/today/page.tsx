@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -128,7 +128,7 @@ export default function TodayPage() {
           error:
             err instanceof Error
               ? err.message
-              : "No se pudo cargar la información.",
+              : "No se pudo cargar la informaciÃ³n.",
           pets: [],
           devices: [],
           reading: null,
@@ -149,10 +149,10 @@ export default function TodayPage() {
     const items = [];
     if (state.reading.water_ml !== null || state.reading.flow_rate !== null) {
       items.push({
-        title: "Hidratación",
+        title: "HidrataciÃ³n",
         description:
           state.reading.flow_rate !== null
-            ? `Flujo ${state.reading.flow_rate} ml/h en la última lectura.`
+            ? `Flujo ${state.reading.flow_rate} ml/h en la Ãºltima lectura.`
             : `Consumo registrado: ${state.reading.water_ml ?? 0} ml.`,
         tone: "info",
       });
@@ -167,7 +167,7 @@ export default function TodayPage() {
     if (state.reading.temperature !== null || state.reading.humidity !== null) {
       items.push({
         title: "Ambiente",
-        description: `Temp ${state.reading.temperature ?? "-"}° · Humedad ${
+        description: `Temp ${state.reading.temperature ?? "-"}Â° Â· Humedad ${
           state.reading.humidity ?? "-"
         }%.`,
         tone: "warning",
@@ -203,7 +203,7 @@ export default function TodayPage() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {primaryDevice
-                    ? `${primaryDevice.device_type} · ${primaryDevice.device_code}`
+                    ? `${primaryDevice.device_type} Â· ${primaryDevice.device_code}`
                     : "Sin dispositivo"}
                 </p>
               </div>
@@ -348,3 +348,4 @@ export default function TodayPage() {
     </div>
   );
 }
+

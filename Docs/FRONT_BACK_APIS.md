@@ -156,6 +156,7 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 ## Auditoria
 - Tabla `audit_events` (server-only).
 - Eventos actuales: `profile_created`, `profile_updated`, `pet_created`, `device_created`, `reading_ingested`.
+Nota: no se expone a frontend (solo service role).
 
 ## Notas sobre Vercel Free
 - Mantener el API liviano (validación y escritura en DB).

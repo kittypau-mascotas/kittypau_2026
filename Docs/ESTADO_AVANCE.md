@@ -37,6 +37,10 @@
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Documentacion CLI completada (Vercel, Supabase, HiveMQ, Raspberry) con ejemplos.
 - Tests post-migracion OK (2026-02-08): DB/API KPCL0159 + onboarding KPCL0208.
+- UTF-8 corregido en UI (login + today).
+- GET /api/devices sin rate limit (solo POST).
+- GET /api/pets sin rate limit; POST /api/pets con rate limit.
+- GET /api/profiles corregido (sin audit ni rate limit); PUT /api/profiles con rate limit + audit.
 - Errores API estandarizados con `code` y `request_id`.
 - Rate limiting basico aplicado (webhook y endpoints mutables).
 - Limites de payload y rangos validados (weight_kg, battery_level, readings limit).
@@ -73,6 +77,7 @@
 
 ## Riesgos conocidos
 - Realtime no esta integrado aun en frontend.
+- Refresh token no implementado en UI (pendiente siguiente iteracion).
 
 ## Verificaciones cerradas (operacion)
 - [x] Schema cache refrescado en Supabase.

@@ -26,20 +26,6 @@ export async function GET(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  if (req.method === "PUT") {
-    const rateKey = `${getRateKeyFromRequest(req, user.id)}:profiles_put`;
-    const rate = checkRateLimit(rateKey, 30, 60_000);
-    if (!rate.ok) {
-      return apiError(
-        req,
-        429,
-        "RATE_LIMITED",
-        "Too many requests",
-        undefined,
-        { "Retry-After": String(rate.retryAfter) }
-      );
-    }
-  }
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -50,24 +36,28 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
-  await logAudit({
-    event_type: existing ? "profile_updated" : "profile_created",
-    actor_id: user.id,
-    entity_type: "profile",
-    entity_id: user.id,
-    payload: { fields: Object.keys(updatePayload) },
-  });
-
   return NextResponse.json(data, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
+  const rateKey = `${getRateKeyFromRequest(req, user.id)}:profiles_put`;
+  const rate = checkRateLimit(rateKey, 30, 60_000);
+  if (!rate.ok) {
+    return apiError(
+      req,
+      429,
+      "RATE_LIMITED",
+      "Too many requests",
+      undefined,
+      { "Retry-After": String(rate.retryAfter) }
+    );
+  }
   let body: Record<string, unknown>;
 
   const sizeError = enforceBodySize(req, 8_000);
@@ -192,6 +182,14 @@ export async function PUT(req: NextRequest) {
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
+
+  await logAudit({
+    event_type: existing ? "profile_updated" : "profile_created",
+    actor_id: user.id,
+    entity_type: "profile",
+    entity_id: user.id,
+    payload: { fields: Object.keys(updatePayload) },
+  });
 
   return NextResponse.json(data, { status: 200 });
 }

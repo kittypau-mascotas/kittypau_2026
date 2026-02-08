@@ -35,18 +35,6 @@ export async function GET(req: NextRequest) {
   }
 
   const { supabase, user } = auth;
-  const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_post`;
-  const rate = checkRateLimit(rateKey, 30, 60_000);
-  if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
-  }
   const { data, error } = await supabase
     .from("pets")
     .select("*")
@@ -63,10 +51,22 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const auth = await getUserClient(req);
   if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
+    return apiError(req, 401, "AUTH_INVALID", auth.error);
   }
 
   const { supabase, user } = auth;
+  const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_post`;
+  const rate = checkRateLimit(rateKey, 30, 60_000);
+  if (!rate.ok) {
+    return apiError(
+      req,
+      429,
+      "RATE_LIMITED",
+      "Too many requests",
+      undefined,
+      { "Retry-After": String(rate.retryAfter) }
+    );
+  }
   let body: Record<string, unknown>;
   try {
     const sizeError = enforceBodySize(req, 8_000);
