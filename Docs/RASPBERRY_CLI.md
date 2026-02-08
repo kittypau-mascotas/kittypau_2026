@@ -36,17 +36,17 @@ journalctl -u kittypau-bridge -n 200 --no-pager
 ## MQTT (si se usa cliente local)
 Suscribirse:
 ```bash
-mqtt sub -h <HOST> -p 8883 -t "kittypau/+/telemetry" -u <USER> -P <PASS> --ssl
+mqtt sub -h <HOST> -p 8883 -t "+/SENSORS" -u <USER> -P <PASS> --ssl
 ```
 
 Publicar:
 ```bash
-mqtt pub -h <HOST> -p 8883 -t "kittypau/<DEVICE_CODE>/telemetry" -m '{"temperature":23.5}' -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"weight":3500,"temp":23.5,"hum":65}' -u <USER> -P <PASS> --ssl
 ```
 
 Ejemplo Kittypau:
 ```bash
-mqtt pub -h <HOST> -p 8883 -t "kittypau/KPCL0001/telemetry" -m '{"temperature":23.5,"humidity":65,"weight_grams":3500,"battery_level":85,"flow_rate":120}' -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"timestamp":"2026-02-08T02:00:00Z","weight":3500,"temp":23.5,"hum":65}' -u <USER> -P <PASS> --ssl
 ```
 
 ## Buenas practicas

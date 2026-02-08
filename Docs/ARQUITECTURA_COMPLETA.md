@@ -13,9 +13,9 @@ Arquitectura real del MVP con Next.js + Supabase + HiveMQ + Raspberry Bridge.
 
 ---
 
-## Flujo de datos (telemetria)
+## Flujo de datos (telemetría)
 1. ESP32 publica MQTT en HiveMQ.
-2. Bridge en Raspberry escucha `kittypau/+/telemetry`.
+2. Bridge en Raspberry escucha `+/SENSORS` (ver `Docs/TOPICOS_MQTT.md`).
 3. Bridge reenvia a `POST /api/mqtt/webhook`.
 4. API valida `x-webhook-token`, busca `device_code` y guarda lectura.
 5. Supabase Realtime notifica a la app.

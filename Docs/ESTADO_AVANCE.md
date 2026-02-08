@@ -41,6 +41,7 @@
 - Onboarding UI basico implementado (perfil + mascota + dispositivo).
 - Tipografia actualizada: Titan One (marca), Fraunces (titulos), Inter (texto).
 - Prueba end-to-end Raspberry/HiveMQ documentada (simulada con MQTT CLI).
+- Docs MQTT alineados a topics `+/SENSORS` (arquitectura y Raspberry CLI).
 - GET /api/devices sin rate limit (solo POST).
 - GET /api/pets sin rate limit; POST /api/pets con rate limit.
 - GET /api/profiles corregido (sin audit ni rate limit); PUT /api/profiles con rate limit + audit.
