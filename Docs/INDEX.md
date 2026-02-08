@@ -47,6 +47,7 @@
 ## Infraestructura Edge
 - `Docs/RASPBERRY_BRIDGE.md`
 - `Docs/TOPICOS_MQTT.md`
+- `Docs/BRIDGE_HEALTHCHECK.md`
 
 ## Infraestructura Cloud
 - `Docs/VERCEL_UPSTASH_CHECKLIST.md`
