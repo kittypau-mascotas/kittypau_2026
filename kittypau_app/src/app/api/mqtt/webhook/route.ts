@@ -129,7 +129,9 @@ export async function POST(req: NextRequest) {
     return apiError(req, 400, "OUT_OF_RANGE", rangeError);
   }
 
-  let deviceQuery = supabaseServer.from("devices").select("id, pet_id");
+  let deviceQuery = supabaseServer
+    .from("devices")
+    .select("id, pet_id, device_code");
   if (deviceId) {
     deviceQuery = deviceQuery.eq("id", deviceId);
   } else {
@@ -140,6 +142,15 @@ export async function POST(req: NextRequest) {
 
   if (deviceError || !device) {
     return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
+  }
+
+  if (deviceId && deviceCode && device.device_code !== deviceCode) {
+    return apiError(
+      req,
+      400,
+      "DEVICE_MISMATCH",
+      "deviceId does not match deviceCode"
+    );
   }
 
   const ingestedAt = new Date().toISOString();

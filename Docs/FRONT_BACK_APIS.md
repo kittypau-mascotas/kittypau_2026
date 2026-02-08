@@ -134,6 +134,7 @@ Notas:
 - La API acepta `deviceCode`, `deviceId` o `device_id`.
 - El `device_code` es el codigo humano (KPCLxxxx).
 - Si se envía `deviceId` (UUID), se busca por `devices.id`.
+- Si se envían `deviceId` y `deviceCode`, deben corresponder al mismo dispositivo.
 - Los campos numéricos pueden llegar como string y se normalizan.
 - La insercion de readings es idempotente por `device_id + recorded_at`.
 - Se guardan dos tiempos: `recorded_at` (dispositivo) y `ingested_at` (servidor).
