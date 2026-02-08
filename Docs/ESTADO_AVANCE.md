@@ -37,6 +37,8 @@
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
 - Webhook hardening: si se envían `deviceId` y `deviceCode`, deben coincidir.
 - Clock drift: cálculo usa `serverTimeMs` consistente y registra `delta_ms`.
+- Trigger de devices optimizado: actualiza `last_seen` solo si pasó 1 min.
+- Índice cubriente para readings (device_id, recorded_at) con INCLUDE de métricas.
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
 - Reglas de negocio aplicadas: `pet_state` default `device_pending`, `type` no editable, `care_rating` 1-10.
 - Un solo device activo por mascota (indice parcial) y link setea `device_state = linked`.

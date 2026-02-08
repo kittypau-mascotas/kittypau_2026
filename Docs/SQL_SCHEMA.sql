@@ -79,6 +79,7 @@ create table if not exists public.devices (
 create table if not exists public.readings (
   id uuid primary key default gen_random_uuid(),
   device_id uuid not null references public.devices(id) on delete cascade,
+  -- pet_id es un snapshot opcional (no fuente de verdad)
   pet_id uuid references public.pets(id) on delete set null,
   weight_grams int,
   water_ml int,
@@ -148,6 +149,9 @@ create index if not exists idx_readings_recorded_at on public.readings(recorded_
 create unique index if not exists idx_readings_device_recorded_at_unique
   on public.readings(device_id, recorded_at);
 create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
+create index if not exists idx_readings_device_recorded_cover
+  on public.readings(device_id, recorded_at desc)
+  include (weight_grams, water_ml, flow_rate, temperature, humidity, battery_level);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);
 create index if not exists idx_audit_events_actor_id on public.audit_events(actor_id);
@@ -282,7 +286,11 @@ begin
         when device_state = 'factory' then 'linked'
         else device_state
       end
-  where id = new.device_id;
+  where id = new.device_id
+    and (
+      last_seen is null
+      or new.recorded_at > last_seen + interval '1 minute'
+    );
   return new;
 end;
 $$ language plpgsql;
