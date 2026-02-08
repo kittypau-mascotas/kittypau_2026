@@ -38,7 +38,9 @@ type LoadState = {
   error: string | null;
   pets: ApiPet[];
   devices: ApiDevice[];
-  reading: ApiReading | null;
+  readings: ApiReading[];
+  readingsCursor: string | null;
+  isLoadingMore: boolean;
 };
 
 const defaultState: LoadState = {
@@ -46,7 +48,9 @@ const defaultState: LoadState = {
   error: null,
   pets: [],
   devices: [],
-  reading: null,
+  readings: [],
+  readingsCursor: null,
+  isLoadingMore: false,
 };
 
 function formatTimestamp(value?: string | null) {
@@ -63,16 +67,55 @@ function formatTimestamp(value?: string | null) {
 
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
+  const token = useMemo(() => getAccessToken(), []);
+
+  const parseListResponse = <T,>(payload: unknown): T[] => {
+    if (Array.isArray(payload)) {
+      return payload as T[];
+    }
+    if (payload && typeof payload === "object" && "data" in payload) {
+      return (payload as { data?: T[] }).data ?? [];
+    }
+    return [];
+  };
+
+  const parseCursor = (payload: unknown): string | null => {
+    if (payload && typeof payload === "object" && "next_cursor" in payload) {
+      return (payload as { next_cursor?: string | null }).next_cursor ?? null;
+    }
+    return null;
+  };
+
+  const loadReadings = async (deviceId: string, cursor?: string | null) => {
+    if (!token) return;
+    const params = new URLSearchParams({
+      device_id: deviceId,
+      limit: "50",
+    });
+    if (cursor) params.set("cursor", cursor);
+    const res = await fetch(`/api/readings?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      throw new Error("No se pudieron cargar las lecturas.");
+    }
+    const payload = await res.json();
+    return {
+      data: parseListResponse<ApiReading>(payload),
+      nextCursor: parseCursor(payload),
+    };
+  };
 
   useEffect(() => {
-    const token = getAccessToken();
     if (!token) {
       setState({
         isLoading: false,
         error: "Necesitas iniciar sesión para ver tu feed.",
         pets: [],
         devices: [],
-        reading: null,
+        readings: [],
+        readingsCursor: null,
+        isLoadingMore: false,
       });
       return;
     }
@@ -80,10 +123,10 @@ export default function TodayPage() {
     const load = async () => {
       try {
         const [petsRes, devicesRes] = await Promise.all([
-          fetch("/api/pets", {
+          fetch("/api/pets?limit=20", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/devices", {
+          fetch("/api/devices?limit=20", {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -95,24 +138,23 @@ export default function TodayPage() {
           throw new Error("No se pudieron cargar los dispositivos.");
         }
 
-        const pets = (await petsRes.json()) as ApiPet[];
-        const devices = (await devicesRes.json()) as ApiDevice[];
+        const petsPayload = await petsRes.json();
+        const devicesPayload = await devicesRes.json();
+
+        const pets = parseListResponse<ApiPet>(petsPayload);
+        const devices = parseListResponse<ApiDevice>(devicesPayload);
 
         const primaryPet = pets[0];
         const primaryDevice =
           devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
 
-        let reading: ApiReading | null = null;
+        let readings: ApiReading[] = [];
+        let readingsCursor: string | null = null;
         if (primaryDevice?.id) {
-          const readingsRes = await fetch(
-            `/api/readings?device_id=${primaryDevice.id}&limit=1`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          if (readingsRes.ok) {
-            const readings = (await readingsRes.json()) as ApiReading[];
-            reading = readings[0] ?? null;
-          }
+          const result = await loadReadings(primaryDevice.id);
+          readings = result.data;
+          readingsCursor = result.nextCursor;
         }
 
         setState({
@@ -120,7 +162,9 @@ export default function TodayPage() {
           error: null,
           pets,
           devices,
-          reading,
+          readings,
+          readingsCursor,
+          isLoadingMore: false,
         });
       } catch (err) {
         setState({
@@ -131,7 +175,9 @@ export default function TodayPage() {
               : "No se pudo cargar la información.",
           pets: [],
           devices: [],
-          reading: null,
+          readings: [],
+          readingsCursor: null,
+          isLoadingMore: false,
         });
       }
     };
@@ -139,42 +185,71 @@ export default function TodayPage() {
     void load();
   }, []);
 
+  const loadMoreReadings = async () => {
+    const primaryDevice =
+      state.devices.find((device) => device.pet_id === state.pets[0]?.id) ??
+      state.devices[0];
+    if (!primaryDevice?.id || !state.readingsCursor || state.isLoadingMore) {
+      return;
+    }
+    setState((prev) => ({ ...prev, isLoadingMore: true }));
+    try {
+      const result = await loadReadings(primaryDevice.id, state.readingsCursor);
+      setState((prev) => ({
+        ...prev,
+        readings: [...prev.readings, ...result.data],
+        readingsCursor: result.nextCursor,
+        isLoadingMore: false,
+      }));
+    } catch (err) {
+      setState((prev) => ({
+        ...prev,
+        error:
+          err instanceof Error
+            ? err.message
+            : "No se pudieron cargar más lecturas.",
+        isLoadingMore: false,
+      }));
+    }
+  };
+
   const primaryPet = state.pets[0];
   const primaryDevice =
     state.devices.find((device) => device.pet_id === primaryPet?.id) ??
     state.devices[0];
+  const latestReading = state.readings[0] ?? null;
 
   const feedCards = useMemo(() => {
-    if (!state.reading) return [];
+    if (!latestReading) return [];
     const items = [];
-    if (state.reading.water_ml !== null || state.reading.flow_rate !== null) {
+    if (latestReading.water_ml !== null || latestReading.flow_rate !== null) {
       items.push({
-        title: "HidrataciÃ³n",
+        title: "Hidratación",
         description:
-          state.reading.flow_rate !== null
-            ? `Flujo ${state.reading.flow_rate} ml/h en la última lectura.`
-            : `Consumo registrado: ${state.reading.water_ml ?? 0} ml.`,
+          latestReading.flow_rate !== null
+            ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
+            : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
         tone: "info",
       });
     }
-    if (state.reading.weight_grams !== null) {
+    if (latestReading.weight_grams !== null) {
       items.push({
         title: "Consumo de alimento",
-        description: `Peso detectado: ${state.reading.weight_grams} g.`,
+        description: `Peso detectado: ${latestReading.weight_grams} g.`,
         tone: "ok",
       });
     }
-    if (state.reading.temperature !== null || state.reading.humidity !== null) {
+    if (latestReading.temperature !== null || latestReading.humidity !== null) {
       items.push({
         title: "Ambiente",
-        description: `Temp ${state.reading.temperature ?? "-"}° · Humedad ${
-          state.reading.humidity ?? "-"
+        description: `Temp ${latestReading.temperature ?? "-"}° · Humedad ${
+          latestReading.humidity ?? "-"
         }%.`,
         tone: "warning",
       });
     }
     return items.slice(0, 3);
-  }, [state.reading]);
+  }, [latestReading]);
 
   const toneStyles: Record<string, string> = {
     ok: "border-emerald-200/60 bg-emerald-50/60 text-emerald-800",
@@ -223,7 +298,7 @@ export default function TodayPage() {
                 Última lectura
               </p>
               <p className="mt-2 text-2xl font-semibold text-slate-900">
-                {formatTimestamp(state.reading?.recorded_at)}
+                {formatTimestamp(latestReading?.recorded_at)}
               </p>
             </div>
             <div className="surface-card px-4 py-4">
@@ -324,6 +399,18 @@ export default function TodayPage() {
               </div>
             )}
           </div>
+          {state.readingsCursor ? (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={loadMoreReadings}
+                disabled={state.isLoadingMore}
+                className="h-9 rounded-[var(--radius)] border border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700"
+              >
+                {state.isLoadingMore ? "Cargando..." : "Cargar más"}
+              </button>
+            </div>
+          ) : null}
         </section>
 
         <section className="surface-card px-6 py-5">
