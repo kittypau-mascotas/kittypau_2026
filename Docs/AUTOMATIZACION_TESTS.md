@@ -195,3 +195,7 @@ Get-Content -Path ".\\Docs\\.env.test.local" |
 # Ejecuta test inmediato
 .\Docs\TEST_DB_API.ps1
 ```
+
+## Nota Vercel CLI
+`vercel link --yes` puede **sobrescribir** el `.env.local` local con variables del proyecto en Vercel.
+Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.env.local` manualmente.
