@@ -87,7 +87,9 @@ export default function TodayPage() {
   };
 
   const loadReadings = async (deviceId: string, cursor?: string | null) => {
-    if (!token) return;
+    if (!token) {
+      return { data: [] as ApiReading[], nextCursor: null as string | null };
+    }
     const params = new URLSearchParams({
       device_id: deviceId,
       limit: "50",
