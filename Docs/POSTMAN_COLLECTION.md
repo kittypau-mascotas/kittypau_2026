@@ -1,4 +1,4 @@
-# Colección Postman/Newman (Kittypau)
+﻿# Colección Postman/Newman (Kittypau)
 
 ## Objetivo
 Tener una colección reproducible para validar el flujo API sin tocar infraestructura IoT.
@@ -16,23 +16,94 @@ device_id = <DEVICE_UUID>
 device_code = KPCL0100
 ```
 
+## Obtener access_token (Auth)
+Endpoint (Supabase Auth):
+`{{supabase_url}}/auth/v1/token?grant_type=password`
+
+Agregar a variables de entorno:
+```
+supabase_url = https://<PROJECT_ID>.supabase.co
+supabase_anon_key = <SUPABASE_ANON_KEY>
+email = <USUARIO_EMAIL>
+password = <USUARIO_PASSWORD>
+```
+
+Request:
+- Method: POST
+- Headers:
+  - `apikey: {{supabase_anon_key}}`
+  - `Content-Type: application/json`
+- Body:
+```json
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+```
+Tests:
+```javascript
+pm.test("status 200", () => pm.response.to.have.status(200));
+pm.environment.set("access_token", pm.response.json().access_token);
+```
+
 ---
 
 ## Colección: `Kittypau API`
 Orden recomendado:
-1. `GET /api/pets`
-2. `POST /api/pets`
-3. `PATCH /api/pets/:id`
-4. `POST /api/devices`
-5. `PATCH /api/devices/:id`
-6. `POST /api/mqtt/webhook`
-7. `GET /api/readings?device_id={{device_id}}`
+1. `POST Auth (Supabase)`
+2. `GET /api/onboarding/status`
+3. `PUT /api/profiles`
+4. `GET /api/pets`
+5. `POST /api/pets`
+6. `PATCH /api/pets/:id`
+7. `POST /api/devices`
+8. `PATCH /api/devices/:id`
+9. `POST /api/mqtt/webhook`
+10. `GET /api/readings?device_id={{device_id}}`
 
 ---
 
 ## Detalle de requests
 
-### 1) GET /api/pets
+### 1) GET /api/onboarding/status
+**Method:** GET  
+**URL:** `{{base_url}}/api/onboarding/status`  
+**Headers:**  
+`Authorization: Bearer {{access_token}}`
+
+**Tests:**
+```javascript
+pm.test("status 200", () => pm.response.to.have.status(200));
+```
+
+---
+
+### 2) PUT /api/profiles
+**Method:** PUT  
+**URL:** `{{base_url}}/api/profiles`  
+**Headers:**  
+`Authorization: Bearer {{access_token}}`  
+`Content-Type: application/json`
+
+**Body (raw JSON):**
+```json
+{
+  "user_name": "Javo",
+  "city": "Lima",
+  "country": "PE",
+  "notification_channel": "email",
+  "user_onboarding_step": "user_profile"
+}
+```
+
+**Tests (Postman):**
+```javascript
+pm.test("status 200", () => pm.response.to.have.status(200));
+```
+
+---
+
+### 3) GET /api/pets
 **Method:** GET  
 **URL:** `{{base_url}}/api/pets`  
 **Headers:**  
@@ -40,7 +111,7 @@ Orden recomendado:
 
 ---
 
-### 2) POST /api/pets
+### 4) POST /api/pets
 **Method:** POST  
 **URL:** `{{base_url}}/api/pets`  
 **Headers:**  
@@ -66,7 +137,7 @@ pm.environment.set("pet_id", pm.response.json().id);
 
 ---
 
-### 3) PATCH /api/pets/:id
+### 5) PATCH /api/pets/:id
 **Method:** PATCH  
 **URL:** `{{base_url}}/api/pets/{{pet_id}}`  
 **Headers:**  
@@ -88,7 +159,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 
 ---
 
-### 4) POST /api/devices
+### 6) POST /api/devices
 **Method:** POST  
 **URL:** `{{base_url}}/api/devices`  
 **Headers:**  
@@ -113,7 +184,7 @@ pm.environment.set("device_id", pm.response.json().id);
 
 ---
 
-### 5) PATCH /api/devices/:id
+### 7) PATCH /api/devices/:id
 **Method:** PATCH  
 **URL:** `{{base_url}}/api/devices/{{device_id}}`  
 **Headers:**  
@@ -135,7 +206,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 
 ---
 
-### 6) POST /api/mqtt/webhook
+### 8) POST /api/mqtt/webhook
 **Method:** POST  
 **URL:** `{{base_url}}/api/mqtt/webhook`  
 **Headers:**  
@@ -145,7 +216,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 **Body:**
 ```json
 {
-  "deviceCode": "{{device_code}}",
+  "deviceId": "{{device_id}}",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -161,7 +232,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 
 ---
 
-### 7) GET /api/readings
+### 9) GET /api/readings
 **Method:** GET  
 **URL:** `{{base_url}}/api/readings?device_id={{device_id}}`  
 **Headers:**  
@@ -189,4 +260,3 @@ newman run Kittypau_API.postman_collection.json \
 ## Notas
 - No subir tokens reales al repo.
 - Si cambian los contratos, actualizar esta colección.
-

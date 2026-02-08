@@ -1,4 +1,4 @@
-﻿# Automatizacion de Tests (Kittypau)
+﻿# Automatización de Tests (Kittypau)
 
 ## Objetivo
 Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructura ni credenciales reales en docs.
@@ -8,20 +8,22 @@ Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructu
 ## Alcance
 - API directa (sin Bridge): **obligatoria**.
 - Bridge/MQTT: **opcional** (depende del entorno IoT).
-- Realtime: validacion manual (frontend).
+- Realtime: validación manual (frontend).
+
+Referencia de colección: ver `Docs/POSTMAN_COLLECTION.md`.
 
 ---
 
 ## Herramienta recomendada
-**OpciÃ³n A (rÃ¡pida y portable): Newman + Postman Collection**
-- Pros: fÃ¡cil de compartir con equipo, ejecuciÃ³n en CI.
-- Contras: depende de colecciÃ³n externa.
+**Opción A (rápida y portable): Newman + Postman Collection**
+- Pros: fácil de compartir con equipo, ejecución en CI.
+- Contras: depende de colección externa.
 
-**OpciÃ³n B (sencilla y nativa): PowerShell**
+**Opción B (sencilla y nativa): PowerShell**
 - Pros: no requiere tooling extra.
 - Contras: menos reportes.
 
-Para este proyecto, empezar con **PowerShell** y luego migrar a **Newman** si el equipo crece.
+Para este proyecto, empezar con **Newman** y mantener **PowerShell** como respaldo local.
 
 ---
 
@@ -109,7 +111,7 @@ Invoke-RestMethod -Method Get `
 
 ---
 
-## Reporte esperado (mÃ­nimo)
+## Reporte esperado (mínimo)
 - Salida de consola con:
   - `200` para flujo base
   - `400/404/403` para casos negativos
@@ -199,3 +201,4 @@ Get-Content -Path ".\\Docs\\.env.test.local" |
 ## Nota Vercel CLI
 `vercel link --yes` puede **sobrescribir** el `.env.local` local con variables del proyecto en Vercel.
 Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.env.local` manualmente.
+
