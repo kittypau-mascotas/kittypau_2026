@@ -35,6 +35,7 @@
 
 ## Implementado hoy
 - Backend hardening v1 completo (errores, rate limit, validaciones, auditoria, RPC, indices, cleanup).
+- Documentacion CLI completada (Vercel, Supabase, HiveMQ, Raspberry) con ejemplos.
 - Errores API estandarizados con `code` y `request_id`.
 - Rate limiting basico aplicado (webhook y endpoints mutables).
 - Limites de payload y rangos validados (weight_kg, battery_level, readings limit).
