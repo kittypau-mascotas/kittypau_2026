@@ -1,4 +1,4 @@
-# Topicos MQTT - Kittypau IoT (referencia)
+﻿# Tópicos MQTT - Kittypau IoT (referencia)
 
 ## Broker (HiveMQ Cloud)
 - **Servicio**: HiveMQ Cloud
@@ -9,8 +9,8 @@
 
 ---
 
-## Convencion de topics
-Patron general:
+## Convención de topics
+Patrón general:
 - `{DEVICE_ID}/SENSORS`
 - `{DEVICE_ID}/STATUS`
 - `{DEVICE_ID}/cmd`
@@ -41,7 +41,7 @@ El bridge se suscribe con wildcard para todos los dispositivos:
 }
 ```
 
-| Campo | Tipo | Descripcion |
+| Campo | Tipo | Descripción |
 |---|---|---|
 | `timestamp` | string | Hora NTP `MM-dd-aaaa HH:mm:ss` |
 | `weight` | float | Peso en gramos |
@@ -125,4 +125,3 @@ El bridge debe mapear `{DEVICE_ID}/SENSORS` al payload de `/api/mqtt/webhook`:
 | `DEVICE_ID` | `deviceCode` (inyectado desde topic) |
 
 **Nota**: `STATUS` no se persiste hoy en DB; se puede extender el schema si se necesita.
-

@@ -1,12 +1,12 @@
 # HiveMQ MQTT CLI (mqtt-cli)
 
 ## Objetivo
-Probar conexiones MQTT y publicar/suscribirse a topicos.
+Probar conexiones MQTT y publicar/suscribirse a tópicos.
 
 ## Repo oficial
 - Proyecto: `hivemq/mqtt-cli` (Apache 2.0)
 
-## Instalacion
+## Instalación
 Windows:
 - Descargar ZIP desde releases y ejecutar `mqtt-cli.exe`.
 
@@ -23,26 +23,26 @@ sudo dpkg -i mqtt-cli-<version>.deb
 sudo yum install -y mqtt-cli-<version>.rpm
 ```
 
-## Comandos basicos
+## Comandos básicos
 Ayuda:
 ```bash
 mqtt --help
 ```
 
-Suscripcion:
+Suscripción:
 ```bash
-mqtt sub -h <HOST> -p 8883 -t "kittypau/+/telemetry" -u <USER> -P <PASS> --ssl
+mqtt sub -h <HOST> -p 8883 -t "+/SENSORS" -u <USER> -P <PASS> --ssl
 ```
 
-Publicacion:
+Publicación:
 ```bash
-mqtt pub -h <HOST> -p 8883 -t "kittypau/<DEVICE_CODE>/telemetry" -m '{"temperature":23.5}' -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"temperature":23.5}' -u <USER> -P <PASS> --ssl
 ```
 
-## Ejemplo Kittypau (topico real)
+## Ejemplo Kittypau (tópico real)
 ```bash
-mqtt sub -h <HOST> -p 8883 -t "kittypau/+/telemetry" -u <USER> -P <PASS> --ssl
-mqtt pub -h <HOST> -p 8883 -t "kittypau/KPCL0001/telemetry" -m '{"temperature":23.5,"humidity":65,"weight_grams":3500,"battery_level":85,"flow_rate":120}' -u <USER> -P <PASS> --ssl
+mqtt sub -h <HOST> -p 8883 -t "+/SENSORS" -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"temperature":23.5,"humidity":65,"weight":3500,"temp":23.5,"hum":65}' -u <USER> -P <PASS> --ssl
 ```
 
 ## Modo shell (opcional)
@@ -53,3 +53,4 @@ mqtt shell
 ## Notas
 - Usar TLS (`--ssl`) en HiveMQ Cloud.
 - Reemplazar `<HOST>`, `<USER>`, `<PASS>`.
+- Referencia de tópicos y payload: `Docs/TOPICOS_MQTT.md`.

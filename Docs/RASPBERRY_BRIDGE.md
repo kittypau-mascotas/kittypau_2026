@@ -261,6 +261,41 @@ El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Ver
 
 ---
 
+## Prueba end-to-end (sin dispositivo físico)
+> Usa MQTT CLI para simular el dispositivo y validar el flujo completo.
+
+### 1) Publicar mensaje en HiveMQ
+Ejemplo (TLS/8883):
+```bash
+mqtt pub \
+  -h <TU_HOST_HIVEMQ> -p 8883 \
+  -u <TU_USUARIO> -P <TU_PASSWORD> \
+  -t KPCL0001/SENSORS \
+  -m "{\"timestamp\":\"2026-02-08T02:00:00Z\",\"weight\":3500,\"temp\":23.5,\"hum\":65}"
+```
+Esperado:
+- El bridge recibe el mensaje.
+- El bridge envía `POST` a `/api/mqtt/webhook`.
+
+### 2) Verificar en Vercel
+```bash
+vercel logs kittypau-app --since 5m
+```
+Esperado:
+- Request `POST /api/mqtt/webhook` con `200`.
+
+### 3) Verificar lectura en Supabase
+```sql
+select * from public.readings
+where device_id = '<DEVICE_UUID>'
+order by recorded_at desc
+limit 3;
+```
+Esperado:
+- Nueva fila con `weight_grams`, `temperature`, `humidity`.
+
+---
+
 ## Service 24/7 (referencia)
 > Esta parte queda para el equipo de infraestructura.
 - `systemd` con auto-restart.
