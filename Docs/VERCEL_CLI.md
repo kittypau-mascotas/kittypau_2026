@@ -30,6 +30,15 @@ npx vercel ls
 npx vercel logs
 ```
 
+## Probar webhook (desde local)
+```powershell
+$env:WEBHOOK_TOKEN="<MQTT_WEBHOOK_SECRET>"
+Invoke-RestMethod -Method Post `
+  -Uri "https://kittypau-app.vercel.app/api/mqtt/webhook" `
+  -Headers @{ "x-webhook-token"=$env:WEBHOOK_TOKEN; "Content-Type"="application/json"} `
+  -Body "{`"deviceCode`":`"KPCL0001`",`"temperature`":23.5,`"humidity`":65,`"weight_grams`":3500,`"battery_level`":85,`"flow_rate`":120}"
+```
+
 ## Variables de entorno
 ```powershell
 npx vercel env ls

@@ -39,6 +39,12 @@ Publicacion:
 mqtt pub -h <HOST> -p 8883 -t "kittypau/<DEVICE_CODE>/telemetry" -m '{"temperature":23.5}' -u <USER> -P <PASS> --ssl
 ```
 
+## Ejemplo Kittypau (topico real)
+```bash
+mqtt sub -h <HOST> -p 8883 -t "kittypau/+/telemetry" -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "kittypau/KPCL0001/telemetry" -m '{"temperature":23.5,"humidity":65,"weight_grams":3500,"battery_level":85,"flow_rate":120}' -u <USER> -P <PASS> --ssl
+```
+
 ## Modo shell (opcional)
 ```bash
 mqtt shell
