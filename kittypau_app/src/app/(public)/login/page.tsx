@@ -83,16 +83,19 @@ export default function LoginPage() {
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-            Kittypau IoT
+            <span className="brand-title text-sm text-slate-700">Kittypau</span>
+            <span className="ui-subtle text-[10px] uppercase tracking-[0.3em] text-slate-400">
+              IoT
+            </span>
           </div>
-          <h1 className="text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
+          <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
           <p className="text-base leading-relaxed text-slate-600 md:text-lg">
             Accede a la lectura interpretada del comportamiento de tu mascota.
             Sin dashboards fríos, solo claridad y calma.
           </p>
-          <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
+          <div className="stagger grid grid-cols-2 gap-4 text-sm text-slate-600">
             <div className="surface-card px-4 py-3">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Última lectura
@@ -113,9 +116,9 @@ export default function LoginPage() {
         </div>
 
         <div className="glass-panel w-full max-w-md p-8">
-          <div className="space-y-6">
+          <div className="stagger space-y-6">
             <div>
-              <h2 className="text-2xl font-semibold text-slate-900">
+              <h2 className="display-title text-2xl font-semibold text-slate-900">
                 Iniciar sesión
               </h2>
               <p className="mt-2 text-sm text-slate-500">

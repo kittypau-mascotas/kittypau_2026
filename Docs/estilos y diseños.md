@@ -1,12 +1,12 @@
-﻿# Estilos y Disenos (Kittypau)
+﻿# Estilos y Diseños (Kittypau)
 
 ## Principio base
-Kittypau no debe verse como un dashboard tecnico. Debe contar una historia.
+Kittypau no debe verse como un dashboard técnico. Debe contar una historia.
 
 Tres reglas de las webs premiadas de data:
 1. Narran, no informan: el usuario descubre.
-2. La pagina reacciona al scroll (scrollytelling).
-3. Los datos se vuelven objetos vivos, no graficos.
+2. La página reacciona al scroll (scrollytelling).
+3. Los datos se vuelven objetos vivos, no gráficos.
 
 ---
 
@@ -18,51 +18,51 @@ Tres reglas de las webs premiadas de data:
 - Temperatura = aura.
 
 ### 2) Scrollytelling narrativo
-- El dia se cuenta como historia:
+- El día se cuenta como historia:
 - 06:10 despierto
-- 07:20 comio
+- 07:20 comió
 - 14:30 siesta
 - 03:12 actividad nocturna
 
 ### 3) Data emocional (clave)
-- No buscamos metricas veterinarias.
-- Buscamos: "como fue su dia".
+- No buscamos métricas veterinarias.
+- Buscamos: "cómo fue su día".
 
 ---
 
 ## Estructura visual ideal de Kittypau
 ### HOME (no dashboard)
 Hero:
-"Mientras trabajabas... esto paso en su mundo"
-Fondo vivo con particulas segun actividad.
+"Mientras trabajabas... esto pasó en su mundo"
+Fondo vivo con partículas según actividad.
 
-### Pagina DIA
-No graficos.
+### Página DIA
+No gráficos.
 En lugar de %:
 - "madrugada tranquila"
 - "explorador diurno"
 - "cazador nocturno"
 
-### Pagina HISTORIA
+### Página HISTORIA
 Timeline vertical narrativa:
-- "El dia que mas te espero"
-- "El dia que estuvo inquieto"
-- "El dia que durmio contigo"
+- "El día que más te esperó"
+- "El día que estuvo inquieto"
+- "El día que durmió contigo"
 
 ### ALERTAS
-No tecnicas.
+No técnicas.
 - Mal: "actividad irregular"
-- Bien: "Hoy estuvo extrano..."
+- Bien: "Hoy estuvo extraño..."
 
 ---
 
-## Traduccion IoT -> UX (correcta)
-| Dato sensor | UI tipica | UI Kittypau |
+## Traducción IoT -> UX (correcta)
+| Dato sensor | UI típica | UI Kittypau |
 |---|---|---|
-| movimiento | grafico | recorrido |
-| temperatura | numero | confort |
-| acelerometro | intensidad | animo |
-| reposo | % | sueno |
+| movimiento | gráfico | recorrido |
+| temperatura | número | confort |
+| acelerómetro | intensidad | ánimo |
+| reposo | % | sueño |
 | patrones | histograma | personalidad |
 
 ---
@@ -74,26 +74,26 @@ Kittypau no es:
 - GPS
 
 Kittypau es:
-- un diario automatico escrito por el gato
+- un diario automático escrito por el gato
 
 ---
 
 ## Estilo visual recomendado
-Calmo + nocturno + organico + calido
+Calmo + nocturno + orgánico + cálido
 
 No:
 - veterinario
 - smartwatch
 - dashboard SaaS
 
-Si:
-- atmosferico
+Sí:
+- atmosférico
 - silencioso
-- intimo
+- íntimo
 
 ---
 
-## Decision de direccion creativa
+## Decisión de dirección creativa
 Elegir una:
 1. Landing emocional tipo producto Apple
 2. Experiencia interactiva (wow, scrollytelling)
@@ -111,7 +111,7 @@ Rosewater (fondos suaves, cards, hover)
 Dusty Rose (secundario, botones suaves)
 - `#C8A2A6`
 
-Marsala (acento fuerte, CTA, titulos)
+Marsala (acento fuerte, CTA, títulos)
 - `#7A2E3A`
 - Alternativa: `#6B2632`
 
@@ -132,7 +132,7 @@ Success / OK
 - Sage Soft: `#7F9C8A`
 - Fondo recomendado: `#EAF2ED`
 
-Info / Notificacion
+Info / Notificación
 - Dusty Blue-Grey: `#6F8597`
 - Fondo recomendado: `#EDF1F5`
 
@@ -145,10 +145,10 @@ Info / Notificacion
 
 ---
 
-## Ejemplo rapido de uso
+## Ejemplo rápido de uso
 - Fondo web: Ivory
 - Cards: Rosewater
-- Boton principal: Marsala
+- Botón principal: Marsala
 - Warning: Muted Gold
 - Error: Deep Marsala
 - Success: Sage
@@ -156,11 +156,11 @@ Info / Notificacion
 
 ---
 
-# Especificaciones - Tablero de Gestion
+# Especificaciones - Tablero de Gestión
 
 ## Marca
 - Marca: KittyPau
-- Estilo: tecnico-amigable, neutro, confiable (no femenino, no relajado)
+- Estilo: técnico-amigable, neutro, confiable (no femenino, no relajado)
 
 ---
 
@@ -180,30 +180,22 @@ Colores de marca
 Estados / Notificaciones
 | Estado | Texto | Fondo |
 |---|---|---|
-| Exito | `#4E6B5B` | `#E6EFE9` |
+| Éxito | `#4E6B5B` | `#E6EFE9` |
 | Aviso | `#8A6A2F` | `#F3E6C9` |
 | Error | `#FFFFFF` | `#B24A42` |
 | Info | `#4C5F6E` | `#EDF1F5` |
 
 ---
 
-## Tipografia
-Titulos / Marca
-- Fuente: Titan One
-- Uso: Logo, H1, CTA clave
-- Peso: Bold
-- Tamano:
+## Tipografía
+Títulos / Marca
+- Marca (solo logotipo): Titan One 400
+- Títulos display: Fraunces 600
+- Texto/UI: Inter 400-500
 - H1: 36-40px
 - H2: 26-30px
-- Color: `#EBB7AA` o `#7A2E3A`
-
-Texto funcional
-- Fuente: Inter / Poppins / Nunito
-- Peso: Regular / Medium
-- Tamano:
 - Texto base: 15-16px
-- Labels: 13-14px
-- Color: `#2E2A28`
+- Labels: 12-13px
 
 ---
 
@@ -212,14 +204,14 @@ Header superior
 - Altura: 72px
 - Fondo: `#FBF8F3`
 - Logo izquierda
-- Navegacion centrada
+- Navegación centrada
 - Usuario derecha (avatar circular 32px)
 
 Sidebar (izquierda)
 - Ancho: 240px
 - Fondo: `#F1E6DE`
 - Iconos monocromos
-- Item activo:
+- Ítem activo:
 - Fondo: `#EBD6CE`
 - Texto: `#7A2E3A`
 
@@ -236,17 +228,17 @@ Cards de Resumen
 - Fondo: `#FBF8F3`
 - Sombra: `0 8px 24px rgba(0,0,0,0.08)`
 - Iconos lineales
-- Numeros en Marsala / Dusty Rose
+- Números en Marsala / Dusty Rose
 
 ---
 
 ## Notificaciones
 - Border-radius: 10px
 - Padding: 16px
-- Icono a la izquierda (20px)
+- Ícono a la izquierda (20px)
 - Texto Medium
 - No animaciones agresivas
-- Error siempre en bloque solido (no outline)
+- Error siempre en bloque sólido (no outline)
 
 ---
 
@@ -254,28 +246,28 @@ Cards de Resumen
 - Botones rectangulares suaves
 - Fondo: `#EFE6DF`
 - Hover: `#E6D1C7`
-- Icono + texto alineado izquierda
+- Ícono + texto alineado izquierda
 
 ---
 
-## Reglas clave de diseno
+## Reglas clave de diseño
 - Nada de colores puros (rojo/verde/azul)
 - Nada pastel infantil
 - Todo ligeramente apagado
-- Mas espacio que decoracion
-- Contraste > saturacion
+- Más espacio que decoración
+- Contraste > saturación
 
 ---
 
 # Stack de UI y Motion (landing Apple-like)
 
-## Filosofia
+## Filosofía
 Landing moderna tipo startup hardware / Apple-like / storytelling.
 No dashboard corporativo, no Material UI.
 
 Principio:
 - UI minimalista + motion fuerte + componentes simples + scroll animado
-- Sin librerias pesadas
+- Sin librerías pesadas
 
 ---
 
@@ -284,7 +276,7 @@ UI base
 - shadcn/ui
 - tailwindcss
 
-Estetica startup
+Estética startup
 - magicui
 - aceternity-ui
 
@@ -299,21 +291,21 @@ Opcional premium
 ---
 
 ## Regla de oro
-- Libreria UI = estructura
+- Librería UI = estructura
 - Motion = experiencia
 - Scroll = storytelling
-- Visual FX = percepcion de calidad
+- Visual FX = percepción de calidad
 
 ---
 
-# Politica de Stack (2024-2026)
+# Política de Stack (2024-2026)
 
 ## Objetivo
-Evitar librerias antiguas. Solo se aceptan tecnologias con uso real y activo en 2024-2026.
+Evitar librerías antiguas. Solo se aceptan tecnologías con uso real y activo en 2024-2026.
 
-## Regla de aceptacion
-- La libreria debe mostrar adopcion fuerte en 2024-2026.
-- Debe tener actividad reciente (release en los ultimos 12-18 meses).
+## Regla de aceptación
+- La librería debe mostrar adopción fuerte en 2024-2026.
+- Debe tener actividad reciente (release en los últimos 12-18 meses).
 - Debe ser compatible con Next.js App Router.
 
 ## Permitidas (core UI)
@@ -340,7 +332,7 @@ Evitar librerias antiguas. Solo se aceptan tecnologias con uso real y activo en 
 - AdminLTE
 
 ## Nota de uso real (2024)
-Segun State of React 2024, MUI sigue liderando en uso y shadcn/ui muestra el mayor crecimiento.
+Según State of React 2024, MUI sigue liderando en uso y shadcn/ui muestra el mayor crecimiento.
 
 ---
 
@@ -389,7 +381,7 @@ La paleta anterior queda como referencia de marca y narrativa.
 
 ## 1) Inputs & Actions
 Todo lo que el usuario puede presionar o completar
-- Button (primary / secondary / ghost / link)
+- Button (primary / secondary / ghost / outline)
 - IconButton
 - Input
 - Textarea
@@ -402,9 +394,9 @@ Todo lo que el usuario puede presionar o completar
 - Command palette (CMD+K)
 
 Regla startup:
-Los botones deben verse grandes, respirables y tactiles.
+Los botones deben verse grandes, respirables y táctiles.
 
-Boton base recomendado:
+Botón base recomendado:
 `components/ui/button.tsx`
 
 ```tsx
@@ -451,7 +443,7 @@ export function Button({ className, variant, size, ...props }: ButtonProps) {
 ---
 
 ## 2) Feedback
-Comunicacion con el usuario
+Comunicación con el usuario
 - Alert
 - Toast
 - Badge
@@ -462,7 +454,7 @@ Comunicacion con el usuario
 - Skeleton loader
 - Progress bar
 
-En SaaS hardware esto es critico: estado del dispositivo.
+En SaaS hardware esto es crítico: estado del dispositivo.
 
 ---
 
@@ -478,7 +470,7 @@ La estructura visual (estos no vienen listos, se crean)
 ---
 
 ## 4) Surface Components
-Donde vive la informacion
+Donde vive la información
 - Card
 - Feature Card
 - Stat Card
@@ -554,10 +546,10 @@ components/
 ---
 
 ## Regla importante
-No construyas paginas primero.
+No construyas páginas primero.
 Primero construyes:
 1 boton + 1 card + 1 input perfectos.
-Despues todo el sitio se arma solo.
+Después todo el sitio se arma solo.
 
 Input base recomendado:
 `components/ui/input.tsx`
@@ -582,27 +574,27 @@ export function Input({
 ```
 
 ## Estilos de Diseño Web Mejor Evaluados (2025-2026)
-1) Soft Minimalism (estandar SaaS)
-- Fondos off-white / gris calido.
+1) Soft Minimalism (estándar SaaS)
+- Fondos off-white / gris cálido.
 - Sombras muy suaves.
-- Tipografia base 14-18.
+- Tipografía base 14-18.
 - Bordes 10-18px.
 - Separaciones amplias.
 - Iconos finos.
 - Nada grita visualmente.
 
 2) Layered Depth (glassmorphism usable)
-- Capas translucidas para jerarquia.
+- Capas translúcidas para jerarquía.
 - Tarjetas flotantes.
 - Blur suave.
 - Overlays claros.
 - Contraste controlado.
 
 3) Editorial Layout (estilo revista digital)
-- Titulos grandes.
+- Títulos grandes.
 - Bloques verticales.
 - Fotos protagonistas.
-- UI minima.
+- UI mínima.
 
 ---
 
@@ -613,45 +605,45 @@ export function Input({
 - Sin dashboards densos.
 
 2) Card-Driven UI
-- Cada accion es una tarjeta.
-- Modulos reutilizables.
+- Cada acción es una tarjeta.
+- Módulos reutilizables.
 
 3) Thumb-Zone First Layout
 - Acciones principales abajo.
-- Nada critico arriba.
+- Nada crítico arriba.
 
 ---
 
 ## Lo que evitar (mal feedback)
 - Sidebars complejas.
 - Dashboards con muchos widgets.
-- Menus hamburguesa profundos.
+- Menús hamburguesa profundos.
 - Colores saturados.
-- Tipografia pequena.
-- Demasiados iconos.
+- Tipografía pequeña.
+- Demasiados íconos.
 - Pantallas con muchas decisiones.
 
 ---
 
 ## Resumen claro
-- Web: Soft minimal + tipografia editorial + capas suaves.
+- Web: Soft minimal + tipografía editorial + capas suaves.
 - Mobile: Feed vertical + tarjetas + pulgar primero.
 
 
 ## Cambio Grande del Mundo UI (2026)
-Antes: se instalaba una libreria completa (Bootstrap/MUI) y se vivia dentro de ella.
+Antes: se instalaba una librería completa (Bootstrap/MUI) y se vivía dentro de ella.
 Ahora: se construye un design system con piezas headless + copy-paste.
 Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componentes copiados (shadcn/custom).
 
 ---
 
-## Librerias con Mejor Diseño (Next.js 2025-2026)
+## Librerías con Mejor Diseño (Next.js 2025-2026)
 **Tier S (premium)**
-- shadcn/ui: estandar actual (Tailwind + Radix).
+- shadcn/ui: estándar actual (Tailwind + Radix).
 - Radix UI: primitivas accesibles sin estilos.
 - React Aria / Headless UI: interacciones complejas y mobile feel.
 
-**Tier A (bonitas pero mas "libreria")**
+**Tier A (bonitas pero más "librería")**
 - HeroUI (NextUI v2).
 - Mantine.
 - Chakra UI.
@@ -665,7 +657,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 ## Componentes Visuales para Landing Premium
 - Magic UI (hero sections premium).
 - Aceternity UI (efectos modernos).
-- Tremor (dashboards analiticos).
+- Tremor (dashboards analíticos).
 - Modern UI (alternativa shadcn).
 
 ---
@@ -677,7 +669,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 ---
 
-## Recomendacion KittyPau
+## Recomendación KittyPau
 - Usar: shadcn/ui + Radix + Tailwind + componentes custom.
 - Evitar: Material UI, Ant Design.
 
@@ -699,32 +691,32 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 - Mobile-first
 - shadcn/Radix: Sheet (menu mobile), DropdownMenu (user menu), Separator
 
-2) Navigation (minima)
+2) Navigation (mínima)
 - TopNav (desktop): Logo, estado general, avatar usuario
 - BottomBar (mobile): Home, Mascotas, Dispositivo, Perfil
 - Componentes: NavigationMenu, Button (icon), Avatar
 
-3) Cards (corazon del diseño)
+3) Cards (corazón del diseño)
 - PetCard: foto real edge-to-edge, nombre + estado, CTA sutil
-- DeviceStatusCard: nivel agua/comida, ultima actividad, estado visual (ok/alerta)
-- InsightCard (feed principal): mensaje humano + accion rapida
+- DeviceStatusCard: nivel agua/comida, última actividad, estado visual (ok/alerta)
+- InsightCard (feed principal): mensaje humano + acción rápida
 - Componentes: Card, AspectRatio, Badge, Progress, Tooltip, Alert, Button
 
 4) Feed principal (mobile-first)
-- DailyFeed: scroll vertical unico (sin dashboards)
+- DailyFeed: scroll vertical único (sin dashboards)
 - Componentes: Card, Separator, Skeleton
 
 5) Estados & Feedback
 - Alertas suaves (no rojas agresivas)
-- Empty states premium (imagen lifestyle + texto corto + CTA unico)
+- Empty states premium (imagen lifestyle + texto corto + CTA único)
 - Componentes: Alert, Badge, Toast, Button, Card
 
-6) Formularios (minimos y humanos)
+6) Formularios (mínimos y humanos)
 - PetForm: nombre, tipo, foto
-- DeviceLinkForm: codigo corto + confirmacion visual
+- DeviceLinkForm: código corto + confirmación visual
 - Componentes: Input, Select, RadioGroup, Form, Button, Dialog
 
-7) Autenticacion (limpia y premium)
+7) Autenticación (limpia y premium)
 - Login/Register: card centrada, fondo lifestyle
 - Componentes: Card, Input, Button, Separator
 
@@ -734,7 +726,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 9) Charts (solo cuando aportan valor)
 - Evitar dashboards complejos
-- Si se usan: consumo agua 7 dias (1 grafico)
+- Si se usan: consumo agua 7 días (1 gráfico)
 - Stack: Tremor + shadcn (AreaChart / LineChart)
 
 ### Motion & Micro-interactions
@@ -753,7 +745,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 ### Mapa final de componentes
 - Layout: Card, Sheet, Separator
-- Navegacion: NavigationMenu, Button
+- Navegación: NavigationMenu, Button
 - Contenido: Card, Badge, Alert
 - Inputs: Input, Select, Radio
 - Feedback: Toast, Tooltip
@@ -762,7 +754,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 ### Resultado visual esperado
 - Estilo Apple / Vercel
-- Sensacion de calma
+- Sensación de calma
 - Foco en mascotas, no sensores
 - UX clara en 3 segundos
 
@@ -770,7 +762,7 @@ Stack actual: Primitivas accesibles (Radix/Aria) + estilos (Tailwind) + componen
 
 # Tokens y Componentes Base (MVP UI)
 
-## Tokens oficiales (aplicacion)
+## Tokens oficiales (aplicación)
 Estos tokens son la fuente de verdad para todas las vistas (login, registro, onboarding).
 
 Color (HSL)
@@ -793,8 +785,8 @@ Color (HSL)
 }
 ```
 
-Tipografia
-- Titulo: Manrope 600-700
+Tipografía
+- Título: Manrope 600-700
 - Texto: Inter 400-500
 - Base: 15-16px
 - Labels: 12-13px

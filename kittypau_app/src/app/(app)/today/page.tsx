@@ -191,7 +191,7 @@ export default function TodayPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Hoy en casa
               </p>
-              <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+              <h1 className="display-title text-3xl font-semibold text-slate-900 md:text-4xl">
                 Resumen del día
               </h1>
             </div>
@@ -209,7 +209,7 @@ export default function TodayPage() {
               </div>
             </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="stagger grid gap-4 md:grid-cols-3">
             <div className="surface-card px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Estado general
@@ -283,7 +283,7 @@ export default function TodayPage() {
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="display-title text-lg font-semibold text-slate-900">
               Feed interpretado
             </h2>
             <span className="text-xs uppercase tracking-[0.2em] text-slate-400">

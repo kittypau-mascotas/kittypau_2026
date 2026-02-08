@@ -39,6 +39,7 @@
 - Tests post-migracion OK (2026-02-08): DB/API KPCL0159 + onboarding KPCL0208.
 - UTF-8 corregido en UI (login + today).
 - Onboarding UI basico implementado (perfil + mascota + dispositivo).
+- Tipografia actualizada: Titan One (marca), Fraunces (titulos), Inter (texto).
 - GET /api/devices sin rate limit (solo POST).
 - GET /api/pets sin rate limit; POST /api/pets con rate limit.
 - GET /api/profiles corregido (sin audit ni rate limit); PUT /api/profiles con rate limit + audit.
