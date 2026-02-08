@@ -69,6 +69,8 @@ export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
   const token = useMemo(() => getAccessToken(), []);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
@@ -149,7 +151,12 @@ export default function TodayPage() {
         const devices = parseListResponse<ApiDevice>(devicesPayload);
 
         const primaryPet = pets[0];
+        const storedDeviceId =
+          typeof window !== "undefined"
+            ? window.localStorage.getItem("kittypau_device_id")
+            : null;
         const primaryDevice =
+          devices.find((device) => device.id === storedDeviceId) ??
           devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
 
@@ -157,6 +164,9 @@ export default function TodayPage() {
         let readingsCursor: string | null = null;
         const initialDeviceId = primaryDevice?.id ?? null;
         setSelectedDeviceId(initialDeviceId);
+        if (initialDeviceId && typeof window !== "undefined") {
+          window.localStorage.setItem("kittypau_device_id", initialDeviceId);
+        }
         if (initialDeviceId) {
           const result = await loadReadings(initialDeviceId);
           readings = result.data;
@@ -224,6 +234,16 @@ export default function TodayPage() {
     state.devices.find((device) => device.pet_id === primaryPet?.id) ??
     state.devices[0];
   const latestReading = state.readings[0] ?? null;
+  const freshnessLabel = useMemo(() => {
+    if (!latestReading?.recorded_at) return "Sin datos";
+    const ts = new Date(latestReading.recorded_at).getTime();
+    if (Number.isNaN(ts)) return "Sin datos";
+    const diffMin = Math.round((Date.now() - ts) / 60000);
+    if (diffMin <= 2) return "Muy reciente";
+    if (diffMin <= 10) return "Reciente";
+    if (diffMin <= 30) return "Moderado";
+    return "Desactualizado";
+  }, [latestReading?.recorded_at]);
 
   const feedCards = useMemo(() => {
     if (!latestReading) return [];
@@ -294,6 +314,9 @@ export default function TodayPage() {
                     onChange={async (event) => {
                       const nextId = event.target.value || null;
                       setSelectedDeviceId(nextId);
+                      if (nextId && typeof window !== "undefined") {
+                        window.localStorage.setItem("kittypau_device_id", nextId);
+                      }
                       if (!nextId) return;
                       try {
                         const result = await loadReadings(nextId);
@@ -303,6 +326,7 @@ export default function TodayPage() {
                           readingsCursor: result.nextCursor,
                         }));
                         setLastRefreshAt(new Date().toISOString());
+                        setRefreshError(null);
                       } catch (err) {
                         setState((prev) => ({
                           ...prev,
@@ -340,6 +364,9 @@ export default function TodayPage() {
               <p className="mt-2 text-2xl font-semibold text-slate-900">
                 {formatTimestamp(latestReading?.recorded_at)}
               </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                {freshnessLabel}
+              </p>
             </div>
             <div className="surface-card px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
@@ -365,6 +392,7 @@ export default function TodayPage() {
               type="button"
               onClick={async () => {
                 if (!selectedDeviceId) return;
+                setIsRefreshing(true);
                 try {
                   const result = await loadReadings(selectedDeviceId);
                   setState((prev) => ({
@@ -373,21 +401,25 @@ export default function TodayPage() {
                     readingsCursor: result.nextCursor,
                   }));
                   setLastRefreshAt(new Date().toISOString());
+                  setRefreshError(null);
                 } catch (err) {
-                  setState((prev) => ({
-                    ...prev,
-                    error:
-                      err instanceof Error
-                        ? err.message
-                        : "No se pudieron cargar las lecturas.",
-                  }));
+                  setRefreshError(
+                    err instanceof Error
+                      ? err.message
+                      : "No se pudieron cargar las lecturas."
+                  );
+                } finally {
+                  setIsRefreshing(false);
                 }
               }}
               className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
             >
-              Actualizar lecturas
+              {isRefreshing ? "Actualizando..." : "Actualizar lecturas"}
             </button>
           </div>
+          {refreshError ? (
+            <p className="mt-2 text-xs text-rose-600">{refreshError}</p>
+          ) : null}
         </section>
 
         {state.error ? (
