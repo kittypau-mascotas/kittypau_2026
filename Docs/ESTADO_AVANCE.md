@@ -34,6 +34,8 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Onboarding backend test OK (2026-02-08): pet `55a0bb9e-2084-4131-9ef9-aaf5327bd08e`, device `e986136d-dd58-43d7-bafc-71406c1810a0` (KPCL0407).
+- GET /api/onboarding/status OK (2026-02-08): userStep `pet_profile`, petCount `4`, deviceCount `6`.
 - Archivo local de entorno de pruebas creado (Docs/.env.test.local, no versionado).
 - Endpoint onboarding status (`GET /api/onboarding/status`) listo.
 - Normalizacion de strings en PATCH /api/pets/:id.
