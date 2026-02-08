@@ -24,6 +24,7 @@
 - `Docs/SQL_SCHEMA.sql`
 - `Docs/GUIA_SQL_SUPABASE.md`
 - `Docs/GUIA_MIGRACION_SQL.md`
+- `Docs/CLEANUP_SQL.sql`
 
 ## APIs y backend
 - `Docs/FRONT_BACK_APIS.md`
