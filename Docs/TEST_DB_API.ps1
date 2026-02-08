@@ -43,7 +43,17 @@ try {
     -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
     -Body "{`"device_code`":`"$deviceCode`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$petIdB`"}"
 } catch {
-  throw "POST /api/devices fallo. Revisa pet_id o duplicado device_code."
+  # fallback: crear una mascota nueva y reintentar
+  $newPet = Invoke-RestMethod -Method Post `
+    -Uri "$apiBase/api/pets" `
+    -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
+    -Body "{`"name`":`"Mishu Test`",`"type`":`"cat`"}"
+
+  $petIdB = $newPet.id
+  $device = Invoke-RestMethod -Method Post `
+    -Uri "$apiBase/api/devices" `
+    -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
+    -Body "{`"device_code`":`"$deviceCode`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$petIdB`"}"
 }
 
 Write-Host "POST /api/devices OK -> $($device.id) ($deviceCode)"

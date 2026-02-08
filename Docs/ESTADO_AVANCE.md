@@ -38,6 +38,7 @@
 - Reglas de negocio aplicadas: `pet_state` default `device_pending`, `type` no editable, `care_rating` 1-10.
 - Un solo device activo por mascota (indice parcial) y link setea `device_state = linked`.
 - Migracion SQL aplicada via Supabase CLI (cleanup + indice unico active per pet).
+- Tests locales OK (2026-02-08): TEST_DB_API.ps1 + TEST_ONBOARDING_BACKEND.ps1.
 - Documentacion CLI completada (Vercel, Supabase, HiveMQ, Raspberry) con ejemplos.
 - Tests post-migracion OK (2026-02-08): DB/API KPCL0159 + onboarding KPCL0208.
 - UTF-8 corregido en UI (login + today).

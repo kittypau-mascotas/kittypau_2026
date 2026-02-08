@@ -10,12 +10,12 @@ $emailB = "kittypau.mascotas@gmail.com"
 $passwordB = $env:KITTYPAU_PASSWORD
 $petName = $env:PET_NAME
 $petType = $env:PET_TYPE
-$deviceCode = "KPCL" + (Get-Date -Format "mmss")
+$deviceCode = "KPCL" + (Get-Random -Minimum 1000 -Maximum 9999)
 
 if (-not $anonKey) { throw "Falta SUPABASE_ANON_KEY en entorno." }
 if (-not $passwordB) { throw "Falta KITTYPAU_PASSWORD en entorno." }
-if (-not $petName) { throw "Falta PET_NAME en entorno." }
-if (-not $petType) { throw "Falta PET_TYPE en entorno." }
+if (-not $petName) { $petName = "Mishu Test" }
+if (-not $petType) { $petType = "cat" }
 
 # 1) Auth
 $tokenB = (Invoke-RestMethod -Method Post `
