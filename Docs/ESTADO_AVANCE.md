@@ -47,6 +47,7 @@
 - Login/register: validación básica + recuperación de contraseña + banner de verificación.
 - /today refinado: resumen interpretado y acceso a /story.
 - /story refinado: filtro por día (hoy/ayer/2 días).
+- /pet refinado: edición básica de perfil con PATCH /api/pets/:id.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).

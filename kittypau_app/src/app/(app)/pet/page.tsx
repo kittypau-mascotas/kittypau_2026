@@ -68,6 +68,9 @@ const formatTimestamp = (value: string) => {
 export default function PetPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editPayload, setEditPayload] = useState<Partial<ApiPet>>({});
+  const [editMessage, setEditMessage] = useState<string | null>(null);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`${apiBase}/api/pets`, {
@@ -76,6 +79,19 @@ export default function PetPage() {
     });
     if (!res.ok) throw new Error("No se pudieron cargar las mascotas.");
     return (await res.json()) as ApiPet[];
+  };
+
+  const savePet = async (token: string, petId: string, payload: Partial<ApiPet>) => {
+    const res = await fetch(`${apiBase}/api/pets/${petId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("No se pudo actualizar la mascota.");
+    return (await res.json()) as ApiPet;
   };
 
   const loadDevices = async (token: string) => {
@@ -131,6 +147,7 @@ export default function PetPage() {
           window.localStorage.setItem("kittypau_pet_id", initialPetId);
         }
         setSelectedPetId(initialPetId);
+        setEditPayload(primaryPet ?? {});
 
         const primaryDevice =
           devices.find((device) => device.pet_id === initialPetId) ??
@@ -140,14 +157,14 @@ export default function PetPage() {
             ? await loadReadings(token, primaryDevice.id)
             : [];
 
-        if (!mounted) return;
-        setState({
-          isLoading: false,
-          error: null,
-          pets,
-          devices,
-          readings,
-        });
+      if (!mounted) return;
+      setState({
+        isLoading: false,
+        error: null,
+        pets,
+        devices,
+        readings,
+      });
       } catch (err) {
         if (!mounted) return;
         setState((prev) => ({
@@ -300,54 +317,181 @@ export default function PetPage() {
                   {selectedPet?.origin ?? "sin origen"}
                 </p>
               </div>
-              {state.pets.length > 1 && (
-                <label className="flex flex-col text-xs text-slate-500">
-                  Cambiar mascota
-                  <select
-                    className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                    value={selectedPetId ?? ""}
-                    onChange={async (event) => {
-                      const nextId = event.target.value || null;
-                      setSelectedPetId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem(
-                          "kittypau_pet_id",
-                          nextId
+              <div className="flex flex-wrap items-center gap-3">
+                {state.pets.length > 1 && (
+                  <label className="flex flex-col text-xs text-slate-500">
+                    Cambiar mascota
+                    <select
+                      className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                      value={selectedPetId ?? ""}
+                      onChange={async (event) => {
+                        const nextId = event.target.value || null;
+                        setSelectedPetId(nextId);
+                        if (nextId && typeof window !== "undefined") {
+                          window.localStorage.setItem(
+                            "kittypau_pet_id",
+                            nextId
+                          );
+                        }
+                        const nextPet = state.pets.find(
+                          (pet) => pet.id === nextId
                         );
-                      }
-                      const token = await getAccessToken();
-                      if (!token || !nextId) return;
-                      const device =
-                        state.devices.find((item) => item.pet_id === nextId) ??
-                        null;
-                      if (!device) {
-                        setState((prev) => ({ ...prev, readings: [] }));
-                        return;
-                      }
-                      try {
-                        const readings = await loadReadings(token, device.id);
-                        setState((prev) => ({ ...prev, readings }));
-                      } catch (err) {
-                        setState((prev) => ({
-                          ...prev,
-                          error:
-                            err instanceof Error
-                              ? err.message
-                              : "No se pudieron cargar las lecturas.",
-                        }));
-                      }
-                    }}
-                  >
-                    {state.pets.map((pet) => (
-                      <option key={pet.id} value={pet.id}>
-                        {pet.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+                        setEditPayload(nextPet ?? {});
+                        const token = await getAccessToken();
+                        if (!token || !nextId) return;
+                        const device =
+                          state.devices.find((item) => item.pet_id === nextId) ??
+                          null;
+                        if (!device) {
+                          setState((prev) => ({ ...prev, readings: [] }));
+                          return;
+                        }
+                        try {
+                          const readings = await loadReadings(token, device.id);
+                          setState((prev) => ({ ...prev, readings }));
+                        } catch (err) {
+                          setState((prev) => ({
+                            ...prev,
+                            error:
+                              err instanceof Error
+                                ? err.message
+                                : "No se pudieron cargar las lecturas.",
+                          }));
+                        }
+                      }}
+                    >
+                      {state.pets.map((pet) => (
+                        <option key={pet.id} value={pet.id}>
+                          {pet.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEdit((prev) => !prev);
+                    setEditMessage(null);
+                    setEditPayload(selectedPet ?? {});
+                  }}
+                  className="mt-4 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                >
+                  {showEdit ? "Cerrar edición" : "Editar perfil"}
+                </button>
+              </div>
             </div>
           </section>
+
+          {showEdit && selectedPet ? (
+            <section className="surface-card px-6 py-5">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Editar perfil
+              </h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <label className="text-xs text-slate-500">
+                  Nombre
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.name ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        name: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="text-xs text-slate-500">
+                  Edad
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.age_range ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        age_range: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="text-xs text-slate-500">
+                  Peso (kg)
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.weight_kg ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        weight_kg: Number(event.target.value) || null,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="text-xs text-slate-500">
+                  Actividad
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.activity_level ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        activity_level: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="text-xs text-slate-500">
+                  Origen
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.origin ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        origin: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <button
+                  type="button"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                  onClick={async () => {
+                    const token = await getAccessToken();
+                    if (!token) return;
+                    try {
+                      const updated = await savePet(
+                        token,
+                        selectedPet.id,
+                        editPayload
+                      );
+                      setState((prev) => ({
+                        ...prev,
+                        pets: prev.pets.map((pet) =>
+                          pet.id === updated.id ? updated : pet
+                        ),
+                      }));
+                      setEditMessage("Perfil actualizado.");
+                    } catch (err) {
+                      setEditMessage(
+                        err instanceof Error
+                          ? err.message
+                          : "No se pudo guardar."
+                      );
+                    }
+                  }}
+                >
+                  Guardar cambios
+                </button>
+                {editMessage ? <span>{editMessage}</span> : null}
+              </div>
+            </section>
+          ) : null}
 
           <section className="surface-card px-6 py-5">
             <div className="grid gap-4 md:grid-cols-3">
