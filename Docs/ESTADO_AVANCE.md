@@ -53,6 +53,7 @@
 - /register refinado: copy, ayuda y confirmación clara.
 - /login refinado: accesibilidad básica y recuperación de contraseña.
 - /story refinado: cards más expresivas.
+- /today refinado: insight principal destacado y acceso directo al diario.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).

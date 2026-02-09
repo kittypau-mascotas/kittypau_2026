@@ -443,6 +443,28 @@ export default function TodayPage() {
           </div>
         </header>
 
+        <section className="surface-card px-6 py-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Insight principal
+              </p>
+              <p className="mt-2 text-lg font-semibold text-slate-900">
+                {summaryText}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Frescura: {freshnessLabel}
+              </p>
+            </div>
+            <Link
+              href="/story"
+              className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+            >
+              Abrir diario
+            </Link>
+          </div>
+        </section>
+
         <section className="surface-card px-6 py-4 text-xs text-slate-500">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span>
