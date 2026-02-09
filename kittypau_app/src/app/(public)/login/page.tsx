@@ -197,6 +197,10 @@ export default function LoginPage() {
     setResetMessage("Te enviamos el correo de recuperación.");
   };
 
+  const isEmailValid = email.includes("@");
+  const isPasswordValid = password.length >= 8;
+  const isLoginValid = isEmailValid && isPasswordValid;
+
   const closeRegister = () => {
     if (registerStep === "onboarding") {
       const ok = window.confirm("¿Quieres cerrar el registro? Se guardará el progreso.");
@@ -303,9 +307,14 @@ export default function LoginPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                  aria-invalid={Boolean(error)}
+                  aria-invalid={Boolean(error) || (email.length > 0 && !isEmailValid)}
                   autoComplete="email"
                 />
+                {email.length > 0 && !isEmailValid ? (
+                  <p className="text-[11px] text-rose-600">
+                    Ingresa un email válido.
+                  </p>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <label
@@ -321,9 +330,16 @@ export default function LoginPage() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                  aria-invalid={Boolean(error)}
+                  aria-invalid={
+                    Boolean(error) || (password.length > 0 && !isPasswordValid)
+                  }
                   autoComplete="current-password"
                 />
+                {password.length > 0 && !isPasswordValid ? (
+                  <p className="text-[11px] text-rose-600">
+                    Usa mínimo 8 caracteres.
+                  </p>
+                ) : null}
                 <label className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                   <input
                     type="checkbox"
@@ -349,11 +365,16 @@ export default function LoginPage() {
               ) : null}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isLoginValid}
                 className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Conectando..." : "Continuar"}
               </button>
+              {!isSubmitting && !isLoginValid ? (
+                <p className="text-[11px] text-slate-500">
+                  Completa email y password (8+).
+                </p>
+              ) : null}
             </form>
 
             <div className="flex items-center justify-between text-xs text-slate-500">
