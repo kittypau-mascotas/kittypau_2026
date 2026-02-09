@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import OnboardingFlow from "@/app/(app)/onboarding/_components/onboarding-flow";
@@ -14,6 +14,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [verifiedMessage, setVerifiedMessage] = useState<string | null>(null);
   const [registerStep, setRegisterStep] = useState<"account" | "onboarding">(
     "account"
   );
@@ -26,6 +30,16 @@ export default function LoginPage() {
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
     [registerStep]
   );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("verified") === "1") {
+      setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
+    }
+    if (params.get("reset") === "1") {
+      setVerifiedMessage("Contraseña actualizada. Inicia sesión.");
+    }
+  }, []);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -150,6 +164,33 @@ export default function LoginPage() {
     setIsResending(false);
   };
 
+  const sendReset = async () => {
+    setResetMessage(null);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setResetMessage("Faltan variables públicas de Supabase en el entorno.");
+      return;
+    }
+    const targetEmail = resetEmail || email;
+    if (!targetEmail) {
+      setResetMessage("Ingresa un email válido.");
+      return;
+    }
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      targetEmail,
+      {
+        redirectTo: `${siteUrl}/login?reset=1`,
+      }
+    );
+    if (resetError) {
+      setResetMessage(resetError.message);
+      return;
+    }
+    setResetMessage("Te enviamos el correo de recuperación.");
+  };
+
   const closeRegister = () => {
     if (registerStep === "onboarding") {
       const ok = window.confirm("¿Quieres cerrar el registro? Se guardará el progreso.");
@@ -266,6 +307,11 @@ export default function LoginPage() {
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
+              {verifiedMessage ? (
+                <p className="rounded-[var(--radius)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                  {verifiedMessage}
+                </p>
+              ) : null}
               {error ? (
                 <p className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
                   {error}
@@ -281,7 +327,11 @@ export default function LoginPage() {
             </form>
 
             <div className="flex items-center justify-between text-xs text-slate-500">
-              <button type="button" className="hover:text-slate-900">
+              <button
+                type="button"
+                className="hover:text-slate-900"
+                onClick={() => setShowReset((prev) => !prev)}
+              >
                 Olvidé mi clave
               </button>
               <button
@@ -292,6 +342,35 @@ export default function LoginPage() {
                 Crear cuenta
               </button>
             </div>
+            {showReset ? (
+              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-700">
+                  Recuperar contraseña
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Enviaremos un enlace al correo asociado.
+                </p>
+                <input
+                  type="email"
+                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 px-3 py-2 text-xs text-slate-700"
+                  placeholder="correo@ejemplo.com"
+                  value={resetEmail}
+                  onChange={(event) => setResetEmail(event.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={sendReset}
+                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
+                >
+                  Enviar enlace
+                </button>
+                {resetMessage ? (
+                  <p className="mt-2 text-[11px] text-slate-500">
+                    {resetMessage}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

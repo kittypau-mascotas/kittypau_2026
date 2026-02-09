@@ -44,6 +44,7 @@
 - Realtime integrado en /today y /story (lecturas en vivo).
 - Realtime integrado en /pet (lecturas en vivo).
 - Estados vacíos/errores unificados en story, pet, bowl y settings.
+- Login/register: validación básica + recuperación de contraseña + banner de verificación.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
