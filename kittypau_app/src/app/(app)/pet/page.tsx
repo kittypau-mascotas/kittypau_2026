@@ -567,8 +567,30 @@ export default function PetPage() {
             </div>
             {profileChecklist.length ? (
               <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                Completa estos datos para mejorar las interpretaciones:{" "}
-                {profileChecklist.join(", ")}.
+                <p className="font-semibold text-amber-800">
+                  Completa estos datos para mejorar las interpretaciones
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {profileChecklist.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-amber-200 bg-white px-2 py-1 text-[11px] font-semibold text-amber-700"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEdit(true);
+                    setEditMessage(null);
+                    setEditPayload(selectedPet ?? {});
+                  }}
+                  className="mt-3 rounded-[var(--radius)] border border-amber-200 bg-white px-3 py-2 text-[11px] font-semibold text-amber-700"
+                >
+                  Completar perfil
+                </button>
               </div>
             ) : null}
           </section>
@@ -585,6 +607,11 @@ export default function PetPage() {
                     ? `${petDevices[0].device_type} · ${petDevices[0].status}`
                     : "Conecta un dispositivo para completar el perfil."}
                 </p>
+                {petDevices[0]?.device_state ? (
+                  <span className="mt-2 inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    {petDevices[0].device_state}
+                  </span>
+                ) : null}
               </div>
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>
@@ -605,6 +632,14 @@ export default function PetPage() {
                 >
                   Ver historia
                 </Link>
+                {!petDevices[0] ? (
+                  <Link
+                    href="/onboarding"
+                    className="rounded-[var(--radius)] bg-primary px-3 py-2 text-[11px] font-semibold text-primary-foreground"
+                  >
+                    Vincular dispositivo
+                  </Link>
+                ) : null}
               </div>
             </div>
           </section>
