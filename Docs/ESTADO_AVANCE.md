@@ -33,7 +33,7 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validación email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
+## Implementado hoy\n- UI /today: acciones rápidas hacia perfil, plato y ajustes.\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validación email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
 - UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.
 - UI today: selector de device, refresco con timestamp y badge de frescura.
 - UI story: timeline narrativo básico con selector de dispositivo.
@@ -160,6 +160,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 

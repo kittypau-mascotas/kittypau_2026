@@ -463,6 +463,26 @@ export default function TodayPage() {
               Abrir diario
             </Link>
           </div>
+          <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-600">
+            <Link
+              href="/pet"
+              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+            >
+              Ver perfil mascota
+            </Link>
+            <Link
+              href="/bowl"
+              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+            >
+              Estado del plato
+            </Link>
+            <Link
+              href="/settings"
+              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+            >
+              Ajustes
+            </Link>
+          </div>
         </section>
 
         <section className="surface-card px-6 py-4 text-xs text-slate-500">
