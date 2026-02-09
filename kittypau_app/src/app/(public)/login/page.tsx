@@ -118,7 +118,7 @@ export default function LoginPage() {
       email: registerEmail,
       password: registerPassword,
       options: {
-        emailRedirectTo: `${siteUrl}/login?verified=1`,
+        emailRedirectTo: `${siteUrl}/onboarding?verified=1`,
       },
     });
 

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getAccessToken, setTokens } from "@/lib/auth/token";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type OnboardingStatus = {
   userStep: string | null;
@@ -80,7 +81,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     device_type: "food_bowl",
   });
 
-  const token = useMemo(() => getAccessToken(), []);
+  const [token, setToken] = useState<string | null>(getAccessToken());
   const completedSteps = useMemo(() => {
     return {
       profile: status.userStep === "pet_profile" || status.userStep === "completed",
@@ -170,11 +171,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   }, [currentStep]);
 
   const loadStatus = async () => {
-    if (!token) {
-      setError("Necesitas iniciar sesión para completar el onboarding.");
-      setIsLoading(false);
-      return;
-    }
+    if (!token) return;
 
     try {
       const [statusRes, petsRes] = await Promise.all([
@@ -211,8 +208,56 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   };
 
   useEffect(() => {
-    void loadStatus();
-  }, []);
+    let isMounted = true;
+    if (token) {
+      setIsLoading(true);
+      void loadStatus();
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setError("Faltan variables públicas de Supabase en el entorno.");
+      setIsLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return;
+      if (data.session?.access_token) {
+        setTokens({
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+        });
+        setToken(data.session.access_token);
+      } else {
+        setError("Necesitas iniciar sesión para completar el onboarding.");
+        setIsLoading(false);
+      }
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!isMounted) return;
+        if (session?.access_token) {
+          setTokens({
+            accessToken: session.access_token,
+            refreshToken: session.refresh_token,
+          });
+          setToken(session.access_token);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, [token]);
 
   const saveProfile = async () => {
     if (!token) return;
