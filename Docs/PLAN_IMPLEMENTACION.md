@@ -85,3 +85,12 @@ Tareas:
 4. Docs: actualizar Docs/VISTAS_APP.md y Docs/ESTADO_AVANCE.md con avances.
 5. Verificación: smoke test UI + endpoints críticos.
 
+
+---
+
+## Cierre del dia (2026-02-09)
+- SMTP y reset password configurados.
+- RPC onboarding y schema cache revisados.
+- Bridge env example documentado.
+- Docs actualizados y enviados a git.
+
