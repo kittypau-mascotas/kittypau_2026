@@ -334,6 +334,33 @@ export default function TodayPage() {
     return items.slice(0, 3);
   }, [latestReading]);
 
+  const quickStats = useMemo(() => {
+    if (!latestReading) {
+      return [
+        { label: "Hidratación", value: "Sin datos" },
+        { label: "Alimento", value: "Sin datos" },
+        { label: "Ambiente", value: "Sin datos" },
+      ];
+    }
+    const hydration =
+      latestReading.flow_rate !== null
+        ? `${Math.round(latestReading.flow_rate)} ml/h`
+        : "Sin flujo";
+    const food =
+      latestReading.weight_grams !== null
+        ? `${latestReading.weight_grams} g`
+        : "Sin peso";
+    const ambient =
+      latestReading.temperature !== null && latestReading.humidity !== null
+        ? `${latestReading.temperature}° · ${latestReading.humidity}%`
+        : "Sin ambiente";
+    return [
+      { label: "Hidratación", value: hydration },
+      { label: "Alimento", value: food },
+      { label: "Ambiente", value: ambient },
+    ];
+  }, [latestReading]);
+
   const toneStyles: Record<string, string> = {
     ok: "border-emerald-200/60 bg-emerald-50/60 text-emerald-800",
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
@@ -482,6 +509,24 @@ export default function TodayPage() {
             >
               Ajustes
             </Link>
+          </div>
+        </section>
+
+        <section className="surface-card px-6 py-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            {quickStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600"
+              >
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  {stat.label}
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">
+                  {stat.value}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 

@@ -34,6 +34,8 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- UI /today: resumen rápido de hidratación, alimento y ambiente.
+- UI /story: conteo de alertas y resumen visual del día.
 - DB↔API: se documentó qué validaciones están en DB vs API y pasos para endurecer constraints.
 - UI/API contrato: /story, /pet y /bowl ahora toleran respuestas paginadas {data,next_cursor}.\n- UI /settings: bloque de seguridad con cierre de sesión.\n- UI /story: tags de tono y texto limpio en timeline.\n- UI /today: acciones rápidas hacia perfil, plato y ajustes.\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validación email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
 - UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.

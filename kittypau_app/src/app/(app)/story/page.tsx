@@ -279,6 +279,13 @@ export default function StoryPage() {
     (pet) => pet.id === selectedDevice?.pet_id
   );
 
+  const summaryCounts = useMemo(() => {
+    const total = filteredTimeline.length;
+    const warn = filteredTimeline.filter((item) => item.story.tone === "warn").length;
+    const good = filteredTimeline.filter((item) => item.story.tone === "good").length;
+    return { total, warn, good };
+  }, [filteredTimeline]);
+
   return (
     <main className="page-shell">
       <div className="page-header">
@@ -379,6 +386,35 @@ export default function StoryPage() {
                   </select>
                 </label>
               )}
+            </div>
+          </section>
+
+          <section className="surface-card px-6 py-4">
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Eventos
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">
+                  {summaryCounts.total}
+                </p>
+              </div>
+              <div className="rounded-[calc(var(--radius)-6px)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-700">
+                  Atención
+                </p>
+                <p className="mt-2 text-lg font-semibold text-amber-900">
+                  {summaryCounts.warn}
+                </p>
+              </div>
+              <div className="rounded-[calc(var(--radius)-6px)] border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-sm text-emerald-800">
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">
+                  Estables
+                </p>
+                <p className="mt-2 text-lg font-semibold text-emerald-900">
+                  {summaryCounts.good}
+                </p>
+              </div>
             </div>
           </section>
 
