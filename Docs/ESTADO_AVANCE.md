@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- UI /login: recuperación deshabilitada sin email válido.
 - UI /register: validaciones inline y botón activo sólo con datos válidos.
 - UI /login: validaciones inline y botón bloqueado hasta datos válidos.
 - UI /register: copy normalizado y mensajes de confirmación claros.
@@ -170,6 +171,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 

@@ -200,6 +200,7 @@ export default function LoginPage() {
   const isEmailValid = email.includes("@");
   const isPasswordValid = password.length >= 8;
   const isLoginValid = isEmailValid && isPasswordValid;
+  const canReset = Boolean(resetEmail || email);
 
   const closeRegister = () => {
     if (registerStep === "onboarding") {
@@ -412,7 +413,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={sendReset}
-                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
+                  disabled={!canReset}
+                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   Enviar enlace
                 </button>
