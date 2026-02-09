@@ -1,21 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   );
   const [error, setError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+
+  const siteUrl = useMemo(
+    () => process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin,
+    []
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -31,6 +35,11 @@ export default function RegisterPage() {
     if (!email || !password) {
       setStatus("error");
       setError("Completa email y password para continuar.");
+      return;
+    }
+    if (!email.includes("@")) {
+      setStatus("error");
+      setError("Ingresa un email válido.");
       return;
     }
     if (password.length < 8) {
@@ -106,6 +115,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="nombre@correo.com"
+              autoComplete="email"
             />
             <span className="mt-2 block text-xs text-slate-500">
               Usaremos este correo para confirmar tu cuenta.
@@ -114,25 +124,42 @@ export default function RegisterPage() {
           <label className="text-sm text-slate-600">
             Password
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Mínimo 8 caracteres"
+              autoComplete="new-password"
             />
             <span className="mt-2 block text-xs text-slate-500">
               Recomendado: 8+ caracteres con letras y números.
             </span>
           </label>
+          <label className="flex items-center gap-2 text-xs text-slate-500">
+            <input
+              type="checkbox"
+              checked={showPassword}
+              onChange={(event) => setShowPassword(event.target.checked)}
+            />
+            Mostrar password
+          </label>
         </div>
 
         {status === "success" && (
-          <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          <div
+            className="mt-4 rounded-[calc(var(--radius)-8px)] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+            role="status"
+            aria-live="polite"
+          >
             Revisa tu correo para confirmar la cuenta. Luego vuelve a iniciar sesión.
           </div>
         )}
         {error && (
-          <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <div
+            className="mt-4 rounded-[calc(var(--radius)-8px)] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+            role="alert"
+            aria-live="polite"
+          >
             {error}
           </div>
         )}

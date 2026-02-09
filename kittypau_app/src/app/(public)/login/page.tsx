@@ -11,6 +11,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -47,6 +48,11 @@ export default function LoginPage() {
     setIsSubmitting(true);
     if (!email || !password) {
       setError("Completa email y password para continuar.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!email.includes("@")) {
+      setError("Ingresa un email válido.");
       setIsSubmitting(false);
       return;
     }
@@ -310,7 +316,7 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="login-password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -318,6 +324,14 @@ export default function LoginPage() {
                   aria-invalid={Boolean(error)}
                   autoComplete="current-password"
                 />
+                <label className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                  <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={(event) => setShowPassword(event.target.checked)}
+                  />
+                  Mostrar password
+                </label>
               </div>
               {verifiedMessage ? (
                 <p className="rounded-[var(--radius)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
@@ -328,6 +342,7 @@ export default function LoginPage() {
                 <p
                   className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
                   role="alert"
+                  aria-live="polite"
                 >
                   {error}
                 </p>
