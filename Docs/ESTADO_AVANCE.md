@@ -49,6 +49,7 @@
 - /story refinado: filtro por día (hoy/ayer/2 días).
 - /pet refinado: edición básica de perfil con PATCH /api/pets/:id.
 - /bowl refinado: estado con diagnóstico de conexión y acciones futuras.
+- /settings refinado: validaciones de perfil antes de guardar.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).

@@ -34,6 +34,7 @@ export default function SettingsPage() {
   const [form, setForm] = useState<ApiProfile | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
 
   const loadProfile = async (token: string) => {
     const res = await fetch(`${apiBase}/api/profiles`, {
@@ -98,6 +99,17 @@ export default function SettingsPage() {
   const handleChange = (field: keyof ApiProfile, value: string) => {
     if (!form) return;
     setForm({ ...form, [field]: value });
+  };
+
+  const validate = (payload: ApiProfile) => {
+    const errors: string[] = [];
+    if (!payload.user_name || payload.user_name.trim().length < 2) {
+      errors.push("Nombre visible es requerido (mínimo 2 caracteres).");
+    }
+    if (payload.phone_number && payload.phone_number.length < 6) {
+      errors.push("Teléfono debe tener al menos 6 dígitos.");
+    }
+    return errors;
   };
 
   return (
@@ -180,6 +192,15 @@ export default function SettingsPage() {
                 />
               </label>
             </div>
+            {formErrors.length ? (
+              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700">
+                <ul className="list-disc pl-4">
+                  {formErrors.map((err) => (
+                    <li key={err}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </section>
 
           <section className="surface-card px-6 py-6">
@@ -234,6 +255,9 @@ export default function SettingsPage() {
                 disabled={saving || !form}
                 onClick={async () => {
                   if (!form) return;
+                  const errors = validate(form);
+                  setFormErrors(errors);
+                  if (errors.length) return;
                   const token = await getAccessToken();
                   if (!token) return;
                   setSaving(true);
@@ -242,6 +266,7 @@ export default function SettingsPage() {
                     const updated = await saveProfile(token, form);
                     setForm(updated);
                     setState((prev) => ({ ...prev, profile: updated }));
+                    setFormErrors([]);
                     setSaveMessage("Cambios guardados.");
                   } catch (err) {
                     setSaveMessage(
