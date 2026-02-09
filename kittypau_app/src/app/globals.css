@@ -244,6 +244,96 @@ body {
   }
 }
 
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px circle at 15% 0%, rgba(255, 206, 146, 0.12), transparent 55%),
+    radial-gradient(800px circle at 90% 10%, rgba(79, 140, 255, 0.16), transparent 60%),
+    linear-gradient(180deg, #f7f7fb 0%, #f1f3f8 100%);
+}
+
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(16px);
+  background: color-mix(in oklab, white 85%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+}
+
+.app-nav-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 24px;
+}
+
+.app-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: hsl(var(--foreground));
+}
+
+.app-nav-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: hsl(var(--foreground));
+  opacity: 0.4;
+}
+
+.app-nav-subtle {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.app-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.app-nav-link {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid transparent;
+  transition: all 160ms ease;
+}
+
+.app-nav-link:hover {
+  color: hsl(var(--foreground));
+  border-color: color-mix(in oklab, hsl(var(--border)) 80%, transparent);
+}
+
+.app-nav-link.is-active {
+  color: hsl(var(--foreground));
+  background: white;
+  border-color: color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.45);
+}
+
+@media (max-width: 720px) {
+  .app-nav-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .app-nav-links {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+}
+
 .glass-panel {
   background: color-mix(in oklab, hsl(var(--card)) 75%, transparent);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);

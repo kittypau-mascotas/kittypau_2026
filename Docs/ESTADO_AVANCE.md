@@ -44,6 +44,7 @@
 - Realtime integrado en /today y /story (lecturas en vivo).
 - Estados vacíos/errores unificados en story, pet, bowl y settings.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
+- Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
 - Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
