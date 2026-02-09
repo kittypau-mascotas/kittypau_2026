@@ -119,6 +119,16 @@ export default function BowlPage() {
     return state.devices.find((device) => device.id === selectedDeviceId);
   }, [selectedDeviceId, state.devices]);
 
+  const connectionHint = useMemo(() => {
+    if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
+    const last = new Date(selectedDevice.last_seen).getTime();
+    if (Number.isNaN(last)) return "Sin check-in reciente.";
+    const diffMin = Math.round((Date.now() - last) / 60000);
+    if (diffMin <= 5) return "Conectado en tiempo real.";
+    if (diffMin <= 30) return "Conectado recientemente.";
+    return "Conexión inestable o apagado.";
+  }, [selectedDevice?.last_seen]);
+
   return (
     <main className="page-shell">
       <div className="page-header">
@@ -225,6 +235,7 @@ export default function BowlPage() {
                 <p className="text-lg font-semibold text-slate-900">
                   {formatTimestamp(selectedDevice?.last_seen ?? null)}
                 </p>
+                <p className="mt-1 text-xs text-slate-500">{connectionHint}</p>
               </div>
             </div>
           </section>
@@ -239,8 +250,10 @@ export default function BowlPage() {
                   Conexión
                 </p>
                 <p className="mt-2 text-slate-700">
-                  {selectedDevice?.last_seen
-                    ? "Conectado recientemente."
+                  {connectionHint === "Conectado en tiempo real."
+                    ? "Datos en vivo. Todo responde bien."
+                    : connectionHint === "Conectado recientemente."
+                    ? "Último check-in dentro de la ventana esperada."
                     : "Sin check-in reciente. Revisa energía y Wi-Fi."}
                 </p>
               </div>
@@ -252,6 +265,22 @@ export default function BowlPage() {
                   Pendiente de integrarse con versión remota.
                 </p>
               </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                onClick={() => window.alert("Calibración pendiente de integrar.")}
+              >
+                Ejecutar calibración
+              </button>
+              <button
+                type="button"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                onClick={() => window.alert("Reinicio remoto pendiente de integrar.")}
+              >
+                Reiniciar plato
+              </button>
             </div>
           </section>
         </>
