@@ -60,7 +60,15 @@ const formatTimestamp = (value: string) => {
   });
 };
 
-  const buildStory = (reading: ApiReading) => {
+const parseListResponse = <T,>(payload: unknown): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return (payload as { data?: T[] }).data ?? [];
+  }
+  return [];
+};
+
+const buildStory = (reading: ApiReading) => {
     const facts: string[] = [];
   if (reading.flow_rate !== null) {
     facts.push(`Flujo ${Math.round(reading.flow_rate)} ml/h`);
@@ -99,7 +107,7 @@ const formatTimestamp = (value: string) => {
       detail: facts.length > 0 ? facts.join(" · ") : "Sin métricas detalladas.",
       tone,
       icon,
-    };
+};
   };
 
 export default function StoryPage() {
@@ -127,14 +135,15 @@ export default function StoryPage() {
 
   const loadReadings = async (token: string, deviceId: string) => {
     const res = await fetch(
-      `${apiBase}/api/readings?device_id=${deviceId}`,
+      `${apiBase}/api/readings?device_id=${deviceId}&limit=50`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
       }
     );
     if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
-    return (await res.json()) as ApiReading[];
+    const payload = await res.json();
+    return parseListResponse<ApiReading>(payload);
   };
 
   useEffect(() => {

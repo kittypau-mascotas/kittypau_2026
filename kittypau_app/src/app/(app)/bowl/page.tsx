@@ -29,6 +29,14 @@ const defaultState: LoadState = {
 
 const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
+const parseListResponse = <T,>(payload: unknown): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return (payload as { data?: T[] }).data ?? [];
+  }
+  return [];
+};
+
 const formatTimestamp = (value: string | null) => {
   if (!value) return "Sin datos";
   const ts = new Date(value);
@@ -59,7 +67,8 @@ export default function BowlPage() {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("No se pudieron cargar los dispositivos.");
-    return (await res.json()) as ApiDevice[];
+    const payload = await res.json();
+    return parseListResponse<ApiDevice>(payload);
   };
 
   useEffect(() => {

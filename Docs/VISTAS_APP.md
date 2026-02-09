@@ -15,6 +15,7 @@ Definir la estructura de vistas antes de implementar UI o routing.
 - /bowl implementado como estado técnico del plato.
 - /settings implementado como ajustes de perfil y notificaciones.
 - /register implementado como ruta pública con reenvío de confirmación.
+- UI tolera respuestas API en formato lista o `{ data, next_cursor }`.
 
 ---
 
@@ -113,7 +114,7 @@ por "eventos / interpretaciones / historia".
 - No mostrar graficos inicialmente.
 - Primer ingreso: mostrar **modo guia** (popup con fondo difuminado).
 **Datos / API**
-- `GET /api/readings?device_id=...` (historial)
+- `GET /api/readings?device_id=...&limit=50` (historial)
 - Supabase Realtime (`readings`) integrado.
 - `devices` (estado, bateria, last_seen)
 - `profiles.first_time_guide_seen` (flag)
@@ -122,7 +123,7 @@ por "eventos / interpretaciones / historia".
 - Timeline narrativo del dia.
 - Ejemplos: "07:12 desayuno tranquilo", "18:32 mucha agua".
 **Datos / API**
-- `GET /api/readings?device_id=...`
+- `GET /api/readings?device_id=...&limit=50`
 - Interpretaciones a partir de lecturas
 - Realtime `readings` integrado.
 
@@ -131,7 +132,7 @@ por "eventos / interpretaciones / historia".
 - No priorizar raza; priorizar patrones.
 **Datos / API**
 - `GET /api/pets`
-- `GET /api/readings?device_id=...`
+- `GET /api/readings?device_id=...&limit=80`
 - Realtime `readings` integrado.
 
 ### /bowl (antes /devices)
@@ -299,7 +300,7 @@ Los numeros existen, pero como evidencia secundaria.
 - Feed vertical, cards.
 - 1 mensaje principal + 1 accion.
 **Datos / API**
-- `GET /api/readings?device_id=...`
+- `GET /api/readings?device_id=...&limit=50`
 - Realtime `readings`.
 **Estados**
 - Empty: "Aun no hay lecturas".

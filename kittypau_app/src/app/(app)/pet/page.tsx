@@ -65,6 +65,14 @@ const formatTimestamp = (value: string) => {
   });
 };
 
+const parseListResponse = <T,>(payload: unknown): T[] => {
+  if (Array.isArray(payload)) return payload as T[];
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return (payload as { data?: T[] }).data ?? [];
+  }
+  return [];
+};
+
 export default function PetPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -79,7 +87,8 @@ export default function PetPage() {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("No se pudieron cargar las mascotas.");
-    return (await res.json()) as ApiPet[];
+    const payload = await res.json();
+    return parseListResponse<ApiPet>(payload);
   };
 
   const savePet = async (token: string, petId: string, payload: Partial<ApiPet>) => {
@@ -101,7 +110,8 @@ export default function PetPage() {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("No se pudieron cargar los dispositivos.");
-    return (await res.json()) as ApiDevice[];
+    const payload = await res.json();
+    return parseListResponse<ApiDevice>(payload);
   };
 
   const loadReadings = async (token: string, deviceId: string) => {
@@ -114,7 +124,7 @@ export default function PetPage() {
     );
     if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
     const payload = await res.json();
-    return Array.isArray(payload) ? payload : payload.data ?? [];
+    return parseListResponse<ApiReading>(payload);
   };
 
   useEffect(() => {
