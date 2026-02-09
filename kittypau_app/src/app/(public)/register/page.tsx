@@ -2,15 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
-);
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -34,6 +29,13 @@ export default function RegisterPage() {
     setError(null);
     setResent(false);
 
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setStatus("error");
+      setError("Faltan variables públicas de Supabase en el entorno.");
+      return;
+    }
+
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -54,6 +56,12 @@ export default function RegisterPage() {
   const handleResend = async () => {
     setResent(false);
     setError(null);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setError("Faltan variables públicas de Supabase en el entorno.");
+      return;
+    }
+
     const { error: resendError } = await supabase.auth.resend({
       type: "signup",
       email,
