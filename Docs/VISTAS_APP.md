@@ -1,4 +1,4 @@
-﻿# Vistas y Pages de la App (Kittypau)
+# Vistas y Pages de la App (Kittypau)
 
 ## Objetivo
 Definir la estructura de vistas antes de implementar UI o routing.
@@ -6,15 +6,15 @@ Definir la estructura de vistas antes de implementar UI o routing.
 ---
 
 ## Implementacion actual (2026-02-07)
-- /login implementado con layout parallax + login real (Supabase Auth).
-- /today implementado como feed vertical interpretado conectado a APIs.
+- /login implementado con layout parallax + login real (Supabase Auth) y validaciones inline.
+- /today implementado como feed vertical interpretado conectado a APIs. Incluye modo guía inicial con tips.
 - /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
 - /story implementado como timeline narrativo básico.
 - /pet implementado como perfil conductual básico con insights.
 - /bowl implementado como estado técnico del plato.
 - /settings implementado como ajustes de perfil y notificaciones.
-- /register implementado como ruta pública con reenvío de confirmación.
+- /register implementado como ruta pública con reenvío de confirmación y validaciones inline.
 - UI tolera respuestas API en formato lista o `{ data, next_cursor }`.
 
 ---

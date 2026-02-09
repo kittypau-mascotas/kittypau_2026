@@ -17,7 +17,7 @@ Tareas:
 ---
 
 ## 2) Design System Base
-Documento fuente: `Docs/estilos y dise�os.md`
+Documento fuente: `Docs/estilos y diseños.md`
 
 Tareas:
 - Implementar `tokens.css`.
@@ -75,3 +75,12 @@ Tareas:
 - Validar endpoints minimos.
 - Si falla, promover el deployment anterior en Vercel.
 
+
+---
+
+## Plan de trabajo para mañana (acordado)
+1. Front: /bowl y /settings (polish visual + empty/error states).
+2. Front: /story cards (densidad, variaciones, filtro por día) y CTA de exploración.
+3. Front: onboarding final (copys, micro-UX, validación y guía de siguiente paso).
+4. Docs: actualizar Docs/VISTAS_APP.md y Docs/ESTADO_AVANCE.md con avances.
+5. Verificación: smoke test UI + endpoints críticos.

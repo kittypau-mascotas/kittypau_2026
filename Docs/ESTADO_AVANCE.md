@@ -1,4 +1,4 @@
-﻿# Estado del Proyecto y Proximos Pasos (2026-02-07)
+# Estado del Proyecto y Proximos Pasos (2026-02-07)
 
 ## Resumen de avance
 - Proyecto Next.js en `kittypau_app/` (TypeScript + App Router) desplegado en Vercel.
