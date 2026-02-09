@@ -596,7 +596,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             </div>
             <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                Cuenta
+                Paso 1 · Usuario (cuenta)
               </p>
               <div className="mt-3 grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
