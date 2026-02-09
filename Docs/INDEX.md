@@ -27,6 +27,7 @@
 - `Docs/GUIA_MIGRACION_SQL.md`
 - `Docs/CLEANUP_SQL.sql`
 - `Docs/PARTICIONES_READINGS.md`
+- `Docs/MIGRACION_SCHEMA_RASPBERRY.md`
 
 ## APIs y backend
 - `Docs/FRONT_BACK_APIS.md`

@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Plan de compatibilidad Raspberry documentado (sin ejecutar migraciones).
 - UI /pet: checklist visual y CTA para completar perfil; CTA de vinculación cuando no hay dispositivo.
 - UI /today: modo guía inicial con tips y CTA a onboarding.
 - UI /login: recuperación deshabilitada sin email válido.
