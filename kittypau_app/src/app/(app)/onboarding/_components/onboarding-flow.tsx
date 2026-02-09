@@ -144,6 +144,31 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     return 4;
   }, [status]);
 
+  const nextStepHint = useMemo(() => {
+    if (currentStep === 1) {
+      return {
+        title: "Completa tu perfil",
+        detail: "Tu nombre y ciudad desbloquean las alertas.",
+      };
+    }
+    if (currentStep === 2) {
+      return {
+        title: "Registra a tu mascota",
+        detail: "Necesitamos el nombre y tipo para personalizar el feed.",
+      };
+    }
+    if (currentStep === 3) {
+      return {
+        title: "Vincula el dispositivo",
+        detail: "Usa el código KPCL0000 del plato.",
+      };
+    }
+    return {
+      title: "Onboarding completo",
+      detail: "Puedes ir al feed en cualquier momento.",
+    };
+  }, [currentStep]);
+
   const loadStatus = async () => {
     if (!token) {
       setError("Necesitas iniciar sesión para completar el onboarding.");
@@ -374,6 +399,23 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             {error}
           </div>
         ) : null}
+
+        <section className="surface-card px-6 py-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Siguiente paso
+              </p>
+              <h2 className="text-lg font-semibold text-slate-900">
+                {nextStepHint.title}
+              </h2>
+              <p className="text-sm text-slate-500">{nextStepHint.detail}</p>
+            </div>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+              {currentStep === 4 ? "Listo" : `Paso ${currentStep} de 3`}
+            </span>
+          </div>
+        </section>
 
         <section className="surface-card px-6 py-5">
           <div className="flex items-center justify-between gap-4">
