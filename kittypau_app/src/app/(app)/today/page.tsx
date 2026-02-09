@@ -72,6 +72,7 @@ export default function TodayPage() {
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
   const token = useMemo(() => getAccessToken(), []);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
@@ -202,6 +203,14 @@ export default function TodayPage() {
 
     void load();
   }, []);
+
+  useEffect(() => {
+    if (!token || typeof window === "undefined") return;
+    const seen = window.localStorage.getItem("kittypau_guide_seen");
+    if (!seen) {
+      setShowGuide(true);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -721,6 +730,57 @@ export default function TodayPage() {
           </div>
         </section>
       </div>
+      {showGuide ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
+          <div className="surface-card w-full max-w-lg px-6 py-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+              Modo guía
+            </p>
+            <h2 className="display-title mt-2 text-2xl font-semibold text-slate-900">
+              Bienvenido a Hoy en casa
+            </h2>
+            <p className="mt-3 text-sm text-slate-600">
+              Aquí verás interpretaciones del día. Puedes cambiar de plato,
+              revisar el diario y ajustar el perfil de tu mascota cuando lo
+              necesites.
+            </p>
+            <div className="mt-5 grid gap-3 text-xs text-slate-600">
+              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">
+                Consejo: usa “Ver diario” para ver eventos del día.
+              </div>
+              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">
+                Consejo: revisa “Perfil conductual” para ajustes de mascota.
+              </div>
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem("kittypau_guide_seen", "1");
+                  }
+                  setShowGuide(false);
+                }}
+                className="h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+              >
+                Entendido
+              </button>
+              <Link
+                href="/onboarding"
+                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem("kittypau_guide_seen", "1");
+                  }
+                  setShowGuide(false);
+                }}
+              >
+                Completar onboarding
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
