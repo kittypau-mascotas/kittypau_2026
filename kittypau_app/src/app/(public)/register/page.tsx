@@ -94,7 +94,7 @@ export default function RegisterPage() {
         <p className="eyebrow">Registro</p>
         <h1 className="display-title text-3xl text-slate-900">Kittypau</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Crea tu cuenta para iniciar el onboarding.
+          Crea tu cuenta y conecta tu plato en menos de 2 minutos.
         </p>
 
         <div className="mt-6 grid gap-4">
@@ -107,6 +107,9 @@ export default function RegisterPage() {
               onChange={(event) => setEmail(event.target.value)}
               placeholder="nombre@correo.com"
             />
+            <span className="mt-2 block text-xs text-slate-500">
+              Usaremos este correo para confirmar tu cuenta.
+            </span>
           </label>
           <label className="text-sm text-slate-600">
             Password
@@ -117,12 +120,15 @@ export default function RegisterPage() {
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Mínimo 8 caracteres"
             />
+            <span className="mt-2 block text-xs text-slate-500">
+              Recomendado: 8+ caracteres con letras y números.
+            </span>
           </label>
         </div>
 
         {status === "success" && (
           <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            Revisa tu correo para confirmar la cuenta.
+            Revisa tu correo para confirmar la cuenta. Luego vuelve a iniciar sesión.
           </div>
         )}
         {error && (
@@ -154,6 +160,9 @@ export default function RegisterPage() {
             Reenviar confirmación
           </button>
         </div>
+        <p className="mt-4 text-xs text-slate-500">
+          Si no llega el correo, revisa spam o intenta reenviar la confirmación.
+        </p>
 
         <div className="mt-6 text-center text-xs text-slate-500">
           ¿Ya tienes cuenta?{" "}

@@ -60,8 +60,8 @@ const formatTimestamp = (value: string) => {
   });
 };
 
-const buildStory = (reading: ApiReading) => {
-  const facts: string[] = [];
+  const buildStory = (reading: ApiReading) => {
+    const facts: string[] = [];
   if (reading.flow_rate !== null) {
     facts.push(`Flujo ${Math.round(reading.flow_rate)} ml/h`);
   }
@@ -93,12 +93,14 @@ const buildStory = (reading: ApiReading) => {
     }
   }
 
-  return {
-    title,
-    detail: facts.length > 0 ? facts.join(" · ") : "Sin métricas detalladas.",
-    tone,
+    const icon = tone === "good" ? "✓" : tone === "warn" ? "!" : "•";
+    return {
+      title,
+      detail: facts.length > 0 ? facts.join(" · ") : "Sin métricas detalladas.",
+      tone,
+      icon,
+    };
   };
-};
 
 export default function StoryPage() {
   const [state, setState] = useState<LoadState>(defaultState);
@@ -387,7 +389,10 @@ export default function StoryPage() {
                   </div>
                   <div className={`story-dot tone-${item.story.tone}`} />
                   <div className="story-content">
-                    <h3>{item.story.title}</h3>
+                    <h3>
+                      <span className="story-icon">{item.story.icon}</span>{" "}
+                      {item.story.title}
+                    </h3>
                     <p>{item.story.detail}</p>
                   </div>
                 </article>

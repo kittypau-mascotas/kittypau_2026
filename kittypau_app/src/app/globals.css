@@ -228,6 +228,19 @@ body {
   margin-bottom: 6px;
 }
 
+.story-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in oklab, hsl(var(--primary)) 15%, transparent);
+  color: hsl(var(--foreground));
+  font-size: 12px;
+  margin-right: 6px;
+}
+
 .story-content p {
   font-size: 14px;
   color: hsl(var(--muted-foreground));

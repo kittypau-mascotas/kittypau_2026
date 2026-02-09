@@ -284,27 +284,39 @@ export default function LoginPage() {
 
             <form className="space-y-4" onSubmit={onSubmit}>
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                <label
+                  className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                  htmlFor="login-email"
+                >
                   Email
                 </label>
                 <input
+                  id="login-email"
                   type="email"
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                  aria-invalid={Boolean(error)}
+                  autoComplete="email"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                <label
+                  className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                  htmlFor="login-password"
+                >
                   Password
                 </label>
                 <input
+                  id="login-password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                  aria-invalid={Boolean(error)}
+                  autoComplete="current-password"
                 />
               </div>
               {verifiedMessage ? (
@@ -313,7 +325,10 @@ export default function LoginPage() {
                 </p>
               ) : null}
               {error ? (
-                <p className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                <p
+                  className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
+                  role="alert"
+                >
                   {error}
                 </p>
               ) : null}
@@ -356,6 +371,7 @@ export default function LoginPage() {
                   placeholder="correo@ejemplo.com"
                   value={resetEmail}
                   onChange={(event) => setResetEmail(event.target.value)}
+                  autoComplete="email"
                 />
                 <button
                   type="button"
