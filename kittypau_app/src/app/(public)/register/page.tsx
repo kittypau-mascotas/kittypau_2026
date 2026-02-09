@@ -15,6 +15,9 @@ export default function RegisterPage() {
   );
   const [error, setError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+  const isEmailValid = email.includes("@");
+  const isPasswordValid = password.length >= 8;
+  const isFormValid = isEmailValid && isPasswordValid;
 
   const siteUrl = useMemo(
     () => process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin,
@@ -116,7 +119,13 @@ export default function RegisterPage() {
               onChange={(event) => setEmail(event.target.value)}
               placeholder="nombre@correo.com"
               autoComplete="email"
+              aria-invalid={email.length > 0 && !isEmailValid}
             />
+            {email.length > 0 && !isEmailValid ? (
+              <span className="mt-2 block text-xs text-rose-600">
+                Ingresa un email válido.
+              </span>
+            ) : null}
             <span className="mt-2 block text-xs text-slate-500">
               Usaremos este correo para confirmar tu cuenta.
             </span>
@@ -130,7 +139,13 @@ export default function RegisterPage() {
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Mínimo 8 caracteres"
               autoComplete="new-password"
+              aria-invalid={password.length > 0 && !isPasswordValid}
             />
+            {password.length > 0 && !isPasswordValid ? (
+              <span className="mt-2 block text-xs text-rose-600">
+                Usa mínimo 8 caracteres.
+              </span>
+            ) : null}
             <span className="mt-2 block text-xs text-slate-500">
               Recomendado: 8+ caracteres con letras y números.
             </span>
@@ -173,7 +188,7 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={handleRegister}
-            disabled={status === "loading"}
+            disabled={status === "loading" || !isFormValid}
             className="rounded-[var(--radius)] bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
           >
             {status === "loading" ? "Creando cuenta..." : "Crear cuenta"}
