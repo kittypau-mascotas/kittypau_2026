@@ -1,4 +1,4 @@
-﻿# Índice de Documentación (Kittypau)
+# Índice de Documentación (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -70,3 +70,5 @@
 - Docs/.env.test.local (no versionado)
 
 - Docs/TEST_DB_API_NEGATIVE.ps1
+
+- Docs/RASPBERRY_INTEGRATION_PLAN.md
