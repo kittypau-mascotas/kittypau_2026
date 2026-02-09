@@ -260,3 +260,21 @@ Errores por endpoint:
 Los enums de `origin`, `living_environment`, `size`, `activity_level`, `age_range`, `alone_time` se validan en frontend/backend.
 El SQL actual solo impone constraints en `type` y `pet_state` para `pets`.
 
+## Alineación DB ↔ API (estado actual)
+- **En DB (constraints activas):**
+  - `devices.device_code` formato `KPCL0000`.
+  - `devices.device_type`, `devices.status`, `devices.device_state`.
+  - `profiles.user_onboarding_step`, `profiles.care_rating`.
+  - `pets.type`, `pets.pet_state`, `pets.pet_onboarding_step`.
+  - `readings` con `clock_invalid`/`ingested_at` y deduplicación `device_id + recorded_at`.
+- **En API (validación adicional, no estricta en DB):**
+  - `profiles.notification_channel` (email/whatsapp/push/sms).
+  - Rangos numéricos (`battery_level`, `weight_kg`, `readings.limit`).
+  - Campos de mascota (`origin`, `living_environment`, `size`, `activity_level`, `age_range`, `alone_time`).
+
+### Recomendación
+Si quieres endurecer DB sin romper datos existentes:
+1. **Auditar** valores actuales (query de distribución).
+2. **Normalizar** datos fuera de rango (update).
+3. **Agregar constraints** con `IF NOT EXISTS`.
+
