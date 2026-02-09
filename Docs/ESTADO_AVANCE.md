@@ -43,6 +43,7 @@
 - UI register: ruta pública con reenvío de confirmación.
 - Realtime integrado en /today y /story (lecturas en vivo).
 - Estados vacíos/errores unificados en story, pet, bowl y settings.
+- Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
 - Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
