@@ -1,4 +1,4 @@
-# Vistas y Pages de la App (Kittypau)
+﻿# Vistas y Pages de la App (Kittypau)
 
 ## Objetivo
 Definir la estructura de vistas antes de implementar UI o routing.
@@ -96,10 +96,10 @@ por "eventos / interpretaciones / historia".
 
 ### /onboarding/device
 - Registro dispositivo (QR obligatorio)
-- Asocia mascota + device_code
+- Asocia mascota + device_id
 **Datos / API**
 - `POST /api/devices`
-- Validar `device_code` unico
+- Validar `device_id` unico
 - Actualiza `pet_state` a `device_linked`
 
 ---
@@ -114,7 +114,7 @@ por "eventos / interpretaciones / historia".
 - No mostrar graficos inicialmente.
 - Primer ingreso: mostrar **modo guia** (popup con fondo difuminado).
 **Datos / API**
-- `GET /api/readings?device_id=...&limit=50` (historial)
+- `GET /api/readings?device_uuid=...&limit=50` (historial)
 - Supabase Realtime (`readings`) integrado.
 - `devices` (estado, bateria, last_seen)
 - `profiles.first_time_guide_seen` (flag)
@@ -123,7 +123,7 @@ por "eventos / interpretaciones / historia".
 - Timeline narrativo del dia.
 - Ejemplos: "07:12 desayuno tranquilo", "18:32 mucha agua".
 **Datos / API**
-- `GET /api/readings?device_id=...&limit=50`
+- `GET /api/readings?device_uuid=...&limit=50`
 - Interpretaciones a partir de lecturas
 - Realtime `readings` integrado.
 
@@ -132,7 +132,7 @@ por "eventos / interpretaciones / historia".
 - No priorizar raza; priorizar patrones.
 **Datos / API**
 - `GET /api/pets`
-- `GET /api/readings?device_id=...&limit=80`
+- `GET /api/readings?device_uuid=...&limit=80`
 - Realtime `readings` integrado.
 
 ### /bowl (antes /devices)
@@ -287,7 +287,7 @@ Los numeros existen, pero como evidencia secundaria.
 - `pet_onboarding_step`.
 
 ### 5) Onboarding Dispositivo
-**Objetivo**: vincular `device_code` con mascota.
+**Objetivo**: vincular `device_id` con mascota.
 **Layout**
 - Input de codigo + QR opcional.
 **Datos / API**
@@ -300,7 +300,7 @@ Los numeros existen, pero como evidencia secundaria.
 - Feed vertical, cards.
 - 1 mensaje principal + 1 accion.
 **Datos / API**
-- `GET /api/readings?device_id=...&limit=50`
+- `GET /api/readings?device_uuid=...&limit=50`
 - Realtime `readings`.
 **Estados**
 - Empty: "Aun no hay lecturas".
@@ -311,7 +311,7 @@ Los numeros existen, pero como evidencia secundaria.
 **Layout**
 - Timeline vertical con tarjetas.
 **Datos / API**
-- `GET /api/readings?device_id=...`
+- `GET /api/readings?device_uuid=...`
 - Reglas de `Docs/REGLAS_INTERPRETACION_IOT.md`.
 
 ### 8) Pet (perfil)
@@ -348,4 +348,8 @@ Los numeros existen, pero como evidencia secundaria.
 3. **/bowl**: estado técnico del plato + acciones.
 4. **/settings**: ajustes de usuario y notificaciones.
 5. **/register**: ruta pública (además del popup) + reenvío de confirmación.
+
+
+
+
 

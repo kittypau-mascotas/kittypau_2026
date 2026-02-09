@@ -1,4 +1,4 @@
-# Arquitectura Completa Kittypau (Actual)
+﻿# Arquitectura Completa Kittypau (Actual)
 
 ## Objetivo
 Arquitectura real del MVP con Next.js + Supabase + HiveMQ + Raspberry Bridge.
@@ -17,7 +17,7 @@ Arquitectura real del MVP con Next.js + Supabase + HiveMQ + Raspberry Bridge.
 1. ESP32 publica MQTT en HiveMQ.
 2. Bridge en Raspberry escucha `+/SENSORS` (ver `Docs/TOPICOS_MQTT.md`).
 3. Bridge reenvia a `POST /api/mqtt/webhook`.
-4. API valida `x-webhook-token`, busca `device_code` y guarda lectura.
+4. API valida `x-webhook-token`, busca `device_id` (KPCL) o `device_uuid` (UUID) y guarda lectura.
 5. Supabase Realtime notifica a la app.
 
 ---
@@ -35,10 +35,10 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 1. `POST /api/mqtt/webhook`
 2. `GET/POST /api/pets`
 3. `GET/POST /api/devices`
-4. `GET /api/readings?device_id=<UUID>`
+4. `GET /api/readings?device_uuid=<UUID>`
 
 Notas:
-- `device_code` (KPCLxxxx) no es `device_id` (UUID).
+- `device_id` (KPCLxxxx) no es `device_uuid` (UUID).
 - `devices.pet_id` es obligatorio.
 
 ---
@@ -70,3 +70,6 @@ Notas:
 - Esquema DB: `Docs/SQL_SCHEMA.sql`
 - Pruebas: `Docs/PRUEBAS_E2E.md`
 - Bridge: `Docs/RASPBERRY_BRIDGE.md`
+
+
+

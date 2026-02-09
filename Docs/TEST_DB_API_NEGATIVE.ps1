@@ -34,7 +34,7 @@ try {
   Invoke-RestMethod -Method Post `
     -Uri "$baseUrl/api/mqtt/webhook" `
     -Headers @{ "x-webhook-token"=$webhook; "Content-Type"="application/json" } `
-    -Body "{`"deviceId`":`"00000000-0000-0000-0000-000000000000`",`"temperature`":23.5}" | Out-Null
+    -Body "{`"device_id`":`"KPCL9999`",`"temperature`":23.5}" | Out-Null
   throw "Expected webhook invalid device to fail"
 } catch {
   if ($_.Exception.Response.StatusCode.value__ -ne 404) { throw $_ }
@@ -56,7 +56,7 @@ try {
 # 4) GET /api/readings con device ajeno -> 403/404
 try {
   Invoke-RestMethod -Method Get `
-    -Uri "$baseUrl/api/readings?device_id=00000000-0000-0000-0000-000000000000" `
+    -Uri "$baseUrl/api/readings?device_uuid=00000000-0000-0000-0000-000000000000" `
     -Headers @{ Authorization="Bearer $token" } | Out-Null
   Write-Host "WARN: readings for unknown device did not fail (check response)"
 } catch {
@@ -69,3 +69,4 @@ try {
 }
 
 Write-Host "NEGATIVE TESTS DONE"
+

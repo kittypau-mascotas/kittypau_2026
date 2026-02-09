@@ -30,7 +30,7 @@ Para este proyecto, empezar con **Newman** y mantener **PowerShell** como respal
 ## Prerrequisitos
 - Token Supabase valido (Auth).
 - `MQTT_WEBHOOK_SECRET` correcto en Vercel.
-- `device_code` existente para pruebas webhook.
+- `device_id` existente para pruebas webhook.
 
 Variables esperadas (no incluir valores reales en docs):
 ```
@@ -43,9 +43,9 @@ BASE_URL=https://kittypau-app.vercel.app
 ---
 
 ## Set de datos de prueba (convencion)
-- `device_code`: `KPCL01XX` (evitar colisiones).
+- `device_id`: `KPCL01XX` (evitar colisiones).
 - `pet_id`: usar mascota real del usuario test.
-- `device_id`: usar el UUID retornado por `POST /api/devices`.
+- `device_uuid`: usar el UUID retornado por `POST /api/devices`.
 
 ---
 
@@ -56,7 +56,7 @@ BASE_URL=https://kittypau-app.vercel.app
 3. `PATCH /api/pets/:id`
 4. `POST /api/devices`
 5. `POST /api/mqtt/webhook`
-6. `GET /api/readings?device_id=...`
+6. `GET /api/readings?device_uuid=...`
 
 **Salida esperada**
 - `200` en todas las rutas.
@@ -79,10 +79,10 @@ $petId = "<PET_UUID>"
 $device = Invoke-RestMethod -Method Post `
   -Uri "$baseUrl/api/devices" `
   -Headers @{Authorization="Bearer $token"; "Content-Type"="application/json"} `
-  -Body "{\"device_code\":\"KPCL0100\",\"device_type\":\"food_bowl\",\"status\":\"active\",\"pet_id\":\"$petId\"}"
+  -Body "{\"device_id\":\"KPCL0100\",\"device_type\":\"food_bowl\",\"status\":\"active\",\"pet_id\":\"$petId\"}"
 
 # 2) Enviar lectura
-$payload = @{ deviceCode=$device.device_code; temperature=23.5; humidity=65; weight_grams=3500; battery_level=85; flow_rate=120 } | ConvertTo-Json
+$payload = @{ device_id=$device.device_id; temperature=23.5; humidity=65; weight_grams=3500; battery_level=85; flow_rate=120 } | ConvertTo-Json
 Invoke-RestMethod -Method Post `
   -Uri "$baseUrl/api/mqtt/webhook" `
   -Headers @{ "x-webhook-token"=$webhook; "Content-Type"="application/json" } `
@@ -90,17 +90,17 @@ Invoke-RestMethod -Method Post `
 
 # 3) Leer lecturas
 Invoke-RestMethod -Method Get `
-  -Uri "$baseUrl/api/readings?device_id=$($device.id)" `
+  -Uri "$baseUrl/api/readings?device_uuid=$($device.id)" `
   -Headers @{Authorization="Bearer $token"}
 ```
 
 ---
 
 ## Casos negativos minimos
-- `POST /api/mqtt/webhook` sin `deviceCode` -> `400`.
-- `POST /api/mqtt/webhook` con `deviceCode` inexistente -> `404`.
+- `POST /api/mqtt/webhook` sin `device_id` -> `400`.
+- `POST /api/mqtt/webhook` con `device_id` inexistente -> `404`.
 - `PATCH /api/devices/:id` con `status` invalido -> `400`.
-- `GET /api/readings` con `device_id` ajeno -> `403` o lista vacia.
+- `GET /api/readings` con `device_uuid` ajeno -> `403` o lista vacía.
 
 ---
 
@@ -149,7 +149,7 @@ Variables a completar
 - PEGA_AQUI_PET_ID
 
 Nota
-- El script genera un `device_code` unico para evitar colisiones.
+- El script genera un `device_id` unico para evitar colisiones.
 
 Uso
 ```powershell
@@ -223,4 +223,7 @@ Get-Content -Path ".\\Docs\\.env.test.local" |
 ## Nota Vercel CLI
 `vercel link --yes` puede **sobrescribir** el `.env.local` local con variables del proyecto en Vercel.
 Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.env.local` manualmente.
+
+
+
 

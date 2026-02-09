@@ -1,8 +1,8 @@
-# Raspberry Pi Zero 2 W - Bridge MQTT (Kittypau)
+﻿# Raspberry Pi Zero 2 W - Bridge MQTT (Kittypau)
 
 ## Objetivo
 Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
-Esta documentacion integra la construccion IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
+Esta documentación integra la construcción IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
 
 ---
 
@@ -14,9 +14,9 @@ Esta documentacion integra la construccion IoT actual (MQTT/HiveMQ) y deja prepa
 
 **No hace**
 - No consulta datos (no hace `GET`).
-- No almacena datos finales (solo reenvia).
+- No almacena datos finales (solo reenvía).
 - No reemplaza la API ni la DB.
-- No se conecta directamente a Supabase en produccion (el backend en Vercel es el unico que escribe en DB).
+- No se conecta directamente a Supabase en producción (el backend en Vercel es el unico que escribe en DB).
 
 ---
 
@@ -87,7 +87,7 @@ WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
 - Cambiar credenciales HiveMQ y `WEBHOOK_TOKEN` si se sospecha fuga.
 - Al rotar, actualizar `.env` en la Pi y variables en Vercel.
 
-### 6) Validaciones minimas en runtime
+### 6) Validaciones mínimas en runtime
 - Verificar que envs existan al iniciar (fail fast).
 - Loggear error claro si falta alguna variable.
 
@@ -151,7 +151,7 @@ Headers:
 **Payload obligatorio**
 ```json
 {
-  "deviceCode": "KPCL0001",
+  "device_id": "KPCL0001",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -162,9 +162,9 @@ Headers:
 }
 ```
 Notas:
-- `deviceCode` **es obligatorio**. Si el payload del IoT no lo trae, el Bridge debe inferirlo del topic y agregarlo.
+- `device_id` es obligatorio. Si el payload del IoT no lo trae, el Bridge debe inferirlo del topic y agregarlo.
 - `timestamp` es opcional. Si no se envia, la API usa hora actual.
-- La API acepta `deviceCode`, `deviceId` o `device_id`, pero **recomendacion oficial**: enviar `deviceCode`.
+- La API acepta `device_id`/`deviceId` (KPCL) y opcional `device_uuid` (UUID). Recomendación oficial: enviar `device_id`.
 
 **Validaciones de rango (API)**
 - `temperature`: -10 a 60
@@ -173,12 +173,12 @@ Notas:
 - `weight_grams`: 0 a 20000
 - `water_ml`: 0 a 5000
 - `flow_rate`: 0 a 1000
-- `deviceCode`: formato `KPCL0000`
+- `device_id`: formato `KPCL0000`
 
 **Errores esperados**
 - `401 Unauthorized`: token invalido o faltante.
 - `400 Bad Request`: payload invalido (campos faltantes o fuera de rango).
-- `404 Not Found`: `deviceCode` no existe en `devices`.
+- `404 Not Found`: `device_id` no existe en `devices`.
 
 ---
 
@@ -214,8 +214,8 @@ El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Ver
 
 ### 2) Normalizacion del payload
 - Convertir el payload IoT (`SENSORS`) al contrato del webhook.
-- Inyectar `deviceCode` desde el topic (`KPCLXXXX`).
-- Validar que `deviceCode` respete formato `KPCL0000`.
+- Inyectar `device_id` desde el topic (`KPCLXXXX`).
+- Validar que `device_id` respete formato `KPCL0000`.
 
 ### 3) Integracion con Vercel (API)
 - Enviar `POST` a `WEBHOOK_URL` con header `x-webhook-token`.
@@ -236,7 +236,7 @@ El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Ver
 ## Flujo completo
 1. Dispositivo publica MQTT en HiveMQ.
 2. Bridge recibe mensaje.
-3. Bridge construye payload y agrega `deviceCode`.
+3. Bridge construye payload y agrega `device_id`.
 4. Bridge hace `POST` a `/api/mqtt/webhook`.
 5. API guarda en `readings` y actualiza `devices.last_seen`.
 
@@ -287,7 +287,7 @@ Esperado:
 ### 3) Verificar lectura en Supabase
 ```sql
 select * from public.readings
-where device_id = '<DEVICE_UUID>'
+where device_uuid = '<DEVICE_UUID>'
 order by recorded_at desc
 limit 3;
 ```
@@ -304,8 +304,15 @@ Esperado:
 
 ---
 
-## Pruebas de funcionamiento (minimas)
+## Pruebas de funcionamiento (mínimas)
 1. Enviar mensaje MQTT desde un simulador.
 2. Ver log de POST exitoso.
 3. Ver nueva fila en `readings`.
+
+
+
+
+
+
+
 

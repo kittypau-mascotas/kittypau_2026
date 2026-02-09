@@ -1,4 +1,4 @@
-# Notas para Implementacion (antes de codificar)
+﻿# Notas para Implementacion (antes de codificar)
 
 ## Alcance
 Este documento resume los puntos criticos para implementar sin romper el contrato de dominio.
@@ -28,7 +28,7 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 - `photo_url` reemplazable (no versionado por ahora).
 
 ## 4) Registro de dispositivo (QR)
-- QR es obligatorio para obtener `device_code`.
+- QR es obligatorio para obtener `device_id`.
 - Asociar siempre a una mascota para activar envio de datos.
 - `device_type` solo `food_bowl` o `water_bowl`.
 - `pet_id` es obligatorio (schema actual).
@@ -62,7 +62,7 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 - Sesion expirada.
 
 ## 11) Estilo de tablero
-- Aplicar paleta y tipografia definidas en `Docs/estilos y dise�os.md`.
+- Aplicar paleta y tipografia definidas en `Docs/estilos y diseños.md`.
 
 ---
 
@@ -70,4 +70,5 @@ Este documento resume los puntos criticos para implementar sin romper el contrat
 - [ ] Aprobado `Docs/DOC_MAESTRO_DOMINIO.md`
 - [ ] Revisado `Docs/PLAN_SQL_ESTRUCTURA.md`
 - [ ] Decidida estrategia de migracion SQL
+
 

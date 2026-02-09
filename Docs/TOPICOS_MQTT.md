@@ -122,6 +122,8 @@ El bridge debe mapear `{DEVICE_ID}/SENSORS` al payload de `/api/mqtt/webhook`:
 | `temp` | `temperature` |
 | `hum` | `humidity` |
 | `timestamp` | `timestamp` |
-| `DEVICE_ID` | `deviceCode` (inyectado desde topic) |
+| `DEVICE_ID` | `device_id` (inyectado desde topic) |
 
 **Nota**: `STATUS` no se persiste hoy en DB; se puede extender el schema si se necesita.
+
+

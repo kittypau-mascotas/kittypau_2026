@@ -1,4 +1,4 @@
-# Migracion de esquema para compatibilidad Raspberry (plan previo)
+﻿# Migracion de esquema para compatibilidad Raspberry (plan previo)
 
 ## Objetivo
 Unificar el esquema de la Raspberry (bridge) con Kittypau sin borrar datos existentes.
@@ -18,13 +18,14 @@ No se ejecuta nada hasta aprobar este plan.
 
 ## Diferencias detectadas (bridge vs Kittypau)
 Bridge usa:
-- `devices.device_id` (Kittypau usa `device_code`)
+- `devices.device_id` (string KPCLxxxx)
 - `device_summary` con columnas: `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`
 - vista `latest_readings`
 - columnas nuevas: `notes`, `ip_history`, `retired_at`
 
 Kittypau actual:
-- `devices.device_code` (unique)
+- `devices.device_id` (string KPCLxxxx, único)
+- `devices.id` (UUID, PK)
 - no tiene `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`
 - no tiene `latest_readings` ni `device_summary`
 
@@ -40,29 +41,18 @@ Kittypau actual:
    - `wifi_ssid` TEXT
    - `wifi_ip` TEXT
    - `sensor_health` TEXT
-2. **Crear vista `latest_readings`** en base a `readings` (por device_code).
-3. **Crear vista `device_summary`** usando `device_code`.
-4. **Mantener `device_code`** como fuente de verdad.
-5. **Actualizar bridge** para usar `device_code` (si es posible).
-
-### Fase 2 (si se decide renombrar)
-1. Renombrar columna `device_code` -> `device_id`.
-2. Actualizar indices y constraints.
-3. Ajustar APIs/UI a `device_id`.
-4. Quitar aliases temporales.
+2. **Crear vista `latest_readings`** en base a `readings` (por `devices.id` y `devices.device_id`).
+3. **Crear vista `device_summary`** usando `device_id` (KPCL) como clave humana.
+4. **Mantener `device_id`** como fuente de verdad para el bridge.
+5. **Actualizar bridge** para enviar `device_id` (KPCL) y opcional `device_uuid` (devices.id).
 
 ---
 
 ## Cambios requeridos en API/UI
-Si se renombra a `device_id`:
-- API: `devices` CRUD debe leer/escribir `device_id`.
-- Webhook: debe mapear `device_id`.
-- UI: todas las vistas que muestran `device_code` pasan a `device_id`.
-- Realtime: filtros por `device_id`.
-
-Si se mantiene `device_code` y solo se agregan columnas:
-- APIs/UI no cambian salvo exponer nuevos campos en `device_summary`.
-- Bridge debe enviar `device_code`.
+- API: `devices` CRUD debe leer/escribir `device_id` (KPCL).
+- Webhook: acepta `device_id` (KPCL) y opcional `device_uuid` (UUID).
+- UI: mostrar `device_id` (KPCL) como identificador humano.
+- Realtime: filtros por `devices.id` (UUID) se mantienen.
 
 ---
 
@@ -70,15 +60,15 @@ Si se mantiene `device_code` y solo se agregan columnas:
 - **Riesgo**: romper UI/API si renombramos sin migracion.
   Mitigacion: fase 1 con compatibilidad y alias.
 - **Riesgo**: datos duplicados si bridge manda `device_id` distinto.
-  Mitigacion: normalizar device_id == device_code.
+  Mitigacion: normalizar device_id (KPCL) y validar formato.
 - **Riesgo**: vistas referencian columnas inexistentes.
   Mitigacion: agregar columnas antes de crear vistas.
 
 ---
 
 ## Checklist previo a ejecutar cambios
-1. Confirmar si bridge puede enviar `device_code`.
-2. Decidir: mantener `device_code` o renombrar a `device_id`.
+1. Confirmar que bridge envía `device_id` (KPCL).
+2. Confirmar si bridge puede enviar `device_uuid` (opcional).
 3. Ejecutar migracion en staging (Supabase).
 4. Validar API `/api/devices` y `/api/readings`.
 5. Validar bridge con MQTT CLI + webhook.
@@ -86,6 +76,6 @@ Si se mantiene `device_code` y solo se agregan columnas:
 ---
 
 ## Recomendacion
-Mantener `device_code` y **agregar compatibilidad** (Fase 1).
-Renombrar solo si el bridge no puede cambiarse.
+Aplicar Fase 1 y mantener `device_id` como identificador humano compatible con bridge.
+
 

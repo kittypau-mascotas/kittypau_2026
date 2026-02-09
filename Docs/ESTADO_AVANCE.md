@@ -1,4 +1,4 @@
-# Estado del Proyecto y Proximos Pasos (2026-02-07)
+﻿# Estado del Proyecto y Próximos Pasos (2026-02-07)
 
 ## Resumen de avance
 - Proyecto Next.js en `kittypau_app/` (TypeScript + App Router) desplegado en Vercel.
@@ -14,7 +14,7 @@
 ## Lo que ya funciona
 1. Webhook recibe datos y guarda en Supabase (produccion).
 2. CRUD de `pets` y `devices` funcionando con Auth.
-3. Lecturas (`readings`) consultables por `device_id`.
+3. Lecturas (`readings`) consultables por `device_uuid`.
 4. Trigger actualiza `devices.last_seen` y `battery_level`.
 
 ## Pendiente inmediato (implementacion)
@@ -74,10 +74,10 @@
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
 - Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
-- Webhook hardening: si se envían `deviceId` y `deviceCode`, deben coincidir.
+- Webhook hardening: si se envían `device_id` y `device_uuid`, deben coincidir.
 - Clock drift: cálculo usa `serverTimeMs` consistente y registra `delta_ms`.
 - Trigger de devices optimizado: actualiza `last_seen` solo si pasó 1 min.
-- Índice cubriente para readings (device_id, recorded_at) con INCLUDE de métricas.
+- Índice cubriente para readings (device_uuid, recorded_at) con INCLUDE de métricas.
 - Algoritmos de interpretación documentados (baseline, ventanas, guardrails).
 - Health check del bridge documentado (heartbeat + cron + alertas).
 - Plan de particionado de `readings` documentado (Postgres nativo + Timescale).
@@ -92,7 +92,7 @@
 - Rate limit distribuido (Upstash) con fallback local.
 - Validacion Upstash OK (429 esperado al exceder 60 req/min en webhook).
 - Webhook con doble timestamp (recorded_at + ingested_at) y flag clock_invalid.
-- Webhook idempotente por `device_id + recorded_at`.
+- Webhook idempotente por `device_uuid + recorded_at`.
 - Paginacion en GET /api/pets, /api/devices, /api/readings.
 - Logs server-side con `request_id` (errores + webhook success).
 - Documentacion CLI completada (Vercel, Supabase, HiveMQ, Raspberry) con ejemplos.
@@ -120,11 +120,11 @@
 - Endpoint onboarding status (`GET /api/onboarding/status`) listo.
 - Normalizacion de strings en PATCH /api/pets/:id.
 - POST /api/devices ahora revierte si falla update de pet_state.
-- Webhook validado con deviceId (UUID) y valores string normalizados.
+- Webhook validado con devices.id (UUID) y device_id (KPCL) y valores string normalizados.
 - Test onboarding backend OK (profiles -> pets -> devices) via TEST_ONBOARDING_BACKEND.ps1.
 - Test inmediato TEST_DB_API.ps1 ejecutado OK (Auth, Pets, Devices, Webhook, Readings).
 - DB/API smoke test real con KPCL0300 (Auth, RLS, Devices, Webhook, Readings).
-- Constraints de onboarding y device_code agregados en SQL.
+- Constraints de onboarding y device_id agregados en SQL.
 - SQL actualizado y aplicado.
 - Validaciones backend en POST /api/pets y POST /api/devices.
 - E2E validado (Auth -> Pets -> Devices -> Webhook -> Readings).
@@ -174,6 +174,12 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
+
+
+
+
+
 
 
 

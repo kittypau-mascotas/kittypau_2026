@@ -1,4 +1,4 @@
-# Checklist de Deploy (Kittypau)
+﻿# Checklist de Deploy (Kittypau)
 
 ## 1) Supabase listo
 - [ ] Proyecto creado en Supabase.
@@ -7,7 +7,7 @@
 - [ ] Auth habilitado (email/password).
 - [ ] Obtener `SUPABASE_URL` y keys.
 - [ ] Crear al menos 1 mascota en `pets`.
-- [ ] Crear al menos 1 dispositivo en `devices` con `device_code` y `pet_id`.
+- [ ] Crear al menos 1 dispositivo en `devices` con `device_id` y `pet_id`.
 
 ## 2) Variables de entorno en Vercel
 Agregar en **Settings -> Environment Variables**:
@@ -51,3 +51,4 @@ Agregar en **Settings -> Environment Variables**:
 - [x] Endpoint `/api/mqtt/webhook` creado.
 - [x] Script local `scripts/test-webhook.ps1` funciona.
 - [x] Prueba local con `success: true`.
+

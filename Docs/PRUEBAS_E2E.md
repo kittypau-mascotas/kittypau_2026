@@ -8,7 +8,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 ## Prerrequisitos
 - Vercel deploy activo: `https://kittypau-app.vercel.app`
 - Supabase con tablas y RLS aplicados (`Docs/SQL_SCHEMA.sql`)
-- Device registrado en `devices` con `device_code` real
+- Device registrado en `devices` con `device_id` real
 
 ---
 
@@ -23,10 +23,10 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 5. `PATCH /api/pets/:id` (actualizar mascota).
 6. `POST /api/devices` (crear dispositivo).
 7. `POST /api/mqtt/webhook` (insertar lectura de prueba).
-8. `GET /api/readings?device_id=<UUID>` (leer lecturas).
+8. `GET /api/readings?device_uuid=<UUID>` (leer lecturas).
 
 **Esperado**
-- `devices` contiene el `device_code` creado.
+- `devices` contiene el `device_id` creado.
 - `readings` contiene la lectura insertada.
 
 **Resultado (2026-02-06)**
@@ -38,25 +38,25 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 
 **IDs generados (ejemplo de prueba global)**
 - pet_id: `02576c11-84a1-4b78-98f8-a2568fc7e179`
-- device_id: `11b5b64b-f212-4527-a9e7-c323ad59ba5c`
+- device_uuid: `11b5b64b-f212-4527-a9e7-c323ad59ba5c`
 - reading_id: `35b5f976-abff-40a4-a673-bc5afcdec46e`
 
 **IDs generados (corrida adicional 2026-02-06)**
 - pet_id: `02576c11-84a1-4b78-98f8-a2568fc7e179`
-- device_id: `90fb4851-fd08-4dc7-a16b-591172b76370`
+- device_uuid: `90fb4851-fd08-4dc7-a16b-591172b76370`
 - reading_id: `039f5519-0c16-48bd-a074-a2537cd7b387`
 - recorded_at: `2026-02-06T19:41:51.147+00:00`
 
 **IDs generados (corrida UI real 2026-02-07)**
 - pet_id: `edd4e20f-afca-4b49-ab9f-dc5f345093fc`
-- device_id: `7086b60a-9f1a-489b-9368-06fe373181eb`
-- device_code: `KPCL0200`
+- device_uuid: `7086b60a-9f1a-489b-9368-06fe373181eb`
+- device_id: `KPCL0200`
 - reading_id: `5ccda865-0276-4248-9767-eb2ec8b17efe`
 - recorded_at: `2026-02-07T22:35:39.802+00:00`
 
 **Recordatorio clave**
-- `device_id` (UUID) **no** es `device_code` (KPCLxxxx).
-- `/api/readings` requiere `device_id`.
+- `device_id` (KPCLxxxx) **no** es `device_uuid` (UUID).
+- `/api/readings` requiere `device_uuid`.
 
 **Cambio confirmado (2026-02-06)**
 - `POST /api/devices` exige `pet_id` (schema lo requiere).
@@ -134,16 +134,16 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 
 ---
 
-## 6) Prueba de integridad de device_code
-**Objetivo:** validar que el `device_code` llegue en el payload (lo inyecta el Bridge).
+## 6) Prueba de integridad de device_id
+**Objetivo:** validar que el `device_id` llegue en el payload (lo inyecta el Bridge).
 
 **Pasos**
 1. Publicar mensaje con topic `KPCLXXXX/SENSORS`
-2. Verificar que el Bridge agregue `deviceCode` en el payload hacia `/api/mqtt/webhook`.
+2. Verificar que el Bridge agregue `device_id` en el payload hacia `/api/mqtt/webhook`.
 
 **Esperado**
 - Se crea lectura asociada a `KPCLXXXX`.
-- Si el Bridge no agrega `deviceCode`, el webhook debe responder `400`.
+- Si el Bridge no agrega `device_id`, el webhook debe responder `400`.
 
 ---
 
@@ -157,7 +157,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 - `WEBHOOK_URL` mal.
 
 **Vercel ok pero no guarda en Supabase**
-- `device_code` no existe en `devices`.
+- `device_id` no existe en `devices`.
 - `SUPABASE_SERVICE_ROLE_KEY` incorrecta.
 
 ---
@@ -171,7 +171,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 3. Con token B ejecutar:
    - `GET /api/devices` (debe devolver array vacio o 403).
    - `GET /api/pets` (debe devolver array vacio o 403).
-4. Intentar `GET /api/readings?device_id=<UUID de usuario A>`.
+4. Intentar `GET /api/readings?device_uuid=<UUID de usuario A>`.
 
 **Esperado**
 - No hay datos de usuario A.
@@ -181,11 +181,11 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 - Usuario A: `c0926551-11e9-48cd-b24f-23d009f85cb6`
 - Usuario B: `1f1c1467-60ad-44e3-88fc-bc8dc9785bea`
 - pet_id B: `709afc2d-bfe1-49b1-a377-70cb366f8a8a`
-- device_id B: `edd4e20f-afca-4b49-ab9f-dc5f345093fc`
+- device_uuid B: `edd4e20f-afca-4b49-ab9f-dc5f345093fc`
 - `GET /api/pets` con token A -> OK (solo mascotas de A)
 - `GET /api/pets` con token B -> OK (solo mascotas de B)
 - `PATCH /api/devices/:id` sobre device de B con token A -> `404` (row no visible, RLS ok)
-- `GET /api/readings?device_id=<device B>` con token A -> `404` (row no visible, RLS ok)
+- `GET /api/readings?device_uuid=<device B>` con token A -> `404` (row no visible, RLS ok)
 
 ---
 
@@ -218,8 +218,16 @@ Ver `Docs/AUTOMATIZACION_TESTS.md`.
 - POST /api/devices OK -> `db4ab517-ba80-43dd-865f-3207354d4b18` (KPCL3755)
 - pet_state -> `device_linked`
 
-**Resultado (2026-02-07, webhook deviceId + strings OK)**
-- POST /api/mqtt/webhook con `deviceId` (UUID) y valores numéricos como string: OK
+**Resultado (2026-02-07, webhook device_id + strings OK)**
+- POST /api/mqtt/webhook con `device_id` (KPCL) y valores numéricos como string: OK
 - Reading creado: `dcb9e265-c825-4acb-9516-e1a77187d9f0`
-- device_id: `db4ab517-ba80-43dd-865f-3207354d4b18`
+- device_uuid: `db4ab517-ba80-43dd-865f-3207354d4b18`
 - recorded_at: `2026-02-07T23:45:14.002+00:00`
+
+
+
+
+
+
+
+

@@ -1,11 +1,11 @@
 # Documento Maestro de Dominio (Kittypau)
 
-## Proposito
+## Propósito
 Definir reglas, estados, contratos y validaciones antes de implementar UI o backend.
 
 ---
 
-## 1. Reglas de negocio (critico)
+## 1. Reglas de negocio (crítico)
 ### Usuario
 - Un usuario puede tener multiples mascotas.
 - Una mascota tiene un solo propietario por ahora (cuidadores en fase futura).
@@ -69,7 +69,8 @@ Definir reglas, estados, contratos y validaciones antes de implementar UI o back
 ### Vincular dispositivo
 ```json
 {
-  "device_id": "uuid",
+  "device_uuid": "uuid",
+  "device_id": "KPCL0001",
   "device_state": "linked",
   "pet_state": "device_linked"
 }

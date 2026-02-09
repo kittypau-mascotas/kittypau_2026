@@ -1,8 +1,8 @@
-# Arquitectura del Proyecto Kittypau (MVP $0)
+﻿# Arquitectura del Proyecto Kittypau (MVP $0)
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesion.
+1. Se registra e inicia sesión.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
@@ -14,8 +14,8 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El codigo fuente vive en el repo (`/bridge`).
-   - El runtime real esta fuera del repo (Raspberry).
+   - El código fuente vive en el repo (`/bridge`).
+   - El runtime real está fuera del repo (Raspberry).
 
 ---
 
@@ -34,22 +34,22 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ## Regla de conexion (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvia a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetria)
+## Flujo de datos (telemetría)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvia a Vercel.
+2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
 ## Registro de dispositivo (paso esencial)
 - El usuario escanea el QR en la parte inferior del plato.
-- El QR entrega el `device_code`.
+- El QR entrega el `device_id`.
 - El dispositivo se asocia a una mascota para activar envio de datos.
 
 ---
@@ -116,7 +116,7 @@ ESP32 -> HiveMQ Cloud
 **Body (ejemplo)**
 ```json
 {
-  "deviceCode": "KPCL0001",
+  "device_id": "KPCL0001",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -125,8 +125,8 @@ ESP32 -> HiveMQ Cloud
 }
 ```
 **Notas**
-- La API acepta `deviceCode`, `deviceId` o `device_id`.
-- El `device_code` es el codigo humano (KPCLxxxx) y se busca en `devices`.
+- La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
+- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -159,7 +159,7 @@ ESP32 -> HiveMQ Cloud
 **Response**
 ```json
 [
-  { "id": "uuid", "device_code": "KPCL0001", "device_type": "food_bowl" }
+  { "id": "uuid", "device_id": "KPCL0001", "device_type": "food_bowl" }
 ]
 ```
 
@@ -167,7 +167,7 @@ ESP32 -> HiveMQ Cloud
 **Body**
 ```json
 {
-  "device_code": "KPCL0001",
+  "device_id": "KPCL0001",
   "device_type": "food_bowl",
   "pet_id": "uuid"
 }
@@ -179,12 +179,13 @@ ESP32 -> HiveMQ Cloud
 
 ---
 
-### 6) `GET /api/readings?device_id=uuid`
+### 6) `GET /api/readings?device_uuid=uuid` (uuid = devices.id)
 **Response**
 ```json
 [
   {
-    "device_id": "uuid",
+    "device_uuid": "uuid",
+    "device_id": "KPCL0001",
     "weight_grams": 3500,
     "battery_level": 85,
     "recorded_at": "2026-02-03T18:30:00Z"
@@ -225,3 +226,8 @@ El deploy incluye:
 - Configurar deploy en Vercel.
 - Configurar webhook en HiveMQ con URL publica.
 - Verificar Realtime en dashboard.
+
+
+
+
+

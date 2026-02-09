@@ -1,4 +1,4 @@
--- Kittypau IoT - SQL Schema (MVP)
+﻿-- Kittypau IoT - SQL Schema (MVP)
 -- Objetivo: Usuario -> Mascota -> Dispositivo -> Lecturas (streaming)
 
 -- Extensions
@@ -66,10 +66,17 @@ create table if not exists public.devices (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references public.profiles(id) on delete cascade,
   pet_id uuid not null references public.pets(id) on delete restrict,
-  device_code text not null unique,
+  device_id text not null unique,
   device_type text not null check (device_type in ('food_bowl','water_bowl')),
   status text not null default 'active' check (status in ('active','inactive','maintenance')),
   device_state text default 'factory' check (device_state in ('factory','claimed','linked','offline','lost','error')),
+  notes text,
+  ip_history jsonb default '[]'::jsonb,
+  retired_at timestamptz,
+  wifi_status text,
+  wifi_ssid text,
+  wifi_ip text,
+  sensor_health text,
   battery_level int,
   last_seen timestamptz,
   created_at timestamptz not null default now()
@@ -78,7 +85,7 @@ create table if not exists public.devices (
 -- Readings (streaming)
 create table if not exists public.readings (
   id uuid primary key default gen_random_uuid(),
-  device_id uuid not null references public.devices(id) on delete cascade,
+  device_uuid UUID not null references public.devices(id) on delete cascade,
   -- pet_id es un snapshot opcional (no fuente de verdad)
   pet_id uuid references public.pets(id) on delete set null,
   weight_grams int,
@@ -131,6 +138,27 @@ ALTER TABLE public.readings
 ALTER TABLE public.readings
   ADD COLUMN IF NOT EXISTS clock_invalid boolean not null default false;
 
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS notes text;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS ip_history jsonb default '[]'::jsonb;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS retired_at timestamptz;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS wifi_status text;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS wifi_ssid text;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS wifi_ip text;
+
+ALTER TABLE public.devices
+  ADD COLUMN IF NOT EXISTS sensor_health text;
+
 -- Data cleanup (idempotent)
 -- Ensure only one active device per pet before adding unique index.
 with ranked as (
@@ -146,6 +174,19 @@ set status = 'inactive'
 from ranked r
 where d.id = r.id and r.rn > 1;
 
+-- Device retirement history (idempotent)
+update public.devices
+set
+  retired_at = '2026-02-09T03:37:00Z',
+  notes = 'Retirado: re-flasheado como KPCL0031 via OTA el 2026-02-09. Mismo hardware fisico.'
+where device_id = 'KPCL0039'
+  and retired_at is null;
+
+update public.devices
+set ip_history = '[{"ip":"192.168.1.91","ssid":"Casa 15","from":"2026-02-07","to":"2026-02-09","note":"Ultima IP antes de re-flasheo como KPCL0031"}]'::jsonb
+where device_id = 'KPCL0039'
+  and ip_history = '[]'::jsonb;
+
 -- Indexes
 create index if not exists idx_pets_user_id on public.pets(user_id);
 create index if not exists idx_pets_user_id_created_at on public.pets(user_id, created_at desc);
@@ -154,14 +195,14 @@ create index if not exists idx_devices_owner_id_created_at on public.devices(own
 create unique index if not exists idx_devices_active_per_pet
   on public.devices(pet_id)
   where status = 'active';
-create index if not exists idx_readings_device_id on public.readings(device_id);
-create index if not exists idx_readings_device_recorded_at on public.readings(device_id, recorded_at desc);
+create index if not exists idx_readings_device_id on public.readings(device_uuid);
+create index if not exists idx_readings_device_recorded_at on public.readings(device_uuid, recorded_at desc);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
 create unique index if not exists idx_readings_device_recorded_at_unique
-  on public.readings(device_id, recorded_at);
-create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
+  on public.readings(device_uuid, recorded_at);
+create index if not exists idx_readings_device_id_recorded_at on public.readings(device_uuid, recorded_at desc);
 create index if not exists idx_readings_device_recorded_cover
-  on public.readings(device_id, recorded_at desc)
+  on public.readings(device_uuid, recorded_at desc)
   include (weight_grams, water_ml, flow_rate, temperature, humidity, battery_level);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);
@@ -169,6 +210,50 @@ create index if not exists idx_audit_events_actor_id on public.audit_events(acto
 create index if not exists idx_audit_events_event_type on public.audit_events(event_type);
 create index if not exists idx_audit_events_created_at on public.audit_events(created_at desc);
 create index if not exists idx_bridge_heartbeats_last_seen on public.bridge_heartbeats(last_seen desc);
+
+-- Views for bridge compatibility
+drop view if exists latest_readings;
+create view latest_readings as
+select
+  d.id as device_uuid,
+  d.device_id,
+  r.weight_grams,
+  r.temperature,
+  r.humidity,
+  r.recorded_at
+from public.devices d
+left join lateral (
+  select *
+  from public.readings r
+  where r.device_uuid = d.id
+  order by r.recorded_at desc
+  limit 1
+) r on true;
+
+drop view if exists device_summary;
+create view device_summary as
+select
+  d.id,
+  d.device_id,
+  d.device_type,
+  d.device_state,
+  d.wifi_status,
+  d.wifi_ssid,
+  d.wifi_ip,
+  d.sensor_health,
+  d.last_seen,
+  d.owner_id,
+  d.pet_id,
+  d.notes,
+  d.retired_at,
+  p.name as pet_name,
+  lr.weight_grams as last_weight,
+  lr.temperature as last_temp,
+  lr.humidity as last_humidity,
+  lr.recorded_at as last_reading_at
+from public.devices d
+left join public.pets p on p.id = d.pet_id
+left join latest_readings lr on lr.device_uuid = d.id;
 
 -- RLS
 alter table public.profiles enable row level security;
@@ -246,7 +331,7 @@ create policy "readings_select_own"
   using (
     exists (
       select 1 from public.devices d
-      where d.id = readings.device_id and d.owner_id = auth.uid()
+      where d.id = readings.device_uuid and d.owner_id = auth.uid()
     )
   );
 
@@ -299,7 +384,7 @@ begin
         when device_state = 'factory' then 'linked'
         else device_state
       end
-  where id = new.device_id
+  where id = new.device_uuid
     and (
       last_seen is null
       or new.recorded_at > last_seen + interval '1 minute'
@@ -312,7 +397,7 @@ $$ language plpgsql;
 create or replace function public.link_device_to_pet(
   p_owner_id uuid,
   p_pet_id uuid,
-  p_device_code text,
+  p_device_id text,
   p_device_type text,
   p_status text,
   p_battery_level int
@@ -345,9 +430,9 @@ begin
     and status = 'active';
 
   insert into public.devices (
-    owner_id, pet_id, device_code, device_type, status, device_state, battery_level
+    owner_id, pet_id, device_id, device_type, status, device_state, battery_level
   ) values (
-    p_owner_id, p_pet_id, p_device_code, p_device_type, p_status, 'linked', p_battery_level
+    p_owner_id, p_pet_id, p_device_id, p_device_type, p_status, 'linked', p_battery_level
   )
   returning * into v_device;
 
@@ -373,11 +458,11 @@ for each row execute function public.update_device_from_reading();
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'devices_device_code_format_check'
+    SELECT 1 FROM pg_constraint WHERE conname = 'devices_device_id_format_check'
   ) THEN
     ALTER TABLE public.devices
-      ADD CONSTRAINT devices_device_code_format_check
-      CHECK (device_code ~ '^KPCL\d{4}$');
+      ADD CONSTRAINT devices_device_id_format_check
+      CHECK (device_id ~ '^KPCL\d{4}$');
   END IF;
 
   IF NOT EXISTS (
@@ -408,4 +493,7 @@ BEGIN
       ));
   END IF;
 END $$;
+
+
+
 

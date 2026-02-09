@@ -12,8 +12,8 @@ base_url = https://kittypau-app.vercel.app
 access_token = <ACCESS_TOKEN>
 webhook_token = <MQTT_WEBHOOK_SECRET>
 pet_id = <PET_UUID>
-device_id = <DEVICE_UUID>
-device_code = KPCL0100
+device_uuid = <DEVICE_UUID>
+device_id = KPCL0100
 ```
 
 ## Obtener access_token (Auth)
@@ -59,7 +59,7 @@ Orden recomendado:
 7. `POST /api/devices`
 8. `PATCH /api/devices/:id`
 9. `POST /api/mqtt/webhook`
-10. `GET /api/readings?device_id={{device_id}}`
+10. `GET /api/readings?device_uuid={{device_uuid}}`
 
 ---
 
@@ -169,7 +169,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 **Body:**
 ```json
 {
-  "device_code": "{{device_code}}",
+  "device_id": "{{device_id}}",
   "device_type": "food_bowl",
   "status": "active",
   "pet_id": "{{pet_id}}"
@@ -179,14 +179,14 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 **Tests:**
 ```javascript
 pm.test("status 201", () => pm.response.to.have.status(201));
-pm.environment.set("device_id", pm.response.json().id);
+pm.environment.set("device_uuid", pm.response.json().id);
 ```
 
 ---
 
 ### 7) PATCH /api/devices/:id
 **Method:** PATCH  
-**URL:** `{{base_url}}/api/devices/{{device_id}}`  
+**URL:** `{{base_url}}/api/devices/{{device_uuid}}`  
 **Headers:**  
 `Authorization: Bearer {{access_token}}`  
 `Content-Type: application/json`
@@ -216,7 +216,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 **Body:**
 ```json
 {
-  "deviceId": "{{device_id}}",
+  "device_id": "{{device_id}}",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -234,7 +234,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 
 ### 9) GET /api/readings
 **Method:** GET  
-**URL:** `{{base_url}}/api/readings?device_id={{device_id}}`  
+**URL:** `{{base_url}}/api/readings?device_uuid={{device_uuid}}`  
 **Headers:**  
 `Authorization: Bearer {{access_token}}`
 
@@ -260,3 +260,6 @@ newman run Kittypau_API.postman_collection.json \
 ## Notas
 - No subir tokens reales al repo.
 - Si cambian los contratos, actualizar esta colección.
+
+
+

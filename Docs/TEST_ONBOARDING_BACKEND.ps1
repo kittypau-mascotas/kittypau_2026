@@ -1,4 +1,4 @@
-# Test onboarding backend (profiles -> pets -> devices)
+﻿# Test onboarding backend (profiles -> pets -> devices)
 # Requiere variables en entorno:
 # SUPABASE_ANON_KEY, MQTT_WEBHOOK_SECRET, KITTYPAU_PASSWORD, PET_NAME, PET_TYPE
 
@@ -10,7 +10,7 @@ $emailB = "kittypau.mascotas@gmail.com"
 $passwordB = $env:KITTYPAU_PASSWORD
 $petName = $env:PET_NAME
 $petType = $env:PET_TYPE
-$deviceCode = "KPCL" + (Get-Random -Minimum 1000 -Maximum 9999)
+$device_id = "KPCL" + (Get-Random -Minimum 1000 -Maximum 9999)
 
 if (-not $anonKey) { throw "Falta SUPABASE_ANON_KEY en entorno." }
 if (-not $passwordB) { throw "Falta KITTYPAU_PASSWORD en entorno." }
@@ -46,9 +46,9 @@ Write-Host "POST /api/pets OK -> $($pet.id)"
 $device = Invoke-RestMethod -Method Post `
   -Uri "$apiBase/api/devices" `
   -Headers @{Authorization="Bearer $tokenB"; "Content-Type"="application/json"} `
-  -Body "{`"device_code`":`"$deviceCode`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$($pet.id)`"}"
+  -Body "{`"device_id`":`"$device_id`",`"device_type`":`"food_bowl`",`"status`":`"active`",`"pet_id`":`"$($pet.id)`"}"
 
-Write-Host "POST /api/devices OK -> $($device.id) ($deviceCode)"
+Write-Host "POST /api/devices OK -> $($device.id) ($device_id)"
 
 # 5) Verify pet state
 $pets = Invoke-RestMethod -Method Get `
@@ -57,3 +57,5 @@ $pets = Invoke-RestMethod -Method Get `
 
 $linked = $pets | Where-Object { $_.id -eq $pet.id }
 Write-Host "pet_state -> $($linked.pet_state)"
+
+

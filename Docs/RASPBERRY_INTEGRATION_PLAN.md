@@ -39,7 +39,7 @@ Se recibió un fragmento de SQL V3 con:
 - vista `device_summary`
 
 Problemas detectados:
-1. En Kittypau usamos `devices.device_code`, no `devices.device_id`.
+1. En Kittypau usamos `devices.device_id` (KPCL) y `devices.id` (UUID).
 2. El SQL menciona columnas inexistentes: `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`.
 3. Menciona la vista `latest_readings`, no definida en este repo.
 
@@ -49,7 +49,7 @@ Necesitamos el SQL completo del bridge (tablas + vistas + triggers) para integra
 ---
 
 ## Plan de integración SQL (propuesto)
-1. Mapear `device_id` → `device_code` (estándar Kittypau).
+1. Mapear `device_id` (KPCL) y soportar `device_uuid` (UUID) cuando aplique.
 2. Agregar columnas extra si son necesarias:
    - `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`
 3. Crear vista `latest_readings` si el bridge la usa.
@@ -78,4 +78,3 @@ Recomendado:
 - SQL completo del bridge (4 tablas adicionales y vistas).
 - Decidir si el bridge persiste localmente o solo forward a webhook.
 - Definir si `device_summary` vive en Supabase o en el bridge.
-

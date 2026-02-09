@@ -1,4 +1,4 @@
-# Vercel CLI (Kittypau)
+﻿# Vercel CLI (Kittypau)
 
 ## Objetivo
 Administrar deployments, vincular el repo y revisar logs del proyecto.
@@ -36,7 +36,7 @@ $env:WEBHOOK_TOKEN="<MQTT_WEBHOOK_SECRET>"
 Invoke-RestMethod -Method Post `
   -Uri "https://kittypau-app.vercel.app/api/mqtt/webhook" `
   -Headers @{ "x-webhook-token"=$env:WEBHOOK_TOKEN; "Content-Type"="application/json"} `
-  -Body "{`"deviceCode`":`"KPCL0001`",`"temperature`":23.5,`"humidity`":65,`"weight_grams`":3500,`"battery_level`":85,`"flow_rate`":120}"
+  -Body "{`"device_id`":`"KPCL0001`",`"temperature`":23.5,`"humidity`":65,`"weight_grams`":3500,`"battery_level`":85,`"flow_rate`":120}"
 ```
 
 ## Variables de entorno
@@ -47,3 +47,5 @@ npx vercel env ls
 ## Buenas practicas
 - No subir `.env.local` con secretos al repo.
 - Validar que el proyecto vinculado sea el correcto antes de deploy.
+
+

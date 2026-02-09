@@ -48,7 +48,7 @@ src/app/
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
    - Inserta lectura y actualiza `devices`.
-   - Busca el dispositivo por `device_code`.
+   - Busca el dispositivo por `device_id`.
 
 2. `GET/PUT /api/profiles`
    - Lee/actualiza perfil del usuario.
@@ -70,13 +70,13 @@ src/app/
 5. `GET/POST /api/devices`
    - Lista dispositivos.
    - Registra y asigna dispositivo a mascota.
-   - `device_code` se obtiene del QR del plato.
+   - `device_id` se obtiene del QR del plato.
    - Al crear dispositivo, actualiza `pet_state` a `device_linked`.
    - Internamente usa RPC `link_device_to_pet` (operacion atomica).
    - Paginacion opcional: `?limit=20&cursor=2026-02-08T00:00:00Z`.
      - Si hay `limit` o `cursor`, respuesta: `{ data, next_cursor }`.
 
-6. `GET /api/readings?device_id=...`
+6. `GET /api/readings?device_uuid=...`
    - Lecturas recientes para gráficos.
    - Paginacion opcional: `&limit=50&cursor=2026-02-08T00:00:00Z`.
      - Si hay `limit` o `cursor`, respuesta: `{ data, next_cursor }`.
@@ -130,7 +130,8 @@ UPSTASH_REDIS_REST_TOKEN=
 Ejemplo:
 ```json
 {
-  "deviceCode": "KPCL0001",
+  "device_id": "KPCL0001",
+  "device_uuid": "uuid-opcional",
   "temperature": 23.5,
   "humidity": 65,
   "weight_grams": 3500,
@@ -140,12 +141,12 @@ Ejemplo:
 }
 ```
 Notas:
-- La API acepta `deviceCode`, `deviceId` o `device_id`.
-- El `device_code` es el codigo humano (KPCLxxxx).
-- Si se envía `deviceId` (UUID), se busca por `devices.id`.
-- Si se envían `deviceId` y `deviceCode`, deben corresponder al mismo dispositivo.
+- La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
+- El `device_id` es el código humano (KPCLxxxx).
+- Si se envía `device_uuid` (UUID), se busca por `devices.id`.
+- Si se envían `device_id` y `device_uuid`, deben corresponder al mismo dispositivo.
 - Los campos numéricos pueden llegar como string y se normalizan.
-- La insercion de readings es idempotente por `device_id + recorded_at`.
+- La inserción de readings es idempotente por `device_uuid + recorded_at`.
 - Se guardan dos tiempos: `recorded_at` (dispositivo) y `ingested_at` (servidor).
 - Si `recorded_at` difiere más de ±10 min del servidor, se reemplaza por `ingested_at` y se marca `clock_invalid = true`.
 
@@ -159,7 +160,7 @@ npm run dev
 curl -X POST http://localhost:3000/api/mqtt/webhook \
   -H "Content-Type: application/json" \
   -H "x-webhook-token: TU_SECRETO" \
-  -d "{\"deviceCode\":\"KPCL0001\",\"temperature\":23.5,\"humidity\":65,\"weight_grams\":3500,\"battery_level\":85}"
+  -d "{\"device_id\":\"KPCL0001\",\"temperature\":23.5,\"humidity\":65,\"weight_grams\":3500,\"battery_level\":85}"
 ```
 
 ## Script local (PowerShell)
@@ -171,7 +172,7 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 
 ## Streaming en vivo
 - Usar **Supabase Realtime** para la tabla `readings`.
-- Suscribirse por `device_id` en el dashboard.
+- Suscribirse por `device_uuid` en el dashboard.
 - Fallback: polling cada X segundos si Realtime falla.
 
 ## Auditoria
@@ -231,8 +232,8 @@ Errores por endpoint:
 1. GET /api/devices
    - 401 si falta token.
 2. POST /api/devices
-   - 400 device_code, device_type, and pet_id are required
-   - 400 device_code must match KPCL0000 format
+   - 400 device_id, device_type, and pet_id are required
+   - 400 device_id must match KPCL0000 format
    - 400 Invalid device_type
    - 400 Invalid status
    - 404 Pet not found
@@ -243,7 +244,7 @@ Errores por endpoint:
    - 404 Device not found
 4. POST /api/mqtt/webhook
    - 401 Unauthorized
-   - 400 Invalid JSON | Missing device code | device_code must match KPCL0000 format | <campo> out of range
+  - 400 Invalid JSON | Missing device_id | device_id must match KPCL0000 format | <campo> out of range
    - 404 Device not found
 5. PATCH /api/pets/:id
    - 400 Invalid type | Invalid pet_state | Invalid pet_onboarding_step | weight_kg must be a number | No fields to update
@@ -262,11 +263,11 @@ El SQL actual solo impone constraints en `type` y `pet_state` para `pets`.
 
 ## Alineación DB ↔ API (estado actual)
 - **En DB (constraints activas):**
-  - `devices.device_code` formato `KPCL0000`.
+  - `devices.device_id` formato `KPCL0000`.
   - `devices.device_type`, `devices.status`, `devices.device_state`.
   - `profiles.user_onboarding_step`, `profiles.care_rating`.
   - `pets.type`, `pets.pet_state`, `pets.pet_onboarding_step`.
-  - `readings` con `clock_invalid`/`ingested_at` y deduplicación `device_id + recorded_at`.
+  - `readings` con `clock_invalid`/`ingested_at` y deduplicación `device_uuid + recorded_at`.
 - **En API (validación adicional, no estricta en DB):**
   - `profiles.notification_channel` (email/whatsapp/push/sms).
   - Rangos numéricos (`battery_level`, `weight_kg`, `readings.limit`).
@@ -277,4 +278,13 @@ Si quieres endurecer DB sin romper datos existentes:
 1. **Auditar** valores actuales (query de distribución).
 2. **Normalizar** datos fuera de rango (update).
 3. **Agregar constraints** con `IF NOT EXISTS`.
+
+
+
+
+
+
+
+
+
 

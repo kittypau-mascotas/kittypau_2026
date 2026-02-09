@@ -1,4 +1,4 @@
-# Plan Paso a Paso: Estructura SQL (Kittypau)
+ï»¿# Plan Paso a Paso: Estructura SQL (Kittypau)
 
 ## Principio guia
 Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y eventos**. El SQL debe reflejar exactamente lo que la app necesita.
@@ -114,14 +114,14 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 **Paso esencial**
 - Escaneo de QR en la parte inferior del plato.
-- El QR entrega el `device_code`.
+- El QR entrega el `device_id`.
 - El dispositivo se asocia a una mascota para activar envio de datos.
 
-**Datos mínimos**
+**Datos mÃ­nimos**
 - id
 - owner_id (usuario)
 - pet_id (obligatorio)
-- device_code (ej: KPCL0001)
+- device_id (ej: KPCL0001)
 - tipo (food_bowl / water_bowl)
 - estado (active / inactive / maintenance)
 - device_state (factory / claimed / linked / offline / lost / error)
@@ -132,7 +132,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 **Origen**: formulario "Registro de Kittypau".
 
 ### D. Lecturas (streaming)
-**Datos mínimos**
+**Datos mÃ­nimos**
 - id
 - device_id
 - pet_id (opcional)
@@ -184,7 +184,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 ### Registro de Kittypau
 - device_type (food_bowl / water_bowl)
-- device_code
+- device_id
 - asignar mascota (opcional)
 - escanear QR (obligatorio)
 
@@ -199,7 +199,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 ---
 
 ## Paso 4: Definir reglas de negocio (constraints)
-1. `device_code` debe ser unico.
+1. `device_id` debe ser unico.
 2. Un usuario solo puede ver/editar su data.
 3. Lecturas solo se insertan via webhook autenticado.
 4. Dispositivo debe estar asignado a mascota.
@@ -264,9 +264,8 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 ### `devices`
 - `id` uuid PK
 - `owner_id` uuid FK -> profiles.id
-- `pet_id` uuid FK -> pets.id (nullable)
 - `pet_id` uuid FK -> pets.id (not null)
-- `device_code` text UNIQUE
+- `device_id` text UNIQUE
 - `device_type` text
 - `status` text
 - `battery_level` int
@@ -275,8 +274,8 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 ### `readings`
 - `id` uuid PK
-- `device_id` uuid FK -> devices.id
-- `pet_id` uuid FK -> pets.id (nullable)
+- `device_uuid` uuid FK -> devices.id
+- `pet_id` uuid FK -> pets.id (nullable, snapshot)
 - `weight_grams` int
 - `water_ml` int
 - `temperature` numeric
@@ -310,4 +309,6 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 ## Proximo paso
 Cuando confirmes este plan, generamos el **script SQL final** y lo guardamos en `Docs/SQL_SCHEMA.sql` antes de tocar codigo.
+
+
 

@@ -1,4 +1,4 @@
-# Reglas de Interpretacion IoT -> UX (Kittypau)
+﻿# Reglas de Interpretacion IoT -> UX (Kittypau)
 
 ## Objetivo
 Convertir lecturas crudas en eventos e interpretaciones utiles para el usuario.
@@ -19,9 +19,9 @@ Estos limites se aplican en el webhook:
 - `weight_grams`: 0 a 20000
 - `water_ml`: 0 a 5000
 - `flow_rate`: 0 a 1000
-- `device_code`: formato `KPCL0000`
+- `device_id`: formato `KPCL0000`
 
-Si falta `device_code` en el payload, el Bridge debe inyectarlo.
+Si falta `device_id` en el payload, el Bridge debe inyectarlo.
 
 ---
 
@@ -56,3 +56,4 @@ Si falta `device_code` en el payload, el Bridge debe inyectarlo.
 
 ## Nota
 Estas reglas no cambian el backend. Solo transforman la capa de presentacion.
+

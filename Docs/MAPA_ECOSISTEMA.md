@@ -1,4 +1,4 @@
-# Mapa de Ecosistema (Onboarding Rapido)
+﻿# Mapa de Ecosistema (Onboarding Rapido)
 
 ## 1) Arquitectura (que corre y donde)
 - Next.js (Frontend + API) en Vercel.
@@ -31,7 +31,7 @@ Endpoints MVP:
 - `POST /api/mqtt/webhook`
 - `GET/POST /api/pets`
 - `GET/POST /api/devices`
-- `GET /api/readings?device_id=<UUID>`
+- `GET /api/readings?device_uuid=<UUID>`
 
 Docs clave:
 - `Docs/FRONT_BACK_APIS.md`
@@ -50,7 +50,7 @@ Docs clave:
 ---
 
 ## 5) Frontend + Design System
-- Tokens + UI base en `Docs/estilos y dise�os.md`
+- Tokens + UI base en `Docs/estilos y diseños.md`
 - Login parallax: `Docs/IMAGENES_LOGIN.md`
 
 ---
@@ -74,4 +74,5 @@ Docs clave:
 3. Verificar Docs/CHECKLIST_DEPLOY.md (envs + schema cache).
 4. Generar ccess_token en Supabase Auth.
 5. Ejecutar pruebas minimas en Docs/PRUEBAS_E2E.md (API directa).
+
 

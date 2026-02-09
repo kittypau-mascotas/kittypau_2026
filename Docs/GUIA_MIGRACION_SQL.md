@@ -57,6 +57,7 @@ Ejecutar en Supabase SQL Editor:
 - `Docs/SQL_SCHEMA.sql` (al final incluye DO $$ ... $$ con nuevos checks)
 
 Checks agregados:
-- `devices_device_code_format_check`
+- `devices_device_id_format_check`
 - `profiles_onboarding_step_check`
 - `pets_onboarding_step_check`
+

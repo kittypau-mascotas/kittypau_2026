@@ -1,4 +1,4 @@
-# Guia: Ejecutar SQL en Supabase (Kittypau)
+﻿# Guia: Ejecutar SQL en Supabase (Kittypau)
 
 ## Objetivo
 Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`.
@@ -19,7 +19,7 @@ Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`
    - `devices`
    - `readings`
 3. Crea una mascota en `pets` (necesario para `devices.pet_id`).
-4. Abre `devices` y crea un registro con `device_code`, `device_type` y `pet_id`.
+4. Abre `devices` y crea un registro con `device_id`, `device_type` y `pet_id`.
 5. Inserta una lectura manual en `readings` para confirmar que guarda bien.
 
 ## Notas importantes
@@ -30,3 +30,4 @@ Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`
 ## Errores comunes
 - **Permisos**: revisar que las policies esten creadas correctamente.
 - **UUID**: Supabase usa `auth.users.id`, no inventar ids manuales.
+

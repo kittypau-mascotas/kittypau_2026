@@ -1,4 +1,4 @@
-# Contratos por Vista (Kittypau)
+﻿# Contratos por Vista (Kittypau)
 
 ## Objetivo
 Definir inputs, outputs y errores por pantalla antes de implementar UI.
@@ -97,7 +97,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 ## /onboarding/device
 **Input**
 - device_type (food_bowl / water_bowl)
-- device_code (QR)
+- device_id (QR)
 - pet_id
 
 **Output**
@@ -108,8 +108,8 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
   - si habia un device activo para esa mascota, pasa a inactive
 
 **Errores**
-- device_code ya vinculado
-- device_code invalido
+- device_id ya vinculado
+- device_id invalido
 - pet_id requerido
 
 ---
@@ -198,3 +198,4 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Errores**
 - phone_number requerido si WhatsApp
+

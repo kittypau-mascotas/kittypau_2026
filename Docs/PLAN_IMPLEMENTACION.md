@@ -1,7 +1,7 @@
-# Plan de Implementacion (Solo Documentacion)
+﻿# Plan de Implementación (Solo Documentación)
 
 ## Objetivo
-Definir las tareas de implementacion para cerrar el MVP sin tocar codigo.
+Definir las tareas de implementación para cerrar el MVP sin tocar código.
 
 ---
 
@@ -34,7 +34,7 @@ Tareas:
 - Login con Supabase Auth.
 - Listar mascotas y dispositivos.
 - Crear mascota y dispositivo (con `pet_id` obligatorio).
-- Mostrar lecturas por `device_id`.
+- Mostrar lecturas por `device_uuid`.
 
 ---
 
@@ -42,7 +42,7 @@ Tareas:
 Documento fuente: `Docs/PRUEBAS_E2E.md`
 
 Tareas:
-- Suscripcion a `readings` por `device_id`.
+- Suscripción a `readings` por `device_uuid`.
 - Actualizar UI sin refresh.
 - Fallback a polling.
 
@@ -54,7 +54,7 @@ Documento fuente: `Docs/RASPBERRY_BRIDGE.md`
 Tareas:
 - Crear servicio systemd.
 - Auto-restart y logs.
-- Validar reconexion MQTT.
+- Validar reconexión MQTT.
 
 ---
 
@@ -72,7 +72,7 @@ Tareas:
 Tareas:
 - Confirmar variables en Vercel (ver Docs/CHECKLIST_DEPLOY.md).
 - Deploy en Vercel desde kittypau_app.
-- Validar endpoints minimos.
+- Validar endpoints mínimos.
 - Si falla, promover el deployment anterior en Vercel.
 
 
@@ -84,3 +84,4 @@ Tareas:
 3. Front: onboarding final (copys, micro-UX, validación y guía de siguiente paso).
 4. Docs: actualizar Docs/VISTAS_APP.md y Docs/ESTADO_AVANCE.md con avances.
 5. Verificación: smoke test UI + endpoints críticos.
+

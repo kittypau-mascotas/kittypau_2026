@@ -1,8 +1,8 @@
 ﻿# SQL Assertions (Kittypau)
 
-Objetivo: Validar schema, constraints y datos base de forma rÃ¡pida en Supabase.
+Objetivo: Validar schema, constraints y datos base de forma rápida en Supabase.
 
-## 1) Columnas crÃ­ticas existen
+## 1) Columnas críticas existen
 ```sql
 select
   table_name,
@@ -40,7 +40,7 @@ Esperado:
 
 ---
 
-## 3) Ãndices mÃ­nimos
+## 3) Índices mínimos
 ```sql
 select
   indexname,
@@ -74,7 +74,7 @@ Esperado: `relrowsecurity = true` en todas.
 
 ---
 
-## 5) PolÃ­ticas RLS registradas
+## 5) Políticas RLS registradas
 ```sql
 select
   schemaname,
@@ -103,6 +103,9 @@ Esperado: 1 fila en `public.readings`.
 
 
 ## Checks adicionales (consistencia de onboarding)
-- Validar constraint `devices_device_code_format_check`.
+- Validar constraint `devices_device_id_format_check`.
 - Validar constraint `profiles_onboarding_step_check`.
 - Validar constraint `pets_onboarding_step_check`.
+
+
+

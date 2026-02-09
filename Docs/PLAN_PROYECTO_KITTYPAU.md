@@ -1,12 +1,12 @@
-# Plan de Proyecto: Kittypau IoT (MVP $0)
+﻿# Plan de Proyecto: Kittypau IoT (MVP $0)
 
 ## Objetivo MVP
-Un usuario se registra, agrega una mascota, registra un dispositivo (plato inteligente de comida o de agua) y ve datos en vivo desde la app web (y base lista para movil).
+Un usuario se registra, agrega una mascota, registra un dispositivo (plato inteligente de comida o de agua) y ve datos en vivo desde la app web (y base lista para móvil).
 
 ## Estado actual del repo (2026-02-06)
 - Next.js creado en `kittypau_app/` con TypeScript y App Router.
 - Archivos anteriores movidos a `kittypau_app/legacy/`.
-- `Docs/` se mantiene en la raiz para documentacion.
+- `Docs/` se mantiene en la raíz para documentación.
 - Endpoint webhook y cliente Supabase ya existen.
 - Prueba local del webhook exitosa.
 
@@ -67,7 +67,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
    - `id` (uuid, PK)
    - `owner_id` (uuid, FK -> profiles.id)
    - `pet_id` (uuid, FK -> pets.id, NOT NULL)
-   - `device_code` (string, unique, ej: KPCL0001)
+   - `device_id` (string, unique, ej: KPCL0001)
    - `device_type` (enum: food_bowl | water_bowl)
    - `status` (active | inactive | maintenance)
    - `device_state` (factory | claimed | linked | offline | lost | error)
@@ -77,7 +77,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 4. **readings**
    - `id` (uuid, PK)
-   - `device_id` (uuid, FK -> devices.id)
+   - `device_uuid` (uuid, FK -> devices.id)
    - `pet_id` (uuid, FK -> pets.id, nullable)
    - `weight_grams` (int, nullable)  # comida
    - `water_ml` (int, nullable)      # agua
@@ -93,7 +93,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 - `devices`: `owner_id = auth.uid()`
 - `readings`: se validan via join a devices/pets del usuario.
 
-## API endpoints m�nimos (Next.js)
+## API endpoints mínimos (Next.js)
 1. **POST `/api/mqtt/webhook`**
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
@@ -105,10 +105,10 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 3. **GET/POST `/api/devices`**
    - Lista dispositivos.
-   - Registra dispositivo (device_code, tipo, pet_id obligatorio).
+   - Registra dispositivo (device_id, tipo, pet_id obligatorio).
 
-4. **GET `/api/readings?device_id=...`**
-   - Devuelve lecturas recientes para graficos.
+4. **GET `/api/readings?device_uuid=...`**
+   - Devuelve lecturas recientes para gráficos.
 
 ## Vistas del MVP
 1. **Login/Registro**
@@ -118,16 +118,16 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 5. **Dashboard**: graficos + estado en vivo (Realtime)
 
 ## UX clave (registro)
-- Registro en pop-up (web y movil).
+- Registro en pop-up (web y móvil).
 - Barra de progreso con 3 hitos: Usuario -> Mascota -> Dispositivo.
 - Progreso persistente si se cierra.
 
 ## Streaming en tiempo real
 - Supabase Realtime sobre `readings`.
-- Frontend se suscribe por `device_id` y actualiza graficos.
+- Frontend se suscribe por `device_uuid` y actualiza gráficos.
 - Alternativa: polling cada X segundos (fallback si Realtime falla).
 
-## Paso a paso (implementacion)
+## Paso a paso (implementación)
 1. Crear proyecto Supabase y configurar Auth + DB.
 2. Crear esquema SQL y RLS.
 3. Inicializar Next.js (App Router).
@@ -140,7 +140,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 ## Nota sobre el deploy
 En este proyecto el deploy en **Vercel incluye frontend + API + backend ligero** (routes `/api/*`).
-No existe un backend separado: la base de datos esta en Supabase.
+No existe un backend separado: la base de datos está en Supabase.
 
 ## Variables de entorno (ejemplo)
 ```
@@ -152,7 +152,7 @@ NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
-## Criterio de exito del MVP
+## Criterio de éxito del MVP
 - Usuario crea cuenta
 - Registra mascota
 - Registra dispositivo
@@ -160,7 +160,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ---
 
-## Proximos pasos inmediatos
+## Próximos pasos inmediatos
 - Implementar login y registro en UI.
 - Implementar CRUD de mascotas y dispositivos.
 - Habilitar Realtime en dashboard.
@@ -169,20 +169,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ## Documento maestro de dominio
 - Ver `Docs/DOC_MAESTRO_DOMINIO.md` antes de codificar.
 
-## Notas de implementacion
+## Notas de implementación
 - Ver `Docs/NOTAS_IMPLEMENTACION.md` antes de comenzar UI y API.
 
 ## Contratos por vista
 - Ver `Docs/CONTRATOS_POR_VISTA.md`.
 
-## Estilos y diseno
+## Estilos y diseño
 - Ver `Docs/estilos y diseños.md`.
 
 ## Enums y reglas
 - Ver `Docs/ENUMS_OFICIALES.md`.
 - Ver `Docs/REGLAS_INTERPRETACION_IOT.md`.
 
-## Migracion SQL
+## Migración SQL
 - Ver `Docs/GUIA_MIGRACION_SQL.md`.
 
 ## Bridge en Raspberry
@@ -190,4 +190,5 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ## Pruebas E2E
 - Ver `Docs/PRUEBAS_E2E.md` para validar el flujo completo.
+
 
