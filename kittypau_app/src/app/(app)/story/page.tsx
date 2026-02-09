@@ -103,6 +103,7 @@ const buildStory = (reading: ApiReading) => {
 export default function StoryPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [dayOffset, setDayOffset] = useState(0);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`${apiBase}/api/pets`, {
@@ -247,6 +248,19 @@ export default function StoryPage() {
     }));
   }, [state.readings]);
 
+  const filteredTimeline = useMemo(() => {
+    if (dayOffset === 0) return timeline;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - dayOffset);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 1);
+    return timeline.filter((item) => {
+      const ts = new Date(item.recorded_at).getTime();
+      return ts >= start.getTime() && ts < end.getTime();
+    });
+  }, [dayOffset, timeline]);
+
   const selectedDevice = state.devices.find(
     (device) => device.id === selectedDeviceId
   );
@@ -302,6 +316,18 @@ export default function StoryPage() {
                     : "Sin dispositivo"}
                 </p>
               </div>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span>Ver:</span>
+                <select
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
+                  value={dayOffset}
+                  onChange={(event) => setDayOffset(Number(event.target.value))}
+                >
+                  <option value={0}>Hoy</option>
+                  <option value={1}>Ayer</option>
+                  <option value={2}>Hace 2 días</option>
+                </select>
+              </div>
               {state.devices.length > 1 && (
                 <label className="flex flex-col text-xs text-slate-500">
                   Cambiar dispositivo
@@ -346,7 +372,7 @@ export default function StoryPage() {
           </section>
 
           <section className="story-list">
-            {timeline.length === 0 ? (
+            {filteredTimeline.length === 0 ? (
               <div className="empty-state">
                 <p className="empty-title">Aún no hay historia para mostrar.</p>
                 <p className="empty-text">
@@ -354,7 +380,7 @@ export default function StoryPage() {
                 </p>
               </div>
             ) : (
-              timeline.map((item) => (
+              filteredTimeline.map((item) => (
                 <article key={item.id} className="story-card">
                   <div className="story-time">
                     {formatTimestamp(item.recorded_at)}
