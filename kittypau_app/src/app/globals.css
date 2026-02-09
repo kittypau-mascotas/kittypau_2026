@@ -148,6 +148,34 @@ body {
   border: 1px solid color-mix(in oklab, hsl(var(--danger)) 30%, transparent);
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 20px 22px;
+  border-radius: var(--radius);
+  border: 1px dashed color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  background: color-mix(in oklab, hsl(var(--card)) 85%, transparent);
+}
+
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.empty-text {
+  font-size: 14px;
+  color: hsl(var(--muted-foreground));
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .story-list {
   display: flex;
   flex-direction: column;

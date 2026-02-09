@@ -272,6 +272,21 @@ export default function StoryPage() {
 
       {state.isLoading ? (
         <div className="surface-card px-6 py-6">Cargando historia...</div>
+      ) : state.devices.length === 0 ? (
+        <div className="empty-state">
+          <p className="empty-title">Aún no hay dispositivos vinculados.</p>
+          <p className="empty-text">
+            Completa el onboarding para conectar un plato y generar la historia.
+          </p>
+          <div className="empty-actions">
+            <Link
+              href="/onboarding"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a onboarding
+            </Link>
+          </div>
+        </div>
       ) : (
         <>
           <section className="surface-card px-6 py-4">
@@ -332,8 +347,11 @@ export default function StoryPage() {
 
           <section className="story-list">
             {timeline.length === 0 ? (
-              <div className="surface-card px-6 py-6 text-sm text-slate-500">
-                Aún no hay historia para mostrar.
+              <div className="empty-state">
+                <p className="empty-title">Aún no hay historia para mostrar.</p>
+                <p className="empty-text">
+                  Cuando lleguen lecturas desde el plato aparecerán aquí.
+                </p>
               </div>
             ) : (
               timeline.map((item) => (

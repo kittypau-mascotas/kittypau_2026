@@ -118,6 +118,22 @@ export default function SettingsPage() {
 
       {state.isLoading ? (
         <div className="surface-card px-6 py-6">Cargando ajustes...</div>
+      ) : !state.profile ? (
+        <div className="empty-state">
+          <p className="empty-title">No se encontró tu perfil.</p>
+          <p className="empty-text">
+            Completa el onboarding para crear tu perfil antes de ajustar
+            preferencias.
+          </p>
+          <div className="empty-actions">
+            <Link
+              href="/onboarding"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a onboarding
+            </Link>
+          </div>
+        </div>
       ) : (
         <>
           <section className="surface-card px-6 py-6">

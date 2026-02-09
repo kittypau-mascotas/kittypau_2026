@@ -228,6 +228,21 @@ export default function PetPage() {
 
       {state.isLoading ? (
         <div className="surface-card px-6 py-6">Cargando perfil...</div>
+      ) : state.pets.length === 0 ? (
+        <div className="empty-state">
+          <p className="empty-title">Aún no tienes mascotas registradas.</p>
+          <p className="empty-text">
+            Completa el onboarding para crear el perfil de tu mascota.
+          </p>
+          <div className="empty-actions">
+            <Link
+              href="/onboarding"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a onboarding
+            </Link>
+          </div>
+        </div>
       ) : (
         <>
           <section className="surface-card px-6 py-5">
