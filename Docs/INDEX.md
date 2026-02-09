@@ -75,3 +75,5 @@
 - Docs/RASPBERRY_INTEGRATION_PLAN.md
 
 - Docs/.env.bridge.example
+
+- Docs/TIMESTAMP_IOT.md
