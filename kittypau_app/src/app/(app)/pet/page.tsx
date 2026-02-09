@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -271,7 +271,7 @@ export default function PetPage() {
         : "Sin peso registrado.";
     const ambient =
       latestReading.temperature !== null && latestReading.humidity !== null
-        ? `Temp ${latestReading.temperature}° · Humedad ${latestReading.humidity}%.`
+        ? `Temp ${latestReading.temperature}Â° · Humedad ${latestReading.humidity}%.`
         : "Sin mediciones ambientales.";
 
     return [
@@ -578,11 +578,25 @@ export default function PetPage() {
                     : "Conecta un dispositivo para completar el perfil."}
                 </p>
               </div>
-              <div className="text-xs text-slate-500">
-                Última lectura:{" "}
-                {latestReading?.recorded_at
-                  ? formatTimestamp(latestReading.recorded_at)
-                  : "Sin datos"}
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span>
+                  Última lectura:{" "}
+                  {latestReading?.recorded_at
+                    ? formatTimestamp(latestReading.recorded_at)
+                    : "Sin datos"}
+                </span>
+                <Link
+                  href="/bowl"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
+                >
+                  Ver plato
+                </Link>
+                <Link
+                  href="/story"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
+                >
+                  Ver historia
+                </Link>
               </div>
             </div>
           </section>
@@ -610,3 +624,4 @@ export default function PetPage() {
     </main>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -51,10 +51,10 @@ const formatTimestamp = (value: string | null) => {
 
 const batteryLabel = (battery: number | null) => {
   if (battery === null || Number.isNaN(battery)) return "Sin datos";
-  if (battery <= 15) return "Crítica";
+  if (battery <= 15) return "CrÃ­tica";
   if (battery <= 35) return "Baja";
   if (battery <= 70) return "Media";
-  return "Óptima";
+  return "Ã“ptima";
 };
 
 export default function BowlPage() {
@@ -81,7 +81,7 @@ export default function BowlPage() {
           setState((prev) => ({
             ...prev,
             isLoading: false,
-            error: "Sesión no válida. Vuelve a iniciar sesión.",
+            error: "SesiÃ³n no vÃ¡lida. Vuelve a iniciar sesiÃ³n.",
           }));
         }
         return;
@@ -135,21 +135,21 @@ export default function BowlPage() {
     const diffMin = Math.round((Date.now() - last) / 60000);
     if (diffMin <= 5) return "Conectado en tiempo real.";
     if (diffMin <= 30) return "Conectado recientemente.";
-    return "Conexión inestable o apagado.";
+    return "ConexiÃ³n inestable o apagado.";
   }, [selectedDevice?.last_seen]);
 
   const actionNotes = useMemo(() => {
     const notes: string[] = [];
     if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
       if (selectedDevice.battery_level <= 15) {
-        notes.push("Carga el plato en las próximas horas.");
+        notes.push("Carga el plato en las prÃ³ximas horas.");
       }
     }
     if (!selectedDevice?.last_seen) {
-      notes.push("Revisa energía y Wi‑Fi antes de usarlo.");
+      notes.push("Revisa energÃ­a y Wiâ€‘Fi antes de usarlo.");
     }
     if (notes.length === 0) {
-      notes.push("Todo estable. Mantén el plato conectado.");
+      notes.push("Todo estable. MantÃ©n el plato conectado.");
     }
     return notes;
   }, [selectedDevice?.battery_level, selectedDevice?.last_seen]);
@@ -176,7 +176,7 @@ export default function BowlPage() {
         <div className="empty-state">
           <p className="empty-title">No hay dispositivos vinculados.</p>
           <p className="empty-text">
-            Conecta un plato para ver batería, estado y diagnósticos.
+            Conecta un plato para ver baterÃ­a, estado y diagnÃ³sticos.
           </p>
           <div className="empty-actions">
             <Link
@@ -233,6 +233,20 @@ export default function BowlPage() {
                 </label>
               )}
             </div>
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <Link
+                href="/pet"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
+              >
+                Ver mascota
+              </Link>
+              <Link
+                href="/settings"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
+              >
+                Ajustes
+              </Link>
+            </div>
           </section>
 
           <section className="surface-card px-6 py-5">
@@ -272,19 +286,19 @@ export default function BowlPage() {
 
           <section className="surface-card px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
-              Diagnóstico rápido
+              DiagnÃ³stico rÃ¡pido
             </h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Conexión
+                  ConexiÃ³n
                 </p>
                 <p className="mt-2 text-slate-700">
                   {connectionHint === "Conectado en tiempo real."
                     ? "Datos en vivo. Todo responde bien."
                     : connectionHint === "Conectado recientemente."
-                    ? "Último check-in dentro de la ventana esperada."
-                    : "Sin check-in reciente. Revisa energía y Wi-Fi."}
+                    ? "Ãšltimo check-in dentro de la ventana esperada."
+                    : "Sin check-in reciente. Revisa energÃ­a y Wi-Fi."}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
@@ -292,7 +306,7 @@ export default function BowlPage() {
                   Firmware
                 </p>
                 <p className="mt-2 text-slate-700">
-                  Sincronizado (próximamente versión remota).
+                  Sincronizado (prÃ³ximamente versiÃ³n remota).
                 </p>
               </div>
             </div>
@@ -312,14 +326,14 @@ export default function BowlPage() {
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
               >
-                Calibración remota (próximamente)
+                CalibraciÃ³n remota (prÃ³ximamente)
               </button>
               <button
                 type="button"
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
               >
-                Reinicio remoto (próximamente)
+                Reinicio remoto (prÃ³ximamente)
               </button>
             </div>
           </section>
@@ -328,3 +342,5 @@ export default function BowlPage() {
     </main>
   );
 }
+
+
