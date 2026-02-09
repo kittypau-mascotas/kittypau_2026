@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -398,6 +398,15 @@ export default function StoryPage() {
                       <span className="story-icon">{item.story.icon}</span>{" "}
                       {item.story.title}
                     </h3>
+                    <span
+                      className={`story-tag story-tag-${item.story.tone}`}
+                    >
+                      {item.story.tone === "good"
+                        ? "Estable"
+                        : item.story.tone === "warn"
+                        ? "Atención"
+                        : "Info"}
+                    </span>
                     <p>{item.story.detail}</p>
                     <div className="story-meta">
                       <span>{selectedDevice?.device_code ?? "Plato"}</span>
@@ -414,3 +423,4 @@ export default function StoryPage() {
     </main>
   );
 }
+
