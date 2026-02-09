@@ -42,6 +42,7 @@
 - UI settings: ajustes de perfil y notificaciones.
 - UI register: ruta pública con reenvío de confirmación.
 - Realtime integrado en /today y /story (lecturas en vivo).
+- Realtime integrado en /pet (lecturas en vivo).
 - Estados vacíos/errores unificados en story, pet, bowl y settings.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
 - Navegación global añadida para vistas app (today/story/pet/bowl/settings).

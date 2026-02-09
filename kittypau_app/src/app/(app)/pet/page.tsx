@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
   id: string;
@@ -165,6 +166,48 @@ export default function PetPage() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!selectedPetId) return;
+    const device = state.devices.find((item) => item.pet_id === selectedPetId);
+    if (!device) return;
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      supabase.realtime.setAuth(accessToken);
+    }
+
+    const channel = supabase
+      .channel(`readings:${device.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "readings",
+          filter: `device_id=eq.${device.id}`,
+        },
+        (payload) => {
+          const nextReading = payload.new as ApiReading;
+          setState((prev) => {
+            const exists = prev.readings.some(
+              (reading) => reading.id === nextReading.id
+            );
+            if (exists) return prev;
+            return {
+              ...prev,
+              readings: [nextReading, ...prev.readings].slice(0, 120),
+            };
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedPetId, state.devices]);
 
   const selectedPet = state.pets.find((pet) => pet.id === selectedPetId);
   const petDevices = state.devices.filter(

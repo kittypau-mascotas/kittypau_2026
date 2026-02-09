@@ -132,6 +132,7 @@ por "eventos / interpretaciones / historia".
 **Datos / API**
 - `GET /api/pets`
 - `GET /api/readings?device_id=...`
+- Realtime `readings` integrado.
 
 ### /bowl (antes /devices)
 - Estado tecnico del plato.
