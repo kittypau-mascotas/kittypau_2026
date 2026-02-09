@@ -129,6 +129,22 @@ export default function BowlPage() {
     return "Conexión inestable o apagado.";
   }, [selectedDevice?.last_seen]);
 
+  const actionNotes = useMemo(() => {
+    const notes: string[] = [];
+    if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
+      if (selectedDevice.battery_level <= 15) {
+        notes.push("Carga el plato en las próximas horas.");
+      }
+    }
+    if (!selectedDevice?.last_seen) {
+      notes.push("Revisa energía y Wi‑Fi antes de usarlo.");
+    }
+    if (notes.length === 0) {
+      notes.push("Todo estable. Mantén el plato conectado.");
+    }
+    return notes;
+  }, [selectedDevice?.battery_level, selectedDevice?.last_seen]);
+
   return (
     <main className="page-shell">
       <div className="page-header">
@@ -176,6 +192,11 @@ export default function BowlPage() {
                     ? `${selectedDevice.device_type} · ${selectedDevice.status}`
                     : "Conecta un dispositivo para ver el estado."}
                 </p>
+                {selectedDevice?.device_state ? (
+                  <span className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+                    Estado técnico: {selectedDevice.device_state}
+                  </span>
+                ) : null}
               </div>
               {state.devices.length > 1 && (
                 <label className="flex flex-col text-xs text-slate-500">
@@ -262,24 +283,34 @@ export default function BowlPage() {
                   Firmware
                 </p>
                 <p className="mt-2 text-slate-700">
-                  Pendiente de integrarse con versión remota.
+                  Sincronizado (próximamente versión remota).
                 </p>
               </div>
+            </div>
+            <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-xs text-slate-600">
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                Acciones recomendadas
+              </p>
+              <ul className="mt-2 list-disc pl-4 text-slate-700">
+                {actionNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
-                onClick={() => window.alert("Calibración pendiente de integrar.")}
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
+                disabled
               >
-                Ejecutar calibración
+                Calibración remota (próximamente)
               </button>
               <button
                 type="button"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
-                onClick={() => window.alert("Reinicio remoto pendiente de integrar.")}
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
+                disabled
               >
-                Reiniciar plato
+                Reinicio remoto (próximamente)
               </button>
             </div>
           </section>

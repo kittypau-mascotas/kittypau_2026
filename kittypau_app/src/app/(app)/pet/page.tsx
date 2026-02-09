@@ -71,6 +71,7 @@ export default function PetPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [editPayload, setEditPayload] = useState<Partial<ApiPet>>({});
   const [editMessage, setEditMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`${apiBase}/api/pets`, {
@@ -270,6 +271,19 @@ export default function PetPage() {
     ];
   }, [latestReading]);
 
+  const profileChecklist = useMemo(() => {
+    if (!selectedPet) return [];
+    const missing: string[] = [];
+    if (!selectedPet.age_range) missing.push("Edad");
+    if (!selectedPet.weight_kg) missing.push("Peso");
+    if (!selectedPet.activity_level) missing.push("Actividad");
+    if (!selectedPet.origin) missing.push("Origen");
+    return missing;
+  }, [selectedPet]);
+
+  const profileStatus =
+    profileChecklist.length === 0 ? "Perfil completo" : "Perfil incompleto";
+
   return (
     <main className="page-shell">
       <div className="page-header">
@@ -312,11 +326,17 @@ export default function PetPage() {
                 <p className="text-xl font-semibold text-slate-900">
                   {selectedPet?.name ?? "Sin mascota"}
                 </p>
-                <p className="text-xs text-slate-500">
-                  {selectedPet?.type ?? "sin tipo"} ·{" "}
-                  {selectedPet?.origin ?? "sin origen"}
-                </p>
-              </div>
+          <p className="text-xs text-slate-500">
+            {selectedPet?.type ?? "sin tipo"} ·{" "}
+            {selectedPet?.origin ?? "sin origen"}
+          </p>
+          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+            <span>{profileStatus}</span>
+            {selectedPet?.pet_state ? (
+              <span className="text-slate-400">· {selectedPet.pet_state}</span>
+            ) : null}
+          </div>
+        </div>
               <div className="flex flex-wrap items-center gap-3">
                 {state.pets.length > 1 && (
                   <label className="flex flex-col text-xs text-slate-500">
@@ -461,9 +481,11 @@ export default function PetPage() {
                 <button
                   type="button"
                   className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                  disabled={isSaving}
                   onClick={async () => {
                     const token = await getAccessToken();
                     if (!token) return;
+                    setIsSaving(true);
                     try {
                       const updated = await savePet(
                         token,
@@ -477,16 +499,19 @@ export default function PetPage() {
                         ),
                       }));
                       setEditMessage("Perfil actualizado.");
+                      setShowEdit(false);
                     } catch (err) {
                       setEditMessage(
                         err instanceof Error
                           ? err.message
                           : "No se pudo guardar."
                       );
+                    } finally {
+                      setIsSaving(false);
                     }
                   }}
                 >
-                  Guardar cambios
+                  {isSaving ? "Guardando..." : "Guardar cambios"}
                 </button>
                 {editMessage ? <span>{editMessage}</span> : null}
               </div>
@@ -522,6 +547,12 @@ export default function PetPage() {
                 </p>
               </div>
             </div>
+            {profileChecklist.length ? (
+              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                Completa estos datos para mejorar las interpretaciones:{" "}
+                {profileChecklist.join(", ")}.
+              </div>
+            ) : null}
           </section>
 
           <section className="surface-card px-6 py-5">

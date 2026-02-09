@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getAccessToken } from "@/lib/auth/token";
 
@@ -112,6 +112,19 @@ export default function SettingsPage() {
     return errors;
   };
 
+  const missingFields = useMemo(() => {
+    if (!form) return [];
+    const missing: string[] = [];
+    if (!form.user_name) missing.push("Nombre visible");
+    if (!form.owner_name) missing.push("Nombre del dueño");
+    if (!form.phone_number) missing.push("Teléfono");
+    if (!form.notification_channel) missing.push("Canal preferido");
+    return missing;
+  }, [form]);
+
+  const completenessLabel =
+    missingFields.length === 0 ? "Perfil completo" : "Perfil incompleto";
+
   return (
     <main className="page-shell">
       <div className="page-header">
@@ -152,6 +165,14 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold text-slate-900">
               Perfil principal
             </h2>
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+              <span>{completenessLabel}</span>
+              {missingFields.length ? (
+                <span className="text-slate-400">
+                  · {missingFields.length} pendiente{missingFields.length > 1 ? "s" : ""}
+                </span>
+              ) : null}
+            </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="text-sm text-slate-600">
                 Nombre visible
@@ -199,6 +220,11 @@ export default function SettingsPage() {
                     <li key={err}>{err}</li>
                   ))}
                 </ul>
+              </div>
+            ) : null}
+            {missingFields.length ? (
+              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                Falta completar: {missingFields.join(", ")}.
               </div>
             ) : null}
           </section>
