@@ -58,6 +58,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [profileError, setProfileError] = useState<string | null>(null);
   const [petError, setPetError] = useState<string | null>(null);
   const [deviceError, setDeviceError] = useState<string | null>(null);
+  const [accountEmail, setAccountEmail] = useState("");
+  const [accountPassword, setAccountPassword] = useState("");
+  const [showAccountPassword, setShowAccountPassword] = useState(false);
+  const [accountMessage, setAccountMessage] = useState<string | null>(null);
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -259,6 +266,21 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     };
   }, [token]);
 
+  useEffect(() => {
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+    let isMounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!isMounted) return;
+      if (data.user?.email) {
+        setAccountEmail(data.user.email);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const saveProfile = async () => {
     if (!token) return;
     setIsSavingProfile(true);
@@ -384,6 +406,58 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     } finally {
       setIsSavingDevice(false);
     }
+  };
+
+  const resendConfirmation = async () => {
+    setAccountError(null);
+    setAccountMessage(null);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setAccountError("Faltan variables públicas de Supabase en el entorno.");
+      return;
+    }
+    if (!accountEmail) {
+      setAccountError("Ingresa un email para reenviar la confirmación.");
+      return;
+    }
+    setIsResending(true);
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: accountEmail,
+    });
+    if (resendError) {
+      setAccountError(resendError.message);
+    } else {
+      setAccountMessage("Te enviamos el correo de confirmación nuevamente.");
+    }
+    setIsResending(false);
+  };
+
+  const sendReset = async () => {
+    setAccountError(null);
+    setAccountMessage(null);
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      setAccountError("Faltan variables públicas de Supabase en el entorno.");
+      return;
+    }
+    if (!accountEmail) {
+      setAccountError("Ingresa un email válido.");
+      return;
+    }
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    setIsResetting(true);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      accountEmail,
+      { redirectTo: `${siteUrl}/reset` }
+    );
+    if (resetError) {
+      setAccountError(resetError.message);
+    } else {
+      setAccountMessage("Te enviamos el correo de recuperación.");
+    }
+    setIsResetting(false);
   };
 
   if (isLoading) {
@@ -519,6 +593,68 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Pendiente
               </span>
+            </div>
+            <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Cuenta
+              </p>
+              <div className="mt-3 grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Email
+                  </label>
+                  <input
+                    className={inputClass(!accountEmail.trim())}
+                    placeholder="tu@email.com"
+                    value={accountEmail}
+                    onChange={(event) => setAccountEmail(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Password
+                  </label>
+                  <input
+                    type={showAccountPassword ? "text" : "password"}
+                    className={inputClass(!accountPassword.trim())}
+                    placeholder="••••••••"
+                    value={accountPassword}
+                    onChange={(event) => setAccountPassword(event.target.value)}
+                  />
+                  <label className="flex items-center gap-2 text-[11px] text-slate-500">
+                    <input
+                      type="checkbox"
+                      checked={showAccountPassword}
+                      onChange={(event) => setShowAccountPassword(event.target.checked)}
+                    />
+                    Mostrar contraseña
+                  </label>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <button
+                  type="button"
+                  onClick={resendConfirmation}
+                  disabled={isResending}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+                >
+                  {isResending ? "Reenviando..." : "Reenviar confirmación"}
+                </button>
+                <button
+                  type="button"
+                  onClick={sendReset}
+                  disabled={isResetting}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+                >
+                  {isResetting ? "Enviando..." : "Olvidé mi clave"}
+                </button>
+              </div>
+              {accountError ? (
+                <p className="mt-3 text-xs text-rose-600">{accountError}</p>
+              ) : null}
+              {accountMessage ? (
+                <p className="mt-3 text-xs text-emerald-600">{accountMessage}</p>
+              ) : null}
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className="flex items-center justify-between">
