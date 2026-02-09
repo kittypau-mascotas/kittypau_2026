@@ -569,6 +569,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingProfile ? "Guardando..." : "Guardar perfil"}
             </button>
+            {!profileValidation.ok ? (
+              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                Falta completar: {profileValidation.issues.join(" ")}
+              </div>
+            ) : null}
             {profileError ? (
               <p className="mt-2 text-xs text-rose-600">{profileError}</p>
             ) : null}
@@ -650,6 +655,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingPet ? "Guardando..." : "Crear mascota"}
             </button>
+            {!petValidation.ok ? (
+              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                Falta completar: {petValidation.issues.join(" ")}
+              </div>
+            ) : null}
             {petError ? (
               <p className="mt-2 text-xs text-rose-600">{petError}</p>
             ) : null}
@@ -746,6 +756,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingDevice ? "Guardando..." : "Registrar dispositivo"}
             </button>
+            {!deviceValidation.ok ? (
+              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                Falta completar: {deviceValidation.issues.join(" ")}
+              </div>
+            ) : null}
             {deviceError ? (
               <p className="mt-2 text-xs text-rose-600">{deviceError}</p>
             ) : null}
