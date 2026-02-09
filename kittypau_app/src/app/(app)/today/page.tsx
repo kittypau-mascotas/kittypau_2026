@@ -288,6 +288,20 @@ export default function TodayPage() {
     return "Desactualizado";
   }, [latestReading?.recorded_at]);
 
+  const summaryText = useMemo(() => {
+    if (!latestReading) return "Sin datos recientes.";
+    if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
+      return "Hidratación elevada detectada hoy.";
+    }
+    if (latestReading.weight_grams !== null && latestReading.weight_grams >= 3500) {
+      return "Consumo estable en el último registro.";
+    }
+    if (latestReading.temperature !== null && latestReading.temperature >= 26) {
+      return "Ambiente cálido, atento a la hidratación.";
+    }
+    return "Ritmo dentro de lo esperado.";
+  }, [latestReading]);
+
   const feedCards = useMemo(() => {
     if (!latestReading) return [];
     const items = [];
@@ -338,6 +352,7 @@ export default function TodayPage() {
               <h1 className="display-title text-3xl font-semibold text-slate-900 md:text-4xl">
                 Resumen del día
               </h1>
+              <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
             </div>
             <div className="surface-card flex items-center gap-4 px-4 py-3">
               <div className="h-12 w-12 rounded-full bg-slate-200" />
@@ -398,6 +413,9 @@ export default function TodayPage() {
               </p>
               <p className="mt-2 text-2xl font-semibold text-slate-900">
                 {primaryDevice?.status ?? "Sin datos"}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                {primaryDevice?.device_state ?? "Sin estado técnico"}
               </p>
             </div>
             <div className="surface-card px-4 py-4">
@@ -511,9 +529,17 @@ export default function TodayPage() {
             <h2 className="display-title text-lg font-semibold text-slate-900">
               Feed interpretado
             </h2>
-            <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
-              Últimas 24h
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                Últimas 24h
+              </span>
+              <Link
+                href="/story"
+                className="text-xs font-semibold text-slate-600 hover:text-slate-900"
+              >
+                Ver diario
+              </Link>
+            </div>
           </div>
           <p className="text-xs text-slate-400">
             Las lecturas duplicadas se ignoran (idempotencia por dispositivo y
