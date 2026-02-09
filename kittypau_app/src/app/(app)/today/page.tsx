@@ -634,8 +634,13 @@ export default function TodayPage() {
           </p>
           <div className="grid gap-4">
             {state.isLoading ? (
-              <div className="surface-card px-6 py-5 text-sm text-slate-500">
-                Cargando lecturas...
+              <div className="surface-card px-6 py-5">
+                <div className="space-y-3">
+                  <div className="h-3 w-24 rounded-full bg-slate-200/70" />
+                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+                </div>
               </div>
             ) : feedCards.length ? (
               feedCards.map((card) => (

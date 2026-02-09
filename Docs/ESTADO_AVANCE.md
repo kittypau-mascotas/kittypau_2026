@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- UI /today y /story: skeletons de carga para lecturas.
 - UI onboarding: bloque de siguiente paso con guía contextual.
 - UI: errores con CTA de login en /pet, /bowl, /settings y /story.\n- UI /pet: acciones rápidas hacia plato e historia.\n- UI /bowl: última conexión y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y símbolos).
 - UI /today: resumen rápido de hidratación, alimento y ambiente.
@@ -166,6 +167,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 

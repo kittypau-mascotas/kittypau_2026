@@ -311,7 +311,14 @@ export default function StoryPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card px-6 py-6">Cargando historia...</div>
+        <div className="surface-card px-6 py-6">
+          <div className="space-y-3">
+            <div className="h-3 w-24 rounded-full bg-slate-200/70" />
+            <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+            <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+            <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
+          </div>
+        </div>
       ) : state.devices.length === 0 ? (
         <div className="empty-state">
           <p className="empty-title">Aún no hay dispositivos vinculados.</p>
