@@ -316,3 +316,8 @@ Esperado:
 
 
 
+
+
+## Variables de entorno del bridge
+- Ver Docs/.env.bridge.example para valores esperados.
+

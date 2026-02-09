@@ -1,4 +1,4 @@
-# Índice de Documentación (Kittypau)
+﻿# Ãndice de DocumentaciÃ³n (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -35,7 +35,7 @@
 ## Flujos UX
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
 - `Docs/IMAGENES_LOGIN.md`
-- `Docs/estilos y diseños.md`
+- `Docs/estilos y diseÃ±os.md`
 
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
@@ -73,3 +73,5 @@
 - Docs/TEST_DB_API_NEGATIVE.ps1
 
 - Docs/RASPBERRY_INTEGRATION_PLAN.md
+
+- Docs/.env.bridge.example
