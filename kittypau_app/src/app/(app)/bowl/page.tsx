@@ -51,10 +51,10 @@ const formatTimestamp = (value: string | null) => {
 
 const batteryLabel = (battery: number | null) => {
   if (battery === null || Number.isNaN(battery)) return "Sin datos";
-  if (battery <= 15) return "CrÃ­tica";
+  if (battery <= 15) return "Crítica";
   if (battery <= 35) return "Baja";
   if (battery <= 70) return "Media";
-  return "Ã“ptima";
+  return "Óptima";
 };
 
 export default function BowlPage() {
@@ -81,7 +81,7 @@ export default function BowlPage() {
           setState((prev) => ({
             ...prev,
             isLoading: false,
-            error: "SesiÃ³n no vÃ¡lida. Vuelve a iniciar sesiÃ³n.",
+            error: "Sesión no válida. Vuelve a iniciar sesión.",
           }));
         }
         return;
@@ -135,21 +135,21 @@ export default function BowlPage() {
     const diffMin = Math.round((Date.now() - last) / 60000);
     if (diffMin <= 5) return "Conectado en tiempo real.";
     if (diffMin <= 30) return "Conectado recientemente.";
-    return "ConexiÃ³n inestable o apagado.";
+    return "Conexión inestable o apagado.";
   }, [selectedDevice?.last_seen]);
 
   const actionNotes = useMemo(() => {
     const notes: string[] = [];
     if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
       if (selectedDevice.battery_level <= 15) {
-        notes.push("Carga el plato en las prÃ³ximas horas.");
+        notes.push("Carga el plato en las próximas horas.");
       }
     }
     if (!selectedDevice?.last_seen) {
-      notes.push("Revisa energÃ­a y Wiâ€‘Fi antes de usarlo.");
+      notes.push("Revisa energía y Wi-Fi antes de usarlo.");
     }
     if (notes.length === 0) {
-      notes.push("Todo estable. MantÃ©n el plato conectado.");
+      notes.push("Todo estable. Mantén el plato conectado.");
     }
     return notes;
   }, [selectedDevice?.battery_level, selectedDevice?.last_seen]);
@@ -167,7 +167,15 @@ export default function BowlPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error">{state.error}</div>
+        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
+          <span>{state.error}</span>
+          <Link
+            href="/login"
+            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+          >
+            Iniciar sesión
+          </Link>
+        </div>
       )}
 
       {state.isLoading ? (
@@ -176,7 +184,7 @@ export default function BowlPage() {
         <div className="empty-state">
           <p className="empty-title">No hay dispositivos vinculados.</p>
           <p className="empty-text">
-            Conecta un plato para ver baterÃ­a, estado y diagnÃ³sticos.
+            Conecta un plato para ver batería, estado y diagnósticos.
           </p>
           <div className="empty-actions">
             <Link
@@ -286,19 +294,19 @@ export default function BowlPage() {
 
           <section className="surface-card px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
-              DiagnÃ³stico rÃ¡pido
+              Diagnóstico rápido
             </h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  ConexiÃ³n
+                  Conexión
                 </p>
                 <p className="mt-2 text-slate-700">
                   {connectionHint === "Conectado en tiempo real."
                     ? "Datos en vivo. Todo responde bien."
                     : connectionHint === "Conectado recientemente."
-                    ? "Ãšltimo check-in dentro de la ventana esperada."
-                    : "Sin check-in reciente. Revisa energÃ­a y Wi-Fi."}
+                    ? "Último check-in dentro de la ventana esperada."
+                    : "Sin check-in reciente. Revisa energía y Wi-Fi."}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
@@ -306,7 +314,7 @@ export default function BowlPage() {
                   Firmware
                 </p>
                 <p className="mt-2 text-slate-700">
-                  Sincronizado (prÃ³ximamente versiÃ³n remota).
+                  Sincronizado (próximamente versión remota).
                 </p>
               </div>
             </div>
@@ -326,14 +334,14 @@ export default function BowlPage() {
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
               >
-                CalibraciÃ³n remota (prÃ³ximamente)
+                Calibración remota (próximamente)
               </button>
               <button
                 type="button"
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
               >
-                Reinicio remoto (prÃ³ximamente)
+                Reinicio remoto (próximamente)
               </button>
             </div>
           </section>
@@ -342,5 +350,6 @@ export default function BowlPage() {
     </main>
   );
 }
+
 
 

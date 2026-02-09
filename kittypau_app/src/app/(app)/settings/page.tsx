@@ -68,7 +68,7 @@ export default function SettingsPage() {
           setState((prev) => ({
             ...prev,
             isLoading: false,
-            error: "SesiÃ³n no vÃ¡lida. Vuelve a iniciar sesiÃ³n.",
+            error: "Sesión no válida. Vuelve a iniciar sesión.",
           }));
         }
         return;
@@ -86,7 +86,7 @@ export default function SettingsPage() {
           error:
             err instanceof Error
               ? err.message
-              : "No se pudo cargar la configuraciÃ³n.",
+              : "No se pudo cargar la configuración.",
         }));
       }
     };
@@ -104,10 +104,10 @@ export default function SettingsPage() {
   const validate = (payload: ApiProfile) => {
     const errors: string[] = [];
     if (!payload.user_name || payload.user_name.trim().length < 2) {
-      errors.push("Nombre visible es requerido (mÃ­nimo 2 caracteres).");
+      errors.push("Nombre visible es requerido (mínimo 2 caracteres).");
     }
     if (payload.phone_number && payload.phone_number.length < 6) {
-      errors.push("TelÃ©fono debe tener al menos 6 dÃ­gitos.");
+      errors.push("Teléfono debe tener al menos 6 dígitos.");
     }
     return errors;
   };
@@ -116,8 +116,8 @@ export default function SettingsPage() {
     if (!form) return [];
     const missing: string[] = [];
     if (!form.user_name) missing.push("Nombre visible");
-    if (!form.owner_name) missing.push("Nombre del dueÃ±o");
-    if (!form.phone_number) missing.push("TelÃ©fono");
+    if (!form.owner_name) missing.push("Nombre del dueño");
+    if (!form.phone_number) missing.push("Teléfono");
     if (!form.notification_channel) missing.push("Canal preferido");
     return missing;
   }, [form]);
@@ -138,7 +138,15 @@ export default function SettingsPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error">{state.error}</div>
+        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
+          <span>{state.error}</span>
+          <Link
+            href="/login"
+            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+          >
+            Iniciar sesión
+          </Link>
+        </div>
       )}
 
       {state.isLoading ? (
@@ -178,7 +186,7 @@ export default function SettingsPage() {
               </span>
             </div>
             <p className="mt-3 text-xs text-slate-500">
-              La confirmaciÃ³n de email se gestiona desde Supabase.
+              La confirmación de email se gestiona desde Supabase.
             </p>
           </section>
 
@@ -190,7 +198,7 @@ export default function SettingsPage() {
               <span>{completenessLabel}</span>
               {missingFields.length ? (
                 <span className="text-slate-400">
-                  Â· {missingFields.length} pendiente{missingFields.length > 1 ? "s" : ""}
+                  · {missingFields.length} pendiente{missingFields.length > 1 ? "s" : ""}
                 </span>
               ) : null}
             </div>
@@ -206,7 +214,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className="text-sm text-slate-600">
-                Nombre del dueÃ±o
+                Nombre del dueño
                 <input
                   className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
                   value={form?.owner_name ?? ""}
@@ -224,7 +232,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className="text-sm text-slate-600">
-                TelÃ©fono
+                Teléfono
                 <input
                   className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
                   value={form?.phone_number ?? ""}
@@ -279,7 +287,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className="text-sm text-slate-600">
-                PaÃ­s
+                País
                 <input
                   className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
                   value={form?.country ?? ""}
@@ -334,7 +342,7 @@ export default function SettingsPage() {
           <section className="surface-card px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">Seguridad</h2>
             <p className="mt-2 text-sm text-slate-500">
-              Si usas un dispositivo compartido, cierra sesiÃ³n al terminar.
+              Si usas un dispositivo compartido, cierra sesión al terminar.
             </p>
             <button
               type="button"
@@ -344,7 +352,7 @@ export default function SettingsPage() {
               }}
               className="mt-4 rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
             >
-              Cerrar sesiÃ³n
+              Cerrar sesión
             </button>
           </section>
         </>
@@ -352,4 +360,5 @@ export default function SettingsPage() {
     </main>
   );
 }
+
 

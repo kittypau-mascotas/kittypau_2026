@@ -271,7 +271,7 @@ export default function PetPage() {
         : "Sin peso registrado.";
     const ambient =
       latestReading.temperature !== null && latestReading.humidity !== null
-        ? `Temp ${latestReading.temperature}Â° · Humedad ${latestReading.humidity}%.`
+        ? `Temp ${latestReading.temperature}° · Humedad ${latestReading.humidity}%.`
         : "Sin mediciones ambientales.";
 
     return [
@@ -307,7 +307,15 @@ export default function PetPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error">{state.error}</div>
+        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
+          <span>{state.error}</span>
+          <Link
+            href="/login"
+            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+          >
+            Iniciar sesión
+          </Link>
+        </div>
       )}
 
       {state.isLoading ? (
@@ -624,4 +632,5 @@ export default function PetPage() {
     </main>
   );
 }
+
 

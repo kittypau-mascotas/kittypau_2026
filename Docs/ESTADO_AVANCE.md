@@ -33,7 +33,8 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- UI /pet: acciones rápidas hacia plato e historia.\n- UI /bowl: última conexión y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y símbolos).
+## Implementado hoy
+- UI: errores con CTA de login en /pet, /bowl, /settings y /story.\n- UI /pet: acciones rápidas hacia plato e historia.\n- UI /bowl: última conexión y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y símbolos).
 - UI /today: resumen rápido de hidratación, alimento y ambiente.
 - UI /story: conteo de alertas y resumen visual del día.
 - DB↔API: se documentó qué validaciones están en DB vs API y pasos para endurecer constraints.
@@ -164,6 +165,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 
