@@ -309,6 +309,23 @@ export default function SettingsPage() {
               </button>
             </div>
           </section>
+
+          <section className="surface-card px-6 py-5">
+            <h2 className="text-lg font-semibold text-slate-900">Seguridad</h2>
+            <p className="mt-2 text-sm text-slate-500">
+              Si usas un dispositivo compartido, cierra sesión al terminar.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                clearTokens();
+                window.location.href = "/login";
+              }}
+              className="mt-4 rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
+            >
+              Cerrar sesión
+            </button>
+          </section>
         </>
       )}
     </main>
