@@ -382,18 +382,28 @@ export default function StoryPage() {
                 </p>
               </div>
             ) : (
-              filteredTimeline.map((item) => (
+              filteredTimeline.map((item, index) => (
                 <article key={item.id} className="story-card">
                   <div className="story-time">
                     {formatTimestamp(item.recorded_at)}
                   </div>
-                  <div className={`story-dot tone-${item.story.tone}`} />
+                  <div className="story-line">
+                    <div className={`story-dot tone-${item.story.tone}`} />
+                    {index < filteredTimeline.length - 1 ? (
+                      <span className="story-rail" />
+                    ) : null}
+                  </div>
                   <div className="story-content">
                     <h3>
                       <span className="story-icon">{item.story.icon}</span>{" "}
                       {item.story.title}
                     </h3>
                     <p>{item.story.detail}</p>
+                    <div className="story-meta">
+                      <span>{selectedDevice?.device_code ?? "Plato"}</span>
+                      <span>·</span>
+                      <span>{selectedPet?.name ?? "Mascota"}</span>
+                    </div>
                   </div>
                 </article>
               ))
