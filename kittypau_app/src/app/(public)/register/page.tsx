@@ -28,6 +28,16 @@ export default function RegisterPage() {
     setStatus("loading");
     setError(null);
     setResent(false);
+    if (!email || !password) {
+      setStatus("error");
+      setError("Completa email y password para continuar.");
+      return;
+    }
+    if (password.length < 8) {
+      setStatus("error");
+      setError("El password debe tener al menos 8 caracteres.");
+      return;
+    }
 
     const supabase = getSupabaseBrowser();
     if (!supabase) {
@@ -56,6 +66,10 @@ export default function RegisterPage() {
   const handleResend = async () => {
     setResent(false);
     setError(null);
+    if (!email) {
+      setError("Ingresa un email válido para reenviar.");
+      return;
+    }
     const supabase = getSupabaseBrowser();
     if (!supabase) {
       setError("Faltan variables públicas de Supabase en el entorno.");

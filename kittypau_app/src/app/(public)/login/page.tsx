@@ -31,6 +31,16 @@ export default function LoginPage() {
     event.preventDefault();
     setError(null);
     setIsSubmitting(true);
+    if (!email || !password) {
+      setError("Completa email y password para continuar.");
+      setIsSubmitting(false);
+      return;
+    }
+    if (password.length < 8) {
+      setError("El password debe tener al menos 8 caracteres.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const supabase = getSupabaseBrowser();
     if (!supabase) {
@@ -63,6 +73,16 @@ export default function LoginPage() {
     event.preventDefault();
     setRegisterError(null);
     setIsRegistering(true);
+    if (!registerEmail || !registerPassword) {
+      setRegisterError("Completa email y password para continuar.");
+      setIsRegistering(false);
+      return;
+    }
+    if (registerPassword.length < 8) {
+      setRegisterError("El password debe tener al menos 8 caracteres.");
+      setIsRegistering(false);
+      return;
+    }
 
     const supabase = getSupabaseBrowser();
     if (!supabase) {
