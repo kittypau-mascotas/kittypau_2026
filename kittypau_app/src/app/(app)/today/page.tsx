@@ -11,6 +11,12 @@ type ApiPet = {
   pet_state?: string | null;
 };
 
+type ApiProfile = {
+  user_name?: string | null;
+  owner_name?: string | null;
+  is_owner?: boolean | null;
+};
+
 type ApiDevice = {
   id: string;
   pet_id: string;
@@ -39,6 +45,7 @@ type LoadState = {
   error: string | null;
   pets: ApiPet[];
   devices: ApiDevice[];
+  profile: ApiProfile | null;
   readings: ApiReading[];
   readingsCursor: string | null;
   isLoadingMore: boolean;
@@ -49,6 +56,7 @@ const defaultState: LoadState = {
   error: null,
   pets: [],
   devices: [],
+  profile: null,
   readings: [],
   readingsCursor: null,
   isLoadingMore: false,
@@ -92,6 +100,14 @@ export default function TodayPage() {
     return null;
   };
 
+  const parseProfile = (payload: unknown): ApiProfile | null => {
+    if (!payload || typeof payload !== "object") return null;
+    if (Array.isArray(payload)) {
+      return (payload[0] as ApiProfile) ?? null;
+    }
+    return payload as ApiProfile;
+  };
+
   const loadReadings = async (deviceId: string, cursor?: string | null) => {
     if (!token) {
       return { data: [] as ApiReading[], nextCursor: null as string | null };
@@ -121,6 +137,7 @@ export default function TodayPage() {
         error: "Necesitas iniciar sesión para ver tu feed.",
         pets: [],
         devices: [],
+        profile: null,
         readings: [],
         readingsCursor: null,
         isLoadingMore: false,
@@ -130,13 +147,14 @@ export default function TodayPage() {
 
     const load = async () => {
       try {
-        const [petsRes, devicesRes] = await Promise.all([
+        const [petsRes, devicesRes, profileRes] = await Promise.all([
           fetch("/api/pets?limit=20", {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("/api/devices?limit=20", {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          fetch("/api/profiles", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         if (!petsRes.ok) {
@@ -145,12 +163,17 @@ export default function TodayPage() {
         if (!devicesRes.ok) {
           throw new Error("No se pudieron cargar los dispositivos.");
         }
+        if (!profileRes.ok) {
+          throw new Error("No se pudo cargar el perfil.");
+        }
 
         const petsPayload = await petsRes.json();
         const devicesPayload = await devicesRes.json();
+        const profilePayload = await profileRes.json();
 
         const pets = parseListResponse<ApiPet>(petsPayload);
         const devices = parseListResponse<ApiDevice>(devicesPayload);
+        const profile = parseProfile(profilePayload);
 
         const primaryPet = pets[0];
         const storedDeviceId =
@@ -181,6 +204,7 @@ export default function TodayPage() {
           error: null,
           pets,
           devices,
+          profile,
           readings,
           readingsCursor,
           isLoadingMore: false,
@@ -194,6 +218,7 @@ export default function TodayPage() {
               : "No se pudo cargar la información.",
           pets: [],
           devices: [],
+          profile: null,
           readings: [],
           readingsCursor: null,
           isLoadingMore: false,
@@ -281,6 +306,11 @@ export default function TodayPage() {
   };
 
   const primaryPet = state.pets[0];
+  const ownerLabel =
+    state.profile?.owner_name ||
+    state.profile?.user_name ||
+    "tu";
+  const petLabel = primaryPet?.name ?? "tu mascota";
   const primaryDevice =
     state.devices.find((device) => device.id === selectedDeviceId) ??
     state.devices.find((device) => device.pet_id === primaryPet?.id) ??
@@ -740,9 +770,8 @@ export default function TodayPage() {
               Bienvenido a Hoy en casa
             </h2>
             <p className="mt-3 text-sm text-slate-600">
-              Aquí verás interpretaciones del día. Puedes cambiar de plato,
-              revisar el diario y ajustar el perfil de tu mascota cuando lo
-              necesites.
+              Aquí verás cuanto come la {petLabel}. También verás el estado del
+              plato y comentarios para {ownerLabel}.
             </p>
             <div className="mt-5 grid gap-3 text-xs text-slate-600">
               <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">

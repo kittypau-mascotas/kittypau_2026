@@ -37,6 +37,7 @@
 - Plan de compatibilidad Raspberry documentado (sin ejecutar migraciones).
 - UI /pet: checklist visual y CTA para completar perfil; CTA de vinculación cuando no hay dispositivo.
 - UI /today: modo guía inicial con tips y CTA a onboarding.
+- UI /today: guía de primer día personalizada con nombre de mascota y dueño.
 - UI /login: recuperación deshabilitada sin email válido.
 - UI /register: validaciones inline y botón activo sólo con datos válidos.
 - UI /login: validaciones inline y botón bloqueado hasta datos válidos.
