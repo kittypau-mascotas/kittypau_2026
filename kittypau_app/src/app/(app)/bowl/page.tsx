@@ -7,7 +7,7 @@ import { clearTokens, getAccessToken } from "@/lib/auth/token";
 type ApiDevice = {
   id: string;
   pet_id: string;
-  device_code: string;
+  device_id: string;
   device_type: string;
   status: string;
   device_state: string | null;
@@ -202,7 +202,7 @@ export default function BowlPage() {
               <div>
                 <p className="text-sm text-slate-500">Plato activo</p>
                 <p className="text-xl font-semibold text-slate-900">
-                  {selectedDevice?.device_code ?? "Sin dispositivo"}
+                  {selectedDevice?.device_id ?? "Sin dispositivo"}
                 </p>
                 <p className="text-xs text-slate-500">
                   {selectedDevice
@@ -234,7 +234,7 @@ export default function BowlPage() {
                   >
                     {state.devices.map((device) => (
                       <option key={device.id} value={device.id}>
-                        {device.device_code}
+                        {device.device_id}
                       </option>
                     ))}
                   </select>
@@ -350,6 +350,7 @@ export default function BowlPage() {
     </main>
   );
 }
+
 
 
 

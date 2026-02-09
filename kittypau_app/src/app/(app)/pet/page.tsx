@@ -19,7 +19,7 @@ type ApiPet = {
 type ApiDevice = {
   id: string;
   pet_id: string;
-  device_code: string;
+  device_id: string;
   device_type: string;
   status: string;
   device_state: string | null;
@@ -600,7 +600,7 @@ export default function PetPage() {
               <div>
                 <p className="text-sm text-slate-500">Dispositivo asociado</p>
                 <p className="text-lg font-semibold text-slate-900">
-                  {petDevices[0]?.device_code ?? "Sin dispositivo"}
+                  {petDevices[0]?.device_id ?? "Sin dispositivo"}
                 </p>
                 <p className="text-xs text-slate-500">
                   {petDevices[0]
@@ -667,5 +667,6 @@ export default function PetPage() {
     </main>
   );
 }
+
 
 

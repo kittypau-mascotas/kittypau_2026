@@ -14,7 +14,7 @@ type ApiPet = {
 type ApiDevice = {
   id: string;
   pet_id: string;
-  device_code: string;
+  device_id: string;
   device_type: string;
   status: string;
   device_state: string | null;
@@ -398,7 +398,7 @@ export default function TodayPage() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {primaryDevice
-                    ? `${primaryDevice.device_type} · ${primaryDevice.device_code}`
+                    ? `${primaryDevice.device_type} · ${primaryDevice.device_id}`
                     : "Sin dispositivo"}
                 </p>
                 {state.devices.length > 1 ? (
@@ -434,7 +434,7 @@ export default function TodayPage() {
                   >
                     {state.devices.map((device) => (
                       <option key={device.id} value={device.id}>
-                        {device.device_code}
+                        {device.device_id}
                       </option>
                     ))}
                   </select>
@@ -784,4 +784,5 @@ export default function TodayPage() {
     </div>
   );
 }
+
 

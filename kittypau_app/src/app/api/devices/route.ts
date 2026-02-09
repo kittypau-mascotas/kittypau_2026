@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import {
   apiError,
   enforceBodySize,
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
   }
   let body: {
     pet_id?: string;
-    device_code?: string;
+    device_id?: string;
     device_type?: string;
     status?: string;
     battery_level?: number;
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
   const payload = {
     owner_id: user.id,
     pet_id: body?.pet_id ?? null,
-    device_code: body?.device_code,
+    device_id: body?.device_id,
     device_type: body?.device_type,
     status: body?.status ?? "active",
     battery_level: body?.battery_level ?? null,
@@ -108,21 +108,21 @@ export async function POST(req: NextRequest) {
     return apiError(req, 400, "INVALID_PET_ID", "pet_id must be a string");
   }
 
-  if (!payload.device_code || !payload.device_type || !payload.pet_id) {
+  if (!payload.device_id || !payload.device_type || !payload.pet_id) {
     return apiError(
       req,
       400,
       "MISSING_FIELDS",
-      "device_code, device_type, and pet_id are required"
+      "device_id, device_type, and pet_id are required"
     );
   }
 
-  if (!/^KPCL\d{4}$/.test(payload.device_code)) {
+  if (!/^KPCL\d{4}$/.test(payload.device_id)) {
     return apiError(
       req,
       400,
       "INVALID_DEVICE_CODE",
-      "device_code must match KPCL0000 format"
+      "device_id must match KPCL0000 format"
     );
   }
 
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabaseServer.rpc("link_device_to_pet", {
     p_owner_id: user.id,
     p_pet_id: payload.pet_id,
-    p_device_code: payload.device_code,
+    p_device_id: payload.device_id,
     p_device_type: payload.device_type,
     p_status: payload.status,
     p_battery_level: payload.battery_level,
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
       const retry = await supabaseServer.rpc("link_device_to_pet", {
         p_owner_id: user.id,
         p_pet_id: payload.pet_id,
-        p_device_code: payload.device_code,
+        p_device_id: payload.device_id,
         p_device_type: payload.device_type,
         p_status: payload.status,
         p_battery_level: payload.battery_level,
@@ -195,7 +195,7 @@ export async function POST(req: NextRequest) {
         actor_id: user.id,
         entity_type: "device",
         entity_id: retry.data.id,
-        payload: { device_code: retry.data.device_code, pet_id: retry.data.pet_id },
+        payload: { device_id: retry.data.device_id, pet_id: retry.data.pet_id },
       });
 
       logRequestEnd(req, startedAt, 201, { device_id: retry.data.id });
@@ -209,9 +209,10 @@ export async function POST(req: NextRequest) {
     actor_id: user.id,
     entity_type: "device",
     entity_id: data.id,
-    payload: { device_code: data.device_code, pet_id: data.pet_id },
+    payload: { device_id: data.device_id, pet_id: data.pet_id },
   });
 
   logRequestEnd(req, startedAt, 201, { device_id: data.id });
   return NextResponse.json(data, { status: 201 });
 }
+

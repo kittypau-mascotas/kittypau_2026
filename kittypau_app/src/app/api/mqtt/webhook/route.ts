@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import {
   apiError,
@@ -13,7 +13,8 @@ import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 type WebhookPayload = {
   deviceId?: string;
   device_id?: string;
-  deviceCode?: string;
+  deviceUuid?: string;
+  device_uuid?: string;
   weight?: number;
   weight_grams?: number;
   water?: number;
@@ -53,17 +54,14 @@ function validateRange(
   return null;
 }
 
-function getDeviceCode(payload: WebhookPayload): string | null {
-  return payload.deviceCode ?? null;
+function getDeviceId(payload: WebhookPayload): string | null {
+  return payload.device_id ?? payload.deviceId ?? null;
 }
 
-function getDeviceId(payload: WebhookPayload): string | null {
-  const candidate = payload.deviceId ?? payload.device_id ?? null;
+function getDeviceUuid(payload: WebhookPayload): string | null {
+  const candidate = payload.device_uuid ?? payload.deviceUuid ?? null;
   if (!candidate) return null;
-  if (/^[0-9a-fA-F-]{36}$/.test(candidate)) {
-    return candidate;
-  }
-  return null;
+  return /^[0-9a-fA-F-]{36}$/.test(candidate) ? candidate : null;
 }
 
 export async function POST(req: NextRequest) {
@@ -96,17 +94,17 @@ export async function POST(req: NextRequest) {
   }
 
   const deviceId = getDeviceId(payload);
-  const deviceCode = getDeviceCode(payload);
-  if (!deviceId && !deviceCode) {
-    return apiError(req, 400, "MISSING_DEVICE", "Missing device code");
+  const deviceUuid = getDeviceUuid(payload);
+  if (!deviceId && !deviceUuid) {
+    return apiError(req, 400, "MISSING_DEVICE", "Missing device_id");
   }
 
-  if (deviceCode && !/^KPCL\d{4}$/.test(deviceCode)) {
+  if (deviceId && !/^KPCL\d{4}$/.test(deviceId)) {
     return apiError(
       req,
       400,
       "INVALID_DEVICE_CODE",
-      "device_code must match KPCL0000 format"
+      "device_id must match KPCL0000 format"
     );
   }
 
@@ -131,11 +129,11 @@ export async function POST(req: NextRequest) {
 
   let deviceQuery = supabaseServer
     .from("devices")
-    .select("id, pet_id, device_code");
-  if (deviceId) {
-    deviceQuery = deviceQuery.eq("id", deviceId);
-  } else {
-    deviceQuery = deviceQuery.eq("device_code", deviceCode);
+    .select("id, pet_id, device_id");
+  if (deviceUuid) {
+    deviceQuery = deviceQuery.eq("id", deviceUuid);
+  } else if (deviceId) {
+    deviceQuery = deviceQuery.eq("device_id", deviceId);
   }
 
   const { data: device, error: deviceError } = await deviceQuery.single();
@@ -144,12 +142,12 @@ export async function POST(req: NextRequest) {
     return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
-  if (deviceId && deviceCode && device.device_code !== deviceCode) {
+  if (deviceId && device.device_id !== deviceId) {
     return apiError(
       req,
       400,
       "DEVICE_MISMATCH",
-      "deviceId does not match deviceCode"
+      "device_uuid does not match device_id"
     );
   }
 
@@ -212,7 +210,8 @@ export async function POST(req: NextRequest) {
     entity_type: "device",
     entity_id: device.id,
     payload: {
-      device_code: deviceCode ?? null,
+      device_id: deviceId ?? null,
+      device_uuid: deviceUuid ?? null,
       weight_grams: weightGrams,
       water_ml: waterMl,
       flow_rate: flowRate,
@@ -243,3 +242,4 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json({ success: true });
 }
+

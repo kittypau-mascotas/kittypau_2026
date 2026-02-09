@@ -76,7 +76,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
 
   const [deviceForm, setDeviceForm] = useState({
     pet_id: "",
-    device_code: "",
+    device_id: "",
     device_type: "food_bowl",
   });
 
@@ -116,9 +116,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const deviceValidation = useMemo(() => {
     const issues: string[] = [];
     if (!deviceForm.pet_id) issues.push("Selecciona una mascota.");
-    if (!deviceForm.device_code.trim()) {
+    if (!deviceForm.device_id.trim()) {
       issues.push("Código de dispositivo requerido.");
-    } else if (!/^KPCL\d{4}$/.test(deviceForm.device_code.trim())) {
+    } else if (!/^KPCL\d{4}$/.test(deviceForm.device_id.trim())) {
       issues.push("Código debe ser KPCL0000.");
     }
     if (!deviceForm.device_type.trim()) issues.push("Tipo de dispositivo requerido.");
@@ -755,15 +755,15 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </div>
               <input
                 className={inputClass(
-                  !deviceForm.device_code.trim() ||
-                    !/^KPCL\\d{4}$/.test(deviceForm.device_code.trim())
+                  !deviceForm.device_id.trim() ||
+                    !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim())
                 )}
                 placeholder="Código KPCL0000"
-                value={deviceForm.device_code}
+                value={deviceForm.device_id}
                 onChange={(event) =>
                   setDeviceForm((prev) => ({
                     ...prev,
-                    device_code: event.target.value.toUpperCase(),
+                    device_id: event.target.value.toUpperCase(),
                   }))
                 }
               />
@@ -842,4 +842,5 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     </div>
   );
 }
+
 

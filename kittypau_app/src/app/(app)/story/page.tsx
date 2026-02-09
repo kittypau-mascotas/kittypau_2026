@@ -13,7 +13,7 @@ type ApiPet = {
 type ApiDevice = {
   id: string;
   pet_id: string;
-  device_code: string;
+  device_id: string;
   device_type: string;
   status: string;
   device_state: string | null;
@@ -345,7 +345,7 @@ export default function StoryPage() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {selectedDevice
-                    ? `${selectedDevice.device_type} · ${selectedDevice.device_code}`
+                    ? `${selectedDevice.device_type} · ${selectedDevice.device_id}`
                     : "Sin dispositivo"}
                 </p>
               </div>
@@ -395,7 +395,7 @@ export default function StoryPage() {
                   >
                     {state.devices.map((device) => (
                       <option key={device.id} value={device.id}>
-                        {device.device_code}
+                        {device.device_id}
                       </option>
                     ))}
                   </select>
@@ -469,7 +469,7 @@ export default function StoryPage() {
                     </span>
                     <p>{item.story.detail}</p>
                     <div className="story-meta">
-                      <span>{selectedDevice?.device_code ?? "Plato"}</span>
+                      <span>{selectedDevice?.device_id ?? "Plato"}</span>
                       <span>·</span>
                       <span>{selectedPet?.name ?? "Mascota"}</span>
                     </div>
@@ -483,5 +483,6 @@ export default function StoryPage() {
     </main>
   );
 }
+
 
 
