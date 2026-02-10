@@ -35,6 +35,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const loadProfile = async (token: string) => {
     const res = await fetch(`${apiBase}/api/profiles`, {
@@ -132,9 +133,44 @@ export default function SettingsPage() {
           <p className="eyebrow">Preferencias</p>
           <h1>Ajustes</h1>
         </div>
-        <Link href="/today" className="ghost-link">
-          Volver a hoy
-        </Link>
+        <div className="relative flex items-center gap-3">
+          <Link href="/today" className="ghost-link">
+            Volver a hoy
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+          >
+            Ajustes
+          </button>
+          {menuOpen ? (
+            <div
+              className="absolute right-0 top-full z-10 mt-2 w-56 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg"
+              role="menu"
+            >
+              <Link
+                href="/pet"
+                className="block rounded-[calc(var(--radius)-6px)] px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                onClick={() => setMenuOpen(false)}
+              >
+                Editar perfil
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  clearTokens();
+                  window.location.href = "/login";
+                }}
+                className="mt-1 block w-full rounded-[calc(var(--radius)-6px)] border border-rose-200 bg-rose-50 px-3 py-2 text-left text-xs font-semibold text-rose-700"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {state.error && (
@@ -169,47 +205,6 @@ export default function SettingsPage() {
         </div>
       ) : (
         <>
-          <section className="surface-card px-6 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm text-slate-500">Acciones rápidas</p>
-                <p className="text-lg font-semibold text-slate-900">
-                  Ajustes principales
-                </p>
-                <p className="text-xs text-slate-500">
-                  Administra tu perfil y tu sesión desde aquí.
-                </p>
-              </div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                Cuenta
-              </span>
-            </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
-              <Link
-                href="/pet"
-                className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700"
-              >
-                Editar perfil
-                <span className="mt-1 block text-[11px] text-rose-500">
-                  Cambia datos personales y de contacto.
-                </span>
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  clearTokens();
-                  window.location.href = "/login";
-                }}
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-700"
-              >
-                Cerrar sesión
-                <span className="mt-1 block text-[11px] text-slate-500">
-                  Te pediremos credenciales nuevamente.
-                </span>
-              </button>
-            </div>
-          </section>
-
           <section className="surface-card px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>

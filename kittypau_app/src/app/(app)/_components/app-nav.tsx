@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getAccessToken } from "@/lib/auth/token";
 
 const navItems = [
   { href: "/today", label: "Hoy" },
@@ -13,10 +15,39 @@ const navItems = [
 
 export default function AppNav() {
   const pathname = usePathname();
+  const [profile, setProfile] = useState<{
+    user_name?: string | null;
+    owner_name?: string | null;
+    photo_url?: string | null;
+  } | null>(null);
 
   if (pathname?.startsWith("/onboarding")) {
     return null;
   }
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) return;
+    let isMounted = true;
+    fetch("/api/profiles", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload) => {
+        const data = payload?.data ?? payload;
+        if (isMounted && data?.id) {
+          setProfile({
+            user_name: data.user_name,
+            owner_name: data.owner_name,
+            photo_url: data.photo_url,
+          });
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <nav className="app-nav">
@@ -43,6 +74,18 @@ export default function AppNav() {
             );
           })}
         </div>
+        {profile ? (
+          <div className="app-nav-user">
+            <img
+              src={profile.photo_url || "/avatar_1.png"}
+              alt="Avatar"
+              className="app-nav-avatar"
+            />
+            <span className="app-nav-user-name">
+              {profile.owner_name || profile.user_name || "Kittypau"}
+            </span>
+          </div>
+        ) : null}
       </div>
     </nav>
   );

@@ -122,6 +122,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!profileForm.user_name.trim()) issues.push("Nombre requerido.");
     if (!profileForm.city.trim()) issues.push("Ciudad requerida.");
     if (!profileForm.country.trim()) issues.push("País requerido.");
+    if (!selectedAvatar) issues.push("Avatar requerido.");
     if (!profileForm.is_owner && !profileForm.owner_name.trim()) {
       issues.push("Nombre del dueño requerido.");
     }

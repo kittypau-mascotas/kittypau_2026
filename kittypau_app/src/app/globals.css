@@ -408,6 +408,34 @@ body {
   gap: 10px;
 }
 
+.app-nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  background: color-mix(in oklab, #ffffff 85%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.app-nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 60%, transparent);
+}
+
+.app-nav-user-name {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .app-nav-link {
   padding: 6px 12px;
   border-radius: 999px;
