@@ -498,51 +498,97 @@ body {
 
 .login-collage {
   position: absolute;
-  right: 6%;
+  right: 5%;
   top: 50%;
   transform: translateY(-50%);
-  display: grid;
-  gap: 16px;
+  width: clamp(280px, 36vw, 520px);
+  height: clamp(340px, 48vw, 640px);
   pointer-events: none;
 }
 
-.login-collage-card {
-  width: clamp(160px, 18vw, 240px);
-  aspect-ratio: 4 / 3;
-  border-radius: 24px;
+.login-collage-frame {
+  position: absolute;
+  --rot: 0deg;
+  --tx: 0%;
+  border-radius: 28px;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: 0 24px 50px -35px rgba(40, 20, 20, 0.45);
+  box-shadow: 0 30px 70px -48px rgba(30, 20, 20, 0.5);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
-  transform: rotate(var(--tilt, 0deg)) translateY(var(--shift, 0px));
-  animation: collageFloat 16s ease-in-out infinite;
+  animation: collageDrift 18s ease-in-out infinite;
 }
 
-.login-collage-card img {
+.login-collage-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.login-collage-card.primary {
-  width: clamp(200px, 22vw, 320px);
+.login-collage-bowl {
+  width: clamp(220px, 26vw, 360px);
   aspect-ratio: 1 / 1;
-  border-radius: 32px;
-  animation-duration: 18s;
+  top: 4%;
+  left: 50%;
+  --tx: -50%;
+  z-index: 3;
+  border-radius: 34px;
+  --rot: 0deg;
+  animation-duration: 22s;
 }
 
-.login-collage-card.secondary {
+.login-collage-cat-left {
+  width: clamp(140px, 18vw, 220px);
+  aspect-ratio: 4 / 5;
+  left: 0%;
+  top: 18%;
+  --rot: -3deg;
+  z-index: 2;
+}
+
+.login-collage-dog-left {
+  width: clamp(150px, 19vw, 240px);
+  aspect-ratio: 5 / 4;
+  left: 6%;
+  bottom: 8%;
+  --rot: 2deg;
+  z-index: 1;
   animation-duration: 20s;
 }
 
-@keyframes collageFloat {
+.login-collage-cat-right {
+  width: clamp(150px, 18vw, 230px);
+  aspect-ratio: 4 / 5;
+  right: 0%;
+  top: 22%;
+  --rot: 3deg;
+  z-index: 2;
+  animation-duration: 21s;
+}
+
+.login-collage-dog-right {
+  width: clamp(160px, 20vw, 250px);
+  aspect-ratio: 5 / 4;
+  right: 6%;
+  bottom: 6%;
+  --rot: -2deg;
+  z-index: 1;
+  animation-duration: 23s;
+}
+
+@keyframes collageDrift {
   0%,
   100% {
-    transform: rotate(var(--tilt, 0deg)) translateY(var(--shift, 0px));
+    transform: translateX(var(--tx)) rotate(var(--rot)) translateY(0px);
   }
   50% {
-    transform: rotate(calc(var(--tilt, 0deg) + 1deg)) translateY(calc(var(--shift, 0px) - 12px));
+    transform: translateX(var(--tx)) rotate(var(--rot)) translateY(-14px);
   }
+}
+
+.brand-hero-logo {
+  width: clamp(96px, 12vw, 140px);
+  height: auto;
+  object-fit: contain;
 }
 
 .glass-panel {

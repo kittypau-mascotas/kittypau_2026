@@ -216,19 +216,19 @@ export default function LoginPage() {
     <div className="login-bg">
       <div className="login-layer">
         <div className="login-collage">
-          <div className="login-collage-card primary" style={{ "--tilt": "-2deg", "--shift": "-10px" } as React.CSSProperties}>
+          <div className="login-collage-frame login-collage-bowl">
             <img src="/plato_cental.png" alt="" />
           </div>
-          <div className="login-collage-card" style={{ "--tilt": "2deg", "--shift": "6px" } as React.CSSProperties}>
+          <div className="login-collage-frame login-collage-cat-left">
             <img src="/gato_1.png" alt="" />
           </div>
-          <div className="login-collage-card secondary" style={{ "--tilt": "-1deg", "--shift": "12px" } as React.CSSProperties}>
+          <div className="login-collage-frame login-collage-dog-left">
             <img src="/perro.png" alt="" />
           </div>
-          <div className="login-collage-card" style={{ "--tilt": "1.5deg", "--shift": "0px" } as React.CSSProperties}>
+          <div className="login-collage-frame login-collage-cat-right">
             <img src="/gato_2.png" alt="" />
           </div>
-          <div className="login-collage-card secondary" style={{ "--tilt": "-1.5deg", "--shift": "8px" } as React.CSSProperties}>
+          <div className="login-collage-frame login-collage-dog-right">
             <img src="/perro_2.png" alt="" />
           </div>
         </div>
@@ -236,15 +236,14 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+          <div className="inline-flex flex-col items-center gap-3">
             <img
-              src="/logo.jpg"
+              src="/logo_carga.jpg"
               alt="Kittypau"
-              className="h-6 w-6 rounded-full object-cover"
+              className="brand-hero-logo"
             />
-            <span className="brand-title text-sm text-slate-700">Kittypau</span>
-            <span className="ui-subtle text-[10px] uppercase tracking-[0.3em] text-slate-400">
-              IoT
+            <span className="brand-title text-3xl text-slate-800">
+              Kittypau
             </span>
           </div>
           <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
