@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist_Mono, Fraunces, Inter, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
-import SocialLinks from "./_components/social-links";
 
 const inter = Inter({
   variable: "--font-ui",
@@ -65,9 +64,6 @@ export default function RootLayout({
       >
         <RouteLoadingOverlay />
         {children}
-        <div className="social-footer">
-          <SocialLinks size="sm" />
-        </div>
       </body>
     </html>
   );

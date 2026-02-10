@@ -221,7 +221,7 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
-          <SocialLinks className="social-header" />
+          <SocialLinks className="social-header" size="md" />
           <div className="inline-flex flex-col items-center gap-3">
             <img
               src="/logo_carga.jpg"
