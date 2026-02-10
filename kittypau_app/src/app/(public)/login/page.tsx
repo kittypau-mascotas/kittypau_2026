@@ -219,15 +219,15 @@ export default function LoginPage() {
         <div className="login-collage" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
-        <div className="max-w-xl space-y-6 text-left">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-12 px-6 py-16 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-w-xl space-y-7 text-left">
           <div className="login-brand-block flex w-full flex-col items-center gap-3">
             <img
               src="/logo_carga.jpg"
               alt="Kittypau"
               className="brand-hero-logo"
             />
-            <span className="brand-title text-3xl text-primary">
+            <span className="brand-title text-4xl text-primary">
               Kittypau
             </span>
             <SocialLinks
@@ -235,7 +235,7 @@ export default function LoginPage() {
               size="md"
             />
           </div>
-          <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
+          <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
           <p className="text-base leading-relaxed text-slate-600 md:text-lg">
@@ -245,7 +245,7 @@ export default function LoginPage() {
         </div>
 
         <div className="glass-panel w-full max-w-md p-8">
-          <div className="stagger space-y-6">
+          <div className="stagger space-y-7">
             <div>
               <h2 className="display-title text-2xl font-semibold text-slate-900">
                 Iniciar sesión
