@@ -215,36 +215,23 @@ export default function LoginPage() {
   return (
     <div className="login-bg">
       <div className="login-layer">
-        <img
-          src="/plato_cental.png"
-          alt=""
-          className="login-parallax login-parallax-bowl"
-          style={{ bottom: "-2%", left: "44%" }}
-        />
-        <img
-          src="/gato_1.png"
-          alt=""
-          className="login-parallax login-parallax-cat"
-          style={{ top: "6%", left: "6%" }}
-        />
-        <img
-          src="/gato_2.png"
-          alt=""
-          className="login-parallax login-parallax-cat"
-          style={{ bottom: "6%", left: "18%" }}
-        />
-        <img
-          src="/perro.png"
-          alt=""
-          className="login-parallax login-parallax-dog"
-          style={{ top: "8%", right: "10%" }}
-        />
-        <img
-          src="/perro_2.png"
-          alt=""
-          className="login-parallax login-parallax-dog"
-          style={{ bottom: "8%", right: "6%" }}
-        />
+        <div className="login-collage">
+          <div className="login-collage-card primary" style={{ "--tilt": "-2deg", "--shift": "-10px" } as React.CSSProperties}>
+            <img src="/plato_cental.png" alt="" />
+          </div>
+          <div className="login-collage-card" style={{ "--tilt": "2deg", "--shift": "6px" } as React.CSSProperties}>
+            <img src="/gato_1.png" alt="" />
+          </div>
+          <div className="login-collage-card secondary" style={{ "--tilt": "-1deg", "--shift": "12px" } as React.CSSProperties}>
+            <img src="/perro.png" alt="" />
+          </div>
+          <div className="login-collage-card" style={{ "--tilt": "1.5deg", "--shift": "0px" } as React.CSSProperties}>
+            <img src="/gato_2.png" alt="" />
+          </div>
+          <div className="login-collage-card secondary" style={{ "--tilt": "-1.5deg", "--shift": "8px" } as React.CSSProperties}>
+            <img src="/perro_2.png" alt="" />
+          </div>
+        </div>
       </div>
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
