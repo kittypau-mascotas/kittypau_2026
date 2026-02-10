@@ -235,7 +235,7 @@ export default function LoginPage() {
             <img
               src="/logo_carga.jpg"
               alt="Kittypau"
-              className="brand-hero-logo"
+              className="brand-hero-logo freeform-float"
             />
             <span className="brand-title text-4xl text-primary">
               Kittypau
@@ -254,7 +254,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="glass-panel w-full max-w-md p-8">
+        <div className="glass-panel freeform-rise w-full max-w-md p-8">
           <div className="stagger space-y-7">
             <div>
               <h2 className="display-title text-2xl font-semibold text-slate-900">
