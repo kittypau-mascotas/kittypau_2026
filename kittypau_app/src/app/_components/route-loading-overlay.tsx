@@ -9,8 +9,15 @@ export default function RouteLoadingOverlay() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    let delay = 350;
+    if (typeof window !== "undefined") {
+      const shouldPlay = window.sessionStorage.getItem("kittypau_play_login_sound");
+      if (shouldPlay) {
+        delay = 2000;
+      }
+    }
     setVisible(true);
-    const timeout = setTimeout(() => setVisible(false), 2000);
+    const timeout = setTimeout(() => setVisible(false), delay);
     return () => clearTimeout(timeout);
   }, [pathname]);
 
