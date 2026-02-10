@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import OnboardingFlow from "@/app/(app)/onboarding/_components/onboarding-flow";
@@ -28,6 +28,7 @@ export default function LoginPage() {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
     [registerStep]
@@ -61,6 +62,12 @@ export default function LoginPage() {
       setError("El password debe tener al menos 8 caracteres.");
       setIsSubmitting(false);
       return;
+    }
+
+    const audio = loginAudioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      void audio.play().catch(() => undefined);
     }
 
     const supabase = getSupabaseBrowser();
@@ -218,6 +225,7 @@ export default function LoginPage() {
       <div className="login-layer">
         <div className="login-collage" />
       </div>
+      <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-12 px-6 py-16 lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-xl space-y-7 text-center lg:text-left">

@@ -9,7 +9,7 @@ export default function RouteLoadingOverlay() {
 
   useEffect(() => {
     setVisible(true);
-    const timeout = setTimeout(() => setVisible(false), 350);
+    const timeout = setTimeout(() => setVisible(false), 2000);
     return () => clearTimeout(timeout);
   }, [pathname]);
 
