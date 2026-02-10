@@ -15,6 +15,7 @@ type ApiProfile = {
   user_name?: string | null;
   owner_name?: string | null;
   is_owner?: boolean | null;
+  photo_url?: string | null;
 };
 
 type ApiDevice = {
@@ -424,15 +425,20 @@ export default function TodayPage() {
               <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
             </div>
             <div className="surface-card flex items-center gap-4 px-4 py-3">
-              <div className="h-12 w-12 rounded-full bg-slate-200" />
+              <img
+                src={state.profile?.photo_url || "/avatar_1.png"}
+                alt="Avatar"
+                className="h-12 w-12 rounded-full object-cover"
+              />
               <div>
                 <p className="text-sm font-semibold text-slate-900">
-                  {primaryPet?.name ?? "Sin mascota"}
+                  {state.profile?.owner_name ||
+                    state.profile?.user_name ||
+                    "Tu cuenta"}
                 </p>
                 <p className="text-xs text-slate-500">
-                  {primaryDevice
-                    ? `${primaryDevice.device_type} · ${primaryDevice.device_id}`
-                    : "Sin dispositivo"}
+                  {primaryPet?.name ?? "Sin mascota"}
+                  {primaryDevice ? ` · ${primaryDevice.device_id}` : ""}
                 </p>
                 {state.devices.length > 1 ? (
                   <select
