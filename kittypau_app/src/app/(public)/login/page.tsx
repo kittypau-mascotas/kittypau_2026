@@ -216,6 +216,12 @@ export default function LoginPage() {
     <div className="login-bg">
       <div className="login-layer">
         <img
+          src="/plato_cental.png"
+          alt=""
+          className="login-parallax login-parallax-bowl"
+          style={{ bottom: "-2%", left: "44%" }}
+        />
+        <img
           src="/gato_1.png"
           alt=""
           className="login-parallax login-parallax-cat"
@@ -238,12 +244,6 @@ export default function LoginPage() {
           alt=""
           className="login-parallax login-parallax-dog"
           style={{ bottom: "8%", right: "6%" }}
-        />
-        <img
-          src="/plato_cental.png"
-          alt=""
-          className="login-parallax login-parallax-bowl"
-          style={{ bottom: "-2%", left: "44%" }}
         />
       </div>
 
