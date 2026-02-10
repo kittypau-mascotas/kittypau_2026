@@ -230,8 +230,11 @@ export default function LoginPage() {
             <span className="brand-title text-3xl text-primary">
               Kittypau
             </span>
+            <SocialLinks
+              className="social-header social-header-center"
+              size="md"
+            />
           </div>
-          <SocialLinks className="social-header social-header-center" size="md" />
           <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
