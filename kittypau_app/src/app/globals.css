@@ -515,10 +515,10 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
-  background: color-mix(in oklab, #ffffff 85%, transparent);
-  color: #6b7280;
-  transition: transform 180ms ease, color 180ms ease, border-color 180ms ease;
+  border: 1px solid transparent;
+  background: hsl(var(--primary));
+  color: #ffffff;
+  transition: transform 180ms ease, background-color 180ms ease;
 }
 
 .social-link svg {
@@ -538,18 +538,7 @@ body {
 }
 
 .social-link:hover {
-  color: #111827;
   transform: translateY(-2px);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 40%, hsl(var(--border)));
-}
-
-.social-header .social-link {
-  background: hsl(var(--primary));
-  color: #ffffff;
-  border-color: transparent;
-}
-
-.social-header .social-link:hover {
   background: hsl(var(--primary-strong));
   color: #ffffff;
 }
@@ -563,7 +552,7 @@ body {
 }
 
 .login-brand-block {
-  align-self: flex-start;
+  align-self: center;
 }
 
 .app-footer {
