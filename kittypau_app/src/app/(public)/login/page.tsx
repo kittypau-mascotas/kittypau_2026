@@ -88,15 +88,8 @@ export default function LoginPage() {
       refreshToken: data.session.refresh_token,
     });
 
-    const audio = loginAudioRef.current;
-    if (audio) {
-      audio.currentTime = 0;
-      try {
-        await audio.play();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } catch {
-        // ignore playback errors (autoplay restrictions)
-      }
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("kittypau_play_login_sound", "1");
     }
 
     router.push("/today");
