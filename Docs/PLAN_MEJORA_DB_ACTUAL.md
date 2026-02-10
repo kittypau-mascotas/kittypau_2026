@@ -1,4 +1,4 @@
-# Plan de mejora de base actual (Supabase)
+﻿# Plan de mejora de base actual (Supabase)
 
 ## Objetivo
 Mejorar la base actual sin romper el frontend ni el bridge. Se mantiene:
@@ -19,7 +19,7 @@ Mejorar la base actual sin romper el frontend ni el bridge. Se mantiene:
 
 ---
 
-## Fase 0 — Seguridad antes de cambios
+## Fase 0 â€” Seguridad antes de cambios
 1. Backup o export de esquema.
 2. Verificar conteos basicos:
    - select count(*) from devices;
@@ -28,7 +28,7 @@ Mejorar la base actual sin romper el frontend ni el bridge. Se mantiene:
 
 ---
 
-## Fase 1 — Alinear esquema de readings con sensor_readings
+## Fase 1 â€” Alinear esquema de readings con sensor_readings
 Asegurar que readings tenga todos los campos que existen en sensor_readings:
 
 ```sql
@@ -54,7 +54,7 @@ create index if not exists idx_readings_ingested
 
 ---
 
-## Fase 2 — Pipeline robusto (sensor_readings -> readings)
+## Fase 2 â€” Pipeline robusto (sensor_readings -> readings)
 Objetivo: copiar datos crudos a readings para que la app lea una sola tabla.
 
 Reglas:
@@ -112,7 +112,7 @@ create trigger trg_sync_sensor_reading
 
 ---
 
-## Fase 3 — Backfill controlado (sin duplicar)
+## Fase 3 â€” Backfill controlado (sin duplicar)
 Si ya existe data en sensor_readings, copiar a readings solo si no existe:
 
 ```sql
@@ -136,7 +136,7 @@ where not exists (
 
 ---
 
-## Fase 4 — Vistas para lectura rapida
+## Fase 4 â€” Vistas para lectura rapida
 Si la app usa latest_readings o device_summary, incluir nuevos campos:
 
 ```sql
@@ -151,7 +151,7 @@ order by device_id, recorded_at desc;
 
 ---
 
-## Fase 5 — Validaciones de integridad (reporte)
+## Fase 5 â€” Validaciones de integridad (reporte)
 
 ```sql
 -- readings sin device
@@ -186,3 +186,18 @@ where d.pet_id is not null and p.id is null;
 3. Fase 3 (backfill).
 4. Fase 4 (vistas).
 5. Fase 5 (integridad).
+
+---
+
+## Requisito funcional: ver data real por usuario
+- Verificar que cada usuario solo vea su mascota y sus dispositivos.
+- Validar vinculos: profiles.id -> pets.user_id -> devices.pet_id -> readings.device_id.
+- Query de verificacion (ejemplo):
+
+`sql
+select p.user_id, p.id as pet_id, d.id as device_uuid, d.device_id as device_kpcl, r.id as reading_id
+from public.pets p
+join public.devices d on d.pet_id = p.id
+left join public.readings r on r.device_id = d.id
+where p.user_id = auth.uid();
+`\n
