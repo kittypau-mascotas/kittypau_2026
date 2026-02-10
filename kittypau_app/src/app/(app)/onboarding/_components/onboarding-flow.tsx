@@ -738,6 +738,20 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <p className="mt-2 text-[11px] text-slate-400">
                   Puedes cambiarlo luego en tu perfil.
                 </p>
+                <div className="mt-3 flex items-center gap-3 text-xs text-slate-500">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                    Seleccionado
+                  </span>
+                  <div className="h-8 w-8 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                    {selectedAvatar ? (
+                      <img
+                        src={selectedAvatar}
+                        alt="Avatar seleccionado"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -920,7 +934,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </div>
             ) : null}
             {profileError ? (
-              <p className="mt-2 text-xs text-rose-600">{profileError}</p>
+              <p className="mt-2 text-xs text-rose-600" role="alert">
+                {profileError}
+              </p>
             ) : null}
           </section>
         )}
@@ -1112,7 +1128,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </div>
             ) : null}
             {petError ? (
-              <p className="mt-2 text-xs text-rose-600">{petError}</p>
+              <p className="mt-2 text-xs text-rose-600" role="alert">
+                {petError}
+              </p>
             ) : null}
           </section>
         )}
@@ -1238,7 +1256,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </div>
             ) : null}
             {deviceError ? (
-              <p className="mt-2 text-xs text-rose-600">{deviceError}</p>
+              <p className="mt-2 text-xs text-rose-600" role="alert">
+                {deviceError}
+              </p>
             ) : null}
           </section>
         )}
