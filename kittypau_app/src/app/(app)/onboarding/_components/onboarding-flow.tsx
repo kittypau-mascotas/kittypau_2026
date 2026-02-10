@@ -760,6 +760,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Paso 1 · Usuario (cuenta)
               </p>
+              <p className="mt-2 text-sm text-slate-500">
+                Tu cuenta será el hogar de{" "}
+                <span className="font-semibold text-slate-700">
+                  {petForm.name?.trim() ? petForm.name : "tu mascota"}
+                </span>
+                .
+              </p>
               <div className="mt-3 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
                 <div className="flex flex-wrap items-center gap-4">
                   <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
