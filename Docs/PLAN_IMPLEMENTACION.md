@@ -101,3 +101,23 @@ Tareas:
 - Sin permisos de edicion ni vinculacion de dispositivos.
 - Requiere RLS adicional y vistas/roles dedicados.
 
+
+---
+
+## Proximos avances (plan priorizado)
+### P0 — Estabilidad y producción real
+1. Storage policies definitivas para kittypau-photos (select/insert/delete para uthenticated).
+2. Refresh token en frontend (rotación y reintento silencioso).
+3. Bridge 24/7 (systemd + watchdog + logging).
+4. Componente Alert unificado (errores/estados en UI).
+
+### P1 — Experiencia de usuario
+1. UI kit base (Button/Input/Card/Alert).
+2. Empty states consistentes (copy/tonos).
+3. Resumen del día personalizado (dueño/mascota).
+
+### P2 — Backend/Operaciones
+1. Auditoría completa en udit_events.
+2. Métricas webhook + tracking de errores.
+3. Backpressure: cola/reintentos.
+
