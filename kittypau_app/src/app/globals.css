@@ -42,18 +42,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 222 47% 7%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 10%;
-    --card-foreground: 210 40% 98%;
-    --muted: 223 29% 14%;
-    --muted-foreground: 215 16% 70%;
-    --border: 223 29% 18%;
-  }
-}
-
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
