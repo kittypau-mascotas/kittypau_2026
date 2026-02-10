@@ -457,7 +457,10 @@ export default function StoryPage() {
               </div>
             ) : (
               filteredTimeline.map((item, index) => (
-                <article key={item.id} className="story-card">
+                <article
+                  key={item.id}
+                  className={`story-card tone-${item.story.tone}`}
+                >
                   <div className="story-time">
                     {formatTimestamp(item.recorded_at)}
                   </div>
@@ -482,6 +485,19 @@ export default function StoryPage() {
                         : "Info"}
                     </span>
                     <p>{item.story.detail}</p>
+                    {item.story.tone === "warn" ? (
+                      <p className="story-hint">
+                        Sugerencia: revisa el agua y el estado del plato.
+                      </p>
+                    ) : item.story.tone === "good" ? (
+                      <p className="story-hint">
+                        Buen ritmo. Mantén la rutina de {selectedPet?.name ?? "tu mascota"}.
+                      </p>
+                    ) : (
+                      <p className="story-hint">
+                        Si quieres más detalle, abre el resumen de hoy.
+                      </p>
+                    )}
                     <div className="story-meta">
                       <span>{selectedDevice?.device_id ?? "Plato"}</span>
                       <span>·</span>
