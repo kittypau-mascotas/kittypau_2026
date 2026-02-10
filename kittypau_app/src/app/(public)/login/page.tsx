@@ -215,35 +215,35 @@ export default function LoginPage() {
   return (
     <div className="login-bg">
       <div className="login-layer">
-        <span
-          className="login-orb"
-          style={{
-            width: "220px",
-            height: "220px",
-            top: "12%",
-            left: "8%",
-            background: "rgba(79, 140, 255, 0.35)",
-          }}
+        <img
+          src="/gato_1.png"
+          alt=""
+          className="login-parallax login-parallax-cat"
+          style={{ top: "6%", left: "6%" }}
         />
-        <span
-          className="login-orb"
-          style={{
-            width: "320px",
-            height: "320px",
-            bottom: "-8%",
-            right: "6%",
-            background: "rgba(255, 196, 124, 0.45)",
-          }}
+        <img
+          src="/gato_2.png"
+          alt=""
+          className="login-parallax login-parallax-cat"
+          style={{ bottom: "6%", left: "18%" }}
         />
-        <span
-          className="login-orb"
-          style={{
-            width: "140px",
-            height: "140px",
-            bottom: "18%",
-            left: "28%",
-            background: "rgba(148, 204, 255, 0.4)",
-          }}
+        <img
+          src="/perro.png"
+          alt=""
+          className="login-parallax login-parallax-dog"
+          style={{ top: "8%", right: "10%" }}
+        />
+        <img
+          src="/perro_2.png"
+          alt=""
+          className="login-parallax login-parallax-dog"
+          style={{ bottom: "8%", right: "6%" }}
+        />
+        <img
+          src="/plato_cental.png"
+          alt=""
+          className="login-parallax login-parallax-bowl"
+          style={{ bottom: "-2%", left: "44%" }}
         />
       </div>
 

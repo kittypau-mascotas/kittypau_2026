@@ -460,24 +460,40 @@ body {
   pointer-events: none;
 }
 
-.login-orb {
+.login-parallax {
   position: absolute;
-  border-radius: 9999px;
-  filter: blur(1px);
-  opacity: 0.7;
-  animation: floaty 8s ease-in-out infinite;
+  width: clamp(140px, 20vw, 260px);
+  opacity: 0.9;
+  filter: drop-shadow(0 20px 40px rgba(30, 20, 20, 0.2));
+  animation: parallaxFloat 12s ease-in-out infinite;
 }
 
-.login-orb:nth-child(2) {
-  animation-delay: 1.5s;
+.login-parallax-cat {
+  animation-duration: 14s;
 }
 
-.login-orb:nth-child(3) {
-  animation-delay: 3s;
+.login-parallax-dog {
+  animation-duration: 16s;
+}
+
+.login-parallax-bowl {
+  width: clamp(180px, 26vw, 360px);
+  opacity: 0.85;
+  animation-duration: 18s;
 }
 
 .login-layer {
   animation: fade-in 600ms ease;
+}
+
+@keyframes parallaxFloat {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-12px) translateX(6px);
+  }
 }
 
 .glass-panel {
