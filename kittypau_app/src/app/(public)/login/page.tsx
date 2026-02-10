@@ -91,7 +91,12 @@ export default function LoginPage() {
     const audio = loginAudioRef.current;
     if (audio) {
       audio.currentTime = 0;
-      void audio.play().catch(() => undefined);
+      try {
+        await audio.play();
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch {
+        // ignore playback errors (autoplay restrictions)
+      }
     }
 
     router.push("/today");
