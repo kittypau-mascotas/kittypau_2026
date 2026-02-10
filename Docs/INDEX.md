@@ -1,4 +1,4 @@
-﻿# Ãndice de DocumentaciÃ³n (Kittypau)
+# Ãndice de DocumentaciÃ³n (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -82,3 +82,5 @@
 
 - Docs/TEST_AUTH_FLOW.ps1
 - Docs/TEST_UI_ONBOARDING.md
+
+- Docs/PLAN_MEJORA_DB_ACTUAL.md

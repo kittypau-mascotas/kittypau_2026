@@ -1,4 +1,4 @@
-﻿# Plan de Implementación (Solo Documentación)
+# Plan de Implementación (Solo Documentación)
 
 ## Objetivo
 Definir las tareas de implementación para cerrar el MVP sin tocar código.
@@ -121,3 +121,8 @@ Tareas:
 2. Métricas webhook + tracking de errores.
 3. Backpressure: cola/reintentos.
 
+
+---
+
+## Plan mejora DB actual (Supabase)
+- Ver Docs/PLAN_MEJORA_DB_ACTUAL.md para fases, SQL y checklist.
