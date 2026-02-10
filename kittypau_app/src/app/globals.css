@@ -543,6 +543,17 @@ body {
   border-color: color-mix(in oklab, hsl(var(--primary)) 40%, hsl(var(--border)));
 }
 
+.social-header .social-link {
+  background: hsl(var(--primary));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.social-header .social-link:hover {
+  background: hsl(var(--primary-strong));
+  color: #ffffff;
+}
+
 .social-header {
   justify-content: flex-start;
 }
