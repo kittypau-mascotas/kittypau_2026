@@ -2,7 +2,8 @@
 
 :root {
   /* Brand */
-  --primary: 12 55% 80%;
+  --primary: 12 62% 79%;
+  --primary-strong: 12 45% 60%;
   --primary-foreground: 0 0% 100%;
 
   /* Surface */
@@ -14,8 +15,8 @@
   /* States */
   --muted: 24 20% 92%;
   --muted-foreground: 20 9% 40%;
-  --border: 24 18% 85%;
-  --ring: 348 45% 33%;
+  --border: 12 45% 85%;
+  --ring: 12 45% 60%;
 
   /* Feedback */
   --success: 145 22% 46%;
@@ -87,6 +88,11 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 18px 44px -30px rgba(15, 23, 42, 0.6);
   border-color: color-mix(in oklab, hsl(var(--border)) 60%, transparent);
+}
+
+.bg-primary:hover,
+.bg-primary:active {
+  background-color: hsl(var(--primary-strong));
 }
 
 .page-shell {
