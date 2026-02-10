@@ -347,7 +347,7 @@ export default function StoryPage() {
         <div className="empty-state">
           <p className="empty-title">Aún no hay dispositivos vinculados.</p>
           <p className="empty-text">
-            Completa el onboarding para conectar un plato y generar la historia.
+            Completa el onboarding para conectar un plato y comenzar tu diario.
           </p>
           <div className="empty-actions">
             <Link
@@ -465,7 +465,7 @@ export default function StoryPage() {
               <div className="empty-state">
                 <p className="empty-title">Aún no hay historia para mostrar.</p>
                 <p className="empty-text">
-                  Cuando lleguen lecturas desde el plato aparecerán aquí.
+                  Cuando lleguen lecturas del plato, verás la historia aquí.
                 </p>
               </div>
             ) : (
