@@ -37,14 +37,14 @@ export async function GET(req: NextRequest) {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
   logRequestEnd(req, startedAt, 200);
-  return NextResponse.json(data, { status: 200 });
+  return NextResponse.json(data ?? null, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
