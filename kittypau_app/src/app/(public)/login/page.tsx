@@ -25,6 +25,7 @@ export default function LoginPage() {
   );
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [registerShowPassword, setRegisterShowPassword] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -206,6 +207,9 @@ export default function LoginPage() {
   const isEmailValid = email.includes("@");
   const isPasswordValid = password.length >= 8;
   const isLoginValid = isEmailValid && isPasswordValid;
+  const isRegisterEmailValid = registerEmail.includes("@");
+  const isRegisterPasswordValid = registerPassword.length >= 8;
+  const isRegisterValid = isRegisterEmailValid && isRegisterPasswordValid;
   const canReset = Boolean(resetEmail || email);
 
   const closeRegister = () => {
@@ -443,7 +447,7 @@ export default function LoginPage() {
                           Password
                         </label>
                         <input
-                          type="password"
+                          type={registerShowPassword ? "text" : "password"}
                           placeholder="••••••••"
                           value={registerPassword}
                           onChange={(event) =>
@@ -451,16 +455,37 @@ export default function LoginPage() {
                           }
                           className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                         />
+                        {registerPassword.length > 0 && !isRegisterPasswordValid ? (
+                          <p className="text-[11px] text-rose-600">
+                            Debe tener 8 caracteres o más.
+                          </p>
+                        ) : null}
                       </div>
                     </div>
+                    <label className="flex items-center gap-2 text-xs text-slate-500">
+                      <input
+                        type="checkbox"
+                        checked={registerShowPassword}
+                        onChange={(event) => setRegisterShowPassword(event.target.checked)}
+                      />
+                      Mostrar password
+                    </label>
+                    {registerEmail.length > 0 && !isRegisterEmailValid ? (
+                      <p className="text-[11px] text-rose-600">
+                        Ingresa un email válido.
+                      </p>
+                    ) : null}
                     {registerError ? (
-                      <p className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                      <p
+                        className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
+                        role="alert"
+                      >
                         {registerError}
                       </p>
                     ) : null}
                     <button
                       type="submit"
-                      disabled={isRegistering}
+                      disabled={isRegistering || !isRegisterValid}
                       className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {isRegistering ? "Creando..." : "Continuar"}
