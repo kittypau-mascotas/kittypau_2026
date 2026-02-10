@@ -70,6 +70,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [accountError, setAccountError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [showProfileHints, setShowProfileHints] = useState(false);
+  const [showPetHints, setShowPetHints] = useState(false);
+  const [showDeviceHints, setShowDeviceHints] = useState(false);
   const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
   const [petPhotoFile, setPetPhotoFile] = useState<File | null>(null);
@@ -304,14 +307,16 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     setIsCropOpen(false);
   };
 
-  const showSavedToastAndRedirect = () => {
+  const showSavedToastAndRedirect = (shouldRedirect: boolean) => {
     if (toastTimeout.current) {
       window.clearTimeout(toastTimeout.current);
     }
     setToastMessage("Guardado");
     toastTimeout.current = window.setTimeout(() => {
       setToastMessage(null);
-      router.push("/today");
+      if (shouldRedirect) {
+        router.push("/today");
+      }
     }, 1400);
   };
 
@@ -422,6 +427,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const saveProfile = async () => {
     if (!token) return;
     setIsSavingProfile(true);
+    setShowProfileHints(true);
     setError(null);
     setProfileError(null);
     if (!profileValidation.ok) {
@@ -452,7 +458,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       }
 
       await loadStatus();
-      showSavedToastAndRedirect();
+      setShowProfileHints(false);
+      showSavedToastAndRedirect(false);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "No se pudo guardar el perfil."
@@ -465,6 +472,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const savePet = async () => {
     if (!token) return;
     setIsSavingPet(true);
+    setShowPetHints(true);
     setError(null);
     setPetError(null);
     if (!petValidation.ok) {
@@ -497,7 +505,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       const newPet = (await res.json()) as Pet;
       setDeviceForm((prev) => ({ ...prev, pet_id: newPet.id }));
       await loadStatus();
-      showSavedToastAndRedirect();
+      setShowPetHints(false);
+      showSavedToastAndRedirect(false);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "No se pudo crear la mascota."
@@ -510,6 +519,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const saveDevice = async () => {
     if (!token) return;
     setIsSavingDevice(true);
+    setShowDeviceHints(true);
     setError(null);
     setDeviceError(null);
     if (!deviceValidation.ok) {
@@ -545,6 +555,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       });
 
       await loadStatus();
+      setShowDeviceHints(false);
+      showSavedToastAndRedirect(true);
     } catch (err) {
       setError(
         err instanceof Error
@@ -823,6 +835,18 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                       {profilePhotoPreview ? (
                         <button
                           type="button"
+                          onClick={() => {
+                            setProfilePhotoFile(null);
+                            setProfilePhotoPreview(null);
+                          }}
+                          className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                        >
+                          Quitar
+                        </button>
+                      ) : null}
+                      {profilePhotoPreview ? (
+                        <button
+                          type="button"
                           onClick={() => openCropper(profilePhotoPreview, "profile")}
                           className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                         >
@@ -915,6 +939,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              {showProfileHints && !profileForm.user_name.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Escribe tu nombre para continuar.
+                </p>
+              ) : null}
               <p className="text-[11px] text-slate-500">
                 Nombre visible en la app.
               </p>
@@ -935,6 +964,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              {showProfileHints && !profileForm.city.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Indica tu ciudad para personalizar alertas.
+                </p>
+              ) : null}
               <p className="text-[11px] text-slate-500">
                 Úsalo para personalizar alertas.
               </p>
@@ -955,6 +989,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              {showProfileHints && !profileForm.country.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Define tu país para completar el perfil.
+                </p>
+              ) : null}
               <p className="text-[11px] text-slate-500">
                 Define tu región principal.
               </p>
@@ -994,30 +1033,44 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 Soy el dueño del plato
               </label>
               {!profileForm.is_owner ? (
-                <input
-                  className={inputClass(!profileForm.owner_name.trim())}
-                  placeholder="Nombre del dueño"
-                  value={profileForm.owner_name}
-                  onChange={(event) =>
-                    setProfileForm((prev) => ({
-                      ...prev,
-                      owner_name: event.target.value,
-                    }))
-                  }
-                />
+                <div className="space-y-2">
+                  <input
+                    className={inputClass(!profileForm.owner_name.trim())}
+                    placeholder="Nombre del dueño"
+                    value={profileForm.owner_name}
+                    onChange={(event) =>
+                      setProfileForm((prev) => ({
+                        ...prev,
+                        owner_name: event.target.value,
+                      }))
+                    }
+                  />
+                  {showProfileHints && !profileForm.owner_name.trim() ? (
+                    <p className="text-[11px] text-rose-600">
+                      Indica el nombre del dueño.
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
               {profileForm.notification_channel === "whatsapp" ? (
-                <input
-                  className={inputClass(!profileForm.phone_number.trim())}
-                  placeholder="Número WhatsApp"
-                  value={profileForm.phone_number}
-                  onChange={(event) =>
-                    setProfileForm((prev) => ({
-                      ...prev,
-                      phone_number: event.target.value,
-                    }))
-                  }
-                />
+                <div className="space-y-2">
+                  <input
+                    className={inputClass(!profileForm.phone_number.trim())}
+                    placeholder="Número WhatsApp"
+                    value={profileForm.phone_number}
+                    onChange={(event) =>
+                      setProfileForm((prev) => ({
+                        ...prev,
+                        phone_number: event.target.value,
+                      }))
+                    }
+                  />
+                  {showProfileHints && !profileForm.phone_number.trim() ? (
+                    <p className="text-[11px] text-rose-600">
+                      Agrega un número de contacto.
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
               {profileForm.notification_channel === "whatsapp" ? (
                 <p className="text-[11px] text-slate-500">
@@ -1120,6 +1173,18 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                     {petPhotoPreview ? (
                       <button
                         type="button"
+                        onClick={() => {
+                          setPetPhotoFile(null);
+                          setPetPhotoPreview(null);
+                        }}
+                        className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Quitar
+                      </button>
+                    ) : null}
+                    {petPhotoPreview ? (
+                      <button
+                        type="button"
                         onClick={() => openCropper(petPhotoPreview, "pet")}
                         className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                       >
@@ -1151,6 +1216,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   setPetForm((prev) => ({ ...prev, name: event.target.value }))
                 }
               />
+              {showPetHints && !petForm.name.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Escribe el nombre de tu mascota.
+                </p>
+              ) : null}
               <p className="text-[11px] text-slate-500">
                 Nombre que verás en el feed.
               </p>
@@ -1170,6 +1240,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <option value="cat">Gato</option>
                 <option value="dog">Perro</option>
               </select>
+              {showPetHints && !petForm.type.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Selecciona el tipo de mascota.
+                </p>
+              ) : null}
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Origen
@@ -1251,6 +1326,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   </option>
                 ))}
               </select>
+              {showDeviceHints && !deviceForm.pet_id ? (
+                <p className="text-[11px] text-rose-600">
+                  Selecciona la mascota a vincular.
+                </p>
+              ) : null}
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Código
@@ -1271,6 +1351,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                   }))
                 }
               />
+              {showDeviceHints &&
+              (!deviceForm.device_id.trim() ||
+                !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim())) ? (
+                <p className="text-[11px] text-rose-600">
+                  Ingresa un código válido KPCL0000.
+                </p>
+              ) : null}
               <p className="text-[11px] text-slate-500">
                 Formato esperado: KPCL0000.
               </p>
@@ -1293,6 +1380,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 <option value="food_bowl">Food bowl</option>
                 <option value="water_bowl">Water bowl</option>
               </select>
+              {showDeviceHints && !deviceForm.device_type.trim() ? (
+                <p className="text-[11px] text-rose-600">
+                  Selecciona el tipo de dispositivo.
+                </p>
+              ) : null}
             </div>
             <button
               type="button"
@@ -1335,6 +1427,24 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 Dispositivos: {status.deviceCount}
               </div>
             </div>
+            {(profileForm.user_name || petForm.name || deviceForm.device_id) ? (
+              <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-700">
+                  Resumen rápido
+                </p>
+                <div className="mt-2 grid gap-1">
+                  {profileForm.user_name ? (
+                    <span>Usuario: {profileForm.user_name}</span>
+                  ) : null}
+                  {petForm.name ? (
+                    <span>Mascota: {petForm.name}</span>
+                  ) : null}
+                  {deviceForm.device_id ? (
+                    <span>Dispositivo: {deviceForm.device_id}</span>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
             <Link
               href="/today"
               className="mt-4 inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
