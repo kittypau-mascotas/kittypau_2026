@@ -328,18 +328,18 @@ export default function TodayPage() {
   }, [latestReading?.recorded_at]);
 
   const summaryText = useMemo(() => {
-    if (!latestReading) return "Sin datos recientes.";
+    if (!latestReading) return `Aún no hay lecturas para ${petLabel}.`;
     if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
-      return "Hidratación elevada detectada hoy.";
+      return `Hidratación elevada detectada hoy en ${petLabel}.`;
     }
     if (latestReading.weight_grams !== null && latestReading.weight_grams >= 3500) {
-      return "Consumo estable en el último registro.";
+      return `Consumo estable en el último registro de ${petLabel}.`;
     }
     if (latestReading.temperature !== null && latestReading.temperature >= 26) {
-      return "Ambiente cálido, atento a la hidratación.";
+      return `Ambiente cálido, atento a la hidratación de ${petLabel}.`;
     }
     return "Ritmo dentro de lo esperado.";
-  }, [latestReading]);
+  }, [latestReading, petLabel]);
 
   const feedCards = useMemo(() => {
     if (!latestReading) return [];
@@ -418,6 +418,9 @@ export default function TodayPage() {
               <h1 className="display-title text-3xl font-semibold text-slate-900 md:text-4xl">
                 Resumen del día
               </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                Hola {ownerLabel}, aquí tienes el resumen de {petLabel}.
+              </p>
               <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
             </div>
             <div className="surface-card flex items-center gap-4 px-4 py-3">
