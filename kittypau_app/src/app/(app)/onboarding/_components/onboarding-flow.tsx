@@ -78,6 +78,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [cropScale, setCropScale] = useState(1);
   const [cropX, setCropX] = useState(0);
   const [cropY, setCropY] = useState(0);
+  const [cropTarget, setCropTarget] = useState<"profile" | "pet">("profile");
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -237,8 +238,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     return data.publicUrl;
   };
 
-  const openCropper = (previewUrl: string | null) => {
+  const openCropper = (previewUrl: string | null, target: "profile" | "pet") => {
     if (!previewUrl) return;
+    setCropTarget(target);
     setCropPreview(previewUrl);
     setCropScale(1);
     setCropX(0);
@@ -247,7 +249,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   };
 
   const applyCrop = async () => {
-    if (!cropPreview || !profilePhotoFile) return;
+    const activeFile = cropTarget === "profile" ? profilePhotoFile : petPhotoFile;
+    if (!cropPreview || !activeFile) return;
     const img = new Image();
     img.src = cropPreview;
     await img.decode();
@@ -282,10 +285,15 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       canvas.toBlob((b) => resolve(b), "image/jpeg", 0.92)
     );
     if (!blob) return;
-    const file = new File([blob], profilePhotoFile.name, { type: "image/jpeg" });
-    setProfilePhotoFile(file);
+    const file = new File([blob], activeFile.name, { type: "image/jpeg" });
     const newPreview = URL.createObjectURL(file);
-    setProfilePhotoPreview(newPreview);
+    if (cropTarget === "profile") {
+      setProfilePhotoFile(file);
+      setProfilePhotoPreview(newPreview);
+    } else {
+      setPetPhotoFile(file);
+      setPetPhotoPreview(newPreview);
+    }
     setIsCropOpen(false);
   };
 
@@ -726,7 +734,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                         src={profilePhotoPreview}
                         alt="Foto de usuario"
                         className="h-full w-full object-cover"
-                        onClick={() => openCropper(profilePhotoPreview)}
+                        onClick={() => openCropper(profilePhotoPreview, "profile")}
                         role="button"
                       />
                     ) : (
@@ -774,7 +782,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                       {profilePhotoPreview ? (
                         <button
                           type="button"
-                          onClick={() => openCropper(profilePhotoPreview)}
+                          onClick={() => openCropper(profilePhotoPreview, "profile")}
                           className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                         >
                           Editar foto
@@ -1012,12 +1020,14 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             </div>
             <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
               <div className="flex flex-wrap items-center gap-4">
-                <div className="h-16 w-16 overflow-hidden rounded-[14px] border border-slate-200 bg-slate-100">
+                <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
                   {petPhotoPreview ? (
                     <img
                       src={petPhotoPreview}
                       alt="Foto de mascota"
                       className="h-full w-full object-cover"
+                      onClick={() => openCropper(petPhotoPreview, "pet")}
+                      role="button"
                     />
                   ) : (
                     <img
@@ -1061,6 +1071,15 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                         }
                       />
                     </label>
+                    {petPhotoPreview ? (
+                      <button
+                        type="button"
+                        onClick={() => openCropper(petPhotoPreview, "pet")}
+                        className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Editar foto
+                      </button>
+                    ) : null}
                   </div>
                   <p className="text-[11px] text-slate-400">
                     JPG/PNG · hasta {MAX_PHOTO_MB}MB.
@@ -1278,7 +1297,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
           <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">
             <div className="border-b border-slate-200 px-5 py-4">
               <h3 className="text-sm font-semibold text-slate-900">
-                Ajusta tu foto de perfil
+                {cropTarget === "profile"
+                  ? "Ajusta tu foto de perfil"
+                  : "Ajusta la foto de tu mascota"}
               </h3>
               <p className="text-xs text-slate-500">
                 Mueve y acerca la imagen para el recorte circular.
