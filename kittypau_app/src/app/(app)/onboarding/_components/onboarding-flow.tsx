@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { clearTokens, getAccessToken, setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
@@ -51,6 +52,7 @@ const STORAGE_BUCKET = "kittypau-photos";
 const MAX_PHOTO_MB = 5;
 
 export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlowProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<OnboardingStatus>(defaultStatus);
   const [pets, setPets] = useState<Pet[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +81,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [cropX, setCropX] = useState(0);
   const [cropY, setCropY] = useState(0);
   const [cropTarget, setCropTarget] = useState<"profile" | "pet">("profile");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimeout = useRef<number | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -214,6 +218,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     return () => {
       if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview);
       if (petPhotoPreview) URL.revokeObjectURL(petPhotoPreview);
+      if (toastTimeout.current) {
+        window.clearTimeout(toastTimeout.current);
+      }
     };
   }, [profilePhotoPreview, petPhotoPreview]);
 
@@ -295,6 +302,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       setPetPhotoPreview(newPreview);
     }
     setIsCropOpen(false);
+  };
+
+  const showSavedToastAndRedirect = () => {
+    if (toastTimeout.current) {
+      window.clearTimeout(toastTimeout.current);
+    }
+    setToastMessage("Guardado");
+    toastTimeout.current = window.setTimeout(() => {
+      setToastMessage(null);
+      router.push("/today");
+    }, 1400);
   };
 
   const loadStatus = async () => {
@@ -434,6 +452,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       }
 
       await loadStatus();
+      showSavedToastAndRedirect();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "No se pudo guardar el perfil."
@@ -478,6 +497,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       const newPet = (await res.json()) as Pet;
       setDeviceForm((prev) => ({ ...prev, pet_id: newPet.id }));
       await loadStatus();
+      showSavedToastAndRedirect();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "No se pudo crear la mascota."
@@ -598,6 +618,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
+      {toastMessage ? (
+        <div className="pointer-events-none fixed inset-x-0 top-6 z-50 flex justify-center">
+          <div className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+            {toastMessage}
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
