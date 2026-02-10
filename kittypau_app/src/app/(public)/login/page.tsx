@@ -64,12 +64,6 @@ export default function LoginPage() {
       return;
     }
 
-    const audio = loginAudioRef.current;
-    if (audio) {
-      audio.currentTime = 0;
-      void audio.play().catch(() => undefined);
-    }
-
     const supabase = getSupabaseBrowser();
     if (!supabase) {
       setError("Faltan variables públicas de Supabase en el entorno.");
@@ -93,6 +87,12 @@ export default function LoginPage() {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
     });
+
+    const audio = loginAudioRef.current;
+    if (audio) {
+      audio.currentTime = 0;
+      void audio.play().catch(() => undefined);
+    }
 
     router.push("/today");
   };
