@@ -445,6 +445,9 @@ export default function StoryPage() {
                 </p>
               </div>
             </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Resumen del día para {selectedPet?.name ?? "tu mascota"}.
+            </p>
           </section>
 
           <section className="story-list">
@@ -471,19 +474,21 @@ export default function StoryPage() {
                     ) : null}
                   </div>
                   <div className="story-content">
-                    <h3>
-                      <span className="story-icon">{item.story.icon}</span>{" "}
-                      {item.story.title}
-                    </h3>
-                    <span
-                      className={`story-tag story-tag-${item.story.tone}`}
-                    >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3>
+                        <span className="story-icon">{item.story.icon}</span>{" "}
+                        {item.story.title}
+                      </h3>
+                      <span
+                        className={`story-tag story-tag-${item.story.tone}`}
+                      >
                       {item.story.tone === "good"
                         ? "Estable"
                         : item.story.tone === "warn"
                         ? "Atención"
                         : "Info"}
-                    </span>
+                      </span>
+                    </div>
                     <p>{item.story.detail}</p>
                     {item.story.tone === "warn" ? (
                       <p className="story-hint">
