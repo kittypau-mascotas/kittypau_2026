@@ -328,7 +328,7 @@ export default function PetPage() {
         <div className="empty-state">
           <p className="empty-title">Aún no tienes mascotas registradas.</p>
           <p className="empty-text">
-            Completa el onboarding para crear el perfil de tu mascota.
+            Completa el onboarding para crear la ficha de tu mascota.
           </p>
           <div className="empty-actions">
             <Link
