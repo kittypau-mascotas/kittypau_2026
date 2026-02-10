@@ -215,23 +215,7 @@ export default function LoginPage() {
   return (
     <div className="login-bg">
       <div className="login-layer">
-        <div className="login-collage">
-          <div className="login-collage-frame login-collage-bowl">
-            <img src="/plato_cental.png" alt="" />
-          </div>
-          <div className="login-collage-frame login-collage-cat-left">
-            <img src="/gato_1.png" alt="" />
-          </div>
-          <div className="login-collage-frame login-collage-dog-left">
-            <img src="/perro.png" alt="" />
-          </div>
-          <div className="login-collage-frame login-collage-cat-right">
-            <img src="/gato_2.png" alt="" />
-          </div>
-          <div className="login-collage-frame login-collage-dog-right">
-            <img src="/perro_2.png" alt="" />
-          </div>
-        </div>
+        <div className="login-collage" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">

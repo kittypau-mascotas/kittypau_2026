@@ -448,9 +448,7 @@ body {
   position: relative;
   min-height: 100vh;
   background:
-    radial-gradient(1200px circle at 10% 10%, rgba(79, 140, 255, 0.18), transparent 55%),
-    radial-gradient(900px circle at 90% 20%, rgba(255, 196, 124, 0.22), transparent 60%),
-    linear-gradient(180deg, #f6f7fb 0%, #eef1f7 100%);
+    linear-gradient(180deg, #ffffff 0%, #ffffff 18%, #f7e3e4 100%);
   overflow: hidden;
 }
 
@@ -497,12 +495,6 @@ body {
 }
 
 .login-collage {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  width: clamp(280px, 36vw, 520px);
-  height: clamp(340px, 48vw, 640px);
   pointer-events: none;
 }
 
