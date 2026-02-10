@@ -358,3 +358,11 @@ Los numeros existen, pero como evidencia secundaria.
 - Logo presente en top nav y pantallas de login/registro.
 - Loading con logo girando + texto Cargando.
 
+
+## Redes sociales
+- Login: iconos bajo el logo de marca.
+- App: footer con redes, empresa y correo.
+
+## Onboarding
+- Paso 1: avatar por seleccion (4 opciones).
+
