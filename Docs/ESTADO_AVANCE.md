@@ -33,7 +33,7 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Última lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selección (4 opciones).\n- Ajustes: acciones rápidas (Editar perfil → /pet, Cerrar sesión).\n- Build Vercel: corregido error por setAccountEmail eliminado.
+## Implementado hoy\n- UI login: micro-UX (estado cargando, mensajes breves, botones coherentes).\n- UI onboarding: guía mejorada (badge obligatorio, tips por paso, aria-live).\n- UI today: chips de frescura/24h y vacío con guía.\n- UI story: resumen contextual y tags alineados.\n- UI settings: acciones rápidas con microcopy.\n- UI login: hero refinado (espaciado, tipografía, fondo).\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Última lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selección (4 opciones).\n- Ajustes: acciones rápidas (Editar perfil → /pet, Cerrar sesión).\n- Build Vercel: corregido error por setAccountEmail eliminado.
 - Branding aplicado: logo en navbar, login/register y loading; favicon/OG/Twitter con logo.\n- Paleta light actualizada segun Docs/estilos y diseños.md.
 - Bridge: guía de healthcheck/heartbeat + política de reintentos y logs mínimos.
 - Storage: pasos para crear bucket `kittypau-photos` + policies (select/insert/delete).
@@ -186,6 +186,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 
