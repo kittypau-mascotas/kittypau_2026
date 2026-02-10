@@ -403,21 +403,6 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     };
   }, [token]);
 
-  useEffect(() => {
-    const supabase = getSupabaseBrowser();
-    if (!supabase) return;
-    let isMounted = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (!isMounted) return;
-      if (data.user?.email) {
-        setAccountEmail(data.user.email);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const saveProfile = async () => {
     if (!token) return;
     setIsSavingProfile(true);
