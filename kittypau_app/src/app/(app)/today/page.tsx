@@ -607,6 +607,14 @@ export default function TodayPage() {
               {isRefreshing ? "Actualizando..." : "Actualizar lecturas"}
             </button>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">
+              Frescura: {freshnessLabel}
+            </span>
+            <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-semibold text-rose-600">
+              Últimas 24h
+            </span>
+          </div>
           {refreshError ? (
             <p className="mt-2 text-xs text-rose-600">{refreshError}</p>
           ) : null}
@@ -710,6 +718,9 @@ export default function TodayPage() {
             ) : (
               <div className="surface-card px-6 py-5 text-sm text-slate-500">
                 Aún no hay lecturas para mostrar.
+                <span className="mt-2 block text-xs text-slate-400">
+                  Cuando el plato envíe datos, aquí verás un resumen claro.
+                </span>
               </div>
             )}
           </div>
