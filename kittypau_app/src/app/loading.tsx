@@ -2,9 +2,9 @@ export default function Loading() {
   return (
     <div className="route-loading-page">
       <img
-        src="/logo.jpg"
+        src="/logo_carga.jpg"
         alt="Kittypau"
-        className="route-loading-logo"
+        className="route-loading-hero"
         aria-hidden
       />
       <div className="route-loading-indicator" aria-hidden />

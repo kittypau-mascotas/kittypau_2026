@@ -590,6 +590,15 @@ body {
   animation: route-loading-spin 1.2s linear infinite;
 }
 
+.route-loading-hero {
+  width: min(72vw, 460px);
+  max-width: 460px;
+  height: auto;
+  border-radius: 0;
+  object-fit: contain;
+  animation: route-loading-spin 1.2s linear infinite;
+}
+
 .route-loading-label {
   font-size: 14px;
   letter-spacing: 0.02em;

@@ -16,9 +16,9 @@ export default function RouteLoadingOverlay() {
   return (
     <div className="route-loading-overlay" data-visible={visible}>
       <img
-        src="/logo.jpg"
+        src="/logo_carga.jpg"
         alt="Kittypau"
-        className="route-loading-logo"
+        className="route-loading-hero"
         aria-hidden
       />
       <div className="route-loading-indicator" aria-hidden />
