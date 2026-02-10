@@ -77,3 +77,5 @@
 - Docs/.env.bridge.example
 
 - Docs/TIMESTAMP_IOT.md
+
+- Docs/STORAGE_POLICIES.md
