@@ -175,33 +175,49 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const { error: insertError } = await supabaseServer
+  const { data: existing } = await supabaseServer
     .from("readings")
-    .upsert(
-      {
-        device_id: device.id,
-        pet_id: device.pet_id ?? null,
-        weight_grams: weightGrams,
-        water_ml: waterMl,
-        flow_rate: flowRate,
-        temperature,
-        humidity,
-        battery_level: batteryLevel,
-        recorded_at: recordedAt,
-        ingested_at: ingestedAt,
-        clock_invalid: clockInvalid,
-      },
-      { onConflict: "device_id,recorded_at", ignoreDuplicates: true }
-    );
+    .select("id")
+    .eq("device_id", device.id)
+    .eq("recorded_at", recordedAt)
+    .limit(1);
 
-  if (insertError) {
-    return apiError(
-      req,
-      500,
-      "INSERT_FAILED",
-      "Insert failed",
-      insertError.message
-    );
+  const isDuplicate = Array.isArray(existing) && existing.length > 0;
+
+  if (!isDuplicate) {
+    const { error: insertError } = await supabaseServer
+      .from("readings")
+      .upsert(
+        {
+          device_id: device.id,
+          pet_id: device.pet_id ?? null,
+          weight_grams: weightGrams,
+          water_ml: waterMl,
+          flow_rate: flowRate,
+          temperature,
+          humidity,
+          battery_level: batteryLevel,
+          recorded_at: recordedAt,
+          ingested_at: ingestedAt,
+          clock_invalid: clockInvalid,
+        },
+        { onConflict: "device_id,recorded_at", ignoreDuplicates: true }
+      );
+
+    if (insertError) {
+      return apiError(
+        req,
+        500,
+        "INSERT_FAILED",
+        "Insert failed",
+        insertError.message
+      );
+    }
+  } else {
+    logInfo(req, "reading_duplicate", {
+      device_id: device.id,
+      recorded_at: recordedAt,
+    });
   }
 
   await logAudit({
@@ -239,7 +255,8 @@ export async function POST(req: NextRequest) {
   logRequestEnd(req, startedAt, 200, {
     device_id: device.id,
     clock_invalid: clockInvalid,
+    idempotent: isDuplicate,
   });
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, idempotent: isDuplicate });
 }
 

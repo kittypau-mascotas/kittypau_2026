@@ -62,7 +62,8 @@ Recomendado:
 - Reintentos exponenciales si falla el webhook (5xx/timeout).
 - Backoff si 429 (rate limit).
 - Log local rotativo.
-- Healthcheck cada 60s a `/api/bridge/heartbeat`.
+- Heartbeat cada 60s a `/api/bridge/heartbeat`.
+- Health check cada 5 min a `/api/bridge/health-check`.
 
 ---
 

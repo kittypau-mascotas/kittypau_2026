@@ -44,8 +44,11 @@ MQTT_PASSWORD=<TU_PASSWORD>
 MQTT_TOPIC=+/SENSORS
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
 WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
 ```
 **Regla**: `WEBHOOK_TOKEN` debe ser igual a `MQTT_WEBHOOK_SECRET` en Vercel.
+**Regla**: `HEARTBEAT_TOKEN` debe ser igual a `BRIDGE_HEARTBEAT_SECRET` en Vercel.
 
 **Nota**: si el firmware publica en otro patron (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
 
@@ -75,8 +78,11 @@ MQTT_PASSWORD=<TU_PASSWORD>
 MQTT_TOPIC=+/SENSORS
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
 WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
 ```
 - `WEBHOOK_TOKEN` = `MQTT_WEBHOOK_SECRET` (Vercel).
+- `HEARTBEAT_TOKEN` = `BRIDGE_HEARTBEAT_SECRET` (Vercel).
 
 ### 4) Reglas de no exposicion
 - Nunca versionar `.env` ni claves.
@@ -221,6 +227,45 @@ El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Ver
 - Enviar `POST` a `WEBHOOK_URL` con header `x-webhook-token`.
 - Manejar respuestas `200/400/401/404` y loggear errores.
 - Reintentar en errores transitorios.
+
+### 3.1) Healthcheck y heartbeat (obligatorio)
+El bridge debe reportar su estado para evitar ceguera operativa.
+
+**Heartbeat (write)**
+```
+POST /api/bridge/heartbeat
+Headers:
+  Authorization: Bearer <SERVICE_ROLE>
+Body:
+{
+  "bridge_id": "raspi-kitty-01",
+  "ip": "192.168.1.90",
+  "uptime_sec": 123456,
+  "mqtt_connected": true,
+  "last_mqtt_at": "2026-02-10T02:10:00Z"
+}
+```
+
+**Health check (read)**
+```
+GET /api/bridge/health-check?bridge_id=raspi-kitty-01
+Headers:
+  Authorization: Bearer <SERVICE_ROLE>
+```
+
+**Regla**
+- Si `last_seen` > 5 min, marcar bridge como degradado y alertar.
+
+### 3.2) Politica de reintentos
+- Errores 5xx o timeout: reintentar con backoff exponencial.
+- Recomendado: 3 intentos (1s, 3s, 7s) y luego log + alerta.
+- Errores 4xx (payload/credenciales): **no reintentar**.
+
+### 3.3) Logs minimos (formato sugerido)
+- `mqtt_connected`, `mqtt_disconnected`
+- `webhook_ok` (status, latency_ms)
+- `webhook_retry` (attempt, status)
+- `webhook_fail` (status, body)
 
 ### 4) Supabase (relacion indirecta)
 - El bridge **no** escribe en Supabase directamente.

@@ -49,6 +49,7 @@ src/app/
    - Valida `x-webhook-token`.
    - Inserta lectura y actualiza `devices`.
    - Busca el dispositivo por `device_id`.
+   - Idempotente por `device_id + recorded_at` (si llega duplicado, responde `idempotent: true`).
 
 2. `GET/PUT /api/profiles`
    - Lee/actualiza perfil del usuario.
@@ -161,6 +162,10 @@ curl -X POST http://localhost:3000/api/mqtt/webhook \
   -H "Content-Type: application/json" \
   -H "x-webhook-token: TU_SECRETO" \
   -d "{\"device_id\":\"KPCL0001\",\"temperature\":23.5,\"humidity\":65,\"weight_grams\":3500,\"battery_level\":85}"
+```
+Respuesta:
+```json
+{ "success": true, "idempotent": false }
 ```
 
 ## Script local (PowerShell)

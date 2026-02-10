@@ -138,6 +138,24 @@ export default function BowlPage() {
     return "Conexión inestable o apagado.";
   }, [selectedDevice?.last_seen]);
 
+  const statusSummary = useMemo(() => {
+    if (!selectedDevice) return { label: "Sin datos", tone: "muted" as const };
+    const battery = selectedDevice.battery_level ?? null;
+    const last = selectedDevice.last_seen
+      ? new Date(selectedDevice.last_seen).getTime()
+      : null;
+    const offline =
+      last === null || Number.isNaN(last) || Date.now() - last > 30 * 60 * 1000;
+    if (offline) return { label: "Atención", tone: "warn" as const };
+    if (battery !== null && battery <= 15) {
+      return { label: "Crítico", tone: "warn" as const };
+    }
+    if (battery !== null && battery <= 35) {
+      return { label: "Requiere cuidado", tone: "warn" as const };
+    }
+    return { label: "Estable", tone: "ok" as const };
+  }, [selectedDevice]);
+
   const actionNotes = useMemo(() => {
     const notes: string[] = [];
     if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
@@ -266,6 +284,17 @@ export default function BowlPage() {
                 <p className="text-lg font-semibold text-slate-900">
                   {selectedDevice?.device_state ?? "Sin datos"}
                 </p>
+                <span
+                  className={`mt-2 inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ${
+                    statusSummary.tone === "warn"
+                      ? "bg-rose-100 text-rose-700"
+                      : statusSummary.tone === "ok"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  Estado general: {statusSummary.label}
+                </span>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">

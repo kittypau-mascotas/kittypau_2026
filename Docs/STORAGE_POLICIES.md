@@ -9,6 +9,11 @@ Crear bucket **`kittypau-photos`** en Supabase Storage.
 - Tipo: Publico (recomendado para simplificar el onboarding)
 - Si prefieres privado, usa las politicas de abajo.
 
+**Pasos (UI)**
+1. Supabase → Storage → Create bucket.
+2. Nombre: `kittypau-photos`.
+3. Public bucket: ON (o OFF si quieres firmar URLs).
+
 ## SQL (policies)
 Ejecutar en SQL Editor (rol postgres).
 
@@ -22,6 +27,11 @@ using (bucket_id = 'kittypau-photos');
 create policy "photos_insert_auth"
 on storage.objects for insert
 with check (bucket_id = 'kittypau-photos' and auth.role() = 'authenticated');
+
+-- Borrado solo del propio usuario (opcional)
+create policy "photos_delete_auth"
+on storage.objects for delete
+using (bucket_id = 'kittypau-photos' and auth.role() = 'authenticated');
 ```
 
 ## Columnas requeridas

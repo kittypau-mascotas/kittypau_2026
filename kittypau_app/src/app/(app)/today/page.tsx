@@ -770,8 +770,8 @@ export default function TodayPage() {
               Bienvenido a Hoy en casa
             </h2>
             <p className="mt-3 text-sm text-slate-600">
-              Aquí verás cuanto come la {petLabel}. También verás el estado del
-              plato y comentarios para {ownerLabel}.
+              Aquí verás cuánto come {petLabel}. También verás el estado del
+              plato y comentarios personalizados para {ownerLabel}.
             </p>
             <div className="mt-5 grid gap-3 text-xs text-slate-600">
               <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">

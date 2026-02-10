@@ -68,8 +68,8 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   return [];
 };
 
-const buildStory = (reading: ApiReading) => {
-    const facts: string[] = [];
+const buildStory = (reading: ApiReading, petName: string) => {
+  const facts: string[] = [];
   if (reading.flow_rate !== null) {
     facts.push(`Flujo ${Math.round(reading.flow_rate)} ml/h`);
   }
@@ -81,34 +81,47 @@ const buildStory = (reading: ApiReading) => {
   }
 
   let title = "Actividad registrada";
+  let detail = "Sin métricas detalladas.";
   let tone: "good" | "warn" | "info" = "info";
 
   if (reading.flow_rate !== null) {
     if (reading.flow_rate >= 140) {
       title = "Hidratación intensa";
+      detail = `${petName} bebió más rápido de lo habitual.`;
       tone = "warn";
     } else if (reading.flow_rate >= 80) {
       title = "Hidratación normal";
+      detail = `Buen ritmo de agua para ${petName}.`;
       tone = "good";
+    } else {
+      title = "Hidratación suave";
+      detail = `Ritmo tranquilo de agua para ${petName}.`;
+      tone = "info";
     }
   } else if (reading.weight_grams !== null) {
     if (reading.weight_grams >= 3500) {
       title = "Consumo estable";
+      detail = `${petName} mantuvo su ingesta estable.`;
       tone = "good";
     } else {
       title = "Consumo liviano";
+      detail = `${petName} comió un poco menos en esta lectura.`;
       tone = "info";
     }
+  } else if (reading.temperature !== null && reading.temperature >= 26) {
+    title = "Ambiente cálido";
+    detail = `Revisa el agua para ${petName} si el calor continúa.`;
+    tone = "warn";
   }
 
-    const icon = tone === "good" ? "✓" : tone === "warn" ? "!" : "•";
-    return {
-      title,
-      detail: facts.length > 0 ? facts.join(" · ") : "Sin métricas detalladas.",
-      tone,
-      icon,
-};
+  const icon = tone === "good" ? "✓" : tone === "warn" ? "!" : "•";
+  return {
+    title,
+    detail: facts.length > 0 ? `${detail} · ${facts.join(" · ")}` : detail,
+    tone,
+    icon,
   };
+};
 
 export default function StoryPage() {
   const [state, setState] = useState<LoadState>(defaultState);
@@ -252,12 +265,20 @@ export default function StoryPage() {
     };
   }, [selectedDeviceId]);
 
+  const selectedDevice = state.devices.find(
+    (device) => device.id === selectedDeviceId
+  );
+  const selectedPet = state.pets.find(
+    (pet) => pet.id === selectedDevice?.pet_id
+  );
+  const petLabel = selectedPet?.name ?? "tu mascota";
+
   const timeline = useMemo(() => {
     return state.readings.slice(0, 24).map((reading) => ({
       ...reading,
-      story: buildStory(reading),
+      story: buildStory(reading, petLabel),
     }));
-  }, [state.readings]);
+  }, [state.readings, petLabel]);
 
   const filteredTimeline = useMemo(() => {
     if (dayOffset === 0) return timeline;
@@ -271,13 +292,6 @@ export default function StoryPage() {
       return ts >= start.getTime() && ts < end.getTime();
     });
   }, [dayOffset, timeline]);
-
-  const selectedDevice = state.devices.find(
-    (device) => device.id === selectedDeviceId
-  );
-  const selectedPet = state.pets.find(
-    (pet) => pet.id === selectedDevice?.pet_id
-  );
 
   const summaryCounts = useMemo(() => {
     const total = filteredTimeline.length;

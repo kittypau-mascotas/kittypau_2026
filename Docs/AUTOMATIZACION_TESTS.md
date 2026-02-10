@@ -234,3 +234,21 @@ Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.e
 - Reset: pedir reset en /login, link debe abrir /reset.
 - Login: después de reset, login debe llevar a /today.
 
+## Rate limit (Upstash)
+1. Asegurar envs en Vercel: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+2. Ejecutar ráfaga al webhook y verificar 429:
+```powershell
+$webhook = "<MQTT_WEBHOOK_SECRET>"
+$body = '{"device_id":"KPCL0001","temperature":23.5,"humidity":65}'
+1..70 | ForEach-Object {
+  try {
+    Invoke-RestMethod -Method Post -Uri "https://kittypau-app.vercel.app/api/mqtt/webhook" `
+      -Headers @{ "x-webhook-token"=$webhook; "Content-Type"="application/json"} `
+      -Body $body | Out-Null
+    Write-Host "." -NoNewline
+  } catch {
+    Write-Host " 429" -NoNewline
+  }
+}
+```
+
