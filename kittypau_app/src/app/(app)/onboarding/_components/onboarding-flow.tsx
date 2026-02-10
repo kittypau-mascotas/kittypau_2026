@@ -625,6 +625,13 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
           </div>
         </div>
       ) : null}
+      {error ? (
+        <div className="pointer-events-none fixed inset-x-0 top-16 z-40 flex justify-center px-4">
+          <div className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700 shadow">
+            {error}
+          </div>
+        </div>
+      ) : null}
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -1019,6 +1026,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingProfile ? "Guardando..." : "Guardar perfil"}
             </button>
+            {isSavingProfile ? (
+              <p className="mt-2 text-[11px] text-slate-500">
+                Guardando perfil, por favor espera...
+              </p>
+            ) : null}
             {!profileValidation.ok ? (
               <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
                 Falta completar: {profileValidation.issues.join(" ")}
@@ -1177,6 +1189,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingPet ? "Guardando..." : "Crear mascota"}
             </button>
+            {isSavingPet ? (
+              <p className="mt-2 text-[11px] text-slate-500">
+                Guardando mascota, por favor espera...
+              </p>
+            ) : null}
             {!petValidation.ok ? (
               <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
                 Falta completar: {petValidation.issues.join(" ")}
@@ -1278,6 +1295,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
             >
               {isSavingDevice ? "Guardando..." : "Registrar dispositivo"}
             </button>
+            {isSavingDevice ? (
+              <p className="mt-2 text-[11px] text-slate-500">
+                Guardando dispositivo, por favor espera...
+              </p>
+            ) : null}
             {!deviceValidation.ok ? (
               <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
                 Falta completar: {deviceValidation.issues.join(" ")}
