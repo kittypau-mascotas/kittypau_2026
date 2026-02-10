@@ -143,6 +143,7 @@ export default function SettingsPage() {
             className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
+            aria-label="Abrir menú de ajustes"
           >
             Ajustes
           </button>
@@ -150,6 +151,12 @@ export default function SettingsPage() {
             <div
               className="absolute right-0 top-full z-10 mt-2 w-56 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg"
               role="menu"
+              tabIndex={-1}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setMenuOpen(false);
+                }
+              }}
             >
               <Link
                 href="/pet"
