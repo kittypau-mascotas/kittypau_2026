@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import OnboardingFlow from "@/app/(app)/onboarding/_components/onboarding-flow";
+import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -220,6 +221,7 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
+          <SocialLinks className="social-header" />
           <div className="inline-flex flex-col items-center gap-3">
             <img
               src="/logo_carga.jpg"

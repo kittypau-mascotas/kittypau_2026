@@ -498,6 +498,63 @@ body {
   pointer-events: none;
 }
 
+.social-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  background: color-mix(in oklab, #ffffff 85%, transparent);
+  color: #6b7280;
+  transition: transform 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.social-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.social-link-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.social-link-md {
+  width: 34px;
+  height: 34px;
+}
+
+.social-link:hover {
+  color: #111827;
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 40%, hsl(var(--border)));
+}
+
+.social-header {
+  justify-content: flex-start;
+}
+
+.social-footer {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in oklab, #ffffff 88%, transparent);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  box-shadow: 0 18px 40px -28px rgba(30, 20, 20, 0.4);
+  backdrop-filter: blur(10px);
+}
+
 .login-collage-frame {
   position: absolute;
   --rot: 0deg;
