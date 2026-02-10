@@ -579,8 +579,19 @@ body {
   background-color: #ffffff;
 }
 
-.glass-panel button {
+.glass-panel button,
+button.bg-primary {
   transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+button.bg-primary:hover,
+button.bg-primary:active {
+  background-color: hsl(var(--primary-strong));
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in oklab, hsl(var(--muted-foreground)) 70%, transparent);
 }
 
 .app-footer {

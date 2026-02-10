@@ -220,8 +220,8 @@ export default function LoginPage() {
       </div>
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-12 px-6 py-16 lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-xl space-y-7 text-left">
-          <div className="login-brand-block flex w-full flex-col items-center gap-3">
+        <div className="max-w-xl space-y-7 text-center lg:text-left">
+          <div className="login-brand-block flex w-full flex-col items-center gap-3 lg:items-start">
             <img
               src="/logo_carga.jpg"
               alt="Kittypau"
@@ -231,7 +231,7 @@ export default function LoginPage() {
               Kittypau
             </span>
             <SocialLinks
-              className="social-header social-header-center"
+              className="social-header social-header-center lg:justify-start"
               size="md"
             />
           </div>
