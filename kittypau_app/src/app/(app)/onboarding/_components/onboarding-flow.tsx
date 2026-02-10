@@ -611,12 +611,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         </header>
 
         {error ? (
-          <div className="surface-card border border-rose-200/70 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
+          <div className="surface-card freeform-rise border border-rose-200/70 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
             {error}
           </div>
         ) : null}
 
-        <section className="surface-card px-6 py-5">
+        <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -633,7 +633,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
           </div>
         </section>
 
-        <section className="surface-card px-6 py-5">
+        <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">
@@ -677,7 +677,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         </section>
 
         {currentStep === 1 && (
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -942,7 +942,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         )}
 
         {currentStep === 2 && (
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -1136,7 +1136,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         )}
 
         {currentStep === 3 && (
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -1264,7 +1264,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         )}
 
         {currentStep === 4 && (
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">Listo</h2>
             <p className="text-sm text-slate-500">
               Ya completaste el registro. Puedes ir al feed.
@@ -1396,5 +1396,6 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     </div>
   );
 }
+
 
 

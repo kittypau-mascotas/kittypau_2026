@@ -335,7 +335,7 @@ export default function StoryPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card px-6 py-6">
+        <div className="surface-card freeform-rise px-6 py-6">
           <div className="space-y-3">
             <div className="h-3 w-24 rounded-full bg-slate-200/70" />
             <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
@@ -360,7 +360,7 @@ export default function StoryPage() {
         </div>
       ) : (
         <>
-          <section className="surface-card px-6 py-4">
+          <section className="surface-card freeform-rise px-6 py-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">Mascota</p>
@@ -428,7 +428,7 @@ export default function StoryPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-4">
+          <section className="surface-card freeform-rise px-6 py-4">
             <div className="grid gap-3 md:grid-cols-3">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
@@ -528,6 +528,7 @@ export default function StoryPage() {
     </main>
   );
 }
+
 
 
 

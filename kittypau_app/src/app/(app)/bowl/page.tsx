@@ -210,7 +210,7 @@ export default function BowlPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card px-6 py-6">Cargando estado...</div>
+        <div className="surface-card freeform-rise px-6 py-6">Cargando estado...</div>
       ) : state.devices.length === 0 ? (
         <div className="empty-state">
           <p className="empty-title">No hay dispositivos vinculados.</p>
@@ -228,7 +228,7 @@ export default function BowlPage() {
         </div>
       ) : (
         <>
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-500">Plato activo</p>
@@ -288,7 +288,7 @@ export default function BowlPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="grid gap-4 md:grid-cols-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
@@ -337,7 +337,7 @@ export default function BowlPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
               Diagnóstico rápido
             </h2>
@@ -408,6 +408,7 @@ export default function BowlPage() {
     </main>
   );
 }
+
 
 
 

@@ -446,7 +446,7 @@ export default function TodayPage() {
               </p>
               <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
             </div>
-            <div className="surface-card flex items-center gap-4 px-4 py-3">
+            <div className="surface-card freeform-rise flex items-center gap-4 px-4 py-3">
               <img
                 src={state.profile?.photo_url || "/avatar_1.png"}
                 alt="Avatar"
@@ -504,7 +504,7 @@ export default function TodayPage() {
             </div>
           </div>
           <div className="stagger grid gap-4 md:grid-cols-3">
-            <div className="surface-card px-4 py-4">
+            <div className="surface-card freeform-rise px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Estado general
               </p>
@@ -515,7 +515,7 @@ export default function TodayPage() {
                 {primaryDevice?.device_state ?? "Sin estado técnico"}
               </p>
             </div>
-            <div className="surface-card px-4 py-4">
+            <div className="surface-card freeform-rise px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Última lectura
               </p>
@@ -526,7 +526,7 @@ export default function TodayPage() {
                 {freshnessLabel}
               </p>
             </div>
-            <div className="surface-card px-4 py-4">
+            <div className="surface-card freeform-rise px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Batería
               </p>
@@ -540,7 +540,7 @@ export default function TodayPage() {
           </div>
         </header>
 
-        <section className="surface-card px-6 py-5">
+        <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
@@ -582,7 +582,7 @@ export default function TodayPage() {
           </div>
         </section>
 
-        <section className="surface-card px-6 py-5">
+        <section className="surface-card freeform-rise px-6 py-5">
           <div className="grid gap-4 md:grid-cols-3">
             {quickStats.map((stat) => (
               <div
@@ -600,7 +600,7 @@ export default function TodayPage() {
           </div>
         </section>
 
-        <section className="surface-card px-6 py-4 text-xs text-slate-500">
+        <section className="surface-card freeform-rise px-6 py-4 text-xs text-slate-500">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span>
               Última actualización:{" "}
@@ -649,7 +649,7 @@ export default function TodayPage() {
         </section>
 
         {state.error ? (
-          <section className="surface-card px-6 py-6 text-sm text-slate-600">
+          <section className="surface-card freeform-rise px-6 py-6 text-sm text-slate-600">
             <p className="mb-3">{state.error}</p>
             <div className="flex items-center gap-3">
               <Link
@@ -675,7 +675,7 @@ export default function TodayPage() {
         {!state.isLoading &&
         !state.error &&
         (!primaryPet || !primaryDevice) ? (
-          <section className="surface-card px-6 py-5 text-sm text-slate-600">
+          <section className="surface-card freeform-rise px-6 py-5 text-sm text-slate-600">
             <p className="mb-3">
               Aún no tienes todo el onboarding completo. Completa perfil,
               mascota y dispositivo para ver el feed.
@@ -712,7 +712,7 @@ export default function TodayPage() {
           </p>
           <div className="grid gap-4">
             {state.isLoading ? (
-              <div className="surface-card px-6 py-5">
+              <div className="surface-card freeform-rise px-6 py-5">
                 <div className="space-y-3">
                   <div className="h-3 w-24 rounded-full bg-slate-200/70" />
                   <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
@@ -724,7 +724,7 @@ export default function TodayPage() {
               feedCards.map((card) => (
                 <article
                   key={card.title}
-                  className="surface-card flex flex-col gap-3 px-6 py-5"
+                  className="surface-card freeform-rise flex flex-col gap-3 px-6 py-5"
                 >
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-slate-900">
@@ -744,7 +744,7 @@ export default function TodayPage() {
                 </article>
               ))
             ) : (
-              <div className="surface-card px-6 py-5 text-sm text-slate-500">
+              <div className="surface-card freeform-rise px-6 py-5 text-sm text-slate-500">
                 Aún no hay lecturas para mostrar.
                 <span className="mt-2 block text-xs text-slate-400">
                   Cuando el plato envíe datos, aquí verás un resumen claro.
@@ -766,7 +766,7 @@ export default function TodayPage() {
           ) : null}
         </section>
 
-        <section className="surface-card px-6 py-5">
+        <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-900">
               Estado del plato
@@ -804,7 +804,7 @@ export default function TodayPage() {
       </div>
       {showGuide ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
-          <div className="surface-card w-full max-w-lg px-6 py-6">
+          <div className="surface-card freeform-rise w-full max-w-lg px-6 py-6">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
               Modo guía
             </p>
@@ -855,5 +855,6 @@ export default function TodayPage() {
     </div>
   );
 }
+
 
 

@@ -193,7 +193,7 @@ export default function SettingsPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card px-6 py-6">Cargando ajustes...</div>
+        <div className="surface-card freeform-rise px-6 py-6">Cargando ajustes...</div>
       ) : !state.profile ? (
         <div className="empty-state">
           <p className="empty-title">No se encontró tu perfil.</p>
@@ -212,7 +212,7 @@ export default function SettingsPage() {
         </div>
       ) : (
         <>
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-500">Cuenta</p>
@@ -233,7 +233,7 @@ export default function SettingsPage() {
             </p>
           </section>
 
-          <section className="surface-card px-6 py-6">
+          <section className="surface-card freeform-rise px-6 py-6">
             <h2 className="text-lg font-semibold text-slate-900">
               Perfil principal
             </h2>
@@ -301,7 +301,7 @@ export default function SettingsPage() {
             ) : null}
           </section>
 
-          <section className="surface-card px-6 py-6">
+          <section className="surface-card freeform-rise px-6 py-6">
             <h2 className="text-lg font-semibold text-slate-900">
               Notificaciones
             </h2>
@@ -342,7 +342,7 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-slate-500">
                 {saveMessage ?? "Guarda tus cambios para mantener todo actualizado."}
@@ -387,5 +387,6 @@ export default function SettingsPage() {
     </main>
   );
 }
+
 
 

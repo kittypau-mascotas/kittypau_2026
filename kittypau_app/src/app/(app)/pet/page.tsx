@@ -323,7 +323,7 @@ export default function PetPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card px-6 py-6">Cargando perfil...</div>
+        <div className="surface-card freeform-rise px-6 py-6">Cargando perfil...</div>
       ) : state.pets.length === 0 ? (
         <div className="empty-state">
           <p className="empty-title">Aún no tienes mascotas registradas.</p>
@@ -341,7 +341,7 @@ export default function PetPage() {
         </div>
       ) : (
         <>
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-500">Mascota seleccionada</p>
@@ -426,7 +426,7 @@ export default function PetPage() {
           </section>
 
           {showEdit && selectedPet ? (
-            <section className="surface-card px-6 py-5">
+            <section className="surface-card freeform-rise px-6 py-5">
               <h2 className="text-lg font-semibold text-slate-900">
                 Editar perfil
               </h2>
@@ -540,7 +540,7 @@ export default function PetPage() {
             </section>
           ) : null}
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="grid gap-4 md:grid-cols-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
@@ -599,7 +599,7 @@ export default function PetPage() {
             ) : null}
           </section>
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">Dispositivo asociado</p>
@@ -648,7 +648,7 @@ export default function PetPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-5">
+          <section className="surface-card freeform-rise px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
               Insights recientes
             </h2>
@@ -671,6 +671,7 @@ export default function PetPage() {
     </main>
   );
 }
+
 
 
 
