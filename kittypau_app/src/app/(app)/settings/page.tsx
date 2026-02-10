@@ -170,6 +170,38 @@ export default function SettingsPage() {
       ) : (
         <>
           <section className="surface-card px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm text-slate-500">Acciones rápidas</p>
+                <p className="text-lg font-semibold text-slate-900">
+                  Ajustes principales
+                </p>
+              </div>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Cuenta
+              </span>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href="/pet"
+                className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Editar perfil
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  clearTokens();
+                  window.location.href = "/login";
+                }}
+                className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </section>
+
+          <section className="surface-card px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-500">Cuenta</p>
@@ -339,22 +371,6 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          <section className="surface-card px-6 py-5">
-            <h2 className="text-lg font-semibold text-slate-900">Seguridad</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Si usas un dispositivo compartido, cierra sesión al terminar.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                clearTokens();
-                window.location.href = "/login";
-              }}
-              className="mt-4 rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
-            >
-              Cerrar sesión
-            </button>
-          </section>
         </>
       )}
     </main>

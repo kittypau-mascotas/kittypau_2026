@@ -221,7 +221,6 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
-          <SocialLinks className="social-header" size="md" />
           <div className="inline-flex flex-col items-center gap-3">
             <img
               src="/logo_carga.jpg"
@@ -232,6 +231,7 @@ export default function LoginPage() {
               Kittypau
             </span>
           </div>
+          <SocialLinks className="social-header" size="md" />
           <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
@@ -239,24 +239,6 @@ export default function LoginPage() {
             Accede a la lectura interpretada del comportamiento de tu mascota.
             Sin dashboards fríos, solo claridad y calma.
           </p>
-          <div className="stagger grid grid-cols-2 gap-4 text-sm text-slate-600">
-            <div className="surface-card px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Última lectura
-              </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">
-                Hace 3 min
-              </p>
-            </div>
-            <div className="surface-card px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Estado general
-              </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">
-                Todo normal
-              </p>
-            </div>
-          </div>
         </div>
 
         <div className="glass-panel w-full max-w-md p-8">

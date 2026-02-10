@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearTokens, getAccessToken, setTokens } from "@/lib/auth/token";
+import { getAccessToken, setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type OnboardingStatus = {
@@ -50,6 +50,12 @@ const defaultStatus: OnboardingStatus = {
 
 const STORAGE_BUCKET = "kittypau-photos";
 const MAX_PHOTO_MB = 5;
+const AVATAR_OPTIONS = [
+  { id: "avatar-1", label: "Clásico", url: "/human_profile.jpeg" },
+  { id: "avatar-2", label: "Dulce", url: "/logo.jpg" },
+  { id: "avatar-3", label: "Calma", url: "/gato_1.png" },
+  { id: "avatar-4", label: "Enérgico", url: "/perro.png" },
+];
 
 export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlowProps) {
   const router = useRouter();
@@ -63,18 +69,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [profileError, setProfileError] = useState<string | null>(null);
   const [petError, setPetError] = useState<string | null>(null);
   const [deviceError, setDeviceError] = useState<string | null>(null);
-  const [accountEmail, setAccountEmail] = useState("");
-  const [accountPassword, setAccountPassword] = useState("");
-  const [showAccountPassword, setShowAccountPassword] = useState(false);
-  const [accountMessage, setAccountMessage] = useState<string | null>(null);
-  const [accountError, setAccountError] = useState<string | null>(null);
-  const [isResending, setIsResending] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const [showProfileHints, setShowProfileHints] = useState(false);
   const [showPetHints, setShowPetHints] = useState(false);
   const [showDeviceHints, setShowDeviceHints] = useState(false);
-  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
-  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
+    AVATAR_OPTIONS[0]?.url ?? null
+  );
   const [petPhotoFile, setPetPhotoFile] = useState<File | null>(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -83,7 +83,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [cropScale, setCropScale] = useState(1);
   const [cropX, setCropX] = useState(0);
   const [cropY, setCropY] = useState(0);
-  const [cropTarget, setCropTarget] = useState<"profile" | "pet">("profile");
+  const [cropTarget, setCropTarget] = useState<"pet">("pet");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimeout = useRef<number | null>(null);
 
@@ -219,13 +219,12 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
 
   useEffect(() => {
     return () => {
-      if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview);
       if (petPhotoPreview) URL.revokeObjectURL(petPhotoPreview);
       if (toastTimeout.current) {
         window.clearTimeout(toastTimeout.current);
       }
     };
-  }, [profilePhotoPreview, petPhotoPreview]);
+  }, [petPhotoPreview]);
 
   const uploadPhoto = async (file: File, folder: "profiles" | "pets") => {
     const supabase = getSupabaseBrowser();
@@ -248,9 +247,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     return data.publicUrl;
   };
 
-  const openCropper = (previewUrl: string | null, target: "profile" | "pet") => {
+  const openCropper = (previewUrl: string | null) => {
     if (!previewUrl) return;
-    setCropTarget(target);
+    setCropTarget("pet");
     setCropPreview(previewUrl);
     setCropScale(1);
     setCropX(0);
@@ -259,7 +258,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   };
 
   const applyCrop = async () => {
-    const activeFile = cropTarget === "profile" ? profilePhotoFile : petPhotoFile;
+    const activeFile = petPhotoFile;
     if (!cropPreview || !activeFile) return;
     const img = new Image();
     img.src = cropPreview;
@@ -297,13 +296,8 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!blob) return;
     const file = new File([blob], activeFile.name, { type: "image/jpeg" });
     const newPreview = URL.createObjectURL(file);
-    if (cropTarget === "profile") {
-      setProfilePhotoFile(file);
-      setProfilePhotoPreview(newPreview);
-    } else {
-      setPetPhotoFile(file);
-      setPetPhotoPreview(newPreview);
-    }
+    setPetPhotoFile(file);
+    setPetPhotoPreview(newPreview);
     setIsCropOpen(false);
   };
 
@@ -436,9 +430,6 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       return;
     }
     try {
-      const profilePhotoUrl = profilePhotoFile
-        ? await uploadPhoto(profilePhotoFile, "profiles")
-        : undefined;
       const res = await fetch("/api/profiles", {
         method: "PUT",
         headers: {
@@ -447,7 +438,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         },
         body: JSON.stringify({
           ...profileForm,
-          photo_url: profilePhotoUrl,
+          photo_url: selectedAvatar ?? undefined,
           user_onboarding_step: "pet_profile",
         }),
       });
@@ -568,58 +559,6 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     }
   };
 
-  const resendConfirmation = async () => {
-    setAccountError(null);
-    setAccountMessage(null);
-    const supabase = getSupabaseBrowser();
-    if (!supabase) {
-      setAccountError("Faltan variables públicas de Supabase en el entorno.");
-      return;
-    }
-    if (!accountEmail) {
-      setAccountError("Ingresa un email para reenviar la confirmación.");
-      return;
-    }
-    setIsResending(true);
-    const { error: resendError } = await supabase.auth.resend({
-      type: "signup",
-      email: accountEmail,
-    });
-    if (resendError) {
-      setAccountError(resendError.message);
-    } else {
-      setAccountMessage("Te enviamos el correo de confirmación nuevamente.");
-    }
-    setIsResending(false);
-  };
-
-  const sendReset = async () => {
-    setAccountError(null);
-    setAccountMessage(null);
-    const supabase = getSupabaseBrowser();
-    if (!supabase) {
-      setAccountError("Faltan variables públicas de Supabase en el entorno.");
-      return;
-    }
-    if (!accountEmail) {
-      setAccountError("Ingresa un email válido.");
-      return;
-    }
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
-    setIsResetting(true);
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      accountEmail,
-      { redirectTo: `${siteUrl}/reset` }
-    );
-    if (resetError) {
-      setAccountError(resetError.message);
-    } else {
-      setAccountMessage("Te enviamos el correo de recuperación.");
-    }
-    setIsResetting(false);
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white px-6 py-12 text-sm text-slate-500">
@@ -662,18 +601,6 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               >
                 Volver al feed
               </Link>
-            ) : null}
-            {mode === "page" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  clearTokens();
-                  window.location.href = "/login";
-                }}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900"
-              >
-                Cerrar sesión
-              </button>
             ) : null}
             {mode === "modal" && onClose ? (
               <button
@@ -780,146 +707,37 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 .
               </p>
               <div className="mt-3 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
-                    {profilePhotoPreview ? (
-                      <img
-                        src={profilePhotoPreview}
-                        alt="Foto de usuario"
-                        className="h-full w-full object-cover"
-                        onClick={() => openCropper(profilePhotoPreview, "profile")}
-                        role="button"
-                      />
-                    ) : (
-                      <img
-                        src="/human_profile.jpeg"
-                        alt="Placeholder de usuario"
-                        className="h-full w-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="space-y-2 text-xs text-slate-500">
-                    <p className="font-semibold text-slate-700">Foto de usuario</p>
-                    <div className="flex flex-wrap gap-2">
-                      <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
-                        Subir archivo
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(event) =>
-                            preparePhoto(
-                              event.target.files?.[0] ?? null,
-                              setProfilePhotoFile,
-                              setProfilePhotoPreview
-                            )
-                          }
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Elige tu avatar
+                </p>
+                <div className="mt-3 grid grid-cols-4 gap-3">
+                  {AVATAR_OPTIONS.map((avatar) => {
+                    const isActive = selectedAvatar === avatar.url;
+                    return (
+                      <button
+                        key={avatar.id}
+                        type="button"
+                        onClick={() => setSelectedAvatar(avatar.url)}
+                        className={`h-14 w-14 overflow-hidden rounded-full border ${
+                          isActive
+                            ? "border-rose-300 ring-2 ring-rose-200"
+                            : "border-slate-200"
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        <img
+                          src={avatar.url}
+                          alt={avatar.label}
+                          className="h-full w-full object-cover"
                         />
-                      </label>
-                      <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
-                        Tomar foto
-                        <input
-                          type="file"
-                          accept="image/*"
-                          capture="user"
-                          className="hidden"
-                          onChange={(event) =>
-                            preparePhoto(
-                              event.target.files?.[0] ?? null,
-                              setProfilePhotoFile,
-                              setProfilePhotoPreview
-                            )
-                          }
-                        />
-                      </label>
-                      {profilePhotoPreview ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProfilePhotoFile(null);
-                            setProfilePhotoPreview(null);
-                          }}
-                          className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                        >
-                          Quitar
-                        </button>
-                      ) : null}
-                      {profilePhotoPreview ? (
-                        <button
-                          type="button"
-                          onClick={() => openCropper(profilePhotoPreview, "profile")}
-                          className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                        >
-                          Editar foto
-                        </button>
-                      ) : null}
-                    </div>
-                    <p className="text-[11px] text-slate-400">
-                      JPG/PNG · hasta {MAX_PHOTO_MB}MB.
-                    </p>
-                  </div>
+                      </button>
+                    );
+                  })}
                 </div>
-                {photoError ? (
-                  <p className="mt-3 text-xs text-rose-600">{photoError}</p>
-                ) : null}
+                <p className="mt-2 text-[11px] text-slate-400">
+                  Puedes cambiarlo luego en tu perfil.
+                </p>
               </div>
-              <div className="mt-3 grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Email
-                  </label>
-                  <input
-                    className={inputClass(!accountEmail.trim())}
-                    placeholder="tu@email.com"
-                    value={accountEmail}
-                    onChange={(event) => setAccountEmail(event.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Password
-                  </label>
-                  <input
-                    type={showAccountPassword ? "text" : "password"}
-                    className={inputClass(!accountPassword.trim())}
-                    placeholder="••••••••"
-                    value={accountPassword}
-                    onChange={(event) => setAccountPassword(event.target.value)}
-                  />
-                  <label className="flex items-center gap-2 text-[11px] text-slate-500">
-                    <input
-                      type="checkbox"
-                      checked={showAccountPassword}
-                      onChange={(event) => setShowAccountPassword(event.target.checked)}
-                    />
-                    Mostrar contraseña
-                  </label>
-                </div>
-              </div>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                <button
-                  type="button"
-                  onClick={resendConfirmation}
-                  disabled={isResending}
-                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-                >
-                  {isResending ? "Reenviando..." : "Reenviar confirmación"}
-                </button>
-                <button
-                  type="button"
-                  onClick={sendReset}
-                  disabled={isResetting}
-                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-                >
-                  {isResetting ? "Enviando..." : "Olvidé mi clave"}
-                </button>
-              </div>
-              {accountError ? (
-                <p className="mt-3 text-xs text-rose-600">{accountError}</p>
-              ) : null}
-              {accountMessage ? (
-                <p className="mt-3 text-xs text-emerald-600">{accountMessage}</p>
-              ) : null}
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div className="flex items-center justify-between">
@@ -1125,7 +943,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                       src={petPhotoPreview}
                       alt="Foto de mascota"
                       className="h-full w-full object-cover"
-                      onClick={() => openCropper(petPhotoPreview, "pet")}
+                      onClick={() => openCropper(petPhotoPreview)}
                       role="button"
                     />
                   ) : (
@@ -1185,7 +1003,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                     {petPhotoPreview ? (
                       <button
                         type="button"
-                        onClick={() => openCropper(petPhotoPreview, "pet")}
+                        onClick={() => openCropper(petPhotoPreview)}
                         className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                       >
                         Editar foto
@@ -1463,9 +1281,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
           <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">
             <div className="border-b border-slate-200 px-5 py-4">
               <h3 className="text-sm font-semibold text-slate-900">
-                {cropTarget === "profile"
-                  ? "Ajusta tu foto de perfil"
-                  : "Ajusta la foto de tu mascota"}
+                Ajusta la foto de tu mascota
               </h3>
               <p className="text-xs text-slate-500">
                 Mueve y acerca la imagen para el recorte circular.
