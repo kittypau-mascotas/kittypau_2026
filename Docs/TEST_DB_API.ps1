@@ -79,12 +79,12 @@ Write-Host "POST /api/mqtt/webhook drift OK"
 
 # === Readings ===
 Invoke-RestMethod -Method Get `
-  -Uri "$apiBase/api/readings?device_uuid=$($device.id)&limit=200" `
+  -Uri "$apiBase/api/readings?device_id=$($device.id)&limit=200" `
   -Headers @{Authorization="Bearer $tokenB"} | Out-Null
 
 # === Verificar clock_invalid ===
 $latestReadings = Invoke-RestMethod -Method Get `
-  -Uri "$apiBase/api/readings?device_uuid=$($device.id)&limit=200" `
+  -Uri "$apiBase/api/readings?device_id=$($device.id)&limit=200" `
   -Headers @{Authorization="Bearer $tokenB"}
 
 $clockInvalid = $false
