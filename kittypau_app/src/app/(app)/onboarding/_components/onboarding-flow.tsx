@@ -73,6 +73,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [petPhotoFile, setPetPhotoFile] = useState<File | null>(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [isCropOpen, setIsCropOpen] = useState(false);
+  const [cropPreview, setCropPreview] = useState<string | null>(null);
+  const [cropScale, setCropScale] = useState(1);
+  const [cropX, setCropX] = useState(0);
+  const [cropY, setCropY] = useState(0);
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -230,6 +235,58 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     }
     const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
     return data.publicUrl;
+  };
+
+  const openCropper = (previewUrl: string | null) => {
+    if (!previewUrl) return;
+    setCropPreview(previewUrl);
+    setCropScale(1);
+    setCropX(0);
+    setCropY(0);
+    setIsCropOpen(true);
+  };
+
+  const applyCrop = async () => {
+    if (!cropPreview || !profilePhotoFile) return;
+    const img = new Image();
+    img.src = cropPreview;
+    await img.decode();
+    const size = 512;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const scaleBase = Math.max(size / img.width, size / img.height);
+    const scale = scaleBase * cropScale;
+    const drawWidth = img.width * scale;
+    const drawHeight = img.height * scale;
+    const maxOffsetX = Math.max(0, (drawWidth - size) / 2);
+    const maxOffsetY = Math.max(0, (drawHeight - size) / 2);
+    const offsetX = Math.min(
+      maxOffsetX,
+      Math.max(-maxOffsetX, (cropX / 100) * maxOffsetX)
+    );
+    const offsetY = Math.min(
+      maxOffsetY,
+      Math.max(-maxOffsetY, (cropY / 100) * maxOffsetY)
+    );
+    const dx = (size - drawWidth) / 2 + offsetX;
+    const dy = (size - drawHeight) / 2 + offsetY;
+
+    ctx.clearRect(0, 0, size, size);
+    ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.92)
+    );
+    if (!blob) return;
+    const file = new File([blob], profilePhotoFile.name, { type: "image/jpeg" });
+    setProfilePhotoFile(file);
+    const newPreview = URL.createObjectURL(file);
+    setProfilePhotoPreview(newPreview);
+    setIsCropOpen(false);
   };
 
   const loadStatus = async () => {
@@ -669,11 +726,15 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                         src={profilePhotoPreview}
                         alt="Foto de usuario"
                         className="h-full w-full object-cover"
+                        onClick={() => openCropper(profilePhotoPreview)}
+                        role="button"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                        Foto
-                      </div>
+                      <img
+                        src="/human_profile.jpeg"
+                        alt="Placeholder de usuario"
+                        className="h-full w-full object-cover"
+                      />
                     )}
                   </div>
                   <div className="space-y-2 text-xs text-slate-500">
@@ -710,6 +771,15 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                           }
                         />
                       </label>
+                      {profilePhotoPreview ? (
+                        <button
+                          type="button"
+                          onClick={() => openCropper(profilePhotoPreview)}
+                          className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                        >
+                          Editar foto
+                        </button>
+                      ) : null}
                     </div>
                     <p className="text-[11px] text-slate-400">
                       JPG/PNG · hasta {MAX_PHOTO_MB}MB.
@@ -950,9 +1020,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
-                      Foto
-                    </div>
+                    <img
+                      src="/pet_profile.jpeg"
+                      alt="Placeholder de mascota"
+                      className="h-full w-full object-cover"
+                    />
                   )}
                 </div>
                 <div className="space-y-2 text-xs text-slate-500">
@@ -1201,6 +1273,88 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
           Estado: {status.petCount} mascotas · {status.deviceCount} dispositivos.
         </div>
       </div>
+      {isCropOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
+          <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Ajusta tu foto de perfil
+              </h3>
+              <p className="text-xs text-slate-500">
+                Mueve y acerca la imagen para el recorte circular.
+              </p>
+            </div>
+            <div className="space-y-4 px-5 py-4">
+              <div className="mx-auto flex h-56 w-56 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                {cropPreview ? (
+                  <img
+                    src={cropPreview}
+                    alt="Vista previa"
+                    style={{
+                      transform: `translate(${cropX}%, ${cropY}%) scale(${cropScale})`,
+                    }}
+                    className="h-full w-full object-cover"
+                  />
+                ) : null}
+              </div>
+              <div className="space-y-3 text-xs text-slate-600">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Zoom</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="2.5"
+                    step="0.05"
+                    value={cropScale}
+                    onChange={(event) => setCropScale(Number(event.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Horizontal</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="1"
+                    value={cropX}
+                    onChange={(event) => setCropX(Number(event.target.value))}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Vertical</label>
+                  <input
+                    type="range"
+                    min="-100"
+                    max="100"
+                    step="1"
+                    value={cropY}
+                    onChange={(event) => setCropY(Number(event.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4 text-xs">
+              <button
+                type="button"
+                onClick={() => setIsCropOpen(false)}
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+              >
+                Salir
+              </button>
+              <button
+                type="button"
+                onClick={applyCrop}
+                className="rounded-[var(--radius)] bg-primary px-3 py-2 font-semibold text-primary-foreground"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
