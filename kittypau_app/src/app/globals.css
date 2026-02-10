@@ -2,27 +2,27 @@
 
 :root {
   /* Brand */
-  --primary: 222 84% 56%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 348 45% 33%;
+  --primary-foreground: 0 0% 100%;
 
   /* Surface */
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
+  --background: 30 38% 97%;
+  --foreground: 20 12% 18%;
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 20 12% 18%;
 
   /* States */
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --border: 214 32% 91%;
-  --ring: 222 84% 56%;
+  --muted: 24 20% 92%;
+  --muted-foreground: 20 9% 40%;
+  --border: 24 18% 85%;
+  --ring: 348 45% 33%;
 
   /* Feedback */
-  --success: 142 71% 45%;
-  --warning: 38 92% 50%;
-  --danger: 0 72% 51%;
+  --success: 145 22% 46%;
+  --warning: 38 40% 48%;
+  --danger: 350 45% 42%;
 
-  --radius: 1.2rem;
+  --radius: 18px;
 }
 
 @theme inline {
@@ -53,6 +53,14 @@ body {
 .brand-title {
   font-family: var(--font-brand), system-ui, sans-serif;
   letter-spacing: 0.01em;
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid hsl(var(--border));
 }
 
 .display-title {
@@ -542,7 +550,7 @@ body {
   gap: 12px;
   align-items: center;
   justify-content: center;
-  background: var(--background);
+  background: #ffffff;
   color: var(--foreground);
 }
 
@@ -554,7 +562,7 @@ body {
   gap: 10px;
   align-items: center;
   justify-content: center;
-  background: color-mix(in oklab, var(--background) 85%, transparent);
+  background: #ffffff;
   opacity: 0;
   pointer-events: none;
   transition: opacity 180ms ease;
@@ -573,6 +581,16 @@ body {
   border-top-color: var(--foreground);
   border-radius: 9999px;
   animation: route-loading-spin 0.8s linear infinite;
+}
+
+.route-loading-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  border: 1px solid hsl(var(--border));
+  object-fit: cover;
+  background: #ffffff;
+  animation: route-loading-spin 1.2s linear infinite;
 }
 
 .route-loading-label {

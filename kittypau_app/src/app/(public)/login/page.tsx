@@ -250,6 +250,11 @@ export default function LoginPage() {
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+            <img
+              src="/logo.jpg"
+              alt="Kittypau"
+              className="h-6 w-6 rounded-full border border-white/60 object-cover"
+            />
             <span className="brand-title text-sm text-slate-700">Kittypau</span>
             <span className="ui-subtle text-[10px] uppercase tracking-[0.3em] text-slate-400">
               IoT

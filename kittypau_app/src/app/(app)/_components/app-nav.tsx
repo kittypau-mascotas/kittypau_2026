@@ -22,6 +22,7 @@ export default function AppNav() {
     <nav className="app-nav">
       <div className="app-nav-inner">
         <div className="app-nav-brand">
+          <img src="/logo.jpg" alt="Kittypau" className="brand-mark" />
           <span className="brand-title">Kittypau</span>
           <span className="app-nav-dot" />
           <span className="app-nav-subtle">IoT</span>

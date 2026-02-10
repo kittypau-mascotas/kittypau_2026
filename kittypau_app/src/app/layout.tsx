@@ -27,6 +27,29 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kittypau",
   description: "Kittypau - IoT para bienestar de mascotas",
+  metadataBase: new URL("https://kittypau-app.vercel.app"),
+  icons: {
+    icon: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
+  openGraph: {
+    title: "Kittypau",
+    description: "Kittypau - IoT para bienestar de mascotas",
+    images: [
+      {
+        url: "/logo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Kittypau",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kittypau",
+    description: "Kittypau - IoT para bienestar de mascotas",
+    images: ["/logo.jpg"],
+  },
 };
 
 export default function RootLayout({
