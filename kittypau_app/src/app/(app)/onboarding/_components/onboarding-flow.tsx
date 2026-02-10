@@ -51,10 +51,10 @@ const defaultStatus: OnboardingStatus = {
 const STORAGE_BUCKET = "kittypau-photos";
 const MAX_PHOTO_MB = 5;
 const AVATAR_OPTIONS = [
-  { id: "avatar-1", label: "Clásico", url: "/human_profile.jpeg" },
-  { id: "avatar-2", label: "Dulce", url: "/logo.jpg" },
-  { id: "avatar-3", label: "Calma", url: "/gato_1.png" },
-  { id: "avatar-4", label: "Enérgico", url: "/perro.png" },
+  { id: "avatar-1", label: "Avatar 1", url: "/avatar_1.png" },
+  { id: "avatar-2", label: "Avatar 2", url: "/avatar_2.png" },
+  { id: "avatar-3", label: "Avatar 3", url: "/avatar_3.png" },
+  { id: "avatar-4", label: "Avatar 4", url: "/avatar_5.png" },
 ];
 
 export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlowProps) {
