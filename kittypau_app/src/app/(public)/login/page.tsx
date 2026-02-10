@@ -221,7 +221,7 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-16 lg:flex-row lg:justify-between">
         <div className="max-w-xl space-y-6 text-left">
-          <div className="inline-flex flex-col items-center gap-3">
+          <div className="login-brand-block inline-flex flex-col items-center gap-3">
             <img
               src="/logo_carga.jpg"
               alt="Kittypau"
@@ -231,7 +231,7 @@ export default function LoginPage() {
               Kittypau
             </span>
           </div>
-          <SocialLinks className="social-header" size="md" />
+          <SocialLinks className="social-header social-header-center" size="md" />
           <h1 className="display-title text-4xl font-semibold leading-tight text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>

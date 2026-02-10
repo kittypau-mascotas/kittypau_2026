@@ -541,6 +541,14 @@ body {
   justify-content: flex-start;
 }
 
+.social-header-center {
+  justify-content: center;
+}
+
+.login-brand-block {
+  align-self: flex-start;
+}
+
 .app-footer {
   margin-top: 36px;
   padding: 20px 24px 28px;
