@@ -191,6 +191,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 
 ## Automatizacion
 Ver `Docs/AUTOMATIZACION_TESTS.md`.
+Ver `Docs/TEST_UI_ONBOARDING.md`.
 
 ---
 
