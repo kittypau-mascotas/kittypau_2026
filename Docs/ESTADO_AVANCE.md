@@ -33,7 +33,8 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- Auth SMTP (Gmail) configurado: reset password operativo con /reset.\n- URL Configuration en Supabase: agregar /reset a Redirect URLs.\n- Onboarding fix: RPC link_device_to_pet actualizado (returns devices) + refresh schema cache.\n- Bridge: creado Docs/.env.bridge.example y documentado en Docs/RASPBERRY_BRIDGE.md.\n- Docs: TIMESTAMP_IOT.md agregado y indexado.\n- Supabase migraciones confirmadas hasta 20260208205000.
+## Implementado hoy
+- Onboarding: soporte de fotos (usuario y mascota) con carga a Supabase Storage (bucket kittypau-photos).\n- Auth SMTP (Gmail) configurado: reset password operativo con /reset.\n- URL Configuration en Supabase: agregar /reset a Redirect URLs.\n- Onboarding fix: RPC link_device_to_pet actualizado (returns devices) + refresh schema cache.\n- Bridge: creado Docs/.env.bridge.example y documentado en Docs/RASPBERRY_BRIDGE.md.\n- Docs: TIMESTAMP_IOT.md agregado y indexado.\n- Supabase migraciones confirmadas hasta 20260208205000.
 - Plan de compatibilidad Raspberry documentado (sin ejecutar migraciones).
 - UI /pet: checklist visual y CTA para completar perfil; CTA de vinculación cuando no hay dispositivo.
 - UI /today: modo guía inicial con tips y CTA a onboarding.
@@ -176,6 +177,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 

@@ -47,6 +47,9 @@ const defaultStatus: OnboardingStatus = {
   deviceCount: 0,
 };
 
+const STORAGE_BUCKET = "kittypau-photos";
+const MAX_PHOTO_MB = 5;
+
 export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlowProps) {
   const [status, setStatus] = useState<OnboardingStatus>(defaultStatus);
   const [pets, setPets] = useState<Pet[]>([]);
@@ -65,6 +68,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
   const [accountError, setAccountError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
+  const [petPhotoFile, setPetPhotoFile] = useState<File | null>(null);
+  const [petPhotoPreview, setPetPhotoPreview] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     user_name: "",
@@ -176,6 +184,53 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       detail: "Puedes ir al feed en cualquier momento.",
     };
   }, [currentStep]);
+
+  const preparePhoto = (
+    file: File | null,
+    setFile: (value: File | null) => void,
+    setPreview: (value: string | null) => void
+  ) => {
+    setPhotoError(null);
+    if (!file) {
+      setFile(null);
+      setPreview(null);
+      return;
+    }
+    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
+      setPhotoError(`La imagen no puede superar ${MAX_PHOTO_MB}MB.`);
+      return;
+    }
+    setFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  useEffect(() => {
+    return () => {
+      if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview);
+      if (petPhotoPreview) URL.revokeObjectURL(petPhotoPreview);
+    };
+  }, [profilePhotoPreview, petPhotoPreview]);
+
+  const uploadPhoto = async (file: File, folder: "profiles" | "pets") => {
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      throw new Error("Faltan variables públicas de Supabase en el entorno.");
+    }
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const random =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const path = `${folder}/${random}.${ext}`;
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (error) {
+      throw new Error(error.message);
+    }
+    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   const loadStatus = async () => {
     if (!token) return;
@@ -292,6 +347,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       return;
     }
     try {
+      const profilePhotoUrl = profilePhotoFile
+        ? await uploadPhoto(profilePhotoFile, "profiles")
+        : undefined;
       const res = await fetch("/api/profiles", {
         method: "PUT",
         headers: {
@@ -300,6 +358,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         },
         body: JSON.stringify({
           ...profileForm,
+          photo_url: profilePhotoUrl,
           user_onboarding_step: "pet_profile",
         }),
       });
@@ -330,6 +389,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
       return;
     }
     try {
+      const petPhotoUrl = petPhotoFile
+        ? await uploadPhoto(petPhotoFile, "pets")
+        : undefined;
       const res = await fetch("/api/pets", {
         method: "POST",
         headers: {
@@ -338,6 +400,7 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
         },
         body: JSON.stringify({
           ...petForm,
+          photo_url: petPhotoUrl,
           pet_onboarding_step: "pet_profile",
         }),
       });
@@ -598,6 +661,65 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Paso 1 · Usuario (cuenta)
               </p>
+              <div className="mt-3 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                    {profilePhotoPreview ? (
+                      <img
+                        src={profilePhotoPreview}
+                        alt="Foto de usuario"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                        Foto
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2 text-xs text-slate-500">
+                    <p className="font-semibold text-slate-700">Foto de usuario</p>
+                    <div className="flex flex-wrap gap-2">
+                      <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
+                        Subir archivo
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) =>
+                            preparePhoto(
+                              event.target.files?.[0] ?? null,
+                              setProfilePhotoFile,
+                              setProfilePhotoPreview
+                            )
+                          }
+                        />
+                      </label>
+                      <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
+                        Tomar foto
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="user"
+                          className="hidden"
+                          onChange={(event) =>
+                            preparePhoto(
+                              event.target.files?.[0] ?? null,
+                              setProfilePhotoFile,
+                              setProfilePhotoPreview
+                            )
+                          }
+                        />
+                      </label>
+                    </div>
+                    <p className="text-[11px] text-slate-400">
+                      JPG/PNG · hasta {MAX_PHOTO_MB}MB.
+                    </p>
+                  </div>
+                </div>
+                {photoError ? (
+                  <p className="mt-3 text-xs text-rose-600">{photoError}</p>
+                ) : null}
+              </div>
               <div className="mt-3 grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -817,6 +939,65 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Pendiente
               </span>
+            </div>
+            <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="h-16 w-16 overflow-hidden rounded-[14px] border border-slate-200 bg-slate-100">
+                  {petPhotoPreview ? (
+                    <img
+                      src={petPhotoPreview}
+                      alt="Foto de mascota"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                      Foto
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 text-xs text-slate-500">
+                  <p className="font-semibold text-slate-700">Foto de mascota</p>
+                  <div className="flex flex-wrap gap-2">
+                    <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
+                      Subir archivo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(event) =>
+                          preparePhoto(
+                            event.target.files?.[0] ?? null,
+                            setPetPhotoFile,
+                            setPetPhotoPreview
+                          )
+                        }
+                      />
+                    </label>
+                    <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
+                      Tomar foto
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={(event) =>
+                          preparePhoto(
+                            event.target.files?.[0] ?? null,
+                            setPetPhotoFile,
+                            setPetPhotoPreview
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    JPG/PNG · hasta {MAX_PHOTO_MB}MB.
+                  </p>
+                </div>
+              </div>
+              {photoError ? (
+                <p className="mt-3 text-xs text-rose-600">{photoError}</p>
+              ) : null}
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               <div className="flex items-center justify-between">

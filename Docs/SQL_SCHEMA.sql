@@ -17,6 +17,7 @@ create table if not exists public.profiles (
   notification_channel text,
   city text,
   country text,
+  photo_url text,
   user_onboarding_step text,
   created_at timestamptz not null default now()
 );
@@ -125,6 +126,9 @@ create table if not exists public.bridge_heartbeats (
 -- These keep existing databases in sync when rerunning this file.
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS user_onboarding_step text;
+
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS photo_url text;
 
 ALTER TABLE public.pets
   ADD COLUMN IF NOT EXISTS pet_onboarding_step text;

@@ -54,7 +54,7 @@ src/app/
    - Lee/actualiza perfil del usuario.
    - Campos soportados: `auth_provider`, `user_name`, `is_owner`, `owner_name`,
      `care_rating`, `phone_number`, `notification_channel`, `city`, `country`,
-     `user_onboarding_step`.
+     `photo_url`, `user_onboarding_step`.
 
 3. `GET/POST /api/pets`
    - Lista mascotas del usuario.

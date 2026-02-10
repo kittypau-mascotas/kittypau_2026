@@ -99,6 +99,7 @@ export async function PUT(req: NextRequest) {
     "notification_channel",
     "city",
     "country",
+    "photo_url",
     "user_onboarding_step",
   ];
 
@@ -116,6 +117,7 @@ export async function PUT(req: NextRequest) {
     "notification_channel",
     "city",
     "country",
+    "photo_url",
   ]) {
     if (key in updatePayload) {
       updatePayload[key] = normalizeString(updatePayload[key]);
