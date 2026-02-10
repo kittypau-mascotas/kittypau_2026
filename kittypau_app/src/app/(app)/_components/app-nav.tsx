@@ -3,14 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getAccessToken } from "@/lib/auth/token";
 
 const navItems = [
   { href: "/today", label: "Hoy" },
   { href: "/story", label: "Story" },
   { href: "/pet", label: "Mascota" },
   { href: "/bowl", label: "Plato" },
-  { href: "/settings", label: "Ajustes" },
 ];
 
 export default function AppNav() {
@@ -20,6 +19,7 @@ export default function AppNav() {
     owner_name?: string | null;
     photo_url?: string | null;
   } | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (pathname?.startsWith("/onboarding")) {
     return null;
@@ -73,6 +73,49 @@ export default function AppNav() {
               </Link>
             );
           })}
+        </div>
+        <div className="relative flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+          >
+            Ajustes
+          </button>
+          {menuOpen ? (
+            <div
+              className="absolute right-0 top-full z-10 mt-2 w-56 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg"
+              role="menu"
+            >
+              <Link
+                href="/settings"
+                className="block rounded-[calc(var(--radius)-6px)] px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                onClick={() => setMenuOpen(false)}
+              >
+                Ajustes
+              </Link>
+              <Link
+                href="/pet"
+                className="mt-1 block rounded-[calc(var(--radius)-6px)] px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                onClick={() => setMenuOpen(false)}
+              >
+                Editar perfil
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  clearTokens();
+                  window.location.href = "/login";
+                }}
+                className="mt-1 block w-full rounded-[calc(var(--radius)-6px)] border border-rose-200 bg-rose-50 px-3 py-2 text-left text-xs font-semibold text-rose-700"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : null}
         </div>
         {profile ? (
           <div className="app-nav-user">
