@@ -161,6 +161,8 @@ export default function BowlPage() {
     if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
       if (selectedDevice.battery_level <= 15) {
         notes.push("Carga el plato en las próximas horas.");
+      } else if (selectedDevice.battery_level <= 35) {
+        notes.push("Planifica una carga hoy para evitar apagados.");
       }
     }
     if (!selectedDevice?.last_seen) {
@@ -171,6 +173,17 @@ export default function BowlPage() {
     }
     return notes;
   }, [selectedDevice?.battery_level, selectedDevice?.last_seen]);
+
+  const statusBlurb = useMemo(() => {
+    if (!selectedDevice) return "Sin diagnóstico disponible.";
+    if (statusSummary.tone === "warn") {
+      return "Se detectó un riesgo operativo. Prioriza batería y conexión.";
+    }
+    if (statusSummary.tone === "ok") {
+      return "Plato estable y conectado. Todo en orden.";
+    }
+    return "Sin datos suficientes para diagnóstico completo.";
+  }, [selectedDevice, statusSummary.tone]);
 
   return (
     <main className="page-shell">
@@ -319,13 +332,16 @@ export default function BowlPage() {
                 <p className="mt-1 text-xs text-slate-500">{connectionHint}</p>
               </div>
             </div>
+            <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              {statusBlurb}
+            </div>
           </section>
 
           <section className="surface-card px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
               Diagnóstico rápido
             </h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                   Conexión
@@ -336,6 +352,19 @@ export default function BowlPage() {
                     : connectionHint === "Conectado recientemente."
                     ? "Último check-in dentro de la ventana esperada."
                     : "Sin check-in reciente. Revisa energía y Wi-Fi."}
+                </p>
+              </div>
+              <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+                  Energía
+                </p>
+                <p className="mt-2 text-slate-700">
+                  {selectedDevice?.battery_level !== null &&
+                  selectedDevice?.battery_level !== undefined
+                    ? `Batería ${selectedDevice.battery_level}% · ${batteryLabel(
+                        selectedDevice.battery_level
+                      )}`
+                    : "Sin datos de batería."}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
