@@ -105,7 +105,7 @@ export default function RegisterPage() {
       <div className="surface-card w-full max-w-md px-6 py-8">
         <p className="eyebrow">Registro</p>
         <div className="mt-2 flex items-center gap-3">
-          <div className="h-10 w-10 overflow-hidden rounded-full border border-slate-200 bg-white">
+          <div className="h-10 w-10 overflow-hidden rounded-full">
             <img
               src="/logo.jpg"
               alt="Kittypau"

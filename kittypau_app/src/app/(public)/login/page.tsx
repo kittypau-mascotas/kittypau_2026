@@ -253,7 +253,7 @@ export default function LoginPage() {
             <img
               src="/logo.jpg"
               alt="Kittypau"
-              className="h-6 w-6 rounded-full border border-white/60 object-cover"
+              className="h-6 w-6 rounded-full object-cover"
             />
             <span className="brand-title text-sm text-slate-700">Kittypau</span>
             <span className="ui-subtle text-[10px] uppercase tracking-[0.3em] text-slate-400">

@@ -60,7 +60,6 @@ body {
   height: 28px;
   border-radius: 999px;
   object-fit: cover;
-  border: 1px solid hsl(var(--border));
 }
 
 .display-title {
@@ -587,9 +586,7 @@ body {
   width: 64px;
   height: 64px;
   border-radius: 999px;
-  border: 1px solid hsl(var(--border));
   object-fit: cover;
-  background: #ffffff;
   animation: route-loading-spin 1.2s linear infinite;
 }
 
