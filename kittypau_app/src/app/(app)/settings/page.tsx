@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 type ApiProfile = {
   id: string;
@@ -62,7 +62,7 @@ export default function SettingsPage() {
   useEffect(() => {
     let mounted = true;
     const run = async () => {
-      const token = await getAccessToken();
+      const token = await getValidAccessToken();
       if (!token) {
         clearTokens();
         if (mounted) {
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                   const errors = validate(form);
                   setFormErrors(errors);
                   if (errors.length) return;
-                  const token = await getAccessToken();
+                  const token = await getValidAccessToken();
                   if (!token) return;
                   setSaving(true);
                   setSaveMessage(null);

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
@@ -130,7 +130,7 @@ export default function PetPage() {
   useEffect(() => {
     let mounted = true;
     const run = async () => {
-      const token = await getAccessToken();
+      const token = await getValidAccessToken();
       if (!token) {
         clearTokens();
         if (mounted) {
@@ -201,10 +201,13 @@ export default function PetPage() {
     if (!device) return;
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
-    const accessToken = getAccessToken();
-    if (accessToken) {
+    let active = true;
+    const connect = async () => {
+      const accessToken = await getValidAccessToken();
+      if (!active || !accessToken) return;
       supabase.realtime.setAuth(accessToken);
-    }
+    };
+    void connect();
 
     const channel = supabase
       .channel(`readings:${device.id}`)
@@ -233,6 +236,7 @@ export default function PetPage() {
       .subscribe();
 
     return () => {
+      active = false;
       supabase.removeChannel(channel);
     };
   }, [selectedPetId, state.devices]);
@@ -375,7 +379,7 @@ export default function PetPage() {
                           (pet) => pet.id === nextId
                         );
                         setEditPayload(nextPet ?? {});
-                        const token = await getAccessToken();
+                      const token = await getValidAccessToken();
                         if (!token || !nextId) return;
                         const device =
                           state.devices.find((item) => item.pet_id === nextId) ??
@@ -501,7 +505,7 @@ export default function PetPage() {
                   className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
                   disabled={isSaving}
                   onClick={async () => {
-                    const token = await getAccessToken();
+                    const token = await getValidAccessToken();
                     if (!token) return;
                     setIsSaving(true);
                     try {

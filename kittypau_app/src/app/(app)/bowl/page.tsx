@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 type ApiDevice = {
   id: string;
@@ -74,7 +74,7 @@ export default function BowlPage() {
   useEffect(() => {
     let mounted = true;
     const run = async () => {
-      const token = await getAccessToken();
+      const token = await getValidAccessToken();
       if (!token) {
         clearTokens();
         if (mounted) {

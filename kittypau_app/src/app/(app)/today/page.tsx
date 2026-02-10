@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
@@ -82,7 +82,17 @@ export default function TodayPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
-  const token = useMemo(() => getAccessToken(), []);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    getValidAccessToken().then((value) => {
+      if (mounted) setToken(value);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
     if (Array.isArray(payload)) {
@@ -228,7 +238,7 @@ export default function TodayPage() {
     };
 
     void load();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (!token || typeof window === "undefined") return;
@@ -242,41 +252,51 @@ export default function TodayPage() {
     if (!selectedDeviceId) return;
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
-    const accessToken = getAccessToken();
-    if (accessToken) {
-      supabase.realtime.setAuth(accessToken);
-    }
 
-    const channel = supabase
-      .channel(`readings:${selectedDeviceId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "readings",
-          filter: `device_id=eq.${selectedDeviceId}`,
-        },
-        (payload) => {
-          const nextReading = payload.new as ApiReading;
-          setState((prev) => {
-            const exists = prev.readings.some(
-              (reading) => reading.id === nextReading.id
-            );
-            if (exists) return prev;
-            return {
-              ...prev,
-              readings: [nextReading, ...prev.readings].slice(0, 120),
-            };
-          });
-          setLastRefreshAt(new Date().toISOString());
-          setRefreshError(null);
-        }
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let active = true;
+
+    const connect = async () => {
+      const accessToken = await getValidAccessToken();
+      if (!active || !accessToken) return;
+      supabase.realtime.setAuth(accessToken);
+
+      channel = supabase
+        .channel(`readings:${selectedDeviceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "readings",
+            filter: `device_id=eq.${selectedDeviceId}`,
+          },
+          (payload) => {
+            const nextReading = payload.new as ApiReading;
+            setState((prev) => {
+              const exists = prev.readings.some(
+                (reading) => reading.id === nextReading.id
+              );
+              if (exists) return prev;
+              return {
+                ...prev,
+                readings: [nextReading, ...prev.readings].slice(0, 120),
+              };
+            });
+            setLastRefreshAt(new Date().toISOString());
+            setRefreshError(null);
+          }
+        )
+        .subscribe();
+    };
+
+    void connect();
 
     return () => {
-      supabase.removeChannel(channel);
+      active = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [selectedDeviceId]);
 

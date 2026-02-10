@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
@@ -162,7 +162,7 @@ export default function StoryPage() {
   useEffect(() => {
     let mounted = true;
     const run = async () => {
-      const token = await getAccessToken();
+      const token = await getValidAccessToken();
       if (!token) {
         clearTokens();
         if (mounted) {
@@ -229,39 +229,49 @@ export default function StoryPage() {
     if (!selectedDeviceId) return;
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
-    const accessToken = getAccessToken();
-    if (accessToken) {
-      supabase.realtime.setAuth(accessToken);
-    }
 
-    const channel = supabase
-      .channel(`readings:${selectedDeviceId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "readings",
-          filter: `device_id=eq.${selectedDeviceId}`,
-        },
-        (payload) => {
-          const nextReading = payload.new as ApiReading;
-          setState((prev) => {
-            const exists = prev.readings.some(
-              (reading) => reading.id === nextReading.id
-            );
-            if (exists) return prev;
-            return {
-              ...prev,
-              readings: [nextReading, ...prev.readings].slice(0, 120),
-            };
-          });
-        }
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let active = true;
+
+    const connect = async () => {
+      const accessToken = await getValidAccessToken();
+      if (!active || !accessToken) return;
+      supabase.realtime.setAuth(accessToken);
+
+      channel = supabase
+        .channel(`readings:${selectedDeviceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "readings",
+            filter: `device_id=eq.${selectedDeviceId}`,
+          },
+          (payload) => {
+            const nextReading = payload.new as ApiReading;
+            setState((prev) => {
+              const exists = prev.readings.some(
+                (reading) => reading.id === nextReading.id
+              );
+              if (exists) return prev;
+              return {
+                ...prev,
+                readings: [nextReading, ...prev.readings].slice(0, 120),
+              };
+            });
+          }
+        )
+        .subscribe();
+    };
+
+    void connect();
 
     return () => {
-      supabase.removeChannel(channel);
+      active = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [selectedDeviceId]);
 
@@ -391,7 +401,7 @@ export default function StoryPage() {
                         );
                       }
                       if (!nextId) return;
-                      const token = await getAccessToken();
+                      const token = await getValidAccessToken();
                       if (!token) return;
                       try {
                         const readings = await loadReadings(token, nextId);

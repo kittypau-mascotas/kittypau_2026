@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { clearTokens, getAccessToken } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 const navItems = [
   { href: "/today", label: "Hoy" },
@@ -26,24 +26,25 @@ export default function AppNav() {
   }
 
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) return;
     let isMounted = true;
-    fetch("/api/profiles", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((payload) => {
-        const data = payload?.data ?? payload;
-        if (isMounted && data?.id) {
-          setProfile({
-            user_name: data.user_name,
-            owner_name: data.owner_name,
-            photo_url: data.photo_url,
-          });
-        }
+    getValidAccessToken().then((token) => {
+      if (!token || !isMounted) return;
+      fetch("/api/profiles", {
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .catch(() => undefined);
+        .then((res) => (res.ok ? res.json() : null))
+        .then((payload) => {
+          const data = payload?.data ?? payload;
+          if (isMounted && data?.id) {
+            setProfile({
+              user_name: data.user_name,
+              owner_name: data.owner_name,
+              photo_url: data.photo_url,
+            });
+          }
+        })
+        .catch(() => undefined);
+    });
     return () => {
       isMounted = false;
     };

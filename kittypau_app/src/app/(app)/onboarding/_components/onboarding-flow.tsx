@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAccessToken, setTokens } from "@/lib/auth/token";
+import { getValidAccessToken, setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type OnboardingStatus = {
@@ -109,7 +109,17 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     device_type: "food_bowl",
   });
 
-  const [token, setToken] = useState<string | null>(getAccessToken());
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    getValidAccessToken().then((value) => {
+      if (mounted) setToken(value);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const completedSteps = useMemo(() => {
     return {
       profile: status.userStep === "pet_profile" || status.userStep === "completed",
