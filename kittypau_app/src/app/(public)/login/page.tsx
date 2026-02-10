@@ -227,7 +227,7 @@ export default function LoginPage() {
               alt="Kittypau"
               className="brand-hero-logo"
             />
-            <span className="brand-title text-3xl text-slate-800">
+            <span className="brand-title text-3xl text-primary">
               Kittypau
             </span>
           </div>
