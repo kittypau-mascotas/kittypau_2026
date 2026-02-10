@@ -94,3 +94,10 @@ Tareas:
 - Bridge env example documentado.
 - Docs actualizados y enviados a git.
 
+
+## Idea futura: perfiles invitados (solo lectura)
+- Un usuario puede asociar multiples cuentas (propietario/invitado).
+- Perfil Invitado: acceso solo lectura a mascotas y platos asociados a la cuenta.
+- Sin permisos de edicion ni vinculacion de dispositivos.
+- Requiere RLS adicional y vistas/roles dedicados.
+
