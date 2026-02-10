@@ -34,6 +34,7 @@
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
 ## Implementado hoy
+- Branding aplicado: logo en navbar, login/register y loading; favicon/OG/Twitter con logo.\n- Paleta light actualizada segun Docs/estilos y diseños.md.
 - Bridge: guía de healthcheck/heartbeat + política de reintentos y logs mínimos.
 - Storage: pasos para crear bucket `kittypau-photos` + policies (select/insert/delete).
 - Webhook: idempotencia explícita con respuesta `idempotent` y log de duplicados.
@@ -185,6 +186,7 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+
 
 
 

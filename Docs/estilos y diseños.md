@@ -826,3 +826,10 @@ Espaciado
 
 ## Regla de consistencia
 Si un componente no existe en esta lista, primero se agrega aqui y luego se implementa en UI.
+
+## Branding aplicado (implementado)
+- Logo: kittypau_app/public/logo.jpg (navbar, login, register).
+- Favicon + OpenGraph + Twitter: configurado en kittypau_app/src/app/layout.tsx.
+- Loading screens: fondo blanco + logo girando (loading.tsx + route overlay).
+- Paleta: tokens HSL actualizados en kittypau_app/src/app/globals.css segun la guia.
+

@@ -353,3 +353,8 @@ Los numeros existen, pero como evidencia secundaria.
 
 
 
+
+## Branding UI
+- Logo presente en top nav y pantallas de login/registro.
+- Loading con logo girando + texto Cargando.
+
