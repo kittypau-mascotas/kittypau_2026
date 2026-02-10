@@ -692,9 +692,14 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 .
               </p>
               <div className="mt-3 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Elige tu avatar
-                </p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Elige tu avatar
+                  </p>
+                  <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-600">
+                    Obligatorio
+                  </span>
+                </div>
                 <div className="mt-3 grid grid-cols-4 gap-3">
                   {AVATAR_OPTIONS.map((avatar) => {
                     const isActive = selectedAvatar === avatar.url;
@@ -895,7 +900,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </p>
             ) : null}
             {!profileValidation.ok ? (
-              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+              <div
+                className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700"
+                role="status"
+                aria-live="polite"
+              >
                 Falta completar: {profileValidation.issues.join(" ")}
               </div>
             ) : null}
@@ -920,6 +929,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 Pendiente
               </span>
             </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Necesitamos nombre y tipo para personalizar las historias.
+            </p>
             <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
@@ -1080,7 +1092,11 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
               </p>
             ) : null}
             {!petValidation.ok ? (
-              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+              <div
+                className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700"
+                role="status"
+                aria-live="polite"
+              >
                 Falta completar: {petValidation.issues.join(" ")}
               </div>
             ) : null}
@@ -1105,6 +1121,9 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
                 Pendiente
               </span>
             </div>
+            <p className="mt-3 text-xs text-slate-500">
+              Usa el código KPCL0000 impreso en el plato.
+            </p>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
