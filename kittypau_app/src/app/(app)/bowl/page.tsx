@@ -215,7 +215,7 @@ export default function BowlPage() {
         <div className="empty-state">
           <p className="empty-title">No hay dispositivos vinculados.</p>
           <p className="empty-text">
-            Conecta un plato para ver batería, estado y diagnósticos.
+            Conecta un plato para ver batería, conexión y diagnóstico.
           </p>
           <div className="empty-actions">
             <Link
