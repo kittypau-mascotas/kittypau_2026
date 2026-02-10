@@ -227,3 +227,10 @@ Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.e
 
 
 
+
+
+## Auth flow (manual)
+- Registro: crear usuario nuevo, confirmar email, debe abrir /onboarding.
+- Reset: pedir reset en /login, link debe abrir /reset.
+- Login: después de reset, login debe llevar a /today.
+

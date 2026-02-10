@@ -79,3 +79,5 @@
 - Docs/TIMESTAMP_IOT.md
 
 - Docs/STORAGE_POLICIES.md
+
+- Docs/TEST_AUTH_FLOW.ps1
