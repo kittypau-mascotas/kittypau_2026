@@ -255,7 +255,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <form className="space-y-4" onSubmit={onSubmit}>
+            <form className="space-y-4" onSubmit={onSubmit} aria-busy={isSubmitting}>
               <div className="space-y-2">
                 <label
                   className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
@@ -329,10 +329,15 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !isLoginValid}
-                className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Conectando..." : "Continuar"}
               </button>
+              {isSubmitting ? (
+                <p className="text-[11px] text-slate-500">
+                  Verificando credenciales…
+                </p>
+              ) : null}
               {!isSubmitting && !isLoginValid ? (
                 <p className="text-[11px] text-slate-500">
                   Completa email y password (8+).
@@ -345,6 +350,7 @@ export default function LoginPage() {
                 type="button"
                 className="hover:text-slate-900"
                 onClick={() => setShowReset((prev) => !prev)}
+                disabled={isSubmitting}
               >
                 Olvidé mi clave
               </button>
@@ -412,7 +418,7 @@ export default function LoginPage() {
               </div>
               <div className="p-6">
                 {registerStep === "account" ? (
-                  <form className="space-y-4" onSubmit={onRegister}>
+                <form className="space-y-4" onSubmit={onRegister} aria-busy={isRegistering}>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
@@ -449,15 +455,20 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={isRegistering}
-                      className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                      className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {isRegistering ? "Creando..." : "Continuar"}
                     </button>
+                    {isRegistering ? (
+                      <p className="text-[11px] text-slate-500">
+                        Creando cuenta…
+                      </p>
+                    ) : null}
                     <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
                       <button
                         type="button"
                         onClick={resendConfirmation}
-                        disabled={isResending}
+                        disabled={isResending || isRegistering}
                         className="font-semibold text-slate-600 hover:text-slate-900"
                       >
                         {isResending ? "Reenviando..." : "Reenviar confirmación"}
