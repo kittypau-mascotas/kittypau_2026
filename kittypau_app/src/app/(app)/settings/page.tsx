@@ -176,17 +176,23 @@ export default function SettingsPage() {
                 <p className="text-lg font-semibold text-slate-900">
                   Ajustes principales
                 </p>
+                <p className="text-xs text-slate-500">
+                  Administra tu perfil y tu sesión desde aquí.
+                </p>
               </div>
               <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Cuenta
               </span>
             </div>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
               <Link
                 href="/pet"
-                className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+                className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700"
               >
                 Editar perfil
+                <span className="mt-1 block text-[11px] text-rose-500">
+                  Cambia datos personales y de contacto.
+                </span>
               </Link>
               <button
                 type="button"
@@ -194,9 +200,12 @@ export default function SettingsPage() {
                   clearTokens();
                   window.location.href = "/login";
                 }}
-                className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-700"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-700"
               >
                 Cerrar sesión
+                <span className="mt-1 block text-[11px] text-slate-500">
+                  Te pediremos credenciales nuevamente.
+                </span>
               </button>
             </div>
           </section>
