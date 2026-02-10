@@ -349,7 +349,9 @@ export default function TodayPage() {
   }, [latestReading?.recorded_at]);
 
   const summaryText = useMemo(() => {
-    if (!latestReading) return `Aún no hay lecturas para ${petLabel}.`;
+    if (!latestReading) {
+      return `Aún no hay lecturas para ${petLabel}. Revisa el plato y vuelve aquí.`;
+    }
     if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
       return `Hidratación elevada detectada hoy en ${petLabel}.`;
     }
