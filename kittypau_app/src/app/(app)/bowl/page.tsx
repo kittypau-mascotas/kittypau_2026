@@ -22,6 +22,7 @@ type ApiReading = {
   recorded_at: string | null;
   weight_grams: number | null;
   temperature: number | null;
+  humidity: number | null;
 };
 
 type LoadState = {
@@ -60,7 +61,7 @@ const formatTimestamp = (value: string | null) => {
 
 const buildSeries = (
   readings: ApiReading[],
-  key: "weight_grams" | "temperature",
+  key: "weight_grams" | "temperature" | "humidity",
   windowMs: number
 ) => {
   const cutoff = Date.now() - windowMs;
@@ -83,11 +84,13 @@ const ChartCard = ({
   unit,
   series,
   accent,
+  className,
 }: {
   title: string;
   unit: string;
   series: { value: number; timestamp: string }[];
   accent: string;
+  className?: string;
 }) => {
   const [streamTick, setStreamTick] = useState(false);
   const values = series.map((item) => item.value);
@@ -123,7 +126,11 @@ const ChartCard = ({
   }, [series[0]?.timestamp]);
 
   return (
-    <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5">
+    <div
+      className={`rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
+        className ?? ""
+      }`}
+    >
       <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
         {title}
       </p>
@@ -454,6 +461,10 @@ export default function BowlPage() {
     () => buildSeries(readings, "temperature", 5 * 60 * 1000),
     [readings]
   );
+  const humiditySeries = useMemo(
+    () => buildSeries(readings, "humidity", 5 * 60 * 1000),
+    [readings]
+  );
 
   return (
     <main className="page-shell">
@@ -522,6 +533,13 @@ export default function BowlPage() {
                   unit="°C"
                   series={tempSeries}
                   accent="hsl(var(--primary-strong))"
+                />
+                <ChartCard
+                  title="Humedad"
+                  unit="%"
+                  series={humiditySeries}
+                  accent="hsl(198 70% 45%)"
+                  className="lg:col-start-2"
                 />
               </div>
             )}
