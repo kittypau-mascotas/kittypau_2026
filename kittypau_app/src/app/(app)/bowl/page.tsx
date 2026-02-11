@@ -78,20 +78,6 @@ const buildSeries = (
     });
 };
 
-const buildChartPoints = (values: number[], width: number, height: number) => {
-  if (values.length === 0) return "";
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || 1;
-  return values
-    .map((value, index) => {
-      const x = (index / (values.length - 1 || 1)) * width;
-      const y = height - ((value - min) / span) * height;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-};
-
 const ChartCard = ({
   title,
   unit,
@@ -100,21 +86,34 @@ const ChartCard = ({
 }: {
   title: string;
   unit: string;
-  series: { value: number; timestamp: string | null }[];
+  series: { value: number; timestamp: string }[];
   accent: string;
 }) => {
   const [streamTick, setStreamTick] = useState(false);
   const values = series.map((item) => item.value);
   const latest = values[0] ?? null;
-  const points = buildChartPoints(values.slice(0, 30).reverse(), 240, 80);
   const latestValues = values.slice(0, 30).reverse();
+  const plotWidth = 210;
+  const plotHeight = 74;
+  const marginLeft = 30;
+  const marginTop = 8;
   const min = latestValues.length > 0 ? Math.min(...latestValues) : 0;
   const max = latestValues.length > 0 ? Math.max(...latestValues) : 1;
   const span = max - min || 1;
+  const points = latestValues
+    .map((value, index) => {
+      const x = marginLeft + (index / (latestValues.length - 1 || 1)) * plotWidth;
+      const y = marginTop + plotHeight - ((value - min) / span) * plotHeight;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
   const latestDotY =
     latestValues.length > 0
-      ? 80 - ((latestValues[latestValues.length - 1] - min) / span) * 80
-      : 40;
+      ? marginTop +
+        plotHeight -
+        ((latestValues[latestValues.length - 1] - min) / span) * plotHeight
+      : marginTop + plotHeight / 2;
+  const latestDotX = marginLeft + plotWidth;
 
   useEffect(() => {
     if (!series[0]?.timestamp) return;
@@ -134,19 +133,50 @@ const ChartCard = ({
       <div className="mt-3 h-24 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
           <div className={`chart-stream-wrap ${streamTick ? "chart-stream-tick" : ""}`}>
-            <svg viewBox="0 0 240 80" className="h-full w-full">
+            <svg viewBox="0 0 260 92" className="h-full w-full">
+              <line
+                x1={marginLeft}
+                y1={marginTop}
+                x2={marginLeft}
+                y2={marginTop + plotHeight}
+                className="chart-axis"
+              />
+              <line
+                x1={marginLeft}
+                y1={marginTop + plotHeight}
+                x2={marginLeft + plotWidth}
+                y2={marginTop + plotHeight}
+                className="chart-axis"
+              />
+              <text x="4" y={marginTop + 8} className="chart-axis-label">
+                {max.toFixed(1)} {unit}
+              </text>
+              <text x="4" y={marginTop + plotHeight} className="chart-axis-label">
+                {min.toFixed(1)} {unit}
+              </text>
+              <text x={marginLeft} y={marginTop + plotHeight + 14} className="chart-axis-label">
+                -5m
+              </text>
+              <text
+                x={marginLeft + plotWidth - 22}
+                y={marginTop + plotHeight + 14}
+                className="chart-axis-label"
+              >
+                Ahora
+              </text>
               <polyline
                 fill="none"
                 stroke={accent}
-                strokeWidth="3"
+                strokeWidth="2.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 points={points}
+                className={`chart-line ${streamTick ? "chart-line-draw" : ""}`}
               />
               <circle
-                cx="240"
+                cx={latestDotX}
                 cy={latestDotY}
-                r="3.6"
+                r="3.4"
                 fill={accent}
                 className="chart-live-dot"
               />
