@@ -93,10 +93,10 @@ const ChartCard = ({
   const values = series.map((item) => item.value);
   const latest = values[0] ?? null;
   const latestValues = values.slice(0, 30).reverse();
-  const plotWidth = 292;
-  const plotHeight = 132;
-  const marginLeft = 44;
-  const marginTop = 12;
+  const plotWidth = 320;
+  const plotHeight = 138;
+  const marginLeft = 52;
+  const marginTop = 20;
   const min = latestValues.length > 0 ? Math.min(...latestValues) : 0;
   const max = latestValues.length > 0 ? Math.max(...latestValues) : 1;
   const span = max - min || 1;
@@ -130,10 +130,10 @@ const ChartCard = ({
       <p className="mt-2 text-2xl font-semibold text-slate-900">
         {latest !== null ? `${latest} ${unit}` : "Sin datos"}
       </p>
-      <div className="mt-4 h-44 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
+      <div className="mt-4 h-56 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
           <div className={`chart-stream-wrap ${streamTick ? "chart-stream-tick" : ""}`}>
-            <svg viewBox="0 0 360 170" className="h-full w-full">
+            <svg viewBox="0 0 420 220" className="h-full w-full">
               <line
                 x1={marginLeft}
                 y1={marginTop}
@@ -148,18 +148,22 @@ const ChartCard = ({
                 y2={marginTop + plotHeight}
                 className="chart-axis"
               />
-              <text x="4" y={marginTop + 8} className="chart-axis-label">
+              <text x="6" y={marginTop + 4} className="chart-axis-label">
                 {max.toFixed(1)} {unit}
               </text>
-              <text x="4" y={marginTop + plotHeight} className="chart-axis-label">
+              <text x="6" y={marginTop + plotHeight} className="chart-axis-label">
                 {min.toFixed(1)} {unit}
               </text>
-              <text x={marginLeft} y={marginTop + plotHeight + 14} className="chart-axis-label">
+              <text
+                x={marginLeft}
+                y={marginTop + plotHeight + 24}
+                className="chart-axis-label"
+              >
                 -5m
               </text>
               <text
-                x={marginLeft + plotWidth - 32}
-                y={marginTop + plotHeight + 14}
+                x={marginLeft + plotWidth - 40}
+                y={marginTop + plotHeight + 24}
                 className="chart-axis-label"
               >
                 Ahora

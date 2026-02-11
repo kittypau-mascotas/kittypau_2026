@@ -708,7 +708,7 @@ textarea::placeholder {
 
 .chart-axis-label {
   fill: hsl(var(--muted-foreground));
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.02em;
 }
 
