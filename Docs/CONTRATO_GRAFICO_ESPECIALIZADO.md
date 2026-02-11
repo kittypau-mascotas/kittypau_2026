@@ -10,6 +10,26 @@ Definir un contrato estable para construir un grafico especializado en otro proy
 - Ingestion IoT: HiveMQ -> Bridge -> `POST /api/mqtt/webhook`.
 - Lectura UI: `GET /api/readings` + Realtime sobre tabla `public.readings`.
 
+## Librerias de graficos (actual vs anterior)
+- Actual (`/bowl`):
+- `chart.js`
+- `react-chartjs-2`
+- Anterior a `Chart.js` (implementacion interna):
+- sin libreria externa de chart
+- render SVG manual en React (`polyline`, `line`, `text`, `circle`)
+- animaciones CSS propias en `globals.css` (clases `chart-*`)
+
+## Paleta de colores de series
+Colores activos en `bowl`:
+- Peso: `#EBB7AA` (color principal Kittypau)
+- Temperatura: `#D99686` (variacion oscura del principal)
+- Luz entorno: `hsl(44 90% 52%)` (amarillo lectura de luz)
+- Humedad: `hsl(198 70% 45%)` (azul humedad)
+
+Notas:
+- Peso y temperatura deben mantenerse en la paleta Kittypau.
+- Si se crea grafico externo, exponer color por prop y respetar estos defaults.
+
 ## Endpoints de datos para graficos
 
 ### 1) GET `/api/readings`
