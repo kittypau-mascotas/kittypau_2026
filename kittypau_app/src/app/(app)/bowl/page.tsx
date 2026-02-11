@@ -178,12 +178,20 @@ const ChartCard = ({
     },
     scales: {
       x: {
+        offset: true,
         grid: { display: false },
+        border: {
+          display: true,
+          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+        },
         ticks: {
           maxTicksLimit: 2,
           color: "hsl(var(--muted-foreground))",
           font: { size: 11 },
           autoSkip: false,
+          padding: 8,
+          maxRotation: 0,
+          minRotation: 0,
           callback: (_value, index, ticks) => {
             if (index === 0) return "-5m";
             if (index === ticks.length - 1) return "Ahora";
@@ -196,7 +204,11 @@ const ChartCard = ({
         suggestedMin: min,
         suggestedMax: max,
         grid: {
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 14%, transparent)",
+          drawOnChartArea: false,
+        },
+        border: {
+          display: true,
+          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
         },
         ticks: {
           color: "hsl(var(--muted-foreground))",
@@ -560,13 +572,13 @@ export default function BowlPage() {
                   title="Peso"
                   unit="g"
                   series={weightSeries}
-                  accent="hsl(var(--primary))"
+                  accent="#EBB7AA"
                 />
                 <ChartCard
                   title="Temperatura"
                   unit="°C"
                   series={tempSeries}
-                  accent="hsl(var(--primary-strong))"
+                  accent="#D99686"
                 />
                 <ChartCard
                   title="Luz entorno"
