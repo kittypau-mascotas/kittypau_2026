@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiDevice = {
   id: string;
@@ -13,6 +14,14 @@ type ApiDevice = {
   device_state: string | null;
   battery_level: number | null;
   last_seen: string | null;
+};
+
+type ApiReading = {
+  id: string;
+  device_id: string;
+  recorded_at: string | null;
+  weight_grams: number | null;
+  temperature: number | null;
 };
 
 type LoadState = {
@@ -49,6 +58,75 @@ const formatTimestamp = (value: string | null) => {
   });
 };
 
+const buildSeries = (
+  readings: ApiReading[],
+  key: "weight_grams" | "temperature"
+) =>
+  readings
+    .map((reading) => ({
+      value: reading[key],
+      timestamp: reading.recorded_at,
+    }))
+    .filter((item): item is { value: number; timestamp: string | null } =>
+      typeof item.value === "number"
+    );
+
+const buildChartPoints = (values: number[], width: number, height: number) => {
+  if (values.length === 0) return "";
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = max - min || 1;
+  return values
+    .map((value, index) => {
+      const x = (index / (values.length - 1 || 1)) * width;
+      const y = height - ((value - min) / span) * height;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+};
+
+const ChartCard = ({
+  title,
+  unit,
+  series,
+  accent,
+}: {
+  title: string;
+  unit: string;
+  series: { value: number; timestamp: string | null }[];
+  accent: string;
+}) => {
+  const values = series.map((item) => item.value);
+  const latest = values[0] ?? null;
+  const points = buildChartPoints(values.slice(0, 30).reverse(), 240, 80);
+  return (
+    <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
+      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+        {title}
+      </p>
+      <p className="mt-2 text-lg font-semibold text-slate-900">
+        {latest !== null ? `${latest} ${unit}` : "Sin datos"}
+      </p>
+      <div className="mt-3 h-24 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
+        {values.length > 1 ? (
+          <svg viewBox="0 0 240 80" className="h-full w-full">
+            <polyline
+              fill="none"
+              stroke={accent}
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              points={points}
+            />
+          </svg>
+        ) : (
+          <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const batteryLabel = (battery: number | null) => {
   if (battery === null || Number.isNaN(battery)) return "Sin datos";
   if (battery <= 15) return "Crítica";
@@ -60,6 +138,9 @@ const batteryLabel = (battery: number | null) => {
 export default function BowlPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [readings, setReadings] = useState<ApiReading[]>([]);
+  const [isReadingsLoading, setIsReadingsLoading] = useState(false);
+  const [readingsError, setReadingsError] = useState<string | null>(null);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`${apiBase}/api/devices`, {
@@ -69,6 +150,19 @@ export default function BowlPage() {
     if (!res.ok) throw new Error("No se pudieron cargar los dispositivos.");
     const payload = await res.json();
     return parseListResponse<ApiDevice>(payload);
+  };
+
+  const loadReadings = async (deviceId: string, token: string) => {
+    const params = new URLSearchParams();
+    params.set("device_id", deviceId);
+    params.set("limit", "30");
+    const res = await fetch(`${apiBase}/api/readings?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("No se pudieron cargar lecturas.");
+    const payload = await res.json();
+    return parseListResponse<ApiReading>(payload);
   };
 
   useEffect(() => {
@@ -100,6 +194,14 @@ export default function BowlPage() {
           window.localStorage.setItem("kittypau_device_id", initialId);
         }
         setSelectedDeviceId(initialId);
+        if (initialId) {
+          setIsReadingsLoading(true);
+          const readingData = await loadReadings(initialId, token);
+          if (mounted) {
+            setReadings(readingData);
+            setReadingsError(null);
+          }
+        }
         if (!mounted) return;
         setState({
           isLoading: false,
@@ -123,6 +225,77 @@ export default function BowlPage() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!selectedDeviceId) return;
+    let active = true;
+    const run = async () => {
+      const token = await getValidAccessToken();
+      if (!token || !active) return;
+      try {
+        setIsReadingsLoading(true);
+        const readingData = await loadReadings(selectedDeviceId, token);
+        if (!active) return;
+        setReadings(readingData);
+        setReadingsError(null);
+      } catch (err) {
+        if (!active) return;
+        setReadingsError(
+          err instanceof Error ? err.message : "No se pudieron cargar lecturas."
+        );
+      } finally {
+        if (active) setIsReadingsLoading(false);
+      }
+    };
+    run();
+    return () => {
+      active = false;
+    };
+  }, [selectedDeviceId]);
+
+  useEffect(() => {
+    if (!selectedDeviceId) return;
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let active = true;
+
+    const connect = async () => {
+      const accessToken = await getValidAccessToken();
+      if (!active || !accessToken) return;
+      supabase.realtime.setAuth(accessToken);
+      channel = supabase
+        .channel(`bowl-readings:${selectedDeviceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "readings",
+            filter: `device_id=eq.${selectedDeviceId}`,
+          },
+          (payload) => {
+            const nextReading = payload.new as ApiReading;
+            setReadings((prev) => {
+              const exists = prev.some((item) => item.id === nextReading.id);
+              if (exists) return prev;
+              return [nextReading, ...prev].slice(0, 60);
+            });
+          }
+        )
+        .subscribe();
+    };
+
+    void connect();
+
+    return () => {
+      active = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [selectedDeviceId]);
 
   const selectedDevice = useMemo(() => {
     return state.devices.find((device) => device.id === selectedDeviceId);
@@ -184,6 +357,15 @@ export default function BowlPage() {
     }
     return "Sin datos suficientes para diagnóstico completo.";
   }, [selectedDevice, statusSummary.tone]);
+
+  const weightSeries = useMemo(
+    () => buildSeries(readings, "weight_grams"),
+    [readings]
+  );
+  const tempSeries = useMemo(
+    () => buildSeries(readings, "temperature"),
+    [readings]
+  );
 
   return (
     <main className="page-shell">
@@ -402,6 +584,35 @@ export default function BowlPage() {
                 Reinicio remoto (próximamente)
               </button>
             </div>
+          </section>
+
+          <section className="surface-card freeform-rise px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Lecturas en vivo
+              </h2>
+              <span className="text-xs text-slate-500">
+                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
+              </span>
+            </div>
+            {readingsError ? (
+              <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
+            ) : (
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <ChartCard
+                  title="Peso"
+                  unit="g"
+                  series={weightSeries}
+                  accent="hsl(var(--primary))"
+                />
+                <ChartCard
+                  title="Temperatura"
+                  unit="°C"
+                  series={tempSeries}
+                  accent="hsl(var(--primary-strong))"
+                />
+              </div>
+            )}
           </section>
         </>
       )}
