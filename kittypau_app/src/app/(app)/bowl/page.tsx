@@ -23,6 +23,7 @@ type ApiReading = {
   weight_grams: number | null;
   temperature: number | null;
   humidity: number | null;
+  light_percent: number | null;
 };
 
 type LoadState = {
@@ -61,7 +62,7 @@ const formatTimestamp = (value: string | null) => {
 
 const buildSeries = (
   readings: ApiReading[],
-  key: "weight_grams" | "temperature" | "humidity",
+  key: "weight_grams" | "temperature" | "humidity" | "light_percent",
   windowMs: number
 ) => {
   const cutoff = Date.now() - windowMs;
@@ -465,6 +466,10 @@ export default function BowlPage() {
     () => buildSeries(readings, "humidity", 5 * 60 * 1000),
     [readings]
   );
+  const lightSeries = useMemo(
+    () => buildSeries(readings, "light_percent", 5 * 60 * 1000),
+    [readings]
+  );
 
   return (
     <main className="page-shell">
@@ -533,6 +538,13 @@ export default function BowlPage() {
                   unit="°C"
                   series={tempSeries}
                   accent="hsl(var(--primary-strong))"
+                />
+                <ChartCard
+                  title="Luz entorno"
+                  unit="%"
+                  series={lightSeries}
+                  accent="hsl(44 90% 52%)"
+                  className="lg:col-start-1"
                 />
                 <ChartCard
                   title="Humedad"
