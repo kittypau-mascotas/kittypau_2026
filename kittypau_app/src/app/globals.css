@@ -716,10 +716,52 @@ textarea::placeholder {
   vector-effect: non-scaling-stroke;
 }
 
+.chart-gridline {
+  stroke-dasharray: 4 4;
+}
+
 .chart-line-draw {
   stroke-dasharray: 360;
   stroke-dashoffset: 360;
   animation: chartLineDraw 440ms cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+
+.chart-style-live_minimal .chart-card-canvas {
+  background: hsl(210 40% 98%);
+}
+
+.chart-style-glass_stream {
+  border-color: hsl(210 30% 88%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 94%, hsl(var(--primary)) 6%),
+    color-mix(in oklab, white 98%, hsl(var(--primary)) 2%)
+  );
+}
+
+.chart-style-glass_stream .chart-card-canvas {
+  background: color-mix(in oklab, white 76%, hsl(var(--primary)) 24%);
+}
+
+.chart-style-technical_grid .chart-axis {
+  stroke: color-mix(in oklab, hsl(var(--muted-foreground)) 55%, transparent);
+}
+
+.chart-style-technical_grid .chart-axis-label {
+  font-size: 12px;
+}
+
+.chart-style-bold_editorial .chart-card-title {
+  letter-spacing: 0.26em;
+  color: hsl(220 36% 30%);
+}
+
+.chart-style-bold_editorial .chart-card-value {
+  font-size: 2rem;
+}
+
+.chart-style-bold_editorial .chart-card-canvas {
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, white);
 }
 
 @keyframes chartPulse {
