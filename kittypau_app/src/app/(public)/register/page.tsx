@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,16 +21,17 @@ export default function RegisterPage() {
   const isFormValid = isEmailValid && isPasswordValid;
 
   const siteUrl = useMemo(
-    () => process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin,
+    () =>
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      (typeof window !== "undefined" ? window.location.origin : ""),
     []
   );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("verified") === "1") {
+    if (searchParams.get("verified") === "1") {
       router.replace("/login?verified=1");
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   const handleRegister = async () => {
     setStatus("loading");
