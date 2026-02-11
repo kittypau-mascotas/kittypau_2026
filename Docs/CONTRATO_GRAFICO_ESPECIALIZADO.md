@@ -174,6 +174,53 @@ const points = readings
 - Realtime usa token de sesion para `supabase.realtime.setAuth(token)`.
 - El componente grafico externo no debe manejar tokens.
 
+## Uso desde otro proyecto local (datos reales)
+Si, puedes conectarte desde otro proyecto local para probar el grafico con datos reales.
+
+Modalidad recomendada:
+1. Autenticar usuario real en Supabase (`email/password`).
+2. Usar token de sesion (`access_token`).
+3. Consumir `GET /api/devices` y `GET /api/readings` de este proyecto (Vercel o local).
+4. Suscribirte a Realtime en `public.readings` filtrando `device_id` UUID.
+
+Alternativa directa a Supabase:
+1. Configurar en el proyecto local:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+2. Login con Supabase Auth para obtener sesion del usuario.
+3. Consultar tabla `public.readings` bajo RLS del usuario autenticado.
+4. Suscripcion Realtime con el mismo token.
+
+Reglas de seguridad:
+- No usar `SUPABASE_SERVICE_ROLE_KEY` en frontend/local client.
+- `SERVICE_ROLE` solo en backend/server scripts.
+- Si el proyecto local es frontend puro, usar siempre `ANON_KEY + sesion de usuario`.
+
+Snippet base (cliente local):
+```ts
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const { data: authData } = await supabase.auth.signInWithPassword({
+  email: "<tu-email>",
+  password: "<tu-password>",
+});
+
+const user = authData.user;
+if (!user) throw new Error("No auth");
+
+const { data: readings } = await supabase
+  .from("readings")
+  .select("id,device_id,recorded_at,weight_grams,temperature,humidity,light_percent")
+  .eq("device_id", "<DEVICE_UUID>")
+  .order("recorded_at", { ascending: false })
+  .limit(60);
+```
+
 ## Checklist para proyecto externo
 1. Implementar componente puro por props (`LiveChartProps`).
 2. Entregar build importable (ideal: paquete React o modulo TSX).
