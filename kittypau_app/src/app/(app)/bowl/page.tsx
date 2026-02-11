@@ -161,6 +161,12 @@ const ChartCard = ({
       tooltip: {
         mode: "index",
         intersect: false,
+        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        titleColor: "#f8fafc",
+        bodyColor: "#f8fafc",
+        borderColor: "rgba(148, 163, 184, 0.35)",
+        borderWidth: 1,
+        displayColors: false,
         callbacks: {
           label: (ctx) => `${ctx.parsed.y} ${unit}`,
         },
@@ -174,15 +180,15 @@ const ChartCard = ({
       x: {
         grid: { display: false },
         ticks: {
-          maxTicksLimit: 4,
+          maxTicksLimit: 2,
           color: "hsl(var(--muted-foreground))",
           font: { size: 11 },
-        },
-        title: {
-          display: true,
-          text: "Ultimos 5 minutos",
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11, weight: 500 },
+          autoSkip: false,
+          callback: (_value, index, ticks) => {
+            if (index === 0) return "-5m";
+            if (index === ticks.length - 1) return "Ahora";
+            return "";
+          },
         },
       },
       y: {
@@ -190,18 +196,13 @@ const ChartCard = ({
         suggestedMin: min,
         suggestedMax: max,
         grid: {
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 20%, transparent)",
+          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 14%, transparent)",
         },
         ticks: {
           color: "hsl(var(--muted-foreground))",
           font: { size: 11 },
+          maxTicksLimit: 3,
           callback: (value) => `${value} ${unit}`,
-        },
-        title: {
-          display: true,
-          text: unit,
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11, weight: 500 },
         },
       },
     },
