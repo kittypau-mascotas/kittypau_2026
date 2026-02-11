@@ -60,16 +60,23 @@ const formatTimestamp = (value: string | null) => {
 
 const buildSeries = (
   readings: ApiReading[],
-  key: "weight_grams" | "temperature"
-) =>
-  readings
+  key: "weight_grams" | "temperature",
+  windowMs: number
+) => {
+  const cutoff = Date.now() - windowMs;
+  return readings
     .map((reading) => ({
       value: reading[key],
       timestamp: reading.recorded_at,
     }))
-    .filter((item): item is { value: number; timestamp: string | null } =>
-      typeof item.value === "number"
-    );
+    .filter((item): item is { value: number; timestamp: string } => {
+      if (typeof item.value !== "number") return false;
+      if (!item.timestamp) return false;
+      const ts = new Date(item.timestamp).getTime();
+      if (Number.isNaN(ts)) return false;
+      return ts >= cutoff;
+    });
+};
 
 const buildChartPoints = (values: number[], width: number, height: number) => {
   if (values.length === 0) return "";
@@ -359,11 +366,11 @@ export default function BowlPage() {
   }, [selectedDevice, statusSummary.tone]);
 
   const weightSeries = useMemo(
-    () => buildSeries(readings, "weight_grams"),
+    () => buildSeries(readings, "weight_grams", 5 * 60 * 1000),
     [readings]
   );
   const tempSeries = useMemo(
-    () => buildSeries(readings, "temperature"),
+    () => buildSeries(readings, "temperature", 5 * 60 * 1000),
     [readings]
   );
 
