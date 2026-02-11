@@ -93,10 +93,10 @@ const ChartCard = ({
   const values = series.map((item) => item.value);
   const latest = values[0] ?? null;
   const latestValues = values.slice(0, 30).reverse();
-  const plotWidth = 210;
-  const plotHeight = 74;
-  const marginLeft = 30;
-  const marginTop = 8;
+  const plotWidth = 292;
+  const plotHeight = 132;
+  const marginLeft = 44;
+  const marginTop = 12;
   const min = latestValues.length > 0 ? Math.min(...latestValues) : 0;
   const max = latestValues.length > 0 ? Math.max(...latestValues) : 1;
   const span = max - min || 1;
@@ -123,17 +123,17 @@ const ChartCard = ({
   }, [series[0]?.timestamp]);
 
   return (
-    <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+    <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">
         {title}
       </p>
-      <p className="mt-2 text-lg font-semibold text-slate-900">
+      <p className="mt-2 text-2xl font-semibold text-slate-900">
         {latest !== null ? `${latest} ${unit}` : "Sin datos"}
       </p>
-      <div className="mt-3 h-24 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
+      <div className="mt-4 h-44 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
           <div className={`chart-stream-wrap ${streamTick ? "chart-stream-tick" : ""}`}>
-            <svg viewBox="0 0 260 92" className="h-full w-full">
+            <svg viewBox="0 0 360 170" className="h-full w-full">
               <line
                 x1={marginLeft}
                 y1={marginTop}
@@ -158,7 +158,7 @@ const ChartCard = ({
                 -5m
               </text>
               <text
-                x={marginLeft + plotWidth - 22}
+                x={marginLeft + plotWidth - 32}
                 y={marginTop + plotHeight + 14}
                 className="chart-axis-label"
               >
@@ -176,7 +176,7 @@ const ChartCard = ({
               <circle
                 cx={latestDotX}
                 cy={latestDotY}
-                r="3.4"
+                r="4"
                 fill={accent}
                 className="chart-live-dot"
               />
@@ -506,7 +506,7 @@ export default function BowlPage() {
             {readingsError ? (
               <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
             ) : (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="mt-4 grid gap-4 lg:grid-cols-2">
                 <ChartCard
                   title="Peso"
                   unit="g"
