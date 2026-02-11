@@ -4,6 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  type ChartOptions,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
 type ApiDevice = {
   id: string;
@@ -32,11 +44,15 @@ type LoadState = {
   devices: ApiDevice[];
 };
 
-type ChartStylePreset =
-  | "live_minimal"
-  | "glass_stream"
-  | "technical_grid"
-  | "bold_editorial";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 const defaultState: LoadState = {
   isLoading: true,
@@ -91,52 +107,109 @@ const ChartCard = ({
   unit,
   series,
   accent,
-  stylePreset,
   className,
 }: {
   title: string;
   unit: string;
   series: { value: number; timestamp: string }[];
   accent: string;
-  stylePreset: ChartStylePreset;
   className?: string;
 }) => {
-  const [streamTick, setStreamTick] = useState(false);
   const values = series.map((item) => item.value);
   const latest = values[0] ?? null;
-  const latestValues = values.slice(0, 30).reverse();
-  const plotWidth = 320;
-  const plotHeight = 138;
-  const marginLeft = 52;
-  const marginTop = 20;
-  const min = latestValues.length > 0 ? Math.min(...latestValues) : 0;
-  const max = latestValues.length > 0 ? Math.max(...latestValues) : 1;
-  const span = max - min || 1;
-  const points = latestValues
-    .map((value, index) => {
-      const x = marginLeft + (index / (latestValues.length - 1 || 1)) * plotWidth;
-      const y = marginTop + plotHeight - ((value - min) / span) * plotHeight;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-  const latestDotY =
-    latestValues.length > 0
-      ? marginTop +
-        plotHeight -
-        ((latestValues[latestValues.length - 1] - min) / span) * plotHeight
-      : marginTop + plotHeight / 2;
-  const latestDotX = marginLeft + plotWidth;
+  const ordered = series.slice(0, 30).reverse();
+  const labels = ordered.map((item) => {
+    const ts = new Date(item.timestamp);
+    if (Number.isNaN(ts.getTime())) return "";
+    return ts.toLocaleTimeString("es-CL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  });
+  const dataPoints = ordered.map((item) => item.value);
 
-  useEffect(() => {
-    if (!series[0]?.timestamp) return;
-    setStreamTick(true);
-    const timeout = setTimeout(() => setStreamTick(false), 360);
-    return () => clearTimeout(timeout);
-  }, [series[0]?.timestamp]);
+  const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
+  const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: title,
+        data: dataPoints,
+        borderColor: accent,
+        backgroundColor: accent,
+        borderWidth: 2.8,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  };
+
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 340,
+      easing: "easeOutQuart",
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        callbacks: {
+          label: (ctx) => `${ctx.parsed.y} ${unit}`,
+        },
+      },
+    },
+    interaction: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          maxTicksLimit: 4,
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+        },
+        title: {
+          display: true,
+          text: "Ultimos 5 minutos",
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11, weight: 500 },
+        },
+      },
+      y: {
+        beginAtZero: false,
+        suggestedMin: min,
+        suggestedMax: max,
+        grid: {
+          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 20%, transparent)",
+        },
+        ticks: {
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+          callback: (value) => `${value} ${unit}`,
+        },
+        title: {
+          display: true,
+          text: unit,
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11, weight: 500 },
+        },
+      },
+    },
+  };
 
   return (
     <div
-      className={`chart-card chart-style-${stylePreset} rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
+      className={`chart-card rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
         className ?? ""
       }`}
     >
@@ -148,78 +221,7 @@ const ChartCard = ({
       </p>
       <div className="chart-card-canvas mt-4 h-56 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
-          <div className={`chart-stream-wrap ${streamTick ? "chart-stream-tick" : ""}`}>
-            <svg viewBox="0 0 420 220" className="h-full w-full">
-              {stylePreset === "technical_grid" ? (
-                <>
-                  <line
-                    x1={marginLeft}
-                    y1={marginTop + plotHeight * 0.33}
-                    x2={marginLeft + plotWidth}
-                    y2={marginTop + plotHeight * 0.33}
-                    className="chart-axis chart-gridline"
-                  />
-                  <line
-                    x1={marginLeft}
-                    y1={marginTop + plotHeight * 0.66}
-                    x2={marginLeft + plotWidth}
-                    y2={marginTop + plotHeight * 0.66}
-                    className="chart-axis chart-gridline"
-                  />
-                </>
-              ) : null}
-              <line
-                x1={marginLeft}
-                y1={marginTop}
-                x2={marginLeft}
-                y2={marginTop + plotHeight}
-                className="chart-axis"
-              />
-              <line
-                x1={marginLeft}
-                y1={marginTop + plotHeight}
-                x2={marginLeft + plotWidth}
-                y2={marginTop + plotHeight}
-                className="chart-axis"
-              />
-              <text x="6" y={marginTop + 4} className="chart-axis-label">
-                {max.toFixed(1)} {unit}
-              </text>
-              <text x="6" y={marginTop + plotHeight} className="chart-axis-label">
-                {min.toFixed(1)} {unit}
-              </text>
-              <text
-                x={marginLeft}
-                y={marginTop + plotHeight + 24}
-                className="chart-axis-label"
-              >
-                -5m
-              </text>
-              <text
-                x={marginLeft + plotWidth - 40}
-                y={marginTop + plotHeight + 24}
-                className="chart-axis-label"
-              >
-                Ahora
-              </text>
-              <polyline
-                fill="none"
-                stroke={accent}
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                points={points}
-                className={`chart-line ${streamTick ? "chart-line-draw" : ""}`}
-              />
-              <circle
-                cx={latestDotX}
-                cy={latestDotY}
-                r="4"
-                fill={accent}
-                className="chart-live-dot"
-              />
-            </svg>
-          </div>
+          <Line data={data} options={options} />
         ) : (
           <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
         )}
@@ -242,7 +244,6 @@ export default function BowlPage() {
   const [readings, setReadings] = useState<ApiReading[]>([]);
   const [isReadingsLoading, setIsReadingsLoading] = useState(false);
   const [readingsError, setReadingsError] = useState<string | null>(null);
-  const [chartStyle, setChartStyle] = useState<ChartStylePreset>("live_minimal");
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`${apiBase}/api/devices`, {
@@ -546,46 +547,9 @@ export default function BowlPage() {
               <h2 className="text-lg font-semibold text-slate-900">
                 Lecturas en vivo
               </h2>
-              <div className="flex items-center gap-2">
-                <details className="relative">
-                  <summary className="cursor-pointer list-none rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
-                    Estilo gráfico
-                  </summary>
-                  <div className="absolute right-0 z-20 mt-2 w-56 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg">
-                    <button
-                      type="button"
-                      className="w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
-                      onClick={() => setChartStyle("live_minimal")}
-                    >
-                      En vivo minimal
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
-                      onClick={() => setChartStyle("glass_stream")}
-                    >
-                      Glass stream
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
-                      onClick={() => setChartStyle("technical_grid")}
-                    >
-                      Técnico con grilla
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-100"
-                      onClick={() => setChartStyle("bold_editorial")}
-                    >
-                      Editorial bold
-                    </button>
-                  </div>
-                </details>
-                <span className="text-xs text-slate-500">
-                  {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
-                </span>
-              </div>
+              <span className="text-xs text-slate-500">
+                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
+              </span>
             </div>
             {readingsError ? (
               <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
@@ -596,21 +560,18 @@ export default function BowlPage() {
                   unit="g"
                   series={weightSeries}
                   accent="hsl(var(--primary))"
-                  stylePreset={chartStyle}
                 />
                 <ChartCard
                   title="Temperatura"
                   unit="°C"
                   series={tempSeries}
                   accent="hsl(var(--primary-strong))"
-                  stylePreset={chartStyle}
                 />
                 <ChartCard
                   title="Luz entorno"
                   unit="%"
                   series={lightSeries}
                   accent="hsl(44 90% 52%)"
-                  stylePreset={chartStyle}
                   className="lg:col-start-1"
                 />
                 <ChartCard
@@ -618,7 +579,6 @@ export default function BowlPage() {
                   unit="%"
                   series={humiditySeries}
                   accent="hsl(198 70% 45%)"
-                  stylePreset={chartStyle}
                   className="lg:col-start-2"
                 />
               </div>
