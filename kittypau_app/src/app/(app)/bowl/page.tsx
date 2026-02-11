@@ -103,9 +103,26 @@ const ChartCard = ({
   series: { value: number; timestamp: string | null }[];
   accent: string;
 }) => {
+  const [streamTick, setStreamTick] = useState(false);
   const values = series.map((item) => item.value);
   const latest = values[0] ?? null;
   const points = buildChartPoints(values.slice(0, 30).reverse(), 240, 80);
+  const latestValues = values.slice(0, 30).reverse();
+  const min = latestValues.length > 0 ? Math.min(...latestValues) : 0;
+  const max = latestValues.length > 0 ? Math.max(...latestValues) : 1;
+  const span = max - min || 1;
+  const latestDotY =
+    latestValues.length > 0
+      ? 80 - ((latestValues[latestValues.length - 1] - min) / span) * 80
+      : 40;
+
+  useEffect(() => {
+    if (!series[0]?.timestamp) return;
+    setStreamTick(true);
+    const timeout = setTimeout(() => setStreamTick(false), 360);
+    return () => clearTimeout(timeout);
+  }, [series[0]?.timestamp]);
+
   return (
     <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
       <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
@@ -116,16 +133,25 @@ const ChartCard = ({
       </p>
       <div className="mt-3 h-24 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
-          <svg viewBox="0 0 240 80" className="h-full w-full">
-            <polyline
-              fill="none"
-              stroke={accent}
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              points={points}
-            />
-          </svg>
+          <div className={`chart-stream-wrap ${streamTick ? "chart-stream-tick" : ""}`}>
+            <svg viewBox="0 0 240 80" className="h-full w-full">
+              <polyline
+                fill="none"
+                stroke={accent}
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                points={points}
+              />
+              <circle
+                cx="240"
+                cy={latestDotY}
+                r="3.6"
+                fill={accent}
+                className="chart-live-dot"
+              />
+            </svg>
+          </div>
         ) : (
           <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
         )}
@@ -257,6 +283,27 @@ export default function BowlPage() {
     run();
     return () => {
       active = false;
+    };
+  }, [selectedDeviceId]);
+
+  useEffect(() => {
+    if (!selectedDeviceId) return;
+    let active = true;
+    const run = async () => {
+      const token = await getValidAccessToken();
+      if (!token || !active) return;
+      try {
+        const readingData = await loadReadings(selectedDeviceId, token);
+        if (!active) return;
+        setReadings(readingData);
+      } catch {
+        // Realtime is primary; polling is fallback.
+      }
+    };
+    const interval = setInterval(run, 8000);
+    return () => {
+      active = false;
+      clearInterval(interval);
     };
   }, [selectedDeviceId]);
 
