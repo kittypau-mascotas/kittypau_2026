@@ -411,6 +411,35 @@ export default function BowlPage() {
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Lecturas en vivo
+              </h2>
+              <span className="text-xs text-slate-500">
+                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
+              </span>
+            </div>
+            {readingsError ? (
+              <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
+            ) : (
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <ChartCard
+                  title="Peso"
+                  unit="g"
+                  series={weightSeries}
+                  accent="hsl(var(--primary))"
+                />
+                <ChartCard
+                  title="Temperatura"
+                  unit="°C"
+                  series={tempSeries}
+                  accent="hsl(var(--primary-strong))"
+                />
+              </div>
+            )}
+          </section>
+
+          <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-500">Plato activo</p>
@@ -586,34 +615,6 @@ export default function BowlPage() {
             </div>
           </section>
 
-          <section className="surface-card freeform-rise px-6 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Lecturas en vivo
-              </h2>
-              <span className="text-xs text-slate-500">
-                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
-              </span>
-            </div>
-            {readingsError ? (
-              <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
-            ) : (
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <ChartCard
-                  title="Peso"
-                  unit="g"
-                  series={weightSeries}
-                  accent="hsl(var(--primary))"
-                />
-                <ChartCard
-                  title="Temperatura"
-                  unit="°C"
-                  series={tempSeries}
-                  accent="hsl(var(--primary-strong))"
-                />
-              </div>
-            )}
-          </section>
         </>
       )}
     </main>
