@@ -1,4 +1,4 @@
-# Ãndice de DocumentaciÃ³n (Kittypau)
+﻿# ÃƒÂndice de DocumentaciÃƒÂ³n (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
@@ -35,7 +35,7 @@
 ## Flujos UX
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
 - `Docs/IMAGENES_LOGIN.md`
-- `Docs/estilos y diseÃ±os.md`
+- `Docs/estilos y diseÃƒÂ±os.md`
 
 ## Deploy
 - `Docs/CHECKLIST_DEPLOY.md`
@@ -85,3 +85,5 @@
 
 - Docs/PLAN_MEJORA_DB_ACTUAL.md
 - Docs/CATALOGO_GRAFICOS.md
+
+- Docs/CONTRATO_GRAFICO_ESPECIALIZADO.md
