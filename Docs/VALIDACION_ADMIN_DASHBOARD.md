@@ -68,3 +68,8 @@ Resultado:
 ## 6) Nota operativa
 - Si se cambia contraseña o rol del admin en Supabase, revalidar esta guía.
 - Si el entorno Vercel cambia de proyecto enlazado, volver a ejecutar `vercel link --yes --project kittypau-app`.
+
+## 7) Nota (CORS / "Failed to fetch")
+- Los endpoints bajo `/api/*` soportan preflight `OPTIONS` y retornan headers CORS.
+- Esto permite validar el dashboard/admin desde herramientas externas o desde otros orÃ­genes (p.ej. pruebas locales),
+  siempre usando `Authorization: Bearer <token>` o `x-bridge-token` segÃºn corresponda.
