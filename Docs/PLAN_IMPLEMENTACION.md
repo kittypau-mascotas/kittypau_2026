@@ -136,3 +136,14 @@ Tareas:
 4. Auditoria de eventos: normalizar `audit_events` para cambios de estado (`bridge_offline_detected`, `device_offline_detected`).
 5. Hardening backend: reforzar validaciones de estado, consistencia de IDs y ejecucion segura de chequeos en segundo plano.
 6. Operacion DevOps/Platform: alinear Vercel + Supabase + bridge (variables, despliegue, verificacion y runbook).
+
+---
+
+## Tareas pendientes: Portal Admin (negocio + operacion)
+Referencia: `Docs/ADMIN_PORTAL_PLAN.md`
+1. Crear modelo de roles admin (`owner_admin`, `ops_admin`, `support_admin`, `readonly_admin`).
+2. Implementar autorizacion server-side para `/api/admin/*`.
+3. Crear vista `/admin` con vision total Kittypau (ingresos, compras, ticket, estado operativo global).
+4. Implementar panel de operacion IoT (bridges + KPCL online/offline con conteos visibles).
+5. Agregar cuadro de `audit_events` en linea dentro del dashboard admin (eventos criticos y filtros basicos).
+6. Implementar auditoria obligatoria de acciones admin en `audit_events`.
