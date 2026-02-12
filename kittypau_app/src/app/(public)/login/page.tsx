@@ -89,11 +89,23 @@ export default function LoginPage() {
       refreshToken: data.session.refresh_token,
     });
 
+    let targetPath = "/today";
+    try {
+      const adminRes = await fetch("/api/admin/overview?audit_limit=1", {
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      });
+      if (adminRes.ok) {
+        targetPath = "/admin";
+      }
+    } catch {
+      // If admin check fails, keep default user route.
+    }
+
     if (typeof window !== "undefined") {
       window.sessionStorage.setItem("kittypau_play_login_sound", "1");
     }
 
-    router.push("/today");
+    router.push(targetPath);
   };
 
   const onRegister = async (event: FormEvent<HTMLFormElement>) => {

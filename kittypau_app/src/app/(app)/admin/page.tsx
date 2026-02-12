@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 type AdminSummary = {
@@ -54,6 +55,7 @@ type IncidentCounters = {
 };
 
 export default function AdminPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
@@ -80,7 +82,8 @@ export default function AdminPage() {
         });
         if (!res.ok) {
           if (res.status === 403) {
-            throw new Error("No tienes permisos de administrador.");
+            router.replace("/today");
+            return;
           }
           throw new Error("No se pudo cargar el dashboard admin.");
         }
@@ -108,7 +111,7 @@ export default function AdminPage() {
       mounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [router]);
 
   const kpiCards = useMemo(() => {
     if (!summary) return [];
