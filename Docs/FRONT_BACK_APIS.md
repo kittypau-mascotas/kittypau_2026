@@ -120,6 +120,19 @@ Los endpoints `/api/profiles`, `/api/pets`, `/api/devices` y `/api/readings` req
 Authorization: Bearer <access_token>
 ```
 
+### Refresh de sesión (frontend)
+- El frontend guarda `access_token` y `refresh_token` en `localStorage`.
+- Antes de llamar APIs, el frontend intenta obtener un token vÃ¡lido:
+  - Si el `access_token` estÃ¡ por expirar, se renueva usando `refresh_token`.
+  - Si una llamada API vuelve `401`, se reintenta 1 vez tras refrescar.
+- Helpers:
+  - `src/lib/auth/token.ts` (`getValidAccessToken`, `forceRefreshAccessToken`)
+  - `src/lib/auth/auth-fetch.ts` (`authFetch`)
+
+### Nota (CORS / "Failed to fetch")
+- Los endpoints bajo `/api/*` soportan preflight `OPTIONS` y retornan headers CORS.
+- Esto permite usar herramientas externas u orÃ­genes distintos (p.ej. pruebas en otro PC/local) con `Authorization` o `x-bridge-token`.
+
 ## Variables de entorno
 ```
 SUPABASE_URL=

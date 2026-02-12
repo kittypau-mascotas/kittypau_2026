@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import Alert from "@/app/_components/alert";
+import EmptyState from "@/app/_components/empty-state";
 
 type ApiProfile = {
   id: string;
@@ -179,35 +181,38 @@ export default function SettingsPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
-          <span>{state.error}</span>
-          <Link
-            href="/login"
-            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
+        <Alert
+          variant="error"
+          title="Error"
+          actions={
+            <Link
+              href="/login"
+              className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+            >
+              Iniciar sesión
+            </Link>
+          }
+        >
+          {state.error}
+        </Alert>
       )}
 
       {state.isLoading ? (
         <div className="surface-card freeform-rise px-6 py-6">Cargando ajustes...</div>
       ) : !state.profile ? (
-        <div className="empty-state">
-          <p className="empty-title">No se encontró tu perfil.</p>
-          <p className="empty-text">
-            Completa el onboarding para crear tu perfil antes de ajustar
-            preferencias.
-          </p>
-          <div className="empty-actions">
+        <EmptyState
+          title="No se encontró tu perfil."
+          actions={
             <Link
               href="/onboarding"
               className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
             >
               Ir a onboarding
             </Link>
-          </div>
-        </div>
+          }
+        >
+          Completa el onboarding para crear tu perfil antes de ajustar preferencias.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">

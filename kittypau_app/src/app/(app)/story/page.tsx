@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import Alert from "@/app/_components/alert";
+import EmptyState from "@/app/_components/empty-state";
 
 type ApiPet = {
   id: string;
@@ -321,15 +323,20 @@ export default function StoryPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
-          <span>{state.error}</span>
-          <Link
-            href="/login"
-            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
+        <Alert
+          variant="error"
+          title="Error"
+          actions={
+            <Link
+              href="/login"
+              className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+            >
+              Iniciar sesión
+            </Link>
+          }
+        >
+          {state.error}
+        </Alert>
       )}
 
       {state.isLoading ? (
@@ -342,20 +349,19 @@ export default function StoryPage() {
           </div>
         </div>
       ) : state.devices.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-title">Aún no hay dispositivos vinculados.</p>
-          <p className="empty-text">
-            Completa el onboarding para conectar un plato y comenzar tu diario.
-          </p>
-          <div className="empty-actions">
+        <EmptyState
+          title="Aún no hay dispositivos vinculados."
+          actions={
             <Link
               href="/onboarding"
               className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
             >
               Ir a onboarding
             </Link>
-          </div>
-        </div>
+          }
+        >
+          Completa el onboarding para conectar un plato y comenzar tu diario.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-4">
@@ -460,12 +466,9 @@ export default function StoryPage() {
 
           <section className="story-list">
             {filteredTimeline.length === 0 ? (
-              <div className="empty-state">
-                <p className="empty-title">Aún no hay historia para mostrar.</p>
-                <p className="empty-text">
-                  Cuando lleguen lecturas del plato, verás la historia aquí.
-                </p>
-              </div>
+              <EmptyState title="Aún no hay historia para mostrar.">
+                Cuando lleguen lecturas del plato, verás la historia aquí.
+              </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (
                 <article

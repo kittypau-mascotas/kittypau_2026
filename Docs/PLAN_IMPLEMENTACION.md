@@ -107,7 +107,7 @@ Tareas:
 ## Proximos avances (plan priorizado)
 ### P0 — Estabilidad y producción real
 1. Storage policies definitivas para kittypau-photos (select/insert/delete para uthenticated).
-2. Refresh token en frontend (rotación y reintento silencioso).
+2. Refresh token en frontend (rotación y reintento silencioso). (Implementado)
 3. Bridge 24/7 (systemd + watchdog + logging).
 4. Componente Alert unificado (errores/estados en UI).
 

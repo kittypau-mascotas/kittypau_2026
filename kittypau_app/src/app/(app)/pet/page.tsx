@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import Alert from "@/app/_components/alert";
+import EmptyState from "@/app/_components/empty-state";
 
 type ApiPet = {
   id: string;
@@ -309,34 +311,38 @@ export default function PetPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
-          <span>{state.error}</span>
-          <Link
-            href="/login"
-            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
+        <Alert
+          variant="error"
+          title="Error"
+          actions={
+            <Link
+              href="/login"
+              className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+            >
+              Iniciar sesión
+            </Link>
+          }
+        >
+          {state.error}
+        </Alert>
       )}
 
       {state.isLoading ? (
         <div className="surface-card freeform-rise px-6 py-6">Cargando perfil...</div>
       ) : state.pets.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-title">Aún no tienes mascotas registradas.</p>
-          <p className="empty-text">
-            Completa el onboarding para crear la ficha de tu mascota.
-          </p>
-          <div className="empty-actions">
+        <EmptyState
+          title="Aún no tienes mascotas registradas."
+          actions={
             <Link
               href="/onboarding"
               className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
             >
               Ir a onboarding
             </Link>
-          </div>
-        </div>
+          }
+        >
+          Completa el onboarding para crear la ficha de tu mascota.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">

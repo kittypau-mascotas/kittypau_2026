@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import Alert from "@/app/_components/alert";
+import EmptyState from "@/app/_components/empty-state";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -523,34 +525,38 @@ export default function BowlPage() {
       </div>
 
       {state.error && (
-        <div className="alert alert-error flex flex-wrap items-center justify-between gap-3">
-          <span>{state.error}</span>
-          <Link
-            href="/login"
-            className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
-          >
-            Iniciar sesión
-          </Link>
-        </div>
+        <Alert
+          variant="error"
+          title="Error"
+          actions={
+            <Link
+              href="/login"
+              className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+            >
+              Iniciar sesión
+            </Link>
+          }
+        >
+          {state.error}
+        </Alert>
       )}
 
       {state.isLoading ? (
         <div className="surface-card freeform-rise px-6 py-6">Cargando estado...</div>
       ) : state.devices.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-title">No hay dispositivos vinculados.</p>
-          <p className="empty-text">
-            Conecta un plato para ver batería, conexión y diagnóstico.
-          </p>
-          <div className="empty-actions">
+        <EmptyState
+          title="No hay dispositivos vinculados."
+          actions={
             <Link
               href="/onboarding"
               className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
             >
               Ir a onboarding
             </Link>
-          </div>
-        </div>
+          }
+        >
+          Conecta un plato para ver batería, conexión y diagnóstico.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">
