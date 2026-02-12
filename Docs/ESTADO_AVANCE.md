@@ -31,6 +31,7 @@
 - Validacion CLI admin/dashboard documentada en `Docs/VALIDACION_ADMIN_DASHBOARD.md` (Vercel + Supabase + auth).
 - API: soporte CORS en `/api/*` (preflight `OPTIONS`) para evitar "Failed to fetch" en herramientas/orÃ­genes externos.
 - Storage: referencia de policies para `kittypau-photos` en `Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql` (configurar vÃ­a Dashboard).
+- Auth: refresh silencioso mejorado (se renueva access_token cuando estÃ¡ expirando) + helper `authFetch()` para reintentar una vez ante `401`.
 
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type ApiPet = {
@@ -82,12 +83,12 @@ export default function TodayPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
+  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
     let mounted = true;
     getValidAccessToken().then((value) => {
-      if (mounted) setToken(value);
+      if (mounted) setIsAuthed(Boolean(value));
     });
     return () => {
       mounted = false;
@@ -120,17 +121,12 @@ export default function TodayPage() {
   };
 
   const loadReadings = async (deviceId: string, cursor?: string | null) => {
-    if (!token) {
-      return { data: [] as ApiReading[], nextCursor: null as string | null };
-    }
     const params = new URLSearchParams({
       device_id: deviceId,
       limit: "50",
     });
     if (cursor) params.set("cursor", cursor);
-    const res = await fetch(`/api/readings?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await authFetch(`/api/readings?${params.toString()}`);
     if (!res.ok) {
       throw new Error("No se pudieron cargar las lecturas.");
     }
@@ -142,7 +138,7 @@ export default function TodayPage() {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (isAuthed === false) {
       setState({
         isLoading: false,
         error: "Necesitas iniciar sesión para ver tu feed.",
@@ -156,16 +152,14 @@ export default function TodayPage() {
       return;
     }
 
+    if (isAuthed === null) return;
+
     const load = async () => {
       try {
         const [petsRes, devicesRes, profileRes] = await Promise.all([
-          fetch("/api/pets?limit=20", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("/api/devices?limit=20", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("/api/profiles", { headers: { Authorization: `Bearer ${token}` } }),
+          authFetch("/api/pets?limit=20"),
+          authFetch("/api/devices?limit=20"),
+          authFetch("/api/profiles"),
         ]);
 
         if (!petsRes.ok) {
@@ -238,15 +232,15 @@ export default function TodayPage() {
     };
 
     void load();
-  }, [token]);
+  }, [isAuthed]);
 
   useEffect(() => {
-    if (!token || typeof window === "undefined") return;
+    if (!isAuthed || typeof window === "undefined") return;
     const seen = window.localStorage.getItem("kittypau_guide_seen");
     if (!seen) {
       setShowGuide(true);
     }
-  }, [token]);
+  }, [isAuthed]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
