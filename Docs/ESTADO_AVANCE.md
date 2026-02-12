@@ -29,6 +29,8 @@
 - Portal admin base implementado: `admin_roles`, vista `admin_dashboard_live`, endpoint `GET /api/admin/overview` y vista web `/admin`.
 - Usuario admin operativo creado: `javomauro.contacto@gmail.com` (rol `owner_admin`).
 - Validacion CLI admin/dashboard documentada en `Docs/VALIDACION_ADMIN_DASHBOARD.md` (Vercel + Supabase + auth).
+- API: soporte CORS en `/api/*` (preflight `OPTIONS`) para evitar "Failed to fetch" en herramientas/orÃ­genes externos.
+- Storage: referencia de policies para `kittypau-photos` en `Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql` (configurar vÃ­a Dashboard).
 
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).
