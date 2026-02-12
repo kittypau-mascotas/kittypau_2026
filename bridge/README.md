@@ -8,14 +8,25 @@ Este servicio escucha en HiveMQ y reenvia los mensajes al webhook de tu API.
 ## Configuracion
 Crear un archivo `.env` en esta carpeta con:
 ```
-MQTT_HOST=cf8e2e9138234a86b5d9ff9332cfac63.s1.eu.hivemq.cloud
+MQTT_HOST=<TU_HOST_HIVEMQ>
 MQTT_PORT=8883
-MQTT_USERNAME=Kittypau
-MQTT_PASSWORD=Kittypau1234
+MQTT_USERNAME=<TU_USUARIO>
+MQTT_PASSWORD=<TU_PASSWORD>
 MQTT_TOPIC=kittypau/+/telemetry
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
-WEBHOOK_TOKEN=3f8c9d6a7b4e2f1d0c9a8b7e6d5c4f3a
+WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+
+# Heartbeat (bridge -> API)
+BRIDGE_ID=KPBR0001
+BRIDGE_HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+BRIDGE_HEARTBEAT_TOKEN=<TU_BRIDGE_HEARTBEAT_TOKEN>
+HEARTBEAT_INTERVAL_SEC=30
 ```
+
+Notas:
+- `WEBHOOK_TOKEN` debe coincidir con `MQTT_WEBHOOK_SECRET` en Vercel.
+- `BRIDGE_HEARTBEAT_TOKEN` debe coincidir con `BRIDGE_HEARTBEAT_SECRET` en Vercel.
+- No versionar `.env`.
 
 ## Nota sobre device_code
 Si el payload no trae `deviceId`/`deviceCode`, el bridge intenta obtenerlo del topic.
@@ -34,3 +45,6 @@ npm start
 ## Notas
 - Este servicio funciona como alternativa cuando HiveMQ no ofrece webhooks nativos en el plan Free.
 - Si lo usas en produccion, despliega este puente en un servicio 24/7 (Railway, Render, Fly.io).
+
+## Seguridad
+Si alguna credencial se expuso por error, debes rotarla inmediatamente (HiveMQ + tokens de Vercel).

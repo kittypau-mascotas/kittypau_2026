@@ -1,0 +1,23 @@
+[Unit]
+Description=Kittypau MQTT Bridge (HiveMQ -> Vercel API)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kittypau
+WorkingDirectory=/home/kittypau/kittypau-bridge
+EnvironmentFile=/home/kittypau/kittypau-bridge/.env
+ExecStart=/usr/bin/node /home/kittypau/kittypau-bridge/src/index.js
+Restart=always
+RestartSec=3
+TimeoutStopSec=10
+KillSignal=SIGINT
+
+# Hardening (keeps it simple; can be tightened later)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+

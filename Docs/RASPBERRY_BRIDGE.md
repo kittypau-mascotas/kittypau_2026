@@ -44,11 +44,13 @@ MQTT_PASSWORD=<TU_PASSWORD>
 MQTT_TOPIC=+/SENSORS
 WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
 WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
-HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
-HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
+BRIDGE_ID=KPBR0001
+BRIDGE_HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+BRIDGE_HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
+HEARTBEAT_INTERVAL_SEC=30
 ```
 **Regla**: `WEBHOOK_TOKEN` debe ser igual a `MQTT_WEBHOOK_SECRET` en Vercel.
-**Regla**: `HEARTBEAT_TOKEN` debe ser igual a `BRIDGE_HEARTBEAT_SECRET` en Vercel.
+**Regla**: `BRIDGE_HEARTBEAT_TOKEN` debe ser igual a `BRIDGE_HEARTBEAT_SECRET` en Vercel.
 
 **Nota**: si el firmware publica en otro patron (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
 
@@ -235,10 +237,10 @@ El bridge debe reportar su estado para evitar ceguera operativa.
 ```
 POST /api/bridge/heartbeat
 Headers:
-  Authorization: Bearer <SERVICE_ROLE>
+  x-bridge-token: <BRIDGE_HEARTBEAT_TOKEN>
 Body:
 {
-  "bridge_id": "raspi-kitty-01",
+  "bridge_id": "KPBR0001",
   "ip": "192.168.1.90",
   "uptime_sec": 123456,
   "mqtt_connected": true,
@@ -250,7 +252,7 @@ Body:
 ```
 GET /api/bridge/health-check?bridge_id=raspi-kitty-01
 Headers:
-  Authorization: Bearer <SERVICE_ROLE>
+  x-bridge-token: <BRIDGE_HEARTBEAT_TOKEN>
 ```
 
 **Regla**
@@ -342,10 +344,36 @@ Esperado:
 ---
 
 ## Service 24/7 (referencia)
-> Esta parte queda para el equipo de infraestructura.
-- `systemd` con auto-restart.
-- watchdog opcional.
-- buffer offline opcional.
+Objetivo: que el bridge quede corriendo 24/7 y reinicie solo si cae.
+
+### 1) Estructura sugerida en la Pi
+- Carpeta: `/home/kittypau/kittypau-bridge`
+- `.env` en esa carpeta (no versionado), permisos: `chmod 600 .env`
+
+### 2) Instalar como servicio systemd
+En este repo existe plantilla:
+- `bridge/systemd/kittypau-bridge.service`
+
+Pasos (en la Pi):
+```bash
+sudo cp /home/kittypau/kittypau-bridge/systemd/kittypau-bridge.service /etc/systemd/system/kittypau-bridge.service
+sudo systemctl daemon-reload
+sudo systemctl enable kittypau-bridge
+sudo systemctl start kittypau-bridge
+sudo systemctl status kittypau-bridge --no-pager
+```
+
+Logs:
+```bash
+journalctl -u kittypau-bridge -f
+```
+
+### 3) Validación rápida (operativa)
+- Debe verse `MQTT connected` y `Subscribed to: ...`
+- Debe verse `Heartbeat ok` cada ~`HEARTBEAT_INTERVAL_SEC`
+- En Supabase:
+  - `bridge_heartbeats.last_seen` debe actualizarse
+  - `bridge_status_live.bridge_status` debe pasar a `active` (o `degraded` si mqtt_connected=false)
 
 ---
 
