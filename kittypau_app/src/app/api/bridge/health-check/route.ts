@@ -4,8 +4,19 @@ import { apiError, logRequestEnd, startRequestTimer } from "../../_utils";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
-  const token = req.headers.get("x-bridge-token");
-  if (!token || token !== process.env.BRIDGE_HEARTBEAT_SECRET) {
+  const bridgeToken = req.headers.get("x-bridge-token");
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : null;
+  const isBridgeAuth =
+    !!bridgeToken && bridgeToken === process.env.BRIDGE_HEARTBEAT_SECRET;
+  const isCronAuth =
+    !!bearerToken &&
+    !!process.env.CRON_SECRET &&
+    bearerToken === process.env.CRON_SECRET;
+
+  if (!isBridgeAuth && !isCronAuth) {
     return apiError(req, 401, "UNAUTHORIZED", "Unauthorized");
   }
 
@@ -28,6 +39,21 @@ export async function GET(req: NextRequest) {
     const lastSeen = row.last_seen ? new Date(row.last_seen).toISOString() : null;
     return !lastSeen || lastSeen < cutoff;
   });
+
+  const offlineBridgeIds = offline
+    .map((row) => row.bridge_id)
+    .filter((id): id is string => /^KPBR\d{4}$/.test(id));
+
+  if (offlineBridgeIds.length > 0) {
+    await supabaseServer.from("bridge_telemetry").insert(
+      offlineBridgeIds.map((bridgeId) => ({
+        device_id: bridgeId,
+        device_type: "bridge",
+        bridge_status: "offline",
+        recorded_at: new Date().toISOString(),
+      }))
+    );
+  }
 
   const ok = offline.length === 0 && (data?.length ?? 0) > 0;
   logRequestEnd(req, startedAt, 200, { ok, offline_count: offline.length });

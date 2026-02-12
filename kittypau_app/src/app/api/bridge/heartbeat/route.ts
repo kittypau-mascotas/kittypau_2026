@@ -8,6 +8,14 @@ type HeartbeatPayload = {
   uptime_sec?: number;
   mqtt_connected?: boolean;
   last_mqtt_at?: string;
+  device_model?: string;
+  hostname?: string;
+  wifi_ssid?: string;
+  wifi_ip?: string;
+  ram_used_mb?: number;
+  ram_total_mb?: number;
+  disk_used_pct?: number;
+  cpu_temp?: number;
 };
 
 function normalizeString(value: unknown): string | null {
@@ -74,6 +82,39 @@ export async function POST(req: NextRequest) {
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
+
+  const bridgeStatus =
+    mqttConnected === false ? "degraded" : "active";
+
+  // Keep bridge telemetry status in sync with latest heartbeat.
+  await supabaseServer.from("bridge_telemetry").insert({
+    device_id: bridgeId,
+    device_type: "bridge",
+    device_model: normalizeString(payload.device_model),
+    hostname: normalizeString(payload.hostname),
+    wifi_ssid: normalizeString(payload.wifi_ssid),
+    wifi_ip: normalizeString(payload.wifi_ip) ?? ip,
+    uptime_min:
+      uptimeSec !== null ? Math.max(0, Math.floor(uptimeSec / 60)) : null,
+    ram_used_mb:
+      typeof payload.ram_used_mb === "number" && Number.isFinite(payload.ram_used_mb)
+        ? Math.max(0, Math.floor(payload.ram_used_mb))
+        : null,
+    ram_total_mb:
+      typeof payload.ram_total_mb === "number" && Number.isFinite(payload.ram_total_mb)
+        ? Math.max(0, Math.floor(payload.ram_total_mb))
+        : null,
+    disk_used_pct:
+      typeof payload.disk_used_pct === "number" && Number.isFinite(payload.disk_used_pct)
+        ? Math.max(0, Math.floor(payload.disk_used_pct))
+        : null,
+    cpu_temp:
+      typeof payload.cpu_temp === "number" && Number.isFinite(payload.cpu_temp)
+        ? payload.cpu_temp
+        : null,
+    bridge_status: bridgeStatus,
+    recorded_at: new Date().toISOString(),
+  });
 
   logRequestEnd(req, startedAt, 200, { bridge_id: bridgeId });
   return NextResponse.json({ ok: true, bridge_id: bridgeId }, { status: 200 });

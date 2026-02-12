@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/bridge/health-check?stale_min=2",
+      "schedule": "*/1 * * * *"
+    }
+  ]
+}
