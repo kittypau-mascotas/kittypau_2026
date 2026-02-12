@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     : 5 * 60_000;
   const cutoff = new Date(Date.now() - staleMs).toISOString();
   const deviceStaleMinutes = Number(
-    req.nextUrl.searchParams.get("device_stale_min") ?? "5"
+    req.nextUrl.searchParams.get("device_stale_min") ?? "10"
   );
   const deviceStaleMs = Number.isFinite(deviceStaleMinutes)
     ? Math.max(1, deviceStaleMinutes) * 60_000
@@ -87,8 +87,9 @@ export async function GET(req: NextRequest) {
 
   const { data: staleDevices, error: staleDevicesError } = await supabaseServer
     .from("devices")
-    .select("id, device_id, device_state, last_seen")
+    .select("id, device_id, device_state, last_seen, retired_at")
     .ilike("device_id", "KPCL%")
+    .is("retired_at", null)
     .or(`last_seen.is.null,last_seen.lt.${deviceCutoff}`);
 
   if (staleDevicesError) {
@@ -123,13 +124,15 @@ export async function GET(req: NextRequest) {
   const { count: totalKpclDevices, error: totalDevicesError } = await supabaseServer
     .from("devices")
     .select("id", { count: "exact", head: true })
-    .ilike("device_id", "KPCL%");
+    .ilike("device_id", "KPCL%")
+    .is("retired_at", null);
   if (totalDevicesError) {
     return apiError(req, 500, "SUPABASE_ERROR", totalDevicesError.message);
   }
 
   const total = totalKpclDevices ?? 0;
   const offlineCount = (staleDevices ?? []).length;
+  const onlineCount = Math.max(0, total - offlineCount);
   const outageByCount = offlineCount >= 3;
   const outageByRatio = total > 0 && offlineCount / total >= 0.6;
   const generalOutage = outageByCount || outageByRatio;
@@ -171,7 +174,13 @@ export async function GET(req: NextRequest) {
   }
 
   const ok = offline.length === 0 && (data?.length ?? 0) > 0;
-  logRequestEnd(req, startedAt, 200, { ok, offline_count: offline.length });
+  logRequestEnd(req, startedAt, 200, {
+    ok,
+    offline_count: offline.length,
+    kpcl_total: total,
+    kpcl_online: onlineCount,
+    kpcl_offline: offlineCount,
+  });
 
   return NextResponse.json(
     {
@@ -179,6 +188,9 @@ export async function GET(req: NextRequest) {
       stale_min: staleMinutes,
       offline_count: offline.length,
       device_stale_min: deviceStaleMinutes,
+      kpcl_total_devices: total,
+      kpcl_online_devices: onlineCount,
+      kpcl_offline_devices: offlineCount,
       offline_devices_count: offlineDevices.length,
       bridges: data ?? [],
       offline,
