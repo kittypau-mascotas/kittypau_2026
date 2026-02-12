@@ -27,8 +27,6 @@ const defaultState: LoadState = {
   profile: null,
 };
 
-const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
 export default function SettingsPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [form, setForm] = useState<ApiProfile | null>(null);
@@ -38,7 +36,7 @@ export default function SettingsPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const loadProfile = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/profiles`, {
+    const res = await fetch(`/api/profiles`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -47,7 +45,7 @@ export default function SettingsPage() {
   };
 
   const saveProfile = async (token: string, payload: ApiProfile) => {
-    const res = await fetch(`${apiBase}/api/profiles`, {
+    const res = await fetch(`/api/profiles`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

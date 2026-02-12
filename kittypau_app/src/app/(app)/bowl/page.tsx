@@ -60,8 +60,6 @@ const defaultState: LoadState = {
   devices: [],
 };
 
-const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
   if (payload && typeof payload === "object" && "data" in payload) {
@@ -259,7 +257,7 @@ export default function BowlPage() {
   const [readingsError, setReadingsError] = useState<string | null>(null);
 
   const loadDevices = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/devices`, {
+    const res = await fetch(`/api/devices`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -272,7 +270,7 @@ export default function BowlPage() {
     const params = new URLSearchParams();
     params.set("device_id", deviceId);
     params.set("limit", "30");
-    const res = await fetch(`${apiBase}/api/readings?${params.toString()}`, {
+    const res = await fetch(`/api/readings?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

@@ -47,8 +47,6 @@ const defaultState: LoadState = {
   readings: [],
 };
 
-const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
 const formatTimestamp = (value: string) => {
   const ts = new Date(value);
   if (Number.isNaN(ts.getTime())) return value;
@@ -129,7 +127,7 @@ export default function StoryPage() {
   const [dayOffset, setDayOffset] = useState(0);
 
   const loadPets = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/pets`, {
+    const res = await fetch(`/api/pets`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -138,7 +136,7 @@ export default function StoryPage() {
   };
 
   const loadDevices = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/devices`, {
+    const res = await fetch(`/api/devices`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -148,7 +146,7 @@ export default function StoryPage() {
 
   const loadReadings = async (token: string, deviceId: string) => {
     const res = await fetch(
-      `${apiBase}/api/readings?device_id=${deviceId}&limit=50`,
+      `/api/readings?device_id=${deviceId}&limit=50`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",

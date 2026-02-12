@@ -52,8 +52,6 @@ const defaultState: LoadState = {
   readings: [],
 };
 
-const apiBase = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
 const formatTimestamp = (value: string) => {
   const ts = new Date(value);
   if (Number.isNaN(ts.getTime())) return value;
@@ -82,7 +80,7 @@ export default function PetPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const loadPets = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/pets`, {
+    const res = await fetch(`/api/pets`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -92,7 +90,7 @@ export default function PetPage() {
   };
 
   const savePet = async (token: string, petId: string, payload: Partial<ApiPet>) => {
-    const res = await fetch(`${apiBase}/api/pets/${petId}`, {
+    const res = await fetch(`/api/pets/${petId}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -105,7 +103,7 @@ export default function PetPage() {
   };
 
   const loadDevices = async (token: string) => {
-    const res = await fetch(`${apiBase}/api/devices`, {
+    const res = await fetch(`/api/devices`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
@@ -116,7 +114,7 @@ export default function PetPage() {
 
   const loadReadings = async (token: string, deviceId: string) => {
     const res = await fetch(
-      `${apiBase}/api/readings?device_id=${deviceId}&limit=80`,
+      `/api/readings?device_id=${deviceId}&limit=80`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
