@@ -126,3 +126,13 @@ Tareas:
 
 ## Plan mejora DB actual (Supabase)
 - Ver Docs/PLAN_MEJORA_DB_ACTUAL.md para fases, SQL y checklist.
+
+---
+
+## Tareas pendientes: Operacion y Confiabilidad IoT
+1. Observabilidad: consolidar health-checks, estado vivo (`bridge_status_live`) y metricas operativas por bridge/dispositivo.
+2. Monitoreo de disponibilidad: deteccion de `offline` por timeout para bridge (KPBR) y platos/sensores (KPCL).
+3. Gestion de incidentes: registrar y cerrar incidentes (`general_device_outage_detected` / `general_device_outage_recovered`).
+4. Auditoria de eventos: normalizar `audit_events` para cambios de estado (`bridge_offline_detected`, `device_offline_detected`).
+5. Hardening backend: reforzar validaciones de estado, consistencia de IDs y ejecucion segura de chequeos en segundo plano.
+6. Operacion DevOps/Platform: alinear Vercel + Supabase + bridge (variables, despliegue, verificacion y runbook).

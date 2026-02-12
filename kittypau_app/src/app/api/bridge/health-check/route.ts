@@ -106,8 +106,8 @@ export async function GET(req: NextRequest) {
     if (updateDeviceError) continue;
 
     offlineDevices.push(device.device_id);
-    await logAudit({
-      event_type: "device_offline_detected",
+      await logAudit({
+        event_type: "device_offline_detected",
       entity_type: "device",
       entity_id: device.id,
       payload: {
@@ -116,6 +116,56 @@ export async function GET(req: NextRequest) {
         next_state: "offline",
         source: "health_check",
         message: `Plato/sensor ${device.device_id} se apagó o perdió conexión.`,
+      },
+    });
+  }
+
+  const { count: totalKpclDevices, error: totalDevicesError } = await supabaseServer
+    .from("devices")
+    .select("id", { count: "exact", head: true })
+    .ilike("device_id", "KPCL%");
+  if (totalDevicesError) {
+    return apiError(req, 500, "SUPABASE_ERROR", totalDevicesError.message);
+  }
+
+  const total = totalKpclDevices ?? 0;
+  const offlineCount = (staleDevices ?? []).length;
+  const outageByCount = offlineCount >= 3;
+  const outageByRatio = total > 0 && offlineCount / total >= 0.6;
+  const generalOutage = outageByCount || outageByRatio;
+
+  const { data: lastOutageEvent } = await supabaseServer
+    .from("audit_events")
+    .select("event_type, created_at")
+    .in("event_type", [
+      "general_device_outage_detected",
+      "general_device_outage_recovered",
+    ])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const lastEventType = lastOutageEvent?.event_type ?? null;
+  if (generalOutage && lastEventType !== "general_device_outage_detected") {
+    await logAudit({
+      event_type: "general_device_outage_detected",
+      entity_type: "system",
+      payload: {
+        source: "health_check",
+        message: "Falla general detectada en dispositivos KPCL.",
+        total_devices: total,
+        stale_devices: offlineCount,
+      },
+    });
+  } else if (!generalOutage && lastEventType === "general_device_outage_detected") {
+    await logAudit({
+      event_type: "general_device_outage_recovered",
+      entity_type: "system",
+      payload: {
+        source: "health_check",
+        message: "Recuperación de falla general en dispositivos KPCL.",
+        total_devices: total,
+        stale_devices: offlineCount,
       },
     });
   }

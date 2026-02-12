@@ -17,6 +17,16 @@
 3. Lecturas (`readings`) consultables por `device_uuid`.
 4. Trigger actualiza `devices.last_seen` y `battery_level`.
 
+## Actualizado hoy (Bridge + disponibilidad)
+- Endpoint `GET /api/bridge/health-check` reforzado:
+- Detecta bridge offline y registra `bridge_offline_detected` en `audit_events`.
+- Detecta dispositivos KPCL offline por timeout, actualiza `devices.device_state='offline'` y registra `device_offline_detected`.
+- Detecta falla general de dispositivos y registra:
+- `general_device_outage_detected` / `general_device_outage_recovered`.
+- Endpoint `POST /api/bridge/heartbeat` ahora registra cambios de estado en `audit_events` (`bridge_status_changed`).
+- Vista SQL `public.bridge_status_live` creada para estado vivo (`active`/`degraded`/`offline`) sin depender de cron de Vercel.
+- `GET /api/devices` dispara health-check en segundo plano (best-effort) para ejecutar detección operativa sin cron en plan Hobby.
+
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).
 2. Realtime en dashboard (suscripcion a readings).
@@ -186,6 +196,11 @@
 - Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
 - Front: integrar Realtime en `/today` y `/story`.
 - Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
+- Observabilidad IoT: consolidar health-checks, estado vivo y métricas operativas de bridge/KPCL.
+- Monitoreo de disponibilidad: detección y trazabilidad de offline por timeout.
+- Gestión de incidentes: apertura/cierre de incidentes generales en `audit_events`.
+- Hardening backend: validaciones de transición de estado y consistencia de IDs.
+- Operación DevOps/Platform: checklist Vercel + Supabase + bridge para operación continua.
 
 
 

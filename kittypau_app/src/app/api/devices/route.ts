@@ -13,12 +13,36 @@ import { supabaseServer } from "@/lib/supabase/server";
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
 
+function triggerBackgroundHealthCheck(req: NextRequest) {
+  const token = process.env.BRIDGE_HEARTBEAT_SECRET;
+  if (!token) return;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1500);
+
+  void fetch(
+    `${req.nextUrl.origin}/api/bridge/health-check?stale_min=5&device_stale_min=5&source=devices_get`,
+    {
+      method: "GET",
+      headers: { "x-bridge-token": token },
+      cache: "no-store",
+      signal: controller.signal,
+    }
+  )
+    .catch(() => {
+      // Best-effort trigger only.
+    })
+    .finally(() => clearTimeout(timeout));
+}
+
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
   if ("error" in auth) {
     return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
   }
+
+  triggerBackgroundHealthCheck(req);
 
   const { supabase, user } = auth;
   const url = new URL(req.url);
