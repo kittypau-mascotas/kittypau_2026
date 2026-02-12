@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, logRequestEnd, startRequestTimer } from "../../_utils";
+import { logAudit } from "../../_audit";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
@@ -25,6 +26,13 @@ export async function GET(req: NextRequest) {
     ? Math.max(1, staleMinutes) * 60_000
     : 5 * 60_000;
   const cutoff = new Date(Date.now() - staleMs).toISOString();
+  const deviceStaleMinutes = Number(
+    req.nextUrl.searchParams.get("device_stale_min") ?? "5"
+  );
+  const deviceStaleMs = Number.isFinite(deviceStaleMinutes)
+    ? Math.max(1, deviceStaleMinutes) * 60_000
+    : 5 * 60_000;
+  const deviceCutoff = new Date(Date.now() - deviceStaleMs).toISOString();
 
   const { data, error } = await supabaseServer
     .from("bridge_heartbeats")
@@ -45,14 +53,71 @@ export async function GET(req: NextRequest) {
     .filter((id): id is string => /^KPBR\d{4}$/.test(id));
 
   if (offlineBridgeIds.length > 0) {
-    await supabaseServer.from("bridge_telemetry").insert(
-      offlineBridgeIds.map((bridgeId) => ({
+    for (const bridgeId of offlineBridgeIds) {
+      const { data: lastStatusRow } = await supabaseServer
+        .from("bridge_telemetry")
+        .select("bridge_status")
+        .eq("device_id", bridgeId)
+        .order("recorded_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastStatusRow?.bridge_status === "offline") continue;
+
+      await supabaseServer.from("bridge_telemetry").insert({
         device_id: bridgeId,
         device_type: "bridge",
         bridge_status: "offline",
         recorded_at: new Date().toISOString(),
-      }))
-    );
+      });
+
+      await logAudit({
+        event_type: "bridge_offline_detected",
+        entity_type: "bridge",
+        payload: {
+          bridge_id: bridgeId,
+          previous_status: lastStatusRow?.bridge_status ?? null,
+          next_status: "offline",
+          source: "health_check",
+          message: `Bridge ${bridgeId} se apagó o perdió conexión.`,
+        },
+      });
+    }
+  }
+
+  const { data: staleDevices, error: staleDevicesError } = await supabaseServer
+    .from("devices")
+    .select("id, device_id, device_state, last_seen")
+    .ilike("device_id", "KPCL%")
+    .or(`last_seen.is.null,last_seen.lt.${deviceCutoff}`);
+
+  if (staleDevicesError) {
+    return apiError(req, 500, "SUPABASE_ERROR", staleDevicesError.message);
+  }
+
+  const offlineDevices: string[] = [];
+  for (const device of staleDevices ?? []) {
+    if (device.device_state === "offline") continue;
+
+    const { error: updateDeviceError } = await supabaseServer
+      .from("devices")
+      .update({ device_state: "offline" })
+      .eq("id", device.id);
+    if (updateDeviceError) continue;
+
+    offlineDevices.push(device.device_id);
+    await logAudit({
+      event_type: "device_offline_detected",
+      entity_type: "device",
+      entity_id: device.id,
+      payload: {
+        device_id: device.device_id,
+        previous_state: device.device_state,
+        next_state: "offline",
+        source: "health_check",
+        message: `Plato/sensor ${device.device_id} se apagó o perdió conexión.`,
+      },
+    });
   }
 
   const ok = offline.length === 0 && (data?.length ?? 0) > 0;
@@ -63,8 +128,11 @@ export async function GET(req: NextRequest) {
       ok,
       stale_min: staleMinutes,
       offline_count: offline.length,
+      device_stale_min: deviceStaleMinutes,
+      offline_devices_count: offlineDevices.length,
       bridges: data ?? [],
       offline,
+      offline_devices: offlineDevices,
     },
     { status: 200 }
   );

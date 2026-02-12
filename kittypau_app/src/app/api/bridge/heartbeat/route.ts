@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, enforceBodySize, logRequestEnd, startRequestTimer } from "../../_utils";
+import { logAudit } from "../../_audit";
 
 type HeartbeatPayload = {
   bridge_id?: string;
@@ -86,6 +87,15 @@ export async function POST(req: NextRequest) {
   const bridgeStatus =
     mqttConnected === false ? "degraded" : "active";
 
+  const { data: lastStatusRow } = await supabaseServer
+    .from("bridge_telemetry")
+    .select("bridge_status")
+    .eq("device_id", bridgeId)
+    .order("recorded_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const previousStatus = lastStatusRow?.bridge_status ?? null;
+
   // Keep bridge telemetry status in sync with latest heartbeat.
   await supabaseServer.from("bridge_telemetry").insert({
     device_id: bridgeId,
@@ -115,6 +125,19 @@ export async function POST(req: NextRequest) {
     bridge_status: bridgeStatus,
     recorded_at: new Date().toISOString(),
   });
+
+  if (previousStatus !== bridgeStatus) {
+    await logAudit({
+      event_type: "bridge_status_changed",
+      entity_type: "bridge",
+      payload: {
+        bridge_id: bridgeId,
+        previous_status: previousStatus,
+        next_status: bridgeStatus,
+        source: "heartbeat",
+      },
+    });
+  }
 
   logRequestEnd(req, startedAt, 200, { bridge_id: bridgeId });
   return NextResponse.json({ ok: true, bridge_id: bridgeId }, { status: 200 });
