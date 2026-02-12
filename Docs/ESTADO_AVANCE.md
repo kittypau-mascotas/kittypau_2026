@@ -26,6 +26,8 @@
 - Endpoint `POST /api/bridge/heartbeat` ahora registra cambios de estado en `audit_events` (`bridge_status_changed`).
 - Vista SQL `public.bridge_status_live` creada para estado vivo (`active`/`degraded`/`offline`) sin depender de cron de Vercel.
 - `GET /api/devices` dispara health-check en segundo plano (best-effort) para ejecutar detección operativa sin cron en plan Hobby.
+- Portal admin base implementado: `admin_roles`, vista `admin_dashboard_live`, endpoint `GET /api/admin/overview` y vista web `/admin`.
+- Usuario admin operativo creado: `javomauro.contacto@gmail.com` (rol `owner_admin`).
 
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).

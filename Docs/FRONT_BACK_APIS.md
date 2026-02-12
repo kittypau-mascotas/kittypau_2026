@@ -98,6 +98,12 @@ src/app/
    - Health check del bridge para cron (server-only).
    - Requiere `x-bridge-token`.
 
+11. `GET /api/admin/overview`
+   - Dashboard admin (server-only).
+   - Requiere `Authorization: Bearer <access_token>`.
+   - Verifica rol en `admin_roles`.
+   - Retorna resumen ejecutivo/operativo + feed de `audit_events` en línea.
+
 Payload propuesto:
 ```json
 {
@@ -183,7 +189,15 @@ $env:MQTT_WEBHOOK_SECRET="TU_SECRETO"
 ## Auditoria
 - Tabla `audit_events` (server-only).
 - Eventos actuales: `profile_created`, `profile_updated`, `pet_created`, `device_created`, `reading_ingested`.
+- Eventos operativos: `bridge_status_changed`, `bridge_offline_detected`, `device_offline_detected`,
+  `general_device_outage_detected`, `general_device_outage_recovered`.
 Nota: no se expone a frontend (solo service role).
+
+## Modelo admin
+- Tabla: `admin_roles` (`user_id`, `role`, `active`).
+- Roles soportados: `owner_admin`, `ops_admin`, `support_admin`, `readonly_admin`.
+- Vista: `admin_dashboard_live` (KPCL online/offline, bridges online/offline, incidentes 24h).
+- Ruta UI: `/admin`.
 
 ## Notas sobre Vercel Free
 - Mantener el API liviano (validación y escritura en DB).

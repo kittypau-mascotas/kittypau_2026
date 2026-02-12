@@ -20,6 +20,7 @@ export default function AppNav() {
     photo_url?: string | null;
   } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   if (pathname?.startsWith("/onboarding")) {
     return null;
@@ -44,6 +45,17 @@ export default function AppNav() {
           }
         })
         .catch(() => undefined);
+
+      fetch("/api/admin/overview?audit_limit=1", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!isMounted) return;
+          setIsAdmin(res.ok);
+        })
+        .catch(() => {
+          if (isMounted) setIsAdmin(false);
+        });
     });
     return () => {
       isMounted = false;
@@ -104,6 +116,15 @@ export default function AppNav() {
               >
                 Editar perfil
               </Link>
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  className="mt-1 block rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Dashboard admin
+                </Link>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {
