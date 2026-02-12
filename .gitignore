@@ -13,3 +13,4 @@ bridge/.env
 Docs/.env.test.local
 .vercel
 .env*.local
+Test Graficos/
