@@ -125,3 +125,8 @@ Todos deben:
 ## Estado
 - Documento de diseño: listo.
 - Implementación: pendiente (prioridad alta, bloque "admin").
+
+## Incremento aplicado (MVP Ops)
+- Filtros básicos para `audit_events` (críticos/bridge/dispositivos/outages/todos).
+- Ventana de tiempo configurable (15 min, 60 min, 3 h, 24 h).
+- Deduplicación en backend por ventana corta (por defecto 30s) para evitar spam de eventos repetidos.

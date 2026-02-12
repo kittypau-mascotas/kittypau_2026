@@ -26,6 +26,8 @@ type AuditEvent = {
   created_at: string;
 };
 
+type AuditFilter = "critical" | "bridge" | "devices" | "outages" | "all";
+
 type BridgeLive = {
   device_id: string;
   bridge_status: "active" | "degraded" | "offline";
@@ -67,6 +69,8 @@ export default function AdminPage() {
     null
   );
   const [activeGeneralOutage, setActiveGeneralOutage] = useState(false);
+  const [auditFilter, setAuditFilter] = useState<AuditFilter>("critical");
+  const [auditWindowMin, setAuditWindowMin] = useState(60);
 
   useEffect(() => {
     let mounted = true;
@@ -76,7 +80,16 @@ export default function AdminPage() {
         if (!token) {
           throw new Error("Necesitas iniciar sesión.");
         }
-        const res = await fetch("/api/admin/overview?audit_limit=40", {
+        const params = new URLSearchParams({
+          audit_limit: "60",
+          audit_window_min: String(auditWindowMin),
+          audit_dedup_sec: "30",
+        });
+        if (auditFilter === "bridge") params.set("audit_type", "bridge_offline_detected");
+        if (auditFilter === "devices") params.set("audit_type", "device_offline_detected");
+        if (auditFilter === "outages") params.set("audit_type", "general_device_outage_detected");
+
+        const res = await fetch(`/api/admin/overview?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
         });
@@ -91,7 +104,21 @@ export default function AdminPage() {
         if (!mounted) return;
         setRole(payload.admin_role ?? null);
         setSummary(payload.summary ?? null);
-        setEvents((payload.audit_events ?? []) as AuditEvent[]);
+        const nextEvents = (payload.audit_events ?? []) as AuditEvent[];
+        if (auditFilter === "critical") {
+          setEvents(
+            nextEvents.filter((event) =>
+              [
+                "bridge_offline_detected",
+                "device_offline_detected",
+                "general_device_outage_detected",
+                "general_device_outage_recovered",
+              ].includes(event.event_type)
+            )
+          );
+        } else {
+          setEvents(nextEvents);
+        }
         setBridges((payload.bridges ?? []) as BridgeLive[]);
         setOfflineDevices((payload.offline_devices ?? []) as OfflineDevice[]);
         setIncidentCounters((payload.incident_counters ?? null) as IncidentCounters | null);
@@ -111,7 +138,7 @@ export default function AdminPage() {
       mounted = false;
       clearInterval(interval);
     };
-  }, [router]);
+  }, [router, auditFilter, auditWindowMin]);
 
   const kpiCards = useMemo(() => {
     if (!summary) return [];
@@ -374,9 +401,36 @@ export default function AdminPage() {
                 <h2 className="display-title text-xl font-semibold text-slate-900">
                   Audit events en línea
                 </h2>
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Auto refresh 15s
-                </span>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Auto refresh 15s
+                  </span>
+                  <select
+                    value={auditFilter}
+                    onChange={(event) =>
+                      setAuditFilter(event.target.value as AuditFilter)
+                    }
+                    className="h-8 rounded-[var(--radius)] border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-600"
+                    aria-label="Filtrar audit events"
+                  >
+                    <option value="critical">CrÃ­ticos</option>
+                    <option value="bridge">Bridge</option>
+                    <option value="devices">Dispositivos</option>
+                    <option value="outages">Outages</option>
+                    <option value="all">Todos</option>
+                  </select>
+                  <select
+                    value={auditWindowMin}
+                    onChange={(event) => setAuditWindowMin(Number(event.target.value))}
+                    className="h-8 rounded-[var(--radius)] border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-600"
+                    aria-label="Ventana de tiempo audit events"
+                  >
+                    <option value={15}>15 min</option>
+                    <option value={60}>60 min</option>
+                    <option value={180}>3 h</option>
+                    <option value={1440}>24 h</option>
+                  </select>
+                </div>
               </div>
               <div className="mt-4 overflow-x-auto">
                 <table className="min-w-full text-left text-xs text-slate-600">

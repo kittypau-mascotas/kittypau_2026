@@ -29,12 +29,27 @@ export async function GET(req: NextRequest) {
     Math.max(Number(req.nextUrl.searchParams.get("audit_limit") ?? 30), 1),
     100
   );
+  const auditTypeParam = req.nextUrl.searchParams.get("audit_type");
+  const auditType =
+    auditTypeParam && auditTypeParam.trim().length ? auditTypeParam.trim() : null;
+  const auditWindowMin = Math.min(
+    Math.max(Number(req.nextUrl.searchParams.get("audit_window_min") ?? 0), 0),
+    24 * 60
+  );
+  const auditDedupWindowSec = Math.min(
+    Math.max(Number(req.nextUrl.searchParams.get("audit_dedup_sec") ?? 30), 0),
+    300
+  );
   const offlineLimit = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("offline_limit") ?? 20), 1),
     100
   );
 
   const staleCutoff = new Date(Date.now() - 10 * 60_000).toISOString();
+  const auditSince =
+    auditWindowMin > 0
+      ? new Date(Date.now() - auditWindowMin * 60_000).toISOString()
+      : null;
 
   const [
     { data: summary, error: summaryError },
@@ -44,11 +59,16 @@ export async function GET(req: NextRequest) {
     { data: incidentWindowEvents, error: incidentError },
   ] = await Promise.all([
       supabaseServer.from("admin_dashboard_live").select("*").limit(1).maybeSingle(),
-      supabaseServer
-        .from("audit_events")
-        .select("id, event_type, actor_id, entity_type, entity_id, payload, created_at")
-        .order("created_at", { ascending: false })
-        .limit(auditLimit),
+      (() => {
+        let query = supabaseServer
+          .from("audit_events")
+          .select("id, event_type, actor_id, entity_type, entity_id, payload, created_at")
+          .order("created_at", { ascending: false })
+          .limit(auditLimit);
+        if (auditSince) query = query.gte("created_at", auditSince);
+        if (auditType) query = query.eq("event_type", auditType);
+        return query;
+      })(),
       supabaseServer
         .from("bridge_status_live")
         .select(
@@ -106,9 +126,30 @@ export async function GET(req: NextRequest) {
     incidentCounters.general_device_outage_detected >
     incidentCounters.general_device_outage_recovered;
 
+  const dedupedAuditEvents = (() => {
+    if (!auditDedupWindowSec) return auditEvents ?? [];
+    const out: typeof auditEvents = [];
+    const lastByKey = new Map<string, number>();
+    for (const row of auditEvents ?? []) {
+      const key = `${row.event_type}:${row.entity_type ?? ""}:${row.entity_id ?? ""}`;
+      const ts = Date.parse(row.created_at);
+      if (!Number.isFinite(ts)) {
+        out.push(row);
+        continue;
+      }
+      const last = lastByKey.get(key);
+      if (last !== undefined && Math.abs(last - ts) < auditDedupWindowSec * 1000) {
+        continue;
+      }
+      lastByKey.set(key, ts);
+      out.push(row);
+    }
+    return out;
+  })();
+
   logRequestEnd(req, startedAt, 200, {
     admin_role: adminRole.role,
-    audit_count: auditEvents?.length ?? 0,
+    audit_count: dedupedAuditEvents?.length ?? 0,
     bridge_count: bridges?.length ?? 0,
     offline_device_count: offlineDevices?.length ?? 0,
   });
@@ -116,7 +157,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     admin_role: adminRole.role,
     summary: summary ?? null,
-    audit_events: auditEvents ?? [],
+    audit_events: dedupedAuditEvents ?? [],
     bridges: bridges ?? [],
     offline_devices: offlineDevices ?? [],
     incident_counters: incidentCounters,
