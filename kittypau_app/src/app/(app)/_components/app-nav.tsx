@@ -26,6 +26,28 @@ export default function AppNav() {
     return null;
   }
 
+  if (pathname?.startsWith("/admin")) {
+    return (
+      <nav className="app-nav">
+        <div className="app-nav-inner">
+          <div className="app-nav-brand">
+            <span className="brand-title">MODO ADMIN</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              clearTokens();
+              window.location.href = "/login";
+            }}
+            className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </nav>
+    );
+  }
+
   useEffect(() => {
     let isMounted = true;
     getValidAccessToken().then((token) => {
