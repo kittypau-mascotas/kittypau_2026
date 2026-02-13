@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
@@ -27,6 +27,16 @@ type AuditEvent = {
 };
 
 type AuditFilter = "critical" | "bridge" | "devices" | "outages" | "all";
+
+type AuditGroup = {
+  key: string;
+  event_type: string;
+  entity_type: string | null;
+  message: string | null;
+  latest_at: string;
+  count: number;
+  sample: AuditEvent[];
+};
 
 type BridgeLive = {
   device_id: string;
@@ -103,6 +113,8 @@ export default function AdminPage() {
   const [activeGeneralOutage, setActiveGeneralOutage] = useState(false);
   const [auditFilter, setAuditFilter] = useState<AuditFilter>("critical");
   const [auditWindowMin, setAuditWindowMin] = useState(60);
+  const [groupAudit, setGroupAudit] = useState(true);
+  const [expandedGroupKey, setExpandedGroupKey] = useState<string | null>(null);
   const [healthCheckStatus, setHealthCheckStatus] = useState<{
     running: boolean;
     lastRunAt: string | null;
@@ -120,7 +132,7 @@ export default function AdminPage() {
       try {
         const token = await getValidAccessToken();
         if (!token) {
-          throw new Error("Necesitas iniciar sesiÃ³n.");
+          throw new Error("Necesitas iniciar sesión.");
         }
         const params = new URLSearchParams({
           audit_limit: "60",
@@ -211,6 +223,40 @@ export default function AdminPage() {
       },
     ];
   }, [summary]);
+
+  const groupedAudit = useMemo((): AuditGroup[] => {
+    const map = new Map<string, AuditGroup>();
+    for (const event of events) {
+      const message =
+        typeof event.payload?.message === "string" ? event.payload.message : null;
+      const key = `${event.event_type}:${event.entity_type ?? ""}:${message ?? ""}`;
+      const existing = map.get(key);
+      if (!existing) {
+        map.set(key, {
+          key,
+          event_type: event.event_type,
+          entity_type: event.entity_type ?? null,
+          message,
+          latest_at: event.created_at,
+          count: 1,
+          sample: [event],
+        });
+        continue;
+      }
+
+      existing.count += 1;
+      if (Date.parse(event.created_at) > Date.parse(existing.latest_at)) {
+        existing.latest_at = event.created_at;
+      }
+      if (existing.sample.length < 6) {
+        existing.sample.push(event);
+      }
+    }
+
+    return Array.from(map.values()).sort(
+      (a, b) => Date.parse(b.latest_at) - Date.parse(a.latest_at)
+    );
+  }, [events]);
 
   const criticalAlerts = useMemo(() => {
     const alerts: string[] = [];
@@ -520,6 +566,17 @@ export default function AdminPage() {
                   <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                     Auto refresh 15s
                   </span>
+                  <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-600">
+                    <input
+                      type="checkbox"
+                      checked={groupAudit}
+                      onChange={(event) => {
+                        setGroupAudit(event.target.checked);
+                        setExpandedGroupKey(null);
+                      }}
+                    />
+                    Agrupar repetidos
+                  </label>
                   <select
                     value={auditFilter}
                     onChange={(event) =>
@@ -528,7 +585,7 @@ export default function AdminPage() {
                     className="h-8 rounded-[var(--radius)] border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-600"
                     aria-label="Filtrar audit events"
                   >
-                    <option value="critical">CrÃ­ticos</option>
+                    <option value="critical">Críticos</option>
                     <option value="bridge">Bridge</option>
                     <option value="devices">Dispositivos</option>
                     <option value="outages">Outages</option>
@@ -555,36 +612,106 @@ export default function AdminPage() {
                       <th className="px-2 py-2 font-semibold">Hace</th>
                       <th className="px-2 py-2 font-semibold">Evento</th>
                       <th className="px-2 py-2 font-semibold">Entidad</th>
+                      <th className="px-2 py-2 font-semibold">Repeticiones</th>
                       <th className="px-2 py-2 font-semibold">Mensaje</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {events.map((event) => (
-                      <tr key={event.id} className="border-b border-slate-100">
-                        <td className="px-2 py-2">
-                          {new Date(event.created_at).toLocaleString("es-CL")}
-                        </td>
-                        <td className="px-2 py-2 whitespace-nowrap text-slate-500">
-                          {formatAgo(event.created_at)}
-                        </td>
-                        <td className="px-2 py-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className={eventBadge(event.event_type).className}>
-                              {eventBadge(event.event_type).label}
-                            </span>
-                            <span className="font-semibold text-slate-800">
-                              {event.event_type}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-2 py-2">{event.entity_type ?? "-"}</td>
-                        <td className="px-2 py-2">
-                          {typeof event.payload?.message === "string"
-                            ? event.payload.message
-                            : "-"}
-                        </td>
-                      </tr>
-                    ))}
+                    {(groupAudit
+                      ? groupedAudit
+                      : events.map(
+                          (event) =>
+                            ({
+                              key: event.id,
+                              event_type: event.event_type,
+                              entity_type: event.entity_type ?? null,
+                              message:
+                                typeof event.payload?.message === "string"
+                                  ? event.payload.message
+                                  : null,
+                              latest_at: event.created_at,
+                              count: 1,
+                              sample: [event],
+                            }) as AuditGroup
+                        )
+                    ).map((group) => {
+                      const badge = eventBadge(group.event_type);
+                      const isExpanded =
+                        groupAudit && expandedGroupKey === group.key;
+                      return (
+                        <Fragment key={group.key}>
+                          <tr className="border-b border-slate-100 align-top">
+                            <td className="px-2 py-2 whitespace-nowrap">
+                              {new Date(group.latest_at).toLocaleString("es-CL")}
+                            </td>
+                            <td className="px-2 py-2 whitespace-nowrap text-slate-500">
+                              {formatAgo(group.latest_at)}
+                            </td>
+                            <td className="px-2 py-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className={badge.className}>
+                                  {badge.label}
+                                </span>
+                                <span className="font-semibold text-slate-800">
+                                  {group.event_type}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-2 py-2">{group.entity_type ?? "-"}</td>
+                            <td className="px-2 py-2">
+                              <div className="flex items-center gap-2">
+                                <span className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700">
+                                  ×{group.count}
+                                </span>
+                                {groupAudit && group.count > 1 ? (
+                                  <button
+                                    type="button"
+                                    className="text-[11px] font-semibold text-slate-600 hover:text-slate-900"
+                                    onClick={() =>
+                                      setExpandedGroupKey((prev) =>
+                                        prev === group.key ? null : group.key
+                                      )
+                                    }
+                                    aria-expanded={isExpanded}
+                                  >
+                                    {isExpanded ? "Ocultar" : "Ver"}
+                                  </button>
+                                ) : null}
+                              </div>
+                            </td>
+                            <td className="px-2 py-2">{group.message ?? "-"}</td>
+                          </tr>
+                          {isExpanded ? (
+                            <tr className="border-b border-slate-100">
+                              <td colSpan={6} className="px-2 pb-3 pt-1">
+                                <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600">
+                                  <p className="font-semibold text-slate-700">
+                                    Muestras recientes (máx. {group.sample.length})
+                                  </p>
+                                  <div className="mt-2 grid gap-1">
+                                    {group.sample.map((evt) => (
+                                      <div
+                                        key={evt.id}
+                                        className="flex flex-wrap items-center justify-between gap-2"
+                                      >
+                                        <span className="text-slate-500">
+                                          {new Date(evt.created_at).toLocaleString("es-CL")}
+                                        </span>
+                                        <span className="text-slate-700">
+                                          {typeof evt.payload?.message === "string"
+                                            ? evt.payload.message
+                                            : "-"}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ) : null}
+                        </Fragment>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
