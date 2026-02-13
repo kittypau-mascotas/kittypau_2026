@@ -56,6 +56,38 @@ type IncidentCounters = {
   general_device_outage_recovered: number;
 };
 
+function formatAgo(value: string) {
+  const ts = Date.parse(value);
+  if (!Number.isFinite(ts)) return "-";
+  const diffMs = Date.now() - ts;
+  const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+  if (diffSec < 60) return `Hace ${diffSec}s`;
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `Hace ${diffMin} min`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `Hace ${diffHr} h`;
+  const diffDay = Math.floor(diffHr / 24);
+  return `Hace ${diffDay} d`;
+}
+
+function eventBadge(eventType: string) {
+  const base = "inline-flex items-center rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]";
+
+  if (eventType.includes("recovered")) {
+    return { label: "Recuperado", className: `${base} border-emerald-200 bg-emerald-50 text-emerald-700` };
+  }
+  if (eventType.includes("outage")) {
+    return { label: "Outage", className: `${base} border-rose-200 bg-rose-50 text-rose-700` };
+  }
+  if (eventType.includes("offline")) {
+    return { label: "Offline", className: `${base} border-amber-200 bg-amber-50 text-amber-800` };
+  }
+  if (eventType.includes("status_changed")) {
+    return { label: "Estado", className: `${base} border-slate-200 bg-white text-slate-600` };
+  }
+  return { label: "Info", className: `${base} border-slate-200 bg-white text-slate-600` };
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -520,6 +552,7 @@ export default function AdminPage() {
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400">
                       <th className="px-2 py-2 font-semibold">Fecha</th>
+                      <th className="px-2 py-2 font-semibold">Hace</th>
                       <th className="px-2 py-2 font-semibold">Evento</th>
                       <th className="px-2 py-2 font-semibold">Entidad</th>
                       <th className="px-2 py-2 font-semibold">Mensaje</th>
@@ -531,7 +564,19 @@ export default function AdminPage() {
                         <td className="px-2 py-2">
                           {new Date(event.created_at).toLocaleString("es-CL")}
                         </td>
-                        <td className="px-2 py-2 font-semibold text-slate-800">{event.event_type}</td>
+                        <td className="px-2 py-2 whitespace-nowrap text-slate-500">
+                          {formatAgo(event.created_at)}
+                        </td>
+                        <td className="px-2 py-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className={eventBadge(event.event_type).className}>
+                              {eventBadge(event.event_type).label}
+                            </span>
+                            <span className="font-semibold text-slate-800">
+                              {event.event_type}
+                            </span>
+                          </div>
+                        </td>
                         <td className="px-2 py-2">{event.entity_type ?? "-"}</td>
                         <td className="px-2 py-2">
                           {typeof event.payload?.message === "string"
