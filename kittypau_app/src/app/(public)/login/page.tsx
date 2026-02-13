@@ -253,7 +253,7 @@ export default function LoginPage() {
           <div className="login-illustrations freeform-rise">
             <div className="login-illustration-card">
               <img
-                src="/illustrations/food.svg"
+                src="/illustrations/food.png"
                 alt="Plato inteligente Kittypau"
                 className="login-illustration-img"
                 loading="eager"
@@ -261,7 +261,7 @@ export default function LoginPage() {
             </div>
             <div className="login-illustration-card">
               <img
-                src="/illustrations/water.svg"
+                src="/illustrations/water.png"
                 alt="Agua inteligente Kittypau"
                 className="login-illustration-img"
                 loading="eager"
