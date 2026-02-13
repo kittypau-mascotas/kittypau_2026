@@ -42,6 +42,12 @@ type ApiReading = {
   battery_level: number | null;
 };
 
+type StatCard = {
+  label: string;
+  value: string;
+  icon?: string;
+};
+
 type LoadState = {
   isLoading: boolean;
   error: string | null;
@@ -369,6 +375,7 @@ export default function TodayPage() {
             ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
             : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
         tone: "info",
+        icon: "/illustrations/water.png",
       });
     }
     if (latestReading.weight_grams !== null) {
@@ -376,6 +383,7 @@ export default function TodayPage() {
         title: "Consumo de alimento",
         description: `Peso detectado: ${latestReading.weight_grams} g.`,
         tone: "ok",
+        icon: "/illustrations/food.png",
       });
     }
     if (latestReading.temperature !== null || latestReading.humidity !== null) {
@@ -393,10 +401,10 @@ export default function TodayPage() {
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
-        { label: "Hidratación", value: "Sin datos" },
-        { label: "Alimento", value: "Sin datos" },
+        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/water.png" },
+        { label: "Alimento", value: "Sin datos", icon: "/illustrations/food.png" },
         { label: "Ambiente", value: "Sin datos" },
-      ];
+      ] as StatCard[];
     }
     const hydration =
       latestReading.flow_rate !== null
@@ -411,10 +419,10 @@ export default function TodayPage() {
         ? `${latestReading.temperature}° · ${latestReading.humidity}%`
         : "Sin ambiente";
     return [
-      { label: "Hidratación", value: hydration },
-      { label: "Alimento", value: food },
+      { label: "Hidratación", value: hydration, icon: "/illustrations/water.png" },
+      { label: "Alimento", value: food, icon: "/illustrations/food.png" },
       { label: "Ambiente", value: ambient },
-    ];
+    ] as StatCard[];
   }, [latestReading]);
 
   const toneStyles: Record<string, string> = {
@@ -583,12 +591,20 @@ export default function TodayPage() {
                 key={stat.label}
                 className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  {stat.label}
-                </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
-                  {stat.value}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                    {stat.label}
+                  </p>
+                  {stat.icon ? (
+                    <img
+                      src={stat.icon}
+                      alt=""
+                      aria-hidden="true"
+                      className="h-6 w-6 object-contain opacity-80"
+                    />
+                  ) : null}
+                </div>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{stat.value}</p>
               </div>
             ))}
           </div>
@@ -721,9 +737,19 @@ export default function TodayPage() {
                   className="surface-card freeform-rise flex flex-col gap-3 px-6 py-5"
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-slate-900">
-                      {card.title}
-                    </h3>
+                    <div className="flex items-center gap-3">
+                      {card.icon ? (
+                        <img
+                          src={card.icon}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-9 w-9 rounded-[14px] border border-slate-200 bg-white object-contain p-1"
+                        />
+                      ) : null}
+                      <h3 className="text-lg font-semibold text-slate-900">
+                        {card.title}
+                      </h3>
+                    </div>
                     <span
                       className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneStyles[card.tone]}`}
                     >
