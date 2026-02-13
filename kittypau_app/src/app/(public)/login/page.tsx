@@ -241,21 +241,25 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-center gap-12 px-6 py-16 lg:flex-row lg:items-center lg:justify-between">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-start lg:justify-between lg:pt-16">
         <div className="max-w-xl space-y-7 text-center lg:text-left">
-          <div className="login-brand-block flex w-full flex-col items-center gap-3 lg:items-start">
-            <img
-              src="/logo_carga.jpg"
-              alt="Kittypau"
-              className="brand-hero-logo freeform-float"
-            />
-            <span className="brand-title text-4xl text-primary">
-              Kittypau
-            </span>
-            <SocialLinks
-              className="social-header social-header-center lg:justify-start"
-              size="md"
-            />
+          <div className="login-illustrations freeform-rise">
+            <div className="login-illustration-card">
+              <img
+                src="/illustrations/food.png"
+                alt="Plato inteligente Kittypau"
+                className="login-illustration-img"
+                loading="eager"
+              />
+            </div>
+            <div className="login-illustration-card">
+              <img
+                src="/illustrations/water.png"
+                alt="Agua inteligente Kittypau"
+                className="login-illustration-img"
+                loading="eager"
+              />
+            </div>
           </div>
           <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
@@ -268,6 +272,15 @@ export default function LoginPage() {
 
         <div className="glass-panel freeform-rise w-full max-w-md p-8">
           <div className="stagger space-y-7">
+            <div className="login-card-brand">
+              <img
+                src="/logo_carga.jpg"
+                alt="Kittypau"
+                className="login-card-logo freeform-float"
+              />
+              <span className="brand-title text-3xl text-primary">Kittypau</span>
+              <SocialLinks className="social-header social-header-center" size="md" />
+            </div>
             <div>
               <h2 className="display-title text-2xl font-semibold text-slate-900">
                 Iniciar sesión
