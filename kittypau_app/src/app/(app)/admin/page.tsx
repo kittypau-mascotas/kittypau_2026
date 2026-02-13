@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -71,6 +71,16 @@ export default function AdminPage() {
   const [activeGeneralOutage, setActiveGeneralOutage] = useState(false);
   const [auditFilter, setAuditFilter] = useState<AuditFilter>("critical");
   const [auditWindowMin, setAuditWindowMin] = useState(60);
+  const [healthCheckStatus, setHealthCheckStatus] = useState<{
+    running: boolean;
+    lastRunAt: string | null;
+    message: string | null;
+  }>({
+    running: false,
+    lastRunAt: null,
+    message: null,
+  });
+  const [reloadNonce, setReloadNonce] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -78,7 +88,7 @@ export default function AdminPage() {
       try {
         const token = await getValidAccessToken();
         if (!token) {
-          throw new Error("Necesitas iniciar sesión.");
+          throw new Error("Necesitas iniciar sesiÃ³n.");
         }
         const params = new URLSearchParams({
           audit_limit: "60",
@@ -138,7 +148,7 @@ export default function AdminPage() {
       mounted = false;
       clearInterval(interval);
     };
-  }, [router, auditFilter, auditWindowMin]);
+  }, [router, auditFilter, auditWindowMin, reloadNonce]);
 
   const kpiCards = useMemo(() => {
     if (!summary) return [];
@@ -194,7 +204,7 @@ export default function AdminPage() {
             Dashboard Ejecutivo Kittypau
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Visión total de operación y auditoría en línea.
+            VisiÃ³n total de operaciÃ³n y auditorÃ­a en lÃ­nea.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
@@ -234,9 +244,82 @@ export default function AdminPage() {
         {!loading && !error && summary ? (
           <>
             <section className="surface-card freeform-rise px-6 py-5">
-              <h2 className="display-title text-xl font-semibold text-slate-900">
-                Avisos críticos
-              </h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="display-title text-xl font-semibold text-slate-900">
+                  Avisos críticos
+                </h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  {healthCheckStatus.lastRunAt ? (
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                      Último chequeo:{" "}
+                      {new Date(healthCheckStatus.lastRunAt).toLocaleTimeString(
+                        "es-CL",
+                        { hour: "2-digit", minute: "2-digit" }
+                      )}
+                    </span>
+                  ) : null}
+                  <button
+                    type="button"
+                    disabled={healthCheckStatus.running}
+                    onClick={async () => {
+                      const token = await getValidAccessToken();
+                      if (!token) {
+                        setHealthCheckStatus((prev) => ({
+                          ...prev,
+                          message: "Necesitas iniciar sesión.",
+                        }));
+                        return;
+                      }
+                      setHealthCheckStatus((prev) => ({
+                        ...prev,
+                        running: true,
+                        message: null,
+                      }));
+                      try {
+                        const res = await fetch(
+                          "/api/admin/health-check?stale_min=2&device_stale_min=10",
+                          {
+                            method: "POST",
+                            headers: { Authorization: `Bearer ${token}` },
+                          }
+                        );
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                          throw new Error(
+                            payload?.error ??
+                              "No se pudo ejecutar el health-check."
+                          );
+                        }
+                        setHealthCheckStatus({
+                          running: false,
+                          lastRunAt: new Date().toISOString(),
+                          message: "Health-check ejecutado.",
+                        });
+                        setReloadNonce((n) => n + 1);
+                      } catch (err) {
+                        setHealthCheckStatus({
+                          running: false,
+                          lastRunAt: new Date().toISOString(),
+                          message:
+                            err instanceof Error
+                              ? err.message
+                              : "No se pudo ejecutar el health-check.",
+                        });
+                      }
+                    }}
+                    className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                  >
+                    {healthCheckStatus.running
+                      ? "Chequeando..."
+                      : "Ejecutar chequeo"}
+                  </button>
+                </div>
+              </div>
+              {healthCheckStatus.message ? (
+                <p className="mt-3 text-xs font-semibold text-slate-500">
+                  {healthCheckStatus.message}
+                </p>
+              ) : null}
               <div className="mt-3 grid gap-3">
                 {criticalAlerts.length ? (
                   criticalAlerts.map((alert) => (
@@ -276,7 +359,7 @@ export default function AdminPage() {
                         <th className="px-2 py-2 font-semibold">Bridge</th>
                         <th className="px-2 py-2 font-semibold">Estado</th>
                         <th className="px-2 py-2 font-semibold">IP</th>
-                        <th className="px-2 py-2 font-semibold">Último seen</th>
+                        <th className="px-2 py-2 font-semibold">Ãšltimo seen</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -321,8 +404,8 @@ export default function AdminPage() {
                       <tr className="border-b border-slate-200 text-slate-400">
                         <th className="px-2 py-2 font-semibold">Device</th>
                         <th className="px-2 py-2 font-semibold">Estado</th>
-                        <th className="px-2 py-2 font-semibold">Batería</th>
-                        <th className="px-2 py-2 font-semibold">Último seen</th>
+                        <th className="px-2 py-2 font-semibold">BaterÃ­a</th>
+                        <th className="px-2 py-2 font-semibold">Ãšltimo seen</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -467,3 +550,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+

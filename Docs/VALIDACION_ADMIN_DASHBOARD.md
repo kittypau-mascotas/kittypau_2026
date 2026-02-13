@@ -64,6 +64,7 @@ Resultado:
 - estado de bridges
 - tabla de dispositivos offline
 - `audit_events` en linea (auto refresh)
+- AcciÃ³n admin: ejecutar health-check manual (server-only) para forzar detecciÃ³n sin cron.
 
 ## 6) Nota operativa
 - Si se cambia contraseña o rol del admin en Supabase, revalidar esta guía.
@@ -73,3 +74,15 @@ Resultado:
 - Los endpoints bajo `/api/*` soportan preflight `OPTIONS` y retornan headers CORS.
 - Esto permite validar el dashboard/admin desde herramientas externas o desde otros orÃ­genes (p.ej. pruebas locales),
   siempre usando `Authorization: Bearer <token>` o `x-bridge-token` segÃºn corresponda.
+
+## 8) Health-check manual (admin)
+Comando (PowerShell):
+```powershell
+# Con access_token ya obtenido:
+Invoke-RestMethod -Method Post `
+  -Uri "https://kittypau-app.vercel.app/api/admin/health-check?stale_min=2&device_stale_min=10" `
+  -Headers @{ Authorization = "Bearer $token" }
+```
+Esperado:
+- `200` si se ejecuta.
+- Se registra `admin_health_check_run` en `audit_events`.

@@ -104,6 +104,15 @@ src/app/
    - Verifica rol en `admin_roles`.
    - Retorna resumen ejecutivo/operativo + feed de `audit_events` en línea.
 
+12. `POST /api/admin/health-check`
+   - Ejecuta health-check de bridge/KPCL bajo autorizaciÃ³n admin (server-only).
+   - Requiere `Authorization: Bearer <access_token>`.
+   - Internamente llama `GET /api/bridge/health-check` usando `BRIDGE_HEARTBEAT_SECRET`.
+   - Registra auditorÃ­a: `admin_health_check_run`.
+   - Query params:
+     - `stale_min` (bridge)
+     - `device_stale_min` (KPCL)
+
 Payload propuesto:
 ```json
 {
