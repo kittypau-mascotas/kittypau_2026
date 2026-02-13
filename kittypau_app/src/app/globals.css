@@ -695,6 +695,7 @@ body {
   align-items: center;
   gap: 10px;
   text-align: center;
+  margin-bottom: 18px;
 }
 
 .login-card-logo {

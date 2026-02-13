@@ -243,24 +243,6 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-start lg:justify-between lg:pt-16">
         <div className="max-w-xl space-y-7 text-center lg:text-left">
-          <div className="login-illustrations freeform-rise">
-            <div className="login-illustration-card">
-              <img
-                src="/illustrations/food.png"
-                alt="Plato inteligente Kittypau"
-                className="login-illustration-img"
-                loading="eager"
-              />
-            </div>
-            <div className="login-illustration-card">
-              <img
-                src="/illustrations/water.png"
-                alt="Agua inteligente Kittypau"
-                className="login-illustration-img"
-                loading="eager"
-              />
-            </div>
-          </div>
           <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
@@ -268,20 +250,40 @@ export default function LoginPage() {
             Accede a la lectura interpretada del comportamiento de tu mascota.
             Sin dashboards fríos, solo claridad y calma.
           </p>
+          <div className="login-illustrations freeform-rise">
+            <div className="login-illustration-card">
+              <img
+                src="/illustrations/food.svg"
+                alt="Plato inteligente Kittypau"
+                className="login-illustration-img"
+                loading="eager"
+              />
+            </div>
+            <div className="login-illustration-card">
+              <img
+                src="/illustrations/water.svg"
+                alt="Agua inteligente Kittypau"
+                className="login-illustration-img"
+                loading="eager"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="glass-panel freeform-rise w-full max-w-md p-8">
-          <div className="stagger space-y-7">
-            <div className="login-card-brand">
-              <img
-                src="/logo_carga.jpg"
-                alt="Kittypau"
-                className="login-card-logo freeform-float"
-              />
-              <span className="brand-title text-3xl text-primary">Kittypau</span>
-              <SocialLinks className="social-header social-header-center" size="md" />
-            </div>
-            <div>
+        <div className="w-full max-w-md">
+          <div className="login-card-brand freeform-rise">
+            <img
+              src="/logo_carga.jpg"
+              alt="Kittypau"
+              className="login-card-logo freeform-float"
+            />
+            <span className="brand-title text-3xl text-primary">Kittypau</span>
+            <SocialLinks className="social-header social-header-center" size="md" />
+          </div>
+
+          <div className="glass-panel freeform-rise w-full p-8">
+            <div className="stagger space-y-7">
+              <div>
               <h2 className="display-title text-2xl font-semibold text-slate-900">
                 Iniciar sesión
               </h2>
@@ -428,6 +430,7 @@ export default function LoginPage() {
                 ) : null}
               </div>
             ) : null}
+            </div>
           </div>
         </div>
       </div>
