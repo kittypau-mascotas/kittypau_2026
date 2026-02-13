@@ -659,34 +659,50 @@ body {
   gap: 12px;
 }
 
-.login-illustrations {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  align-items: stretch;
-  justify-items: center;
+.login-hero-decor {
+  position: relative;
+  height: 240px;
+  margin-top: 14px;
+  overflow: visible;
+}
+
+.login-decor {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 360px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.login-decor-back {
+  transform: translate3d(-10%, 12%, 0) rotate(-4deg) scale(1);
+  opacity: 0.2;
+  filter: blur(0.2px);
+}
+
+.login-decor-front {
+  left: 120px;
+  bottom: -22px;
+  width: 320px;
+  transform: translate3d(0, 0, 0) rotate(2deg) scale(1);
+  opacity: 0.32;
 }
 
 @media (max-width: 640px) {
-  .login-illustrations {
-    grid-template-columns: 1fr;
+  .login-hero-decor {
+    height: 190px;
   }
-}
 
-.login-illustration-card {
-  width: 100%;
-  border-radius: 22px;
-  overflow: hidden;
-  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
-  background: color-mix(in oklab, #ffffff 88%, transparent);
-  box-shadow: 0 18px 44px -36px rgba(15, 23, 42, 0.35);
-}
+  .login-decor {
+    width: 300px;
+  }
 
-.login-illustration-img {
-  width: 100%;
-  height: 148px;
-  object-fit: cover;
-  display: block;
+  .login-decor-front {
+    left: 70px;
+    width: 270px;
+  }
 }
 
 .login-card-brand {
