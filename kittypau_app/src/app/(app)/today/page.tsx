@@ -589,14 +589,14 @@ export default function TodayPage() {
             {quickStats.map((stat) => (
               <div
                 key={stat.label}
-                className="relative rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 pr-16 text-sm text-slate-600 md:pr-20"
+                className="relative rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 pr-20 text-sm text-slate-600 md:pr-24"
               >
                 {stat.icon ? (
                   <img
                     src={stat.icon}
                     alt=""
                     aria-hidden="true"
-                    className="absolute right-4 top-1/2 h-11 w-11 -translate-y-1/2 object-contain opacity-95 md:h-12 md:w-12"
+                    className="absolute right-4 top-1/2 h-16 w-16 -translate-y-1/2 object-contain opacity-95 md:h-20 md:w-20"
                   />
                 ) : null}
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
