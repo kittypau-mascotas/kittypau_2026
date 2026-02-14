@@ -706,14 +706,20 @@ body {
 }
 
 .login-bandida-outside {
-  margin-top: 14px;
-  display: flex;
-  justify-content: flex-end;
+  position: absolute;
+  right: 22px;
+  bottom: -56px;
+  z-index: 5;
 }
 
 @media (max-width: 420px) {
   .login-bandida {
     width: 112px;
+  }
+
+  .login-bandida-outside {
+    right: 14px;
+    bottom: -52px;
   }
 }
 

@@ -261,7 +261,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md relative">
           <div className="login-card-brand freeform-rise">
             <img
               src="/logo_carga.jpg"
@@ -423,16 +423,16 @@ export default function LoginPage() {
             ) : null}
             </div>
           </div>
-        </div>
 
-        <div className="login-bandida-outside" aria-hidden="true">
-          <img
-            src="/illustrations/bandida.png"
-            alt=""
-            className="login-bandida"
-            loading="eager"
-            draggable={false}
-          />
+          <div className="login-bandida-outside" aria-hidden="true">
+            <img
+              src="/illustrations/bandida.png"
+              alt=""
+              className="login-bandida"
+              loading="eager"
+              draggable={false}
+            />
+          </div>
         </div>
       </div>
 
