@@ -968,7 +968,7 @@ textarea::placeholder {
   height: 64px;
   border-radius: 999px;
   object-fit: cover;
-  animation: route-loading-spin 1.2s linear infinite;
+  animation: none;
 }
 
 .route-loading-hero {
@@ -977,7 +977,7 @@ textarea::placeholder {
   height: auto;
   border-radius: 0;
   object-fit: contain;
-  animation: route-loading-spin 1.2s linear infinite;
+  animation: none;
 }
 
 .route-loading-label {

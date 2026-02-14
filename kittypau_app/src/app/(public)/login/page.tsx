@@ -266,7 +266,7 @@ export default function LoginPage() {
             <img
               src="/logo_carga.jpg"
               alt="Kittypau"
-              className="login-card-logo freeform-float"
+              className="login-card-logo"
             />
             <span className="brand-title text-3xl text-primary">Kittypau</span>
             <SocialLinks className="social-header social-header-center" size="md" />
