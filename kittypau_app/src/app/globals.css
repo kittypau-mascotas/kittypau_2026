@@ -700,6 +700,23 @@ body {
   position: relative;
 }
 
+.login-bandida-action {
+  position: absolute;
+  right: 6px;
+  bottom: -128px;
+  z-index: 5;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.login-bandida-action:focus-visible {
+  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 70%, transparent);
+  outline-offset: 6px;
+  border-radius: 999px;
+}
+
 .login-bandida {
   width: clamp(114px, 12vw, 160px);
   height: auto;
@@ -709,19 +726,12 @@ body {
   filter: drop-shadow(0 16px 26px rgba(15, 23, 42, 0.16));
 }
 
-.login-bandida-outside {
-  position: absolute;
-  right: 6px;
-  bottom: -128px;
-  z-index: 5;
-}
-
 @media (max-width: 420px) {
   .login-bandida {
     width: 134px;
   }
 
-  .login-bandida-outside {
+  .login-bandida-action {
     right: 4px;
     bottom: -118px;
   }

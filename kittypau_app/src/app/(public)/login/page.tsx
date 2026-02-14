@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [highlightRegister, setHighlightRegister] = useState(false);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
@@ -374,23 +375,27 @@ export default function LoginPage() {
                 ) : null}
               </form>
 
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <button
-                  type="button"
-                  className="hover:text-slate-900"
-                  onClick={() => setShowReset((prev) => !prev)}
-                  disabled={isSubmitting}
-                >
-                  Olvidé mi clave
-                </button>
-                <button
-                  type="button"
-                  className="hover:text-slate-900"
-                  onClick={() => setShowRegister(true)}
-                >
-                  Crear cuenta
-                </button>
-              </div>
+            <div className="flex items-center justify-between text-xs text-slate-500">
+              <button
+                type="button"
+                className="hover:text-slate-900"
+                onClick={() => setShowReset((prev) => !prev)}
+                disabled={isSubmitting}
+              >
+                Olvidé mi clave
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-2 py-1 transition ${
+                  highlightRegister
+                    ? "bg-primary/10 text-slate-900 ring-1 ring-primary/40"
+                    : "hover:text-slate-900"
+                }`}
+                onClick={() => router.push("/register")}
+              >
+                Crear cuenta
+              </button>
+            </div>
               {showReset ? (
                 <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-600">
                   <p className="font-semibold text-slate-700">
@@ -425,15 +430,25 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="login-bandida-outside" aria-hidden="true">
+            <button
+              type="button"
+              className="login-bandida-action"
+              aria-label="Crear cuenta"
+              onMouseEnter={() => setHighlightRegister(true)}
+              onMouseLeave={() => setHighlightRegister(false)}
+              onFocus={() => setHighlightRegister(true)}
+              onBlur={() => setHighlightRegister(false)}
+              onClick={() => router.push("/register")}
+            >
               <img
                 src="/illustrations/bandida.png"
                 alt=""
+                aria-hidden="true"
                 className="login-bandida"
                 loading="eager"
                 draggable={false}
               />
-            </div>
+            </button>
           </div>
         </div>
       </div>
