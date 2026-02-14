@@ -600,7 +600,7 @@ export default function TodayPage() {
                       src={stat.icon}
                       alt=""
                       aria-hidden="true"
-                      className="h-6 w-6 object-contain opacity-80"
+                      className="h-9 w-9 object-contain opacity-90 md:h-10 md:w-10"
                     />
                   ) : null}
                 </div>
