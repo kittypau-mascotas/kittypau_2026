@@ -659,6 +659,27 @@ body {
   gap: 12px;
 }
 
+.login-hero-asset {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-hero-asset-img {
+  width: min(560px, 100%);
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: 0 26px 70px -60px rgba(15, 23, 42, 0.45);
+}
+
+@media (min-width: 1024px) {
+  .login-hero-asset {
+    justify-content: flex-start;
+  }
+}
+
 
 .login-card-brand {
   display: flex;
