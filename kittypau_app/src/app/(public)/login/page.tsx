@@ -274,15 +274,7 @@ export default function LoginPage() {
 
           <div className="glass-panel freeform-rise w-full p-8">
             <div className="stagger space-y-7">
-              <div className="login-form-head">
-                <img
-                  src="/illustrations/bandida.png"
-                  alt=""
-                  aria-hidden="true"
-                  className="login-bandida"
-                  loading="eager"
-                  draggable={false}
-                />
+              <div>
                 <h2 className="display-title text-2xl font-semibold text-slate-900">
                   Iniciar sesión
                 </h2>
@@ -431,6 +423,16 @@ export default function LoginPage() {
             ) : null}
             </div>
           </div>
+        </div>
+
+        <div className="login-bandida-outside" aria-hidden="true">
+          <img
+            src="/illustrations/bandida.png"
+            alt=""
+            className="login-bandida"
+            loading="eager"
+            draggable={false}
+          />
         </div>
       </div>
 
