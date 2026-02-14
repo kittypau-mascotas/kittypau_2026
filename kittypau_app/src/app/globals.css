@@ -659,51 +659,6 @@ body {
   gap: 12px;
 }
 
-.login-hero-decor {
-  position: relative;
-  height: 240px;
-  margin-top: 14px;
-  overflow: visible;
-}
-
-.login-decor {
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 360px;
-  height: auto;
-  pointer-events: none;
-  user-select: none;
-}
-
-.login-decor-back {
-  transform: translate3d(-10%, 12%, 0) rotate(-4deg) scale(1);
-  opacity: 0.2;
-  filter: blur(0.2px);
-}
-
-.login-decor-front {
-  left: 120px;
-  bottom: -22px;
-  width: 320px;
-  transform: translate3d(0, 0, 0) rotate(2deg) scale(1);
-  opacity: 0.32;
-}
-
-@media (max-width: 640px) {
-  .login-hero-decor {
-    height: 190px;
-  }
-
-  .login-decor {
-    width: 300px;
-  }
-
-  .login-decor-front {
-    left: 70px;
-    width: 270px;
-  }
-}
 
 .login-card-brand {
   display: flex;

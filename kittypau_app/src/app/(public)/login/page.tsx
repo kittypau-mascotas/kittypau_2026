@@ -250,22 +250,6 @@ export default function LoginPage() {
             Accede a la lectura interpretada del comportamiento de tu mascota.
             Sin dashboards fríos, solo claridad y calma.
           </p>
-          <div className="login-hero-decor freeform-rise" aria-hidden="true">
-            <img
-              src="/illustrations/food.png"
-              alt=""
-              className="login-decor login-decor-back"
-              loading="eager"
-              draggable={false}
-            />
-            <img
-              src="/illustrations/water.png"
-              alt=""
-              className="login-decor login-decor-front"
-              loading="eager"
-              draggable={false}
-            />
-          </div>
         </div>
 
         <div className="w-full max-w-md">
