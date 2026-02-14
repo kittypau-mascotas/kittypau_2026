@@ -241,15 +241,8 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-start lg:justify-between lg:pt-16">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-center lg:justify-between lg:pt-16">
         <div className="max-w-xl space-y-7 text-center lg:text-left">
-          <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
-            Tu plato inteligente, tu historia diaria.
-          </h1>
-          <p className="text-base leading-relaxed text-slate-600 md:text-lg">
-            Accede a la lectura interpretada del comportamiento de tu mascota.
-            Sin dashboards fríos, solo claridad y calma.
-          </p>
           <div className="login-hero-asset freeform-rise" aria-hidden="true">
             <img
               src="/illustrations/food.png"
@@ -259,6 +252,13 @@ export default function LoginPage() {
               draggable={false}
             />
           </div>
+          <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
+            Tu plato inteligente, tu historia diaria.
+          </h1>
+          <p className="text-base leading-relaxed text-slate-600 md:text-lg">
+            Accede a la lectura interpretada del comportamiento de tu mascota.
+            Sin dashboards fríos, solo claridad y calma.
+          </p>
         </div>
 
         <div className="w-full max-w-md">
