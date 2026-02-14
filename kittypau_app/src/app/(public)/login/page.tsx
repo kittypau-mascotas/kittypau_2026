@@ -274,14 +274,22 @@ export default function LoginPage() {
 
           <div className="glass-panel freeform-rise w-full p-8">
             <div className="stagger space-y-7">
-              <div>
-              <h2 className="display-title text-2xl font-semibold text-slate-900">
-                Iniciar sesión
-              </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Usa tu correo para ver el estado de tu plato.
-              </p>
-            </div>
+              <div className="login-form-head">
+                <img
+                  src="/illustrations/bandida.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="login-bandida"
+                  loading="eager"
+                  draggable={false}
+                />
+                <h2 className="display-title text-2xl font-semibold text-slate-900">
+                  Iniciar sesión
+                </h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  Usa tu correo para ver el estado de tu plato.
+                </p>
+              </div>
 
             <form className="space-y-4" onSubmit={onSubmit} aria-busy={isSubmitting}>
               <div className="space-y-2">
