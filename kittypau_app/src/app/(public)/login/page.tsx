@@ -241,7 +241,7 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-center lg:justify-between lg:pt-16">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-start lg:justify-between lg:pt-16">
         <div className="max-w-xl space-y-7 text-center lg:text-left">
           <div className="login-hero-asset freeform-rise" aria-hidden="true">
             <img
