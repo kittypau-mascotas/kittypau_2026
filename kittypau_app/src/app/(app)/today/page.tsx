@@ -592,12 +592,14 @@ export default function TodayPage() {
                 className="relative rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 pr-20 text-sm text-slate-600 md:pr-24"
               >
                 {stat.icon ? (
-                  <img
-                    src={stat.icon}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute right-4 top-1/2 h-16 w-16 -translate-y-1/2 object-contain opacity-95 md:h-20 md:w-20"
-                  />
+                  <div className="absolute inset-y-3 right-4 flex w-16 items-center justify-center md:w-20">
+                    <img
+                      src={stat.icon}
+                      alt=""
+                      aria-hidden="true"
+                      className="max-h-full max-w-full object-contain opacity-95"
+                    />
+                  </div>
                 ) : null}
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   {stat.label}
