@@ -696,8 +696,12 @@ body {
   display: block;
 }
 
+.login-panel-wrap {
+  position: relative;
+}
+
 .login-bandida {
-  width: clamp(92px, 10vw, 132px);
+  width: clamp(104px, 11vw, 146px);
   height: auto;
   display: block;
   pointer-events: none;
@@ -707,19 +711,19 @@ body {
 
 .login-bandida-outside {
   position: absolute;
-  right: 22px;
-  bottom: -56px;
+  right: 6px;
+  bottom: -112px;
   z-index: 5;
 }
 
 @media (max-width: 420px) {
   .login-bandida {
-    width: 112px;
+    width: 122px;
   }
 
   .login-bandida-outside {
-    right: 14px;
-    bottom: -52px;
+    right: 4px;
+    bottom: -102px;
   }
 }
 

@@ -261,7 +261,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="w-full max-w-md relative">
+        <div className="w-full max-w-md">
           <div className="login-card-brand freeform-rise">
             <img
               src="/logo_carga.jpg"
@@ -272,166 +272,168 @@ export default function LoginPage() {
             <SocialLinks className="social-header social-header-center" size="md" />
           </div>
 
-          <div className="glass-panel freeform-rise w-full p-8">
-            <div className="stagger space-y-7">
-              <div>
-                <h2 className="display-title text-2xl font-semibold text-slate-900">
-                  Iniciar sesión
-                </h2>
-                <p className="mt-2 text-sm text-slate-500">
-                  Usa tu correo para ver el estado de tu plato.
-                </p>
-              </div>
+          <div className="login-panel-wrap">
+            <div className="glass-panel freeform-rise w-full p-8">
+              <div className="stagger space-y-7">
+                <div>
+                  <h2 className="display-title text-2xl font-semibold text-slate-900">
+                    Iniciar sesión
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Usa tu correo para ver el estado de tu plato.
+                  </p>
+                </div>
 
-            <form className="space-y-4" onSubmit={onSubmit} aria-busy={isSubmitting}>
-              <div className="space-y-2">
-                <label
-                  className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
-                  htmlFor="login-email"
-                >
-                  Email
-                </label>
-                <input
-                  id="login-email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                  aria-invalid={Boolean(error) || (email.length > 0 && !isEmailValid)}
-                  autoComplete="email"
-                />
-                {email.length > 0 && !isEmailValid ? (
-                  <p className="text-[11px] text-rose-600">
-                    Ingresa un email válido.
-                  </p>
-                ) : null}
-              </div>
-              <div className="space-y-2">
-                <label
-                  className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
-                  htmlFor="login-password"
-                >
-                  Password
-                </label>
-                <input
-                  id="login-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                  aria-invalid={
-                    Boolean(error) || (password.length > 0 && !isPasswordValid)
-                  }
-                  autoComplete="current-password"
-                />
-                {password.length > 0 && !isPasswordValid ? (
-                  <p className="text-[11px] text-rose-600">
-                    Usa mínimo 8 caracteres.
-                  </p>
-                ) : null}
-                <label className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+              <form className="space-y-4" onSubmit={onSubmit} aria-busy={isSubmitting}>
+                <div className="space-y-2">
+                  <label
+                    className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                    htmlFor="login-email"
+                  >
+                    Email
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={showPassword}
-                    onChange={(event) => setShowPassword(event.target.checked)}
+                    id="login-email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                    aria-invalid={Boolean(error) || (email.length > 0 && !isEmailValid)}
+                    autoComplete="email"
                   />
-                  Mostrar password
-                </label>
-              </div>
-              {verifiedMessage ? (
-                <p className="rounded-[var(--radius)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-                  {verifiedMessage}
-                </p>
-              ) : null}
-              {error ? (
-                <p
-                  className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
-                  role="alert"
-                  aria-live="polite"
+                  {email.length > 0 && !isEmailValid ? (
+                    <p className="text-[11px] text-rose-600">
+                      Ingresa un email válido.
+                    </p>
+                  ) : null}
+                </div>
+                <div className="space-y-2">
+                  <label
+                    className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                    htmlFor="login-password"
+                  >
+                    Password
+                  </label>
+                  <input
+                    id="login-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                    aria-invalid={
+                      Boolean(error) || (password.length > 0 && !isPasswordValid)
+                    }
+                    autoComplete="current-password"
+                  />
+                  {password.length > 0 && !isPasswordValid ? (
+                    <p className="text-[11px] text-rose-600">
+                      Usa mínimo 8 caracteres.
+                    </p>
+                  ) : null}
+                  <label className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                    <input
+                      type="checkbox"
+                      checked={showPassword}
+                      onChange={(event) => setShowPassword(event.target.checked)}
+                    />
+                    Mostrar password
+                  </label>
+                </div>
+                {verifiedMessage ? (
+                  <p className="rounded-[var(--radius)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                    {verifiedMessage}
+                  </p>
+                ) : null}
+                {error ? (
+                  <p
+                    className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {error}
+                  </p>
+                ) : null}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !isLoginValid}
+                  className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {error}
-                </p>
-              ) : null}
-              <button
-                type="submit"
-                disabled={isSubmitting || !isLoginValid}
-                className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {isSubmitting ? "Conectando..." : "Continuar"}
-              </button>
-              {isSubmitting ? (
-                <p className="text-[11px] text-slate-500">
-                  Verificando credenciales…
-                </p>
-              ) : null}
-              {!isSubmitting && !isLoginValid ? (
-                <p className="text-[11px] text-slate-500">
-                  Completa email y password (8+).
-                </p>
-              ) : null}
-            </form>
+                  {isSubmitting ? "Conectando..." : "Continuar"}
+                </button>
+                {isSubmitting ? (
+                  <p className="text-[11px] text-slate-500">
+                    Verificando credenciales…
+                  </p>
+                ) : null}
+                {!isSubmitting && !isLoginValid ? (
+                  <p className="text-[11px] text-slate-500">
+                    Completa email y password (8+).
+                  </p>
+                ) : null}
+              </form>
 
-            <div className="flex items-center justify-between text-xs text-slate-500">
-              <button
-                type="button"
-                className="hover:text-slate-900"
-                onClick={() => setShowReset((prev) => !prev)}
-                disabled={isSubmitting}
-              >
-                Olvidé mi clave
-              </button>
-              <button
-                type="button"
-                className="hover:text-slate-900"
-                onClick={() => setShowRegister(true)}
-              >
-                Crear cuenta
-              </button>
-            </div>
-            {showReset ? (
-              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-600">
-                <p className="font-semibold text-slate-700">
-                  Recuperar contraseña
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Enviaremos un enlace al correo asociado.
-                </p>
-                <input
-                  type="email"
-                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 px-3 py-2 text-xs text-slate-700"
-                  placeholder="correo@ejemplo.com"
-                  value={resetEmail}
-                  onChange={(event) => setResetEmail(event.target.value)}
-                  autoComplete="email"
-                />
+              <div className="flex items-center justify-between text-xs text-slate-500">
                 <button
                   type="button"
-                  onClick={sendReset}
-                  disabled={!canReset}
-                  className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                  className="hover:text-slate-900"
+                  onClick={() => setShowReset((prev) => !prev)}
+                  disabled={isSubmitting}
                 >
-                  Enviar enlace
+                  Olvidé mi clave
                 </button>
-                {resetMessage ? (
-                  <p className="mt-2 text-[11px] text-slate-500">
-                    {resetMessage}
-                  </p>
-                ) : null}
+                <button
+                  type="button"
+                  className="hover:text-slate-900"
+                  onClick={() => setShowRegister(true)}
+                >
+                  Crear cuenta
+                </button>
               </div>
-            ) : null}
+              {showReset ? (
+                <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-600">
+                  <p className="font-semibold text-slate-700">
+                    Recuperar contraseña
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Enviaremos un enlace al correo asociado.
+                  </p>
+                  <input
+                    type="email"
+                    className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 px-3 py-2 text-xs text-slate-700"
+                    placeholder="correo@ejemplo.com"
+                    value={resetEmail}
+                    onChange={(event) => setResetEmail(event.target.value)}
+                    autoComplete="email"
+                  />
+                  <button
+                    type="button"
+                    onClick={sendReset}
+                    disabled={!canReset}
+                    className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-900 px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    Enviar enlace
+                  </button>
+                  {resetMessage ? (
+                    <p className="mt-2 text-[11px] text-slate-500">
+                      {resetMessage}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+              </div>
             </div>
-          </div>
 
-          <div className="login-bandida-outside" aria-hidden="true">
-            <img
-              src="/illustrations/bandida.png"
-              alt=""
-              className="login-bandida"
-              loading="eager"
-              draggable={false}
-            />
+            <div className="login-bandida-outside" aria-hidden="true">
+              <img
+                src="/illustrations/bandida.png"
+                alt=""
+                className="login-bandida"
+                loading="eager"
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
       </div>
