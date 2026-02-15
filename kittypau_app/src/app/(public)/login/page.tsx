@@ -490,7 +490,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="w-full max-w-md">
+        <div className="login-auth-column w-full max-w-md">
           <div className="login-card-brand freeform-rise">
             <div className="brand-logo-badge" aria-hidden="true">
               <img

@@ -677,6 +677,10 @@ body {
 }
 
 @media (min-width: 1024px) {
+  .login-auth-column {
+    transform: translateY(-15%);
+  }
+
   .login-hero-asset {
     justify-content: center;
   }
@@ -691,6 +695,10 @@ body {
     height: auto;
     overflow-y: auto;
   }
+
+  .login-auth-column {
+    transform: none;
+  }
 }
 
 
@@ -701,6 +709,10 @@ body {
   gap: 10px;
   text-align: center;
   margin-bottom: 12px;
+}
+
+.login-auth-column {
+  transform: translateY(0);
 }
 
 .login-card-logo {
