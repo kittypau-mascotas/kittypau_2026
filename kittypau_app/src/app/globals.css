@@ -788,23 +788,21 @@ body {
 }
 
 .login-register-modal {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 32%, hsl(var(--border)));
+  border-color: color-mix(in oklab, hsl(var(--primary)) 22%, hsl(var(--border)));
+  box-shadow: 0 30px 80px -64px rgba(15, 23, 42, 0.45);
 }
 
 .login-register-head {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, #ffffff 80%, hsl(var(--primary)) 6%),
-    color-mix(in oklab, #ffffff 92%, transparent)
-  );
+  background: #ffffff;
+  border-top: 3px solid color-mix(in oklab, hsl(var(--primary)) 70%, transparent);
 }
 
 .login-register-pill {
   border-radius: 999px;
   padding: 8px 12px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 32%, transparent);
-  background: color-mix(in oklab, hsl(var(--primary)) 12%, #ffffff);
-  color: color-mix(in oklab, hsl(var(--primary-strong)) 70%, #334155);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 88%, transparent);
+  background: color-mix(in oklab, hsl(var(--muted)) 70%, #ffffff);
+  color: #334155;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -812,15 +810,16 @@ body {
 .login-stepcopy {
   border-radius: 16px;
   padding: 12px 14px;
-  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
-  background: color-mix(in oklab, #ffffff 88%, transparent);
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 85%, transparent);
+  background: color-mix(in oklab, hsl(var(--muted)) 66%, #ffffff);
 }
 
 .login-register-callout {
   border-radius: 16px;
   padding: 12px 14px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, transparent);
-  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 22%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 6%, #ffffff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .login-stepper2 {
@@ -837,7 +836,7 @@ body {
   right: 12px;
   top: 12px;
   height: 2px;
-  background: color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, hsl(var(--border)));
 }
 
 .login-step2 {
@@ -857,10 +856,10 @@ body {
   place-items: center;
   font-size: 12px;
   font-weight: 800;
-  border: 1px solid color-mix(in oklab, hsl(var(--border)) 78%, transparent);
-  background: #ffffff;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 88%, transparent);
+  background: color-mix(in oklab, #ffffff 92%, hsl(var(--muted)) 8%);
   color: #64748b;
-  box-shadow: 0 10px 26px -20px rgba(15, 23, 42, 0.4);
+  box-shadow: 0 14px 30px -26px rgba(15, 23, 42, 0.45);
 }
 
 .login-step2-label {
@@ -872,9 +871,9 @@ body {
 }
 
 .login-step2.active .login-step2-dot {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 62%, hsl(var(--border)));
-  background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
-  color: #0f172a;
+  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .login-step2.active .login-step2-label {
@@ -882,7 +881,7 @@ body {
 }
 
 .login-step2.done .login-step2-dot {
-  border-color: color-mix(in oklab, hsl(var(--primary-strong)) 62%, hsl(var(--border)));
+  border-color: color-mix(in oklab, hsl(var(--primary-strong)) 55%, hsl(var(--border)));
   background: hsl(var(--primary-strong));
   color: hsl(var(--primary-foreground));
 }
