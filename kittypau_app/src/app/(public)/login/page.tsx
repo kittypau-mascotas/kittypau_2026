@@ -44,7 +44,8 @@ export default function LoginPage() {
       {
         label: "Cuenta",
         title: "Crea tu cuenta",
-        description: "Registramos tu correo y enviamos confirmación para activar el acceso.",
+        description:
+          "Registramos tu correo y enviamos confirmación para activar el acceso. Si no llega, revisa spam o usa “Reenviar confirmación”.",
       },
       {
         label: "Usuario",
@@ -549,15 +550,6 @@ export default function LoginPage() {
               <div className="login-register-body p-6">
                 {registerStep === "account" ? (
                 <form className="space-y-4" onSubmit={onRegister} aria-busy={isRegistering}>
-                    <div className="login-register-callout">
-                      <p className="text-xs font-semibold text-slate-700">
-                        Confirmación por correo
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        Te enviaremos un enlace para confirmar. Si no llega, revisa spam o usa
-                        “Reenviar confirmación”.
-                      </p>
-                    </div>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
