@@ -470,7 +470,7 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-8 px-6 py-6 lg:flex-row lg:items-center lg:justify-between lg:py-8">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="max-w-xl space-y-5 text-center lg:text-left">
           <div className="login-hero-asset freeform-rise" aria-hidden="true">
             <img
@@ -481,10 +481,10 @@ export default function LoginPage() {
               draggable={false}
             />
           </div>
-          <h1 className="display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
+          <h1 className="login-hero-title display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.
           </h1>
-          <p className="text-base leading-relaxed text-slate-600 md:text-lg">
+          <p className="login-hero-copy text-base leading-relaxed text-slate-600 md:text-lg">
             Accede a la lectura interpretada del comportamiento de tu mascota.
             Sin dashboards fríos, solo claridad y calma.
           </p>
