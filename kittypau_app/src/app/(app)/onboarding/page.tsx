@@ -1,5 +1,21 @@
-import OnboardingFlow from "./_components/onboarding-flow";
+import { redirect } from "next/navigation";
 
-export default function OnboardingPage() {
-  return <OnboardingFlow />;
+export default function OnboardingPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const params = new URLSearchParams();
+  params.set("register", "1");
+  if (searchParams) {
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (!value) continue;
+      if (Array.isArray(value)) {
+        if (value[0]) params.set(key, value[0]);
+      } else {
+        params.set(key, value);
+      }
+    }
+  }
+  redirect(`/login?${params.toString()}`);
 }

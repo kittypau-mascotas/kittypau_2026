@@ -64,7 +64,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${siteUrl}/login?verified=1`,
+        emailRedirectTo: `${siteUrl}/login?register=1&verified=1`,
       },
     });
 

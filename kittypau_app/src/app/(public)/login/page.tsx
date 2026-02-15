@@ -31,6 +31,8 @@ export default function LoginPage() {
   const [isResending, setIsResending] = useState(false);
   const [highlightRegister, setHighlightRegister] = useState(false);
   const [onboardingProgress, setOnboardingProgress] = useState(1);
+  const [registerConfirmed, setRegisterConfirmed] = useState(false);
+  const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
@@ -88,13 +90,65 @@ export default function LoginPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("verified") === "1") {
+    const wantsRegister = params.get("register") === "1";
+    const verified = params.get("verified") === "1";
+
+    if (verified && wantsRegister) {
+      // We'll try to resume the onboarding popup after email confirmation.
+      setShowRegister(true);
+      setRegisterStep("onboarding");
+      setRegisterConfirmed(true);
+      setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
+    } else if (verified) {
       setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
     }
     if (params.get("reset") === "1") {
       setVerifiedMessage("Contraseña actualizada. Inicia sesión.");
     }
   }, []);
+
+  useEffect(() => {
+    // Support Supabase PKCE confirmations: /login?code=...&register=1
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const wantsRegister = params.get("register") === "1";
+    if (!code || !wantsRegister) return;
+
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
+        if (error || !data.session?.access_token) return;
+
+        setTokens({
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+        });
+
+        setShowRegister(true);
+        setRegisterStep("onboarding");
+        setRegisterConfirmed(true);
+        setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
+
+        // Clean the URL (remove ?code=...) to avoid re-exchanging on reload.
+        const next = new URL(window.location.href);
+        next.searchParams.delete("code");
+        next.searchParams.set("verified", "1");
+        next.searchParams.set("register", "1");
+        router.replace(next.pathname + "?" + next.searchParams.toString());
+      } catch {
+        // ignore
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -188,7 +242,7 @@ export default function LoginPage() {
       email: registerEmail,
       password: registerPassword,
       options: {
-        emailRedirectTo: `${siteUrl}/onboarding?verified=1`,
+        emailRedirectTo: `${siteUrl}/login?register=1&verified=1`,
       },
     });
 
@@ -544,6 +598,11 @@ export default function LoginPage() {
                   <div className="login-stepcopy">
                     <p className="text-sm font-semibold text-slate-900">{activeStep.title}</p>
                     <p className="mt-1 text-xs text-slate-500">{activeStep.description}</p>
+                    {registerConfirmed && registerConfirmedMessage ? (
+                      <p className="mt-3 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                        {registerConfirmedMessage}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               </div>
