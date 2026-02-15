@@ -746,7 +746,7 @@ body {
 
 .login-bandida-action {
   position: absolute;
-  right: 6px;
+  right: 54px;
   bottom: -108px;
   z-index: 5;
   padding: 0;
@@ -1002,6 +1002,7 @@ body {
   }
 
   .login-bandida-action {
+    right: 44px;
     bottom: -90px;
   }
 }
