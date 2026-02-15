@@ -500,7 +500,7 @@ export default function AdminPage() {
                   </div>
                   <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
                     <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
-                      Incompletos > 24h
+                      Incompletos {" > "} 24h
                     </p>
                     <p className="mt-2 text-2xl font-semibold text-slate-900">
                       {registrationSummary?.stalled_24h ?? 0}
