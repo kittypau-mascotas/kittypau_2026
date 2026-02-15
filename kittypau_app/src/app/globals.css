@@ -499,12 +499,13 @@ body {
 .login-bg {
   position: relative;
   min-height: 100dvh;
+  height: 100dvh;
   background:
     radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
     linear-gradient(180deg, #ffffff 0%, #ffffff 18%, #f6dbd6 100%);
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .login-layer {
@@ -678,6 +679,17 @@ body {
 @media (min-width: 1024px) {
   .login-hero-asset {
     justify-content: flex-start;
+  }
+
+  .login-hero-asset-img {
+    width: min(390px, 100%);
+  }
+}
+
+@media (max-width: 1023px) {
+  .login-bg {
+    height: auto;
+    overflow-y: auto;
   }
 }
 
