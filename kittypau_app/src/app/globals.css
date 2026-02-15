@@ -787,6 +787,121 @@ body {
   }
 }
 
+.login-register-modal {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 32%, hsl(var(--border)));
+}
+
+.login-register-head {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, #ffffff 80%, hsl(var(--primary)) 6%),
+    color-mix(in oklab, #ffffff 92%, transparent)
+  );
+}
+
+.login-register-pill {
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 32%, transparent);
+  background: color-mix(in oklab, hsl(var(--primary)) 12%, #ffffff);
+  color: color-mix(in oklab, hsl(var(--primary-strong)) 70%, #334155);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-stepcopy {
+  border-radius: 16px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  background: color-mix(in oklab, #ffffff 88%, transparent);
+}
+
+.login-register-callout {
+  border-radius: 16px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, transparent);
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+}
+
+.login-stepper2 {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.login-stepper2-track {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  height: 2px;
+  background: color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+}
+
+.login-step2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.login-step2-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 78%, transparent);
+  background: #ffffff;
+  color: #64748b;
+  box-shadow: 0 10px 26px -20px rgba(15, 23, 42, 0.4);
+}
+
+.login-step2-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.login-step2.active .login-step2-dot {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 62%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
+  color: #0f172a;
+}
+
+.login-step2.active .login-step2-label {
+  color: #475569;
+}
+
+.login-step2.done .login-step2-dot {
+  border-color: color-mix(in oklab, hsl(var(--primary-strong)) 62%, hsl(var(--border)));
+  background: hsl(var(--primary-strong));
+  color: hsl(var(--primary-foreground));
+}
+
+.login-step2.done .login-step2-label {
+  color: #475569;
+}
+
+@media (max-width: 640px) {
+  .login-stepper2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+
+  .login-stepper2-track {
+    display: none;
+  }
+}
+
 .login-bandida {
   width: clamp(114px, 12vw, 160px);
   height: auto;

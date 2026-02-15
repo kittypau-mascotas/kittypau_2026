@@ -39,15 +39,46 @@ export default function LoginPage() {
 
   const modalStep = registerStep === "account" ? 1 : Math.min(4, onboardingProgress + 1);
 
+  const stepMeta = useMemo(
+    () => [
+      {
+        label: "Cuenta",
+        title: "Crea tu cuenta",
+        description: "Registramos tu correo y enviamos confirmación para activar el acceso.",
+      },
+      {
+        label: "Usuario",
+        title: "Perfil de usuario",
+        description: "Guardamos nombre, ciudad y tu avatar para personalizar el dashboard.",
+      },
+      {
+        label: "Mascota",
+        title: "Perfil de mascota",
+        description: "Nombre y tipo para interpretar lecturas y crear el feed.",
+      },
+      {
+        label: "Dispositivo",
+        title: "Vincular dispositivo",
+        description: "Conecta tu plato con el código KPCL0000 para ver datos en vivo.",
+      },
+    ],
+    []
+  );
+
+  const activeStep = stepMeta[Math.max(0, Math.min(stepMeta.length - 1, modalStep - 1))];
+
   const Stepper = () => (
-    <div className="login-stepper" aria-label="Progreso de onboarding">
-      {["Cuenta", "Usuario", "Mascota", "Dispositivo"].map((label, idx) => {
-        const step = idx + 1;
-        const state = step < modalStep ? "done" : step === modalStep ? "active" : "todo";
+    <div className="login-stepper2" aria-label="Progreso del onboarding">
+      <div className="login-stepper2-track" aria-hidden="true" />
+      {stepMeta.map((step, idx) => {
+        const number = idx + 1;
+        const state = number < modalStep ? "done" : number === modalStep ? "active" : "todo";
         return (
-          <div key={label} className={`login-step ${state}`}>
-            <span className="login-step-dot" aria-hidden="true" />
-            <span className="login-step-label">{label}</span>
+          <div key={step.label} className={`login-step2 ${state}`}>
+            <span className="login-step2-dot" aria-hidden="true">
+              {number}
+            </span>
+            <span className="login-step2-label">{step.label}</span>
           </div>
         );
       })}
@@ -490,21 +521,41 @@ export default function LoginPage() {
             >
               Cerrar
             </button>
-            <div className="glass-panel overflow-hidden">
-              <div className="border-b border-white/30 px-6 py-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Registro Kittypau
-                </p>
-                <h2 className="display-title text-2xl font-semibold text-slate-900">
-                  {registerTitle}
-                </h2>
-                <div className="mt-4">
+            <div className="glass-panel overflow-hidden login-register-modal">
+              <div className="login-register-head border-b border-white/30 px-6 py-5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                      Registro
+                    </p>
+                    <h2 className="display-title text-2xl font-semibold text-slate-900">
+                      {registerTitle}
+                    </h2>
+                  </div>
+                  <span className="login-register-pill text-xs font-semibold">
+                    Paso {modalStep} / 4
+                  </span>
+                </div>
+                <div className="mt-4 space-y-3">
                   <Stepper />
+                  <div className="login-stepcopy">
+                    <p className="text-sm font-semibold text-slate-900">{activeStep.title}</p>
+                    <p className="mt-1 text-xs text-slate-500">{activeStep.description}</p>
+                  </div>
                 </div>
               </div>
               <div className="p-6">
                 {registerStep === "account" ? (
                 <form className="space-y-4" onSubmit={onRegister} aria-busy={isRegistering}>
+                    <div className="login-register-callout">
+                      <p className="text-xs font-semibold text-slate-700">
+                        Confirmación por correo
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Te enviaremos un enlace para confirmar. Si no llega, revisa spam o usa
+                        “Reenviar confirmación”.
+                      </p>
+                    </div>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
