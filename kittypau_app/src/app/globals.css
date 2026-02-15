@@ -1272,6 +1272,7 @@ textarea::placeholder {
   overflow: hidden;
   box-shadow: 0 26px 80px -62px rgba(15, 23, 42, 0.35);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  animation: route-loading-badge-pulse 1.25s ease-in-out infinite;
 }
 
 .route-loading-hero {
@@ -1279,7 +1280,8 @@ textarea::placeholder {
   max-width: none;
   height: auto;
   object-fit: contain;
-  animation: none;
+  transform-origin: center center;
+  animation: route-loading-batman 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
 }
 
 .route-loading-label {
@@ -1291,5 +1293,37 @@ textarea::placeholder {
 @keyframes route-loading-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes route-loading-batman {
+  0% {
+    transform: rotate(0deg) scale(0.84);
+  }
+  42% {
+    transform: rotate(190deg) scale(1.16);
+  }
+  72% {
+    transform: rotate(315deg) scale(0.96);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes route-loading-badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 26px 80px -62px rgba(15, 23, 42, 0.35);
+  }
+  50% {
+    box-shadow: 0 32px 96px -58px rgba(15, 23, 42, 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loading-hero,
+  .route-loading-badge {
+    animation: none;
   }
 }
