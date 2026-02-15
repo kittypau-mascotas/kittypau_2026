@@ -23,6 +23,7 @@ type Pet = {
 type OnboardingFlowProps = {
   mode?: "page" | "modal";
   onClose?: () => void;
+  onProgress?: (step: number) => void;
 };
 
 type TooltipIconProps = {
@@ -57,7 +58,11 @@ const AVATAR_OPTIONS = [
   { id: "avatar-4", label: "Avatar 4", url: "/avatar_5.png" },
 ];
 
-export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlowProps) {
+export default function OnboardingFlow({
+  mode = "page",
+  onClose,
+  onProgress,
+}: OnboardingFlowProps) {
   const router = useRouter();
   const [status, setStatus] = useState<OnboardingStatus>(defaultStatus);
   const [pets, setPets] = useState<Pet[]>([]);
@@ -183,6 +188,10 @@ export default function OnboardingFlow({ mode = "page", onClose }: OnboardingFlo
     if (!status.hasDevice) return 3;
     return 4;
   }, [status]);
+
+  useEffect(() => {
+    onProgress?.(currentStep);
+  }, [currentStep, onProgress]);
 
   const nextStepHint = useMemo(() => {
     if (currentStep === 1) {

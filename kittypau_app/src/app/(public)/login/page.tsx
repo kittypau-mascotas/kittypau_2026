@@ -30,10 +30,28 @@ export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [highlightRegister, setHighlightRegister] = useState(false);
+  const [onboardingProgress, setOnboardingProgress] = useState(1);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
     [registerStep]
+  );
+
+  const modalStep = registerStep === "account" ? 1 : Math.min(4, onboardingProgress + 1);
+
+  const Stepper = () => (
+    <div className="login-stepper" aria-label="Progreso de onboarding">
+      {["Cuenta", "Usuario", "Mascota", "Dispositivo"].map((label, idx) => {
+        const step = idx + 1;
+        const state = step < modalStep ? "done" : step === modalStep ? "active" : "todo";
+        return (
+          <div key={label} className={`login-step ${state}`}>
+            <span className="login-step-dot" aria-hidden="true" />
+            <span className="login-step-label">{label}</span>
+          </div>
+        );
+      })}
+    </div>
   );
 
   useEffect(() => {
@@ -394,7 +412,10 @@ export default function LoginPage() {
                     ? "bg-primary/10 text-slate-900 ring-1 ring-primary/40"
                     : "hover:text-slate-900"
                 }`}
-                onClick={() => router.push("/register")}
+                onClick={() => {
+                  setShowRegister(true);
+                  setRegisterStep("account");
+                }}
               >
                 Crear cuenta
               </button>
@@ -441,7 +462,10 @@ export default function LoginPage() {
               onMouseLeave={() => setHighlightRegister(false)}
               onFocus={() => setHighlightRegister(true)}
               onBlur={() => setHighlightRegister(false)}
-              onClick={() => router.push("/register")}
+              onClick={() => {
+                setShowRegister(true);
+                setRegisterStep("account");
+              }}
             >
               <img
                 src="/illustrations/bandida.png"
@@ -474,6 +498,9 @@ export default function LoginPage() {
                 <h2 className="display-title text-2xl font-semibold text-slate-900">
                   {registerTitle}
                 </h2>
+                <div className="mt-4">
+                  <Stepper />
+                </div>
               </div>
               <div className="p-6">
                 {registerStep === "account" ? (
@@ -563,7 +590,11 @@ export default function LoginPage() {
                     </div>
                   </form>
                 ) : (
-                  <OnboardingFlow mode="modal" onClose={closeRegister} />
+                  <OnboardingFlow
+                    mode="modal"
+                    onClose={closeRegister}
+                    onProgress={(step) => setOnboardingProgress(step)}
+                  />
                 )}
               </div>
             </div>

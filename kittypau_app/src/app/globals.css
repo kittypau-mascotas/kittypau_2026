@@ -736,6 +736,57 @@ body {
   border-radius: 999px;
 }
 
+.login-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.login-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  background: color-mix(in oklab, #ffffff 82%, transparent);
+}
+
+.login-step-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.login-step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in oklab, hsl(var(--border)) 55%, transparent);
+}
+
+.login-step.active {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 60%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+}
+
+.login-step.active .login-step-dot {
+  background: hsl(var(--primary));
+}
+
+.login-step.done .login-step-dot {
+  background: hsl(var(--primary-strong));
+}
+
+@media (max-width: 640px) {
+  .login-stepper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .login-bandida {
   width: clamp(114px, 12vw, 160px);
   height: auto;
