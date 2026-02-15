@@ -678,7 +678,7 @@ body {
 
 @media (min-width: 1024px) {
   .login-hero-asset {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .login-hero-asset-img {
