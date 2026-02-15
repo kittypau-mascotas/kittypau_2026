@@ -790,6 +790,23 @@ body {
 .login-register-modal {
   border-color: color-mix(in oklab, hsl(var(--primary)) 22%, hsl(var(--border)));
   box-shadow: 0 30px 80px -64px rgba(15, 23, 42, 0.45);
+  max-height: calc(100dvh - 16px);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-register-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .login-register-modal {
+    border-radius: 24px 24px 0 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: calc(100dvh - 8px);
+  }
 }
 
 .login-register-head {

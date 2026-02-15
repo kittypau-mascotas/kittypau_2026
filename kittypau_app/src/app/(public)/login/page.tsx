@@ -512,16 +512,9 @@ export default function LoginPage() {
       </div>
 
       {showRegister ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
-          <div className="relative w-full max-w-4xl">
-            <button
-              type="button"
-              onClick={closeRegister}
-              className="absolute right-4 top-4 rounded-full border border-white/40 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm"
-            >
-              Cerrar
-            </button>
-            <div className="glass-panel overflow-hidden login-register-modal">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10">
+          <div className="relative w-full max-w-4xl sm:px-0">
+            <div className="glass-panel login-register-modal w-full overflow-hidden">
               <div className="login-register-head border-b border-white/30 px-6 py-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -532,9 +525,18 @@ export default function LoginPage() {
                       {registerTitle}
                     </h2>
                   </div>
-                  <span className="login-register-pill text-xs font-semibold">
-                    Paso {modalStep} / 4
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="login-register-pill text-xs font-semibold">
+                      Paso {modalStep} / 4
+                    </span>
+                    <button
+                      type="button"
+                      onClick={closeRegister}
+                      className="rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-4 space-y-3">
                   <Stepper />
@@ -544,7 +546,7 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="login-register-body p-6">
                 {registerStep === "account" ? (
                 <form className="space-y-4" onSubmit={onRegister} aria-busy={isRegistering}>
                     <div className="login-register-callout">
