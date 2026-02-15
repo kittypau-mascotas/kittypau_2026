@@ -1,62 +1,43 @@
-# Mini-spec: Pop-up de Registro (Kittypau)
+﻿# Mini-spec: Pop-up de Registro (Kittypau)
 
 ## Objetivo
-Guiar al usuario en un solo flujo visual con progreso persistente hasta completar:
-**Usuario -> Mascota -> Dispositivo**.
-
----
+Guiar al usuario en un solo flujo (sin salir de `/login`) con progreso persistente hasta completar:
+**Cuenta -> Usuario -> Mascota -> Dispositivo**.
 
 ## Comportamiento general
-- Se abre al click de "Registrarse".
-- Modal/popup bloqueante (no permite navegar fuera del flujo).
-- Puede cerrarse con confirmaci�n, pero **guarda progreso**.
-- Reanudacion automatica al volver a abrir la app.
-
----
+- Se abre al click de "Crear cuenta" (y tambien al click de la ilustracion "Bandida").
+- Modal/popup bloqueante.
+- Puede cerrarse con confirmacion, pero guarda progreso.
+- Reanudacion automatica al volver a abrir el pop-up.
+- Si la cuenta ya esta confirmada (hay sesion Supabase), el pop-up salta automaticamente al Paso 2 (Usuario).
 
 ## Estados UI del pop-up
-1. **Idle**: listo para iniciar.
-2. **Step: Usuario**
-3. **Step: Mascota**
-4. **Step: Dispositivo**
-5. **Loading**: guardando cambios.
-6. **Success**: completo.
-7. **Error**: muestra error recuperable.
-
----
+1. Idle: listo para iniciar.
+2. Step 1: Cuenta.
+3. Step 2: Usuario.
+4. Step 3: Mascota.
+5. Step 4: Dispositivo.
+6. Loading: guardando cambios.
+7. Success: completo.
+8. Error: muestra error recuperable.
 
 ## Barra de progreso
-3 hitos visuales:
-1. Usuario
-2. Mascota
-3. Dispositivo
+4 hitos visuales:
+1. Cuenta
+2. Usuario
+3. Mascota
+4. Dispositivo
 
 - Se marca completo al terminar cada step.
-- Se puede mostrar porcentaje (33% / 66% / 100%).
-
----
-
-## Eventos UX esperados
-- `popup_opened`
-- `step_completed:user`
-- `step_completed:pet`
-- `step_completed:device`
-- `popup_closed`
-- `popup_resumed`
-- `popup_completed`
-
----
+- Se muestra como "Paso X / 4" y un stepper visual.
 
 ## Persistencia de progreso
-Guardar:
-- `user_onboarding_step`
-- `pet_onboarding_step`
-- `device_onboarding_step`
+Se apoya en los estados ya existentes en DB:
+- `profiles.user_onboarding_step`
+- `pets.pet_onboarding_step`
+- Vinculo device<->pet + `devices.device_state`
 
-Si el usuario sale:
-- Reabrir en el ultimo step no completado.
-
----
+Regla UX: si el usuario cierra, al reabrir se debe continuar en el ultimo step no completado.
 
 ## Errores esperados
 - Sin internet -> mostrar retry.
@@ -64,12 +45,28 @@ Si el usuario sale:
 - Dispositivo ya vinculado -> pedir escanear otro QR.
 - Sesion expirada -> re-login.
 
----
-
 ## Reglas clave
-- No permitir finalizar sin QR valido y mascota asociada.
+- No permitir finalizar sin mascota asociada y dispositivo vinculado.
 - Si el usuario no es dueno, pedir `owner_name`.
 - Si el canal incluye WhatsApp, pedir `phone_number`.
+
+## Confirmacion por correo (Supabase)
+Objetivo: cuando el usuario confirma el correo, debe volver al mismo pop-up y continuar en Paso 2 (Usuario) sin usar la pagina `/onboarding`.
+
+### Redirect URL (frontend)
+- En `signUp`, `emailRedirectTo` apunta a: `/login?register=1&verified=1`
+
+### Variantes de confirmacion soportadas
+- PKCE: `/login?register=1&code=...`
+  - Se usa `exchangeCodeForSession(code)` y luego se avanza a onboarding.
+- OTP/hash: `/login?register=1&type=signup&token_hash=...`
+  - Se usa `verifyOtp({ type, token_hash })` y luego se avanza a onboarding.
+- Mensaje simple: `/login?register=1&verified=1`
+  - Abre el pop-up. En cuanto exista sesion (confirmacion en otra pestaña), el pop-up avanza a Paso 2.
+
+### Regla UX en Step 1
+- Si `signUp` no entrega `session` (lo normal con confirmacion por correo), el Step 1 muestra:
+  - "Revisa tu correo (y spam) para confirmar... Cuando confirmes, volveras aqui y pasaremos automaticamente al paso Usuario."
 
 ---
 
@@ -93,4 +90,3 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
 
 ## Persistencia
 - Guardar `first_time_guide_seen` en perfil de usuario.
-

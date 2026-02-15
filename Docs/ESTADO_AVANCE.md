@@ -1,5 +1,16 @@
 ﻿# Estado del Proyecto y Próximos Pasos (2026-02-07)
 
+
+## Actualizado (2026-02-15) - Registro en popup + confirmacion por correo
+- El onboarding ya no se usa como pagina separada: el flujo vive en un popup/modal dentro de `/login`.
+- El popup ahora tiene 4 pasos: `Cuenta -> Usuario -> Mascota -> Dispositivo` (stepper + copy por paso).
+- Confirmacion de correo (Supabase) soportada para volver al popup y continuar:
+  - `/login?register=1&code=...` (PKCE) -> `exchangeCodeForSession(code)`
+  - `/login?register=1&type=signup&token_hash=...` (OTP/hash) -> `verifyOtp({ type, token_hash })`
+  - `/login?register=1&verified=1` (abre popup; al existir sesion, avanza automaticamente)
+- Regla UX: si el usuario ya esta validado (hay sesion Supabase), el popup salta el Paso 1 y entra directo a Paso 2 (Usuario).
+- Mensaje en Step 1 actualizado: al crear cuenta sin sesion inmediata, indica que al confirmar correo se vuelve al popup y avanza solo.
+
 ## Resumen de avance
 - Proyecto Next.js en `kittypau_app/` (TypeScript + App Router) desplegado en Vercel.
 - Endpoints API listos: `/api/pets`, `/api/devices`, `/api/readings`, `/api/mqtt/webhook`.
@@ -207,6 +218,9 @@
 - Gestión de incidentes: apertura/cierre de incidentes generales en `audit_events`.
 - Hardening backend: validaciones de transición de estado y consistencia de IDs.
 - Operación DevOps/Platform: checklist Vercel + Supabase + bridge para operación continua.
+
+
+
 
 
 

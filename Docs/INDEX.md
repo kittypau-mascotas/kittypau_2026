@@ -1,8 +1,9 @@
-﻿# ÃƒÂndice de DocumentaciÃƒÂ³n (Kittypau)
+﻿# Indice de Documentacion (Kittypau)
 
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
 - `Docs/ESTADO_AVANCE.md`
+- `Docs/NOTAS_SESION_2026-02-15.md`
 - `Docs/NOTAS_IMPLEMENTACION.md`
 - `Docs/MAPA_ECOSISTEMA.md`
 - `Docs/PLAN_IMPLEMENTACION.md`
@@ -28,17 +29,30 @@
 - `Docs/CLEANUP_SQL.sql`
 - `Docs/PARTICIONES_READINGS.md`
 - `Docs/MIGRACION_SCHEMA_RASPBERRY.md`
+- `Docs/SQL_ASSERTS.md`
+- `Docs/SQL_CHECK_BRIDGE_UNIQUENESS.sql`
+- `Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql`
 
 ## APIs y backend
 - `Docs/FRONT_BACK_APIS.md`
+- `Docs/BRIDGE_HEALTHCHECK.md`
+- `Docs/STORAGE_POLICIES.md`
 
-## Flujos UX
+## Flujos UX / UI
 - `Docs/FLUJO_REGISTRO_DISPOSITIVO.md`
+- `Docs/POPUP_REGISTRO_SPEC.md`
 - `Docs/IMAGENES_LOGIN.md`
-- `Docs/estilos y diseÃƒÂ±os.md`
+- `Docs/estilos y diseños.md`
+- `Docs/CATALOGO_GRAFICOS.md`
 
-## Deploy
+## Admin / Operacion
+- `Docs/ADMIN_PORTAL_PLAN.md`
+- `Docs/VALIDACION_ADMIN_DASHBOARD.md`
+
+## Deploy / DevOps
 - `Docs/CHECKLIST_DEPLOY.md`
+- `Docs/PIPELINE_CICD.md`
+- `Docs/VERCEL_UPSTASH_CHECKLIST.md`
 
 ## CLI
 - `Docs/VERCEL_CLI.md`
@@ -48,47 +62,23 @@
 
 ## Infraestructura Edge
 - `Docs/RASPBERRY_BRIDGE.md`
+- `Docs/RASPBERRY_INTEGRATION_PLAN.md`
 - `Docs/TOPICOS_MQTT.md`
-- `Docs/BRIDGE_HEALTHCHECK.md`
-
-## Infraestructura Cloud
-- `Docs/VERCEL_UPSTASH_CHECKLIST.md`
-- `Docs/PIPELINE_CICD.md`
 
 ## Pruebas
 - `Docs/PRUEBAS_E2E.md`
 - `Docs/AUTOMATIZACION_TESTS.md`
+- `Docs/POSTMAN_COLLECTION.md`
 
+## Scripts (referencia)
+- `Docs/TEST_DB_API.ps1`
+- `Docs/TEST_DB_API_NEGATIVE.ps1`
+- `Docs/TEST_ONBOARDING_BACKEND.ps1`
+- `Docs/TEST_AUTH_FLOW.ps1`
+- `Docs/TEST_UI_ONBOARDING.md`
 
-
-
-## Scripts
-- Docs/TEST_DB_API.ps1
-
-- Docs/TEST_ONBOARDING_BACKEND.ps1
-
-- Docs/.env.test.example
-- Docs/.env.test.local (no versionado)
-
-- Docs/TEST_DB_API_NEGATIVE.ps1
-
-- Docs/RASPBERRY_INTEGRATION_PLAN.md
-
-- Docs/.env.bridge.example
-
-- Docs/TIMESTAMP_IOT.md
-
-- Docs/STORAGE_POLICIES.md
-
-- Docs/TEST_AUTH_FLOW.ps1
-- Docs/TEST_UI_ONBOARDING.md
-
-- Docs/PLAN_MEJORA_DB_ACTUAL.md
-- Docs/CATALOGO_GRAFICOS.md
-- Docs/ADMIN_PORTAL_PLAN.md
-- Docs/VALIDACION_ADMIN_DASHBOARD.md
-
-- Docs/SQL_CHECK_BRIDGE_UNIQUENESS.sql
-- Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql
-
+## Env examples
+- `Docs/.env.bridge.example`
+- `Docs/.env.test.example`
+- `Docs/.env.test.local` (no versionado)
 

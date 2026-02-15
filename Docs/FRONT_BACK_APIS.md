@@ -23,8 +23,17 @@ No hay backend separado en otro servidor. La base de datos vive en Supabase.
 
 ## Registro en pop-up
 - Se abre al click de registrarse (web y movil).
-- Barra de progreso con 3 hitos: Usuario -> Mascota -> Dispositivo.
+- Barra de progreso con 4 hitos: Cuenta -> Usuario -> Mascota -> Dispositivo.
 - Persistencia si el usuario cierra.
+- Confirmacion por correo: al validar, el flujo vuelve al pop-up y continua en Paso 2 (Usuario).
+
+### Confirmacion de cuenta (Supabase)
+- Redirect configurado en `signUp`:
+  - `/login?register=1&verified=1`
+- Variantes soportadas al volver desde el correo:
+  - PKCE: `/login?register=1&code=...` -> `exchangeCodeForSession(code)`
+  - OTP/hash: `/login?register=1&type=signup&token_hash=...` -> `verifyOtp({ type, token_hash })`
+  - Simple: `/login?register=1&verified=1` (abre el pop-up; al existir sesion, avanza a Paso 2)
 
 ## Estructura del frontend
 ```
@@ -105,10 +114,10 @@ src/app/
    - Retorna resumen ejecutivo/operativo + feed de `audit_events` en línea.
 
 12. `POST /api/admin/health-check`
-   - Ejecuta health-check de bridge/KPCL bajo autorizaciÃ³n admin (server-only).
+   - Ejecuta health-check de bridge/KPCL bajo autorizacion admin (server-only).
    - Requiere `Authorization: Bearer <access_token>`.
    - Internamente llama `GET /api/bridge/health-check` usando `BRIDGE_HEARTBEAT_SECRET`.
-   - Registra auditorÃ­a: `admin_health_check_run`.
+   - Registra auditoria: `admin_health_check_run`.
    - Query params:
      - `stale_min` (bridge)
      - `device_stale_min` (KPCL)
