@@ -66,6 +66,26 @@ type IncidentCounters = {
   general_device_outage_recovered: number;
 };
 
+type PendingRegistration = {
+  id: string;
+  user_name: string | null;
+  city: string | null;
+  user_step: string | null;
+  created_at: string;
+  stage: "profile_pending" | "pet_pending" | "device_pending" | "completed";
+};
+
+type RegistrationSummary = {
+  total_profiles: number;
+  completed: number;
+  pending_total: number;
+  pending_profile: number;
+  pending_pet: number;
+  pending_device: number;
+  stalled_24h: number;
+  pending_recent: PendingRegistration[];
+};
+
 function formatAgo(value: string) {
   const ts = Date.parse(value);
   if (!Number.isFinite(ts)) return "-";
@@ -110,6 +130,8 @@ export default function AdminPage() {
   const [incidentCounters, setIncidentCounters] = useState<IncidentCounters | null>(
     null
   );
+  const [registrationSummary, setRegistrationSummary] =
+    useState<RegistrationSummary | null>(null);
   const [activeGeneralOutage, setActiveGeneralOutage] = useState(false);
   const [auditFilter, setAuditFilter] = useState<AuditFilter>("critical");
   const [auditWindowMin, setAuditWindowMin] = useState(60);
@@ -176,6 +198,9 @@ export default function AdminPage() {
         setBridges((payload.bridges ?? []) as BridgeLive[]);
         setOfflineDevices((payload.offline_devices ?? []) as OfflineDevice[]);
         setIncidentCounters((payload.incident_counters ?? null) as IncidentCounters | null);
+        setRegistrationSummary(
+          (payload.registration_summary ?? null) as RegistrationSummary | null
+        );
         setActiveGeneralOutage(Boolean(payload.active_general_outage));
         setError(null);
       } catch (err) {
@@ -221,8 +246,16 @@ export default function AdminPage() {
         label: "Eventos offline 24h",
         value: `${summary.offline_events_last_24h}`,
       },
+      {
+        label: "Registros completos",
+        value: `${registrationSummary?.completed ?? 0}/${registrationSummary?.total_profiles ?? 0}`,
+      },
+      {
+        label: "Registros pendientes",
+        value: `${registrationSummary?.pending_total ?? 0}`,
+      },
     ];
-  }, [summary]);
+  }, [summary, registrationSummary]);
 
   const groupedAudit = useMemo((): AuditGroup[] => {
     const map = new Map<string, AuditGroup>();
@@ -270,8 +303,18 @@ export default function AdminPage() {
     if (activeGeneralOutage) {
       alerts.push("Incidente general activo en la red de dispositivos.");
     }
+    if ((registrationSummary?.pending_device ?? 0) > 0) {
+      alerts.push(
+        `${registrationSummary?.pending_device ?? 0} registro(s) con dispositivo pendiente.`
+      );
+    }
+    if ((registrationSummary?.stalled_24h ?? 0) > 0) {
+      alerts.push(
+        `${registrationSummary?.stalled_24h ?? 0} registro(s) incompletos con más de 24h.`
+      );
+    }
     return alerts;
-  }, [summary, activeGeneralOutage]);
+  }, [summary, activeGeneralOutage, registrationSummary]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
@@ -423,6 +466,93 @@ export default function AdminPage() {
                   <p className="mt-2 text-3xl font-semibold text-slate-900">{card.value}</p>
                 </article>
               ))}
+            </section>
+
+            <section className="grid gap-4 lg:grid-cols-2">
+              <article className="surface-card freeform-rise px-6 py-5">
+                <h2 className="display-title text-xl font-semibold text-slate-900">
+                  Estado de registro
+                </h2>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Perfil pendiente
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                      {registrationSummary?.pending_profile ?? 0}
+                    </p>
+                  </div>
+                  <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Mascota pendiente
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                      {registrationSummary?.pending_pet ?? 0}
+                    </p>
+                  </div>
+                  <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Dispositivo pendiente
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                      {registrationSummary?.pending_device ?? 0}
+                    </p>
+                  </div>
+                  <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                      Incompletos > 24h
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-900">
+                      {registrationSummary?.stalled_24h ?? 0}
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="surface-card freeform-rise px-6 py-5">
+                <h2 className="display-title text-xl font-semibold text-slate-900">
+                  Registros pendientes recientes
+                </h2>
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full text-left text-xs text-slate-600">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-400">
+                        <th className="px-2 py-2 font-semibold">Usuario</th>
+                        <th className="px-2 py-2 font-semibold">Etapa</th>
+                        <th className="px-2 py-2 font-semibold">Alta</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(registrationSummary?.pending_recent ?? []).length ? (
+                        (registrationSummary?.pending_recent ?? []).map((row) => (
+                          <tr key={row.id} className="border-b border-slate-100">
+                            <td className="px-2 py-2 font-semibold text-slate-800">
+                              {row.user_name ?? "Sin nombre"}
+                              {row.city ? ` (${row.city})` : ""}
+                            </td>
+                            <td className="px-2 py-2">
+                              {row.stage === "profile_pending"
+                                ? "Perfil"
+                                : row.stage === "pet_pending"
+                                ? "Mascota"
+                                : "Dispositivo"}
+                            </td>
+                            <td className="px-2 py-2">
+                              {row.created_at ? formatAgo(row.created_at) : "-"}
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td className="px-2 py-2 text-slate-500" colSpan={3}>
+                            Sin registros pendientes.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
             </section>
 
             <section className="grid gap-4 lg:grid-cols-2">

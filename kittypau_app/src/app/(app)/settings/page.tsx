@@ -204,15 +204,15 @@ export default function SettingsPage() {
           title="No se encontró tu perfil."
           actions={
             <Link
-              href="/onboarding"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-            >
-              Ir a onboarding
-            </Link>
-          }
-        >
-          Completa el onboarding para crear tu perfil antes de ajustar preferencias.
-        </EmptyState>
+              href="/registro"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
+            > 
+              Ir a registro 
+            </Link> 
+          } 
+        > 
+          Completa el registro para crear tu perfil antes de ajustar preferencias. 
+        </EmptyState> 
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">

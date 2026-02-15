@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../_utils";
 
+type RegistrationStage =
+  | "profile_pending"
+  | "pet_pending"
+  | "device_pending"
+  | "completed";
+
+function toRegistrationStage(params: {
+  userStep: string | null;
+  hasPet: boolean;
+  hasDevice: boolean;
+}): RegistrationStage {
+  const userStep = params.userStep ?? "not_started";
+  if (userStep === "completed" && params.hasPet && params.hasDevice) {
+    return "completed";
+  }
+  if (
+    userStep === "not_started" ||
+    userStep === "user_profile" ||
+    userStep === ""
+  ) {
+    return "profile_pending";
+  }
+  if (!params.hasPet || userStep === "pet_profile") {
+    return "pet_pending";
+  }
+  if (!params.hasDevice || userStep === "device_link") {
+    return "device_pending";
+  }
+  return "profile_pending";
+}
+
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
@@ -57,6 +88,9 @@ export async function GET(req: NextRequest) {
     { data: bridges, error: bridgesError },
     { data: offlineDevices, error: offlineError },
     { data: incidentWindowEvents, error: incidentError },
+    { data: profiles, error: profilesError },
+    { data: petOwners, error: petOwnersError },
+    { data: deviceOwners, error: deviceOwnersError },
   ] = await Promise.all([
       supabaseServer.from("admin_dashboard_live").select("*").limit(1).maybeSingle(),
       (() => {
@@ -93,6 +127,16 @@ export async function GET(req: NextRequest) {
           "general_device_outage_detected",
           "general_device_outage_recovered",
         ]),
+      supabaseServer
+        .from("profiles")
+        .select("id, user_name, city, user_onboarding_step, created_at"),
+      supabaseServer
+        .from("pets")
+        .select("user_id"),
+      supabaseServer
+        .from("devices")
+        .select("owner_id")
+        .not("owner_id", "is", null),
     ]);
 
   if (summaryError) {
@@ -110,6 +154,15 @@ export async function GET(req: NextRequest) {
   if (incidentError) {
     return apiError(req, 500, "SUPABASE_ERROR", incidentError.message);
   }
+  if (profilesError) {
+    return apiError(req, 500, "SUPABASE_ERROR", profilesError.message);
+  }
+  if (petOwnersError) {
+    return apiError(req, 500, "SUPABASE_ERROR", petOwnersError.message);
+  }
+  if (deviceOwnersError) {
+    return apiError(req, 500, "SUPABASE_ERROR", deviceOwnersError.message);
+  }
 
   const incidentCounters = {
     bridge_offline_detected: 0,
@@ -125,6 +178,65 @@ export async function GET(req: NextRequest) {
   const activeGeneralOutage =
     incidentCounters.general_device_outage_detected >
     incidentCounters.general_device_outage_recovered;
+
+  const ownersWithPet = new Set((petOwners ?? []).map((row) => row.user_id));
+  const ownersWithDevice = new Set((deviceOwners ?? []).map((row) => row.owner_id));
+  const nowMs = Date.now();
+  const registrationRows = (profiles ?? []).map((row) => {
+    const hasPet = ownersWithPet.has(row.id);
+    const hasDevice = ownersWithDevice.has(row.id);
+    const stage = toRegistrationStage({
+      userStep: row.user_onboarding_step ?? null,
+      hasPet,
+      hasDevice,
+    });
+    return {
+      id: row.id,
+      user_name: row.user_name ?? null,
+      city: row.city ?? null,
+      user_step: row.user_onboarding_step ?? null,
+      created_at: row.created_at,
+      stage,
+    };
+  });
+  const registrationSummary = (() => {
+    let completed = 0;
+    let pendingProfile = 0;
+    let pendingPet = 0;
+    let pendingDevice = 0;
+    let stalled24h = 0;
+    const pending: typeof registrationRows = [];
+
+    for (const row of registrationRows) {
+      if (row.stage === "completed") {
+        completed += 1;
+        continue;
+      }
+      pending.push(row);
+      if (row.stage === "profile_pending") pendingProfile += 1;
+      if (row.stage === "pet_pending") pendingPet += 1;
+      if (row.stage === "device_pending") pendingDevice += 1;
+      const ageMs = nowMs - Date.parse(row.created_at ?? "");
+      if (Number.isFinite(ageMs) && ageMs > 24 * 60 * 60 * 1000) {
+        stalled24h += 1;
+      }
+    }
+
+    pending.sort(
+      (a, b) => Date.parse(b.created_at ?? "") - Date.parse(a.created_at ?? "")
+    );
+
+    return {
+      total_profiles: registrationRows.length,
+      completed,
+      pending_total: pending.length,
+      pending_profile: pendingProfile,
+      pending_pet: pendingPet,
+      pending_device: pendingDevice,
+      stalled_24h: stalled24h,
+      pending_recent: pending.slice(0, 8),
+    };
+  })();
 
   const dedupedAuditEvents = (() => {
     if (!auditDedupWindowSec) return auditEvents ?? [];
@@ -152,6 +264,7 @@ export async function GET(req: NextRequest) {
     audit_count: dedupedAuditEvents?.length ?? 0,
     bridge_count: bridges?.length ?? 0,
     offline_device_count: offlineDevices?.length ?? 0,
+    registration_pending: registrationSummary.pending_total,
   });
 
   return NextResponse.json({
@@ -162,6 +275,7 @@ export async function GET(req: NextRequest) {
     offline_devices: offlineDevices ?? [],
     incident_counters: incidentCounters,
     active_general_outage: activeGeneralOutage,
+    registration_summary: registrationSummary,
     stale_cutoff: staleCutoff,
   });
 }

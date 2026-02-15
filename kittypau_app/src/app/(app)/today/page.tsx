@@ -687,15 +687,15 @@ export default function TodayPage() {
         (!primaryPet || !primaryDevice) ? (
           <section className="surface-card freeform-rise px-6 py-5 text-sm text-slate-600">
             <p className="mb-3">
-              Aún no tienes todo el onboarding completo. Completa perfil,
-              mascota y dispositivo para ver el feed.
-            </p>
-            <Link
-              href="/onboarding"
-              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
-            >
-              Ir al onboarding
-            </Link>
+              Aún no tienes todo el registro completo. Completa perfil,
+              mascota y dispositivo para ver el feed. 
+            </p> 
+            <Link 
+              href="/registro" 
+              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground" 
+            > 
+              Ir al registro 
+            </Link> 
           </section>
         ) : null}
 
@@ -857,17 +857,17 @@ export default function TodayPage() {
                 Entendido
               </button>
               <Link
-                href="/onboarding"
-                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.localStorage.setItem("kittypau_guide_seen", "1");
-                  }
-                  setShowGuide(false);
-                }}
-              >
-                Completar onboarding
-              </Link>
+                href="/registro"
+                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700" 
+                onClick={() => { 
+                  if (typeof window !== "undefined") { 
+                    window.localStorage.setItem("kittypau_guide_seen", "1"); 
+                  } 
+                  setShowGuide(false); 
+                }} 
+              > 
+                Completar registro 
+              </Link> 
             </div>
           </div>
         </div>

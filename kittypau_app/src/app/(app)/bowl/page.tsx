@@ -548,11 +548,11 @@ export default function BowlPage() {
           title="No hay dispositivos vinculados."
           actions={
             <Link
-              href="/onboarding"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-            >
-              Ir a onboarding
-            </Link>
+              href="/registro"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
+            > 
+              Ir a registro 
+            </Link> 
           }
         >
           Conecta un plato para ver batería, conexión y diagnóstico.

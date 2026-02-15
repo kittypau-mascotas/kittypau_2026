@@ -5,7 +5,7 @@ import type { FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
-import OnboardingFlow from "@/app/(app)/onboarding/_components/onboarding-flow";
+import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
 import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
@@ -20,7 +20,7 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState<string | null>(null);
   const [verifiedMessage, setVerifiedMessage] = useState<string | null>(null);
-  const [registerStep, setRegisterStep] = useState<"account" | "onboarding">(
+  const [registerStep, setRegisterStep] = useState<"account" | "registro">(
     "account"
   );
   const [registerEmail, setRegisterEmail] = useState("");
@@ -30,16 +30,17 @@ export default function LoginPage() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [highlightRegister, setHighlightRegister] = useState(false);
-  const [onboardingProgress, setOnboardingProgress] = useState(1);
+  const [registroProgress, setRegistroProgress] = useState(1);
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
+  const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
-    () => (registerStep === "account" ? "Crear cuenta" : "Completar onboarding"),
+    () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
     [registerStep]
   );
 
-  const modalStep = registerStep === "account" ? 1 : Math.min(4, onboardingProgress + 1);
+  const modalStep = registerStep === "account" ? 1 : Math.min(4, registroProgress + 1);
 
   const stepMeta = useMemo(
     () => [
@@ -71,7 +72,7 @@ export default function LoginPage() {
   const activeStep = stepMeta[Math.max(0, Math.min(stepMeta.length - 1, modalStep - 1))];
 
   const Stepper = () => (
-    <div className="login-stepper2" aria-label="Progreso del onboarding">
+    <div className="login-stepper2" aria-label="Progreso del registro">
       <div className="login-stepper2-track" aria-hidden="true" />
       {stepMeta.map((step, idx) => {
         const number = idx + 1;
@@ -94,11 +95,9 @@ export default function LoginPage() {
     const verified = params.get("verified") === "1";
 
     if (verified && wantsRegister) {
-      // We'll try to resume the onboarding popup after email confirmation.
+      // Resume the registration popup after email confirmation. We'll advance to step 2+
+      // as soon as Supabase session becomes available (code/token_hash exchange or auth state change).
       setShowRegister(true);
-      setRegisterStep("onboarding");
-      setRegisterConfirmed(true);
-      setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
     } else if (verified) {
       setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
     }
@@ -106,6 +105,68 @@ export default function LoginPage() {
       setVerifiedMessage("Contraseña actualizada. Inicia sesión.");
     }
   }, []);
+
+  useEffect(() => {
+    // Keep the popup in sync if the user confirms email in another tab/window.
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.access_token) return;
+
+      setTokens({
+        accessToken: session.access_token,
+        refreshToken: session.refresh_token,
+      });
+      setConfirmedEmail(session.user?.email ?? null);
+
+      // If we're inside the registration popup, jump to step 2+.
+      if (showRegister && registerStep === "account") {
+        setRegisterStep("registro");
+        setRegisterConfirmed(true);
+        setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
+        setRegisterError(null);
+      }
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
+  }, [registerStep, showRegister]);
+
+  useEffect(() => {
+    // If the user already has a valid session (e.g., confirmed email in another tab),
+    // jump directly to registration steps inside the same popup.
+    if (!showRegister) return;
+    if (registerStep !== "account") return;
+
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    let cancelled = false;
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (cancelled) return;
+        const session = data.session;
+        if (!session?.access_token) return;
+
+        setTokens({
+          accessToken: session.access_token,
+          refreshToken: session.refresh_token,
+        });
+        setConfirmedEmail(session.user?.email ?? null);
+
+        setRegisterStep("registro");
+        setRegisterConfirmed(true);
+        setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [registerStep, showRegister]);
 
   useEffect(() => {
     // Support Supabase PKCE confirmations: /login?code=...&register=1
@@ -130,13 +191,65 @@ export default function LoginPage() {
         });
 
         setShowRegister(true);
-        setRegisterStep("onboarding");
+        setRegisterStep("registro");
         setRegisterConfirmed(true);
         setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
 
         // Clean the URL (remove ?code=...) to avoid re-exchanging on reload.
         const next = new URL(window.location.href);
         next.searchParams.delete("code");
+        next.searchParams.set("verified", "1");
+        next.searchParams.set("register", "1");
+        router.replace(next.pathname + "?" + next.searchParams.toString());
+      } catch {
+        // ignore
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
+  useEffect(() => {
+    // Support Supabase non-PKCE confirmations: /login?token_hash=...&type=signup&register=1
+    const params = new URLSearchParams(window.location.search);
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type");
+    const wantsRegister = params.get("register") === "1";
+    if (!tokenHash || !type || !wantsRegister) return;
+
+    if (type !== "signup" && type !== "invite" && type !== "magiclink" && type !== "recovery") {
+      return;
+    }
+
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.verifyOtp({
+          type: type as "signup" | "invite" | "magiclink" | "recovery",
+          token_hash: tokenHash,
+        });
+        if (cancelled) return;
+        if (error || !data.session?.access_token) return;
+
+        setTokens({
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+        });
+        setConfirmedEmail(data.session.user?.email ?? null);
+
+        setShowRegister(true);
+        setRegisterStep("registro");
+        setRegisterConfirmed(true);
+        setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
+
+        const next = new URL(window.location.href);
+        next.searchParams.delete("token_hash");
+        next.searchParams.delete("type");
         next.searchParams.set("verified", "1");
         next.searchParams.set("register", "1");
         router.replace(next.pathname + "?" + next.searchParams.toString());
@@ -254,7 +367,7 @@ export default function LoginPage() {
 
     if (!data.session?.access_token) {
       setRegisterError(
-        "Revisa tu correo (y spam) para confirmar la cuenta antes de continuar."
+        "Revisa tu correo (y spam) para confirmar la cuenta antes de continuar. Cuando confirmes, volverás aquí y pasaremos automáticamente al paso Usuario."
       );
       setIsRegistering(false);
       return;
@@ -264,7 +377,8 @@ export default function LoginPage() {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
     });
-    setRegisterStep("onboarding");
+    setConfirmedEmail(data.session.user?.email ?? null);
+    setRegisterStep("registro");
     setIsRegistering(false);
   };
 
@@ -329,8 +443,18 @@ export default function LoginPage() {
   const isRegisterValid = isRegisterEmailValid && isRegisterPasswordValid;
   const canReset = Boolean(resetEmail || email);
 
+  const openRegister = () => {
+    setShowRegister(true);
+    setRegisterStep("account");
+    setRegisterError(null);
+    setRegisterConfirmed(false);
+    setRegisterConfirmedMessage(null);
+    setConfirmedEmail(null);
+    setRegistroProgress(1);
+  };
+
   const closeRegister = () => {
-    if (registerStep === "onboarding") {
+    if (registerStep === "registro") {
       const ok = window.confirm("¿Quieres cerrar el registro? Se guardará el progreso.");
       if (!ok) return;
     }
@@ -346,7 +470,7 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col items-center justify-start gap-12 px-6 pb-16 pt-10 lg:flex-row lg:items-start lg:justify-between lg:pt-16">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:py-10">
         <div className="max-w-xl space-y-7 text-center lg:text-left">
           <div className="login-hero-asset freeform-rise" aria-hidden="true">
             <img
@@ -498,10 +622,7 @@ export default function LoginPage() {
                     ? "bg-primary/10 text-slate-900 ring-1 ring-primary/40"
                     : "hover:text-slate-900"
                 }`}
-                onClick={() => {
-                  setShowRegister(true);
-                  setRegisterStep("account");
-                }}
+                onClick={openRegister}
               >
                 Crear cuenta
               </button>
@@ -548,10 +669,7 @@ export default function LoginPage() {
               onMouseLeave={() => setHighlightRegister(false)}
               onFocus={() => setHighlightRegister(true)}
               onBlur={() => setHighlightRegister(false)}
-              onClick={() => {
-                setShowRegister(true);
-                setRegisterStep("account");
-              }}
+              onClick={openRegister}
             >
               <img
                 src="/illustrations/bandida.png"
@@ -598,6 +716,11 @@ export default function LoginPage() {
                   <div className="login-stepcopy">
                     <p className="text-sm font-semibold text-slate-900">{activeStep.title}</p>
                     <p className="mt-1 text-xs text-slate-500">{activeStep.description}</p>
+                    {confirmedEmail && registerStep !== "account" ? (
+                      <p className="mt-2 text-[11px] font-semibold text-slate-500">
+                        Cuenta: <span className="font-semibold text-slate-700">{confirmedEmail}</span>
+                      </p>
+                    ) : null}
                     {registerConfirmed && registerConfirmedMessage ? (
                       <p className="mt-3 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
                         {registerConfirmedMessage}
@@ -694,11 +817,11 @@ export default function LoginPage() {
                     </div>
                   </form>
                 ) : (
-                  <OnboardingFlow
-                    mode="modal"
-                    onClose={closeRegister}
-                    onProgress={(step) => setOnboardingProgress(step)}
-                  />
+                  <RegistroFlow 
+                    mode="modal" 
+                    onClose={closeRegister} 
+                    onProgress={(step) => setRegistroProgress(step)} 
+                  /> 
                 )}
               </div>
             </div>

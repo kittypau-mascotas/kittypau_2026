@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getValidAccessToken, setTokens } from "@/lib/auth/token";
+import { clearTokens, getValidAccessToken, setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
-type OnboardingStatus = {
+type RegistroStatus = {
   userStep: string | null;
   hasPet: boolean;
   hasDevice: boolean;
@@ -20,7 +20,7 @@ type Pet = {
   type: string;
 };
 
-type OnboardingFlowProps = {
+type RegistroFlowProps = {
   mode?: "page" | "modal";
   onClose?: () => void;
   onProgress?: (step: number) => void;
@@ -41,7 +41,7 @@ function TooltipIcon({ text }: TooltipIconProps) {
   );
 }
 
-const defaultStatus: OnboardingStatus = {
+const defaultStatus: RegistroStatus = {
   userStep: null,
   hasPet: false,
   hasDevice: false,
@@ -58,13 +58,13 @@ const AVATAR_OPTIONS = [
   { id: "avatar-4", label: "Avatar 4", url: "/avatar_5.png" },
 ];
 
-export default function OnboardingFlow({
+export default function RegistroFlow({
   mode = "page",
   onClose,
   onProgress,
-}: OnboardingFlowProps) {
+}: RegistroFlowProps) {
   const router = useRouter();
-  const [status, setStatus] = useState<OnboardingStatus>(defaultStatus);
+  const [status, setStatus] = useState<RegistroStatus>(defaultStatus);
   const [pets, setPets] = useState<Pet[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,13 +125,6 @@ export default function OnboardingFlow({
       mounted = false;
     };
   }, []);
-  const completedSteps = useMemo(() => {
-    return {
-      profile: status.userStep === "pet_profile" || status.userStep === "completed",
-      pet: status.hasPet,
-      device: status.hasDevice,
-    };
-  }, [status]);
   const profileValidation = useMemo(() => {
     const issues: string[] = [];
     if (!profileForm.user_name.trim()) issues.push("Nombre requerido.");
@@ -188,35 +181,14 @@ export default function OnboardingFlow({
     if (!status.hasDevice) return 3;
     return 4;
   }, [status]);
+  const sessionExpired = useMemo(() => {
+    if (!error) return false;
+    return /sesi[oó]n expir[oó]/i.test(error) || /iniciar sesi[oó]n/i.test(error);
+  }, [error]);
 
   useEffect(() => {
     onProgress?.(currentStep);
   }, [currentStep, onProgress]);
-
-  const nextStepHint = useMemo(() => {
-    if (currentStep === 1) {
-      return {
-        title: "Completa tu perfil",
-        detail: "Tu nombre y ciudad desbloquean las alertas.",
-      };
-    }
-    if (currentStep === 2) {
-      return {
-        title: "Registra a tu mascota",
-        detail: "Necesitamos el nombre y tipo para personalizar el feed.",
-      };
-    }
-    if (currentStep === 3) {
-      return {
-        title: "Vincula el dispositivo",
-        detail: "Usa el código KPCL0000 del plato.",
-      };
-    }
-    return {
-      title: "Onboarding completo",
-      detail: "Puedes ir al feed en cualquier momento.",
-    };
-  }, [currentStep]);
 
   const preparePhoto = (
     file: File | null,
@@ -334,25 +306,46 @@ export default function OnboardingFlow({
     }, 1400);
   };
 
-  const loadStatus = async () => {
-    if (!token) return;
+  const loadStatus = async (accessToken = token, allowRetry = true) => {
+    if (!accessToken) return;
 
     try {
       const [statusRes, petsRes] = await Promise.all([
-        fetch("/api/onboarding/status", {
-          headers: { Authorization: `Bearer ${token}` },
+        fetch("/api/registro/status", {
+          headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        fetch("/api/pets", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("/api/pets", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }),
       ]);
 
+      if ((statusRes.status === 401 || petsRes.status === 401) && allowRetry) {
+        const supabase = getSupabaseBrowser();
+        if (!supabase) {
+          throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
+        }
+        const { data } = await supabase.auth.getSession();
+        const nextToken = data.session?.access_token ?? null;
+        if (nextToken && nextToken !== accessToken) {
+          setTokens({
+            accessToken: nextToken,
+            refreshToken: data.session?.refresh_token,
+          });
+          setToken(nextToken);
+          await loadStatus(nextToken, false);
+          return;
+        }
+        throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
+      }
+
       if (!statusRes.ok) {
-        throw new Error("No se pudo cargar el estado de onboarding.");
+        throw new Error("No se pudo cargar el estado del registro.");
       }
       if (!petsRes.ok) {
         throw new Error("No se pudieron cargar las mascotas.");
       }
 
-      const statusData = (await statusRes.json()) as OnboardingStatus;
+      const statusData = (await statusRes.json()) as RegistroStatus;
       const petsData = (await petsRes.json()) as Pet[];
 
       setStatus(statusData);
@@ -364,11 +357,22 @@ export default function OnboardingFlow({
       setError(null);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "No se pudo cargar el onboarding."
+        err instanceof Error ? err.message : "No se pudo cargar el registro."
       );
     } finally {
       setIsLoading(false);
     }
+  };
+  const retryLoadStatus = async () => {
+    setIsLoading(true);
+    const nextToken = (await getValidAccessToken()) ?? token;
+    if (!nextToken) {
+      setIsLoading(false);
+      setError("Tu sesión expiró. Inicia sesión nuevamente.");
+      return;
+    }
+    setToken(nextToken);
+    await loadStatus(nextToken, false);
   };
 
   useEffect(() => {
@@ -399,7 +403,7 @@ export default function OnboardingFlow({
         });
         setToken(data.session.access_token);
       } else {
-        setError("Necesitas iniciar sesión para completar el onboarding.");
+        setError("Necesitas iniciar sesión para completar el registro.");
         setIsLoading(false);
       }
     });
@@ -567,7 +571,7 @@ export default function OnboardingFlow({
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white px-6 py-12 text-sm text-slate-500">
-        Cargando onboarding...
+        Cargando registro...
       </div>
     );
   }
@@ -592,10 +596,10 @@ export default function OnboardingFlow({
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Onboarding rápido
+              Registro Kittypau
             </p>
             <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
-              Configura tu cuenta en 3 pasos
+              Registro Kittypau
             </h1>
           </div>
           <div className="flex items-center gap-3 text-xs text-slate-500">
@@ -624,66 +628,48 @@ export default function OnboardingFlow({
             {error}
           </div>
         ) : null}
-
-        <section className="surface-card freeform-rise px-6 py-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                Siguiente paso
-              </p>
-              <h2 className="text-lg font-semibold text-slate-900">
-                {nextStepHint.title}
-              </h2>
-              <p className="text-sm text-slate-500">{nextStepHint.detail}</p>
+        {sessionExpired ? (
+          <section className="surface-card freeform-rise border border-amber-200 bg-amber-50/80 px-5 py-4 text-sm text-amber-800">
+            <p className="font-semibold">Tu sesión necesita revalidación.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  void retryLoadStatus();
+                }}
+                className="rounded-[var(--radius)] border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-800"
+              >
+                Reintentar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearTokens();
+                  router.push("/login?register=1");
+                }}
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+              >
+                Volver a login
+              </button>
+              {mode === "modal" && onClose ? (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-xs font-semibold text-slate-700"
+                >
+                  Cerrar modal
+                </button>
+              ) : (
+                <Link
+                  href="/login?register=1"
+                  className="text-xs font-semibold text-slate-700 underline"
+                >
+                  Abrir login
+                </Link>
+              )}
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-              {currentStep === 4 ? "Listo" : `Paso ${currentStep} de 3`}
-            </span>
-          </div>
-        </section>
-
-        <section className="surface-card freeform-rise px-6 py-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Registro guiado
-              </h2>
-              <p className="text-sm text-slate-500">
-                Completa usuario → mascota → dispositivo sin salir del flujo.
-              </p>
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-              {currentStep === 4 ? "Completo" : `Paso ${currentStep}/3`}
-            </span>
-          </div>
-
-          <div className="mt-4 h-2 w-full rounded-full bg-slate-200/70">
-            <div
-              className="h-2 rounded-full bg-primary transition-all"
-              style={{ width: `${Math.min(currentStep, 3) * 33.33}%` }}
-            />
-          </div>
-          <div className="mt-4 grid gap-2 text-xs text-slate-500 md:grid-cols-3">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
-                {completedSteps.profile ? "✓" : "1"}
-              </span>
-              Perfil de usuario
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
-                {completedSteps.pet ? "✓" : "2"}
-              </span>
-              Mascota
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[10px] font-semibold">
-                {completedSteps.device ? "✓" : "3"}
-              </span>
-              Dispositivo
-            </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
         {currentStep === 1 && (
           <section className="surface-card freeform-rise px-6 py-5">

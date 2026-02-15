@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-export default function OnboardingPage({
+export default function RegistroPage({
   searchParams,
 }: {
   searchParams?: Record<string, string | string[] | undefined>;

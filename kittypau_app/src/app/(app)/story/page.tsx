@@ -353,15 +353,15 @@ export default function StoryPage() {
           title="Aún no hay dispositivos vinculados."
           actions={
             <Link
-              href="/onboarding"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-            >
-              Ir a onboarding
-            </Link>
-          }
-        >
-          Completa el onboarding para conectar un plato y comenzar tu diario.
-        </EmptyState>
+              href="/registro"
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
+            > 
+              Ir a registro 
+            </Link> 
+          } 
+        > 
+          Completa el registro para conectar un plato y comenzar tu diario. 
+        </EmptyState> 
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-4">

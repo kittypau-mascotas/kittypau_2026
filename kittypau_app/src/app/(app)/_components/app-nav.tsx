@@ -22,7 +22,7 @@ export default function AppNav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  if (pathname?.startsWith("/onboarding")) {
+  if (pathname?.startsWith("/registro")) {
     return null;
   }
 
