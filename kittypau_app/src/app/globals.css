@@ -3,25 +3,25 @@
 :root {
   /* Brand */
   --primary: 12 62% 79%;
-  --primary-strong: 12 45% 60%;
+  --primary-strong: 11 43% 63%;
   --primary-foreground: 0 0% 100%;
 
   /* Surface */
-  --background: 30 38% 97%;
-  --foreground: 20 12% 18%;
+  --background: 25 70% 98%;
+  --foreground: 18 18% 16%;
   --card: 0 0% 100%;
-  --card-foreground: 20 12% 18%;
+  --card-foreground: 18 18% 16%;
 
   /* States */
-  --muted: 24 20% 92%;
-  --muted-foreground: 20 9% 40%;
-  --border: 12 45% 85%;
-  --ring: 12 45% 60%;
+  --muted: 20 38% 94%;
+  --muted-foreground: 18 10% 42%;
+  --border: 12 35% 86%;
+  --ring: 11 43% 63%;
 
   /* Feedback */
-  --success: 145 22% 46%;
-  --warning: 38 40% 48%;
-  --danger: 350 45% 42%;
+  --success: 150 22% 40%;
+  --warning: 32 55% 44%;
+  --danger: 350 55% 44%;
 
   --radius: 18px;
 }
