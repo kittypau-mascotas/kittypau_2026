@@ -599,11 +599,6 @@ export default function LoginPage() {
                     Verificando credenciales…
                   </p>
                 ) : null}
-                {!isSubmitting && !isLoginValid ? (
-                  <p className="text-[11px] text-slate-500">
-                    Completa email y password (8+).
-                  </p>
-                ) : null}
               </form>
 
             <div className="flex items-center justify-between text-xs text-slate-500">
