@@ -36,12 +36,9 @@ export default function RouteLoadingOverlay() {
   return (
     <div className="route-loading-overlay" data-visible={visible}>
       <audio ref={audioRef} src="/audio/sonido_marca.mp3" preload="auto" />
-      <img
-        src="/logo_carga.jpg"
-        alt="Kittypau"
-        className="route-loading-hero"
-        aria-hidden
-      />
+      <div className="route-loading-badge" aria-hidden="true">
+        <img src="/logo_carga.jpg" alt="" className="route-loading-hero" />
+      </div>
       <div className="route-loading-indicator" aria-hidden />
       <span className="route-loading-label">Cargando</span>
     </div>

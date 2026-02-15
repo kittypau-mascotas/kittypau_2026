@@ -264,11 +264,14 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md">
           <div className="login-card-brand freeform-rise">
-            <img
-              src="/logo_carga.jpg"
-              alt="Kittypau"
-              className="login-card-logo"
-            />
+            <div className="brand-logo-badge" aria-hidden="true">
+              <img
+                src="/logo_carga.jpg"
+                alt=""
+                className="brand-logo-img"
+                draggable={false}
+              />
+            </div>
             <span className="brand-title text-3xl text-primary">Kittypau</span>
             <SocialLinks className="social-header social-header-center" size="md" />
           </div>
