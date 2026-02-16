@@ -471,7 +471,7 @@ export default function LoginPage() {
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
-        <div className="max-w-xl space-y-5 text-center">
+        <div className="login-hero-column max-w-xl space-y-4 text-center">
           <div className="login-hero-asset freeform-rise" aria-hidden="true">
             <img
               src="/illustrations/food.png"
@@ -505,8 +505,8 @@ export default function LoginPage() {
           </div>
 
           <div className="login-panel-wrap">
-            <div className="glass-panel freeform-rise w-full p-8">
-              <div className="stagger space-y-7">
+            <div className="glass-panel freeform-rise w-full p-7">
+              <div className="stagger login-login-stack">
                 <div>
                   <h2 className="display-title text-2xl font-semibold text-slate-900">
                     Iniciar sesión
@@ -516,7 +516,7 @@ export default function LoginPage() {
                   </p>
                 </div>
 
-              <form className="space-y-4" onSubmit={onSubmit} aria-busy={isSubmitting}>
+              <form className="login-login-form" onSubmit={onSubmit} aria-busy={isSubmitting}>
                 <div className="space-y-2">
                   <label
                     className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
