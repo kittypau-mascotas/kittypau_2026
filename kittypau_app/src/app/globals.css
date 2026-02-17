@@ -970,13 +970,13 @@ body {
 }
 
 .login-step2.done .login-step2-dot {
-  border-color: color-mix(in oklab, hsl(var(--primary-strong)) 55%, hsl(var(--border)));
-  background: hsl(var(--primary-strong));
-  color: hsl(var(--primary-foreground));
+  border-color: #10b981;
+  background: #10b981;
+  color: #ffffff;
 }
 
 .login-step2.done .login-step2-label {
-  color: #475569;
+  color: #0f766e;
 }
 
 @media (max-width: 640px) {

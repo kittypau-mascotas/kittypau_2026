@@ -43,6 +43,20 @@ export default function LoginPage() {
 
   const activeRegistroStep = manualRegistroStep ?? registroProgress;
   const modalStep = registerStep === "account" ? 1 : Math.min(4, activeRegistroStep + 1);
+  const realRegistroStep = Math.min(4, Math.max(1, registroProgress));
+
+  const accountCompleted =
+    Boolean(confirmedEmail) || registerConfirmed || registerStep === "registro";
+  const userCompleted = registerStep === "registro" && realRegistroStep >= 2;
+  const petCompleted = registerStep === "registro" && realRegistroStep >= 3;
+  const deviceCompleted = registerStep === "registro" && realRegistroStep >= 4;
+
+  const completedMap: Record<number, boolean> = {
+    1: accountCompleted,
+    2: userCompleted,
+    3: petCompleted,
+    4: deviceCompleted,
+  };
 
   const stepMeta = useMemo(
     () => [
@@ -88,7 +102,11 @@ export default function LoginPage() {
       <div className="login-stepper2-track" aria-hidden="true" />
       {stepMeta.map((step, idx) => {
         const number = idx + 1;
-        const state = number < modalStep ? "done" : number === modalStep ? "active" : "todo";
+        const state = completedMap[number]
+          ? "done"
+          : number === modalStep
+            ? "active"
+            : "todo";
         return (
           <button
             key={step.label}
@@ -98,7 +116,7 @@ export default function LoginPage() {
             aria-current={number === modalStep ? "step" : undefined}
           >
             <span className="login-step2-dot" aria-hidden="true">
-              {number}
+              {completedMap[number] ? "✓" : number}
             </span>
             <span className="login-step2-label">{step.label}</span>
           </button>
