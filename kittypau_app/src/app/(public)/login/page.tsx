@@ -705,7 +705,11 @@ export default function LoginPage() {
       {showRegister ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10">
           <div className="relative w-full max-w-4xl sm:px-0">
-            <div className="glass-panel login-register-modal w-full overflow-hidden">
+            <div
+              className={`glass-panel login-register-modal w-full overflow-hidden ${
+                registerStep === "registro" ? "login-register-modal-registro" : ""
+              }`}
+            >
               <div className="login-register-head border-b border-white/30 px-6 py-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>

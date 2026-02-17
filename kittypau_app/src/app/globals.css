@@ -841,17 +841,25 @@ body {
   max-height: calc(100dvh - 16px);
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .login-register-body {
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   background: #ffffff;
 }
 
 .login-register-body-registro {
-  padding: 14px 18px 18px;
+  padding: 10px 14px 14px;
   background: linear-gradient(180deg, #ffffff 0%, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 100%);
+  overflow-y: hidden;
+}
+
+.login-register-modal-registro {
+  max-height: calc(100dvh - 8px);
+  min-height: calc(100dvh - 8px);
 }
 
 @media (max-width: 640px) {
@@ -864,6 +872,11 @@ body {
 
   .login-register-body-registro {
     padding: 12px;
+    overflow-y: auto;
+  }
+
+  .login-register-modal-registro {
+    min-height: calc(100dvh - 8px);
   }
 }
 
