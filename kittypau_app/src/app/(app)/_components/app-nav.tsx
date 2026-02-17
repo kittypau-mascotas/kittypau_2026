@@ -88,10 +88,10 @@ export default function AppNav() {
     <nav className="app-nav">
       <div className="app-nav-inner">
         <div className="app-nav-brand">
-          <img src="/logo.jpg" alt="Kittypau" className="brand-mark" />
-          <span className="brand-title">Kittypau</span>
-          <span className="app-nav-dot" />
-          <span className="app-nav-subtle">IoT</span>
+          <span className="app-nav-logo-wrap" aria-hidden="true">
+            <img src="/logo.jpg" alt="Kittypau" className="brand-mark app-nav-logo" />
+          </span>
+          <span className="brand-title app-nav-brand-title">Kittypau</span>
         </div>
         <div className="app-nav-links">
           {navItems.map((item) => {
@@ -113,7 +113,7 @@ export default function AppNav() {
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+            className="app-nav-settings-btn"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
@@ -121,7 +121,7 @@ export default function AppNav() {
           </button>
           {menuOpen ? (
             <div
-              className="absolute right-0 top-full z-10 mt-2 w-56 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg"
+              className="app-nav-menu"
               role="menu"
             >
               <Link
