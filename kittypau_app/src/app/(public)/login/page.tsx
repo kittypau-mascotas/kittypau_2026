@@ -724,7 +724,11 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
-              <div className="login-register-body p-6">
+              <div
+                className={`login-register-body ${
+                  registerStep === "account" ? "p-6" : "login-register-body-registro"
+                }`}
+              >
                 {registerStep === "account" ? (
                 <form className="space-y-4" onSubmit={onRegister} aria-busy={isRegistering}>
                     <div className="grid gap-4 md:grid-cols-2">

@@ -33,7 +33,7 @@ type TooltipIconProps = {
 function TooltipIcon({ text }: TooltipIconProps) {
   return (
     <span className="relative group inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[11px] text-slate-500">
-      ⓘ
+      ?
       <span className="pointer-events-none absolute left-1/2 top-7 z-10 w-56 -translate-x-1/2 rounded-[12px] border border-slate-900/10 bg-slate-900 px-3 py-2 text-[11px] text-slate-100 opacity-0 shadow-lg transition duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
         {text}
       </span>
@@ -187,6 +187,18 @@ export default function RegistroFlow({
     if (!error) return false;
     return /sesi[oó]n expir[oó]/i.test(error) || /iniciar sesi[oó]n/i.test(error);
   }, [error]);
+
+  const sectionClass = isModal
+    ? "rounded-[var(--radius)] border border-slate-200/70 bg-white px-5 py-4 shadow-none"
+    : "{sectionClass}";
+
+  const errorCardClass = isModal
+    ? "rounded-[var(--radius)] border border-rose-200/70 bg-rose-50/80 px-5 py-4 text-sm text-rose-700"
+    : "{errorCardClass}";
+
+  const sessionCardClass = isModal
+    ? "rounded-[var(--radius)] border border-amber-200 bg-amber-50/80 px-5 py-4 text-sm text-amber-800"
+    : "{sessionCardClass}";
 
   useEffect(() => {
     onProgress?.(currentStep);
@@ -637,12 +649,12 @@ export default function RegistroFlow({
         ) : null}
 
         {error ? (
-          <div className="surface-card freeform-rise border border-rose-200/70 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
+          <div className={errorCardClass}>
             {error}
           </div>
         ) : null}
         {sessionExpired ? (
-          <section className="surface-card freeform-rise border border-amber-200 bg-amber-50/80 px-5 py-4 text-sm text-amber-800">
+          <section className={sessionCardClass}>
             <p className="font-semibold">Tu sesión necesita revalidación.</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <button
@@ -677,7 +689,7 @@ export default function RegistroFlow({
         ) : null}
 
         {currentStep === 1 && (
-          <section className="surface-card freeform-rise px-6 py-5">
+          <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -942,7 +954,7 @@ export default function RegistroFlow({
         )}
 
         {currentStep === 2 && (
-          <section className="surface-card freeform-rise px-6 py-5">
+          <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -1136,7 +1148,7 @@ export default function RegistroFlow({
         )}
 
         {currentStep === 3 && (
-          <section className="surface-card freeform-rise px-6 py-5">
+          <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -1264,7 +1276,7 @@ export default function RegistroFlow({
         )}
 
         {currentStep === 4 && (
-          <section className="surface-card freeform-rise px-6 py-5">
+          <section className={sectionClass}>
             <h2 className="text-lg font-semibold text-slate-900">Listo</h2>
             <p className="text-sm text-slate-500">
               Ya completaste el registro. Puedes ir al feed.
@@ -1401,6 +1413,7 @@ export default function RegistroFlow({
     </div>
   );
 }
+
 
 
 

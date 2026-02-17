@@ -846,6 +846,12 @@ body {
 .login-register-body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+}
+
+.login-register-body-registro {
+  padding: 14px 18px 18px;
+  background: linear-gradient(180deg, #ffffff 0%, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 100%);
 }
 
 @media (max-width: 640px) {
@@ -854,6 +860,10 @@ body {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     max-height: calc(100dvh - 8px);
+  }
+
+  .login-register-body-registro {
+    padding: 12px;
   }
 }
 
