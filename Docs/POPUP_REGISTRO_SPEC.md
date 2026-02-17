@@ -90,3 +90,31 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
 
 ## Persistencia
 - Guardar `first_time_guide_seen` en perfil de usuario.
+
+## Actualización UI/UX (2026-02-17)
+
+### Stepper y navegación entre pasos
+- Los pasos del stepper son clickeables en modal: `Cuenta`, `Usuario`, `Mascota`, `Dispositivo`.
+- El estado completado de cada etapa se refleja en verde (`done`) con check visual.
+- Se mantiene validación real por etapa (no solo navegación visual).
+
+### Contenido superior del popup
+- Se eliminó el bloque descriptivo redundante por etapa en el header del modal.
+- Se conserva únicamente el banner verde de confirmación de cuenta en el paso de Cuenta cuando aplica.
+
+### Paso Dispositivo
+- Selector de tipo migrado a cards visuales:
+  - `Comida` (`/illustrations/food.png`)
+  - `Agua` (`/illustrations/water.png`)
+- El tipo seleccionado se mantiene en el resumen final del registro.
+
+### Finalización del flujo
+- Pantalla final actualizada a `Bienvenido a Kittypau`.
+- Resumen final ampliado con:
+  - Cuenta
+  - Perfil
+  - Mascotas
+  - Dispositivos
+  - Foto de perfil (si existe)
+  - Foto de mascota (si existe)
+- Botón final: `Continuar al dashboard`.

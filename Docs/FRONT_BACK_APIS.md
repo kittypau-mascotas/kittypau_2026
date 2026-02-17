@@ -338,3 +338,22 @@ Si quieres endurecer DB sin romper datos existentes:
 
 
 
+
+## Contratos frontend recientes (2026-02-17)
+
+### Navbar de app
+- Componente: `src/app/(app)/_components/app-nav.tsx`
+- Branding:
+  - usa `logo_2.png` en navbar.
+  - elimina subtítulo `IoT`.
+- Menú de usuario:
+  - se abre desde avatar + nombre (no botón separado de ajustes).
+  - opciones: `Ajustes`, `Editar perfil`, `Cerrar sesión` (+ `Dashboard admin` si rol admin).
+
+### Popup de registro
+- `LoginPage` integra `RegistroFlow` en modal con props:
+  - `mode="modal"`
+  - `forcedStep` (navegación manual por stepper)
+  - `onProgress(step)` (sincroniza avance real)
+  - `onDeviceTypeChange(deviceType)` (sincroniza tipo de plato seleccionado)
+- `RegistroFlow` soporta resumen final extendido y selector visual de dispositivo (comida/agua).

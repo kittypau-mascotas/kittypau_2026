@@ -257,3 +257,24 @@
 
 
 
+
+## Actualizado (2026-02-17) - Navbar + registro popup
+- Navbar app renovado:
+  - logo de marca agrandado (`logo_2.png`) en `app-nav`.
+  - eliminado texto `IoT` junto a la marca.
+  - menú de acciones movido al trigger de perfil (avatar + nombre).
+  - acciones en menú: `Ajustes`, `Editar perfil`, `Cerrar sesión` (+ `Dashboard admin` si corresponde).
+- Popup de registro unificado:
+  - header simplificado (se eliminó bloque redundante de descripción por paso).
+  - etapas clickeables desde el stepper (`Cuenta`, `Usuario`, `Mascota`, `Dispositivo`).
+  - círculos de etapas completadas en verde con check.
+  - modo modal sin duplicación visual respecto del flujo interno.
+- Paso `Dispositivo` mejorado:
+  - selección de tipo por tarjetas con imagen (`Comida` / `Agua`) en lugar de select simple.
+  - resumen persistente del tipo seleccionado en el flujo.
+- Cierre de registro mejorado:
+  - mensaje `Bienvenido a Kittypau`.
+  - resumen de cuenta + perfil + mascota + dispositivo.
+  - incluye preview de foto de perfil/mascota cuando existe.
+  - CTA final: `Continuar al dashboard`.
+- Layout del popup ajustado para evitar scroll y espacios vacíos innecesarios en desktop.
