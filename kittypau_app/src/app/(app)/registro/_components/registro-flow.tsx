@@ -18,12 +18,14 @@ type Pet = {
   id: string;
   name: string;
   type: string;
+  photo_url?: string | null;
 };
 
 type RegistroFlowProps = {
   mode?: "page" | "modal";
   onClose?: () => void;
   onProgress?: (step: number) => void;
+  forcedStep?: number | null;
 };
 
 type TooltipIconProps = {
@@ -62,6 +64,7 @@ export default function RegistroFlow({
   mode = "page",
   onClose,
   onProgress,
+  forcedStep = null,
 }: RegistroFlowProps) {
   const isModal = mode === "modal";
   const router = useRouter();
@@ -117,6 +120,13 @@ export default function RegistroFlow({
 
   const [token, setToken] = useState<string | null>(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [profileSummary, setProfileSummary] = useState<{
+    user_name?: string | null;
+    city?: string | null;
+    country?: string | null;
+    notification_channel?: string | null;
+    photo_url?: string | null;
+  } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -183,6 +193,7 @@ export default function RegistroFlow({
     if (!status.hasDevice) return 3;
     return 4;
   }, [status]);
+  const displayStep = forcedStep ?? currentStep;
   const sessionExpired = useMemo(() => {
     if (!error) return false;
     return /sesi[oó]n expir[oó]/i.test(error) || /iniciar sesi[oó]n/i.test(error);
@@ -324,16 +335,22 @@ export default function RegistroFlow({
     if (!accessToken) return;
 
     try {
-      const [statusRes, petsRes] = await Promise.all([
+      const [statusRes, petsRes, profileRes] = await Promise.all([
         fetch("/api/registro/status", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
         fetch("/api/pets", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
+        fetch("/api/profiles", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }),
       ]);
 
-      if ((statusRes.status === 401 || petsRes.status === 401) && allowRetry) {
+      if (
+        (statusRes.status === 401 || petsRes.status === 401 || profileRes.status === 401) &&
+        allowRetry
+      ) {
         const supabase = getSupabaseBrowser();
         if (!supabase) {
           throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
@@ -358,12 +375,28 @@ export default function RegistroFlow({
       if (!petsRes.ok) {
         throw new Error("No se pudieron cargar las mascotas.");
       }
+      if (!profileRes.ok) {
+        throw new Error("No se pudo cargar el perfil.");
+      }
 
       const statusData = (await statusRes.json()) as RegistroStatus;
       const petsData = (await petsRes.json()) as Pet[];
+      const profileDataRaw = await profileRes.json();
+      const profileData = (profileDataRaw?.profile ?? profileDataRaw) as
+        | {
+            user_name?: string | null;
+            city?: string | null;
+            country?: string | null;
+            notification_channel?: string | null;
+            photo_url?: string | null;
+            email?: string | null;
+          }
+        | null;
 
       setStatus(statusData);
       setPets(petsData ?? []);
+      setProfileSummary(profileData ?? null);
+      setAccountEmail((prev) => profileData?.email ?? prev);
       setDeviceForm((prev) => ({
         ...prev,
         pet_id: prev.pet_id || petsData?.[0]?.id || "",
@@ -688,7 +721,7 @@ export default function RegistroFlow({
           </section>
         ) : null}
 
-        {currentStep === 1 && (
+        {displayStep === 1 && (
           <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -953,7 +986,7 @@ export default function RegistroFlow({
           </section>
         )}
 
-        {currentStep === 2 && (
+        {displayStep === 2 && (
           <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -1147,7 +1180,7 @@ export default function RegistroFlow({
           </section>
         )}
 
-        {currentStep === 3 && (
+        {displayStep === 3 && (
           <section className={sectionClass}>
             <div className="flex items-center justify-between gap-4">
               <div>
@@ -1275,11 +1308,11 @@ export default function RegistroFlow({
           </section>
         )}
 
-        {currentStep === 4 && (
+        {displayStep === 4 && (
           <section className={sectionClass}>
-            <h2 className="text-lg font-semibold text-slate-900">Listo</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Bienvenido a Kittypau</h2>
             <p className="text-sm text-slate-500">
-              Ya completaste el registro. Puedes ir al feed.
+              Registro completado. Este es el resumen de tu configuración.
             </p>
             <div className="mt-4 grid gap-3 text-xs text-slate-600 md:grid-cols-4">
               <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
@@ -1301,6 +1334,26 @@ export default function RegistroFlow({
                   Resumen rápido
                 </p>
                 <div className="mt-2 grid gap-1">
+                  {profileSummary?.photo_url || selectedAvatar ? (
+                    <div className="mb-1 flex items-center gap-2">
+                      <img
+                        src={profileSummary?.photo_url ?? selectedAvatar ?? ""}
+                        alt="Foto de perfil"
+                        className="h-8 w-8 rounded-full border border-slate-200 object-cover"
+                      />
+                      <span>Foto de perfil</span>
+                    </div>
+                  ) : null}
+                  {(pets.find((pet) => pet.id === deviceForm.pet_id)?.photo_url ?? petPhotoPreview) ? (
+                    <div className="mb-1 flex items-center gap-2">
+                      <img
+                        src={(pets.find((pet) => pet.id === deviceForm.pet_id)?.photo_url ?? petPhotoPreview) ?? ""}
+                        alt="Foto de mascota"
+                        className="h-8 w-8 rounded-full border border-slate-200 object-cover"
+                      />
+                      <span>Foto de mascota</span>
+                    </div>
+                  ) : null}
                   {profileForm.user_name ? (
                     <span>Usuario: {profileForm.user_name}</span>
                   ) : null}
@@ -1317,12 +1370,12 @@ export default function RegistroFlow({
               href="/today"
               className="mt-4 inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
             >
-              Ir al feed
+              Continuar al dashboard
             </Link>
           </section>
         )}
 
-        {currentStep === 4 ? (
+        {displayStep === 4 ? (
           <div className="text-xs text-slate-500">
             Estado: {status.petCount} mascotas · {status.deviceCount} dispositivos.
           </div>

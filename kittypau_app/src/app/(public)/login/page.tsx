@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [isResending, setIsResending] = useState(false);
   const [highlightRegister, setHighlightRegister] = useState(false);
   const [registroProgress, setRegistroProgress] = useState(1);
+  const [manualRegistroStep, setManualRegistroStep] = useState<number | null>(null);
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
@@ -40,7 +41,8 @@ export default function LoginPage() {
     [registerStep]
   );
 
-  const modalStep = registerStep === "account" ? 1 : Math.min(4, registroProgress + 1);
+  const activeRegistroStep = manualRegistroStep ?? registroProgress;
+  const modalStep = registerStep === "account" ? 1 : Math.min(4, activeRegistroStep + 1);
 
   const stepMeta = useMemo(
     () => [
@@ -71,6 +73,16 @@ export default function LoginPage() {
 
   const activeStep = stepMeta[Math.max(0, Math.min(stepMeta.length - 1, modalStep - 1))];
 
+  const onStepperClick = (targetStep: number) => {
+    if (targetStep <= 1) {
+      setRegisterStep("account");
+      setManualRegistroStep(null);
+      return;
+    }
+    setRegisterStep("registro");
+    setManualRegistroStep(Math.min(3, Math.max(1, targetStep - 1)));
+  };
+
   const Stepper = () => (
     <div className="login-stepper2" aria-label="Progreso del registro">
       <div className="login-stepper2-track" aria-hidden="true" />
@@ -78,12 +90,18 @@ export default function LoginPage() {
         const number = idx + 1;
         const state = number < modalStep ? "done" : number === modalStep ? "active" : "todo";
         return (
-          <div key={step.label} className={`login-step2 ${state}`}>
+          <button
+            key={step.label}
+            type="button"
+            onClick={() => onStepperClick(number)}
+            className={`login-step2 login-step2-btn ${state}`}
+            aria-current={number === modalStep ? "step" : undefined}
+          >
             <span className="login-step2-dot" aria-hidden="true">
               {number}
             </span>
             <span className="login-step2-label">{step.label}</span>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -123,6 +141,7 @@ export default function LoginPage() {
       // If we're inside the registration popup, jump to step 2+.
       if (showRegister && registerStep === "account") {
         setRegisterStep("registro");
+        setManualRegistroStep(null);
         setRegisterConfirmed(true);
         setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
         setRegisterError(null);
@@ -158,6 +177,7 @@ export default function LoginPage() {
         setConfirmedEmail(session.user?.email ?? null);
 
         setRegisterStep("registro");
+        setManualRegistroStep(null);
         setRegisterConfirmed(true);
         setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
       })
@@ -192,6 +212,7 @@ export default function LoginPage() {
 
         setShowRegister(true);
         setRegisterStep("registro");
+        setManualRegistroStep(null);
         setRegisterConfirmed(true);
         setRegisterConfirmedMessage("Cuenta confirmada. Continuemos con tu perfil.");
 
@@ -379,6 +400,7 @@ export default function LoginPage() {
     });
     setConfirmedEmail(data.session.user?.email ?? null);
     setRegisterStep("registro");
+    setManualRegistroStep(null);
     setIsRegistering(false);
   };
 
@@ -451,6 +473,7 @@ export default function LoginPage() {
     setRegisterConfirmedMessage(null);
     setConfirmedEmail(null);
     setRegistroProgress(1);
+    setManualRegistroStep(null);
   };
 
   const closeRegister = () => {
@@ -460,6 +483,7 @@ export default function LoginPage() {
     }
     setShowRegister(false);
     setRegisterStep("account");
+    setManualRegistroStep(null);
     setRegisterError(null);
   };
 
@@ -819,7 +843,13 @@ export default function LoginPage() {
                   <RegistroFlow 
                     mode="modal" 
                     onClose={closeRegister} 
-                    onProgress={(step) => setRegistroProgress(step)} 
+                    forcedStep={manualRegistroStep}
+                    onProgress={(step) => {
+                      setRegistroProgress(step);
+                      if (manualRegistroStep !== null && step !== manualRegistroStep) {
+                        setManualRegistroStep(null);
+                      }
+                    }} 
                   /> 
                 )}
               </div>
