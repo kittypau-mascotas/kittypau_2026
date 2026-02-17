@@ -35,6 +35,9 @@ export default function LoginPage() {
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
+  const [selectedBowlType, setSelectedBowlType] = useState<"food_bowl" | "water_bowl">(
+    "food_bowl"
+  );
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -492,6 +495,7 @@ export default function LoginPage() {
     setConfirmedEmail(null);
     setRegistroProgress(1);
     setManualRegistroStep(null);
+    setSelectedBowlType("food_bowl");
   };
 
   const closeRegister = () => {
@@ -503,6 +507,7 @@ export default function LoginPage() {
     setRegisterStep("account");
     setManualRegistroStep(null);
     setRegisterError(null);
+    setSelectedBowlType("food_bowl");
   };
 
   return (
@@ -758,6 +763,14 @@ export default function LoginPage() {
                         Cuenta: <span className="font-semibold text-slate-700">{confirmedEmail}</span>
                       </p>
                     ) : null}
+                    {registerStep === "registro" && modalStep >= 2 ? (
+                      <p className="mt-1 text-[11px] font-semibold text-slate-500">
+                        Plato:{" "}
+                        <span className="font-semibold text-slate-700">
+                          {selectedBowlType === "water_bowl" ? "Agua" : "Comida"}
+                        </span>
+                      </p>
+                    ) : null}
                     {registerConfirmed && registerConfirmedMessage ? (
                       <p className="mt-3 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
                         {registerConfirmedMessage}
@@ -862,6 +875,7 @@ export default function LoginPage() {
                     mode="modal" 
                     onClose={closeRegister} 
                     forcedStep={manualRegistroStep}
+                    onDeviceTypeChange={setSelectedBowlType}
                     onProgress={(step) => {
                       setRegistroProgress(step);
                       if (manualRegistroStep !== null && step !== manualRegistroStep) {

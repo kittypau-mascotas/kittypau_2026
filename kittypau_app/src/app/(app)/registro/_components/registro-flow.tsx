@@ -26,6 +26,7 @@ type RegistroFlowProps = {
   onClose?: () => void;
   onProgress?: (step: number) => void;
   forcedStep?: number | null;
+  onDeviceTypeChange?: (deviceType: "food_bowl" | "water_bowl") => void;
 };
 
 type TooltipIconProps = {
@@ -65,6 +66,7 @@ export default function RegistroFlow({
   onClose,
   onProgress,
   forcedStep = null,
+  onDeviceTypeChange,
 }: RegistroFlowProps) {
   const isModal = mode === "modal";
   const router = useRouter();
@@ -115,7 +117,7 @@ export default function RegistroFlow({
   const [deviceForm, setDeviceForm] = useState({
     pet_id: "",
     device_id: "",
-    device_type: "food_bowl",
+    device_type: "food_bowl" as "food_bowl" | "water_bowl",
   });
 
   const [token, setToken] = useState<string | null>(null);
@@ -214,6 +216,10 @@ export default function RegistroFlow({
   useEffect(() => {
     onProgress?.(currentStep);
   }, [currentStep, onProgress]);
+
+  useEffect(() => {
+    onDeviceTypeChange?.(deviceForm.device_type);
+  }, [deviceForm.device_type, onDeviceTypeChange]);
 
   const preparePhoto = (
     file: File | null,
@@ -1263,19 +1269,54 @@ export default function RegistroFlow({
                 </label>
                 <TooltipIcon text="Food bowl o water bowl." />
               </div>
-              <select
-                className={inputClass(!deviceForm.device_type.trim())}
-                value={deviceForm.device_type}
-                onChange={(event) =>
-                  setDeviceForm((prev) => ({
-                    ...prev,
-                    device_type: event.target.value,
-                  }))
-                }
-              >
-                <option value="food_bowl">Food bowl</option>
-                <option value="water_bowl">Water bowl</option>
-              </select>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDeviceForm((prev) => ({
+                      ...prev,
+                      device_type: "food_bowl",
+                    }))
+                  }
+                  className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
+                    deviceForm.device_type === "food_bowl"
+                      ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <img
+                    src="/illustrations/food.png"
+                    alt="Plato de comida"
+                    className="mx-auto h-20 w-auto object-contain"
+                  />
+                  <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
+                    Comida
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDeviceForm((prev) => ({
+                      ...prev,
+                      device_type: "water_bowl",
+                    }))
+                  }
+                  className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
+                    deviceForm.device_type === "water_bowl"
+                      ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <img
+                    src="/illustrations/water.png"
+                    alt="Plato de agua"
+                    className="mx-auto h-20 w-auto object-contain"
+                  />
+                  <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
+                    Agua
+                  </p>
+                </button>
+              </div>
               {showDeviceHints && !deviceForm.device_type.trim() ? (
                 <p className="text-[11px] text-rose-600">
                   Selecciona el tipo de dispositivo.
@@ -1363,6 +1404,9 @@ export default function RegistroFlow({
                   {deviceForm.device_id ? (
                     <span>Dispositivo: {deviceForm.device_id}</span>
                   ) : null}
+                  <span>
+                    Tipo: {deviceForm.device_type === "water_bowl" ? "Agua" : "Comida"}
+                  </span>
                 </div>
               </div>
             ) : null}
