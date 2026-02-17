@@ -325,7 +325,7 @@ export default function AdminPage() {
             Dashboard Ejecutivo Kittypau
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            VisiÃ³n total de operaciÃ³n y auditorÃ­a en lÃ­nea.
+            Visión total de operación y auditoría en línea.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
@@ -398,7 +398,7 @@ export default function AdminPage() {
                       }));
                       try {
                         const res = await fetch(
-                          "/api/admin/health-check?stale_min=2&device_stale_min=10",
+                          "/api/admin/health-check?stale_min=10&device_stale_min=10",
                           {
                             method: "POST",
                             headers: { Authorization: `Bearer ${token}` },
@@ -567,7 +567,7 @@ export default function AdminPage() {
                         <th className="px-2 py-2 font-semibold">Bridge</th>
                         <th className="px-2 py-2 font-semibold">Estado</th>
                         <th className="px-2 py-2 font-semibold">IP</th>
-                        <th className="px-2 py-2 font-semibold">Ãšltimo seen</th>
+                        <th className="px-2 py-2 font-semibold">Último seen</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -612,8 +612,8 @@ export default function AdminPage() {
                       <tr className="border-b border-slate-200 text-slate-400">
                         <th className="px-2 py-2 font-semibold">Device</th>
                         <th className="px-2 py-2 font-semibold">Estado</th>
-                        <th className="px-2 py-2 font-semibold">BaterÃ­a</th>
-                        <th className="px-2 py-2 font-semibold">Ãšltimo seen</th>
+                        <th className="px-2 py-2 font-semibold">Batería</th>
+                        <th className="px-2 py-2 font-semibold">Último seen</th>
                       </tr>
                     </thead>
                     <tbody>

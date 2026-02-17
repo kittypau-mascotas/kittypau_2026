@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const staleMin = Math.min(
-    Math.max(Number(req.nextUrl.searchParams.get("stale_min") ?? 2), 1),
+    Math.max(Number(req.nextUrl.searchParams.get("stale_min") ?? 10), 1),
     60
   );
   const deviceStaleMin = Math.min(
@@ -81,4 +81,3 @@ export async function POST(req: NextRequest) {
     { status: res.ok ? 200 : 502 }
   );
 }
-

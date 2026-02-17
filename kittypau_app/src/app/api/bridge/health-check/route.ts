@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
     return apiError(req, 401, "UNAUTHORIZED", "Unauthorized");
   }
 
-  const staleMinutes = Number(req.nextUrl.searchParams.get("stale_min") ?? "5");
+  const staleMinutes = Number(req.nextUrl.searchParams.get("stale_min") ?? "10");
   const staleMs = Number.isFinite(staleMinutes)
     ? Math.max(1, staleMinutes) * 60_000
-    : 5 * 60_000;
+    : 10 * 60_000;
   const cutoff = new Date(Date.now() - staleMs).toISOString();
   const deviceStaleMinutes = Number(
     req.nextUrl.searchParams.get("device_stale_min") ?? "10"
