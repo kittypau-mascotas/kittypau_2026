@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -109,21 +109,27 @@ export default function AppNav() {
             );
           })}
         </div>
-        <div className="relative flex items-center gap-3">
+
+        <div className="relative">
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="app-nav-settings-btn"
+            className="app-nav-user app-nav-user-trigger"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
-            Ajustes
+            <img
+              src={profile?.photo_url || "/avatar_1.png"}
+              alt="Avatar"
+              className="app-nav-avatar"
+            />
+            <span className="app-nav-user-name">
+              {profile?.owner_name || profile?.user_name || "Kittypau"}
+            </span>
           </button>
+
           {menuOpen ? (
-            <div
-              className="app-nav-menu"
-              role="menu"
-            >
+            <div className="app-nav-menu" role="menu">
               <Link
                 href="/settings"
                 className="block rounded-[calc(var(--radius)-6px)] px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
@@ -161,18 +167,6 @@ export default function AppNav() {
             </div>
           ) : null}
         </div>
-        {profile ? (
-          <div className="app-nav-user">
-            <img
-              src={profile.photo_url || "/avatar_1.png"}
-              alt="Avatar"
-              className="app-nav-avatar"
-            />
-            <span className="app-nav-user-name">
-              {profile.owner_name || profile.user_name || "Kittypau"}
-            </span>
-          </div>
-        ) : null}
       </div>
     </nav>
   );
