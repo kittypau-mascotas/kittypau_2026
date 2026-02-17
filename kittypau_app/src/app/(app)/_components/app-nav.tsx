@@ -89,7 +89,7 @@ export default function AppNav() {
       <div className="app-nav-inner">
         <div className="app-nav-brand">
           <span className="app-nav-logo-wrap" aria-hidden="true">
-            <img src="/logo.jpg" alt="Kittypau" className="brand-mark app-nav-logo" />
+            <img src="/logo_2.png" alt="Kittypau" className="brand-mark app-nav-logo" />
           </span>
           <span className="brand-title app-nav-brand-title">Kittypau</span>
         </div>
