@@ -859,7 +859,8 @@ body {
 
 .login-register-modal-registro {
   max-height: calc(100dvh - 8px);
-  min-height: calc(100dvh - 8px);
+  height: auto;
+  min-height: 0;
 }
 
 @media (max-width: 640px) {
@@ -876,7 +877,8 @@ body {
   }
 
   .login-register-modal-registro {
-    min-height: calc(100dvh - 8px);
+    height: auto;
+    min-height: 0;
   }
 }
 
