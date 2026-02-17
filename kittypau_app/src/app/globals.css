@@ -531,24 +531,77 @@ body {
 
 @media (max-width: 720px) {
   .app-nav-inner {
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand profile"
+      "links links";
+    align-items: center;
+    gap: 10px 12px;
+    padding: 10px 12px;
   }
+
+  .app-nav-brand {
+    grid-area: brand;
+    gap: 8px;
+  }
+
+  .app-nav-profile-menu {
+    grid-area: profile;
+    justify-self: end;
+  }
+
   .app-nav-brand-title {
-    font-size: 1.95rem;
+    font-size: 1.6rem;
   }
+
   .app-nav-logo-wrap {
-    width: 50px;
-    height: 50px;
-  }
-  .app-nav-logo {
     width: 42px;
     height: 42px;
   }
+
+  .app-nav-logo {
+    width: 36px;
+    height: 36px;
+  }
+
   .app-nav-links {
+    grid-area: links;
     width: 100%;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 6px;
+    overflow-y: hidden;
+    gap: 8px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .app-nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-nav-link {
+    white-space: nowrap;
+    padding: 6px 10px;
+  }
+
+  .app-nav-user {
+    gap: 8px;
+    padding: 4px 8px;
+  }
+
+  .app-nav-avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .app-nav-user-name {
+    max-width: 84px;
+  }
+
+  .app-nav-menu {
+    right: 0;
+    width: 210px;
   }
 }
 

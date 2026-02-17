@@ -85,19 +85,23 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const { data: staleDevices, error: staleDevicesError } = await supabaseServer
+  const { data: kpclDevices, error: kpclDevicesError } = await supabaseServer
     .from("devices")
     .select("id, device_id, device_state, last_seen, retired_at")
     .ilike("device_id", "KPCL%")
-    .is("retired_at", null)
-    .or(`last_seen.is.null,last_seen.lt.${deviceCutoff}`);
+    .is("retired_at", null);
 
-  if (staleDevicesError) {
-    return apiError(req, 500, "SUPABASE_ERROR", staleDevicesError.message);
+  if (kpclDevicesError) {
+    return apiError(req, 500, "SUPABASE_ERROR", kpclDevicesError.message);
   }
 
-  const offlineDevices: string[] = [];
-  for (const device of staleDevices ?? []) {
+  const staleDevices = (kpclDevices ?? []).filter((device) => {
+    if (!device.last_seen) return true;
+    return new Date(device.last_seen).toISOString() < deviceCutoff;
+  });
+
+  const transitionedOfflineDevices: string[] = [];
+  for (const device of staleDevices) {
     if (device.device_state === "offline") continue;
 
     const { error: updateDeviceError } = await supabaseServer
@@ -106,9 +110,9 @@ export async function GET(req: NextRequest) {
       .eq("id", device.id);
     if (updateDeviceError) continue;
 
-    offlineDevices.push(device.device_id);
-      await logAudit({
-        event_type: "device_offline_detected",
+    transitionedOfflineDevices.push(device.device_id);
+    await logAudit({
+      event_type: "device_offline_detected",
       entity_type: "device",
       entity_id: device.id,
       payload: {
@@ -121,17 +125,14 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const { count: totalKpclDevices, error: totalDevicesError } = await supabaseServer
-    .from("devices")
-    .select("id", { count: "exact", head: true })
-    .ilike("device_id", "KPCL%")
-    .is("retired_at", null);
-  if (totalDevicesError) {
-    return apiError(req, 500, "SUPABASE_ERROR", totalDevicesError.message);
-  }
-
-  const total = totalKpclDevices ?? 0;
-  const offlineCount = (staleDevices ?? []).length;
+  const total = (kpclDevices ?? []).length;
+  const offlineNowDevices = (kpclDevices ?? []).filter((device) => {
+    if (device.device_state === "offline") return true;
+    if (!device.last_seen) return true;
+    return new Date(device.last_seen).toISOString() < deviceCutoff;
+  });
+  const offlineNowIds = offlineNowDevices.map((device) => device.device_id);
+  const offlineCount = offlineNowIds.length;
   const onlineCount = Math.max(0, total - offlineCount);
   const outageByCount = offlineCount >= 3;
   const outageByRatio = total > 0 && offlineCount / total >= 0.6;
@@ -191,10 +192,12 @@ export async function GET(req: NextRequest) {
       kpcl_total_devices: total,
       kpcl_online_devices: onlineCount,
       kpcl_offline_devices: offlineCount,
-      offline_devices_count: offlineDevices.length,
+      offline_devices_count: offlineNowIds.length,
+      offline_devices_transitioned_count: transitionedOfflineDevices.length,
       bridges: data ?? [],
       offline,
-      offline_devices: offlineDevices,
+      offline_devices: offlineNowIds,
+      offline_devices_transitioned: transitionedOfflineDevices,
     },
     { status: 200 }
   );

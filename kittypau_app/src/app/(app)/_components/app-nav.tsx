@@ -110,7 +110,7 @@ export default function AppNav() {
           })}
         </div>
 
-        <div className="relative">
+        <div className="relative app-nav-profile-menu">
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}

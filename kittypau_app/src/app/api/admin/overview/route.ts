@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
         .select("id, device_id, device_state, status, last_seen, battery_level, owner_id")
         .ilike("device_id", "KPCL%")
         .is("retired_at", null)
-        .or(`last_seen.is.null,last_seen.lt.${staleCutoff}`)
+        .or(`device_state.eq.offline,last_seen.is.null,last_seen.lt.${staleCutoff}`)
         .order("last_seen", { ascending: true, nullsFirst: true })
         .limit(offlineLimit),
       supabaseServer
@@ -259,10 +259,25 @@ export async function GET(req: NextRequest) {
     return out;
   })();
 
+  const currentBridgeStatus = (() => {
+    const byBridge = new Map<string, any>();
+    for (const row of bridges ?? []) {
+      const key = row.device_id;
+      if (!key) continue;
+      const prev = byBridge.get(key);
+      const rowTs = Date.parse(row.last_seen ?? "");
+      const prevTs = Date.parse(prev?.last_seen ?? "");
+      if (!prev || (!Number.isNaN(rowTs) && (Number.isNaN(prevTs) || rowTs > prevTs))) {
+        byBridge.set(key, row);
+      }
+    }
+    return Array.from(byBridge.values());
+  })();
+
   logRequestEnd(req, startedAt, 200, {
     admin_role: adminRole.role,
     audit_count: dedupedAuditEvents?.length ?? 0,
-    bridge_count: bridges?.length ?? 0,
+    bridge_count: currentBridgeStatus.length,
     offline_device_count: offlineDevices?.length ?? 0,
     registration_pending: registrationSummary.pending_total,
   });
@@ -271,7 +286,7 @@ export async function GET(req: NextRequest) {
     admin_role: adminRole.role,
     summary: summary ?? null,
     audit_events: dedupedAuditEvents ?? [],
-    bridges: bridges ?? [],
+    bridges: currentBridgeStatus,
     offline_devices: offlineDevices ?? [],
     incident_counters: incidentCounters,
     active_general_outage: activeGeneralOutage,
