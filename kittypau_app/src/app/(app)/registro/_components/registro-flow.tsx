@@ -63,6 +63,7 @@ export default function RegistroFlow({
   onClose,
   onProgress,
 }: RegistroFlowProps) {
+  const isModal = mode === "modal";
   const router = useRouter();
   const [status, setStatus] = useState<RegistroStatus>(defaultStatus);
   const [pets, setPets] = useState<Pet[]>([]);
@@ -115,6 +116,7 @@ export default function RegistroFlow({
   });
 
   const [token, setToken] = useState<string | null>(null);
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -397,6 +399,7 @@ export default function RegistroFlow({
     supabase.auth.getSession().then(({ data }) => {
       if (!isMounted) return;
       if (data.session?.access_token) {
+        setAccountEmail(data.session.user?.email ?? null);
         setTokens({
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
@@ -412,6 +415,7 @@ export default function RegistroFlow({
       (_event, session) => {
         if (!isMounted) return;
         if (session?.access_token) {
+          setAccountEmail(session.user?.email ?? null);
           setTokens({
             accessToken: session.access_token,
             refreshToken: session.refresh_token,
@@ -570,14 +574,26 @@ export default function RegistroFlow({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white px-6 py-12 text-sm text-slate-500">
+      <div
+        className={
+          isModal
+            ? "px-2 py-4 text-sm text-slate-500"
+            : "min-h-screen bg-white px-6 py-12 text-sm text-slate-500"
+        }
+      >
         Cargando registro...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
+    <div
+      className={
+        isModal
+          ? "w-full"
+          : "min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10"
+      }
+    >
       {toastMessage ? (
         <div className="pointer-events-none fixed inset-x-0 top-6 z-50 flex justify-center">
           <div className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-lg">
@@ -592,36 +608,33 @@ export default function RegistroFlow({
           </div>
         </div>
       ) : null}
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Registro Kittypau
-            </p>
-            <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
-              Registro Kittypau
-            </h1>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            {mode === "page" ? (
+      <div
+        className={
+          isModal
+            ? "mx-auto flex w-full max-w-4xl flex-col gap-5"
+            : "mx-auto flex w-full max-w-4xl flex-col gap-8"
+        }
+      >
+        {!isModal ? (
+          <header className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Registro Kittypau
+              </p>
+              <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+                Registro Kittypau
+              </h1>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-slate-500">
               <Link
                 href="/today"
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
               >
                 Volver al feed
               </Link>
-            ) : null}
-            {mode === "modal" && onClose ? (
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900"
-              >
-                Cerrar
-              </button>
-            ) : null}
-          </div>
-        </header>
+            </div>
+          </header>
+        ) : null}
 
         {error ? (
           <div className="surface-card freeform-rise border border-rose-200/70 bg-rose-50/80 px-5 py-4 text-sm text-rose-700">
@@ -651,22 +664,14 @@ export default function RegistroFlow({
               >
                 Volver a login
               </button>
-              {mode === "modal" && onClose ? (
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-xs font-semibold text-slate-700"
-                >
-                  Cerrar modal
-                </button>
-              ) : (
+              {!isModal ? (
                 <Link
                   href="/login?register=1"
                   className="text-xs font-semibold text-slate-700 underline"
                 >
                   Abrir login
                 </Link>
-              )}
+              ) : null}
             </div>
           </section>
         ) : null}
@@ -1264,7 +1269,10 @@ export default function RegistroFlow({
             <p className="text-sm text-slate-500">
               Ya completaste el registro. Puedes ir al feed.
             </p>
-            <div className="mt-4 grid gap-3 text-xs text-slate-600 md:grid-cols-3">
+            <div className="mt-4 grid gap-3 text-xs text-slate-600 md:grid-cols-4">
+              <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
+                Cuenta: {accountEmail ?? "confirmada"}
+              </div>
               <div className="rounded-[var(--radius)] border border-slate-200/70 bg-white px-3 py-3">
                 Perfil: {status.userStep ?? "completado"}
               </div>
@@ -1302,9 +1310,11 @@ export default function RegistroFlow({
           </section>
         )}
 
-        <div className="text-xs text-slate-500">
-          Estado: {status.petCount} mascotas · {status.deviceCount} dispositivos.
-        </div>
+        {currentStep === 4 ? (
+          <div className="text-xs text-slate-500">
+            Estado: {status.petCount} mascotas · {status.deviceCount} dispositivos.
+          </div>
+        ) : null}
       </div>
       {isCropOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
