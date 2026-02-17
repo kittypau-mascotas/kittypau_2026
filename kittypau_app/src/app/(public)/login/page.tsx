@@ -35,9 +35,6 @@ export default function LoginPage() {
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
-  const [selectedBowlType, setSelectedBowlType] = useState<"food_bowl" | "water_bowl">(
-    "food_bowl"
-  );
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -63,32 +60,13 @@ export default function LoginPage() {
 
   const stepMeta = useMemo(
     () => [
-      {
-        label: "Cuenta",
-        title: "Crea tu cuenta",
-        description:
-          "Registramos tu correo y enviamos confirmación para activar el acceso. Si no llega, revisa spam o usa “Reenviar confirmación”.",
-      },
-      {
-        label: "Usuario",
-        title: "Perfil de usuario",
-        description: "Guardamos nombre, ciudad y tu avatar para personalizar el dashboard.",
-      },
-      {
-        label: "Mascota",
-        title: "Perfil de mascota",
-        description: "Nombre y tipo para interpretar lecturas y crear el feed.",
-      },
-      {
-        label: "Dispositivo",
-        title: "Vincular dispositivo",
-        description: "Conecta tu plato con el código KPCL0000 para ver datos en vivo.",
-      },
+      { label: "Cuenta" },
+      { label: "Usuario" },
+      { label: "Mascota" },
+      { label: "Dispositivo" },
     ],
     []
   );
-
-  const activeStep = stepMeta[Math.max(0, Math.min(stepMeta.length - 1, modalStep - 1))];
 
   const onStepperClick = (targetStep: number) => {
     if (targetStep <= 1) {
@@ -495,7 +473,6 @@ export default function LoginPage() {
     setConfirmedEmail(null);
     setRegistroProgress(1);
     setManualRegistroStep(null);
-    setSelectedBowlType("food_bowl");
   };
 
   const closeRegister = () => {
@@ -507,7 +484,6 @@ export default function LoginPage() {
     setRegisterStep("account");
     setManualRegistroStep(null);
     setRegisterError(null);
-    setSelectedBowlType("food_bowl");
   };
 
   return (
@@ -755,28 +731,11 @@ export default function LoginPage() {
                 </div>
                 <div className="mt-4 space-y-3">
                   <Stepper />
-                  <div className="login-stepcopy">
-                    <p className="text-sm font-semibold text-slate-900">{activeStep.title}</p>
-                    <p className="mt-1 text-xs text-slate-500">{activeStep.description}</p>
-                    {confirmedEmail && registerStep !== "account" ? (
-                      <p className="mt-2 text-[11px] font-semibold text-slate-500">
-                        Cuenta: <span className="font-semibold text-slate-700">{confirmedEmail}</span>
-                      </p>
-                    ) : null}
-                    {registerStep === "registro" && modalStep >= 2 ? (
-                      <p className="mt-1 text-[11px] font-semibold text-slate-500">
-                        Plato:{" "}
-                        <span className="font-semibold text-slate-700">
-                          {selectedBowlType === "water_bowl" ? "Agua" : "Comida"}
-                        </span>
-                      </p>
-                    ) : null}
-                    {registerConfirmed && registerConfirmedMessage ? (
-                      <p className="mt-3 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-                        {registerConfirmedMessage}
-                      </p>
-                    ) : null}
-                  </div>
+                  {registerStep === "account" && registerConfirmed && registerConfirmedMessage ? (
+                    <p className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                      {registerConfirmedMessage}
+                    </p>
+                  ) : null}
                 </div>
               </div>
               <div
@@ -875,7 +834,6 @@ export default function LoginPage() {
                     mode="modal" 
                     onClose={closeRegister} 
                     forcedStep={manualRegistroStep}
-                    onDeviceTypeChange={setSelectedBowlType}
                     onProgress={(step) => {
                       setRegistroProgress(step);
                       if (manualRegistroStep !== null && step !== manualRegistroStep) {
