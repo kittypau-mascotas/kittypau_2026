@@ -6,6 +6,7 @@ import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
+import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -687,7 +688,8 @@ export default function BowlPage() {
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
                   Batería
                 </p>
-                <p className="text-lg font-semibold text-slate-900">
+                <p className="flex items-center gap-2 text-lg font-semibold text-slate-900">
+                  <BatteryStatusIcon level={selectedDevice?.battery_level} />
                   {selectedDevice?.battery_level !== null &&
                   selectedDevice?.battery_level !== undefined
                     ? `${selectedDevice.battery_level}% · ${batteryLabel(

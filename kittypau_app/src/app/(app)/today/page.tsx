@@ -5,6 +5,7 @@ import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 
 type ApiPet = {
   id: string;
@@ -532,7 +533,8 @@ export default function TodayPage() {
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                 Batería
               </p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
+              <p className="mt-2 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+                <BatteryStatusIcon level={primaryDevice?.battery_level} className="h-5 w-5" />
                 {primaryDevice?.battery_level !== null &&
                 primaryDevice?.battery_level !== undefined
                   ? `${primaryDevice.battery_level}%`

@@ -4,6 +4,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 
 type AdminSummary = {
   generated_at: string;
@@ -625,7 +626,10 @@ export default function AdminPage() {
                             </td>
                             <td className="px-2 py-2">{device.device_state ?? "-"}</td>
                             <td className="px-2 py-2">
-                              {device.battery_level !== null ? `${device.battery_level}%` : "-"}
+                              <span className="inline-flex items-center gap-1.5">
+                                <BatteryStatusIcon level={device.battery_level} className="h-4 w-4" />
+                                {device.battery_level !== null ? `${device.battery_level}%` : "-"}
+                              </span>
                             </td>
                             <td className="px-2 py-2">
                               {device.last_seen
