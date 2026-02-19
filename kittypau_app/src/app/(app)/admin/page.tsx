@@ -348,6 +348,22 @@ export default function AdminPage() {
     return alerts;
   }, [summary, activeGeneralOutage, registrationSummary, kpclDevices]);
 
+  const continuityChart = useMemo(() => {
+    const rows = kpclWeeklyStatus;
+    const weekLabels =
+      rows[0]?.weeks?.map((w) => w.label) ?? ["Semana 1", "Semana 2", "Semana 3", "Semana 4"];
+    const width = 980;
+    const left = 140;
+    const right = 20;
+    const top = 20;
+    const rowGap = 34;
+    const rowHeight = 12;
+    const xWidth = width - left - right;
+    const segmentWidth = weekLabels.length > 0 ? xWidth / weekLabels.length : xWidth;
+    const height = top + Math.max(1, rows.length) * rowGap + 36;
+    return { rows, weekLabels, width, height, left, top, rowGap, rowHeight, segmentWidth, xWidth };
+  }, [kpclWeeklyStatus]);
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -498,7 +514,7 @@ export default function AdminPage() {
                     Continuidad KPCL
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
-                    Vista mensual en 4 semanas. Cada KPCL tiene su línea horizontal.
+                    Eje Y: dispositivos KPCL · Eje X: tiempo (4 semanas).
                   </p>
                 </div>
                 <div className="inline-flex items-center gap-3 text-xs font-semibold">
@@ -512,43 +528,75 @@ export default function AdminPage() {
                   </span>
                 </div>
               </div>
-              <div className="mt-4 overflow-x-auto">
-                <table className="min-w-full text-left text-xs text-slate-600">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400">
-                      <th className="px-2 py-2 font-semibold">KPCL</th>
-                      <th className="px-2 py-2 font-semibold">Semana 1</th>
-                      <th className="px-2 py-2 font-semibold">Semana 2</th>
-                      <th className="px-2 py-2 font-semibold">Semana 3</th>
-                      <th className="px-2 py-2 font-semibold">Semana 4</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {kpclWeeklyStatus.map((row) => (
-                      <tr key={row.device_id} className="border-b border-slate-100">
-                        <td className="px-2 py-3 font-semibold text-slate-800">
+              <div className="mt-4 overflow-x-auto rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                <svg
+                  viewBox={`0 0 ${continuityChart.width} ${continuityChart.height}`}
+                  className="min-w-[860px]"
+                  role="img"
+                  aria-label="Continuidad mensual KPCL"
+                >
+                  <rect
+                    x={continuityChart.left}
+                    y={continuityChart.top - 10}
+                    width={continuityChart.xWidth}
+                    height={Math.max(1, continuityChart.rows.length) * continuityChart.rowGap}
+                    fill="rgba(148,163,184,0.08)"
+                    rx="8"
+                  />
+
+                  {continuityChart.rows.map((row, i) => {
+                    const y = continuityChart.top + i * continuityChart.rowGap + continuityChart.rowHeight;
+                    return (
+                      <g key={row.device_id}>
+                        <text
+                          x={continuityChart.left - 10}
+                          y={y}
+                          textAnchor="end"
+                          dominantBaseline="middle"
+                          fontSize="11"
+                          fill="#334155"
+                        >
                           {row.device_id}
-                        </td>
-                        {row.weeks.map((week) => (
-                          <td key={`${row.device_id}-${week.label}`} className="px-2 py-3">
-                            <div className="w-full rounded-full bg-slate-100 p-1">
-                              <div
-                                className={`h-3 rounded-full ${
-                                  week.online ? "bg-emerald-500" : "bg-rose-500"
-                                }`}
-                              />
-                            </div>
-                            <p className="mt-1 text-[10px] text-slate-500">
-                              {week.online
-                                ? `${week.active_days}/7 días activos`
-                                : `${week.offline_minutes} min apagado`}
-                            </p>
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </text>
+                        {row.weeks.map((week, j) => {
+                          const x = continuityChart.left + j * continuityChart.segmentWidth;
+                          const stroke = week.online ? "rgba(16,185,129,0.72)" : "rgba(239,68,68,0.72)";
+                          return (
+                            <line
+                              key={`${row.device_id}-${week.label}`}
+                              x1={x}
+                              y1={y}
+                              x2={x + continuityChart.segmentWidth}
+                              y2={y}
+                              stroke={stroke}
+                              strokeWidth={10}
+                              strokeLinecap="round"
+                            />
+                          );
+                        })}
+                      </g>
+                    );
+                  })}
+
+                  {continuityChart.weekLabels.map((label, i) => {
+                    const x =
+                      continuityChart.left +
+                      i * continuityChart.segmentWidth +
+                      continuityChart.segmentWidth / 2;
+                    return (
+                      <text
+                        key={label}
+                        x={x}
+                        y={continuityChart.height - 10}
+                        textAnchor="middle"
+                        fontSize="11"
+                        fill="#64748b"
+                      >
+                        {label}
+                      </text>
+                    );
+                  })}
+                </svg>
               </div>
             </section>
 
