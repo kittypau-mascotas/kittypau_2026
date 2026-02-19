@@ -115,7 +115,9 @@ begin
 end;
 $$;
 
-create or replace view public.admin_object_stats_live as
+drop view if exists public.admin_object_stats_live;
+
+create view public.admin_object_stats_live as
 select *
 from public.admin_object_stats()
 order by coalesce(size_bytes, 0) desc, object_name;
