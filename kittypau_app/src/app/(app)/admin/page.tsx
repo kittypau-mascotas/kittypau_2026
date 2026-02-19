@@ -1063,32 +1063,29 @@ export default function AdminPage() {
               >
                 Cerrar sesión
               </button>
+              <button
+                type="button"
+                onClick={() => setNocMode((prev) => !prev)}
+                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
+              >
+                Modo NOC: {nocMode ? "ON" : "OFF"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompactDensity((prev) => !prev)}
+                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
+              >
+                Densidad: {compactDensity ? "Compacta" : "Normal"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setInfraExpanded((prev) => !prev)}
+                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
+              >
+                Infra: {infraExpanded ? "Visible" : "Colapsada"}
+              </button>
             </div>
           </nav>
-
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
-            <button
-              type="button"
-              onClick={() => setNocMode((prev) => !prev)}
-              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-            >
-              Modo NOC: {nocMode ? "ON" : "OFF"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCompactDensity((prev) => !prev)}
-              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-            >
-              Densidad: {compactDensity ? "Compacta" : "Normal"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setInfraExpanded((prev) => !prev)}
-              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-            >
-              Infra: {infraExpanded ? "Visible" : "Colapsada"}
-            </button>
-          </div>
         </header>
 
         {loading ? (
