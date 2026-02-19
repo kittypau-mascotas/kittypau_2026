@@ -5,21 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
-import {
-  BarController,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LineController,
-  LineElement,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  type ChartData,
-  type ChartOptions,
-} from "chart.js";
-import { Chart } from "react-chartjs-2";
 
 type AdminSummary = {
   generated_at: string;
@@ -76,30 +61,17 @@ type KpclDevice = {
   is_online: boolean;
 };
 
-type KpclSeriesPoint = {
+type KpclWeekStatus = {
   label: string;
-  online_devices: number;
-  offline_devices: number;
+  online: boolean;
+  active_days: number;
   offline_minutes: number;
 };
 
-type KpclUptimeSeries = {
-  total_devices: number;
-  daily: KpclSeriesPoint[];
-  weekly: KpclSeriesPoint[];
+type KpclDeviceWeeklyStatus = {
+  device_id: string;
+  weeks: KpclWeekStatus[];
 };
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarController,
-  LineController,
-  PointElement,
-  LineElement,
-  BarElement,
-  Tooltip,
-  Legend
-);
 
 type IncidentCounters = {
   bridge_offline_detected: number;
@@ -172,10 +144,7 @@ export default function AdminPage() {
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [bridges, setBridges] = useState<BridgeLive[]>([]);
   const [kpclDevices, setKpclDevices] = useState<KpclDevice[]>([]);
-  const [kpclUptimeSeries, setKpclUptimeSeries] = useState<KpclUptimeSeries | null>(
-    null
-  );
-  const [uptimeWindow, setUptimeWindow] = useState<"daily" | "weekly">("daily");
+  const [kpclWeeklyStatus, setKpclWeeklyStatus] = useState<KpclDeviceWeeklyStatus[]>([]);
   const [incidentCounters, setIncidentCounters] = useState<IncidentCounters | null>(
     null
   );
@@ -248,7 +217,9 @@ export default function AdminPage() {
         }
         setBridges((payload.bridges ?? []) as BridgeLive[]);
         setKpclDevices((payload.kpcl_devices ?? []) as KpclDevice[]);
-        setKpclUptimeSeries((payload.kpcl_uptime_series ?? null) as KpclUptimeSeries | null);
+        setKpclWeeklyStatus(
+          (payload.kpcl_device_weekly_status ?? []) as KpclDeviceWeeklyStatus[]
+        );
         setIncidentCounters((payload.incident_counters ?? null) as IncidentCounters | null);
         setRegistrationSummary(
           (payload.registration_summary ?? null) as RegistrationSummary | null
@@ -376,74 +347,6 @@ export default function AdminPage() {
     }
     return alerts;
   }, [summary, activeGeneralOutage, registrationSummary, kpclDevices]);
-
-  const uptimeChartData = useMemo<ChartData<"bar" | "line">>(() => {
-    const points =
-      uptimeWindow === "daily"
-        ? kpclUptimeSeries?.daily ?? []
-        : kpclUptimeSeries?.weekly ?? [];
-    return {
-      labels: points.map((p) => p.label),
-      datasets: [
-        {
-          type: "line" as const,
-          label: "KPCL Online",
-          data: points.map((p) => p.online_devices),
-          borderColor: "#10b981",
-          backgroundColor: "rgba(16,185,129,0.15)",
-          borderWidth: 2,
-          pointRadius: 2,
-          tension: 0.35,
-          yAxisID: "y",
-        },
-        {
-          type: "line" as const,
-          label: "KPCL Offline",
-          data: points.map((p) => p.offline_devices),
-          borderColor: "#ef4444",
-          backgroundColor: "rgba(239,68,68,0.15)",
-          borderWidth: 2,
-          pointRadius: 2,
-          tension: 0.35,
-          yAxisID: "y",
-        },
-        {
-          type: "bar" as const,
-          label: "Tiempo apagado (min)",
-          data: points.map((p) => p.offline_minutes),
-          backgroundColor: "rgba(244,114,182,0.26)",
-          borderColor: "rgba(190,24,93,0.35)",
-          borderWidth: 1,
-          yAxisID: "y1",
-        },
-      ],
-    };
-  }, [kpclUptimeSeries, uptimeWindow]);
-
-  const uptimeChartOptions = useMemo<ChartOptions<"bar" | "line">>(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
-      plugins: {
-        legend: { position: "top" as const },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "Dispositivos KPCL" },
-          suggestedMax: Math.max(3, kpclUptimeSeries?.total_devices ?? 0),
-        },
-        y1: {
-          beginAtZero: true,
-          position: "right" as const,
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: "Minutos apagado" },
-        },
-      },
-    }),
-    [kpclUptimeSeries?.total_devices]
-  );
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
@@ -595,36 +498,57 @@ export default function AdminPage() {
                     Continuidad KPCL
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
-                    Línea continua de online/offline y barra de minutos apagados.
+                    Vista mensual en 4 semanas. Cada KPCL tiene su línea horizontal.
                   </p>
                 </div>
-                <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => setUptimeWindow("daily")}
-                    className={`rounded-full px-3 py-1 ${
-                      uptimeWindow === "daily"
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-600"
-                    }`}
-                  >
-                    Diario
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUptimeWindow("weekly")}
-                    className={`rounded-full px-3 py-1 ${
-                      uptimeWindow === "weekly"
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-600"
-                    }`}
-                  >
-                    Semanal
-                  </button>
+                <div className="inline-flex items-center gap-3 text-xs font-semibold">
+                  <span className="inline-flex items-center gap-1 text-emerald-700">
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    Prendido
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-rose-700">
+                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                    Apagado
+                  </span>
                 </div>
               </div>
-              <div className="mt-4 h-72">
-                <Chart type="bar" data={uptimeChartData} options={uptimeChartOptions} />
+              <div className="mt-4 overflow-x-auto">
+                <table className="min-w-full text-left text-xs text-slate-600">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400">
+                      <th className="px-2 py-2 font-semibold">KPCL</th>
+                      <th className="px-2 py-2 font-semibold">Semana 1</th>
+                      <th className="px-2 py-2 font-semibold">Semana 2</th>
+                      <th className="px-2 py-2 font-semibold">Semana 3</th>
+                      <th className="px-2 py-2 font-semibold">Semana 4</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {kpclWeeklyStatus.map((row) => (
+                      <tr key={row.device_id} className="border-b border-slate-100">
+                        <td className="px-2 py-3 font-semibold text-slate-800">
+                          {row.device_id}
+                        </td>
+                        {row.weeks.map((week) => (
+                          <td key={`${row.device_id}-${week.label}`} className="px-2 py-3">
+                            <div className="w-full rounded-full bg-slate-100 p-1">
+                              <div
+                                className={`h-3 rounded-full ${
+                                  week.online ? "bg-emerald-500" : "bg-rose-500"
+                                }`}
+                              />
+                            </div>
+                            <p className="mt-1 text-[10px] text-slate-500">
+                              {week.online
+                                ? `${week.active_days}/7 días activos`
+                                : `${week.offline_minutes} min apagado`}
+                            </p>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </section>
 

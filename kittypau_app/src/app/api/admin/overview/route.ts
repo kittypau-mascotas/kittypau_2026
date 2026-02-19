@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
       supabaseServer
         .from("readings")
         .select("device_id, recorded_at")
-        .gte("recorded_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .gte("recorded_at", new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString())
         .order("recorded_at", { ascending: true }),
     ]);
 
@@ -290,85 +290,58 @@ export async function GET(req: NextRequest) {
     };
   });
 
-  const kpclUptimeSeries = (() => {
-    const totalDevices = (kpclDevices ?? []).length;
-    const deviceIdToCode = new Map<string, string>(
-      (kpclDevices ?? []).map((d) => [d.id, d.device_id])
-    );
-
+  const kpclDeviceWeeklyStatus = (() => {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const weekMs = 7 * dayMs;
     const now = Date.now();
-    const hourMs = 60 * 60 * 1000;
-    const dayMs = 24 * hourMs;
+    const windowStart = now - 4 * weekMs;
+    const weekRanges = Array.from({ length: 4 }, (_, i) => {
+      const start = windowStart + i * weekMs;
+      const end = start + weekMs;
+      return { start, end, label: `Semana ${i + 1}` };
+    });
 
-    const dayEndMs = Math.floor(now / hourMs) * hourMs + hourMs;
-    const dayStartMs = dayEndMs - 24 * hourMs;
-    const dayActive = Array.from({ length: 24 }, () => new Set<string>());
-
-    const weekEndDate = new Date();
-    weekEndDate.setHours(0, 0, 0, 0);
-    weekEndDate.setDate(weekEndDate.getDate() + 1);
-    const weekEndMs = weekEndDate.getTime();
-    const weekStartMs = weekEndMs - 7 * dayMs;
-    const weekActive = Array.from({ length: 7 }, () => new Set<string>());
-
+    const daySetsByDevice = new Map<string, Map<number, Set<string>>>();
     for (const row of recentReadings ?? []) {
       if (!row.recorded_at) continue;
       const ts = Date.parse(row.recorded_at);
-      if (!Number.isFinite(ts)) continue;
-      const code = deviceIdToCode.get(row.device_id);
-      if (!code) continue;
-
-      if (ts >= dayStartMs && ts < dayEndMs) {
-        const idx = Math.floor((ts - dayStartMs) / hourMs);
-        if (idx >= 0 && idx < dayActive.length) {
-          dayActive[idx].add(code);
+      if (!Number.isFinite(ts) || ts < windowStart || ts > now) continue;
+      let weekIndex = -1;
+      for (let i = 0; i < weekRanges.length; i += 1) {
+        if (ts >= weekRanges[i].start && ts < weekRanges[i].end) {
+          weekIndex = i;
+          break;
         }
       }
-      if (ts >= weekStartMs && ts < weekEndMs) {
-        const idx = Math.floor((ts - weekStartMs) / dayMs);
-        if (idx >= 0 && idx < weekActive.length) {
-          weekActive[idx].add(code);
-        }
+      if (weekIndex < 0) continue;
+      const dayKey = new Date(ts).toISOString().slice(0, 10);
+      if (!daySetsByDevice.has(row.device_id)) {
+        daySetsByDevice.set(row.device_id, new Map<number, Set<string>>());
       }
+      const weekMap = daySetsByDevice.get(row.device_id)!;
+      if (!weekMap.has(weekIndex)) {
+        weekMap.set(weekIndex, new Set<string>());
+      }
+      weekMap.get(weekIndex)!.add(dayKey);
     }
 
-    const daily = dayActive.map((set, idx) => {
-      const bucketStartMs = dayStartMs + idx * hourMs;
-      const dt = new Date(bucketStartMs);
-      const online = set.size;
-      const offline = Math.max(0, totalDevices - online);
+    return (kpclDevices ?? []).map((device) => {
+      const weekMap = daySetsByDevice.get(device.id) ?? new Map<number, Set<string>>();
+      const weeks = weekRanges.map((w, idx) => {
+        const activeDays = weekMap.get(idx)?.size ?? 0;
+        const online = activeDays > 0;
+        return {
+          label: w.label,
+          online,
+          active_days: activeDays,
+          offline_minutes: Math.max(0, (7 - activeDays) * 24 * 60),
+        };
+      });
       return {
-        label: dt.toLocaleTimeString("es-CL", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        online_devices: online,
-        offline_devices: offline,
-        offline_minutes: offline * 60,
+        device_id: device.device_id,
+        weeks,
       };
     });
-
-    const weekly = weekActive.map((set, idx) => {
-      const bucketStartMs = weekStartMs + idx * dayMs;
-      const dt = new Date(bucketStartMs);
-      const online = set.size;
-      const offline = Math.max(0, totalDevices - online);
-      return {
-        label: dt.toLocaleDateString("es-CL", {
-          weekday: "short",
-          day: "2-digit",
-        }),
-        online_devices: online,
-        offline_devices: offline,
-        offline_minutes: offline * 24 * 60,
-      };
-    });
-
-    return {
-      total_devices: totalDevices,
-      daily,
-      weekly,
-    };
   })();
 
   const currentBridgeStatus = (() => {
@@ -401,7 +374,7 @@ export async function GET(req: NextRequest) {
     bridges: currentBridgeStatus,
     offline_devices: offlineDevices ?? [],
     kpcl_devices: kpclStatus,
-    kpcl_uptime_series: kpclUptimeSeries,
+    kpcl_device_weekly_status: kpclDeviceWeeklyStatus,
     incident_counters: incidentCounters,
     active_general_outage: activeGeneralOutage,
     registration_summary: registrationSummary,
