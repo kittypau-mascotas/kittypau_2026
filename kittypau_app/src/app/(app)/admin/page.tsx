@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
+  BarController,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
   Legend,
+  LineController,
   LineElement,
   LinearScale,
   PointElement,
@@ -90,6 +92,8 @@ type KpclUptimeSeries = {
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  BarController,
+  LineController,
   PointElement,
   LineElement,
   BarElement,
