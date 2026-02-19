@@ -85,6 +85,47 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  const onlineBridgeIds = (data ?? [])
+    .filter((row) => {
+      const lastSeen = row.last_seen ? new Date(row.last_seen).toISOString() : null;
+      return !!lastSeen && lastSeen >= cutoff;
+    })
+    .map((row) => row.bridge_id)
+    .filter((id): id is string => /^KPBR\d{4}$/.test(id));
+
+  if (onlineBridgeIds.length > 0) {
+    for (const bridgeId of onlineBridgeIds) {
+      const { data: lastStatusRow } = await supabaseServer
+        .from("bridge_telemetry")
+        .select("bridge_status")
+        .eq("device_id", bridgeId)
+        .order("recorded_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastStatusRow?.bridge_status !== "offline") continue;
+
+      await supabaseServer.from("bridge_telemetry").insert({
+        device_id: bridgeId,
+        device_type: "bridge",
+        bridge_status: "active",
+        recorded_at: new Date().toISOString(),
+      });
+
+      await logAudit({
+        event_type: "bridge_online_detected",
+        entity_type: "bridge",
+        payload: {
+          bridge_id: bridgeId,
+          previous_status: "offline",
+          next_status: "active",
+          source: "health_check",
+          message: `Bridge ${bridgeId} volvió a estar en línea.`,
+        },
+      });
+    }
+  }
+
   const { data: kpclDevices, error: kpclDevicesError } = await supabaseServer
     .from("devices")
     .select("id, device_id, device_state, last_seen, retired_at")
@@ -121,6 +162,34 @@ export async function GET(req: NextRequest) {
         next_state: "offline",
         source: "health_check",
         message: `Plato/sensor ${device.device_id} se apagó o perdió conexión.`,
+      },
+    });
+  }
+
+  const recoveredDevices = (kpclDevices ?? []).filter((device) => {
+    if (device.device_state !== "offline") return false;
+    if (!device.last_seen) return false;
+    return new Date(device.last_seen).toISOString() >= deviceCutoff;
+  });
+  const transitionedOnlineDevices: string[] = [];
+  for (const device of recoveredDevices) {
+    const { error: updateDeviceError } = await supabaseServer
+      .from("devices")
+      .update({ device_state: "linked" })
+      .eq("id", device.id);
+    if (updateDeviceError) continue;
+
+    transitionedOnlineDevices.push(device.device_id);
+    await logAudit({
+      event_type: "device_online_detected",
+      entity_type: "device",
+      entity_id: device.id,
+      payload: {
+        device_id: device.device_id,
+        previous_state: "offline",
+        next_state: "linked",
+        source: "health_check",
+        message: `Plato/sensor ${device.device_id} volvió a estar en línea.`,
       },
     });
   }
@@ -194,10 +263,12 @@ export async function GET(req: NextRequest) {
       kpcl_offline_devices: offlineCount,
       offline_devices_count: offlineNowIds.length,
       offline_devices_transitioned_count: transitionedOfflineDevices.length,
+      online_devices_transitioned_count: transitionedOnlineDevices.length,
       bridges: data ?? [],
       offline,
       offline_devices: offlineNowIds,
       offline_devices_transitioned: transitionedOfflineDevices,
+      online_devices_transitioned: transitionedOnlineDevices,
     },
     { status: 200 }
   );

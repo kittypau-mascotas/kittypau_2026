@@ -91,6 +91,7 @@ export async function GET(req: NextRequest) {
     { data: profiles, error: profilesError },
     { data: petOwners, error: petOwnersError },
     { data: deviceOwners, error: deviceOwnersError },
+    { data: kpclDevices, error: kpclDevicesError },
   ] = await Promise.all([
       supabaseServer.from("admin_dashboard_live").select("*").limit(1).maybeSingle(),
       (() => {
@@ -137,6 +138,12 @@ export async function GET(req: NextRequest) {
         .from("devices")
         .select("owner_id")
         .not("owner_id", "is", null),
+      supabaseServer
+        .from("devices")
+        .select("id, device_id, device_state, status, last_seen, battery_level, owner_id")
+        .ilike("device_id", "KPCL%")
+        .is("retired_at", null)
+        .order("device_id", { ascending: true }),
     ]);
 
   if (summaryError) {
@@ -162,6 +169,9 @@ export async function GET(req: NextRequest) {
   }
   if (deviceOwnersError) {
     return apiError(req, 500, "SUPABASE_ERROR", deviceOwnersError.message);
+  }
+  if (kpclDevicesError) {
+    return apiError(req, 500, "SUPABASE_ERROR", kpclDevicesError.message);
   }
 
   const incidentCounters = {
@@ -259,6 +269,18 @@ export async function GET(req: NextRequest) {
     return out;
   })();
 
+  const kpclStatus = (kpclDevices ?? []).map((device) => {
+    const lastSeenTs = device.last_seen ? Date.parse(device.last_seen) : NaN;
+    const isFresh = Number.isFinite(lastSeenTs)
+      ? lastSeenTs >= Date.parse(staleCutoff)
+      : false;
+    const isOnline = device.device_state !== "offline" && isFresh;
+    return {
+      ...device,
+      is_online: isOnline,
+    };
+  });
+
   const currentBridgeStatus = (() => {
     const byBridge = new Map<string, any>();
     for (const row of bridges ?? []) {
@@ -288,6 +310,7 @@ export async function GET(req: NextRequest) {
     audit_events: dedupedAuditEvents ?? [],
     bridges: currentBridgeStatus,
     offline_devices: offlineDevices ?? [],
+    kpcl_devices: kpclStatus,
     incident_counters: incidentCounters,
     active_general_outage: activeGeneralOutage,
     registration_summary: registrationSummary,
