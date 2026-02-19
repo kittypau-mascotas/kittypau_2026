@@ -55,7 +55,12 @@ async function runTest(
 export async function POST(req: NextRequest) {
   const admin = await ensureAdmin(req);
   if ("error" in admin) {
-    return apiError(req, admin.status ?? 401, "AUTH_INVALID", admin.error);
+    return apiError(
+      req,
+      admin.status ?? 401,
+      "AUTH_INVALID",
+      admin.error ?? "Unauthorized"
+    );
   }
 
   const results: AdminTestResult[] = [];
@@ -172,7 +177,12 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const admin = await ensureAdmin(req);
   if ("error" in admin) {
-    return apiError(req, admin.status ?? 401, "AUTH_INVALID", admin.error);
+    return apiError(
+      req,
+      admin.status ?? 401,
+      "AUTH_INVALID",
+      admin.error ?? "Unauthorized"
+    );
   }
 
   const { data, error } = await supabaseServer
