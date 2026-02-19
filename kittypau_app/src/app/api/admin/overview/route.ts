@@ -92,6 +92,7 @@ export async function GET(req: NextRequest) {
     { data: petOwners, error: petOwnersError },
     { data: deviceOwners, error: deviceOwnersError },
     { data: kpclDevices, error: kpclDevicesError },
+    { data: recentReadings, error: recentReadingsError },
   ] = await Promise.all([
       supabaseServer.from("admin_dashboard_live").select("*").limit(1).maybeSingle(),
       (() => {
@@ -144,6 +145,11 @@ export async function GET(req: NextRequest) {
         .ilike("device_id", "KPCL%")
         .is("retired_at", null)
         .order("device_id", { ascending: true }),
+      supabaseServer
+        .from("readings")
+        .select("device_id, recorded_at")
+        .gte("recorded_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        .order("recorded_at", { ascending: true }),
     ]);
 
   if (summaryError) {
@@ -172,6 +178,9 @@ export async function GET(req: NextRequest) {
   }
   if (kpclDevicesError) {
     return apiError(req, 500, "SUPABASE_ERROR", kpclDevicesError.message);
+  }
+  if (recentReadingsError) {
+    return apiError(req, 500, "SUPABASE_ERROR", recentReadingsError.message);
   }
 
   const incidentCounters = {
@@ -281,6 +290,87 @@ export async function GET(req: NextRequest) {
     };
   });
 
+  const kpclUptimeSeries = (() => {
+    const totalDevices = (kpclDevices ?? []).length;
+    const deviceIdToCode = new Map<string, string>(
+      (kpclDevices ?? []).map((d) => [d.id, d.device_id])
+    );
+
+    const now = Date.now();
+    const hourMs = 60 * 60 * 1000;
+    const dayMs = 24 * hourMs;
+
+    const dayEndMs = Math.floor(now / hourMs) * hourMs + hourMs;
+    const dayStartMs = dayEndMs - 24 * hourMs;
+    const dayActive = Array.from({ length: 24 }, () => new Set<string>());
+
+    const weekEndDate = new Date();
+    weekEndDate.setHours(0, 0, 0, 0);
+    weekEndDate.setDate(weekEndDate.getDate() + 1);
+    const weekEndMs = weekEndDate.getTime();
+    const weekStartMs = weekEndMs - 7 * dayMs;
+    const weekActive = Array.from({ length: 7 }, () => new Set<string>());
+
+    for (const row of recentReadings ?? []) {
+      if (!row.recorded_at) continue;
+      const ts = Date.parse(row.recorded_at);
+      if (!Number.isFinite(ts)) continue;
+      const code = deviceIdToCode.get(row.device_id);
+      if (!code) continue;
+
+      if (ts >= dayStartMs && ts < dayEndMs) {
+        const idx = Math.floor((ts - dayStartMs) / hourMs);
+        if (idx >= 0 && idx < dayActive.length) {
+          dayActive[idx].add(code);
+        }
+      }
+      if (ts >= weekStartMs && ts < weekEndMs) {
+        const idx = Math.floor((ts - weekStartMs) / dayMs);
+        if (idx >= 0 && idx < weekActive.length) {
+          weekActive[idx].add(code);
+        }
+      }
+    }
+
+    const daily = dayActive.map((set, idx) => {
+      const bucketStartMs = dayStartMs + idx * hourMs;
+      const dt = new Date(bucketStartMs);
+      const online = set.size;
+      const offline = Math.max(0, totalDevices - online);
+      return {
+        label: dt.toLocaleTimeString("es-CL", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        online_devices: online,
+        offline_devices: offline,
+        offline_minutes: offline * 60,
+      };
+    });
+
+    const weekly = weekActive.map((set, idx) => {
+      const bucketStartMs = weekStartMs + idx * dayMs;
+      const dt = new Date(bucketStartMs);
+      const online = set.size;
+      const offline = Math.max(0, totalDevices - online);
+      return {
+        label: dt.toLocaleDateString("es-CL", {
+          weekday: "short",
+          day: "2-digit",
+        }),
+        online_devices: online,
+        offline_devices: offline,
+        offline_minutes: offline * 24 * 60,
+      };
+    });
+
+    return {
+      total_devices: totalDevices,
+      daily,
+      weekly,
+    };
+  })();
+
   const currentBridgeStatus = (() => {
     const byBridge = new Map<string, any>();
     for (const row of bridges ?? []) {
@@ -311,6 +401,7 @@ export async function GET(req: NextRequest) {
     bridges: currentBridgeStatus,
     offline_devices: offlineDevices ?? [],
     kpcl_devices: kpclStatus,
+    kpcl_uptime_series: kpclUptimeSeries,
     incident_counters: incidentCounters,
     active_general_outage: activeGeneralOutage,
     registration_summary: registrationSummary,

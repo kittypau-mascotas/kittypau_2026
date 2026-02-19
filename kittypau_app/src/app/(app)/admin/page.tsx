@@ -5,6 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  type ChartData,
+  type ChartOptions,
+} from "chart.js";
+import { Chart } from "react-chartjs-2";
 
 type AdminSummary = {
   generated_at: string;
@@ -60,6 +73,29 @@ type KpclDevice = {
   owner_id: string | null;
   is_online: boolean;
 };
+
+type KpclSeriesPoint = {
+  label: string;
+  online_devices: number;
+  offline_devices: number;
+  offline_minutes: number;
+};
+
+type KpclUptimeSeries = {
+  total_devices: number;
+  daily: KpclSeriesPoint[];
+  weekly: KpclSeriesPoint[];
+};
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Tooltip,
+  Legend
+);
 
 type IncidentCounters = {
   bridge_offline_detected: number;
@@ -132,6 +168,10 @@ export default function AdminPage() {
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [bridges, setBridges] = useState<BridgeLive[]>([]);
   const [kpclDevices, setKpclDevices] = useState<KpclDevice[]>([]);
+  const [kpclUptimeSeries, setKpclUptimeSeries] = useState<KpclUptimeSeries | null>(
+    null
+  );
+  const [uptimeWindow, setUptimeWindow] = useState<"daily" | "weekly">("daily");
   const [incidentCounters, setIncidentCounters] = useState<IncidentCounters | null>(
     null
   );
@@ -204,6 +244,7 @@ export default function AdminPage() {
         }
         setBridges((payload.bridges ?? []) as BridgeLive[]);
         setKpclDevices((payload.kpcl_devices ?? []) as KpclDevice[]);
+        setKpclUptimeSeries((payload.kpcl_uptime_series ?? null) as KpclUptimeSeries | null);
         setIncidentCounters((payload.incident_counters ?? null) as IncidentCounters | null);
         setRegistrationSummary(
           (payload.registration_summary ?? null) as RegistrationSummary | null
@@ -331,6 +372,74 @@ export default function AdminPage() {
     }
     return alerts;
   }, [summary, activeGeneralOutage, registrationSummary, kpclDevices]);
+
+  const uptimeChartData = useMemo<ChartData<"bar" | "line">>(() => {
+    const points =
+      uptimeWindow === "daily"
+        ? kpclUptimeSeries?.daily ?? []
+        : kpclUptimeSeries?.weekly ?? [];
+    return {
+      labels: points.map((p) => p.label),
+      datasets: [
+        {
+          type: "line" as const,
+          label: "KPCL Online",
+          data: points.map((p) => p.online_devices),
+          borderColor: "#10b981",
+          backgroundColor: "rgba(16,185,129,0.15)",
+          borderWidth: 2,
+          pointRadius: 2,
+          tension: 0.35,
+          yAxisID: "y",
+        },
+        {
+          type: "line" as const,
+          label: "KPCL Offline",
+          data: points.map((p) => p.offline_devices),
+          borderColor: "#ef4444",
+          backgroundColor: "rgba(239,68,68,0.15)",
+          borderWidth: 2,
+          pointRadius: 2,
+          tension: 0.35,
+          yAxisID: "y",
+        },
+        {
+          type: "bar" as const,
+          label: "Tiempo apagado (min)",
+          data: points.map((p) => p.offline_minutes),
+          backgroundColor: "rgba(244,114,182,0.26)",
+          borderColor: "rgba(190,24,93,0.35)",
+          borderWidth: 1,
+          yAxisID: "y1",
+        },
+      ],
+    };
+  }, [kpclUptimeSeries, uptimeWindow]);
+
+  const uptimeChartOptions = useMemo<ChartOptions<"bar" | "line">>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "top" as const },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Dispositivos KPCL" },
+          suggestedMax: Math.max(3, kpclUptimeSeries?.total_devices ?? 0),
+        },
+        y1: {
+          beginAtZero: true,
+          position: "right" as const,
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: "Minutos apagado" },
+        },
+      },
+    }),
+    [kpclUptimeSeries?.total_devices]
+  );
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
@@ -472,6 +581,46 @@ export default function AdminPage() {
                     Sin alertas críticas activas.
                   </div>
                 )}
+              </div>
+            </section>
+
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="display-title text-xl font-semibold text-slate-900">
+                    Continuidad KPCL
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Línea continua de online/offline y barra de minutos apagados.
+                  </p>
+                </div>
+                <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setUptimeWindow("daily")}
+                    className={`rounded-full px-3 py-1 ${
+                      uptimeWindow === "daily"
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    Diario
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUptimeWindow("weekly")}
+                    className={`rounded-full px-3 py-1 ${
+                      uptimeWindow === "weekly"
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    Semanal
+                  </button>
+                </div>
+              </div>
+              <div className="mt-4 h-72">
+                <Chart type="bar" data={uptimeChartData} options={uptimeChartOptions} />
               </div>
             </section>
 
