@@ -223,6 +223,26 @@ body {
   border-color: color-mix(in oklab, hsl(var(--warning)) 30%, transparent);
 }
 
+.admin-density-compact .surface-card {
+  border-radius: 14px;
+}
+
+.admin-density-compact .surface-card p,
+.admin-density-compact .surface-card td,
+.admin-density-compact .surface-card th {
+  line-height: 1.25;
+}
+
+.admin-density-compact .surface-card .px-4 {
+  padding-left: 0.85rem;
+  padding-right: 0.85rem;
+}
+
+.admin-density-compact .surface-card .py-4 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .story-card.tone-good {
   background: linear-gradient(
       120deg,

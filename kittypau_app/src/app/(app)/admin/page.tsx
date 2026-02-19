@@ -268,38 +268,79 @@ const ADMIN_TEST_CATALOG = [
   {
     id: "admin_dashboard_live",
     name: "Vista admin_dashboard_live",
+    source: "API",
     description: "Valida que el resumen operativo principal esté disponible.",
     expected: "Consulta 200 y al menos 1 fila.",
   },
   {
     id: "bridge_status_live",
     name: "Vista bridge_status_live",
+    source: "API",
     description: "Revisa estado vivo de bridges (active/degraded/offline).",
     expected: "Consulta exitosa y conteo de bridges.",
   },
   {
     id: "kpcl_devices",
     name: "Inventario KPCL",
+    source: "API",
     description: "Verifica acceso a dispositivos KPCL activos.",
     expected: "Conteo de KPCL activos.",
   },
   {
     id: "finance_summary",
     name: "Resumen financiero",
+    source: "API",
     description: "Confirma disponibilidad de métricas BOM y cloud mensual.",
     expected: "Fila presente en finance_admin_summary.",
   },
   {
     id: "kpcl_catalog",
     name: "Catálogo KPCL financiero",
+    source: "API",
     description: "Valida perfiles y componentes de costo por KPCL.",
     expected: "Perfiles activos y componentes disponibles.",
   },
   {
     id: "db_object_stats",
     name: "Catálogo de tablas/vistas",
+    source: "API",
     description: "Verifica estadística de objetos vía vista o RPC fallback.",
     expected: "Listado de objetos con tamaño/rows estimados.",
+  },
+  {
+    id: "ps_test_auth_flow",
+    name: "PowerShell: TEST_AUTH_FLOW",
+    source: "PS1 · Docs/TEST_AUTH_FLOW.ps1",
+    description: "Prueba flujo de autenticación (login, token y acceso protegido).",
+    expected: "Token válido y respuestas HTTP esperadas para auth.",
+  },
+  {
+    id: "ps_test_db_api",
+    name: "PowerShell: TEST_DB_API",
+    source: "PS1 · Docs/TEST_DB_API.ps1",
+    description: "Valida endpoints principales de base de datos/API en escenario positivo.",
+    expected: "Respuestas 2xx con payload consistente.",
+  },
+  {
+    id: "ps_test_db_api_negative",
+    name: "PowerShell: TEST_DB_API_NEGATIVE",
+    source: "PS1 · Docs/TEST_DB_API_NEGATIVE.ps1",
+    description: "Ejecuta casos negativos para validar control de errores y permisos.",
+    expected: "Respuestas de error controladas (4xx/5xx esperadas).",
+  },
+  {
+    id: "ps_test_onboarding_backend",
+    name: "PowerShell: TEST_ONBOARDING_BACKEND",
+    source: "PS1 · Docs/TEST_ONBOARDING_BACKEND.ps1",
+    description: "Prueba flujo backend de onboarding y estados de registro.",
+    expected: "Transiciones de estado válidas sin inconsistencias.",
+  },
+  {
+    id: "ps_test_webhook",
+    name: "PowerShell: test-webhook",
+    source: "PS1 · kittypau_app/scripts/test-webhook.ps1",
+    description: "Simula envío de webhook MQTT para validar ingesta y persistencia.",
+    expected: "Webhook aceptado y lectura registrada en backend.",
   },
 ] as const;
 
@@ -365,6 +406,9 @@ export default function AdminPage() {
   const [lastTestRun, setLastTestRun] = useState<AdminTestRun | null>(null);
   const [testHistory, setTestHistory] = useState<AdminTestHistoryItem[]>([]);
   const [testRunnerMessage, setTestRunnerMessage] = useState<string | null>(null);
+  const [compactDensity, setCompactDensity] = useState(false);
+  const [nocMode, setNocMode] = useState(true);
+  const [infraExpanded, setInfraExpanded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -565,6 +609,21 @@ export default function AdminPage() {
     }
     return alerts;
   }, [summary, activeGeneralOutage, registrationSummary, kpclDevices]);
+
+  const operationStatus = useMemo(() => {
+    if (criticalAlerts.length > 0) {
+      return {
+        label: "Atención",
+        tone: "text-rose-700 bg-rose-50 border-rose-200",
+        detail: "Hay alertas operativas activas.",
+      };
+    }
+    return {
+      label: "Operación estable",
+      tone: "text-emerald-700 bg-emerald-50 border-emerald-200",
+      detail: "No hay alertas críticas activas.",
+    };
+  }, [criticalAlerts]);
 
   const continuityChart = useMemo(() => {
     const rows = kpclHourlyStatus;
@@ -964,41 +1023,71 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-3 py-6 sm:px-6 sm:py-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <header className="surface-card freeform-rise sticky top-3 z-20 px-4 py-4 sm:px-6 sm:py-5 backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Admin</p>
-          <h1 className="display-title mt-1 text-3xl font-semibold text-slate-900">
-            Dashboard Ejecutivo Kittypau
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Visión total de operación y auditoría en línea.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
-              Rol: {role ?? "sin rol"}
-            </span>
-            <Link
-              href="/today"
-              className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700"
-            >
-              Volver a la app
-            </Link>
+    <div className={`min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-3 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${compactDensity ? "admin-density-compact" : ""}`}>
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 lg:gap-6">
+        <header className="surface-card freeform-rise md:sticky md:top-3 z-20 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
+          <nav className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-[280px]">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Admin</p>
+              <h1 className="display-title text-lg sm:text-xl font-semibold text-slate-900">
+                Dashboard Ejecutivo Kittypau
+              </h1>
+              <p className="text-xs text-slate-500">
+                Visión total de operación y auditoría en línea.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
+                Rol: {role ?? "sin rol"}
+              </span>
+              <span className={`rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold ${dashboardFreshness.tone}`}>
+                {dashboardFreshness.label}
+              </span>
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-500">
+                Auto refresh: 5 min
+              </span>
+              <Link
+                href="/today"
+                className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700"
+              >
+                Volver a la app
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  clearTokens();
+                  window.location.href = "/login";
+                }}
+                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 font-semibold text-rose-700"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </nav>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
             <button
               type="button"
-              onClick={() => {
-                clearTokens();
-                window.location.href = "/login";
-              }}
-              className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 font-semibold text-rose-700"
+              onClick={() => setNocMode((prev) => !prev)}
+              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
             >
-              Cerrar sesión
+              Modo NOC: {nocMode ? "ON" : "OFF"}
             </button>
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
-            <span className={`font-semibold ${dashboardFreshness.tone}`}>{dashboardFreshness.label}</span>
-            <span className="text-slate-400">·</span>
-            <span className="text-slate-500">Auto refresh: 5 min</span>
+            <button
+              type="button"
+              onClick={() => setCompactDensity((prev) => !prev)}
+              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
+            >
+              Densidad: {compactDensity ? "Compacta" : "Normal"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setInfraExpanded((prev) => !prev)}
+              className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
+            >
+              Infra: {infraExpanded ? "Visible" : "Colapsada"}
+            </button>
           </div>
         </header>
 
@@ -1030,7 +1119,7 @@ export default function AdminPage() {
 
         {!loading && !error && summary ? (
           <>
-            <section className="surface-card freeform-rise px-6 py-5">
+            <section className="surface-card freeform-rise order-1 px-6 py-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="display-title text-xl font-semibold text-slate-900">
                   Avisos críticos
@@ -1125,7 +1214,7 @@ export default function AdminPage() {
               </div>
             </section>
 
-            <section className="surface-card freeform-rise order-1 px-4 py-4 sm:px-6 sm:py-5">
+            <section className="surface-card freeform-rise order-2 px-4 py-4 sm:px-6 sm:py-5">
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 KPI ejecutivos
               </h2>
@@ -1141,7 +1230,26 @@ export default function AdminPage() {
             </section>
 
             <div className="flex flex-col gap-6">
-            <section className="surface-card freeform-rise order-9 px-4 py-4 sm:px-6 sm:py-5">
+            <section className="surface-card freeform-rise order-0 px-4 py-4 sm:px-6 sm:py-5">
+              <h2 className="display-title text-xl font-semibold text-slate-900">
+                1) Operación del Servicio
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Estado operativo para cliente final: continuidad, disponibilidad y registros completos.
+              </p>
+              {nocMode ? (
+                <div className={`mt-3 rounded-[var(--radius)] border px-3 py-2 text-sm font-semibold ${operationStatus.tone}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span>Semáforo operativo: {operationStatus.label}</span>
+                    <span className="text-xs">KPCL online {summary.kpcl_online_devices}/{summary.kpcl_total_devices}</span>
+                  </div>
+                  <p className="mt-1 text-xs font-medium">{operationStatus.detail}</p>
+                </div>
+              ) : null}
+            </section>
+
+            {infraExpanded ? (
+            <section className="surface-card freeform-rise order-12 px-4 py-4 sm:px-6 sm:py-5">
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 Resumen de Finanzas
               </h2>
@@ -1416,9 +1524,10 @@ export default function AdminPage() {
                   : "N/D"}
               </p>
             </section>
+            ) : null}
 
-            <section className="surface-card freeform-rise order-2 px-4 py-4 sm:px-6 sm:py-5">
-              <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+            <section className="surface-card freeform-rise order-3 px-4 py-4 sm:px-6 sm:py-5">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)]">
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -1719,7 +1828,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <aside className="rounded-[var(--radius)] border border-slate-200 bg-white p-4">
+                <aside className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 xl:sticky xl:top-24 h-fit">
                   <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
                     Resumen operativo
                   </p>
@@ -1857,7 +1966,8 @@ export default function AdminPage() {
               </div>
             </section>
 
-            <section className="surface-card freeform-rise order-8 px-4 py-4 sm:px-6 sm:py-5">
+            {infraExpanded ? (
+            <section className="surface-card freeform-rise order-11 px-4 py-4 sm:px-6 sm:py-5">
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 Tablas y Vistas (Uso Aproximado)
               </h2>
@@ -1911,8 +2021,24 @@ export default function AdminPage() {
                 </table>
               </div>
             </section>
+            ) : (
+              <section className="surface-card freeform-rise order-11 px-4 py-3 sm:px-6 sm:py-4">
+                <p className="text-xs text-slate-500">
+                  Infraestructura colapsada. Actívala desde el header para ver telemetría técnica completa.
+                </p>
+              </section>
+            )}
 
-            <section className="order-6 grid gap-4 lg:grid-cols-2">
+            <section className="surface-card freeform-rise order-6 px-4 py-4 sm:px-6 sm:py-5">
+              <h2 className="display-title text-xl font-semibold text-slate-900">
+                2) Auditoría e Integridad de Datos
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Calidad y trazabilidad de datos: registros pendientes, eventos y validaciones.
+              </p>
+            </section>
+
+            <section className="order-7 grid gap-4 xl:grid-cols-2">
               <article className="surface-card freeform-rise px-6 py-5">
                 <h2 className="display-title text-xl font-semibold text-slate-900">
                   Estado de registro
@@ -1999,7 +2125,17 @@ export default function AdminPage() {
               </article>
             </section>
 
-            <section className="order-5 grid gap-4 lg:grid-cols-2">
+            <section className="surface-card freeform-rise order-9 px-4 py-4 sm:px-6 sm:py-5">
+              <h2 className="display-title text-xl font-semibold text-slate-900">
+                3) Infraestructura y Telemetría
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Salud técnica de plataforma IoT: bridge, dispositivos, uso de servicios y capacidad.
+              </p>
+            </section>
+
+            {infraExpanded ? (
+            <section className="order-10 grid gap-4 xl:grid-cols-2">
               <article className="surface-card freeform-rise px-6 py-5">
                 <h2 className="display-title text-xl font-semibold text-slate-900">
                   Estado de bridges
@@ -2103,8 +2239,9 @@ export default function AdminPage() {
                 </div>
               </article>
             </section>
+            ) : null}
 
-            <section className="surface-card freeform-rise order-3 px-4 py-4 sm:px-6 sm:py-5">
+            <section className="surface-card freeform-rise order-8 px-4 py-4 sm:px-6 sm:py-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="display-title text-xl font-semibold text-slate-900">
@@ -2133,6 +2270,7 @@ export default function AdminPage() {
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-400">
                       <th className="px-2 py-2 font-semibold">Test</th>
+                      <th className="hidden px-2 py-2 font-semibold sm:table-cell">Origen</th>
                       <th className="hidden px-2 py-2 font-semibold md:table-cell">Descripción</th>
                       <th className="hidden px-2 py-2 font-semibold lg:table-cell">Resultado esperado</th>
                     </tr>
@@ -2141,6 +2279,7 @@ export default function AdminPage() {
                     {ADMIN_TEST_CATALOG.map((test) => (
                       <tr key={test.id} className="border-b border-slate-100">
                         <td className="px-2 py-2 font-semibold text-slate-800">{test.name}</td>
+                        <td className="hidden px-2 py-2 sm:table-cell">{test.source}</td>
                         <td className="hidden px-2 py-2 md:table-cell">{test.description}</td>
                         <td className="hidden px-2 py-2 lg:table-cell">{test.expected}</td>
                       </tr>
@@ -2148,6 +2287,9 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
+              <p className="mt-2 text-[11px] text-slate-400">
+                Nota: los tests "API" se ejecutan con el botón de suite. Los tests "PS1" son scripts operativos manuales.
+              </p>
 
               {lastTestRun ? (
                 <div className="mt-4">
@@ -2278,7 +2420,7 @@ export default function AdminPage() {
               </div>
             </section>
 
-            <section className="surface-card freeform-rise order-7 px-4 py-4 sm:px-6 sm:py-5">
+            <section className="surface-card freeform-rise order-8 px-4 py-4 sm:px-6 sm:py-5">
               <div className="flex items-center justify-between">
                 <h2 className="display-title text-xl font-semibold text-slate-900">
                   Audit events en línea
