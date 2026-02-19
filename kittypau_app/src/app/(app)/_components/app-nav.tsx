@@ -21,34 +21,19 @@ export default function AppNav() {
   } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminRole, setAdminRole] = useState<string>("owner_admin");
+  const [adminGeneratedAt, setAdminGeneratedAt] = useState<string | null>(null);
+  const [adminFreshnessLabel, setAdminFreshnessLabel] = useState("Actualizado recientemente");
+  const [adminNocMode, setAdminNocMode] = useState(true);
+  const [adminCompactDensity, setAdminCompactDensity] = useState(false);
+  const [adminInfraExpanded, setAdminInfraExpanded] = useState(false);
 
   if (pathname?.startsWith("/registro")) {
     return null;
   }
 
-  if (pathname?.startsWith("/admin")) {
-    return (
-      <nav className="app-nav">
-        <div className="app-nav-inner">
-          <div className="app-nav-brand">
-            <span className="brand-title">MODO ADMIN</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              clearTokens();
-              window.location.href = "/login";
-            }}
-            className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </nav>
-    );
-  }
-
   useEffect(() => {
+    if (pathname?.startsWith("/admin")) return;
     let isMounted = true;
     getValidAccessToken().then((token) => {
       if (!token || !isMounted) return;
@@ -88,6 +73,141 @@ export default function AppNav() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!pathname?.startsWith("/admin")) return;
+    let active = true;
+
+    const readBool = (key: string, fallback: boolean) => {
+      if (typeof window === "undefined") return fallback;
+      const raw = window.localStorage.getItem(key);
+      if (raw === "true") return true;
+      if (raw === "false") return false;
+      return fallback;
+    };
+
+    setAdminNocMode(readBool("admin_ui_noc_mode", true));
+    setAdminCompactDensity(readBool("admin_ui_density_compact", false));
+    setAdminInfraExpanded(readBool("admin_ui_infra_expanded", false));
+
+    const formatFreshness = (isoValue: string | null) => {
+      if (!isoValue) return "Actualizado recientemente";
+      const ms = Date.now() - Date.parse(isoValue);
+      if (!Number.isFinite(ms) || ms < 0) return "Actualizado recientemente";
+      const sec = Math.floor(ms / 1000);
+      if (sec < 60) return `Actualizado hace ${sec}s`;
+      const min = Math.floor(sec / 60);
+      return `Actualizado hace ${min}m`;
+    };
+
+    const syncAdmin = async () => {
+      const token = await getValidAccessToken();
+      if (!token || !active) return;
+
+      const roleRes = await fetch("/api/admin/access", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (roleRes.ok && active) {
+        const rolePayload = await roleRes.json().catch(() => null);
+        setAdminRole(rolePayload?.role ?? "owner_admin");
+      }
+
+      const overviewRes = await fetch("/api/admin/overview?audit_limit=1", {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (overviewRes.ok && active) {
+        const overviewPayload = await overviewRes.json().catch(() => null);
+        const generatedAt = overviewPayload?.summary?.generated_at ?? null;
+        setAdminGeneratedAt(generatedAt);
+        setAdminFreshnessLabel(formatFreshness(generatedAt));
+      }
+    };
+
+    syncAdmin().catch(() => undefined);
+    const interval = window.setInterval(() => {
+      setAdminFreshnessLabel(formatFreshness(adminGeneratedAt));
+    }, 15000);
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [pathname, adminGeneratedAt]);
+
+  const setAdminPreference = (key: string, value: boolean) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(key, String(value));
+      window.dispatchEvent(
+        new CustomEvent("admin-ui-settings-changed", {
+          detail: { key, value },
+        })
+      );
+    }
+  };
+
+  if (pathname?.startsWith("/admin")) {
+    return (
+      <nav className="app-nav">
+        <div className="app-nav-inner app-nav-inner-admin">
+          <div className="app-nav-brand">
+            <span className="brand-title">MODO ADMIN</span>
+          </div>
+          <div className="app-nav-admin-actions">
+            <span className="app-nav-admin-pill">Rol: {adminRole}</span>
+            <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
+            <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
+            <Link href="/today" className="app-nav-admin-pill app-nav-admin-link">
+              Volver a la app
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                clearTokens();
+                window.location.href = "/login";
+              }}
+              className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"
+            >
+              Cerrar sesión
+            </button>
+            <button
+              type="button"
+              className="app-nav-admin-pill app-nav-admin-toggle"
+              onClick={() => {
+                const next = !adminNocMode;
+                setAdminNocMode(next);
+                setAdminPreference("admin_ui_noc_mode", next);
+              }}
+            >
+              Modo NOC: {adminNocMode ? "ON" : "OFF"}
+            </button>
+            <button
+              type="button"
+              className="app-nav-admin-pill app-nav-admin-toggle"
+              onClick={() => {
+                const next = !adminCompactDensity;
+                setAdminCompactDensity(next);
+                setAdminPreference("admin_ui_density_compact", next);
+              }}
+            >
+              Densidad: {adminCompactDensity ? "Compacta" : "Normal"}
+            </button>
+            <button
+              type="button"
+              className="app-nav-admin-pill app-nav-admin-toggle"
+              onClick={() => {
+                const next = !adminInfraExpanded;
+                setAdminInfraExpanded(next);
+                setAdminPreference("admin_ui_infra_expanded", next);
+              }}
+            >
+              Infra: {adminInfraExpanded ? "Visible" : "Colapsada"}
+            </button>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="app-nav">

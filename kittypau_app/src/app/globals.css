@@ -469,6 +469,36 @@ body {
   gap: 10px;
 }
 
+.app-nav-inner-admin {
+  max-width: 1400px;
+  align-items: flex-start;
+}
+
+.app-nav-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.app-nav-admin-pill {
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  background: #fff;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.app-nav-admin-link {
+  color: #334155;
+}
+
+.app-nav-admin-toggle {
+  cursor: pointer;
+}
+
 .app-nav-settings-btn {
   border-radius: 999px;
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
@@ -594,6 +624,17 @@ body {
     gap: 8px;
     padding-bottom: 2px;
     scrollbar-width: none;
+  }
+
+  .app-nav-inner-admin {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "links";
+  }
+
+  .app-nav-admin-actions {
+    justify-content: flex-start;
   }
 
   .app-nav-links::-webkit-scrollbar {

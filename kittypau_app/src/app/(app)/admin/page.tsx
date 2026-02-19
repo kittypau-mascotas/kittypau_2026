@@ -1,10 +1,9 @@
 ﻿"use client";
 
 import { Fragment, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken } from "@/lib/auth/token";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
   DEFAULT_KPCL_COST_CATALOG,
@@ -365,7 +364,6 @@ export default function AdminPage() {
   const [loadingPercent, setLoadingPercent] = useState(0);
   const [loadingStage, setLoadingStage] = useState("Iniciando...");
   const [error, setError] = useState<string | null>(null);
-  const [role, setRole] = useState<string | null>(null);
   const [summary, setSummary] = useState<AdminSummary | null>(null);
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [bridges, setBridges] = useState<BridgeLive[]>([]);
@@ -409,6 +407,30 @@ export default function AdminPage() {
   const [compactDensity, setCompactDensity] = useState(false);
   const [nocMode, setNocMode] = useState(true);
   const [infraExpanded, setInfraExpanded] = useState(false);
+
+  useEffect(() => {
+    const readBool = (key: string, fallback: boolean) => {
+      if (typeof window === "undefined") return fallback;
+      const raw = window.localStorage.getItem(key);
+      if (raw === "true") return true;
+      if (raw === "false") return false;
+      return fallback;
+    };
+
+    const applySettings = () => {
+      setNocMode(readBool("admin_ui_noc_mode", true));
+      setCompactDensity(readBool("admin_ui_density_compact", false));
+      setInfraExpanded(readBool("admin_ui_infra_expanded", false));
+    };
+
+    applySettings();
+
+    const onSettingsChanged = () => applySettings();
+    window.addEventListener("admin-ui-settings-changed", onSettingsChanged);
+    return () => {
+      window.removeEventListener("admin-ui-settings-changed", onSettingsChanged);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -457,7 +479,6 @@ export default function AdminPage() {
         }
         const payload = await res.json();
         if (!mounted) return;
-        setRole(payload.admin_role ?? null);
         setSummary(payload.summary ?? null);
         const nextEvents = (payload.audit_events ?? []) as AuditEvent[];
         if (auditFilter === "critical") {
@@ -943,19 +964,6 @@ export default function AdminPage() {
     });
   }, [kpclDevices, kpclRuntimeByDevice, kpclCatalog]);
 
-  const dashboardFreshness = useMemo(() => {
-    if (!summary?.generated_at) {
-      return { label: "Sin timestamp", tone: "text-slate-500" as const };
-    }
-    const ageMs = Math.max(0, Date.now() - Date.parse(summary.generated_at));
-    const ageSec = Math.floor(ageMs / 1000);
-    if (ageSec < 60) return { label: `Actualizado hace ${ageSec}s`, tone: "text-emerald-700" as const };
-    const ageMin = Math.floor(ageSec / 60);
-    if (ageMin < 10) return { label: `Actualizado hace ${ageMin} min`, tone: "text-emerald-700" as const };
-    if (ageMin < 30) return { label: `Actualizado hace ${ageMin} min`, tone: "text-amber-700" as const };
-    return { label: `Actualizado hace ${ageMin} min`, tone: "text-rose-700" as const };
-  }, [summary?.generated_at]);
-
   const executiveKpis = useMemo(() => {
     if (!summary) return [];
     const kpclOnlinePct =
@@ -1026,66 +1034,13 @@ export default function AdminPage() {
     <div className={`min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-3 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${compactDensity ? "admin-density-compact" : ""}`}>
       <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 lg:gap-6">
         <header className="surface-card freeform-rise md:sticky md:top-3 z-20 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
-          <nav className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-[280px]">
-              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Admin</p>
-              <h1 className="display-title text-lg sm:text-xl font-semibold text-slate-900">
-                Dashboard Ejecutivo Kittypau
-              </h1>
-              <p className="text-xs text-slate-500">
-                Visión total de operación y auditoría en línea.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
-                Rol: {role ?? "sin rol"}
-              </span>
-              <span className={`rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold ${dashboardFreshness.tone}`}>
-                {dashboardFreshness.label}
-              </span>
-              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-500">
-                Auto refresh: 5 min
-              </span>
-              <Link
-                href="/today"
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700"
-              >
-                Volver a la app
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  clearTokens();
-                  window.location.href = "/login";
-                }}
-                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 font-semibold text-rose-700"
-              >
-                Cerrar sesión
-              </button>
-              <button
-                type="button"
-                onClick={() => setNocMode((prev) => !prev)}
-                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-              >
-                Modo NOC: {nocMode ? "ON" : "OFF"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCompactDensity((prev) => !prev)}
-                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-              >
-                Densidad: {compactDensity ? "Compacta" : "Normal"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setInfraExpanded((prev) => !prev)}
-                className="rounded-full border border-slate-200 bg-white px-2 py-1 font-semibold text-slate-600"
-              >
-                Infra: {infraExpanded ? "Visible" : "Colapsada"}
-              </button>
-            </div>
-          </nav>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Resumen Admin</p>
+          <h1 className="display-title text-lg sm:text-xl font-semibold text-slate-900">
+            Panel Ejecutivo Operación · Auditoría · Infraestructura
+          </h1>
+          <p className="text-xs text-slate-500">
+            Detalle operativo del dashboard. Los controles globales están en la navbar superior.
+          </p>
         </header>
 
         {loading ? (
