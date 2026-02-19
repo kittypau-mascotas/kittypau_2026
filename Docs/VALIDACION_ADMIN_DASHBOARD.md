@@ -2,6 +2,21 @@
 
 Fecha de validacion: 2026-02-12
 
+## Actualización (2026-02-19)
+- Caché operativo en `GET /api/admin/overview` con Upstash + invalidación por eventos críticos.
+- Variables de entorno revisadas:
+  - `ADMIN_OVERVIEW_CACHE_TTL_SEC` debe ser numérica (ej. `45`).
+  - Si el valor no es numérico, backend usa fallback `45`.
+- Admin dashboard ahora muestra catálogo de objetos (`table`/`view`) con:
+  - descripción, rows/size estimado y última actualización aproximada.
+- `% Supabase Utilizado` actualizado a consumo total:
+  - DB (tablas) + Storage (objetos).
+- Seguridad verificada:
+  - `/api/admin/overview` sin `Authorization` retorna `401`.
+  - `/api/bridge/health-check` sin `x-bridge-token` retorna `401`.
+- Nota de operación:
+  - Para forzar datos frescos en validación puntual: usar `?no_cache=1`.
+
 ## 1) Verificacion en Vercel CLI
 Comando:
 ```bash
@@ -86,3 +101,28 @@ Invoke-RestMethod -Method Post `
 Esperado:
 - `200` si se ejecuta.
 - Se registra `admin_health_check_run` en `audit_events`.
+
+## 9) Validacion nueva (catalogo KPCL y stats robustos)
+Aplicar migraciones nuevas:
+```bash
+npx supabase db push
+```
+
+Incluye:
+- `20260220001500_finance_kpcl_catalog.sql`
+- `20260220003000_admin_object_stats_hardened.sql`
+
+Checks:
+1. `GET /api/admin/overview` responde con `kpcl_catalog`.
+2. `GET /api/admin/finance/kpcl-catalog` responde `200`.
+3. Si falla `admin_object_stats_live`, `/api/admin/overview` sigue entregando `db_object_stats` via fallback RPC.
+
+## 10) Validacion suite de tests admin
+Endpoint:
+- `POST /api/admin/tests/run-all`
+- `GET /api/admin/tests/run-all`
+
+Esperado:
+1. El POST retorna `status`, `failed_count`, `total_count`, `results`.
+2. Si hay errores (`failed_count > 0`), se registra evento `admin_test_suite_failed` en `audit_events`.
+3. El GET lista historial de errores recientes para render en dashboard.

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, logRequestEnd, startRequestTimer } from "../../_utils";
 import { logAudit } from "../../_audit";
+import { bumpAdminOverviewCacheVersion } from "../../_cache";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
@@ -244,6 +245,7 @@ export async function GET(req: NextRequest) {
   }
 
   const ok = offline.length === 0 && (data?.length ?? 0) > 0;
+  await bumpAdminOverviewCacheVersion();
   logRequestEnd(req, startedAt, 200, {
     ok,
     offline_count: offline.length,

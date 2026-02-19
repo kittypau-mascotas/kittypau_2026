@@ -209,15 +209,21 @@
 - Tests: scripts DB/API y onboarding backend, checklist Postman/Newman.
 
 
-## Pendientes prioritarios
-- Front: implementar `/pet`, `/bowl`, `/settings` y ruta `/register` (además del popup).
-- Front: integrar Realtime en `/today` y `/story`.
-- Auth: resolver envío de confirmaciones (SMTP o desactivar confirmación).
-- Observabilidad IoT: consolidar health-checks, estado vivo y métricas operativas de bridge/KPCL.
-- Monitoreo de disponibilidad: detección y trazabilidad de offline por timeout.
-- Gestión de incidentes: apertura/cierre de incidentes generales en `audit_events`.
-- Hardening backend: validaciones de transición de estado y consistencia de IDs.
-- Operación DevOps/Platform: checklist Vercel + Supabase + bridge para operación continua.
+## Pendientes prioritarios (actualizado)
+- Seguridad: rotar secretos expuestos (service role, MQTT, tokens) y regenerar credenciales de prueba.
+- Admin Cloud Costing: integrar costo real de HiveMQ por API (actualmente simulación proporcional por MB/horas).
+- Finanzas KPCL: completado en código/base de datos (`finance_kpcl_profiles` + `finance_kpcl_profile_components` + endpoint admin).
+- Admin release hygiene: consolidar cambios pendientes en commits por bloque (UI/API, SQL, docs) y dejar changelog.
+- Observabilidad IoT: mantener health-check operativo y revisar alertas automáticas por timeout/offline en producción.
+
+## Cierre técnico (2026-02-19)
+- Dashboard admin reorganizado por prioridad operativa y mobile-first.
+- KPIs ejecutivos unificados en bloque superior.
+- Catálogo financiero KPCL servido desde backend y persistido en DB.
+- Fallback robusto para métricas de tablas/vistas (`admin_object_stats_live` -> RPC `admin_object_stats()`).
+- Suite de tests admin integrada:
+  - botón "Correr todos los tests" en UI,
+  - historial de errores persistido en `audit_events`.
 
 
 
@@ -278,3 +284,17 @@
   - incluye preview de foto de perfil/mascota cuando existe.
   - CTA final: `Continuar al dashboard`.
 - Layout del popup ajustado para evitar scroll y espacios vacíos innecesarios en desktop.
+
+## Actualizado (2026-02-19) - Hardening Admin + Advisor
+- Admin dashboard con cache Upstash en `GET /api/admin/overview` (TTL configurable por `ADMIN_OVERVIEW_CACHE_TTL_SEC`).
+- Invalidacion de cache en `admin/health-check`, `bridge/heartbeat` y `bridge/health-check`.
+- Fallback de TTL agregado: si el valor no es numerico, backend usa `45s`.
+- Loader admin actualizado con logo Kittypau + porcentaje de carga.
+- Migracion aplicada para findings de Supabase Advisor:
+  - `supabase/migrations/20260219193000_hardening_advisor_findings.sql`
+- Catalogo admin de tablas/vistas integrado en dashboard:
+  - nombre de objeto, tipo, descripcion, rows/size estimado y ultima actualizacion.
+- `% Supabase utilizado` ahora calcula total real:
+  - DB (tablas) + Storage (objetos).
+- Fix aplicado al catalogo admin para evitar error 500 por tablas sin `created_at/updated_at`:
+  - `supabase/migrations/20260219202000_fix_admin_object_stats_timestamp_columns.sql`

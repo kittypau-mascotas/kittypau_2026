@@ -68,12 +68,17 @@ export default function AppNav() {
         })
         .catch(() => undefined);
 
-      fetch("/api/admin/overview?audit_limit=1", {
+      fetch("/api/admin/access", {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => {
+        .then(async (res) => {
           if (!isMounted) return;
-          setIsAdmin(res.ok);
+          if (!res.ok) {
+            setIsAdmin(false);
+            return;
+          }
+          const payload = await res.json().catch(() => null);
+          setIsAdmin(Boolean(payload?.is_admin));
         })
         .catch(() => {
           if (isMounted) setIsAdmin(false);

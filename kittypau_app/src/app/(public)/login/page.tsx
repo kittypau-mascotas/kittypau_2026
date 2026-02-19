@@ -329,11 +329,14 @@ export default function LoginPage() {
 
     let targetPath = "/today";
     try {
-      const adminRes = await fetch("/api/admin/overview?audit_limit=1", {
+      const adminRes = await fetch("/api/admin/access", {
         headers: { Authorization: `Bearer ${data.session.access_token}` },
       });
       if (adminRes.ok) {
-        targetPath = "/admin";
+        const adminPayload = await adminRes.json();
+        if (adminPayload?.is_admin === true) {
+          targetPath = "/admin";
+        }
       }
     } catch {
       // If admin check fails, keep default user route.

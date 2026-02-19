@@ -124,9 +124,26 @@ Todos deben:
 
 ## Estado
 - Documento de diseño: listo.
-- Implementación: pendiente (prioridad alta, bloque "admin").
+- Implementación: en producción parcial.
+  - Portal admin operativo en `/admin`.
+  - KPIs, continuidad, auditoría y costos financieros visibles.
+  - Suite de tests admin integrada en dashboard.
+  - Pendiente externo: rotación de claves y costos reales HiveMQ.
 
 ## Incremento aplicado (MVP Ops)
 - Filtros básicos para `audit_events` (críticos/bridge/dispositivos/outages/todos).
 - Ventana de tiempo configurable (15 min, 60 min, 3 h, 24 h).
 - Deduplicación en backend por ventana corta (por defecto 30s) para evitar spam de eventos repetidos.
+
+## Incremento propuesto (Finanzas v1)
+- Agregar container final "Resumen de Finanzas" en `/admin`.
+- Basar datos en:
+  - `public.finance_kit_components`
+  - `public.finance_provider_plans`
+  - `public.finance_monthly_snapshots`
+  - `public.finance_admin_summary`
+- Mostrar:
+  - costo unitario estimado,
+  - costo cloud mensual,
+  - costo mensual total,
+  - estado de planes Supabase/Vercel/HiveMQ (free/pago + activo).

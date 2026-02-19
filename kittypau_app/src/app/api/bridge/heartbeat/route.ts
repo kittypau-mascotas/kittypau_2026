@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, enforceBodySize, logRequestEnd, startRequestTimer } from "../../_utils";
 import { logAudit } from "../../_audit";
+import { bumpAdminOverviewCacheVersion } from "../../_cache";
 
 type HeartbeatPayload = {
   bridge_id?: string;
@@ -138,6 +139,8 @@ export async function POST(req: NextRequest) {
       },
     });
   }
+
+  await bumpAdminOverviewCacheVersion();
 
   logRequestEnd(req, startedAt, 200, { bridge_id: bridgeId });
   return NextResponse.json({ ok: true, bridge_id: bridgeId }, { status: 200 });
