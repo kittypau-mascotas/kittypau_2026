@@ -197,6 +197,15 @@ type AdminTestHistoryItem = {
   results: AdminTestResult[];
 };
 
+type SectionStatus = {
+  status: "ok" | "warning" | "critical";
+  score: number;
+  alerts: number;
+  updatedAt: string | null;
+  action: string;
+  kpis: Array<{ label: string; value: string }>;
+};
+
 function formatAgo(value: string) {
   const ts = Date.parse(value);
   if (!Number.isFinite(ts)) return "-";
@@ -251,6 +260,46 @@ function formatClp(value: number) {
     currency: "CLP",
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function SectionStatusCard({
+  title,
+  data,
+}: {
+  title: string;
+  data: SectionStatus;
+}) {
+  const styleByStatus: Record<SectionStatus["status"], string> = {
+    ok: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    warning: "border-amber-200 bg-amber-50 text-amber-800",
+    critical: "border-rose-200 bg-rose-50 text-rose-800",
+  };
+  const labelByStatus: Record<SectionStatus["status"], string> = {
+    ok: "Estable",
+    warning: "Atención",
+    critical: "Crítico",
+  };
+
+  return (
+    <div className={`mt-3 rounded-[var(--radius)] border px-3 py-2 ${styleByStatus[data.status]}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em]">{title}</p>
+        <span className="text-xs font-semibold">
+          {labelByStatus[data.status]} · {data.score}/100 · {data.alerts} alerta(s)
+        </span>
+      </div>
+      <div className="mt-2 grid gap-1 text-xs md:grid-cols-2">
+        {data.kpis.map((kpi) => (
+          <p key={`${title}-${kpi.label}`}>
+            <span className="font-semibold">{kpi.label}:</span> {kpi.value}
+          </p>
+        ))}
+      </div>
+      <p className="mt-2 text-[11px]">
+        Última actualización: {data.updatedAt ? formatAgo(data.updatedAt) : "-"} · Acción: {data.action}
+      </p>
+    </div>
+  );
 }
 
 const FX_CLP_PER_USD = 950;
@@ -404,33 +453,7 @@ export default function AdminPage() {
   const [lastTestRun, setLastTestRun] = useState<AdminTestRun | null>(null);
   const [testHistory, setTestHistory] = useState<AdminTestHistoryItem[]>([]);
   const [testRunnerMessage, setTestRunnerMessage] = useState<string | null>(null);
-  const [compactDensity, setCompactDensity] = useState(false);
-  const [nocMode, setNocMode] = useState(true);
-  const [infraExpanded, setInfraExpanded] = useState(false);
-
-  useEffect(() => {
-    const readBool = (key: string, fallback: boolean) => {
-      if (typeof window === "undefined") return fallback;
-      const raw = window.localStorage.getItem(key);
-      if (raw === "true") return true;
-      if (raw === "false") return false;
-      return fallback;
-    };
-
-    const applySettings = () => {
-      setNocMode(readBool("admin_ui_noc_mode", true));
-      setCompactDensity(readBool("admin_ui_density_compact", false));
-      setInfraExpanded(readBool("admin_ui_infra_expanded", false));
-    };
-
-    applySettings();
-
-    const onSettingsChanged = () => applySettings();
-    window.addEventListener("admin-ui-settings-changed", onSettingsChanged);
-    return () => {
-      window.removeEventListener("admin-ui-settings-changed", onSettingsChanged);
-    };
-  }, []);
+  const infraExpanded = true;
 
   useEffect(() => {
     let mounted = true;
@@ -630,21 +653,6 @@ export default function AdminPage() {
     }
     return alerts;
   }, [summary, activeGeneralOutage, registrationSummary, kpclDevices]);
-
-  const operationStatus = useMemo(() => {
-    if (criticalAlerts.length > 0) {
-      return {
-        label: "Atención",
-        tone: "text-rose-700 bg-rose-50 border-rose-200",
-        detail: "Hay alertas operativas activas.",
-      };
-    }
-    return {
-      label: "Operación estable",
-      tone: "text-emerald-700 bg-emerald-50 border-emerald-200",
-      detail: "No hay alertas críticas activas.",
-    };
-  }, [criticalAlerts]);
 
   const continuityChart = useMemo(() => {
     const rows = kpclHourlyStatus;
@@ -990,6 +998,238 @@ export default function AdminPage() {
     ];
   }, [summary, registrationSummary, supabaseStorage]);
 
+  const operationSectionStatus = useMemo<SectionStatus>(() => {
+    const onlinePct =
+      summary && summary.kpcl_total_devices > 0
+        ? (summary.kpcl_online_devices / summary.kpcl_total_devices) * 100
+        : 0;
+    const offline24h = summary?.kpcl_offline_devices ?? 0;
+    const alerts =
+      (onlinePct < 90 ? 1 : 0) +
+      (onlinePct < 80 ? 1 : 0) +
+      (offline24h > 2 ? 1 : 0) +
+      ((summary?.offline_events_last_24h ?? 0) > 0 ? 1 : 0);
+    const status: SectionStatus["status"] =
+      onlinePct < 80 || offline24h > 2 ? "critical" : onlinePct < 90 ? "warning" : "ok";
+    const score = Math.max(0, Math.min(100, Math.round(onlinePct - alerts * 7)));
+    return {
+      status,
+      score,
+      alerts,
+      updatedAt: summary?.generated_at ?? null,
+      action:
+        status === "critical"
+          ? "Revisar conectividad edge y firmware en KPCL offline."
+          : status === "warning"
+          ? "Monitorear reconexiones y última conexión."
+          : "Operación normal.",
+      kpis: [
+        { label: "KPCL online", value: `${summary?.kpcl_online_devices ?? 0}/${summary?.kpcl_total_devices ?? 0}` },
+        { label: "Offline >24h", value: `${offline24h}` },
+        { label: "Eventos offline 24h", value: `${summary?.offline_events_last_24h ?? 0}` },
+      ],
+    };
+  }, [summary]);
+
+  const auditSectionStatus = useMemo<SectionStatus>(() => {
+    const pending = registrationSummary?.pending_total ?? 0;
+    const stalled24h = registrationSummary?.stalled_24h ?? 0;
+    const failedAudit = events.filter(
+      (e) => e.event_type.includes("failed") || e.event_type.includes("error")
+    ).length;
+    const alerts = (pending > 3 ? 1 : 0) + (stalled24h > 2 ? 1 : 0) + (failedAudit > 0 ? 1 : 0);
+    const status: SectionStatus["status"] =
+      stalled24h > 2 || failedAudit > 0 ? "critical" : pending > 3 ? "warning" : "ok";
+    const score = Math.max(0, Math.min(100, 100 - pending * 4 - stalled24h * 8 - failedAudit * 3));
+    return {
+      status,
+      score,
+      alerts,
+      updatedAt: summary?.generated_at ?? null,
+      action:
+        status === "critical"
+          ? "Corregir onboarding y revisar inconsistencias pendientes."
+          : status === "warning"
+          ? "Reducir pendientes de registro."
+          : "Integridad de datos estable.",
+      kpis: [
+        { label: "Pendientes onboarding", value: `${pending}` },
+        { label: "Incompletos >24h", value: `${stalled24h}` },
+        { label: "Eventos de error", value: `${failedAudit}` },
+      ],
+    };
+  }, [registrationSummary, events, summary?.generated_at]);
+
+  const infraSectionStatus = useMemo<SectionStatus>(() => {
+    const bridgeOffline = summary?.bridge_offline ?? 0;
+    const dbUsage = supabaseStorage?.used_percent ?? 0;
+    const alerts = (bridgeOffline > 0 ? 1 : 0) + (dbUsage > 75 ? 1 : 0) + (dbUsage > 90 ? 1 : 0);
+    const status: SectionStatus["status"] =
+      bridgeOffline > 0 || dbUsage > 90 ? "critical" : dbUsage > 75 ? "warning" : "ok";
+    const score = Math.max(0, Math.min(100, 100 - bridgeOffline * 25 - Math.max(0, dbUsage - 70)));
+    return {
+      status,
+      score,
+      alerts,
+      updatedAt: summary?.generated_at ?? null,
+      action:
+        status === "critical"
+          ? "Priorizar capacidad/bridge antes de degradación."
+          : status === "warning"
+          ? "Monitorear uso de DB y crecimiento de datos."
+          : "Infraestructura estable.",
+      kpis: [
+        { label: "Bridge activo", value: `${summary?.bridge_active ?? 0}/${summary?.bridge_total ?? 0}` },
+        { label: "Uso Supabase", value: `${dbUsage}%` },
+        { label: "DB total", value: `${supabaseStorage?.used_mb ?? 0}MB/${supabaseStorage?.plan_mb ?? 0}MB` },
+      ],
+    };
+  }, [summary, supabaseStorage]);
+
+  const financeSectionStatus = useMemo<SectionStatus>(() => {
+    const avgMb = kpclFinancialRows.length
+      ? kpclFinancialRows.reduce((acc, row) => acc + row.mb28d, 0) / kpclFinancialRows.length
+      : 0;
+    const opex = financeSummary?.total_cost_usd ?? 0;
+    const alerts = (avgMb > 10 ? 1 : 0) + (opex > 50 ? 1 : 0);
+    const status: SectionStatus["status"] = opex > 50 ? "critical" : avgMb > 10 ? "warning" : "ok";
+    const score = Math.max(0, Math.min(100, Math.round(100 - avgMb * 3 - alerts * 10)));
+    return {
+      status,
+      score,
+      alerts,
+      updatedAt: financeSummary?.generated_at ?? null,
+      action:
+        status === "critical"
+          ? "Revisar estructura de costos y consumo por dispositivo."
+          : status === "warning"
+          ? "Optimizar firmware en nodos de alto tráfico."
+          : "Costo operativo controlado.",
+      kpis: [
+        { label: "Opex mensual", value: `USD ${opex.toFixed(2)}` },
+        { label: "MB prom/KPCL", value: `${avgMb.toFixed(2)}MB` },
+        { label: "BOM unitario", value: `USD ${(financeSummary?.bom_unit_cost_usd ?? 0).toFixed(2)}` },
+      ],
+    };
+  }, [kpclFinancialRows, financeSummary]);
+
+  const testsSectionStatus = useMemo<SectionStatus>(() => {
+    const failed = lastTestRun?.failed_count ?? 0;
+    const total = lastTestRun?.total_count ?? 0;
+    const lastRunAt = lastTestRun?.generated_at ?? testHistory[0]?.created_at ?? null;
+    const staleRun =
+      lastRunAt !== null ? Date.now() - Date.parse(lastRunAt) > 24 * 60 * 60 * 1000 : true;
+    const alerts = (failed > 0 ? 1 : 0) + (staleRun ? 1 : 0);
+    const status: SectionStatus["status"] = failed > 0 ? "critical" : staleRun ? "warning" : "ok";
+    const score = total > 0 ? Math.max(0, Math.round(((total - failed) / total) * 100)) : 80;
+    return {
+      status,
+      score,
+      alerts,
+      updatedAt: lastRunAt,
+      action:
+        status === "critical"
+          ? "Corregir tests fallidos antes de cambios productivos."
+          : status === "warning"
+          ? "Ejecutar suite para refrescar validación."
+          : "Suite en estado saludable.",
+      kpis: [
+        { label: "Tests OK", value: `${Math.max(0, total - failed)}/${total}` },
+        { label: "Fallidos", value: `${failed}` },
+        { label: "Historial errores", value: `${testHistory.length}` },
+      ],
+    };
+  }, [lastTestRun, testHistory]);
+
+  const businessModels = useMemo(() => {
+    const online = summary?.kpcl_online_devices ?? 0;
+    const total = Math.max(1, summary?.kpcl_total_devices ?? 0);
+    const onlinePct = Math.round((online / total) * 100);
+    const bomUnit = financeSummary?.bom_unit_cost_usd ?? 0;
+    const opexMonthly = financeSummary?.total_cost_usd ?? 0;
+    const opexPerActive = online > 0 ? opexMonthly / online : 0;
+    const churnAssumed = 0.06;
+    const cacAssumed = 20;
+    const arpuA = 9.9;
+    const ltvA = arpuA * (1 / churnAssumed);
+    const ltvCacA = cacAssumed > 0 ? ltvA / cacAssumed : 0;
+    const priceA = 59;
+    const priceB = 99;
+    const marginA = priceA - bomUnit;
+    const marginB = priceB - bomUnit;
+    const marginBPct = priceB > 0 ? (marginB / priceB) * 100 : 0;
+    const completionPct =
+      (registrationSummary?.total_profiles ?? 0) > 0
+        ? ((registrationSummary?.completed ?? 0) /
+            (registrationSummary?.total_profiles ?? 1)) *
+          100
+        : 0;
+    const conversionFreemium = Math.max(0, Math.round(completionPct * 0.15 * 10) / 10);
+
+    const cards = [
+      {
+        key: "model_a",
+        rank: 1,
+        title: "Camino A · Hardware + Suscripción",
+        why: "Prioridad actual: ingreso recurrente y valorización SaaS.",
+        status: ltvCacA >= 3 ? "Recomendado" : "Atención",
+        metrics: [
+          `LTV/CAC: ${ltvCacA.toFixed(1)}x (meta > 3x)`,
+          `MRR estimado: USD ${(online * arpuA).toFixed(2)}`,
+          `Margen hardware: USD ${marginA.toFixed(2)} por unidad`,
+        ],
+      },
+      {
+        key: "model_c",
+        rank: 2,
+        title: "Camino C · Freemium Escalable",
+        why: "Segundo paso: crecer base activa y convertir a premium.",
+        status: conversionFreemium >= 8 ? "Recomendado" : "Atención",
+        metrics: [
+          `Conversión proxy free→paid: ${conversionFreemium.toFixed(1)}% (meta > 8%)`,
+          `Retención proxy onboarding: ${completionPct.toFixed(1)}%`,
+          `Costo por activo: USD ${opexPerActive.toFixed(2)}`,
+        ],
+      },
+      {
+        key: "model_b",
+        rank: 3,
+        title: "Camino B · Hardware Premium sin Suscripción",
+        why: "Tercera prioridad: caja rápida, menor recurrencia.",
+        status: marginBPct > 45 ? "Viable" : "Margen bajo",
+        metrics: [
+          `Margen premium: ${marginBPct.toFixed(1)}% (meta > 45%)`,
+          `Margen por unidad: USD ${marginB.toFixed(2)}`,
+          `Dependencia de volumen: alta (sin MRR)`,
+        ],
+      },
+    ];
+
+    return cards.sort((a, b) => a.rank - b.rank);
+  }, [
+    summary,
+    financeSummary,
+    registrationSummary,
+  ]);
+
+  const scalingMetrics = useMemo(() => {
+    const infraMonthlyUsd = financePlans
+      .filter((p) => p.is_active)
+      .reduce((acc, p) => acc + Number(p.monthly_cost_usd ?? 0), 0);
+    const activeUsers = Math.max(1, summary?.kpcl_online_devices ?? 0);
+    const costPerActive = infraMonthlyUsd / activeUsers;
+    const costPer1000 = costPerActive * 1000;
+    const opexMonthly = financeSummary?.total_cost_usd ?? 0;
+    const marginIncremental = opexMonthly > 0 ? ((costPerActive * 100) / opexMonthly) : 0;
+
+    return {
+      infraMonthlyUsd,
+      costPerActive,
+      costPer1000,
+      marginIncremental,
+    };
+  }, [financePlans, summary?.kpcl_online_devices, financeSummary?.total_cost_usd]);
+
   const runAllAdminTests = async () => {
     const token = await getValidAccessToken();
     if (!token) {
@@ -1031,9 +1271,9 @@ export default function AdminPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-3 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10 ${compactDensity ? "admin-density-compact" : ""}`}>
-      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-5 lg:gap-6">
-        <header className="surface-card freeform-rise md:sticky md:top-3 z-20 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
+    <div className="admin-density-compact min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-3 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 lg:gap-5">
+        <header className="surface-card freeform-rise z-20 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur">
           <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Resumen Admin</p>
           <h1 className="display-title text-lg sm:text-xl font-semibold text-slate-900">
             Panel Ejecutivo Operación · Auditoría · Infraestructura
@@ -1181,6 +1421,59 @@ export default function AdminPage() {
               </div>
             </section>
 
+            <section className="surface-card freeform-rise order-2 px-4 py-4 sm:px-6 sm:py-5">
+              <h2 className="display-title text-xl font-semibold text-slate-900">
+                Modelos de Negocio
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Ranking estratégico para monetizar KittyPau con los datos reales actuales.
+              </p>
+              <div className="mt-3 grid gap-3 lg:grid-cols-3">
+                {businessModels.map((card) => (
+                  <article
+                    key={card.key}
+                    className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-slate-900">{card.title}</p>
+                      <span className="rounded-full border border-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                        #{card.rank} · {card.status}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-xs font-semibold text-slate-700">{card.why}</p>
+                    <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                      {card.metrics.map((metric) => (
+                        <li key={`${card.key}-${metric}`}>{metric}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+              <div className="mt-4 rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                  4) Escalamiento (métricas operativas)
+                </p>
+                <div className="mt-2 grid gap-2 text-xs text-slate-700 md:grid-cols-4">
+                  <p>
+                    <span className="font-semibold">Infra mensual:</span> USD{" "}
+                    {scalingMetrics.infraMonthlyUsd.toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Costo/usuario activo:</span> USD{" "}
+                    {scalingMetrics.costPerActive.toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Costo por 1.000:</span> USD{" "}
+                    {scalingMetrics.costPer1000.toFixed(2)}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Carga incremental:</span>{" "}
+                    {scalingMetrics.marginIncremental.toFixed(1)}%
+                  </p>
+                </div>
+              </div>
+            </section>
+
             <div className="flex flex-col gap-6">
             <section className="surface-card freeform-rise order-0 px-4 py-4 sm:px-6 sm:py-5">
               <h2 className="display-title text-xl font-semibold text-slate-900">
@@ -1189,15 +1482,7 @@ export default function AdminPage() {
               <p className="mt-1 text-xs text-slate-500">
                 Estado operativo para cliente final: continuidad, disponibilidad y registros completos.
               </p>
-              {nocMode ? (
-                <div className={`mt-3 rounded-[var(--radius)] border px-3 py-2 text-sm font-semibold ${operationStatus.tone}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span>Semáforo operativo: {operationStatus.label}</span>
-                    <span className="text-xs">KPCL online {summary.kpcl_online_devices}/{summary.kpcl_total_devices}</span>
-                  </div>
-                  <p className="mt-1 text-xs font-medium">{operationStatus.detail}</p>
-                </div>
-              ) : null}
+              <SectionStatusCard title="Operación del Servicio" data={operationSectionStatus} />
             </section>
 
             {infraExpanded ? (
@@ -1208,6 +1493,7 @@ export default function AdminPage() {
               <p className="mt-1 text-xs text-slate-500">
                 Estimacion operativa: BOM, costos cloud y snapshot mensual.
               </p>
+              <SectionStatusCard title="Finanzas Operativas" data={financeSectionStatus} />
               <div className="mt-4 grid gap-3 md:grid-cols-4">
                 <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
                   <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">BOM unitario</p>
@@ -1988,6 +2274,7 @@ export default function AdminPage() {
               <p className="mt-1 text-xs text-slate-500">
                 Calidad y trazabilidad de datos: registros pendientes, eventos y validaciones.
               </p>
+              <SectionStatusCard title="Auditoría e Integridad" data={auditSectionStatus} />
             </section>
 
             <section className="order-7 grid gap-4 xl:grid-cols-2">
@@ -2084,6 +2371,7 @@ export default function AdminPage() {
               <p className="mt-1 text-xs text-slate-500">
                 Salud técnica de plataforma IoT: bridge, dispositivos, uso de servicios y capacidad.
               </p>
+              <SectionStatusCard title="Infraestructura y Telemetría" data={infraSectionStatus} />
             </section>
 
             {infraExpanded ? (
@@ -2202,6 +2490,7 @@ export default function AdminPage() {
                   <p className="mt-1 text-xs text-slate-500">
                     Ejecuta validaciones de vistas, catálogos y fuentes del dashboard.
                   </p>
+                  <SectionStatusCard title="Calidad y Tests" data={testsSectionStatus} />
                 </div>
                 <button
                   type="button"

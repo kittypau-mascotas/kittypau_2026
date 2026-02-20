@@ -24,9 +24,6 @@ export default function AppNav() {
   const [adminRole, setAdminRole] = useState<string>("owner_admin");
   const [adminGeneratedAt, setAdminGeneratedAt] = useState<string | null>(null);
   const [adminFreshnessLabel, setAdminFreshnessLabel] = useState("Actualizado recientemente");
-  const [adminNocMode, setAdminNocMode] = useState(true);
-  const [adminCompactDensity, setAdminCompactDensity] = useState(false);
-  const [adminInfraExpanded, setAdminInfraExpanded] = useState(false);
 
   if (pathname?.startsWith("/registro")) {
     return null;
@@ -78,18 +75,6 @@ export default function AppNav() {
     if (!pathname?.startsWith("/admin")) return;
     let active = true;
 
-    const readBool = (key: string, fallback: boolean) => {
-      if (typeof window === "undefined") return fallback;
-      const raw = window.localStorage.getItem(key);
-      if (raw === "true") return true;
-      if (raw === "false") return false;
-      return fallback;
-    };
-
-    setAdminNocMode(readBool("admin_ui_noc_mode", true));
-    setAdminCompactDensity(readBool("admin_ui_density_compact", false));
-    setAdminInfraExpanded(readBool("admin_ui_infra_expanded", false));
-
     const formatFreshness = (isoValue: string | null) => {
       if (!isoValue) return "Actualizado recientemente";
       const ms = Date.now() - Date.parse(isoValue);
@@ -135,17 +120,6 @@ export default function AppNav() {
     };
   }, [pathname, adminGeneratedAt]);
 
-  const setAdminPreference = (key: string, value: boolean) => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(key, String(value));
-      window.dispatchEvent(
-        new CustomEvent("admin-ui-settings-changed", {
-          detail: { key, value },
-        })
-      );
-    }
-  };
-
   if (pathname?.startsWith("/admin")) {
     return (
       <nav className="app-nav">
@@ -169,39 +143,6 @@ export default function AppNav() {
               className="rounded-full border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"
             >
               Cerrar sesión
-            </button>
-            <button
-              type="button"
-              className="app-nav-admin-pill app-nav-admin-toggle"
-              onClick={() => {
-                const next = !adminNocMode;
-                setAdminNocMode(next);
-                setAdminPreference("admin_ui_noc_mode", next);
-              }}
-            >
-              Modo NOC: {adminNocMode ? "ON" : "OFF"}
-            </button>
-            <button
-              type="button"
-              className="app-nav-admin-pill app-nav-admin-toggle"
-              onClick={() => {
-                const next = !adminCompactDensity;
-                setAdminCompactDensity(next);
-                setAdminPreference("admin_ui_density_compact", next);
-              }}
-            >
-              Densidad: {adminCompactDensity ? "Compacta" : "Normal"}
-            </button>
-            <button
-              type="button"
-              className="app-nav-admin-pill app-nav-admin-toggle"
-              onClick={() => {
-                const next = !adminInfraExpanded;
-                setAdminInfraExpanded(next);
-                setAdminPreference("admin_ui_infra_expanded", next);
-              }}
-            >
-              Infra: {adminInfraExpanded ? "Visible" : "Colapsada"}
             </button>
           </div>
         </div>
