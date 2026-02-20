@@ -1466,6 +1466,23 @@ export default function AdminPage() {
                   </p>
                 </div>
               </div>
+              <div className="mt-3 grid gap-3 lg:grid-cols-3">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs text-slate-700">
+                  <p className="font-semibold text-slate-900">Fase 1 (actual): Camino A</p>
+                  <p className="mt-1">Objetivo: ingreso recurrente y LTV/CAC &gt; 3.</p>
+                  <p className="mt-1 text-slate-500">KPI crítico: LTV/CAC y MRR.</p>
+                </article>
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs text-slate-700">
+                  <p className="font-semibold text-slate-900">Fase 2: Camino C</p>
+                  <p className="mt-1">Objetivo: escalar base activa con conversión freemium.</p>
+                  <p className="mt-1 text-slate-500">KPI crítico: conversión free→paid &gt; 8%.</p>
+                </article>
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs text-slate-700">
+                  <p className="font-semibold text-slate-900">Fase 3: Camino B / B2B</p>
+                  <p className="mt-1">Objetivo: caja táctica y expansión (veterinarias/seguros).</p>
+                  <p className="mt-1 text-slate-500">KPI crítico: margen premium &gt; 45%.</p>
+                </article>
+              </div>
             </section>
 
             <div className="flex flex-col gap-6">
