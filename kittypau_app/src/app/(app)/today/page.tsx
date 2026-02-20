@@ -502,6 +502,14 @@ export default function TodayPage() {
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
   };
+  const sensorTempText =
+    latestReading?.temperature !== null && latestReading?.temperature !== undefined
+      ? `${latestReading.temperature}°C`
+      : "N/D";
+  const sensorHumidityText =
+    latestReading?.humidity !== null && latestReading?.humidity !== undefined
+      ? `${latestReading.humidity}%`
+      : "N/D";
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
     off: "bg-rose-500 border-rose-400",
@@ -553,6 +561,8 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
+                      <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
                     </div>
                   </div>
                   <div className="h-28 overflow-hidden">
@@ -588,6 +598,8 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
+                      <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
                     </div>
                   </div>
                   <div className="h-28 overflow-hidden">
