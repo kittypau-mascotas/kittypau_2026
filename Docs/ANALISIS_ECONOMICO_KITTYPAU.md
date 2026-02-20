@@ -192,3 +192,35 @@ Ajuste por modelos:
 
 El dashboard admin debe recalcular estas metricas ante cambios de costos cloud, componentes y suscripciones.
 
+## 16. Valorizacion de Kittypau como empresa SaaS
+La valorizacion se estima por multiplo SaaS sobre ingresos recurrentes.
+
+Base:
+- `MRR = usuarios_premium * precio_mensual`
+- `ARR = MRR * 12`
+- `valor_saas = ARR * multiplo_saas`
+
+Variables clave:
+- churn mensual,
+- ARPU,
+- LTV,
+- CAC,
+- relacion `LTV/CAC`.
+
+Formulas:
+- `LTV = ARPU * (1 / churn)`
+- `LTV/CAC = LTV / CAC`
+
+Regla de calidad:
+- objetivo operativo: `LTV/CAC > 3`.
+- si churn sube, baja LTV y baja valorizacion esperada.
+
+En Freemium:
+- `ARPU_freemium = ingresos_mensuales / usuarios_activos`
+- aproximacion: `ARPU_freemium ~ precio_premium * conversion_free_to_paid`.
+
+Salidas de simulador:
+- valorizacion estimada a 6 meses,
+- valorizacion estimada a 12 meses,
+- sensibilidad por cambios de precio/churn/CAC.
+

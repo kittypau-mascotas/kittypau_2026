@@ -149,6 +149,33 @@ type FinanceSummary = {
   unit_cost_usd: number;
 };
 
+type FinanceBreakdown = {
+  snapshot_month: string | null;
+  units_produced: number;
+  bom_cost_total_usd: number;
+  manufacturing_cost_total_usd: number;
+  cloud_cost_total_usd: number;
+  logistics_cost_total_usd: number;
+  support_cost_total_usd: number;
+  warranty_cost_total_usd: number;
+  total_cost_usd: number;
+  unit_cost_usd: number;
+  updated_at: string;
+};
+
+type FinanceBreakEven = {
+  plate_price_usd: number | null;
+  subscription_price_usd: number | null;
+  cac_usd: number | null;
+  churn_monthly: number | null;
+  margin_per_unit_usd: number | null;
+  fixed_monthly_usd: number;
+  break_even_units: number | null;
+  ltv_usd: number | null;
+  ltv_cac_ratio: number | null;
+  source: "env_config" | "partial_config";
+};
+
 type FinancePlan = {
   provider: string;
   plan_name: string;
@@ -427,6 +454,8 @@ export default function AdminPage() {
   const [supabaseStorage, setSupabaseStorage] = useState<SupabaseStorageSummary | null>(null);
   const [vercelUsage, setVercelUsage] = useState<VercelUsageSummary | null>(null);
   const [financeSummary, setFinanceSummary] = useState<FinanceSummary | null>(null);
+  const [financeBreakdown, setFinanceBreakdown] = useState<FinanceBreakdown | null>(null);
+  const [financeBreakEven, setFinanceBreakEven] = useState<FinanceBreakEven | null>(null);
   const [financePlans, setFinancePlans] = useState<FinancePlan[]>([]);
   const [dbObjectStats, setDbObjectStats] = useState<DbObjectStat[]>([]);
   const [kpclCatalog, setKpclCatalog] = useState<KpclCatalogPayload>(
@@ -543,6 +572,8 @@ export default function AdminPage() {
         );
         setVercelUsage((payload.vercel_usage ?? null) as VercelUsageSummary | null);
         setFinanceSummary((payload.finance_summary ?? null) as FinanceSummary | null);
+        setFinanceBreakdown((payload.finance_breakdown ?? null) as FinanceBreakdown | null);
+        setFinanceBreakEven((payload.finance_break_even ?? null) as FinanceBreakEven | null);
         setFinancePlans((payload.finance_plans ?? []) as FinancePlan[]);
         setDbObjectStats((payload.db_object_stats ?? []) as DbObjectStat[]);
         setKpclCatalog(
@@ -1090,15 +1121,17 @@ export default function AdminPage() {
     const avgMb = kpclFinancialRows.length
       ? kpclFinancialRows.reduce((acc, row) => acc + row.mb28d, 0) / kpclFinancialRows.length
       : 0;
-    const opex = financeSummary?.total_cost_usd ?? 0;
-    const alerts = (avgMb > 10 ? 1 : 0) + (opex > 50 ? 1 : 0);
-    const status: SectionStatus["status"] = opex > 50 ? "critical" : avgMb > 10 ? "warning" : "ok";
+    const opex = financeBreakdown?.total_cost_usd ?? financeSummary?.total_cost_usd ?? 0;
+    const warranty = financeBreakdown?.warranty_cost_total_usd ?? 0;
+    const alerts = (avgMb > 10 ? 1 : 0) + (opex > 50 ? 1 : 0) + (warranty > 0 ? 1 : 0);
+    const status: SectionStatus["status"] =
+      opex > 50 ? "critical" : avgMb > 10 || warranty > 0 ? "warning" : "ok";
     const score = Math.max(0, Math.min(100, Math.round(100 - avgMb * 3 - alerts * 10)));
     return {
       status,
       score,
       alerts,
-      updatedAt: financeSummary?.generated_at ?? null,
+      updatedAt: financeBreakdown?.updated_at ?? financeSummary?.generated_at ?? null,
       action:
         status === "critical"
           ? "Revisar estructura de costos y consumo por dispositivo."
@@ -1108,10 +1141,11 @@ export default function AdminPage() {
       kpis: [
         { label: "Opex mensual", value: `USD ${opex.toFixed(2)}` },
         { label: "MB prom/KPCL", value: `${avgMb.toFixed(2)}MB` },
+        { label: "Garantías", value: `USD ${warranty.toFixed(2)}` },
         { label: "BOM unitario", value: `USD ${(financeSummary?.bom_unit_cost_usd ?? 0).toFixed(2)}` },
       ],
     };
-  }, [kpclFinancialRows, financeSummary]);
+  }, [kpclFinancialRows, financeBreakdown, financeSummary]);
 
   const testsSectionStatus = useMemo<SectionStatus>(() => {
     const failed = lastTestRun?.failed_count ?? 0;
@@ -1146,15 +1180,12 @@ export default function AdminPage() {
     const total = Math.max(1, summary?.kpcl_total_devices ?? 0);
     const onlinePct = Math.round((online / total) * 100);
     const bomUnit = financeSummary?.bom_unit_cost_usd ?? 0;
-    const opexMonthly = financeSummary?.total_cost_usd ?? 0;
+    const opexMonthly = financeBreakdown?.total_cost_usd ?? financeSummary?.total_cost_usd ?? 0;
     const opexPerActive = online > 0 ? opexMonthly / online : 0;
-    const churnAssumed = 0.06;
-    const cacAssumed = 20;
-    const arpuA = 9.9;
-    const ltvA = arpuA * (1 / churnAssumed);
-    const ltvCacA = cacAssumed > 0 ? ltvA / cacAssumed : 0;
-    const priceA = 59;
-    const priceB = 99;
+    const ltvCacA = financeBreakEven?.ltv_cac_ratio ?? 0;
+    const subscriptionPrice = financeBreakEven?.subscription_price_usd ?? 0;
+    const priceA = financeBreakEven?.plate_price_usd ?? 0;
+    const priceB = financeBreakEven?.plate_price_usd ?? 0;
     const marginA = priceA - bomUnit;
     const marginB = priceB - bomUnit;
     const marginBPct = priceB > 0 ? (marginB / priceB) * 100 : 0;
@@ -1174,9 +1205,15 @@ export default function AdminPage() {
         why: "Prioridad actual: ingreso recurrente y valorización SaaS.",
         status: ltvCacA >= 3 ? "Recomendado" : "Atención",
         metrics: [
-          `LTV/CAC: ${ltvCacA.toFixed(1)}x (meta > 3x)`,
-          `MRR estimado: USD ${(online * arpuA).toFixed(2)}`,
-          `Margen hardware: USD ${marginA.toFixed(2)} por unidad`,
+          financeBreakEven?.ltv_cac_ratio !== null && financeBreakEven?.ltv_cac_ratio !== undefined
+            ? `LTV/CAC: ${ltvCacA.toFixed(1)}x (meta > 3x)`
+            : "LTV/CAC: N/D (configurar CAC/churn/suscripción)",
+          subscriptionPrice > 0
+            ? `MRR proxy real: USD ${(online * subscriptionPrice).toFixed(2)}`
+            : "MRR proxy: N/D (falta precio suscripción)",
+          priceA > 0
+            ? `Margen hardware: USD ${marginA.toFixed(2)} por unidad`
+            : "Margen hardware: N/D (falta precio plato)",
         ],
       },
       {
@@ -1198,8 +1235,12 @@ export default function AdminPage() {
         why: "Tercera prioridad: caja rápida, menor recurrencia.",
         status: marginBPct > 45 ? "Viable" : "Margen bajo",
         metrics: [
-          `Margen premium: ${marginBPct.toFixed(1)}% (meta > 45%)`,
-          `Margen por unidad: USD ${marginB.toFixed(2)}`,
+          priceB > 0
+            ? `Margen premium: ${marginBPct.toFixed(1)}% (meta > 45%)`
+            : "Margen premium: N/D (falta precio plato)",
+          priceB > 0
+            ? `Margen por unidad: USD ${marginB.toFixed(2)}`
+            : "Margen por unidad: N/D",
           `Dependencia de volumen: alta (sin MRR)`,
         ],
       },
@@ -1209,6 +1250,8 @@ export default function AdminPage() {
   }, [
     summary,
     financeSummary,
+    financeBreakdown,
+    financeBreakEven,
     registrationSummary,
   ]);
 
@@ -1219,7 +1262,7 @@ export default function AdminPage() {
     const activeUsers = Math.max(1, summary?.kpcl_online_devices ?? 0);
     const costPerActive = infraMonthlyUsd / activeUsers;
     const costPer1000 = costPerActive * 1000;
-    const opexMonthly = financeSummary?.total_cost_usd ?? 0;
+    const opexMonthly = financeBreakdown?.total_cost_usd ?? financeSummary?.total_cost_usd ?? 0;
     const marginIncremental = opexMonthly > 0 ? ((costPerActive * 100) / opexMonthly) : 0;
 
     return {
@@ -1228,7 +1271,51 @@ export default function AdminPage() {
       costPer1000,
       marginIncremental,
     };
-  }, [financePlans, summary?.kpcl_online_devices, financeSummary?.total_cost_usd]);
+  }, [financePlans, summary?.kpcl_online_devices, financeBreakdown?.total_cost_usd, financeSummary?.total_cost_usd]);
+
+  const saasValuation = useMemo(() => {
+    const premiumUsersProxy = summary?.kpcl_online_devices ?? 0;
+    const activeUsersProxy = Math.max(1, summary?.kpcl_total_devices ?? 0);
+    const subscriptionPrice = financeBreakEven?.subscription_price_usd ?? null;
+    const churn = financeBreakEven?.churn_monthly ?? null;
+    const cac = financeBreakEven?.cac_usd ?? null;
+
+    const mrr = subscriptionPrice ? premiumUsersProxy * subscriptionPrice : null;
+    const arr = mrr !== null ? mrr * 12 : null;
+    const arpuFreemium =
+      subscriptionPrice && activeUsersProxy > 0
+        ? (premiumUsersProxy / activeUsersProxy) * subscriptionPrice
+        : null;
+    const ltv = arpuFreemium !== null && churn && churn > 0 ? arpuFreemium * (1 / churn) : null;
+    const ltvCac = ltv !== null && cac && cac > 0 ? ltv / cac : null;
+
+    const saasMultiple = (() => {
+      if (ltvCac === null) return null;
+      if (ltvCac >= 4 && (churn ?? 1) <= 0.05) return 6;
+      if (ltvCac >= 3) return 4.5;
+      return 3;
+    })();
+
+    const mrrGrowthMonthly = 0.03;
+    const mrr6 = mrr !== null ? mrr * (1 + mrrGrowthMonthly) ** 6 : null;
+    const mrr12 = mrr !== null ? mrr * (1 + mrrGrowthMonthly) ** 12 : null;
+    const ev6 = mrr6 !== null && saasMultiple !== null ? mrr6 * 12 * saasMultiple : null;
+    const ev12 = mrr12 !== null && saasMultiple !== null ? mrr12 * 12 * saasMultiple : null;
+
+    return {
+      premiumUsersProxy,
+      activeUsersProxy,
+      mrr,
+      arr,
+      arpuFreemium,
+      ltv,
+      cac,
+      ltvCac,
+      saasMultiple,
+      ev6,
+      ev12,
+    };
+  }, [summary, financeBreakEven]);
 
   const runAllAdminTests = async () => {
     const token = await getValidAccessToken();
@@ -1466,6 +1553,50 @@ export default function AdminPage() {
                   </p>
                 </div>
               </div>
+              <div className="mt-3 rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                  Valorización SaaS (simulador)
+                </p>
+                <div className="mt-2 grid gap-2 text-xs text-slate-700 md:grid-cols-4">
+                  <p>
+                    <span className="font-semibold">MRR:</span>{" "}
+                    {saasValuation.mrr !== null ? `USD ${saasValuation.mrr.toFixed(2)}` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">ARR:</span>{" "}
+                    {saasValuation.arr !== null ? `USD ${saasValuation.arr.toFixed(2)}` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">ARPU Freemium:</span>{" "}
+                    {saasValuation.arpuFreemium !== null
+                      ? `USD ${saasValuation.arpuFreemium.toFixed(2)}`
+                      : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">LTV/CAC:</span>{" "}
+                    {saasValuation.ltvCac !== null ? `${saasValuation.ltvCac.toFixed(2)}x` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Múltiplo SaaS:</span>{" "}
+                    {saasValuation.saasMultiple !== null ? `${saasValuation.saasMultiple.toFixed(1)}x` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Valorización 6m:</span>{" "}
+                    {saasValuation.ev6 !== null ? `USD ${saasValuation.ev6.toFixed(2)}` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Valorización 12m:</span>{" "}
+                    {saasValuation.ev12 !== null ? `USD ${saasValuation.ev12.toFixed(2)}` : "N/D"}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Base usuarios:</span>{" "}
+                    {saasValuation.premiumUsersProxy}/{saasValuation.activeUsersProxy} (premium/activos proxy)
+                  </p>
+                </div>
+                <p className="mt-2 text-[11px] text-slate-500">
+                  Proyección con crecimiento MRR del 3% mensual y múltiplo ajustado por LTV/CAC y churn.
+                </p>
+              </div>
               <div className="mt-3 grid gap-3 lg:grid-cols-3">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3 text-xs text-slate-700">
                   <p className="font-semibold text-slate-900">Fase 1 (actual): Camino A</p>
@@ -1524,6 +1655,59 @@ export default function AdminPage() {
                     USD {(financeSummary?.unit_cost_usd ?? 0).toFixed(2)}
                   </p>
                 </div>
+              </div>
+              <div className="mt-3 grid gap-3 md:grid-cols-4">
+                <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Garantías</p>
+                  <p className="mt-2 text-xl font-semibold text-slate-900">
+                    USD {(financeBreakdown?.warranty_cost_total_usd ?? 0).toFixed(2)}
+                  </p>
+                </div>
+                <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Break-even (unid.)</p>
+                  <p className="mt-2 text-xl font-semibold text-slate-900">
+                    {financeBreakEven?.break_even_units !== null &&
+                    financeBreakEven?.break_even_units !== undefined
+                      ? financeBreakEven.break_even_units.toFixed(2)
+                      : "N/D"}
+                  </p>
+                </div>
+                <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Margen por unidad</p>
+                  <p className="mt-2 text-xl font-semibold text-slate-900">
+                    {financeBreakEven?.margin_per_unit_usd !== null &&
+                    financeBreakEven?.margin_per_unit_usd !== undefined
+                      ? `USD ${financeBreakEven.margin_per_unit_usd.toFixed(2)}`
+                      : "N/D"}
+                  </p>
+                </div>
+                <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">LTV/CAC</p>
+                  <p className="mt-2 text-xl font-semibold text-slate-900">
+                    {financeBreakEven?.ltv_cac_ratio !== null &&
+                    financeBreakEven?.ltv_cac_ratio !== undefined
+                      ? `${financeBreakEven.ltv_cac_ratio.toFixed(2)}x`
+                      : "N/D"}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 rounded-[var(--radius)] border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-700">Break-even (modelo operativo)</p>
+                <p className="mt-1">
+                  Costos fijos mensuales usados: USD {(financeBreakEven?.fixed_monthly_usd ?? 0).toFixed(2)} ·
+                  Precio plato:{" "}
+                  {financeBreakEven?.plate_price_usd ? `USD ${financeBreakEven.plate_price_usd.toFixed(2)}` : "N/D"} ·
+                  Suscripción:{" "}
+                  {financeBreakEven?.subscription_price_usd
+                    ? `USD ${financeBreakEven.subscription_price_usd.toFixed(2)}`
+                    : "N/D"}.
+                </p>
+                <p className="mt-1 text-slate-500">
+                  Fuente de configuración:{" "}
+                  {financeBreakEven?.source === "env_config"
+                    ? "variables de entorno completas"
+                    : "parcial (faltan precio/CAC/churn o suscripción)"}.
+                </p>
               </div>
               <div className="mt-4 md:hidden space-y-2">
                 {financePlans.length ? (

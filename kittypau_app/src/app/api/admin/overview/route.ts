@@ -60,6 +60,20 @@ type FinanceSummaryRow = {
   unit_cost_usd: number | null;
 };
 
+type FinanceMonthlySnapshotRow = {
+  snapshot_month: string;
+  units_produced: number;
+  bom_cost_total_usd: number;
+  manufacturing_cost_total_usd: number;
+  cloud_cost_total_usd: number;
+  logistics_cost_total_usd: number;
+  support_cost_total_usd: number;
+  warranty_cost_total_usd: number;
+  total_cost_usd: number;
+  unit_cost_usd: number;
+  updated_at: string;
+};
+
 type FinanceProviderRow = {
   provider: string;
   plan_name: string;
@@ -326,6 +340,7 @@ export async function GET(req: NextRequest) {
     { data: objectStats, error: objectStatsError },
     { data: financeSummaryRow, error: financeSummaryError },
     { data: financeProviders, error: financeProvidersError },
+    { data: financeMonthlySnapshotRow, error: financeMonthlySnapshotError },
     { data: kpclCatalogProfiles, error: kpclCatalogProfilesError },
     { data: kpclCatalogComponents, error: kpclCatalogComponentsError },
   ] = await Promise.all([
@@ -417,6 +432,14 @@ export async function GET(req: NextRequest) {
         )
         .eq("is_active", true)
         .order("provider", { ascending: true }),
+      supabaseServer
+        .from("finance_monthly_snapshots")
+        .select(
+          "snapshot_month, units_produced, bom_cost_total_usd, manufacturing_cost_total_usd, cloud_cost_total_usd, logistics_cost_total_usd, support_cost_total_usd, warranty_cost_total_usd, total_cost_usd, unit_cost_usd, updated_at"
+        )
+        .order("snapshot_month", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
       supabaseServer
         .from("finance_kpcl_profiles")
         .select(
@@ -820,6 +843,72 @@ export async function GET(req: NextRequest) {
     ? []
     : (financeProviders as FinanceProviderRow[] | null) ?? [];
 
+  const financeBreakdown = (() => {
+    if (financeMonthlySnapshotError || !financeMonthlySnapshotRow) return null;
+    const row = financeMonthlySnapshotRow as FinanceMonthlySnapshotRow;
+    return {
+      snapshot_month: row.snapshot_month,
+      units_produced: Number(row.units_produced ?? 0),
+      bom_cost_total_usd: Number(row.bom_cost_total_usd ?? 0),
+      manufacturing_cost_total_usd: Number(row.manufacturing_cost_total_usd ?? 0),
+      cloud_cost_total_usd: Number(row.cloud_cost_total_usd ?? 0),
+      logistics_cost_total_usd: Number(row.logistics_cost_total_usd ?? 0),
+      support_cost_total_usd: Number(row.support_cost_total_usd ?? 0),
+      warranty_cost_total_usd: Number(row.warranty_cost_total_usd ?? 0),
+      total_cost_usd: Number(row.total_cost_usd ?? 0),
+      unit_cost_usd: Number(row.unit_cost_usd ?? 0),
+      updated_at: row.updated_at,
+    };
+  })();
+
+  const financeBreakEven = (() => {
+    const unitCost = financeBreakdown?.unit_cost_usd ?? financeSummary?.unit_cost_usd ?? 0;
+    const fixedMonthly =
+      (financeBreakdown?.cloud_cost_total_usd ?? 0) +
+      (financeBreakdown?.logistics_cost_total_usd ?? 0) +
+      (financeBreakdown?.support_cost_total_usd ?? 0) +
+      (financeBreakdown?.warranty_cost_total_usd ?? 0);
+
+    const platePriceUsd = Number(process.env.ADMIN_KIT_PRICE_USD ?? 0);
+    const subscriptionPriceUsd = Number(process.env.ADMIN_SUBSCRIPTION_PRICE_USD ?? 0);
+    const cacUsd = Number(process.env.ADMIN_CAC_USD ?? 0);
+    const churnMonthly = Number(process.env.ADMIN_CHURN_MONTHLY ?? 0);
+
+    const hasPlatePrice = Number.isFinite(platePriceUsd) && platePriceUsd > 0;
+    const marginPerUnitUsd = hasPlatePrice ? platePriceUsd - unitCost : null;
+    const breakEvenUnits =
+      marginPerUnitUsd && marginPerUnitUsd > 0 && fixedMonthly > 0
+        ? Number((fixedMonthly / marginPerUnitUsd).toFixed(2))
+        : null;
+
+    const ltvUsd =
+      subscriptionPriceUsd > 0 && churnMonthly > 0
+        ? Number((subscriptionPriceUsd * (1 / churnMonthly)).toFixed(2))
+        : null;
+    const ltvCacRatio =
+      ltvUsd && cacUsd > 0 ? Number((ltvUsd / cacUsd).toFixed(2)) : null;
+
+    return {
+      plate_price_usd: hasPlatePrice ? platePriceUsd : null,
+      subscription_price_usd:
+        Number.isFinite(subscriptionPriceUsd) && subscriptionPriceUsd > 0
+          ? subscriptionPriceUsd
+          : null,
+      cac_usd: Number.isFinite(cacUsd) && cacUsd > 0 ? cacUsd : null,
+      churn_monthly:
+        Number.isFinite(churnMonthly) && churnMonthly > 0 ? churnMonthly : null,
+      margin_per_unit_usd: marginPerUnitUsd,
+      fixed_monthly_usd: Number(fixedMonthly.toFixed(2)),
+      break_even_units: breakEvenUnits,
+      ltv_usd: ltvUsd,
+      ltv_cac_ratio: ltvCacRatio,
+      source:
+        hasPlatePrice && subscriptionPriceUsd > 0 && cacUsd > 0 && churnMonthly > 0
+          ? "env_config"
+          : "partial_config",
+    };
+  })();
+
   const kpclCatalog = (() => {
     if (kpclCatalogProfilesError || kpclCatalogComponentsError) {
       return DEFAULT_KPCL_COST_CATALOG;
@@ -896,6 +985,8 @@ export async function GET(req: NextRequest) {
     supabase_storage: supabaseStorage,
     vercel_usage: vercelUsage,
     finance_summary: financeSummary,
+    finance_breakdown: financeBreakdown,
+    finance_break_even: financeBreakEven,
     finance_plans: financePlans,
     kpcl_catalog: kpclCatalog,
     db_object_stats: adminTableStats,

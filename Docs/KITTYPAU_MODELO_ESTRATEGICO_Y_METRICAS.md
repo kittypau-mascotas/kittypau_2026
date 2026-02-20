@@ -148,3 +148,28 @@ Reglas por camino:
 - Camino B: solo margen directo unitario, objetivo `margen > 45%`.
 - Camino C: incluir conversion free->paid y retencion en proyeccion.
 
+## 11. Valorizacion SaaS (multiplo)
+Modelo recomendado:
+- `MRR = usuarios_premium * precio_mensual`
+- `ARR = MRR * 12`
+- `EV_saas = ARR * multiplo_saas`
+
+Drivers de valor:
+- recurrencia (MRR),
+- retencion (churn bajo),
+- eficiencia comercial (`LTV/CAC`),
+- calidad y explotacion de datos.
+
+Regla ejecutiva:
+- `LTV/CAC > 3` para crecimiento sano.
+
+Freemium (Camino C):
+- `ARPU_freemium = ingresos_totales / usuarios_activos`.
+- aproximacion operativa: `precio_premium * conversion_free_to_paid`.
+- `LTV_freemium = ARPU_freemium * (1/churn)`.
+
+Salida esperada en Admin:
+- MRR, ARR,
+- LTV, CAC, LTV/CAC,
+- valorizacion proxy 6m y 12m.
+

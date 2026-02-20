@@ -109,3 +109,23 @@ Condiciones:
 - si faltan entradas clave (precio, CAC, churn): mostrar `N/D`.
 - recalculo automatico cuando cambien costos de componentes o proveedores.
 
+## KPI de valorizacion SaaS en dashboard
+Agregar bloque compacto en Finanzas con:
+- `MRR`
+- `ARR`
+- `ARPU Freemium`
+- `LTV/CAC`
+- `Valorizacion 6m`
+- `Valorizacion 12m`
+
+Formulas:
+- `MRR = usuarios_premium * precio_mensual`
+- `ARR = MRR * 12`
+- `LTV = ARPU * (1/churn)`
+- `LTV/CAC = LTV / CAC`
+- `valor_saas = ARR * multiplo_saas`
+
+Reglas:
+- si no hay datos de suscripcion/CAC/churn, mostrar `N/D`.
+- declarar fuente de usuarios (`proxy` o `real`) en el bloque.
+
