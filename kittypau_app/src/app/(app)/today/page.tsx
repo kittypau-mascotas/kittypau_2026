@@ -541,8 +541,8 @@ export default function TodayPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
-                  <div className="mb-2 flex justify-end">
-                    <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-10 shrink-0 flex-col items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
                         aria-label={
@@ -564,12 +564,10 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
                     </div>
-                  </div>
-                  <div className="h-28 overflow-hidden">
                     <img
                       src="/illustrations/food.png"
                       alt="Kittypau comedero"
-                      className="h-full w-full scale-125 object-contain"
+                      className="h-28 w-full object-contain"
                     />
                   </div>
                   <p className="mt-1 text-center text-[9px] text-slate-400/80">
@@ -578,8 +576,8 @@ export default function TodayPage() {
                 </article>
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
-                  <div className="mb-2 flex justify-end">
-                    <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-10 shrink-0 flex-col items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
                         aria-label={
@@ -601,12 +599,10 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
                     </div>
-                  </div>
-                  <div className="h-28 overflow-hidden">
                     <img
                       src="/illustrations/water.png"
                       alt="Kittypau bebedero"
-                      className="h-full w-full scale-125 object-contain"
+                      className="h-28 w-full object-contain"
                     />
                   </div>
                   <p className="mt-1 text-center text-[10px] text-slate-500">
