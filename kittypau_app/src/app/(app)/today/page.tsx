@@ -11,6 +11,7 @@ type ApiPet = {
   id: string;
   name: string;
   pet_state?: string | null;
+  photo_url?: string | null;
 };
 
 type ApiProfile = {
@@ -81,6 +82,27 @@ function formatTimestamp(value?: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function resolveDevicePowerState(
+  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined
+): "on" | "off" | "nodata" {
+  if (!device) return "nodata";
+  const state = (device.device_state ?? "").toLowerCase();
+  const status = (device.status ?? "").toLowerCase();
+  if (!state && !status) return "nodata";
+  if (state.includes("offline") || status === "offline" || status === "inactive") {
+    return "off";
+  }
+  if (
+    state.includes("online") ||
+    state.includes("linked") ||
+    status === "active" ||
+    status === "linked"
+  ) {
+    return "on";
+  }
+  return "nodata";
 }
 
 export default function TodayPage() {
@@ -480,6 +502,13 @@ export default function TodayPage() {
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
   };
+  const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
+    on: "bg-emerald-500 border-emerald-400",
+    off: "bg-rose-500 border-rose-400",
+    nodata: "bg-white border-slate-300",
+  };
+  const bowlPowerState = resolveDevicePowerState(bowlDevice);
+  const waterPowerState = resolveDevicePowerState(waterDevice);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
@@ -490,7 +519,7 @@ export default function TodayPage() {
               <div className="flex flex-col items-center gap-2">
                 <p className="text-sm font-semibold text-slate-900">{petLabel}</p>
                 <img
-                  src={state.profile?.photo_url || "/avatar_1.png"}
+                  src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                   alt={`Foto de ${petLabel}`}
                   className="h-24 w-24 rounded-full object-cover border border-slate-200"
                 />
@@ -504,34 +533,62 @@ export default function TodayPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                      aria-label={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                          ? "Apagado"
+                          : "Sin data"
+                      }
+                      title={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                          ? "Apagado"
+                          : "Sin data"
+                      }
+                    />
+                  </div>
                   <img
                     src="/illustrations/food.png"
                     alt="Kittypau comedero"
-                    className="h-20 w-full object-contain"
+                    className="h-28 w-full object-contain"
                   />
-                  <p className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-slate-700">
-                    <BatteryStatusIcon level={bowlDevice?.battery_level} className="h-4 w-4" />
-                    {bowlDevice?.battery_level !== null && bowlDevice?.battery_level !== undefined
-                      ? `${bowlDevice.battery_level}%`
-                      : "Sin datos"}
-                  </p>
-                  <p className="mt-1 text-center text-[10px] text-slate-500">
+                  <p className="mt-1 text-center text-[9px] text-slate-400/80">
                     {bowlDevice?.device_id ?? "KPCLXXXX"}
                   </p>
                 </article>
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                      aria-label={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                          ? "Apagado"
+                          : "Sin data"
+                      }
+                      title={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                          ? "Apagado"
+                          : "Sin data"
+                      }
+                    />
+                  </div>
                   <img
                     src="/illustrations/water.png"
                     alt="Kittypau bebedero"
-                    className="h-20 w-full object-contain"
+                    className="h-28 w-full object-contain"
                   />
-                  <p className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-slate-700">
-                    <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-4 w-4" />
-                    {waterDevice?.battery_level !== null && waterDevice?.battery_level !== undefined
-                      ? `${waterDevice.battery_level}%`
-                      : "Sin datos"}
-                  </p>
                   <p className="mt-1 text-center text-[10px] text-slate-500">
                     {waterDevice?.device_id ?? "KPBWXXXX"}
                   </p>
