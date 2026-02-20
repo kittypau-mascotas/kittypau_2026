@@ -533,30 +533,32 @@ export default function TodayPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
-                  <div className="mb-2 flex items-center justify-between">
-                    <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                    <span
-                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                      aria-label={
-                        bowlPowerState === "on"
-                          ? "Prendido"
-                          : bowlPowerState === "off"
-                          ? "Apagado"
-                          : "Sin data"
-                      }
-                      title={
-                        bowlPowerState === "on"
-                          ? "Prendido"
-                          : bowlPowerState === "off"
-                          ? "Apagado"
-                          : "Sin data"
-                      }
-                    />
+                  <div className="mb-2 flex justify-end">
+                    <div className="flex flex-col items-center gap-1">
+                      <span
+                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                        aria-label={
+                          bowlPowerState === "on"
+                            ? "Prendido"
+                            : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                        }
+                        title={
+                          bowlPowerState === "on"
+                            ? "Prendido"
+                            : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                        }
+                      />
+                      <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                    </div>
                   </div>
                   <img
                     src="/illustrations/food.png"
                     alt="Kittypau comedero"
-                    className="h-28 w-full object-contain"
+                    className="h-36 w-full object-contain"
                   />
                   <p className="mt-1 text-center text-[9px] text-slate-400/80">
                     {bowlDevice?.device_id ?? "KPCLXXXX"}
@@ -564,30 +566,32 @@ export default function TodayPage() {
                 </article>
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
-                  <div className="mb-2 flex items-center justify-between">
-                    <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                    <span
-                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                      aria-label={
-                        waterPowerState === "on"
-                          ? "Prendido"
-                          : waterPowerState === "off"
-                          ? "Apagado"
-                          : "Sin data"
-                      }
-                      title={
-                        waterPowerState === "on"
-                          ? "Prendido"
-                          : waterPowerState === "off"
-                          ? "Apagado"
-                          : "Sin data"
-                      }
-                    />
+                  <div className="mb-2 flex justify-end">
+                    <div className="flex flex-col items-center gap-1">
+                      <span
+                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                        aria-label={
+                          waterPowerState === "on"
+                            ? "Prendido"
+                            : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                        }
+                        title={
+                          waterPowerState === "on"
+                            ? "Prendido"
+                            : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                        }
+                      />
+                      <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                    </div>
                   </div>
                   <img
                     src="/illustrations/water.png"
                     alt="Kittypau bebedero"
-                    className="h-28 w-full object-contain"
+                    className="h-36 w-full object-contain"
                   />
                   <p className="mt-1 text-center text-[10px] text-slate-500">
                     {waterDevice?.device_id ?? "KPBWXXXX"}
