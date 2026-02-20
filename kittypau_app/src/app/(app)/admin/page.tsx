@@ -1278,9 +1278,6 @@ export default function AdminPage() {
           <h1 className="display-title text-lg sm:text-xl font-semibold text-slate-900">
             Panel Ejecutivo Operación · Auditoría · Infraestructura
           </h1>
-          <p className="text-xs text-slate-500">
-            Detalle operativo del dashboard. Los controles globales están en la navbar superior.
-          </p>
         </header>
 
         {loading ? (
@@ -1425,9 +1422,6 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 Modelos de Negocio
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Ranking estratégico para monetizar KittyPau con los datos reales actuales.
-              </p>
               <div className="mt-3 grid gap-3 lg:grid-cols-3">
                 {businessModels.map((card) => (
                   <article
@@ -1479,9 +1473,6 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 1) Operación del Servicio
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Estado operativo para cliente final: continuidad, disponibilidad y registros completos.
-              </p>
               <SectionStatusCard title="Operación del Servicio" data={operationSectionStatus} />
             </section>
 
@@ -1490,9 +1481,6 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 Resumen de Finanzas
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Estimacion operativa: BOM, costos cloud y snapshot mensual.
-              </p>
               <SectionStatusCard title="Finanzas Operativas" data={financeSectionStatus} />
               <div className="mt-4 grid gap-3 md:grid-cols-4">
                 <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
@@ -2271,9 +2259,6 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 2) Auditoría e Integridad de Datos
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Calidad y trazabilidad de datos: registros pendientes, eventos y validaciones.
-              </p>
               <SectionStatusCard title="Auditoría e Integridad" data={auditSectionStatus} />
             </section>
 
@@ -2368,9 +2353,6 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 3) Infraestructura y Telemetría
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Salud técnica de plataforma IoT: bridge, dispositivos, uso de servicios y capacidad.
-              </p>
               <SectionStatusCard title="Infraestructura y Telemetría" data={infraSectionStatus} />
             </section>
 
@@ -2528,10 +2510,6 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
-              <p className="mt-2 text-[11px] text-slate-400">
-                Nota: los tests "API" se ejecutan con el botón de suite. Los tests "PS1" son scripts operativos manuales.
-              </p>
-
               {lastTestRun ? (
                 <div className="mt-4">
                   <p className="text-xs font-semibold text-slate-700">
