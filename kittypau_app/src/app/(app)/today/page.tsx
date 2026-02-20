@@ -369,6 +369,23 @@ export default function TodayPage() {
     state.devices.find((device) => device.id === selectedDeviceId) ??
     state.devices.find((device) => device.pet_id === primaryPet?.id) ??
     state.devices[0];
+  const bowlDevice =
+    state.devices.find(
+      (device) =>
+        device.device_id?.toUpperCase().includes("KPCL") ||
+        (device.device_type ?? "").toLowerCase().includes("comedero")
+    ) ?? primaryDevice;
+  const waterDevice =
+    state.devices.find((device) => {
+      const id = (device.device_id ?? "").toUpperCase();
+      const type = (device.device_type ?? "").toLowerCase();
+      return (
+        id.includes("KPBW") ||
+        id.includes("KPW") ||
+        type.includes("bebedero") ||
+        type.includes("water")
+      );
+    }) ?? null;
   const latestReading = state.readings[0] ?? null;
   const freshnessLabel = useMemo(() => {
     if (!latestReading?.recorded_at) return "Sin datos";
@@ -468,20 +485,60 @@ export default function TodayPage() {
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                Hoy en casa
-              </p>
-              <h1 className="display-title text-3xl font-semibold text-slate-900 md:text-4xl">
-                Resumen del día
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Hola {ownerLabel}, aquí tienes el resumen de {petLabel}.
-              </p>
-              <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
+          <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
+            <div className="grid gap-4 md:grid-cols-[180px_1fr]">
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-sm font-semibold text-slate-900">{petLabel}</p>
+                <img
+                  src={state.profile?.photo_url || "/avatar_1.png"}
+                  alt={`Foto de ${petLabel}`}
+                  className="h-24 w-24 rounded-full object-cover border border-slate-200"
+                />
+                <Link
+                  href="/pet"
+                  className="text-[11px] font-semibold text-slate-600 underline underline-offset-2"
+                >
+                  Ajustar foto
+                </Link>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                  <img
+                    src="/illustrations/food.png"
+                    alt="Kittypau comedero"
+                    className="h-20 w-full object-contain"
+                  />
+                  <p className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-slate-700">
+                    <BatteryStatusIcon level={bowlDevice?.battery_level} className="h-4 w-4" />
+                    {bowlDevice?.battery_level !== null && bowlDevice?.battery_level !== undefined
+                      ? `${bowlDevice.battery_level}%`
+                      : "Sin datos"}
+                  </p>
+                  <p className="mt-1 text-center text-[10px] text-slate-500">
+                    {bowlDevice?.device_id ?? "KPCLXXXX"}
+                  </p>
+                </article>
+
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                  <img
+                    src="/illustrations/water.png"
+                    alt="Kittypau bebedero"
+                    className="h-20 w-full object-contain"
+                  />
+                  <p className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-slate-700">
+                    <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-4 w-4" />
+                    {waterDevice?.battery_level !== null && waterDevice?.battery_level !== undefined
+                      ? `${waterDevice.battery_level}%`
+                      : "Sin datos"}
+                  </p>
+                  <p className="mt-1 text-center text-[10px] text-slate-500">
+                    {waterDevice?.device_id ?? "KPBWXXXX"}
+                  </p>
+                </article>
+              </div>
             </div>
-          </div>
+          </section>
           <div className="stagger grid gap-4 md:grid-cols-3">
             <div className="surface-card freeform-rise px-4 py-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
