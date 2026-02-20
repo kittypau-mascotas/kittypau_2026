@@ -555,11 +555,13 @@ export default function TodayPage() {
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
                     </div>
                   </div>
-                  <img
-                    src="/illustrations/food.png"
-                    alt="Kittypau comedero"
-                    className="h-36 w-full object-contain"
-                  />
+                  <div className="h-28 overflow-hidden">
+                    <img
+                      src="/illustrations/food.png"
+                      alt="Kittypau comedero"
+                      className="h-full w-full scale-125 object-contain"
+                    />
+                  </div>
                   <p className="mt-1 text-center text-[9px] text-slate-400/80">
                     {bowlDevice?.device_id ?? "KPCLXXXX"}
                   </p>
@@ -588,11 +590,13 @@ export default function TodayPage() {
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
                     </div>
                   </div>
-                  <img
-                    src="/illustrations/water.png"
-                    alt="Kittypau bebedero"
-                    className="h-36 w-full object-contain"
-                  />
+                  <div className="h-28 overflow-hidden">
+                    <img
+                      src="/illustrations/water.png"
+                      alt="Kittypau bebedero"
+                      className="h-full w-full scale-125 object-contain"
+                    />
+                  </div>
                   <p className="mt-1 text-center text-[10px] text-slate-500">
                     {waterDevice?.device_id ?? "KPBWXXXX"}
                   </p>
