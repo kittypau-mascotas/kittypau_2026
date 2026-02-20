@@ -1,128 +1,150 @@
-# KITTYPAU
+﻿# KITTYPAU - Modelo Estrategico y Metricas
 
-## Modelo Estratégico y Métricas de Dashboard
+Documento estrategico oficial para operar KittyPau como negocio IoT con control operativo, financiero y de escalamiento.
 
-Documento operativo para escalar KittyPau como empresa IoT con monetización híbrida.
+## 1. Vision general
+KittyPau combina:
+- hardware (KPCL),
+- SaaS (app + backend + analytics),
+- suscripcion,
+- data operational intelligence.
 
-## 1. Visión General
-- KittyPau combina: hardware (KPCL), plataforma SaaS, analítica y suscripción.
-- Objetivo: pasar de monitoreo técnico a control de negocio con métricas accionables.
-- El dashboard admin ya integra estado operativo, auditoría, infraestructura, finanzas y tests.
+Meta de negocio: usar hardware como canal de adquisicion y recurrencia SaaS como motor de valor.
 
-## 2. Ranking de Caminos de Negocio
-### #1 Camino A: Hardware + Suscripción (Recomendado)
-- Venta de plato + ingreso mensual recurrente.
-- KPI crítico: `LTV/CAC > 3`.
-- Meta: predictibilidad de ingresos y valorización SaaS.
+## 2. Ranking de modelos de ingresos
+### #1 Camino A - Hardware + Suscripcion (Recomendado)
+- Ingreso: venta inicial + MRR.
+- KPI critico: `LTV/CAC > 3`.
+- Objetivo: predictibilidad y valorizacion SaaS.
 
-### #2 Camino C: Freemium Escalable
-- Plato + app básica + upgrade premium.
-- KPI crítico: `Conversión free->paid > 8%`.
-- Meta: crecimiento de base activa con conversión controlada.
+### #2 Camino C - Freemium escalable
+- Ingreso: plato + upgrade premium.
+- KPI critico: `conversion free->paid > 8%`.
+- Objetivo: crecer base y convertir de forma controlada.
 
-### #3 Camino B: Hardware Premium sin Suscripción
-- Ticket unitario alto, sin recurrencia.
-- KPI crítico: `Margen > 45%`.
-- Meta: caja rápida táctica, no estructural.
+### #3 Camino B - Hardware premium sin suscripcion
+- Ingreso: ticket unico alto.
+- KPI critico: `margen > 45%`.
+- Objetivo: caja rapida tactica, no crecimiento compuesto.
 
-## 3. KPIs por Camino
-### Camino A (Hardware + SaaS)
-- COGS unitario.
-- Precio de venta.
-- Margen bruto unitario.
-- MRR.
-- ARPU.
-- CAC.
-- Churn mensual.
-- LTV.
+## 3. KPIs por camino
+### Camino A
+- COGS unitario
+- precio venta
+- margen bruto unitario
+- MRR
+- ARPU
+- CAC
+- churn
+- LTV
 
-Fórmulas:
+Formulas:
 - `MRR = usuarios_premium * precio_mensual`
 - `LTV = ARPU * (1 / churn)`
 - `LTV/CAC = LTV / CAC`
 
-### Camino C (Freemium)
-- Tasa de activación.
-- Conversión free->paid.
-- Retención 30/60/90.
-- Costo servidor por usuario activo.
-- Margen por premium.
+### Camino C
+- activacion
+- conversion free->paid
+- retencion 30/60/90
+- costo por usuario activo
+- margen por premium
 
-### Camino B (Premium unitario)
-- Margen bruto unitario.
-- Punto de equilibrio.
-- Volumen mensual.
-- Rotación inventario.
+### Camino B
+- margen unitario
+- punto de equilibrio
+- volumen mensual
+- rotacion de inventario
 
-## 4. Dashboard Estratégico (Estado actual integrado)
-La vista admin debe mantener 5 bloques:
-- Operación del Servicio.
-- Auditoría e Integridad.
-- Infraestructura y Telemetría.
-- Finanzas Operativas.
-- Calidad y Tests.
+## 4. Dashboard estrategico (minimal y claro)
+Mantener 5 bloques:
+1. Operacion del servicio
+2. Auditoria e integridad
+3. Infraestructura y telemetria
+4. Finanzas operativas
+5. Calidad y tests
 
-Y un bloque de negocio con:
-- Ranking de caminos (#1, #2, #3).
-- KPI crítico por camino.
-- Sección 4 de escalamiento:
-  - Infra mensual.
-  - Costo por usuario activo.
-  - Costo por 1.000 usuarios.
-  - Carga incremental.
+Dentro de Finanzas operativas incluir:
+- ranking de caminos (#1 #2 #3),
+- KPI critico de cada camino,
+- costo de escalamiento (infra mensual, costo/usuario, costo por 1.000 usuarios).
 
-## 5. Actualización Automática (modelo recomendado)
-Cada cambio en costos/ventas/suscripciones debe recalcular métricas.
-
+## 5. Actualizacion automatica de metricas
 Tablas recomendadas:
 - `production_costs`
 - `hardware_sales`
 - `subscriptions`
 - `infra_costs`
 
-Recalcular automáticamente:
-- Margen unitario.
-- MRR.
-- LTV.
-- Proyección 12 meses.
+Al cambiar datos, recalcular:
+- margen unitario,
+- MRR,
+- LTV,
+- proyeccion 12 meses,
+- break-even.
 
-## 6. Conexión con Stack actual
-Fuente de datos principal hoy:
+## 6. Integracion con stack actual
+Fuente principal:
 - Supabase/PostgreSQL (`devices`, `readings`, `sensor_readings`, `finance_*`, vistas admin).
 
-Servicios de costo:
-- Supabase, Vercel, HiveMQ (capturados en dashboard financiero).
+Proveedores de costo:
+- Supabase
+- Vercel
+- HiveMQ
 
-## 7. Simulador Escalable (siguiente iteración)
+## 7. Simulador (siguiente fase)
 Entradas:
-- Precio plato.
-- Costo unitario.
-- Precio suscripción.
-- Churn.
+- precio plato,
+- costo unitario,
+- precio suscripcion,
+- churn,
 - CAC.
 
 Salidas:
-- Break-even.
-- Recuperación de inversión.
-- MRR 6 y 12 meses.
-- Estimación de valor (múltiplo SaaS).
+- break-even,
+- recuperacion inversion,
+- MRR 6/12 meses,
+- estimacion de valor empresarial (referencia SaaS multiple).
 
-## 8. Plan por Fases
-- Fase 1: Camino A (consolidar recurrencia).
-- Fase 2: Camino C (escalar conversión).
-- Fase 3: Camino B + B2B (veterinarias/seguros) como expansión.
+## 8. Decision ejecutiva
+Estrategia recomendada por fases:
+- Fase 1: Camino A.
+- Fase 2: Camino C.
+- Fase 3: Camino B + B2B (veterinarias/seguros) como expansion.
 
-## 9. Riesgos Estratégicos
-- Baja continuidad de KPCL afecta adopción.
-- Onboarding incompleto reduce conversión.
-- Crecimiento de consumo sin pricing optimizado reduce margen.
-- Falta de retención destruye LTV.
+Principio central:
+el valor de KittyPau esta en recurrencia, retencion y calidad de datos; no solo en la venta del hardware.
 
-## 10. Decisión Ejecutiva
-KittyPau debe operar como **SaaS IoT con hardware como canal de adquisición**.
-El valor empresarial principal está en:
-- recurrencia,
-- retención,
-- calidad de datos,
-- capacidad predictiva.
+## 9. Garantias y reemplazos (impacto estrategico)
+Los reemplazos impactan directamente en rentabilidad por dos vias:
+- costo mensual comercial (garantias),
+- erosion de margen unitario via overhead.
+
+Efecto en punto de equilibrio:
+- mayor garantia -> mayor overhead -> menor margen -> mayor volumen para break-even.
+
+KPIs minimos:
+- tasa de reemplazo,
+- costo de garantia por unidad vendida,
+- margen bruto ajustado por garantia,
+- break-even ajustado.
+
+## 10. Simulador de break-even (operativo)
+Entradas minimas:
+- `precio_plato`
+- `costo_unitario_kit`
+- `precio_suscripcion`
+- `churn`
+- `CAC`
+
+Salidas minimas:
+- `break_even_unidades`
+- `break_even_meses`
+- `margen_unitario`
+- `LTV/CAC` (cuando aplica)
+
+Reglas por camino:
+- Camino A: incluir flujo recurrente mensual y validacion `LTV/CAC > 3`.
+- Camino B: solo margen directo unitario, objetivo `margen > 45%`.
+- Camino C: incluir conversion free->paid y retencion en proyeccion.
 

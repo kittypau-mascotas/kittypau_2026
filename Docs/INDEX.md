@@ -1,5 +1,10 @@
 ﻿# Indice de Documentacion (Kittypau)
 
+## Canon Economico y Financiero
+- `Docs/ANALISIS_ECONOMICO_KITTYPAU.md` (modelo oficial de costos)
+- `Docs/KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md` (BOM y costos por perfil KPCL)
+- `Docs/ADMIN_FINANZAS_CONTAINER_SPEC.md` (contrato del bloque financiero en Admin)
+- `Docs/KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md` (modelos de negocio y KPIs)
 ## Plan y estado
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
 - `Docs/ESTADO_AVANCE.md`
@@ -91,4 +96,7 @@
 - `Docs/.env.bridge.example`
 - `Docs/.env.test.example`
 - `Docs/.env.test.local` (no versionado)
+
+
+
 

@@ -1,130 +1,133 @@
-# KPCL - Catalogo Estandar de Componentes y Costos
+﻿# KPCL - Catalogo Estandar de Componentes y Costos
 
 ## Objetivo
-Estandarizar la cuantificacion absoluta de cada KPCL (construccion, mantenimiento y funcionamiento), diferenciando por tipo/modelo de microcontrolador.
+Estandarizar la cuantificacion absoluta de cada KPCL para construccion, mantenimiento y operacion.
 
-## Fuentes base consideradas
-- `public.devices` (campos: `device_id`, `device_type`, `device_model`, `sensor_health`, `wifi_status`, `last_seen`)
-- Estado operativo actual de KPCL0031..KPCL0041.
-- Compra filamento PLA+: CLP 16.000 por 1kg (incluye envio), proveedor VOXEL SYSTEMICS SpA.
-- Tipo de cambio operativo usado para dashboard: `1 USD = 950 CLP`.
+## Fuentes base
+- `public.devices` (`device_id`, `device_type`, `device_model`, `last_seen`, `sensor_health`, `wifi_status`)
+- estados operativos KPCL0031..KPCL0041
+- compra filamento PLA+ (CLP 16.000 / 1kg con envio)
+- tipo de cambio operativo: `1 USD = 950 CLP`
 
-## Familias de hardware detectadas
+## Perfiles de hardware
+### A) KPCL Comedero (NodeMCU v3 CP2102)
+Uso tipico: KPCL sin camara.
 
-### 1) KPCL Comedero (ESP8266)
-- Perfil: `NodeMCU v3 CP2102`
-- Dispositivos observados: KPCL0033, KPCL0034, KPCL0035, KPCL0037, KPCL0038 (algunos sin modelo explicito, compatibles por tipo/telemetria).
+### B) KPCL Comedero CAM (AI-Thinker ESP32-CAM)
+Uso tipico: KPCL con camara.
 
-### 2) KPCL Comedero CAM (ESP32-CAM)
-- Perfil: `AI-Thinker ESP32-CAM`
-- Dispositivos observados: KPCL0040, KPCL0041.
+### C) KPCL Generico
+Fallback para unidades sin modelo explicitado.
 
-### 3) KPCL Base no tipificado
-- Dispositivos con modelo faltante o incompleto: KPCL0031, KPCL0036, KPCL0039.
-
-## Diccionario de cuantificacion (USD por unidad)
+## Diccionario base (USD por unidad)
 
 ```json
 {
   "nodemcu-v3": {
-    "label": "KPCL Comedero (NodeMCU v3 CP2102)",
+    "mcu": 4.90,
+    "load_cell": 2.10,
+    "hx711": 1.20,
+    "sensor_temp_hum": 1.10,
+    "pcb_regulacion": 2.20,
+    "fuente_plug_5v": 2.30,
+    "cables_conectores_tornillos": 1.00,
+    "packaging": 0.90,
+    "cuerpo_3d": 2.40,
+    "ensamblaje": 1.80,
+    "postproceso": 0.70,
+    "qa_calibracion": 0.90,
+    "maintenance_monthly": 0.85,
+    "power_monthly": 0.55,
     "print_grams": 185,
-    "print_hours": 6.2,
-    "print_unit_cost_usd": 2.4,
-    "maintenance_monthly_usd": 0.85,
-    "power_monthly_usd": 0.55,
-    "components": [
-      { "code": "MCU_ESP8266", "name": "NodeMCU v3 CP2102 (ESP8266)", "qty": 1, "unit_cost_usd": 4.9 },
-      { "code": "LOAD_CELL", "name": "Celda de carga 5kg", "qty": 1, "unit_cost_usd": 2.1 },
-      { "code": "ADC_HX711", "name": "Conversor HX711", "qty": 1, "unit_cost_usd": 1.2 },
-      { "code": "SENSOR_DHT", "name": "Sensor DHT temp/humedad", "qty": 1, "unit_cost_usd": 1.1 },
-      { "code": "PSU_5V", "name": "Fuente 5V + plug", "qty": 1, "unit_cost_usd": 2.3 },
-      { "code": "CABLING", "name": "Cables, conectores, tornillos", "qty": 1, "unit_cost_usd": 1.0 },
-      { "code": "BODY_3D", "name": "Cuerpo impreso 3D", "qty": 1, "unit_cost_usd": 2.4 }
-    ]
+    "print_hours": 6.2
   },
   "esp32-cam": {
-    "label": "KPCL Comedero CAM (AI-Thinker ESP32-CAM)",
+    "mcu": 7.20,
+    "load_cell": 2.10,
+    "hx711": 1.20,
+    "sensor_temp_hum": 1.10,
+    "pcb_regulacion": 2.40,
+    "fuente_plug_5v": 2.30,
+    "cables_conectores_tornillos": 1.10,
+    "packaging": 0.95,
+    "cuerpo_3d": 2.80,
+    "ensamblaje": 2.10,
+    "postproceso": 0.75,
+    "qa_calibracion": 1.00,
+    "maintenance_monthly": 1.05,
+    "power_monthly": 0.70,
     "print_grams": 205,
-    "print_hours": 6.9,
-    "print_unit_cost_usd": 2.8,
-    "maintenance_monthly_usd": 1.05,
-    "power_monthly_usd": 0.7,
-    "components": [
-      { "code": "MCU_ESP32CAM", "name": "AI-Thinker ESP32-CAM", "qty": 1, "unit_cost_usd": 7.2 },
-      { "code": "LOAD_CELL", "name": "Celda de carga 5kg", "qty": 1, "unit_cost_usd": 2.1 },
-      { "code": "ADC_HX711", "name": "Conversor HX711", "qty": 1, "unit_cost_usd": 1.2 },
-      { "code": "SENSOR_DHT", "name": "Sensor DHT temp/humedad", "qty": 1, "unit_cost_usd": 1.1 },
-      { "code": "PSU_5V", "name": "Fuente 5V + plug", "qty": 1, "unit_cost_usd": 2.3 },
-      { "code": "CABLING", "name": "Cables, conectores, tornillos", "qty": 1, "unit_cost_usd": 1.1 },
-      { "code": "BODY_3D", "name": "Cuerpo impreso 3D (cam)", "qty": 1, "unit_cost_usd": 2.8 }
-    ]
+    "print_hours": 6.9
   },
   "generic-kpcl": {
-    "label": "KPCL Base (generico)",
+    "maintenance_monthly": 0.80,
+    "power_monthly": 0.50,
     "print_grams": 180,
-    "print_hours": 6.0,
-    "print_unit_cost_usd": 2.3,
-    "maintenance_monthly_usd": 0.8,
-    "power_monthly_usd": 0.5
+    "print_hours": 6.0
   }
 }
 ```
 
-## Reglas de mapeo KPCL -> perfil
+## Reglas de mapeo
 1. Si `device_model` contiene `ESP32-CAM` o `device_type` contiene `cam` -> `esp32-cam`.
 2. Si `device_model` contiene `NodeMCU` o `CP2102` -> `nodemcu-v3`.
-3. Si no hay modelo -> `generic-kpcl`.
+3. Si falta modelo -> `generic-kpcl`.
 
-## Formula de costo por KPCL
-- `costo_componentes_usd = sum(qty * unit_cost_usd)`
-- `costo_unitario_construccion_usd = costo_componentes_usd` (incluye cuerpo 3D)
-- `costo_operacion_mensual_usd = maintenance_monthly_usd + power_monthly_usd`
+## Formulas de costo
+### Costo de construccion unitario
+- `bom_usd = suma(componentes fisicos)`
+- `manufactura_usd = ensamblaje + postproceso + qa_calibracion + cuerpo_3d`
+- `costo_unitario_construccion_usd = bom_usd + manufactura_usd`
 
-## Simulacion de costo cloud por KPCL (basada en data real)
-Cuando plan proveedor = free (0 USD), se usa shadow-pricing para cuantificar impacto por dispositivo:
+### Costo operativo mensual por KPCL
+- `opex_base_kpcl_usd = maintenance_monthly + power_monthly`
 
-- `mb_kpcl` = MB reales del dispositivo (ventana 28d).
-- `mb_total` = MB reales de todos los KPCL.
-- `h_kpcl` = horas online del dispositivo (ventana 28d).
-- `h_total` = horas online de todos los KPCL.
-
-Presupuesto mensual simulado:
+### Impacto cloud por KPCL (shadow-pricing)
+Con ventana de 28 dias:
 - `hivemq_budget_usd = mb_total * 0.06`
-- `vercel_budget_usd = mb_total * 0.04 + h_total * 0.01`
+- `vercel_budget_usd = (mb_total * 0.04) + (h_total * 0.01)`
+- `hivemq_kpcl_usd = hivemq_budget_usd * (mb_kpcl/mb_total)`
+- `vercel_kpcl_usd = vercel_budget_usd * (0.7*mb_kpcl/mb_total + 0.3*h_kpcl/h_total)`
+- `opex_kpcl_usd = opex_base_kpcl_usd + hivemq_kpcl_usd + vercel_kpcl_usd`
 
-Distribucion por KPCL:
-- `hivemq_kpcl_usd = hivemq_budget_usd * (mb_kpcl / mb_total)`
-- `vercel_kpcl_usd = vercel_budget_usd * (0.7 * mb_kpcl/mb_total + 0.3 * h_kpcl/h_total)`
+## Diferencia de costo MCU (NodeMCU vs ESP32-CAM)
+- La diferencia principal proviene del MCU y de ajustes de manufactura/cuerpo 3D.
+- `esp32-cam` suele tener mayor BOM y mayor OPEX base por consumo energetico.
+- Los valores exactos se controlan en `public.finance_kit_components`.
 
-Costo mensual operativo por KPCL:
-- `opex_kpcl_usd = maintenance_monthly_usd + power_monthly_usd + hivemq_kpcl_usd + vercel_kpcl_usd`
+## Referencia de impresion 3D
+- PLA+ eSUN 1kg (costo total CLP 16.000, envio incluido).
+- Costo referencia: CLP 16/g.
+- Conversion referencia: 0.0168 USD/g.
 
-## Variables clave estandarizadas
-- Microcontrolador
-- Celdas de carga
-- Convertidor HX711
-- Sensor ambiental
-- Fuente/plug
-- Cables y conectores
-- Impresion 3D (gramos, tiempo, costo unitario)
-- Mantenimiento mensual
-- Costo electrico mensual aproximado
-- Costo simulado de HiveMQ por KPCL
-- Costo simulado de Vercel por KPCL
+## Uso en dashboard admin
+- Selector de KPCL bajo imagen del comedero (`public/illustrations/food.png`).
+- Lista por componente, costo unitario, subtotal y total de unidad.
+- Bloque separado para OPEX mensual estimado por KPCL.
 
-## Registro de compra filamento (referencia)
-- Proveedor: `VOXEL SYSTEMICS SpA`
-- Medio de pago: `Mercado Pago`
-- Precio total: `CLP 16.000`
-- Presentacion: `PLA+ eSUN 1.75mm 1Kg`
-- Costo por gramo aproximado: `CLP 16/g`
-- Costo por gramo aproximado en USD: `0.0168 USD/g` (a 950 CLP/USD)
+## Mantenimiento de este catalogo
+Actualizar cuando cambie:
+- proveedor o precio de componentes,
+- tipo de cambio operativo,
+- factores de shadow-pricing,
+- perfil de hardware detectado en `public.devices`.
 
-## Uso en Admin
-- Bajo la foto del comedero:
-  - selector de KPCL,
-  - lista de componentes por unidad,
-  - subtotal por componente,
-  - total por unidad,
-  - costo de operacion mensual.
+## Inventario en base de datos
+Gestion de catalogo para BOM/manufactura:
+- `public.finance_kit_components`
+- `public.finance_kpcl_profiles`
+- `public.finance_kpcl_profile_components`
+
+Moneda estandar:
+- USD (2 decimales) como base.
+- CLP solo para visualizacion secundaria.
+
+Control administrativo:
+- selector KPCL en Admin,
+- lista de componentes y subtotales,
+- total de construccion por unidad,
+- costo operativo mensual por KPCL.
+
+Test recomendado en suite admin:
+- `kpcl_catalog`: valida perfiles, componentes activos y mapeo de hardware.
+
