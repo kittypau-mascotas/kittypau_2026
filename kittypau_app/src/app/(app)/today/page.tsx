@@ -108,6 +108,7 @@ function resolveDevicePowerState(
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -149,10 +150,14 @@ export default function TodayPage() {
     return payload as ApiProfile;
   };
 
-  const loadReadings = async (deviceId: string, cursor?: string | null) => {
+  const loadReadings = async (
+    deviceId: string,
+    cursor?: string | null,
+    limit = 50
+  ) => {
     const params = new URLSearchParams({
       device_id: deviceId,
-      limit: "50",
+      limit: String(limit),
     });
     if (cursor) params.set("cursor", cursor);
     const res = await authFetch(`/api/readings?${params.toString()}`);
@@ -409,6 +414,8 @@ export default function TodayPage() {
       );
     }) ?? null;
   const latestReading = state.readings[0] ?? null;
+  const bowlLatestReading = bowlDevice?.id ? (deviceLatestReadings[bowlDevice.id] ?? null) : null;
+  const waterLatestReading = waterDevice?.id ? (deviceLatestReadings[waterDevice.id] ?? null) : null;
   const freshnessLabel = useMemo(() => {
     if (!latestReading?.recorded_at) return "Sin datos";
     const ts = new Date(latestReading.recorded_at).getTime();
@@ -419,6 +426,36 @@ export default function TodayPage() {
     if (diffMin <= 30) return "Moderado";
     return "Desactualizado";
   }, [latestReading?.recorded_at]);
+
+  useEffect(() => {
+    const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
+      (value, index, arr): value is string =>
+        Boolean(value) && arr.indexOf(value) === index
+    );
+    if (!targetIds.length) return;
+    let active = true;
+    const loadTargets = async () => {
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const result = await loadReadings(deviceId, null, 1);
+            return [deviceId, result.data[0] ?? null] as const;
+          } catch {
+            return [deviceId, null] as const;
+          }
+        })
+      );
+      if (!active) return;
+      setDeviceLatestReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+    };
+    void loadTargets();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, waterDevice?.id]);
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -502,13 +539,21 @@ export default function TodayPage() {
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
   };
-  const sensorTempText =
-    latestReading?.temperature !== null && latestReading?.temperature !== undefined
-      ? `${latestReading.temperature}°C`
+  const bowlTempText =
+    bowlLatestReading?.temperature !== null && bowlLatestReading?.temperature !== undefined
+      ? `${bowlLatestReading.temperature}°C`
       : "N/D";
-  const sensorHumidityText =
-    latestReading?.humidity !== null && latestReading?.humidity !== undefined
-      ? `${latestReading.humidity}%`
+  const bowlHumidityText =
+    bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
+      ? `${bowlLatestReading.humidity}%`
+      : "N/D";
+  const waterTempText =
+    waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
+      ? `${waterLatestReading.temperature}°C`
+      : "N/D";
+  const waterHumidityText =
+    waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
+      ? `${waterLatestReading.humidity}%`
       : "N/D";
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
@@ -540,7 +585,7 @@ export default function TodayPage() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="flex items-center gap-3">
                     <div className="flex w-10 shrink-0 flex-col items-center gap-1">
                       <span
@@ -561,14 +606,16 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
-                      <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
+                      <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
+                      <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
-                    <img
-                      src="/illustrations/food.png"
-                      alt="Kittypau comedero"
-                      className="h-28 w-full object-contain"
-                    />
+                    <div className="flex flex-1 justify-center">
+                      <img
+                        src="/illustrations/food.png"
+                        alt="Kittypau comedero"
+                        className="h-28 w-full max-w-[220px] object-contain"
+                      />
+                    </div>
                   </div>
                   <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                     {bowlDevice?.device_id ?? "KPCLXXXX"}
@@ -580,7 +627,7 @@ export default function TodayPage() {
                   </div>
                 </article>
 
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="flex items-center gap-3">
                     <div className="flex w-10 shrink-0 flex-col items-center gap-1">
                       <span
@@ -601,14 +648,16 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{sensorTempText}</p>
-                      <p className="text-[10px] font-semibold text-slate-500">{sensorHumidityText}</p>
+                      <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
+                      <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
-                    <img
-                      src="/illustrations/water.png"
-                      alt="Kittypau bebedero"
-                      className="h-28 w-full object-contain"
-                    />
+                    <div className="flex flex-1 justify-center">
+                      <img
+                        src="/illustrations/water.png"
+                        alt="Kittypau bebedero"
+                        className="h-28 w-full max-w-[220px] object-contain"
+                      />
+                    </div>
                   </div>
                   <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                     {waterDevice?.device_id ?? "KPBWXXXX"}
