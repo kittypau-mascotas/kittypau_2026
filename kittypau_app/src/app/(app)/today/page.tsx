@@ -301,6 +301,38 @@ export default function TodayPage() {
     };
   }, [selectedDeviceId]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onDeviceChange = async (event: Event) => {
+      const custom = event as CustomEvent<{ deviceId?: string }>;
+      const nextId = custom.detail?.deviceId ?? null;
+      if (!nextId || nextId === selectedDeviceId) return;
+      setSelectedDeviceId(nextId);
+      try {
+        const result = await loadReadings(nextId);
+        setState((prev) => ({
+          ...prev,
+          readings: result.data,
+          readingsCursor: result.nextCursor,
+        }));
+        setLastRefreshAt(new Date().toISOString());
+        setRefreshError(null);
+      } catch (err) {
+        setState((prev) => ({
+          ...prev,
+          error:
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar las lecturas.",
+        }));
+      }
+    };
+    window.addEventListener("kittypau-device-change", onDeviceChange as EventListener);
+    return () => {
+      window.removeEventListener("kittypau-device-change", onDeviceChange as EventListener);
+    };
+  }, [selectedDeviceId]);
+
   const loadMoreReadings = async () => {
     const deviceId = selectedDeviceId;
     if (!deviceId || !state.readingsCursor || state.isLoadingMore) {
@@ -448,62 +480,6 @@ export default function TodayPage() {
                 Hola {ownerLabel}, aquí tienes el resumen de {petLabel}.
               </p>
               <p className="mt-2 text-sm text-slate-500">{summaryText}</p>
-            </div>
-            <div className="surface-card freeform-rise flex items-center gap-4 px-4 py-3">
-              <img
-                src={state.profile?.photo_url || "/avatar_1.png"}
-                alt="Avatar"
-                className="h-12 w-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-sm font-semibold text-slate-900">
-                  {state.profile?.owner_name ||
-                    state.profile?.user_name ||
-                    "Tu cuenta"}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {primaryPet?.name ?? "Sin mascota"}
-                  {primaryDevice ? ` · ${primaryDevice.device_id}` : ""}
-                </p>
-                {state.devices.length > 1 ? (
-                  <select
-                    className="mt-2 h-8 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-2 text-[11px] text-slate-600"
-                    value={primaryDevice?.id ?? ""}
-                    onChange={async (event) => {
-                      const nextId = event.target.value || null;
-                      setSelectedDeviceId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem("kittypau_device_id", nextId);
-                      }
-                      if (!nextId) return;
-                      try {
-                        const result = await loadReadings(nextId);
-                        setState((prev) => ({
-                          ...prev,
-                          readings: result.data,
-                          readingsCursor: result.nextCursor,
-                        }));
-                        setLastRefreshAt(new Date().toISOString());
-                        setRefreshError(null);
-                      } catch (err) {
-                        setState((prev) => ({
-                          ...prev,
-                          error:
-                            err instanceof Error
-                              ? err.message
-                              : "No se pudieron cargar las lecturas.",
-                        }));
-                      }
-                    }}
-                  >
-                    {state.devices.map((device) => (
-                      <option key={device.id} value={device.id}>
-                        {device.device_id}
-                      </option>
-                    ))}
-                  </select>
-                ) : null}
-              </div>
             </div>
           </div>
           <div className="stagger grid gap-4 md:grid-cols-3">

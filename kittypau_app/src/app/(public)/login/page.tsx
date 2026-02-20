@@ -692,14 +692,7 @@ export default function LoginPage() {
               onBlur={() => setHighlightRegister(false)}
               onClick={openRegister}
             >
-              <img
-                src="/illustrations/bandida.png"
-                alt=""
-                aria-hidden="true"
-                className="login-bandida"
-                loading="eager"
-                draggable={false}
-              />
+              Crear cuenta
             </button>
           </div>
         </div>
