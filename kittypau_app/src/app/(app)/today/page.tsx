@@ -570,9 +570,14 @@ export default function TodayPage() {
                       className="h-28 w-full object-contain"
                     />
                   </div>
-                  <p className="mt-1 text-center text-[9px] text-slate-400/80">
+                  <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                     {bowlDevice?.device_id ?? "KPCLXXXX"}
                   </p>
+                  <div className="mt-2 flex justify-center">
+                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                      Alimentación
+                    </span>
+                  </div>
                 </article>
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
@@ -605,9 +610,14 @@ export default function TodayPage() {
                       className="h-28 w-full object-contain"
                     />
                   </div>
-                  <p className="mt-1 text-center text-[10px] text-slate-500">
+                  <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                     {waterDevice?.device_id ?? "KPBWXXXX"}
                   </p>
+                  <div className="mt-2 flex justify-center">
+                    <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                      Hidratación
+                    </span>
+                  </div>
                 </article>
               </div>
             </div>
