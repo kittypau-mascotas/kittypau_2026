@@ -35,7 +35,7 @@ export default function LoginPage() {
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
-  const [heroFoodState, setHeroFoodState] = useState<"full" | "medium" | "empty">("full");
+  const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -64,11 +64,13 @@ export default function LoginPage() {
     medium: "/illustrations/pink_food_medium.png",
     empty: "/illustrations/pink_empty.png",
   };
-  const nextHeroFoodState: Record<"full" | "medium" | "empty", "full" | "medium" | "empty"> = {
-    full: "medium",
-    medium: "empty",
-    empty: "medium",
-  };
+  const heroFoodCycle: Array<"full" | "medium" | "empty" | "medium"> = [
+    "full",
+    "medium",
+    "empty",
+    "medium",
+  ];
+  const currentHeroFoodState = heroFoodCycle[heroFoodCycleIndex];
 
   const stepMeta = useMemo(
     () => [
@@ -513,15 +515,17 @@ export default function LoginPage() {
           <div className="login-hero-asset freeform-rise freeform-float">
             <button
               type="button"
-              onClick={() => setHeroFoodState((prev) => nextHeroFoodState[prev])}
-              className="group cursor-pointer appearance-none border-0 bg-transparent p-0"
+              onClick={() =>
+                setHeroFoodCycleIndex((prev) => (prev + 1) % heroFoodCycle.length)
+              }
+              className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
               aria-label="Cambiar nivel visual del plato"
               title="Cambiar nivel visual del plato"
             >
               <img
-                src={heroFoodImageByState[heroFoodState]}
+                src={heroFoodImageByState[currentHeroFoodState]}
                 alt="Plato de comida Kittypau"
-                className="login-hero-asset-img select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
                 loading="eager"
                 draggable={false}
               />
