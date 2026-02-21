@@ -35,9 +35,8 @@ export default function LoginPage() {
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
-  const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
+  const [heroBowlCycleIndex, setHeroBowlCycleIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
-  const heroFoodSoundIndexRef = useRef(0);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
     [registerStep]
@@ -60,31 +59,36 @@ export default function LoginPage() {
     4: deviceCompleted,
   };
 
-  const heroFoodImageByState: Record<"full" | "medium" | "empty", string> = {
-    full: "/illustrations/pink_food_full.png",
-    medium: "/illustrations/pink_food_medium.png",
-    empty: "/illustrations/pink_empty.png",
-  };
-  const heroFoodCycle: Array<"full" | "medium" | "empty" | "medium"> = [
-    "full",
-    "medium",
-    "empty",
-    "medium",
-  ];
-  const currentHeroFoodState = heroFoodCycle[heroFoodCycleIndex];
+  const heroBowlCycle = [
+    { image: "/illustrations/pink_food_full.png", soundGroup: "food" as const },
+    { image: "/illustrations/pink_food_medium.png", soundGroup: "food" as const },
+    { image: "/illustrations/pink_empty.png", soundGroup: "food" as const },
+    { image: "/illustrations/pink_water_full.png", soundGroup: "water" as const },
+    { image: "/illustrations/pink_water_medium.png", soundGroup: "water" as const },
+    { image: "/illustrations/pink_empty.png", soundGroup: "water" as const },
+  ] as const;
+  const currentHeroBowlState = heroBowlCycle[heroBowlCycleIndex];
   const heroFoodSoundFiles = [
     "/audio/comer_1.mp3",
     "/audio/comer_2.mp3",
     "/audio/comer_3.mp3",
   ] as const;
-  const playFoodClickSound = () => {
-    const soundIdx = heroFoodSoundIndexRef.current;
-    const soundSrc = heroFoodSoundFiles[soundIdx];
+  const heroWaterSoundFiles = [
+    "/audio/agua_1.mp3",
+    "/audio/agua_2.mp3",
+    "/audio/agua_3.mp3",
+  ] as const;
+  const randomFrom = (arr: readonly string[]) =>
+    arr[Math.floor(Math.random() * arr.length)];
+  const playBowlClickSound = (group: "food" | "water") => {
+    const soundSrc =
+      group === "food"
+        ? randomFrom(heroFoodSoundFiles)
+        : randomFrom(heroWaterSoundFiles);
     const instance = new Audio(soundSrc);
     instance.preload = "auto";
     instance.currentTime = 0;
     void instance.play().catch(() => undefined);
-    heroFoodSoundIndexRef.current = (soundIdx + 1) % heroFoodSoundFiles.length;
   };
 
   const stepMeta = useMemo(
@@ -531,15 +535,17 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => {
-                playFoodClickSound();
-                setHeroFoodCycleIndex((prev) => (prev + 1) % heroFoodCycle.length);
+                const nextIndex = (heroBowlCycleIndex + 1) % heroBowlCycle.length;
+                const nextState = heroBowlCycle[nextIndex];
+                playBowlClickSound(nextState.soundGroup);
+                setHeroBowlCycleIndex(nextIndex);
               }}
               className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
               aria-label="Cambiar nivel visual del plato"
               title="Cambiar nivel visual del plato"
             >
               <img
-                src={heroFoodImageByState[currentHeroFoodState]}
+                src={currentHeroBowlState.image}
                 alt="Plato de comida Kittypau"
                 className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
                 loading="eager"
