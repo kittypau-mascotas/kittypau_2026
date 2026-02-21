@@ -37,7 +37,7 @@ export default function LoginPage() {
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
-  const foodClickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const foodClickAudioRefs = useRef<Array<HTMLAudioElement | null>>([]);
   const heroFoodSoundIndexRef = useRef(0);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -80,14 +80,12 @@ export default function LoginPage() {
   ] as const;
   const playFoodClickSound = () => {
     const soundIdx = heroFoodSoundIndexRef.current;
-    const soundSrc = heroFoodSoundFiles[soundIdx];
-    const target = foodClickAudioRef.current;
+    const target = foodClickAudioRefs.current[soundIdx];
     if (target) {
-      if (!target.src.endsWith(soundSrc)) {
-        target.src = soundSrc;
-      }
-      target.currentTime = 0;
-      void target.play().catch(() => undefined);
+      // Clone to ensure reliable playback on rapid sequential clicks.
+      const instance = target.cloneNode(true) as HTMLAudioElement;
+      instance.currentTime = 0;
+      void instance.play().catch(() => undefined);
     }
     heroFoodSoundIndexRef.current = (soundIdx + 1) % heroFoodSoundFiles.length;
   };
@@ -530,8 +528,24 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
       <audio
-        ref={foodClickAudioRef}
+        ref={(el) => {
+          foodClickAudioRefs.current[0] = el;
+        }}
         src="/audio/comer_1.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={(el) => {
+          foodClickAudioRefs.current[1] = el;
+        }}
+        src="/audio/comer_2.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={(el) => {
+          foodClickAudioRefs.current[2] = el;
+        }}
+        src="/audio/comer_3.mp3"
         preload="auto"
       />
 
