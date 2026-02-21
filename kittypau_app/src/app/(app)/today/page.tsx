@@ -699,16 +699,17 @@ export default function TodayPage() {
                     </div>
                   ) : null}
                 </div>
-                <img
-                  src={primaryPet?.photo_url || "/pet_profile.jpeg"}
-                  alt={`Foto de ${petLabel}`}
-                  className="h-24 w-24 rounded-full object-cover border border-slate-200"
-                />
                 <Link
                   href="/pet"
-                  className="text-[11px] font-semibold text-slate-600 underline underline-offset-2"
+                  className="inline-flex"
+                  title="Ajustar foto"
+                  aria-label="Ajustar foto"
                 >
-                  Ajustar foto
+                  <img
+                    src={primaryPet?.photo_url || "/pet_profile.jpeg"}
+                    alt={`Foto de ${petLabel}`}
+                    className="h-24 w-24 rounded-full object-cover border border-slate-200"
+                  />
                 </Link>
               </div>
 
