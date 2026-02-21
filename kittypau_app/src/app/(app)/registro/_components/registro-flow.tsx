@@ -1308,7 +1308,7 @@ export default function RegistroFlow({
                   }`}
                 >
                   <img
-                    src="/illustrations/pink_water_full.png"
+                    src="/illustrations/green_water_full.png"
                     alt="Plato de agua"
                     className="mx-auto h-20 w-auto object-contain"
                   />

@@ -553,7 +553,7 @@ export default function TodayPage() {
             ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
             : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
         tone: "info",
-        icon: "/illustrations/pink_water_full.png",
+        icon: "/illustrations/green_water_full.png",
       });
     }
     if (latestReading.weight_grams !== null) {
@@ -579,7 +579,7 @@ export default function TodayPage() {
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
-        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/pink_water_full.png" },
+        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/green_water_full.png" },
         { label: "Alimento", value: "Sin datos", icon: "/illustrations/pink_food_full.png" },
         { label: "Ambiente", value: "Sin datos" },
       ] as StatCard[];
@@ -597,7 +597,7 @@ export default function TodayPage() {
         ? `${latestReading.temperature}° · ${latestReading.humidity}%`
         : "Sin ambiente";
     return [
-      { label: "Hidratación", value: hydration, icon: "/illustrations/pink_water_full.png" },
+      { label: "Hidratación", value: hydration, icon: "/illustrations/green_water_full.png" },
       { label: "Alimento", value: food, icon: "/illustrations/pink_food_full.png" },
       { label: "Ambiente", value: ambient },
     ] as StatCard[];
@@ -818,7 +818,7 @@ export default function TodayPage() {
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
-                        src="/illustrations/pink_water_full.png"
+                        src="/illustrations/green_water_full.png"
                         alt="Kittypau bebedero"
                         className="mx-auto h-28 w-40 object-contain object-center"
                       />
