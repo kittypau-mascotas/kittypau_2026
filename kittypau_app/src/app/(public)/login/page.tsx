@@ -36,9 +36,9 @@ export default function LoginPage() {
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
-  const [heroFoodSoundIndex, setHeroFoodSoundIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
-  const foodClickAudioRefs = useRef<Array<HTMLAudioElement | null>>([]);
+  const foodClickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const heroFoodSoundIndexRef = useRef(0);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
     [registerStep]
@@ -73,13 +73,23 @@ export default function LoginPage() {
     "medium",
   ];
   const currentHeroFoodState = heroFoodCycle[heroFoodCycleIndex];
+  const heroFoodSoundFiles = [
+    "/audio/comer_1.mp3",
+    "/audio/comer_2.mp3",
+    "/audio/comer_3.mp3",
+  ] as const;
   const playFoodClickSound = () => {
-    const target = foodClickAudioRefs.current[heroFoodSoundIndex];
+    const soundIdx = heroFoodSoundIndexRef.current;
+    const soundSrc = heroFoodSoundFiles[soundIdx];
+    const target = foodClickAudioRef.current;
     if (target) {
+      if (!target.src.endsWith(soundSrc)) {
+        target.src = soundSrc;
+      }
       target.currentTime = 0;
       void target.play().catch(() => undefined);
     }
-    setHeroFoodSoundIndex((prev) => (prev + 1) % 3);
+    heroFoodSoundIndexRef.current = (soundIdx + 1) % heroFoodSoundFiles.length;
   };
 
   const stepMeta = useMemo(
@@ -520,24 +530,8 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
       <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[0] = el;
-        }}
+        ref={foodClickAudioRef}
         src="/audio/comer_1.mp3"
-        preload="auto"
-      />
-      <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[1] = el;
-        }}
-        src="/audio/comer_2.mp3"
-        preload="auto"
-      />
-      <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[2] = el;
-        }}
-        src="/audio/comer_3.mp3"
         preload="auto"
       />
 
