@@ -498,9 +498,9 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
-          <div className="login-hero-asset freeform-rise" aria-hidden="true">
+          <div className="login-hero-asset freeform-rise freeform-float" aria-hidden="true">
             <img
-              src="/illustrations/food.png"
+              src="/illustrations/pink_food_full.png"
               alt=""
               className="login-hero-asset-img"
               loading="eager"
