@@ -393,9 +393,9 @@ body {
 .app-shell {
   min-height: 100vh;
   background:
-    radial-gradient(900px circle at 15% 0%, rgba(255, 206, 146, 0.12), transparent 55%),
-    radial-gradient(800px circle at 90% 10%, rgba(79, 140, 255, 0.16), transparent 60%),
-    linear-gradient(180deg, #f7f7fb 0%, #f1f3f8 100%);
+    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, #ffffff 18%, #f6dbd6 100%);
 }
 
 .app-nav {
