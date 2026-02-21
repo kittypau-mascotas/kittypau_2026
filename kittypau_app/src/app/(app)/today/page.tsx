@@ -50,6 +50,8 @@ type StatCard = {
   icon?: string;
 };
 
+type FoodVisualState = "full" | "medium" | "empty";
+
 type LoadState = {
   isLoading: boolean;
   error: string | null;
@@ -139,6 +141,7 @@ export default function TodayPage() {
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [foodVisualState, setFoodVisualState] = useState<FoodVisualState>("full");
 
   useEffect(() => {
     let mounted = true;
@@ -550,7 +553,7 @@ export default function TodayPage() {
             ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
             : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
         tone: "info",
-        icon: "/illustrations/water.png",
+        icon: "/illustrations/pink_water_full.png",
       });
     }
     if (latestReading.weight_grams !== null) {
@@ -558,7 +561,7 @@ export default function TodayPage() {
         title: "Consumo de alimento",
         description: `Peso detectado: ${latestReading.weight_grams} g.`,
         tone: "ok",
-        icon: "/illustrations/food.png",
+        icon: "/illustrations/pink_food_full.png",
       });
     }
     if (latestReading.temperature !== null || latestReading.humidity !== null) {
@@ -576,8 +579,8 @@ export default function TodayPage() {
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
-        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/water.png" },
-        { label: "Alimento", value: "Sin datos", icon: "/illustrations/food.png" },
+        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/pink_water_full.png" },
+        { label: "Alimento", value: "Sin datos", icon: "/illustrations/pink_food_full.png" },
         { label: "Ambiente", value: "Sin datos" },
       ] as StatCard[];
     }
@@ -594,8 +597,8 @@ export default function TodayPage() {
         ? `${latestReading.temperature}° · ${latestReading.humidity}%`
         : "Sin ambiente";
     return [
-      { label: "Hidratación", value: hydration, icon: "/illustrations/water.png" },
-      { label: "Alimento", value: food, icon: "/illustrations/food.png" },
+      { label: "Hidratación", value: hydration, icon: "/illustrations/pink_water_full.png" },
+      { label: "Alimento", value: food, icon: "/illustrations/pink_food_full.png" },
       { label: "Ambiente", value: ambient },
     ] as StatCard[];
   }, [latestReading]);
@@ -628,9 +631,19 @@ export default function TodayPage() {
   };
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
   const waterPowerState = resolveDevicePowerState(waterDevice);
+  const foodImageByState: Record<FoodVisualState, string> = {
+    full: "/illustrations/pink_food_full.png",
+    medium: "/illustrations/pink_food_medium.png",
+    empty: "/illustrations/pink_empty.png",
+  };
+  const nextFoodState: Record<FoodVisualState, FoodVisualState> = {
+    full: "medium",
+    medium: "empty",
+    empty: "medium",
+  };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(226,232,240,0.7),_rgba(248,250,252,1))] px-6 py-10">
+    <div className="min-h-screen px-6 py-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-4">
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
@@ -744,11 +757,21 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <img
-                        src="/illustrations/food.png"
-                        alt="Kittypau comedero"
-                        className="mx-auto h-28 w-40 object-contain object-center"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFoodVisualState((prev) => nextFoodState[prev]);
+                        }}
+                        className="group cursor-pointer appearance-none border-0 bg-transparent p-0"
+                        aria-label="Cambiar nivel visual de alimento"
+                        title="Cambiar nivel visual de alimento"
+                      >
+                        <img
+                          src={foodImageByState[foodVisualState]}
+                          alt="Kittypau comedero"
+                          className="mx-auto h-28 w-40 select-none object-contain object-center transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                        />
+                      </button>
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {bowlDevice?.device_id ?? "KPCLXXXX"}
                       </p>
@@ -795,7 +818,7 @@ export default function TodayPage() {
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
-                        src="/illustrations/water.png"
+                        src="/illustrations/pink_water_full.png"
                         alt="Kittypau bebedero"
                         className="mx-auto h-28 w-40 object-contain object-center"
                       />
