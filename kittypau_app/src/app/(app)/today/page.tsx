@@ -714,8 +714,8 @@ export default function TodayPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="flex items-center gap-3">
-                    <div className="flex w-10 shrink-0 flex-col items-center gap-1">
+                  <div className="relative min-h-[132px]">
+                    <div className="absolute left-0 top-1/2 flex w-10 -translate-y-1/2 flex-col items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
                         aria-label={
@@ -737,17 +737,17 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
-                    <div className="flex flex-1 justify-center">
+                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center">
                       <img
                         src="/illustrations/food.png"
                         alt="Kittypau comedero"
                         className="h-28 w-full max-w-[220px] object-contain"
                       />
+                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                        {bowlDevice?.device_id ?? "KPCLXXXX"}
+                      </p>
                     </div>
                   </div>
-                  <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                    {bowlDevice?.device_id ?? "KPCLXXXX"}
-                  </p>
                   <div className="mt-2 flex justify-center">
                     <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
                       Alimentación
@@ -756,8 +756,8 @@ export default function TodayPage() {
                 </article>
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="flex items-center gap-3">
-                    <div className="flex w-10 shrink-0 flex-col items-center gap-1">
+                  <div className="relative min-h-[132px]">
+                    <div className="absolute left-0 top-1/2 flex w-10 -translate-y-1/2 flex-col items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
                         aria-label={
@@ -779,17 +779,17 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
-                    <div className="flex flex-1 justify-center">
+                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center">
                       <img
                         src="/illustrations/water.png"
                         alt="Kittypau bebedero"
                         className="h-28 w-full max-w-[220px] object-contain"
                       />
+                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                        {waterDevice?.device_id ?? "KPBWXXXX"}
+                      </p>
                     </div>
                   </div>
-                  <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                    {waterDevice?.device_id ?? "KPBWXXXX"}
-                  </p>
                   <div className="mt-2 flex justify-center">
                     <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
                       Hidratación
