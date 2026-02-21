@@ -427,19 +427,23 @@ body {
 }
 
 .app-nav-logo-wrap {
-  width: 90px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
   border-radius: 999px;
   display: grid;
   place-items: center;
+  overflow: hidden;
   background: #ffffff;
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
   box-shadow: 0 16px 28px -24px rgba(15, 23, 42, 0.45);
 }
 
 .app-nav-logo {
-  width: 78px;
-  height: 78px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  transform: scale(1.22);
+  transform-origin: center;
 }
 
 .app-nav-brand-title {
@@ -623,13 +627,16 @@ body {
   }
 
   .app-nav-logo-wrap {
-    width: 63px;
-    height: 63px;
+    width: 42px;
+    height: 42px;
   }
 
   .app-nav-logo {
-    width: 54px;
-    height: 54px;
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    transform: scale(1.22);
+    transform-origin: center;
   }
 
   .app-nav-links {
@@ -638,6 +645,7 @@ body {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
+    justify-content: center;
     gap: 8px;
     padding-bottom: 2px;
     scrollbar-width: none;
@@ -651,7 +659,7 @@ body {
   }
 
   .app-nav-admin-actions {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .app-nav-links::-webkit-scrollbar {
