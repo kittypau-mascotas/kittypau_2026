@@ -737,21 +737,19 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center">
+                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
                         src="/illustrations/food.png"
                         alt="Kittypau comedero"
-                        className="h-28 w-full max-w-[220px] object-contain"
+                        className="mx-auto h-28 w-40 object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {bowlDevice?.device_id ?? "KPCLXXXX"}
                       </p>
+                      <span className="mt-2 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                        Alimentación
+                      </span>
                     </div>
-                  </div>
-                  <div className="mt-2 flex justify-center">
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                      Alimentación
-                    </span>
                   </div>
                 </article>
 
@@ -779,21 +777,19 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center">
+                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
                         src="/illustrations/water.png"
                         alt="Kittypau bebedero"
-                        className="h-28 w-full max-w-[220px] object-contain"
+                        className="mx-auto h-28 w-40 object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {waterDevice?.device_id ?? "KPBWXXXX"}
                       </p>
+                      <span className="mt-2 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                        Hidratación
+                      </span>
                     </div>
-                  </div>
-                  <div className="mt-2 flex justify-center">
-                    <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
-                      Hidratación
-                    </span>
                   </div>
                 </article>
               </div>
