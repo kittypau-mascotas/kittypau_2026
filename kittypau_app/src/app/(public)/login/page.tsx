@@ -37,7 +37,6 @@ export default function LoginPage() {
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
-  const foodClickAudioRefs = useRef<Array<HTMLAudioElement | null>>([]);
   const heroFoodSoundIndexRef = useRef(0);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -80,13 +79,11 @@ export default function LoginPage() {
   ] as const;
   const playFoodClickSound = () => {
     const soundIdx = heroFoodSoundIndexRef.current;
-    const target = foodClickAudioRefs.current[soundIdx];
-    if (target) {
-      // Clone to ensure reliable playback on rapid sequential clicks.
-      const instance = target.cloneNode(true) as HTMLAudioElement;
-      instance.currentTime = 0;
-      void instance.play().catch(() => undefined);
-    }
+    const soundSrc = heroFoodSoundFiles[soundIdx];
+    const instance = new Audio(soundSrc);
+    instance.preload = "auto";
+    instance.currentTime = 0;
+    void instance.play().catch(() => undefined);
     heroFoodSoundIndexRef.current = (soundIdx + 1) % heroFoodSoundFiles.length;
   };
 
@@ -527,27 +524,6 @@ export default function LoginPage() {
         <div className="login-collage" />
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
-      <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[0] = el;
-        }}
-        src="/audio/comer_1.mp3"
-        preload="auto"
-      />
-      <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[1] = el;
-        }}
-        src="/audio/comer_2.mp3"
-        preload="auto"
-      />
-      <audio
-        ref={(el) => {
-          foodClickAudioRefs.current[2] = el;
-        }}
-        src="/audio/comer_3.mp3"
-        preload="auto"
-      />
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
