@@ -104,8 +104,8 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
 
 ### Paso Dispositivo
 - Selector de tipo migrado a cards visuales:
-  - `Comida` (`/illustrations/food.png`)
-  - `Agua` (`/illustrations/water.png`)
+  - `Comida` (`/illustrations/pink_food_full.png`)
+  - `Agua` (`/illustrations/green_water_full.png`)
 - El tipo seleccionado se mantiene en el resumen final del registro.
 
 ### Finalización del flujo

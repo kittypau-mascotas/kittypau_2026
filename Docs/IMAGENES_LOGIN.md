@@ -98,6 +98,11 @@ Assets versionados actuales:
 Notas:
 - `food.png` y `water.png` quedaron deprecados y removidos del flujo actual.
 - Login hero usa `pink_food_full.png`.
+- Interaccion del plato hero en login:
+  - ciclo visual infinito por click:
+    `full -> medium -> empty -> medium -> full -> ...`
+  - audio por click:
+    `comer_1.mp3 -> comer_2.mp3 -> comer_3.mp3 -> repetir`.
 
 ---
 

@@ -55,6 +55,11 @@ por "eventos / interpretaciones / historia".
 - Metodo de acceso (Google/Apple/Email)
 - Nota: Google/Apple aun no estan activos (no funciona).
 - Si email: formulario simple
+- Hero del login (plato grande):
+  - plato clickeable con ciclo visual infinito:
+    `pink_food_full` -> `pink_food_medium` -> `pink_empty` -> `pink_food_medium` -> `pink_food_full` -> ...
+  - audio por click con ciclo:
+    `comer_1` -> `comer_2` -> `comer_3` -> repetir.
 **Datos / API**
 - Supabase Auth (signInWithPassword)
 

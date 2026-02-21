@@ -314,10 +314,6 @@
   - `Ultima lectura` movida junto al badge de `Alimentacion` y `Hidratacion`,
   - eliminado texto de frescura "Muy reciente" dentro de esas cards,
   - foto mascota clickeable para abrir ajustes de foto en `/pet` (se elimino link separado).
-- Interaccion visual del plato de comida en `/today`:
-  - hover reduce escala (feedback de boton),
-  - active reduce mas (estado de click),
-  - ciclo visual al click: `pink_food_full` -> `pink_food_medium` -> `pink_empty` -> `pink_food_medium` -> ...
 - Navbar:
   - logo migrado a `logo.jpg`,
   - zoom del logo sin agrandar contenedor del navbar,
@@ -332,6 +328,12 @@
 - Ajuste de interaccion:
   - animacion/interaccion de plato se mantiene solo en el plato grande del login.
   - en `/today`, los platos quedan estaticos (sin hover/click de cambio de estado).
+- Login hero (plato grande) actualizado:
+  - ciclo visual infinito por click:
+    `full -> medium -> empty -> medium -> full -> ...`
+  - ciclo de audio por click:
+    `comer_1.mp3 -> comer_2.mp3 -> comer_3.mp3 -> comer_1.mp3 -> ...`
+  - assets de audio versionados en `kittypau_app/public/audio/`.
 - Pendiente funcional documentado (roadmap UI de platos):
   - `0%` -> plato vacio (`pink_empty` / variante agua vacia futura).
   - `50% aprox` -> plato medio (`pink_food_medium` / `pink_water_medium`).

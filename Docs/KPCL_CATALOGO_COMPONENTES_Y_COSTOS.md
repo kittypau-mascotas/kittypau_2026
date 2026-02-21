@@ -101,7 +101,7 @@ Con ventana de 28 dias:
 - Conversion referencia: 0.0168 USD/g.
 
 ## Uso en dashboard admin
-- Selector de KPCL bajo imagen del comedero (`public/illustrations/food.png`).
+- Selector de KPCL bajo imagen del comedero (`public/illustrations/pink_food_full.png`).
 - Lista por componente, costo unitario, subtotal y total de unidad.
 - Bloque separado para OPEX mensual estimado por KPCL.
 

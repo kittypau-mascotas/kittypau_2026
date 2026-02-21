@@ -836,14 +836,17 @@ Si un componente no existe en esta lista, primero se agrega aqui y luego se impl
 ## Ilustraciones operativas (2026-02-21)
 - Comida (default): `kittypau_app/public/illustrations/pink_food_full.png`
 - Agua (default): `kittypau_app/public/illustrations/green_water_full.png`
-- Estados comida en `/today`:
+- Estados comida (ciclo visual en login):
   - `pink_food_full.png`
   - `pink_food_medium.png`
   - `pink_empty.png`
-- Interaccion UX comida en `/today`:
-  - hover: escala menor (indica boton),
-  - active: escala aun menor (feedback de presion),
-  - click: ciclo visual de estados del plato.
+- Interaccion UX comida:
+  - en `/login` (solo plato grande): hover + active + click con ciclo visual.
+  - en `/today`: platos estaticos (sin ciclo por click).
+- Audio de click en plato login:
+  - `kittypau_app/public/audio/comer_1.mp3`
+  - `kittypau_app/public/audio/comer_2.mp3`
+  - `kittypau_app/public/audio/comer_3.mp3`
 
 ## Navbar (ajuste visual)
 - Se mantiene tamaño de contenedor del logo para no crecer alto del navbar.
