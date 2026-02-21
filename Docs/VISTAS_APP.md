@@ -126,8 +126,11 @@ por "eventos / interpretaciones / historia".
   - temperatura y humedad,
   - ultima lectura (timestamp real del dispositivo).
 - Interaccion UX en card comida:
-  - imagen clickeable con feedback visual hover/active,
-  - ciclo de imagen: `pink_food_full` -> `pink_food_medium` -> `pink_empty` -> `pink_food_medium` -> ...
+  - actualmente sin interaccion manual (imagen estatica en `/today`).
+  - pendiente: cambiar estado visual por porcentaje real de comida/agua por KPCL:
+    - 0%: vacio,
+    - ~50%: medio,
+    - 100%: lleno.
 **Datos / API**
 - `GET /api/readings?device_uuid=...&limit=50` (historial)
 - Supabase Realtime (`readings`) integrado.

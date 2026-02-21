@@ -329,3 +329,11 @@
 - Convencion visual oficial de dispositivos:
   - plato de comida por defecto: `pink_food_full.png`
   - plato de agua por defecto: `green_water_full.png`
+- Ajuste de interaccion:
+  - animacion/interaccion de plato se mantiene solo en el plato grande del login.
+  - en `/today`, los platos quedan estaticos (sin hover/click de cambio de estado).
+- Pendiente funcional documentado (roadmap UI de platos):
+  - `0%` -> plato vacio (`pink_empty` / variante agua vacia futura).
+  - `50% aprox` -> plato medio (`pink_food_medium` / `pink_water_medium`).
+  - `100%` -> plato lleno (`pink_food_full` / `green_water_full`).
+  - la transicion final debe estar basada en dato real por KPCL (comida/agua), no en click manual.

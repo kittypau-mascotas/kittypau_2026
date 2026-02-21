@@ -35,6 +35,7 @@ export default function LoginPage() {
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
+  const [heroFoodState, setHeroFoodState] = useState<"full" | "medium" | "empty">("full");
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -56,6 +57,17 @@ export default function LoginPage() {
     2: userCompleted,
     3: petCompleted,
     4: deviceCompleted,
+  };
+
+  const heroFoodImageByState: Record<"full" | "medium" | "empty", string> = {
+    full: "/illustrations/pink_food_full.png",
+    medium: "/illustrations/pink_food_medium.png",
+    empty: "/illustrations/pink_empty.png",
+  };
+  const nextHeroFoodState: Record<"full" | "medium" | "empty", "full" | "medium" | "empty"> = {
+    full: "medium",
+    medium: "empty",
+    empty: "medium",
   };
 
   const stepMeta = useMemo(
@@ -498,14 +510,22 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
-          <div className="login-hero-asset freeform-rise freeform-float" aria-hidden="true">
-            <img
-              src="/illustrations/pink_food_full.png"
-              alt=""
-              className="login-hero-asset-img"
-              loading="eager"
-              draggable={false}
-            />
+          <div className="login-hero-asset freeform-rise freeform-float">
+            <button
+              type="button"
+              onClick={() => setHeroFoodState((prev) => nextHeroFoodState[prev])}
+              className="group cursor-pointer appearance-none border-0 bg-transparent p-0"
+              aria-label="Cambiar nivel visual del plato"
+              title="Cambiar nivel visual del plato"
+            >
+              <img
+                src={heroFoodImageByState[heroFoodState]}
+                alt="Plato de comida Kittypau"
+                className="login-hero-asset-img select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                loading="eager"
+                draggable={false}
+              />
+            </button>
           </div>
           <h1 className="login-hero-title display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
             Tu plato inteligente, tu historia diaria.

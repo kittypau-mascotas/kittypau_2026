@@ -50,8 +50,6 @@ type StatCard = {
   icon?: string;
 };
 
-type FoodVisualState = "full" | "medium" | "empty";
-
 type LoadState = {
   isLoading: boolean;
   error: string | null;
@@ -141,7 +139,6 @@ export default function TodayPage() {
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
-  const [foodVisualState, setFoodVisualState] = useState<FoodVisualState>("full");
 
   useEffect(() => {
     let mounted = true;
@@ -631,16 +628,6 @@ export default function TodayPage() {
   };
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
   const waterPowerState = resolveDevicePowerState(waterDevice);
-  const foodImageByState: Record<FoodVisualState, string> = {
-    full: "/illustrations/pink_food_full.png",
-    medium: "/illustrations/pink_food_medium.png",
-    empty: "/illustrations/pink_empty.png",
-  };
-  const nextFoodState: Record<FoodVisualState, FoodVisualState> = {
-    full: "medium",
-    medium: "empty",
-    empty: "medium",
-  };
 
   return (
     <div className="min-h-screen px-6 py-10">
@@ -757,21 +744,11 @@ export default function TodayPage() {
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFoodVisualState((prev) => nextFoodState[prev]);
-                        }}
-                        className="group cursor-pointer appearance-none border-0 bg-transparent p-0"
-                        aria-label="Cambiar nivel visual de alimento"
-                        title="Cambiar nivel visual de alimento"
-                      >
-                        <img
-                          src={foodImageByState[foodVisualState]}
-                          alt="Kittypau comedero"
-                          className="mx-auto h-28 w-40 select-none object-contain object-center transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
-                        />
-                      </button>
+                      <img
+                        src="/illustrations/pink_food_full.png"
+                        alt="Kittypau comedero"
+                        className="mx-auto h-28 w-40 object-contain object-center"
+                      />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {bowlDevice?.device_id ?? "KPCLXXXX"}
                       </p>
