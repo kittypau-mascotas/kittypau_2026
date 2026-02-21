@@ -113,6 +113,21 @@ por "eventos / interpretaciones / historia".
 - Ultimo evento.
 - No mostrar graficos inicialmente.
 - Primer ingreso: mostrar **modo guia** (popup con fondo difuminado).
+- Hero operativo actual:
+  - avatar mascota (clic directo a `/pet` para ajuste de foto),
+  - selector de mascota por nombre (dropdown con mini fotos),
+  - dos cards principales: `Alimentacion` y `Hidratacion`.
+- Reglas de asociacion KPCL en hero:
+  - por defecto por mascota activa (`pet_id`),
+  - soporte de mapeo por `test_####`: comida `KPCL####`, agua `KPCL####+1`.
+- Datos mostrados por card (siempre por KPCL real):
+  - estado ON/OFF/Sin data,
+  - bateria,
+  - temperatura y humedad,
+  - ultima lectura (timestamp real del dispositivo).
+- Interaccion UX en card comida:
+  - imagen clickeable con feedback visual hover/active,
+  - ciclo de imagen: `pink_food_full` -> `pink_food_medium` -> `pink_empty` -> `pink_food_medium` -> ...
 **Datos / API**
 - `GET /api/readings?device_uuid=...&limit=50` (historial)
 - Supabase Realtime (`readings`) integrado.
@@ -357,6 +372,8 @@ Los numeros existen, pero como evidencia secundaria.
 ## Branding UI
 - Logo presente en top nav y pantallas de login/registro.
 - Loading con logo girando + texto Cargando.
+- Fondo global app alineado al estilo visual del login.
+- Navbar mobile centrado (links y acciones).
 
 
 ## Redes sociales

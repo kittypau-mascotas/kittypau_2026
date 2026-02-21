@@ -298,3 +298,34 @@
   - DB (tablas) + Storage (objetos).
 - Fix aplicado al catalogo admin para evitar error 500 por tablas sin `created_at/updated_at`:
   - `supabase/migrations/20260219202000_fix_admin_object_stats_timestamp_columns.sql`
+
+## Actualizado (2026-02-21) - UI today/login + assets unificados
+- `/today` usa fondo global de app (mismo gradiente visual del login), eliminando el fondo inline local.
+- Hero de `/today` actualizado:
+  - selector de mascota por nombre (dropdown con mini foto),
+  - persistencia de `kittypau_pet_id`,
+  - mapeo por nombre `test_####` a KPCL principal.
+- Mapeo operativo aplicado para parejas de dispositivos:
+  - alimento: `KPCL####`
+  - hidratacion: `KPCL#### + 1`
+  - ejemplo: `test_0038` -> comida `KPCL0038`, agua `KPCL0039`.
+- Cards de alimento/hidratacion en `/today`:
+  - KPI superior eliminado (Estado general / Ultima lectura / Bateria),
+  - `Ultima lectura` movida junto al badge de `Alimentacion` y `Hidratacion`,
+  - eliminado texto de frescura "Muy reciente" dentro de esas cards,
+  - foto mascota clickeable para abrir ajustes de foto en `/pet` (se elimino link separado).
+- Interaccion visual del plato de comida en `/today`:
+  - hover reduce escala (feedback de boton),
+  - active reduce mas (estado de click),
+  - ciclo visual al click: `pink_food_full` -> `pink_food_medium` -> `pink_empty` -> `pink_food_medium` -> ...
+- Navbar:
+  - logo migrado a `logo.jpg`,
+  - zoom del logo sin agrandar contenedor del navbar,
+  - enlaces de navbar centrados en mobile.
+- Assets de ilustraciones normalizados y versionados en repo:
+  - agregados: `pink_food_full.png`, `pink_food_medium.png`, `pink_empty.png`,
+    `pink_water_full.png`, `pink_water_medium.png`, `green_water_full.png`.
+  - removidos assets legacy no usados: `food.png`, `water.png`.
+- Convencion visual oficial de dispositivos:
+  - plato de comida por defecto: `pink_food_full.png`
+  - plato de agua por defecto: `green_water_full.png`

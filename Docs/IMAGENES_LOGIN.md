@@ -83,6 +83,22 @@ Archivos:
 - `perro_2.png`
 - `plato_cental.png`
 
+## Assets vigentes en frontend (public/illustrations)
+Directorio de runtime:
+`kittypau_app/public/illustrations`
+
+Assets versionados actuales:
+- `pink_food_full.png` (plato comida por defecto)
+- `pink_food_medium.png` (estado intermedio comida)
+- `pink_empty.png` (estado vacio comida)
+- `green_water_full.png` (plato agua por defecto)
+- `pink_water_full.png` (variante agua)
+- `pink_water_medium.png` (variante agua intermedia)
+
+Notas:
+- `food.png` y `water.png` quedaron deprecados y removidos del flujo actual.
+- Login hero usa `pink_food_full.png`.
+
 ---
 
 ## Uso para parallax (orden de capas recomendado)

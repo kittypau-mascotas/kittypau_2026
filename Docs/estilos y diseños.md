@@ -833,3 +833,20 @@ Si un componente no existe en esta lista, primero se agrega aqui y luego se impl
 - Loading screens: fondo blanco + logo girando (loading.tsx + route overlay).
 - Paleta: tokens HSL actualizados en kittypau_app/src/app/globals.css segun la guia.
 
+## Ilustraciones operativas (2026-02-21)
+- Comida (default): `kittypau_app/public/illustrations/pink_food_full.png`
+- Agua (default): `kittypau_app/public/illustrations/green_water_full.png`
+- Estados comida en `/today`:
+  - `pink_food_full.png`
+  - `pink_food_medium.png`
+  - `pink_empty.png`
+- Interaccion UX comida en `/today`:
+  - hover: escala menor (indica boton),
+  - active: escala aun menor (feedback de presion),
+  - click: ciclo visual de estados del plato.
+
+## Navbar (ajuste visual)
+- Se mantiene tamaño de contenedor del logo para no crecer alto del navbar.
+- Se aplica zoom/escala al logo dentro del contenedor.
+- En mobile, los menus del navbar quedan centrados respecto al ancho de pantalla.
+
