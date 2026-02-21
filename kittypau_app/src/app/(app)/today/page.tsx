@@ -492,14 +492,6 @@ export default function TodayPage() {
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
     [latestReading?.recorded_at]
   );
-  const bowlFreshnessLabel = useMemo(
-    () => getFreshnessLabelByTimestamp(bowlLatestReading?.recorded_at),
-    [bowlLatestReading?.recorded_at]
-  );
-  const waterFreshnessLabel = useMemo(
-    () => getFreshnessLabelByTimestamp(waterLatestReading?.recorded_at),
-    [waterLatestReading?.recorded_at]
-  );
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -771,9 +763,6 @@ export default function TodayPage() {
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
                             {formatTimestamp(bowlLatestReading?.recorded_at)}
                           </p>
-                          <p className="mt-0.5 text-[9px] leading-none text-slate-500">
-                            {bowlFreshnessLabel}
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -823,9 +812,6 @@ export default function TodayPage() {
                           </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
                             {formatTimestamp(waterLatestReading?.recorded_at)}
-                          </p>
-                          <p className="mt-0.5 text-[9px] leading-none text-slate-500">
-                            {waterFreshnessLabel}
                           </p>
                         </div>
                       </div>
