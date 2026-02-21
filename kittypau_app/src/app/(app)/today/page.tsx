@@ -84,6 +84,17 @@ function formatTimestamp(value?: string | null) {
   }).format(date);
 }
 
+function getFreshnessLabelByTimestamp(value?: string | null) {
+  if (!value) return "Sin datos";
+  const ts = new Date(value).getTime();
+  if (Number.isNaN(ts)) return "Sin datos";
+  const diffMin = Math.round((Date.now() - ts) / 60000);
+  if (diffMin <= 2) return "Muy reciente";
+  if (diffMin <= 10) return "Reciente";
+  if (diffMin <= 30) return "Moderado";
+  return "Desactualizado";
+}
+
 function resolveDevicePowerState(
   device: Pick<ApiDevice, "device_state" | "status"> | null | undefined
 ): "on" | "off" | "nodata" {
@@ -477,16 +488,18 @@ export default function TodayPage() {
   const latestReading = state.readings[0] ?? null;
   const bowlLatestReading = bowlDevice?.id ? (deviceLatestReadings[bowlDevice.id] ?? null) : null;
   const waterLatestReading = waterDevice?.id ? (deviceLatestReadings[waterDevice.id] ?? null) : null;
-  const freshnessLabel = useMemo(() => {
-    if (!latestReading?.recorded_at) return "Sin datos";
-    const ts = new Date(latestReading.recorded_at).getTime();
-    if (Number.isNaN(ts)) return "Sin datos";
-    const diffMin = Math.round((Date.now() - ts) / 60000);
-    if (diffMin <= 2) return "Muy reciente";
-    if (diffMin <= 10) return "Reciente";
-    if (diffMin <= 30) return "Moderado";
-    return "Desactualizado";
-  }, [latestReading?.recorded_at]);
+  const freshnessLabel = useMemo(
+    () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
+    [latestReading?.recorded_at]
+  );
+  const bowlFreshnessLabel = useMemo(
+    () => getFreshnessLabelByTimestamp(bowlLatestReading?.recorded_at),
+    [bowlLatestReading?.recorded_at]
+  );
+  const waterFreshnessLabel = useMemo(
+    () => getFreshnessLabelByTimestamp(waterLatestReading?.recorded_at),
+    [waterLatestReading?.recorded_at]
+  );
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -747,9 +760,22 @@ export default function TodayPage() {
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {bowlDevice?.device_id ?? "KPCLXXXX"}
                       </p>
-                      <span className="mt-2 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                        Alimentación
-                      </span>
+                      <div className="mt-2 flex w-full items-start justify-center gap-2">
+                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                          Alimentación
+                        </span>
+                        <div className="text-left">
+                          <p className="text-[10px] font-semibold leading-none text-slate-500">
+                            Última lectura
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {formatTimestamp(bowlLatestReading?.recorded_at)}
+                          </p>
+                          <p className="mt-0.5 text-[9px] leading-none text-slate-500">
+                            {bowlFreshnessLabel}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -787,51 +813,28 @@ export default function TodayPage() {
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {waterDevice?.device_id ?? "KPBWXXXX"}
                       </p>
-                      <span className="mt-2 rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
-                        Hidratación
-                      </span>
+                      <div className="mt-2 flex w-full items-start justify-center gap-2">
+                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                          Hidratación
+                        </span>
+                        <div className="text-left">
+                          <p className="text-[10px] font-semibold leading-none text-slate-500">
+                            Última lectura
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {formatTimestamp(waterLatestReading?.recorded_at)}
+                          </p>
+                          <p className="mt-0.5 text-[9px] leading-none text-slate-500">
+                            {waterFreshnessLabel}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </article>
               </div>
             </div>
           </section>
-          <div className="stagger grid gap-4 md:grid-cols-3">
-            <div className="surface-card freeform-rise px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Estado general
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
-                {primaryDevice?.status ?? "Sin datos"}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                {primaryDevice?.device_state ?? "Sin estado técnico"}
-              </p>
-            </div>
-            <div className="surface-card freeform-rise px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Última lectura
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
-                {formatTimestamp(latestReading?.recorded_at)}
-              </p>
-              <p className="mt-1 text-xs font-semibold text-slate-500">
-                {freshnessLabel}
-              </p>
-            </div>
-            <div className="surface-card freeform-rise px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Batería
-              </p>
-              <p className="mt-2 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-                <BatteryStatusIcon level={primaryDevice?.battery_level} className="h-5 w-5" />
-                {primaryDevice?.battery_level !== null &&
-                primaryDevice?.battery_level !== undefined
-                  ? `${primaryDevice.battery_level}%`
-                  : "Sin datos"}
-              </p>
-            </div>
-          </div>
         </header>
 
         <section className="surface-card freeform-rise px-6 py-5">
