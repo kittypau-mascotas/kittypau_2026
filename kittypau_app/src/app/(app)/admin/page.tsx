@@ -1771,7 +1771,7 @@ export default function AdminPage() {
               <div className="mt-5 grid gap-4 lg:grid-cols-[220px_1fr]">
                 <div className="rounded-[var(--radius)] border border-slate-200 bg-white p-3">
                   <Image
-                    src="/illustrations/food.png"
+                    src="/illustrations/pink_food_full.png"
                     alt="Kittypau comedero"
                     width={220}
                     height={220}

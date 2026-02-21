@@ -1285,7 +1285,7 @@ export default function RegistroFlow({
                   }`}
                 >
                   <img
-                    src="/illustrations/food.png"
+                    src="/illustrations/pink_food_full.png"
                     alt="Plato de comida"
                     className="mx-auto h-20 w-auto object-contain"
                   />
@@ -1308,7 +1308,7 @@ export default function RegistroFlow({
                   }`}
                 >
                   <img
-                    src="/illustrations/water.png"
+                    src="/illustrations/pink_water_full.png"
                     alt="Plato de agua"
                     className="mx-auto h-20 w-auto object-contain"
                   />
