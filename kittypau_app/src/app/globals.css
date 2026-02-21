@@ -427,8 +427,8 @@ body {
 }
 
 .app-nav-logo-wrap {
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -438,8 +438,8 @@ body {
 }
 
 .app-nav-logo {
-  width: 52px;
-  height: 52px;
+  width: 78px;
+  height: 78px;
 }
 
 .app-nav-brand-title {
@@ -623,13 +623,13 @@ body {
   }
 
   .app-nav-logo-wrap {
-    width: 42px;
-    height: 42px;
+    width: 63px;
+    height: 63px;
   }
 
   .app-nav-logo {
-    width: 36px;
-    height: 36px;
+    width: 54px;
+    height: 54px;
   }
 
   .app-nav-links {
