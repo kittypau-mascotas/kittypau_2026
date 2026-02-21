@@ -36,7 +36,9 @@ export default function LoginPage() {
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [heroFoodCycleIndex, setHeroFoodCycleIndex] = useState(0);
+  const [heroFoodSoundIndex, setHeroFoodSoundIndex] = useState(0);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
+  const foodClickAudioRefs = useRef<Array<HTMLAudioElement | null>>([]);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
     [registerStep]
@@ -71,6 +73,14 @@ export default function LoginPage() {
     "medium",
   ];
   const currentHeroFoodState = heroFoodCycle[heroFoodCycleIndex];
+  const playFoodClickSound = () => {
+    const target = foodClickAudioRefs.current[heroFoodSoundIndex];
+    if (target) {
+      target.currentTime = 0;
+      void target.play().catch(() => undefined);
+    }
+    setHeroFoodSoundIndex((prev) => (prev + 1) % 3);
+  };
 
   const stepMeta = useMemo(
     () => [
@@ -509,15 +519,37 @@ export default function LoginPage() {
         <div className="login-collage" />
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
+      <audio
+        ref={(el) => {
+          foodClickAudioRefs.current[0] = el;
+        }}
+        src="/audio/comer_1.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={(el) => {
+          foodClickAudioRefs.current[1] = el;
+        }}
+        src="/audio/comer_2.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={(el) => {
+          foodClickAudioRefs.current[2] = el;
+        }}
+        src="/audio/comer_3.mp3"
+        preload="auto"
+      />
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
           <div className="login-hero-asset freeform-rise freeform-float">
             <button
               type="button"
-              onClick={() =>
-                setHeroFoodCycleIndex((prev) => (prev + 1) % heroFoodCycle.length)
-              }
+              onClick={() => {
+                playFoodClickSound();
+                setHeroFoodCycleIndex((prev) => (prev + 1) % heroFoodCycle.length);
+              }}
               className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
               aria-label="Cambiar nivel visual del plato"
               title="Cambiar nivel visual del plato"
