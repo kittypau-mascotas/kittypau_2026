@@ -105,9 +105,23 @@ function resolveDevicePowerState(
   return "nodata";
 }
 
+function parsePetNumberSuffix(petName: string | null | undefined): number | null {
+  if (!petName) return null;
+  const match = petName.match(/test[_\s-]*(\d{3,4})/i);
+  if (!match) return null;
+  const parsed = Number.parseInt(match[1], 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function kpclLabelFromNumber(value: number): string {
+  return `KPCL${String(value).padStart(4, "0")}`;
+}
+
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+  const [isPetMenuOpen, setIsPetMenuOpen] = useState(false);
   const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -214,20 +228,33 @@ export default function TodayPage() {
         const devices = parseListResponse<ApiDevice>(devicesPayload);
         const profile = parseProfile(profilePayload);
 
-        const primaryPet = pets[0];
+        const storedPetId =
+          typeof window !== "undefined"
+            ? window.localStorage.getItem("kittypau_pet_id")
+            : null;
+        const primaryPet =
+          pets.find((pet) => pet.id === storedPetId) ??
+          pets[0];
         const storedDeviceId =
           typeof window !== "undefined"
             ? window.localStorage.getItem("kittypau_device_id")
             : null;
+        const petSuffix = parsePetNumberSuffix(primaryPet?.name);
+        const expectedFoodDeviceId = petSuffix ? kpclLabelFromNumber(petSuffix) : null;
         const primaryDevice =
           devices.find((device) => device.id === storedDeviceId) ??
+          devices.find((device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId) ??
           devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
 
         let readings: ApiReading[] = [];
         let readingsCursor: string | null = null;
         const initialDeviceId = primaryDevice?.id ?? null;
+        setSelectedPetId(primaryPet?.id ?? null);
         setSelectedDeviceId(initialDeviceId);
+        if (primaryPet?.id && typeof window !== "undefined") {
+          window.localStorage.setItem("kittypau_pet_id", primaryPet.id);
+        }
         if (initialDeviceId && typeof window !== "undefined") {
           window.localStorage.setItem("kittypau_device_id", initialDeviceId);
         }
@@ -386,24 +413,58 @@ export default function TodayPage() {
     }
   };
 
-  const primaryPet = state.pets[0];
+  const primaryPet =
+    state.pets.find((pet) => pet.id === selectedPetId) ??
+    state.pets[0];
+  const selectedPetSuffix = parsePetNumberSuffix(primaryPet?.name);
+  const expectedFoodDeviceCode = selectedPetSuffix ? kpclLabelFromNumber(selectedPetSuffix) : null;
+  const expectedWaterDeviceCode = selectedPetSuffix
+    ? kpclLabelFromNumber(selectedPetSuffix + 1)
+    : null;
+  const petDevices = useMemo(() => {
+    const base = state.devices.filter((device) => device.pet_id === primaryPet?.id);
+    const byFoodCode = expectedFoodDeviceCode
+      ? state.devices.find(
+          (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+        )
+      : null;
+    const byWaterCode = expectedWaterDeviceCode
+      ? state.devices.find(
+          (device) => (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode
+        )
+      : null;
+    const merged = [...base];
+    if (byFoodCode && !merged.some((item) => item.id === byFoodCode.id)) merged.push(byFoodCode);
+    if (byWaterCode && !merged.some((item) => item.id === byWaterCode.id)) merged.push(byWaterCode);
+    return merged;
+  }, [state.devices, primaryPet?.id, expectedFoodDeviceCode, expectedWaterDeviceCode]);
   const ownerLabel =
     state.profile?.owner_name ||
     state.profile?.user_name ||
     "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
   const primaryDevice =
+    petDevices.find((device) => device.id === selectedDeviceId) ??
+    petDevices.find(
+      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+    ) ??
+    petDevices[0] ??
     state.devices.find((device) => device.id === selectedDeviceId) ??
-    state.devices.find((device) => device.pet_id === primaryPet?.id) ??
     state.devices[0];
   const bowlDevice =
-    state.devices.find(
+    petDevices.find(
+      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+    ) ??
+    petDevices.find(
       (device) =>
         device.device_id?.toUpperCase().includes("KPCL") ||
         (device.device_type ?? "").toLowerCase().includes("comedero")
     ) ?? primaryDevice;
   const waterDevice =
-    state.devices.find((device) => {
+    petDevices.find(
+      (device) => (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode
+    ) ??
+    petDevices.find((device) => {
       const id = (device.device_id ?? "").toUpperCase();
       const type = (device.device_type ?? "").toLowerCase();
       return (
@@ -570,7 +631,74 @@ export default function TodayPage() {
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
             <div className="grid gap-4 md:grid-cols-[180px_1fr]">
               <div className="flex flex-col items-center gap-2">
-                <p className="text-sm font-semibold text-slate-900">{petLabel}</p>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsPetMenuOpen((prev) => !prev)}
+                    className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-900"
+                  >
+                    {petLabel}
+                  </button>
+                  {isPetMenuOpen ? (
+                    <div className="absolute left-1/2 top-[calc(100%+6px)] z-20 w-52 -translate-x-1/2 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg">
+                      <div className="space-y-1">
+                        {state.pets.map((pet) => (
+                          <button
+                            key={pet.id}
+                            type="button"
+                            onClick={async () => {
+                              const suffix = parsePetNumberSuffix(pet.name);
+                              const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
+                              const nextDevice =
+                                state.devices.find(
+                                  (device) =>
+                                    (device.device_id ?? "").toUpperCase() === foodCode
+                                ) ??
+                                state.devices.find((device) => device.pet_id === pet.id) ??
+                                null;
+
+                              setSelectedPetId(pet.id);
+                              setIsPetMenuOpen(false);
+                              if (typeof window !== "undefined") {
+                                window.localStorage.setItem("kittypau_pet_id", pet.id);
+                              }
+
+                              if (!nextDevice) return;
+                              setSelectedDeviceId(nextDevice.id);
+                              if (typeof window !== "undefined") {
+                                window.localStorage.setItem("kittypau_device_id", nextDevice.id);
+                              }
+                              try {
+                                const result = await loadReadings(nextDevice.id);
+                                setState((prev) => ({
+                                  ...prev,
+                                  readings: result.data,
+                                  readingsCursor: result.nextCursor,
+                                }));
+                                setLastRefreshAt(new Date().toISOString());
+                                setRefreshError(null);
+                              } catch (err) {
+                                setRefreshError(
+                                  err instanceof Error
+                                    ? err.message
+                                    : "No se pudieron cargar las lecturas."
+                                );
+                              }
+                            }}
+                            className="flex w-full items-center gap-2 rounded-[10px] px-2 py-1 text-left hover:bg-slate-50"
+                          >
+                            <img
+                              src={pet.photo_url || "/pet_profile.jpeg"}
+                              alt={`Foto de ${pet.name}`}
+                              className="h-6 w-6 rounded-full border border-slate-200 object-cover"
+                            />
+                            <span className="text-xs font-medium text-slate-700">{pet.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
                 <img
                   src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                   alt={`Foto de ${petLabel}`}
