@@ -9,6 +9,7 @@
 - `Docs/PLAN_PROYECTO_KITTYPAU.md`
 - `Docs/ESTADO_AVANCE.md`
 - `Docs/ONBOARDING_JAVIER.md`
+- `Docs/GUIA_CLONADO_JAVO_IA.md`
 - `Docs/GITHUB_JAVO.md`
 - `Docs/GITHUB_MAURO.md`
 - `Docs/AVANCE_PUSHES_GITHUB.md`
@@ -54,6 +55,7 @@
 ## APIs y backend
 - `Docs/FRONT_BACK_APIS.md`
 - `Docs/BRIDGE_HEALTHCHECK.md`
+- `Docs/ESTADO_BRIDGE_ACTUAL.md`
 - `Docs/STORAGE_POLICIES.md`
 
 ## Flujos UX / UI
