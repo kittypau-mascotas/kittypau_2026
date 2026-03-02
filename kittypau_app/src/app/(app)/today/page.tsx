@@ -749,7 +749,7 @@ export default function TodayPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="relative min-h-[132px]">
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
+                    <div className="absolute right-2 top-2 flex items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
                         aria-label={
@@ -768,7 +768,8 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold leading-none text-slate-500">plato alimentacion</p>
+                    </div>
+                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <p className="text-[10px] font-semibold text-slate-700">{bowlContentWeightText} (contenido)</p>
                       <p className="text-[10px] font-semibold text-slate-700">{bowlPlateWeightText} (plato)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
@@ -794,7 +795,7 @@ export default function TodayPage() {
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="relative min-h-[132px]">
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
+                    <div className="absolute right-2 top-2 flex items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
                         aria-label={
@@ -813,7 +814,8 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold leading-none text-slate-500">plato hidratacion</p>
+                    </div>
+                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <p className="text-[10px] font-semibold text-slate-700">{waterVolumeCm3Text} (aprox)</p>
                       <p className="text-[10px] font-semibold text-slate-700">{waterPlateWeightText} (plato)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
