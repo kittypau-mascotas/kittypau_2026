@@ -30,6 +30,7 @@ Cada vez que Mauro o Javo haga `git push` a su rama personal:
 | 2026-03-02 | Mauro | feat/mauro-curcuma | e9913af | feat(login): implement 6-step food/water bowl cycle with randomized sound groups | pendiente | rama creada y sincronizada con `main` |
 | 2026-03-02 | Javo | feat/javo-mauro | e9913af | feat(login): implement 6-step food/water bowl cycle with randomized sound groups | pendiente | rama creada y sincronizada con `main` |
 | 2026-03-02 | Mauro | feat/mauro-curcuma | 928bda7 | chore(github): enforce collaboration guardrails and merge governance | pendiente | push realizado (PR 1 infra de colaboración listo) |
+| 2026-03-02 | Mauro | test/fusion-main-javo-mauro-2026-03-02 | 7768c57 | test: merge mauro branch into main test | pendiente | prueba de fusion publicada para evaluación (sin tocar `main`) |
 
 ## Comandos de verificación rápida
 ```bash
