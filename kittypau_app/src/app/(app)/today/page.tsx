@@ -613,6 +613,10 @@ export default function TodayPage() {
     bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
       ? `${bowlLatestReading.humidity}%`
       : "N/D";
+  const bowlWeightText =
+    bowlLatestReading?.weight_grams !== null && bowlLatestReading?.weight_grams !== undefined
+      ? `${bowlLatestReading.weight_grams} g`
+      : "N/D";
   const waterTempText =
     waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
       ? `${waterLatestReading.temperature}°C`
@@ -620,6 +624,16 @@ export default function TodayPage() {
   const waterHumidityText =
     waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
       ? `${waterLatestReading.humidity}%`
+      : "N/D";
+  const waterWeightText =
+    waterLatestReading?.weight_grams !== null && waterLatestReading?.weight_grams !== undefined
+      ? `${waterLatestReading.weight_grams} g`
+      : "N/D";
+  const waterVolumeCm3Text =
+    waterLatestReading?.water_ml !== null && waterLatestReading?.water_ml !== undefined
+      ? `${Math.round(waterLatestReading.water_ml)} cm3`
+      : waterLatestReading?.weight_grams !== null && waterLatestReading?.weight_grams !== undefined
+      ? `${Math.round(waterLatestReading.weight_grams)} cm3`
       : "N/D";
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
@@ -763,6 +777,12 @@ export default function TodayPage() {
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
                             {formatTimestamp(bowlLatestReading?.recorded_at)}
                           </p>
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
+                            Peso
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {bowlWeightText}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -812,6 +832,18 @@ export default function TodayPage() {
                           </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
                             {formatTimestamp(waterLatestReading?.recorded_at)}
+                          </p>
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
+                            Peso
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {waterWeightText}
+                          </p>
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
+                            Aprox. cm3
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {waterVolumeCm3Text}
                           </p>
                         </div>
                       </div>
