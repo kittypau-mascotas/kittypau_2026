@@ -109,6 +109,7 @@ export async function POST(req: NextRequest) {
     device_type?: string;
     status?: string;
     battery_level?: number;
+    plate_weight_grams?: number;
   };
 
   try {
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
     device_type: body?.device_type,
     status: body?.status ?? "active",
     battery_level: body?.battery_level ?? null,
+    plate_weight_grams: body?.plate_weight_grams ?? null,
   };
 
   if (payload.pet_id && typeof payload.pet_id !== "string") {
@@ -168,6 +170,21 @@ export async function POST(req: NextRequest) {
       400,
       "BATTERY_OUT_OF_RANGE",
       "battery_level must be between 0 and 100"
+    );
+  }
+
+  if (
+    payload.plate_weight_grams !== null &&
+    payload.plate_weight_grams !== undefined &&
+    (!Number.isFinite(payload.plate_weight_grams) ||
+      payload.plate_weight_grams <= 0 ||
+      payload.plate_weight_grams > 5000)
+  ) {
+    return apiError(
+      req,
+      400,
+      "INVALID_PLATE_WEIGHT",
+      "plate_weight_grams must be between 1 and 5000"
     );
   }
 
@@ -222,8 +239,22 @@ export async function POST(req: NextRequest) {
         payload: { device_id: retry.data.device_id, pet_id: retry.data.pet_id },
       });
 
+      if (payload.plate_weight_grams !== null) {
+        await supabase
+          .from("devices")
+          .update({ plate_weight_grams: payload.plate_weight_grams })
+          .eq("id", retry.data.id)
+          .eq("owner_id", user.id);
+      }
+
       logRequestEnd(req, startedAt, 201, { device_id: retry.data.id });
-      return NextResponse.json(retry.data, { status: 201 });
+      return NextResponse.json(
+        {
+          ...retry.data,
+          plate_weight_grams: payload.plate_weight_grams,
+        },
+        { status: 201 }
+      );
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);
   }
@@ -236,7 +267,21 @@ export async function POST(req: NextRequest) {
     payload: { device_id: data.device_id, pet_id: data.pet_id },
   });
 
+  if (payload.plate_weight_grams !== null) {
+    await supabase
+      .from("devices")
+      .update({ plate_weight_grams: payload.plate_weight_grams })
+      .eq("id", data.id)
+      .eq("owner_id", user.id);
+  }
+
   logRequestEnd(req, startedAt, 201, { device_id: data.id });
-  return NextResponse.json(data, { status: 201 });
+  return NextResponse.json(
+    {
+      ...data,
+      plate_weight_grams: payload.plate_weight_grams,
+    },
+    { status: 201 }
+  );
 }
 

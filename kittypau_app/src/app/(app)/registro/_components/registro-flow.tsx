@@ -118,6 +118,7 @@ export default function RegistroFlow({
     pet_id: "",
     device_id: "",
     device_type: "food_bowl" as "food_bowl" | "water_bowl",
+    plate_weight_grams: "",
   });
 
   const [token, setToken] = useState<string | null>(null);
@@ -174,6 +175,12 @@ export default function RegistroFlow({
       issues.push("Código debe ser KPCL0000.");
     }
     if (!deviceForm.device_type.trim()) issues.push("Tipo de dispositivo requerido.");
+    const tare = Number(deviceForm.plate_weight_grams);
+    if (!deviceForm.plate_weight_grams.trim()) {
+      issues.push("Peso del plato requerido.");
+    } else if (!Number.isFinite(tare) || tare <= 0 || tare > 5000) {
+      issues.push("Peso del plato debe estar entre 1 y 5000 g.");
+    }
     return { ok: issues.length === 0, issues };
   }, [deviceForm]);
 
@@ -591,6 +598,7 @@ export default function RegistroFlow({
         },
         body: JSON.stringify({
           ...deviceForm,
+          plate_weight_grams: Number(deviceForm.plate_weight_grams),
           status: "active",
         }),
       });
@@ -1322,6 +1330,41 @@ export default function RegistroFlow({
                   Selecciona el tipo de dispositivo.
                 </p>
               ) : null}
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Peso del plato (g)
+                </label>
+                <TooltipIcon text="Peso del plato auxiliar vacío que va sobre Kittypau. Esto permite calcular contenido exacto." />
+              </div>
+              <input
+                type="number"
+                min={1}
+                max={5000}
+                className={inputClass(
+                  !deviceForm.plate_weight_grams.trim() ||
+                    !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
+                    Number(deviceForm.plate_weight_grams) <= 0
+                )}
+                placeholder="Ej: 320"
+                value={deviceForm.plate_weight_grams}
+                onChange={(event) =>
+                  setDeviceForm((prev) => ({
+                    ...prev,
+                    plate_weight_grams: event.target.value,
+                  }))
+                }
+              />
+              {showDeviceHints &&
+              (!deviceForm.plate_weight_grams.trim() ||
+                !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
+                Number(deviceForm.plate_weight_grams) <= 0) ? (
+                <p className="text-[11px] text-rose-600">
+                  Ingresa el peso del plato vacío en gramos.
+                </p>
+              ) : null}
+              <p className="text-[11px] text-slate-500">
+                Kittypau mide el peso total. Con esta tara se calcula el contenido del plato.
+              </p>
             </div>
             <button
               type="button"

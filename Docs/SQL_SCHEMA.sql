@@ -78,6 +78,7 @@ create table if not exists public.devices (
   wifi_ssid text,
   wifi_ip text,
   sensor_health text,
+  plate_weight_grams int check (plate_weight_grams is null or (plate_weight_grams > 0 and plate_weight_grams <= 5000)),
   battery_level int,
   last_seen timestamptz,
   created_at timestamptz not null default now()

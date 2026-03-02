@@ -26,6 +26,7 @@ type ApiDevice = {
   pet_id: string;
   device_id: string;
   device_type: string;
+  plate_weight_grams?: number | null;
   status: string;
   device_state: string | null;
   battery_level: number | null;
@@ -126,6 +127,11 @@ function parsePetNumberSuffix(petName: string | null | undefined): number | null
 
 function kpclLabelFromNumber(value: number): string {
   return `KPCL${String(value).padStart(4, "0")}`;
+}
+
+function toNonNegativeNumber(value: number | null | undefined): number {
+  if (value === null || value === undefined || !Number.isFinite(value)) return 0;
+  return Math.max(0, value);
 }
 
 export default function TodayPage() {
@@ -613,11 +619,11 @@ export default function TodayPage() {
     bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
       ? `${bowlLatestReading.humidity}%`
       : "N/D";
-  const bowlContentWeightText =
-    bowlLatestReading?.weight_grams !== null && bowlLatestReading?.weight_grams !== undefined
-      ? `${bowlLatestReading.weight_grams} g`
-      : "N/D";
-  const bowlPlateWeightText = "N/D";
+  const bowlPlateWeightGrams = toNonNegativeNumber(bowlDevice?.plate_weight_grams);
+  const bowlGrossWeightGrams = toNonNegativeNumber(bowlLatestReading?.weight_grams);
+  const bowlContentWeightGrams = Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams);
+  const bowlContentWeightText = `${Math.round(bowlContentWeightGrams)} g`;
+  const bowlPlateWeightText = `${Math.round(bowlPlateWeightGrams)} g`;
   const waterTempText =
     waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
       ? `${waterLatestReading.temperature}°C`
@@ -626,17 +632,12 @@ export default function TodayPage() {
     waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
       ? `${waterLatestReading.humidity}%`
       : "N/D";
-  const waterContentWeightText =
-    waterLatestReading?.weight_grams !== null && waterLatestReading?.weight_grams !== undefined
-      ? `${waterLatestReading.weight_grams} g`
-      : "N/D";
-  const waterPlateWeightText = "N/D";
-  const waterVolumeCm3Text =
-    waterLatestReading?.water_ml !== null && waterLatestReading?.water_ml !== undefined
-      ? `${Math.round(waterLatestReading.water_ml)} cm3`
-      : waterLatestReading?.weight_grams !== null && waterLatestReading?.weight_grams !== undefined
-      ? `${Math.round(waterLatestReading.weight_grams)} cm3`
-      : "N/D";
+  const waterPlateWeightGrams = toNonNegativeNumber(waterDevice?.plate_weight_grams);
+  const waterGrossWeightGrams = toNonNegativeNumber(waterLatestReading?.weight_grams);
+  const waterContentWeightGrams = Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams);
+  const waterContentWeightText = `${Math.round(waterContentWeightGrams)} g`;
+  const waterPlateWeightText = `${Math.round(waterPlateWeightGrams)} g`;
+  const waterVolumeCm3Text = `${Math.round(waterContentWeightGrams)} cm3`;
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
     off: "bg-rose-500 border-rose-400",
@@ -756,7 +757,7 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{bowlContentWeightText}</p>
+                      <p className="text-[10px] font-semibold text-slate-600">{bowlContentWeightText} (cont.)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
@@ -774,23 +775,11 @@ export default function TodayPage() {
                           Alimentación
                         </span>
                         <div className="text-left">
-                          <p className="text-[10px] font-semibold leading-none text-slate-500">
-                            Última lectura
-                          </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {formatTimestamp(bowlLatestReading?.recorded_at)}
+                            {bowlContentWeightText} (contenido)
                           </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso del plato
-                          </p>
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {bowlPlateWeightText}
-                          </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso del contenido
-                          </p>
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {bowlContentWeightText}
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-700">
+                            {bowlPlateWeightText} (plato)
                           </p>
                         </div>
                       </div>
@@ -819,7 +808,7 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{waterContentWeightText}</p>
+                      <p className="text-[10px] font-semibold text-slate-600">{waterContentWeightText} (cont.)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
@@ -837,29 +826,11 @@ export default function TodayPage() {
                           Hidratación
                         </span>
                         <div className="text-left">
-                          <p className="text-[10px] font-semibold leading-none text-slate-500">
-                            Última lectura
-                          </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {formatTimestamp(waterLatestReading?.recorded_at)}
+                            {waterVolumeCm3Text} (aprox. contenido)
                           </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso del plato
-                          </p>
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterPlateWeightText}
-                          </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso del contenido
-                          </p>
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterContentWeightText}
-                          </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Aprox. cm3
-                          </p>
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterVolumeCm3Text}
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-700">
+                            {waterPlateWeightText} (plato)
                           </p>
                         </div>
                       </div>
