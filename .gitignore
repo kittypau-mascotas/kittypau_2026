@@ -16,3 +16,4 @@ Docs/.env.test.local
 Test Graficos/
 kittypau_2026/
 kittypau_iot_firmware/
+iot_firmware/**/data/wifi.json

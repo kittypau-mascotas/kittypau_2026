@@ -1,0 +1,13 @@
+-- ============================================
+-- DEPRECADO - Schema antiguo del bridge
+-- ============================================
+-- Este archivo ya no se usa.
+-- El schema unificado esta en: ../SQL_UNIFICADO.sql
+--
+-- Ese archivo contiene TODAS las tablas del proyecto:
+--   profiles, breeds, pets, pet_breeds, devices,
+--   sensor_readings, system_events
+--
+-- Ejecutar SQL_UNIFICADO.sql en Supabase antes de
+-- iniciar el bridge v2.0.
+-- ============================================
