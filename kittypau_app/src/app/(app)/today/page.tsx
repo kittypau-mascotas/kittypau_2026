@@ -129,9 +129,9 @@ function kpclLabelFromNumber(value: number): string {
   return `KPCL${String(value).padStart(4, "0")}`;
 }
 
-function toNonNegativeNumber(value: number | null | undefined): number {
-  if (value === null || value === undefined || !Number.isFinite(value)) return 0;
-  return Math.max(0, value);
+function toNullableNumber(value: number | null | undefined): number | null {
+  if (value === null || value === undefined || !Number.isFinite(value)) return null;
+  return value;
 }
 
 export default function TodayPage() {
@@ -619,11 +619,16 @@ export default function TodayPage() {
     bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
       ? `${bowlLatestReading.humidity}%`
       : "N/D";
-  const bowlPlateWeightGrams = toNonNegativeNumber(bowlDevice?.plate_weight_grams);
-  const bowlGrossWeightGrams = toNonNegativeNumber(bowlLatestReading?.weight_grams);
-  const bowlContentWeightGrams = Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams);
-  const bowlContentWeightText = `${Math.round(bowlContentWeightGrams)} g`;
-  const bowlPlateWeightText = `${Math.round(bowlPlateWeightGrams)} g`;
+  const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
+  const bowlGrossWeightGrams = toNullableNumber(bowlLatestReading?.weight_grams);
+  const bowlContentWeightGrams =
+    bowlPlateWeightGrams !== null && bowlGrossWeightGrams !== null
+      ? Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams)
+      : null;
+  const bowlContentWeightText =
+    bowlContentWeightGrams !== null ? `${Math.round(bowlContentWeightGrams)} g` : "N/D";
+  const bowlPlateWeightText =
+    bowlPlateWeightGrams !== null ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g` : "N/D";
   const waterTempText =
     waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
       ? `${waterLatestReading.temperature}°C`
@@ -632,12 +637,18 @@ export default function TodayPage() {
     waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
       ? `${waterLatestReading.humidity}%`
       : "N/D";
-  const waterPlateWeightGrams = toNonNegativeNumber(waterDevice?.plate_weight_grams);
-  const waterGrossWeightGrams = toNonNegativeNumber(waterLatestReading?.weight_grams);
-  const waterContentWeightGrams = Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams);
-  const waterContentWeightText = `${Math.round(waterContentWeightGrams)} g`;
-  const waterPlateWeightText = `${Math.round(waterPlateWeightGrams)} g`;
-  const waterVolumeCm3Text = `${Math.round(waterContentWeightGrams)} cm3`;
+  const waterPlateWeightGrams = toNullableNumber(waterDevice?.plate_weight_grams);
+  const waterGrossWeightGrams = toNullableNumber(waterLatestReading?.weight_grams);
+  const waterContentWeightGrams =
+    waterPlateWeightGrams !== null && waterGrossWeightGrams !== null
+      ? Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams)
+      : null;
+  const waterContentWeightText =
+    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} g` : "N/D";
+  const waterPlateWeightText =
+    waterPlateWeightGrams !== null ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g` : "N/D";
+  const waterVolumeCm3Text =
+    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} cm3` : "N/D";
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
     off: "bg-rose-500 border-rose-400",
@@ -738,7 +749,7 @@ export default function TodayPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="relative min-h-[132px]">
-                    <div className="absolute left-0 top-1/2 flex w-10 -translate-y-1/2 flex-col items-center gap-1">
+                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
                         aria-label={
@@ -757,7 +768,9 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{bowlContentWeightText} (cont.)</p>
+                      <p className="text-[10px] font-semibold leading-none text-slate-500">plato alimentacion</p>
+                      <p className="text-[10px] font-semibold text-slate-700">{bowlContentWeightText} (contenido)</p>
+                      <p className="text-[10px] font-semibold text-slate-700">{bowlPlateWeightText} (plato)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
@@ -774,14 +787,6 @@ export default function TodayPage() {
                         <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
                           Alimentación
                         </span>
-                        <div className="text-left">
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {bowlContentWeightText} (contenido)
-                          </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-700">
-                            {bowlPlateWeightText} (plato)
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -789,7 +794,7 @@ export default function TodayPage() {
 
                 <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
                   <div className="relative min-h-[132px]">
-                    <div className="absolute left-0 top-1/2 flex w-10 -translate-y-1/2 flex-col items-center gap-1">
+                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
                         aria-label={
@@ -808,7 +813,9 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                      <p className="text-[10px] font-semibold text-slate-600">{waterContentWeightText} (cont.)</p>
+                      <p className="text-[10px] font-semibold leading-none text-slate-500">plato hidratacion</p>
+                      <p className="text-[10px] font-semibold text-slate-700">{waterVolumeCm3Text} (aprox)</p>
+                      <p className="text-[10px] font-semibold text-slate-700">{waterPlateWeightText} (plato)</p>
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
@@ -825,14 +832,6 @@ export default function TodayPage() {
                         <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
                           Hidratación
                         </span>
-                        <div className="text-left">
-                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterVolumeCm3Text} (aprox. contenido)
-                          </p>
-                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterPlateWeightText} (plato)
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
