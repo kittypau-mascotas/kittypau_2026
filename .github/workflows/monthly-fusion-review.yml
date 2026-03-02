@@ -1,0 +1,73 @@
+name: Monthly Fusion Review
+
+on:
+  schedule:
+    - cron: "0 12 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-monthly-review-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open monthly review issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const today = new Date().toISOString().slice(0, 10);
+            const title = `[Monthly] Review fusion Mauro + Javo -> main (${today})`;
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              per_page: 100
+            });
+
+            const exists = openIssues.some(i => i.title.startsWith("[Monthly] Review fusion Mauro + Javo -> main"));
+            if (exists) {
+              core.info("Monthly review issue already open. Skipping.");
+              return;
+            }
+
+            const body = [
+              "## Objective",
+              "Monthly evaluation to merge work from personal branches into `main` while preserving project coherence.",
+              "",
+              "## Branches to review",
+              "- `feat/mauro-curcuma`",
+              "- `feat/javo-mauro`",
+              "",
+              "## Checklist",
+              "- [ ] Review `Docs/AVANCE_PUSHES_GITHUB.md`",
+              "- [ ] Review `Docs/GITHUB_MAURO.md`",
+              "- [ ] Review `Docs/GITHUB_JAVO.md`",
+              "- [ ] Compare changes vs `main` (`git log` / `git diff`)",
+              "- [ ] Define PR list for monthly fusion",
+              "- [ ] Execute minimum validations before merge",
+              "- [ ] Record conclusions in both logs",
+              "",
+              "## Command reference",
+              "```bash",
+              "git fetch origin --prune",
+              "git log --oneline origin/main..origin/feat/mauro-curcuma",
+              "git log --oneline origin/main..origin/feat/javo-mauro",
+              "git diff --name-only origin/main...origin/feat/mauro-curcuma",
+              "git diff --name-only origin/main...origin/feat/javo-mauro",
+              "```",
+              "",
+              "## Notes",
+              "Keep this issue open until the monthly review decision is complete."
+            ].join("\\n");
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body
+            });

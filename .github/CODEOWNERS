@@ -1,0 +1,17 @@
+# Global fallback
+* @Mauro-Carcamo @javo-mauro
+
+# Docs and process
+/Docs/** @Mauro-Carcamo @javo-mauro
+
+# Frontend and API (Next.js)
+/kittypau_app/** @Mauro-Carcamo
+
+# Bridge service
+/bridge/** @javo-mauro @Mauro-Carcamo
+
+# Firmware and IoT integration
+/iot_firmware/** @javo-mauro @Mauro-Carcamo
+
+# Database migrations
+/supabase/migrations/** @Mauro-Carcamo @javo-mauro

@@ -1,56 +1,70 @@
 # HiveMQ MQTT CLI (mqtt-cli)
 
 ## Objetivo
-Probar conexiones MQTT y publicar/suscribirse a tópicos.
+Probar conectividad MQTT, publicar/suscribir payloads y validar topicos KPCL/KPBR.
 
-## Repo oficial
-- Proyecto: `hivemq/mqtt-cli` (Apache 2.0)
+## Referencia oficial
+- `hivemq/mqtt-cli`
 
-## Instalación
+## 1) Instalacion
+
 Windows:
-- Descargar ZIP desde releases y ejecutar `mqtt-cli.exe`.
+- Descargar release de `mqtt-cli` y agregar binario al `PATH`.
 
-macOS (Homebrew):
+macOS:
 ```bash
 brew tap hivemq/mqtt-cli
 brew install mqtt-cli
 ```
 
-Linux (deb/rpm):
+Linux:
 ```bash
 sudo dpkg -i mqtt-cli-<version>.deb
 # o
 sudo yum install -y mqtt-cli-<version>.rpm
 ```
 
-## Comandos básicos
-Ayuda:
+## 2) Verificar CLI
 ```bash
 mqtt --help
 ```
 
-Suscripción:
+## 3) Suscripcion base (sensores)
 ```bash
 mqtt sub -h <HOST> -p 8883 -t "+/SENSORS" -u <USER> -P <PASS> --ssl
 ```
 
-Publicación:
+## 4) Suscripcion status
 ```bash
-mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"temperature":23.5}' -u <USER> -P <PASS> --ssl
+mqtt sub -h <HOST> -p 8883 -t "+/STATUS" -u <USER> -P <PASS> --ssl
 ```
 
-## Ejemplo Kittypau (tópico real)
+## 5) Publicacion de prueba (SENSORS)
 ```bash
-mqtt sub -h <HOST> -p 8883 -t "+/SENSORS" -u <USER> -P <PASS> --ssl
-mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" -m '{"temperature":23.5,"humidity":65,"weight":3500,"temp":23.5,"hum":65}' -u <USER> -P <PASS> --ssl
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" \
+  -m '{"timestamp":"2026-03-02T12:00:00Z","weight":3500,"temp":23.5,"hum":65}' \
+  -u <USER> -P <PASS> --ssl
 ```
 
-## Modo shell (opcional)
+## 6) Publicacion de prueba (STATUS)
 ```bash
-mqtt shell
+mqtt pub -h <HOST> -p 8883 -t "KPCL0001/STATUS" \
+  -m '{"wifi_status":"Conectado","wifi_ssid":"Lab","wifi_ip":"192.168.1.50","KPCL0001":"Online","sensor_health":"OK"}' \
+  -u <USER> -P <PASS> --ssl
 ```
 
-## Notas
-- Usar TLS (`--ssl`) en HiveMQ Cloud.
-- Reemplazar `<HOST>`, `<USER>`, `<PASS>`.
-- Referencia de tópicos y payload: `Docs/TOPICOS_MQTT.md`.
+## 7) Validacion esperada en Kittypau
+1. Bridge recibe mensaje MQTT.
+2. `/api/mqtt/webhook` responde 200.
+3. Se inserta fila en `readings`.
+4. `last_seen` y estado de dispositivo se actualizan.
+
+## 8) Topicos oficiales
+Revisar:
+- `Docs/TOPICOS_MQTT.md`
+- `Docs/RASPBERRY_BRIDGE.md`
+
+## 9) Problemas comunes
+- Timeout TLS: revisar `--ssl`, host y puerto 8883.
+- Sin mensajes en bridge: revisar topic exacto y wildcard.
+- 400/404 en webhook: revisar formato `device_id` (`KPCL0000`) y registro del dispositivo.

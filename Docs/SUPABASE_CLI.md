@@ -1,43 +1,66 @@
 # Supabase CLI (Kittypau)
 
 ## Objetivo
-Gestionar schema y migraciones de la base de datos.
+Gestionar migraciones, schema y validaciones de base de datos.
 
-## Uso recomendado (npx)
+## Prerrequisitos
+- Node.js/npm
+- Acceso al proyecto Supabase
+
+## 1) Verificar CLI
 ```powershell
 npx supabase --version
 ```
 
-## Login
+## 2) Login
 ```powershell
 npx supabase login
 ```
 
-## Link al proyecto
+## 3) Link al proyecto
 ```powershell
-npx supabase link --project-ref zgwqtzazvkjkfocxnxsh
+npx supabase link --project-ref <PROJECT_REF>
 ```
 
-## Migraciones
+Referencia usada en este proyecto:
+- `zgwqtzazvkjkfocxnxsh`
+
+## 4) Flujo de migraciones
+
 Crear migracion:
 ```powershell
-npx supabase migration new apply_schema
+npx supabase migration new <nombre_migracion>
 ```
-Pegar contenido de `Docs/SQL_SCHEMA.sql` en el archivo creado y luego:
+
+Aplicar migraciones:
 ```powershell
 npx supabase db push
 ```
 
-## Pull schema (referencia)
+Traer estado remoto (solo referencia):
 ```powershell
 npx supabase db pull
 ```
 
-## Lint
+Lint SQL:
 ```powershell
 npx supabase db lint
 ```
 
-## Buenas practicas
-- Mantener migraciones en `supabase/migrations/`.
-- Aplicar cambios de SQL via migraciones (no manual).
+## 5) Reglas del proyecto
+- Toda modificacion SQL debe quedar en `supabase/migrations/`.
+- No aplicar cambios manuales en prod sin migracion versionada.
+- Mantener migraciones idempotentes cuando sea posible.
+
+## 6) Verificaciones despues de `db push`
+- Ejecutar scripts de validacion:
+  - `Docs/TEST_DB_API.ps1`
+  - `Docs/TEST_ONBOARDING_BACKEND.ps1`
+- Revisar:
+  - `Docs/PRUEBAS_E2E.md`
+  - `Docs/SQL_CHECK_BRIDGE_UNIQUENESS.sql`
+
+## 7) Problemas comunes
+- `project not linked`: correr `npx supabase link --project-ref ...`.
+- `auth failed`: repetir `npx supabase login`.
+- drift entre local/remoto: revisar migraciones faltantes y orden de ejecución.
