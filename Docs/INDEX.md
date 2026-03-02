@@ -76,6 +76,8 @@
 - `Docs/RASPBERRY_CLI.md`
 
 ## Infraestructura Edge
+- Docs/INTEGRACION_JAVIER_IOT.md (estado de fusion técnica de kittypau_1a)
+- Docs/PLAYBOOK_INGRESO_IOT_FIRMWARE.md (protocolo de ingreso IoT/firmware antes de merge)
 - `Docs/RASPBERRY_BRIDGE.md`
 - `Docs/RASPBERRY_INTEGRATION_PLAN.md`
 - `Docs/TOPICOS_MQTT.md`
@@ -96,6 +98,8 @@
 - `Docs/.env.bridge.example`
 - `Docs/.env.test.example`
 - `Docs/.env.test.local` (no versionado)
+
+
 
 
 
