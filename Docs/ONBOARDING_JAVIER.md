@@ -223,6 +223,29 @@ git push -u origin feat/javier-iot/<modulo>
 - Adjuntar evidencia de pruebas.
 - No mergear si fallan checks criticos.
 
+### 6.3.1 Crear PR con GitHub CLI (`gh`) - flujo validado
+Si `gh` no esta instalado:
+```bash
+winget install --id GitHub.cli -e
+```
+
+Login web:
+```bash
+gh auth login -h github.com -p https -w
+```
+
+Esperado en salida:
+- `✓ Logged in as javo-mauro` (en PC de Javier)
+
+Crear PR hacia `main` desde rama activa:
+```bash
+gh pr create --base main --head feat/javo-mauro --title "feat(admin): integrar modulo Javo en dashboard admin" --fill
+```
+
+Esperado en salida:
+- `Creating pull request for feat/javo-mauro into main ...`
+- URL del PR, por ejemplo: `https://github.com/kittypau-mascotas/kittypau_2026/pull/<numero>`
+
 ## 6.4 Ramas oficiales de trabajo (Kittypau)
 Ramas creadas para separar trabajo por persona:
 - `feat/mauro-curcuma`
