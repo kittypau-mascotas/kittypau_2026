@@ -613,10 +613,11 @@ export default function TodayPage() {
     bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
       ? `${bowlLatestReading.humidity}%`
       : "N/D";
-  const bowlWeightText =
+  const bowlContentWeightText =
     bowlLatestReading?.weight_grams !== null && bowlLatestReading?.weight_grams !== undefined
       ? `${bowlLatestReading.weight_grams} g`
       : "N/D";
+  const bowlPlateWeightText = "N/D";
   const waterTempText =
     waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
       ? `${waterLatestReading.temperature}°C`
@@ -625,10 +626,11 @@ export default function TodayPage() {
     waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
       ? `${waterLatestReading.humidity}%`
       : "N/D";
-  const waterWeightText =
+  const waterContentWeightText =
     waterLatestReading?.weight_grams !== null && waterLatestReading?.weight_grams !== undefined
       ? `${waterLatestReading.weight_grams} g`
       : "N/D";
+  const waterPlateWeightText = "N/D";
   const waterVolumeCm3Text =
     waterLatestReading?.water_ml !== null && waterLatestReading?.water_ml !== undefined
       ? `${Math.round(waterLatestReading.water_ml)} cm3`
@@ -754,6 +756,7 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <p className="text-[10px] font-semibold text-slate-600">{bowlContentWeightText}</p>
                       <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
                     </div>
@@ -778,10 +781,16 @@ export default function TodayPage() {
                             {formatTimestamp(bowlLatestReading?.recorded_at)}
                           </p>
                           <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso
+                            Peso del plato
                           </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {bowlWeightText}
+                            {bowlPlateWeightText}
+                          </p>
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
+                            Peso del contenido
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {bowlContentWeightText}
                           </p>
                         </div>
                       </div>
@@ -810,6 +819,7 @@ export default function TodayPage() {
                         }
                       />
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <p className="text-[10px] font-semibold text-slate-600">{waterContentWeightText}</p>
                       <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
                       <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
                     </div>
@@ -834,10 +844,16 @@ export default function TodayPage() {
                             {formatTimestamp(waterLatestReading?.recorded_at)}
                           </p>
                           <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
-                            Peso
+                            Peso del plato
                           </p>
                           <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
-                            {waterWeightText}
+                            {waterPlateWeightText}
+                          </p>
+                          <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
+                            Peso del contenido
+                          </p>
+                          <p className="mt-0.5 text-[10px] font-semibold leading-none text-slate-700">
+                            {waterContentWeightText}
                           </p>
                           <p className="mt-1 text-[10px] font-semibold leading-none text-slate-500">
                             Aprox. cm3
