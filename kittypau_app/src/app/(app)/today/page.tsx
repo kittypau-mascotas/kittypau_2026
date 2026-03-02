@@ -140,6 +140,7 @@ export default function TodayPage() {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [isPetMenuOpen, setIsPetMenuOpen] = useState(false);
   const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
+  const [devicePreviousReadings, setDevicePreviousReadings] = useState<Record<string, ApiReading | null>>({});
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -493,7 +494,9 @@ export default function TodayPage() {
     }) ?? null;
   const latestReading = state.readings[0] ?? null;
   const bowlLatestReading = bowlDevice?.id ? (deviceLatestReadings[bowlDevice.id] ?? null) : null;
+  const bowlPreviousReading = bowlDevice?.id ? (devicePreviousReadings[bowlDevice.id] ?? null) : null;
   const waterLatestReading = waterDevice?.id ? (deviceLatestReadings[waterDevice.id] ?? null) : null;
+  const waterPreviousReading = waterDevice?.id ? (devicePreviousReadings[waterDevice.id] ?? null) : null;
   const freshnessLabel = useMemo(
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
     [latestReading?.recorded_at]
@@ -510,17 +513,21 @@ export default function TodayPage() {
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
-            const result = await loadReadings(deviceId, null, 1);
-            return [deviceId, result.data[0] ?? null] as const;
+            const result = await loadReadings(deviceId, null, 2);
+            return [deviceId, result.data[0] ?? null, result.data[1] ?? null] as const;
           } catch {
-            return [deviceId, null] as const;
+            return [deviceId, null, null] as const;
           }
         })
       );
       if (!active) return;
       setDeviceLatestReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(entries),
+        ...Object.fromEntries(entries.map(([deviceId, latest]) => [deviceId, latest])),
+      }));
+      setDevicePreviousReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries.map(([deviceId, _latest, previous]) => [deviceId, previous])),
       }));
     };
     void loadTargets();
@@ -649,6 +656,37 @@ export default function TodayPage() {
     waterPlateWeightGrams !== null ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g` : "N/D";
   const waterVolumeCm3Text =
     waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} cm3` : "N/D";
+
+  const bowlPrevGrossWeightGrams = toNullableNumber(bowlPreviousReading?.weight_grams);
+  const bowlPrevContentWeightGrams =
+    bowlPlateWeightGrams !== null && bowlPrevGrossWeightGrams !== null
+      ? Math.max(0, bowlPrevGrossWeightGrams - bowlPlateWeightGrams)
+      : null;
+  const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
+  const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
+
+  const waterPrevGrossWeightGrams = toNullableNumber(waterPreviousReading?.weight_grams);
+  const waterPrevContentWeightGrams =
+    waterPlateWeightGrams !== null && waterPrevGrossWeightGrams !== null
+      ? Math.max(0, waterPrevGrossWeightGrams - waterPlateWeightGrams)
+      : null;
+  const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
+  const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
+
+  const renderTrend = (current: number | null, previous: number | null) => {
+    if (current === null || previous === null) return null;
+    const delta = current - previous;
+    if (Math.abs(delta) < 0.001) return null;
+    const up = delta > 0;
+    return (
+      <span
+        aria-hidden="true"
+        className={`ml-1 inline-flex text-[9px] leading-none opacity-65 ${up ? "text-emerald-600" : "text-rose-600"}`}
+      >
+        {up ? "▲" : "▼"}
+      </span>
+    );
+  };
   const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
     on: "bg-emerald-500 border-emerald-400",
     off: "bg-rose-500 border-rose-400",
@@ -770,10 +808,21 @@ export default function TodayPage() {
                       <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
                     </div>
                     <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">{bowlContentWeightText} (contenido)</p>
-                      <p className="text-[10px] font-semibold text-slate-700">{bowlPlateWeightText} (plato)</p>
-                      <p className="text-[10px] font-semibold text-slate-600">{bowlTempText}</p>
-                      <p className="text-[10px] font-semibold text-slate-500">{bowlHumidityText}</p>
+                      <p className="text-[10px] font-semibold text-slate-700">
+                        {bowlContentWeightText} (contenido)
+                        {renderTrend(bowlContentWeightGrams, bowlPrevContentWeightGrams)}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-700">
+                        {bowlPlateWeightText} (plato)
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-600">
+                        {bowlTempText}
+                        {renderTrend(toNullableNumber(bowlLatestReading?.temperature), bowlPrevTemp)}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-500">
+                        {bowlHumidityText}
+                        {renderTrend(toNullableNumber(bowlLatestReading?.humidity), bowlPrevHumidity)}
+                      </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
@@ -816,10 +865,21 @@ export default function TodayPage() {
                       <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
                     </div>
                     <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">{waterVolumeCm3Text} (aprox)</p>
-                      <p className="text-[10px] font-semibold text-slate-700">{waterPlateWeightText} (plato)</p>
-                      <p className="text-[10px] font-semibold text-slate-600">{waterTempText}</p>
-                      <p className="text-[10px] font-semibold text-slate-500">{waterHumidityText}</p>
+                      <p className="text-[10px] font-semibold text-slate-700">
+                        {waterVolumeCm3Text} (aprox)
+                        {renderTrend(waterContentWeightGrams, waterPrevContentWeightGrams)}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-700">
+                        {waterPlateWeightText} (plato)
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-600">
+                        {waterTempText}
+                        {renderTrend(toNullableNumber(waterLatestReading?.temperature), waterPrevTemp)}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-500">
+                        {waterHumidityText}
+                        {renderTrend(toNullableNumber(waterLatestReading?.humidity), waterPrevHumidity)}
+                      </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
                       <img
