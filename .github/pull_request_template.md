@@ -9,6 +9,7 @@
 - [ ] No secrets/tokens/passwords committed.
 - [ ] Docs updated if contracts or behavior changed.
 - [ ] Rollback approach is defined.
+- [ ] Monthly merge review considered (`feat/mauro-curcuma`, `feat/javo-mauro` vs `main`).
 
 ## Validation (Required)
 - [ ] `kittypau_app`: `npm run lint`
@@ -23,6 +24,11 @@
 - [ ] Bridge owner reviewed
 - [ ] App/API owner reviewed
 - [ ] DB/Docs owner reviewed
+
+## Mauro/Javo Cross-Review (Required for shared work)
+- [ ] Mauro reviewed this PR
+- [ ] Javo reviewed this PR
+- [ ] Personal logs updated (`Docs/GITHUB_MAURO.md`, `Docs/GITHUB_JAVO.md`)
 
 ## Files Touched
 - Key files:

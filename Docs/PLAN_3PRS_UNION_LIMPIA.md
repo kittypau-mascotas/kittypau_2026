@@ -118,3 +118,17 @@ Secuencia:
 ## Nota operativa
 `origin` es remoto, no rama.
 Rama común siempre: `main`.
+
+## Ejecucion inmediata (estado 2026-03-02)
+1. PR de modulo Javo ya listo en rama:
+   - `feat/mauro-curcuma` (commit `020bb37`)
+2. Crear PR hacia `main`:
+   - `https://github.com/kittypau-mascotas/kittypau_2026/compare/main...feat/mauro-curcuma?expand=1`
+3. Siguiente PR tecnico recomendado (lote pequeno):
+   - Base: `main`
+   - Head: `feat/javo-mauro`
+   - Alcance: `iot_firmware/javier_1a/**` + docs IoT relacionadas
+4. Antes de merge de cada lote:
+   - correr `npm run build` en `kittypau_app`
+   - actualizar `Docs/AVANCE_PUSHES_GITHUB.md`
+   - actualizar bitacoras `Docs/GITHUB_MAURO.md` y/o `Docs/GITHUB_JAVO.md`
