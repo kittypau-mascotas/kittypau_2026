@@ -295,6 +295,28 @@ Formato minimo por entrada:
 - Pruebas
 - Riesgos/Pendientes
 
+## 6.6 Sincronizar rama de Javo con `main` (obligatorio antes de desarrollar)
+Objetivo: asegurar que Javier trabaje sobre la ultima base comun del proyecto.
+
+Comandos:
+```bash
+git fetch origin --prune
+git checkout feat/javo-mauro
+git pull origin feat/javo-mauro
+git merge origin/main
+git push origin feat/javo-mauro
+```
+
+Verificacion:
+```bash
+git status
+git branch --show-current
+```
+
+Esperado:
+- rama actual: `feat/javo-mauro`
+- working tree limpio o solo cambios locales intencionales
+
 ## 7) Flujo Vercel (Preview + Production)
 
 Si Vercel esta conectado al repo GitHub:
