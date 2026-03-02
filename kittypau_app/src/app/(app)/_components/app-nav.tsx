@@ -153,6 +153,12 @@ export default function AppNav() {
             <span className="app-nav-admin-pill">Rol: {adminRole}</span>
             <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
             <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
+            <Link href="/admin" className="app-nav-admin-pill app-nav-admin-link">
+              Dashboard
+            </Link>
+            <Link href="/admin/javo" className="app-nav-admin-pill app-nav-admin-link">
+              Javo
+            </Link>
             <Link href="/today" className="app-nav-admin-pill app-nav-admin-link">
               Volver a la app
             </Link>
@@ -287,6 +293,15 @@ export default function AppNav() {
                   onClick={() => setMenuOpen(false)}
                 >
                   Dashboard admin
+                </Link>
+              ) : null}
+              {isSpecial ? (
+                <Link
+                  href="/admin/javo"
+                  className="mt-1 block rounded-[calc(var(--radius)-6px)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Módulo Javo
                 </Link>
               ) : null}
               <button
