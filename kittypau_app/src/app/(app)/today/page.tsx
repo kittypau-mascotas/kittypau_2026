@@ -1163,6 +1163,21 @@ export default function TodayPage() {
           titleColor: "#be185d",
           bodyColor: "#334155",
           footerColor: "#64748b",
+          titleFont: {
+            family: "Arial, Helvetica, sans-serif",
+            size: 13,
+            weight: 700,
+          },
+          bodyFont: {
+            family: "Arial, Helvetica, sans-serif",
+            size: 12,
+            weight: 600,
+          },
+          footerFont: {
+            family: "Arial, Helvetica, sans-serif",
+            size: 11,
+            weight: 500,
+          },
           borderColor: "rgba(244,114,182,0.32)",
           borderWidth: 1,
           cornerRadius: 12,
@@ -1172,30 +1187,32 @@ export default function TodayPage() {
           boxPadding: 4,
           callbacks: {
             title: (items) => {
-              const point = items[0]?.parsed;
-              if (!point || typeof point.x !== "number") return "Hora: N/D";
-              const datasetLabel = String(items[0]?.dataset?.label ?? "");
-              const seriesTitle = datasetLabel.includes("Hidratación")
-                ? "Hidratación"
-                : datasetLabel.includes("Alimentación")
-                  ? "Alimentación"
-                  : "Lectura";
-              const at = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
-              return `${seriesTitle} · ${at.toLocaleString("es-CL", {
-                day: "2-digit",
-                month: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}`;
+              void items;
+              return "";
             },
             label: (context) => {
+              const point = context.parsed;
               const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
-              const label = context.dataset.label ?? "Serie";
-              if (value === null) return `${label}: N/D`;
+              const label = String(context.dataset.label ?? "Serie");
+              const seriesTitle = label.includes("Hidratación")
+                ? "Hidratación"
+                : label.includes("Alimentación")
+                  ? "Alimentación"
+                  : "Lectura";
+              const pointTime =
+                typeof point.x === "number"
+                  ? new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000).toLocaleString("es-CL", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })
+                  : "N/D";
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
-              return `${label}: ${value} ${unit}`;
+              const valueText = value === null ? "N/D" : `${value} ${unit}`;
+              return [`${seriesTitle} · ${pointTime}`, `Valor: ${valueText}`];
             },
             afterLabel: (context) => {
               const label = context.dataset.label ?? "Serie";
