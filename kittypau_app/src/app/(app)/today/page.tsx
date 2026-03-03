@@ -365,13 +365,16 @@ export default function TodayPage() {
   const loadReadings = async (
     deviceId: string,
     cursor?: string | null,
-    limit = 50
+    limit = 50,
+    range?: { from?: string; to?: string }
   ) => {
     const params = new URLSearchParams({
       device_id: deviceId,
       limit: String(limit),
     });
     if (cursor) params.set("cursor", cursor);
+    if (range?.from) params.set("from", range.from);
+    if (range?.to) params.set("to", range.to);
     const res = await authFetch(`/api/readings?${params.toString()}`);
     if (!res.ok) {
       throw new Error("No se pudieron cargar las lecturas.");
@@ -724,11 +727,20 @@ export default function TodayPage() {
     if (!targetIds.length) return;
     let active = true;
     const loadChartTargets = async () => {
+      const anchor = new Date();
+      if (dayCycleOffsetDays > 0) {
+        anchor.setDate(anchor.getDate() - dayCycleOffsetDays);
+      }
+      const cycleWindow = getDayNightWindow(anchor);
+      const cycleFrom = new Date(cycleWindow.startMs).toISOString();
+      const cycleTo = new Date(cycleWindow.endMs).toISOString();
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
-            const dynamicLimit = Math.min(1200, 320 + dayCycleOffsetDays * 320);
-            const result = await loadReadings(deviceId, null, dynamicLimit);
+            const result = await loadReadings(deviceId, null, 500, {
+              from: cycleFrom,
+              to: cycleTo,
+            });
             return [deviceId, result.data] as const;
           } catch {
             return [deviceId, []] as const;
@@ -1257,7 +1269,7 @@ export default function TodayPage() {
                   <button
                     type="button"
                     onClick={() => void switchPetByOffset(-1)}
-                    className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
                     aria-label="Mascota anterior"
                     title="Mascota anterior"
                   >
@@ -1269,7 +1281,7 @@ export default function TodayPage() {
                   <button
                     type="button"
                     onClick={() => void switchPetByOffset(1)}
-                    className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
                     aria-label="Siguiente mascota"
                     title="Siguiente mascota"
                   >
@@ -1414,11 +1426,21 @@ export default function TodayPage() {
                 <button
                   type="button"
                   onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
-                  className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
                   aria-label="Ciclo anterior"
                   title="Ciclo anterior"
                 >
                   ◀
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))}
+                  disabled={dayCycleOffsetDays === 0}
+                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Ciclo siguiente"
+                  title="Ciclo siguiente"
+                >
+                  ▶
                 </button>
                 <button
                   type="button"
