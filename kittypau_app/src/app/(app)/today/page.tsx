@@ -926,7 +926,6 @@ export default function TodayPage() {
           labels: {
             color: "#334155",
             usePointStyle: true,
-            pointStyle: "circle",
             padding: 16,
             boxWidth: 14,
             boxHeight: 14,
