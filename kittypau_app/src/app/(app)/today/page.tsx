@@ -6,6 +6,18 @@ import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
+import {
+  Chart as ChartJS,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  type ChartData,
+  type ChartOptions,
+  type Plugin,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
 type ApiPet = {
   id: string;
@@ -45,6 +57,10 @@ type ApiReading = {
   battery_level: number | null;
 };
 
+type DayNightPoint = { x: number; y: number };
+
+type DeviceReadingsMap = Record<string, ApiReading[]>;
+
 type StatCard = {
   label: string;
   value: string;
@@ -72,6 +88,8 @@ const defaultState: LoadState = {
   readingsCursor: null,
   isLoadingMore: false,
 };
+
+ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 function formatTimestamp(value?: string | null) {
   if (!value) return "Sin datos";
@@ -134,6 +152,51 @@ function toNullableNumber(value: number | null | undefined): number | null {
   return value;
 }
 
+function getDayNightWindow(now = new Date()) {
+  const start = new Date(now);
+  start.setHours(9, 0, 0, 0);
+  if (now.getTime() < start.getTime()) {
+    start.setDate(start.getDate() - 1);
+  }
+  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+  return {
+    startMs: start.getTime(),
+    endMs: end.getTime(),
+  };
+}
+
+function formatHourFromOffset(offsetHours: number) {
+  const rounded = Math.round(offsetHours);
+  const hour = ((9 + rounded) % 24 + 24) % 24;
+  return `${String(hour).padStart(2, "0")}:00`;
+}
+
+function isBoundaryHour(value: number) {
+  const epsilon = 0.02;
+  const boundaries = [0, 6, 12, 18, 24];
+  return boundaries.some((boundary) => Math.abs(value - boundary) <= epsilon);
+}
+
+function toDayNightPoints(
+  readings: ApiReading[],
+  startMs: number,
+  endMs: number,
+  valueSelector: (reading: ApiReading) => number | null
+): DayNightPoint[] {
+  return readings
+    .map((reading) => {
+      const ts = new Date(reading.recorded_at).getTime();
+      const value = valueSelector(reading);
+      if (Number.isNaN(ts) || ts < startMs || ts > endMs || value === null) return null;
+      return {
+        x: (ts - startMs) / (60 * 60 * 1000),
+        y: value,
+      };
+    })
+    .filter((item): item is DayNightPoint => Boolean(item))
+    .sort((a, b) => a.x - b.x);
+}
+
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
@@ -141,6 +204,8 @@ export default function TodayPage() {
   const [isPetMenuOpen, setIsPetMenuOpen] = useState(false);
   const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
   const [devicePreviousReadings, setDevicePreviousReadings] = useState<Record<string, ApiReading | null>>({});
+  const [deviceChartReadings, setDeviceChartReadings] = useState<DeviceReadingsMap>({});
+  const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -536,6 +601,38 @@ export default function TodayPage() {
     };
   }, [bowlDevice?.id, waterDevice?.id]);
 
+  useEffect(() => {
+    const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
+      (value, index, arr): value is string =>
+        Boolean(value) && arr.indexOf(value) === index
+    );
+    if (!targetIds.length) return;
+    let active = true;
+    const loadChartTargets = async () => {
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const result = await loadReadings(deviceId, null, 240);
+            return [deviceId, result.data] as const;
+          } catch {
+            return [deviceId, []] as const;
+          }
+        })
+      );
+      if (!active) return;
+      setDeviceChartReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+      const hasAnyData = entries.some(([, values]) => values.length > 0);
+      setChartLoadError(hasAnyData ? null : "Sin lecturas suficientes para construir el gráfico.");
+    };
+    void loadChartTargets();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, waterDevice?.id]);
+
   const summaryText = useMemo(() => {
     if (!latestReading) {
       return `Aún no hay lecturas para ${petLabel}. Revisa el plato y vuelve aquí.`;
@@ -694,6 +791,223 @@ export default function TodayPage() {
   };
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
   const waterPowerState = resolveDevicePowerState(waterDevice);
+
+  const dayNightWindow = useMemo(() => getDayNightWindow(new Date()), [lastRefreshAt]);
+  const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
+  const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
+
+  const selectBowlSeriesValue = (reading: ApiReading) => {
+    const gross = toNullableNumber(reading.weight_grams);
+    const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
+    if (gross === null) return null;
+    if (plate === null) return gross;
+    return Math.max(0, gross - plate);
+  };
+
+  const selectWaterSeriesValue = (reading: ApiReading) => {
+    const waterMl = toNullableNumber(reading.water_ml);
+    if (waterMl !== null) return Math.max(0, waterMl);
+    const gross = toNullableNumber(reading.weight_grams);
+    const plate = toNullableNumber(waterDevice?.plate_weight_grams);
+    if (gross === null) return null;
+    if (plate === null) return gross;
+    return Math.max(0, gross - plate);
+  };
+
+  const bowlDayNightPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        bowlChartReadings,
+        dayNightWindow.startMs,
+        dayNightWindow.endMs,
+        selectBowlSeriesValue
+      ),
+    [bowlChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, bowlDevice?.plate_weight_grams]
+  );
+
+  const waterDayNightPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        waterChartReadings,
+        dayNightWindow.startMs,
+        dayNightWindow.endMs,
+        selectWaterSeriesValue
+      ),
+    [waterChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, waterDevice?.plate_weight_grams]
+  );
+
+  const foodPointStyle = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    const img = new window.Image(28, 28);
+    img.src = "/illustrations/pink_food_full.png";
+    return img;
+  }, []);
+
+  const waterPointStyle = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    const img = new window.Image(28, 28);
+    img.src = "/illustrations/green_water_full.png";
+    return img;
+  }, []);
+
+  const dayNightBackground = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    const img = new window.Image();
+    img.src = "/fondo_dia_noche.png";
+    return img;
+  }, []);
+
+  const dayNightBackgroundPlugin = useMemo<Plugin<"line">>(
+    () => ({
+      id: "kittypau-day-night-background",
+      beforeDatasetsDraw: (chart) => {
+        const { ctx, chartArea } = chart;
+        if (!chartArea || !dayNightBackground || !dayNightBackground.complete) return;
+        ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.drawImage(
+          dayNightBackground,
+          chartArea.left,
+          chartArea.top,
+          chartArea.right - chartArea.left,
+          chartArea.bottom - chartArea.top
+        );
+        ctx.restore();
+      },
+    }),
+    [dayNightBackground]
+  );
+
+  const dayNightChartData = useMemo<ChartData<"line", DayNightPoint[]>>(
+    () => ({
+      datasets: [
+        {
+          label: `Alimentación (${bowlDevice?.device_id ?? "KPCL"})`,
+          data: bowlDayNightPoints,
+          showLine: false,
+          pointStyle: foodPointStyle,
+          pointRadius: 8,
+          pointHoverRadius: 9,
+          pointBackgroundColor: "#d9468f",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.2,
+        },
+        {
+          label: `Hidratación (${waterDevice?.device_id ?? "KPCL"})`,
+          data: waterDayNightPoints,
+          showLine: false,
+          pointStyle: waterPointStyle,
+          pointRadius: 8,
+          pointHoverRadius: 9,
+          pointBackgroundColor: "#0ea5e9",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.2,
+        },
+      ],
+    }),
+    [bowlDayNightPoints, bowlDevice?.device_id, foodPointStyle, waterDayNightPoints, waterDevice?.device_id, waterPointStyle]
+  );
+
+  const dayNightChartOptions = useMemo<ChartOptions<"line">>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: {
+        mode: "nearest",
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: "#475569",
+            usePointStyle: true,
+            boxWidth: 14,
+            boxHeight: 14,
+            font: {
+              size: 11,
+              family: "system-ui, -apple-system, Segoe UI, sans-serif",
+              weight: "600",
+            },
+          },
+        },
+        tooltip: {
+          backgroundColor: "rgba(15,23,42,0.9)",
+          titleColor: "#fff1f2",
+          bodyColor: "#e2e8f0",
+          displayColors: false,
+          callbacks: {
+            title: (items) => {
+              const point = items[0]?.parsed;
+              if (!point || typeof point.x !== "number") return "Sin hora";
+              const at = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
+              return at.toLocaleString("es-CL", {
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              });
+            },
+            label: (context) => {
+              const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
+              if (value === null) return `${context.dataset.label}: N/D`;
+              if (context.dataset.label.includes("Hidratación")) {
+                return `${context.dataset.label}: ${value} cm3 (aprox)`;
+              }
+              return `${context.dataset.label}: ${value} g`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 24,
+          grid: {
+            color: "rgba(148,163,184,0.2)",
+            drawBorder: false,
+          },
+          border: {
+            color: "rgba(100,116,139,0.45)",
+          },
+          ticks: {
+            stepSize: 1,
+            color: "#475569",
+            maxRotation: 0,
+            minRotation: 0,
+            callback: (value) => {
+              const numeric = Number(value);
+              if (!isBoundaryHour(numeric)) return "";
+              return formatHourFromOffset(numeric);
+            },
+            font: {
+              size: 11,
+              family: "system-ui, -apple-system, Segoe UI, sans-serif",
+              weight: "600",
+            },
+          },
+        },
+        y: {
+          type: "linear",
+          beginAtZero: true,
+          ticks: {
+            display: false,
+          },
+          grid: {
+            display: false,
+          },
+          border: {
+            display: false,
+          },
+        },
+      },
+    }),
+    [dayNightWindow.startMs]
+  );
+
+  const hasDayNightData = bowlDayNightPoints.length > 0 || waterDayNightPoints.length > 0;
 
   return (
     <div className="min-h-screen px-6 py-10">
@@ -903,6 +1217,44 @@ export default function TodayPage() {
                     </div>
                   </div>
                 </article>
+              </div>
+            </div>
+          </section>
+
+          <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="display-title text-xl font-semibold text-slate-900">
+                  Peso vs Tiempo (Día-Noche)
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Eje X de 09:00 a 09:00 del día siguiente (24h lineales), en 4 bloques de 6h:
+                  15:00, 21:00, 03:00 y 09:00.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-700">
+                  {bowlDevice?.device_id ?? "KPCL alimento"}
+                </span>
+                <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold text-sky-700">
+                  {waterDevice?.device_id ?? "KPCL agua"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white p-3">
+              <div className="h-[320px] w-full rounded-[calc(var(--radius)-10px)] bg-gradient-to-b from-rose-50/40 to-white px-2 py-2">
+                {hasDayNightData ? (
+                  <Line
+                    data={dayNightChartData}
+                    options={dayNightChartOptions}
+                    plugins={[dayNightBackgroundPlugin]}
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                    {chartLoadError ?? "Sin datos en la ventana 09:00–09:00 para alimentación e hidratación."}
+                  </div>
+                )}
               </div>
             </div>
           </section>
