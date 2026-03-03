@@ -1038,7 +1038,7 @@ export default function TodayPage() {
       plugins: {
         legend: {
           position: "bottom",
-          align: "start",
+          align: "center",
           labels: {
             color: "#334155",
             usePointStyle: true,
@@ -1369,7 +1369,7 @@ export default function TodayPage() {
                 />
               </div>
               {chartLoadError ? (
-                <p className="mt-2 text-xs font-medium text-slate-500">
+                <p className="mt-2 w-full text-center text-xs font-medium text-slate-500">
                   {chartLoadError}
                 </p>
               ) : null}
