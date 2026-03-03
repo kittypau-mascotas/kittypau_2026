@@ -927,7 +927,7 @@ export default function TodayPage() {
             font: {
               size: 11,
               family: "system-ui, -apple-system, Segoe UI, sans-serif",
-              weight: "600",
+              weight: 600,
             },
           },
         },
@@ -985,7 +985,7 @@ export default function TodayPage() {
             font: {
               size: 11,
               family: "system-ui, -apple-system, Segoe UI, sans-serif",
-              weight: "600",
+              weight: 600,
             },
           },
         },
@@ -1543,6 +1543,7 @@ export default function TodayPage() {
     </div>
   );
 }
+
 
 
 
