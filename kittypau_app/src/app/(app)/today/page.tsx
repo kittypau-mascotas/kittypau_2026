@@ -316,7 +316,6 @@ export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const [isPetMenuOpen, setIsPetMenuOpen] = useState(false);
   const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
   const [devicePreviousReadings, setDevicePreviousReadings] = useState<Record<string, ApiReading | null>>({});
   const [deviceChartReadings, setDeviceChartReadings] = useState<DeviceReadingsMap>({});
@@ -918,8 +917,53 @@ export default function TodayPage() {
   }, [dayCycleOffsetDays, lastRefreshAt]);
   const dayNightRangeTitle = useMemo(() => {
     const cycleDate = formatCycleDate(dayNightWindow.startMs);
-    return `Fecha actual: ${cycleDate} (ciclo 09:00 -> 09:00)`;
+    return cycleDate;
   }, [dayNightWindow.startMs]);
+  const selectedPetIndex = Math.max(
+    0,
+    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? ""))
+  );
+  const switchPetByOffset = async (offset: -1 | 1) => {
+    if (!state.pets.length) return;
+    const nextIndex =
+      (selectedPetIndex + offset + state.pets.length) % state.pets.length;
+    const pet = state.pets[nextIndex];
+    const suffix = parsePetNumberSuffix(pet.name);
+    const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
+    const nextDevice =
+      state.devices.find(
+        (device) => (device.device_id ?? "").toUpperCase() === foodCode
+      ) ??
+      state.devices.find((device) => device.pet_id === pet.id) ??
+      null;
+
+    setSelectedPetId(pet.id);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("kittypau_pet_id", pet.id);
+    }
+
+    if (!nextDevice) return;
+    setSelectedDeviceId(nextDevice.id);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("kittypau_device_id", nextDevice.id);
+    }
+    try {
+      const result = await loadReadings(nextDevice.id);
+      setState((prev) => ({
+        ...prev,
+        readings: result.data,
+        readingsCursor: result.nextCursor,
+      }));
+      setLastRefreshAt(new Date().toISOString());
+      setRefreshError(null);
+    } catch (err) {
+      setRefreshError(
+        err instanceof Error
+          ? err.message
+          : "No se pudieron cargar las lecturas."
+      );
+    }
+  };
   const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
   const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
 
@@ -1209,73 +1253,28 @@ export default function TodayPage() {
           >
             <div className="grid gap-4 md:grid-cols-[180px_1fr]">
               <div className="flex flex-col items-center gap-2">
-                <div className="relative">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setIsPetMenuOpen((prev) => !prev)}
-                    className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-900"
+                    onClick={() => void switchPetByOffset(-1)}
+                    className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    aria-label="Mascota anterior"
+                    title="Mascota anterior"
                   >
-                    {petLabel}
+                    ◀
                   </button>
-                  {isPetMenuOpen ? (
-                    <div className="absolute left-1/2 top-[calc(100%+6px)] z-20 w-52 -translate-x-1/2 rounded-[var(--radius)] border border-slate-200 bg-white p-2 shadow-lg">
-                      <div className="space-y-1">
-                        {state.pets.map((pet) => (
-                          <button
-                            key={pet.id}
-                            type="button"
-                            onClick={async () => {
-                              const suffix = parsePetNumberSuffix(pet.name);
-                              const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
-                              const nextDevice =
-                                state.devices.find(
-                                  (device) =>
-                                    (device.device_id ?? "").toUpperCase() === foodCode
-                                ) ??
-                                state.devices.find((device) => device.pet_id === pet.id) ??
-                                null;
-
-                              setSelectedPetId(pet.id);
-                              setIsPetMenuOpen(false);
-                              if (typeof window !== "undefined") {
-                                window.localStorage.setItem("kittypau_pet_id", pet.id);
-                              }
-
-                              if (!nextDevice) return;
-                              setSelectedDeviceId(nextDevice.id);
-                              if (typeof window !== "undefined") {
-                                window.localStorage.setItem("kittypau_device_id", nextDevice.id);
-                              }
-                              try {
-                                const result = await loadReadings(nextDevice.id);
-                                setState((prev) => ({
-                                  ...prev,
-                                  readings: result.data,
-                                  readingsCursor: result.nextCursor,
-                                }));
-                                setLastRefreshAt(new Date().toISOString());
-                                setRefreshError(null);
-                              } catch (err) {
-                                setRefreshError(
-                                  err instanceof Error
-                                    ? err.message
-                                    : "No se pudieron cargar las lecturas."
-                                );
-                              }
-                            }}
-                            className="flex w-full items-center gap-2 rounded-[10px] px-2 py-1 text-left hover:bg-slate-50"
-                          >
-                            <img
-                              src={pet.photo_url || "/pet_profile.jpeg"}
-                              alt={`Foto de ${pet.name}`}
-                              className="h-6 w-6 rounded-full border border-slate-200 object-cover"
-                            />
-                            <span className="text-xs font-medium text-slate-700">{pet.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
+                  <p className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-900">
+                    {petLabel}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void switchPetByOffset(1)}
+                    className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    aria-label="Siguiente mascota"
+                    title="Siguiente mascota"
+                  >
+                    ▶
+                  </button>
                 </div>
                 <Link
                   href="/pet"
@@ -1415,9 +1414,11 @@ export default function TodayPage() {
                 <button
                   type="button"
                   onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
-                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-50"
+                  className="h-7 w-7 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  aria-label="Ciclo anterior"
+                  title="Ciclo anterior"
                 >
-                  Dia anterior
+                  ◀
                 </button>
                 <button
                   type="button"
