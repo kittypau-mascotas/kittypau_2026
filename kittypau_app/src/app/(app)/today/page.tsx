@@ -57,7 +57,20 @@ type ApiReading = {
   battery_level: number | null;
 };
 
-type DayNightPoint = { x: number; y: number };
+type DayNightPoint = { x: number; y: number; t: number };
+
+type IntakeSession = {
+  startIndex: number;
+  endIndex: number;
+  startX: number;
+  endX: number;
+  startT: number;
+  endT: number;
+  startValue: number;
+  endValue: number;
+  consumed: number;
+  durationMinutes: number;
+};
 
 type DeviceReadingsMap = Record<string, ApiReading[]>;
 
@@ -171,6 +184,23 @@ function formatHourFromOffset(offsetHours: number) {
   return `${String(hour).padStart(2, "0")}:00`;
 }
 
+function formatSessionClock(ts: number) {
+  return new Date(ts).toLocaleTimeString("es-CL", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+function formatSessionDuration(minutes: number) {
+  const safe = Math.max(0, Math.round(minutes));
+  const h = Math.floor(safe / 60);
+  const m = safe % 60;
+  if (h <= 0) return `${m} min`;
+  if (m === 0) return `${h} h`;
+  return `${h} h ${m} min`;
+}
+
 function isBoundaryHour(value: number) {
   const epsilon = 0.02;
   const boundaries = [0, 6, 12, 18, 24];
@@ -191,10 +221,86 @@ function toDayNightPoints(
       return {
         x: (ts - startMs) / (60 * 60 * 1000),
         y: value,
+        t: ts,
       };
     })
     .filter((item): item is DayNightPoint => Boolean(item))
     .sort((a, b) => a.x - b.x);
+}
+
+function detectIntakeSessions(points: DayNightPoint[]): IntakeSession[] {
+  if (points.length < 2) return [];
+  const minDrop = 2;
+  const maxGapMinutes = 180;
+  const sessions: IntakeSession[] = [];
+  let active: {
+    startIndex: number;
+    endIndex: number;
+    consumed: number;
+  } | null = null;
+
+  const closeActive = () => {
+    if (!active) return;
+    const start = points[active.startIndex];
+    const end = points[active.endIndex];
+    const consumed = Math.max(0, Math.round(active.consumed));
+    const durationMinutes = (end.t - start.t) / 60000;
+    if (consumed >= minDrop && durationMinutes > 0) {
+      sessions.push({
+        startIndex: active.startIndex,
+        endIndex: active.endIndex,
+        startX: start.x,
+        endX: end.x,
+        startT: start.t,
+        endT: end.t,
+        startValue: start.y,
+        endValue: end.y,
+        consumed,
+        durationMinutes,
+      });
+    }
+    active = null;
+  };
+
+  for (let idx = 1; idx < points.length; idx += 1) {
+    const prev = points[idx - 1];
+    const curr = points[idx];
+    const gapMinutes = (curr.t - prev.t) / 60000;
+    if (gapMinutes > maxGapMinutes) {
+      closeActive();
+      continue;
+    }
+    const delta = curr.y - prev.y;
+    if (delta <= -minDrop) {
+      if (!active) {
+        active = {
+          startIndex: idx - 1,
+          endIndex: idx,
+          consumed: -delta,
+        };
+      } else {
+        active.endIndex = idx;
+        active.consumed += -delta;
+      }
+      continue;
+    }
+    closeActive();
+  }
+
+  closeActive();
+  return sessions;
+}
+
+function findSessionForPoint(
+  sessions: IntakeSession[],
+  pointIndex: number
+): IntakeSession | null {
+  return (
+    sessions.find(
+      (session) =>
+        pointIndex >= session.startIndex && pointIndex <= session.endIndex
+    ) ?? null
+  );
 }
 
 export default function TodayPage() {
@@ -836,6 +942,16 @@ export default function TodayPage() {
     [waterChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, waterDevice?.plate_weight_grams]
   );
 
+  const bowlIntakeSessions = useMemo(
+    () => detectIntakeSessions(bowlDayNightPoints),
+    [bowlDayNightPoints]
+  );
+
+  const waterIntakeSessions = useMemo(
+    () => detectIntakeSessions(waterDayNightPoints),
+    [waterDayNightPoints]
+  );
+
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
     const img = new window.Image(28, 28);
@@ -962,10 +1078,24 @@ export default function TodayPage() {
               const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
               const label = context.dataset.label ?? "Serie";
               if (value === null) return `${label}: N/D`;
-              if (label.includes("Hidratación")) {
-                return `${label}: ${value} cm3 (aprox)`;
+              const isHydration = label.includes("Hidratación");
+              const unit = isHydration ? "cm3 (aprox)" : "g";
+              const sessions =
+                context.datasetIndex === 0 ? bowlIntakeSessions : waterIntakeSessions;
+              const session = findSessionForPoint(sessions, context.dataIndex);
+              if (!session) {
+                return [
+                  `${label}: ${value} ${unit}`,
+                  "Proceso: sin evento detectado",
+                ];
               }
-              return `${label}: ${value} g`;
+              return [
+                `${label}: ${value} ${unit}`,
+                `Inicio: ${formatSessionClock(session.startT)}`,
+                `Fin: ${formatSessionClock(session.endT)}`,
+                `Duración: ${formatSessionDuration(session.durationMinutes)}`,
+                `Consumo proceso: ${Math.round(session.consumed)} ${unit}`,
+              ];
             },
           },
         },
@@ -1014,7 +1144,7 @@ export default function TodayPage() {
         },
       },
     }),
-    [dayNightWindow.startMs]
+    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions]
   );
 
   return (
