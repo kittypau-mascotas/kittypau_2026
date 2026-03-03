@@ -167,7 +167,7 @@ function toNullableNumber(value: number | null | undefined): number | null {
 
 function getDayNightWindow(now = new Date()) {
   const start = new Date(now);
-  start.setHours(9, 0, 0, 0);
+  start.setHours(6, 0, 0, 0);
   if (now.getTime() < start.getTime()) {
     start.setDate(start.getDate() - 1);
   }
@@ -180,7 +180,7 @@ function getDayNightWindow(now = new Date()) {
 
 function formatHourFromOffset(offsetHours: number) {
   const rounded = Math.round(offsetHours);
-  const hour = ((9 + rounded) % 24 + 24) % 24;
+  const hour = ((6 + rounded) % 24 + 24) % 24;
   return `${String(hour).padStart(2, "0")}:00`;
 }
 
@@ -929,8 +929,8 @@ export default function TodayPage() {
   }, [dayCycleOffsetDays, lastRefreshAt]);
   const dayNightRangeTitle = useMemo(() => {
     const cycleDate = formatCycleDate(dayNightWindow.startMs);
-    return cycleDate;
-  }, [dayNightWindow.startMs]);
+    return dayCycleOffsetDays === 0 ? "hoy" : cycleDate;
+  }, [dayCycleOffsetDays, dayNightWindow.startMs]);
   const selectedPetIndex = Math.max(
     0,
     state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? ""))
@@ -1046,7 +1046,7 @@ export default function TodayPage() {
   const dayNightBackground = useMemo(() => {
     if (typeof window === "undefined") return null;
     const img = new window.Image();
-    img.src = "/fondo_dia_noche.png";
+    img.src = "/fondo.png";
     return img;
   }, []);
 
@@ -1422,7 +1422,7 @@ export default function TodayPage() {
 
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
             <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
-              <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
+              <div className="mb-2 flex items-center justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
@@ -1434,6 +1434,15 @@ export default function TodayPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setDayCycleOffsetDays(0)}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-0.5 text-[12px] font-semibold text-slate-600 hover:bg-slate-50"
+                  aria-label="Volver a hoy"
+                  title="Volver a hoy"
+                >
+                  {dayNightRangeTitle}
+                </button>
+                <button
+                  type="button"
                   onClick={() => setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))}
                   disabled={dayCycleOffsetDays === 0}
                   className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
@@ -1442,16 +1451,7 @@ export default function TodayPage() {
                 >
                   ▶
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays(0)}
-                  disabled={dayCycleOffsetDays === 0}
-                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Hoy
-                </button>
               </div>
-              <p className="mb-2 text-center text-[12px] font-semibold text-slate-600">{dayNightRangeTitle}</p>
               <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
                 <Line
                   data={dayNightChartData}
