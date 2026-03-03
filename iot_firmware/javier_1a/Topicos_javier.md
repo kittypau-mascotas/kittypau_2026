@@ -10,20 +10,21 @@ Este documento detalla los tópicos MQTT utilizados por el dispositivo `KPCL0037
 *   **Payload (JSON):**
     ```json
     {
-        "timestamp": "MM-dd-aaaa HH:mm:ss",
+        "timestamp": "2026-02-08T16:06:28Z",
         "weight": 0.00,
         "temp": 0.00,
         "hum": 0.00,
-        "ldr": 0
+        "light": { "lux": 0.00, "%": 0, "condition": "dark" }
     }
     ```
 *   **Ejemplo:**
     ```json
-    {"timestamp":"01-09-2026 16:06:28","weight":0.44,"temp":26.60,"hum":39.40,"ldr":7}
+    {"timestamp":"2026-02-08T16:06:28Z","weight":0.44,"temp":26.60,"hum":39.40,"light":{"lux":12.5,"%":7,"condition":"dim"}}
     ```
 *   **Consideraciones:**
     *   `temp` y `hum` pueden ser `null` si hay un error de lectura del sensor DHT.
-    *   `ldr` es un valor entero.
+    *   `light` es un objeto: `lux` (float), `%` (0-100), `condition` ("dark" | "dim" | "bright").
+    *   Timestamp en ISO 8601 (`YYYY-MM-DDTHH:MM:SSZ`).
 
 ### 2. `KPCL0037/STATUS`
 *   **Descripción:** Publica el estado actual del dispositivo (conectividad WiFi, estado del dispositivo, salud de los sensores).

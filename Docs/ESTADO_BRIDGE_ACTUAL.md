@@ -11,14 +11,10 @@ npm start
 ```
 - Variables esperadas: `bridge/.env` (segun `bridge/.env.example`)
 
-## Bridge de referencia (Javier)
-- Ruta: `iot_firmware/javier_1a/bridge_v2_4/bridge.js`
-- Estado: referencia tecnica, no productivo principal.
-
 ## Decision vigente
-1. El bridge activo del proyecto es `bridge/src/index.js`.
-2. `bridge_v2_4` se usa para analisis y convergencia controlada.
-3. Cualquier migracion de bridge debe pasar por PR, checklist y plan de rollback.
+1. El bridge activo del proyecto es `bridge/src/index.js` (v2.4, MQTT→Supabase directo).
+2. `bridge_v2_4/` fue eliminado — su código fue consolidado en `bridge/src/index.js`.
+3. Cualquier migración de bridge debe pasar por PR, checklist y plan de rollback.
 
 ## Validaciones minimas
 - `POST /api/mqtt/webhook` responde 200 en prueba controlada.

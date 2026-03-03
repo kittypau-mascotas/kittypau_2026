@@ -113,6 +113,7 @@ create table if not exists public.audit_events (
 );
 
 -- Bridge heartbeats (server-only)
+-- Extendido en migration 20260302: +device_type, +device_model, +hostname, +wifi_ssid, +ram_*, +disk_*, +cpu_temp
 create table if not exists public.bridge_heartbeats (
   bridge_id text primary key,
   ip text,
@@ -120,7 +121,31 @@ create table if not exists public.bridge_heartbeats (
   mqtt_connected boolean,
   last_mqtt_at timestamptz,
   last_seen timestamptz not null default now(),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  device_type text,
+  device_model text,
+  hostname text,
+  wifi_ssid text,
+  ram_used_mb int,
+  ram_total_mb int,
+  disk_used_pct numeric,
+  cpu_temp numeric
+);
+
+-- Sensor readings v2.4 (bridge escribe aqui con device_id TEXT)
+-- Creada en migration 20260302 para compatibilidad con bridge v2.4.
+-- No usa device_uuid (UUID FK) sino device_id (TEXT) para escritura directa del bridge.
+create table if not exists public.sensor_readings (
+  id bigserial primary key,
+  device_id text not null,
+  weight_grams numeric,
+  temperature numeric,
+  humidity numeric,
+  light_lux numeric,
+  light_percent numeric,
+  light_condition text,
+  device_timestamp timestamptz,
+  ingested_at timestamptz not null default now()
 );
 
 -- Bridge telemetry (server-only)
