@@ -326,6 +326,7 @@ export default function TodayPage() {
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -727,7 +728,8 @@ export default function TodayPage() {
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
-            const result = await loadReadings(deviceId, null, 240);
+            const dynamicLimit = Math.min(1200, 320 + dayCycleOffsetDays * 320);
+            const result = await loadReadings(deviceId, null, dynamicLimit);
             return [deviceId, result.data] as const;
           } catch {
             return [deviceId, []] as const;
@@ -746,7 +748,7 @@ export default function TodayPage() {
     return () => {
       active = false;
     };
-  }, [bowlDevice?.id, waterDevice?.id]);
+  }, [bowlDevice?.id, dayCycleOffsetDays, waterDevice?.id]);
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -907,12 +909,17 @@ export default function TodayPage() {
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
   const waterPowerState = resolveDevicePowerState(waterDevice);
 
-  const dayNightWindow = useMemo(() => getDayNightWindow(new Date()), [lastRefreshAt]);
+  const dayNightWindow = useMemo(() => {
+    const anchor = new Date();
+    if (dayCycleOffsetDays > 0) {
+      anchor.setDate(anchor.getDate() - dayCycleOffsetDays);
+    }
+    return getDayNightWindow(anchor);
+  }, [dayCycleOffsetDays, lastRefreshAt]);
   const dayNightRangeTitle = useMemo(() => {
-    const startLabel = formatCycleDate(dayNightWindow.startMs);
-    const endLabel = formatCycleDate(dayNightWindow.endMs);
-    return `Ciclo diario: ${startLabel} 09:00 -> ${endLabel} 09:00`;
-  }, [dayNightWindow.endMs, dayNightWindow.startMs]);
+    const cycleDate = formatCycleDate(dayNightWindow.startMs);
+    return `Fecha actual: ${cycleDate} (ciclo 09:00 -> 09:00)`;
+  }, [dayNightWindow.startMs]);
   const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
   const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
 
@@ -1404,9 +1411,24 @@ export default function TodayPage() {
 
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
             <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
-              <p className="mb-2 text-center text-[12px] font-semibold text-slate-600">
-                {dayNightRangeTitle}
-              </p>
+              <div className="mb-2 flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  Dia anterior
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDayCycleOffsetDays(0)}
+                  disabled={dayCycleOffsetDays === 0}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Hoy
+                </button>
+              </div>
+              <p className="mb-2 text-center text-[12px] font-semibold text-slate-600">{dayNightRangeTitle}</p>
               <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
                 <Line
                   data={dayNightChartData}
