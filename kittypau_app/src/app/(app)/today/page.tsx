@@ -886,22 +886,24 @@ export default function TodayPage() {
           data: bowlDayNightPoints,
           showLine: false,
           pointStyle: foodPointStyle,
-          pointRadius: 8,
-          pointHoverRadius: 9,
-          pointBackgroundColor: "#d9468f",
+          pointRadius: 9,
+          pointHoverRadius: 10,
+          pointHoverBorderWidth: 2,
+          pointBackgroundColor: "#ec4899",
           pointBorderColor: "#ffffff",
-          pointBorderWidth: 1.2,
+          pointBorderWidth: 1.5,
         },
         {
           label: `Hidratación (${waterDevice?.device_id ?? "KPCL"})`,
           data: waterDayNightPoints,
           showLine: false,
           pointStyle: waterPointStyle,
-          pointRadius: 8,
-          pointHoverRadius: 9,
-          pointBackgroundColor: "#0ea5e9",
+          pointRadius: 9,
+          pointHoverRadius: 10,
+          pointHoverBorderWidth: 2,
+          pointBackgroundColor: "#14b8a6",
           pointBorderColor: "#ffffff",
-          pointBorderWidth: 1.2,
+          pointBorderWidth: 1.5,
         },
       ],
     }),
@@ -919,22 +921,30 @@ export default function TodayPage() {
       },
       plugins: {
         legend: {
+          position: "bottom",
+          align: "start",
           labels: {
-            color: "#475569",
+            color: "#334155",
             usePointStyle: true,
+            pointStyle: "circle",
+            padding: 16,
             boxWidth: 14,
             boxHeight: 14,
             font: {
-              size: 11,
-              family: "system-ui, -apple-system, Segoe UI, sans-serif",
+              size: 12,
+              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
         },
         tooltip: {
-          backgroundColor: "rgba(15,23,42,0.9)",
-          titleColor: "#fff1f2",
-          bodyColor: "#e2e8f0",
+          backgroundColor: "rgba(30,41,59,0.9)",
+          titleColor: "#fdf2f8",
+          bodyColor: "#f8fafc",
+          borderColor: "rgba(244,114,182,0.35)",
+          borderWidth: 1,
+          cornerRadius: 10,
+          padding: 10,
           displayColors: false,
           callbacks: {
             title: (items) => {
@@ -967,15 +977,15 @@ export default function TodayPage() {
           min: 0,
           max: 24,
           grid: {
-            color: "rgba(148,163,184,0.2)",
+            color: "rgba(244,114,182,0.2)",
             drawBorder: false,
           },
           border: {
-            color: "rgba(100,116,139,0.45)",
+            color: "rgba(148,163,184,0.55)",
           },
           ticks: {
             stepSize: 1,
-            color: "#475569",
+            color: "#334155",
             maxRotation: 0,
             minRotation: 0,
             callback: (value) => {
@@ -984,8 +994,8 @@ export default function TodayPage() {
               return formatHourFromOffset(numeric);
             },
             font: {
-              size: 11,
-              family: "system-ui, -apple-system, Segoe UI, sans-serif",
+              size: 12,
+              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
@@ -1221,28 +1231,8 @@ export default function TodayPage() {
           </section>
 
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="display-title text-xl font-semibold text-slate-900">
-                  Peso vs Tiempo (Día-Noche)
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Eje X de 09:00 a 09:00 del día siguiente (24h lineales), en 4 bloques de 6h:
-                  15:00, 21:00, 03:00 y 09:00.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-700">
-                  {bowlDevice?.device_id ?? "KPCL alimento"}
-                </span>
-                <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold text-sky-700">
-                  {waterDevice?.device_id ?? "KPCL agua"}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white p-3">
-              <div className="h-[320px] w-full rounded-[calc(var(--radius)-10px)] bg-gradient-to-b from-rose-50/40 to-white px-2 py-2">
+            <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
+              <div className="h-[320px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
                 <Line
                   data={dayNightChartData}
                   options={dayNightChartOptions}
@@ -1250,7 +1240,7 @@ export default function TodayPage() {
                 />
               </div>
               {chartLoadError ? (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs font-medium text-slate-500">
                   {chartLoadError}
                 </p>
               ) : null}
