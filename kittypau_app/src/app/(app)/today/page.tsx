@@ -1008,8 +1008,6 @@ export default function TodayPage() {
     [dayNightWindow.startMs]
   );
 
-  const hasDayNightData = bowlDayNightPoints.length > 0 || waterDayNightPoints.length > 0;
-
   return (
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
@@ -1245,18 +1243,17 @@ export default function TodayPage() {
 
             <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white p-3">
               <div className="h-[320px] w-full rounded-[calc(var(--radius)-10px)] bg-gradient-to-b from-rose-50/40 to-white px-2 py-2">
-                {hasDayNightData ? (
-                  <Line
-                    data={dayNightChartData}
-                    options={dayNightChartOptions}
-                    plugins={[dayNightBackgroundPlugin]}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-sm text-slate-500">
-                    {chartLoadError ?? "Sin datos en la ventana 09:00–09:00 para alimentación e hidratación."}
-                  </div>
-                )}
+                <Line
+                  data={dayNightChartData}
+                  options={dayNightChartOptions}
+                  plugins={[dayNightBackgroundPlugin]}
+                />
               </div>
+              {chartLoadError ? (
+                <p className="mt-2 text-xs text-slate-500">
+                  {chartLoadError}
+                </p>
+              ) : null}
             </div>
           </section>
         </header>
