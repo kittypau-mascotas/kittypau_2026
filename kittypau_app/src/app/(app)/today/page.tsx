@@ -951,11 +951,12 @@ export default function TodayPage() {
             },
             label: (context) => {
               const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
-              if (value === null) return `${context.dataset.label}: N/D`;
-              if (context.dataset.label.includes("Hidratación")) {
-                return `${context.dataset.label}: ${value} cm3 (aprox)`;
+              const label = context.dataset.label ?? "Serie";
+              if (value === null) return `${label}: N/D`;
+              if (label.includes("Hidratación")) {
+                return `${label}: ${value} cm3 (aprox)`;
               }
-              return `${context.dataset.label}: ${value} g`;
+              return `${label}: ${value} g`;
             },
           },
         },
