@@ -201,6 +201,15 @@ function formatSessionDuration(minutes: number) {
   return `${h} h ${m} min`;
 }
 
+function formatCycleDate(ts: number) {
+  return new Date(ts).toLocaleDateString("es-CL", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 function isBoundaryHour(value: number) {
   const epsilon = 0.02;
   const boundaries = [0, 6, 12, 18, 24];
@@ -899,6 +908,11 @@ export default function TodayPage() {
   const waterPowerState = resolveDevicePowerState(waterDevice);
 
   const dayNightWindow = useMemo(() => getDayNightWindow(new Date()), [lastRefreshAt]);
+  const dayNightRangeTitle = useMemo(() => {
+    const startLabel = formatCycleDate(dayNightWindow.startMs);
+    const endLabel = formatCycleDate(dayNightWindow.endMs);
+    return `Ciclo diario: ${startLabel} 09:00 -> ${endLabel} 09:00`;
+  }, [dayNightWindow.endMs, dayNightWindow.startMs]);
   const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
   const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
 
@@ -979,14 +993,43 @@ export default function TodayPage() {
       beforeDatasetsDraw: (chart) => {
         const { ctx, chartArea } = chart;
         if (!chartArea || !dayNightBackground || !dayNightBackground.complete) return;
+        const areaWidth = chartArea.right - chartArea.left;
+        const areaHeight = chartArea.bottom - chartArea.top;
+        if (areaWidth <= 0 || areaHeight <= 0) return;
+        const imageWidth = dayNightBackground.naturalWidth || dayNightBackground.width;
+        const imageHeight = dayNightBackground.naturalHeight || dayNightBackground.height;
+        if (!imageWidth || !imageHeight) return;
+
+        // Draw in "cover" mode to keep proportions and avoid stretched background.
+        const imageAspect = imageWidth / imageHeight;
+        const areaAspect = areaWidth / areaHeight;
+        let srcX = 0;
+        let srcY = 0;
+        let srcW = imageWidth;
+        let srcH = imageHeight;
+
+        if (imageAspect > areaAspect) {
+          srcW = imageHeight * areaAspect;
+          srcX = (imageWidth - srcW) / 2;
+        } else {
+          srcH = imageWidth / areaAspect;
+          srcY = (imageHeight - srcH) / 2;
+        }
+
         ctx.save();
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
         ctx.globalAlpha = 1;
         ctx.drawImage(
           dayNightBackground,
+          srcX,
+          srcY,
+          srcW,
+          srcH,
           chartArea.left,
           chartArea.top,
-          chartArea.right - chartArea.left,
-          chartArea.bottom - chartArea.top
+          areaWidth,
+          areaHeight
         );
         ctx.restore();
       },
@@ -1361,7 +1404,10 @@ export default function TodayPage() {
 
           <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
             <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
-              <div className="h-[320px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
+              <p className="mb-2 text-center text-[12px] font-semibold text-slate-600">
+                {dayNightRangeTitle}
+              </p>
+              <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
                 <Line
                   data={dayNightChartData}
                   options={dayNightChartOptions}
