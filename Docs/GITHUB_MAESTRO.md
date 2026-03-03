@@ -1,0 +1,27 @@
+# GitHub Maestro — Kittypau
+
+Índice de flujo de trabajo, gobernanza y colaboración en GitHub.
+
+---
+
+## Flujo oficial (leer primero)
+- [GITHUB_FLUJO_OFICIAL.md](GITHUB_FLUJO_OFICIAL.md) — Ramas, commits, PRs, reglas del repo
+- [GITHUB_GOBERNANZA_COLABORACION.md](GITHUB_GOBERNANZA_COLABORACION.md) — Branch protection, CI checks, políticas
+
+## Comandos operativos
+- [GIT_CLI.md](GIT_CLI.md) — Comandos Git: rebase, merge, stash, log
+- [VERCEL_CLI.md](VERCEL_CLI.md) — Deploy, variables de entorno, logs en Vercel
+- [SUPABASE_CLI.md](SUPABASE_CLI.md) — Migraciones y comandos de Supabase CLI
+
+## Onboarding (colaboradores nuevos)
+- [ONBOARDING_JAVIER.md](ONBOARDING_JAVIER.md) — Setup completo: Git, Node, VS Code, PlatformIO
+- [GUIA_CLONADO_JAVO_IA.md](GUIA_CLONADO_JAVO_IA.md) — Autenticación GitHub y clonado del repo
+
+## Bitácoras personales
+- [GITHUB_JAVO.md](GITHUB_JAVO.md) — Registro de actividad de Javier
+- [GITHUB_MAURO.md](GITHUB_MAURO.md) — Registro de actividad de Mauro
+- [AVANCE_PUSHES_GITHUB.md](AVANCE_PUSHES_GITHUB.md) — Tabla consolidada de pushes (ambos)
+
+## Integración de ramas
+- [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md) — Estrategia de 3 PRs para fusión limpia
+- [REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md](REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md) — Log de prueba de fusión conjunta

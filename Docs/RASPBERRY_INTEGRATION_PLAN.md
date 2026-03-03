@@ -76,6 +76,53 @@ Recomendado:
 ---
 
 ## Pendientes
-- SQL completo del bridge (4 tablas adicionales y vistas).
-- Decidir si el bridge persiste localmente o solo forward a webhook.
-- Definir si `device_summary` vive en Supabase o en el bridge.
+- Decidir si `device_summary` vive en Supabase o en el bridge.
+
+> **Nota (bridge v2.4):** El bridge activo (`bridge/src/index.js`) conecta directo a Supabase usando `@supabase/supabase-js` con service role key. Ya no usa webhook intermedio.
+
+---
+
+## Estrategia de Migración de Schema (compatibilidad Raspberry)
+
+### Objetivo
+Unificar el esquema de la Raspberry (bridge) con Kittypau sin borrar datos existentes.
+Se permite **renombrar columnas** y **agregar columnas/vistas** para compatibilidad.
+No se ejecuta nada hasta aprobar este plan.
+
+### Diferencias detectadas (bridge vs Kittypau)
+Bridge usa:
+- `devices.device_id` (string KPCLxxxx)
+- `device_summary` con columnas: `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`
+- vista `latest_readings`
+- columnas nuevas: `notes`, `ip_history`, `retired_at`
+
+Kittypau actual:
+- `devices.device_id` (string KPCLxxxx, único)
+- `devices.id` (UUID, PK)
+- no tiene `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`
+- no tiene `latest_readings` ni `device_summary`
+
+### Fase 1 (compatibilidad — sin perder datos)
+1. **Agregar columnas** a `devices`:
+   - `notes` TEXT
+   - `ip_history` JSONB default '[]'
+   - `retired_at` TIMESTAMPTZ
+   - `wifi_status` TEXT
+   - `wifi_ssid` TEXT
+   - `wifi_ip` TEXT
+   - `sensor_health` TEXT
+2. **Crear vista `latest_readings`** en base a `sensor_readings` (por `device_id`).
+3. **Crear vista `device_summary`** usando `device_id` (KPCL) como clave humana.
+4. **Mantener `device_id`** como fuente de verdad para el bridge.
+
+### Riesgos y mitigaciones
+- **Riesgo**: romper UI/API si renombramos sin migración → Mitigación: fase 1 con aliases
+- **Riesgo**: datos duplicados si bridge manda `device_id` distinto → Mitigación: normalizar formato KPCL
+- **Riesgo**: vistas referencian columnas inexistentes → Mitigación: agregar columnas antes de crear vistas
+
+### Checklist previo a ejecutar
+1. Confirmar que bridge envía `device_id` (KPCL).
+2. Confirmar si bridge puede enviar `device_uuid` (opcional).
+3. Ejecutar migración en staging (Supabase).
+4. Validar API `/api/devices` y `/api/readings`.
+5. Validar bridge con MQTT CLI.
