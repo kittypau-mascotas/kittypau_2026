@@ -1159,26 +1159,35 @@ export default function TodayPage() {
           },
         },
         tooltip: {
-          backgroundColor: "rgba(30,41,59,0.9)",
-          titleColor: "#fdf2f8",
-          bodyColor: "#f8fafc",
-          borderColor: "rgba(244,114,182,0.35)",
+          backgroundColor: "rgba(255,251,253,0.98)",
+          titleColor: "#be185d",
+          bodyColor: "#334155",
+          footerColor: "#64748b",
+          borderColor: "rgba(244,114,182,0.32)",
           borderWidth: 1,
-          cornerRadius: 10,
-          padding: 10,
-          displayColors: false,
+          cornerRadius: 12,
+          padding: 12,
+          displayColors: true,
+          usePointStyle: true,
+          boxPadding: 4,
           callbacks: {
             title: (items) => {
               const point = items[0]?.parsed;
-              if (!point || typeof point.x !== "number") return "Sin hora";
+              if (!point || typeof point.x !== "number") return "Hora: N/D";
+              const datasetLabel = String(items[0]?.dataset?.label ?? "");
+              const seriesTitle = datasetLabel.includes("Hidratación")
+                ? "Hidratación"
+                : datasetLabel.includes("Alimentación")
+                  ? "Alimentación"
+                  : "Lectura";
               const at = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
-              return at.toLocaleString("es-CL", {
+              return `${seriesTitle} · ${at.toLocaleString("es-CL", {
                 day: "2-digit",
                 month: "2-digit",
                 hour: "2-digit",
                 minute: "2-digit",
                 hour12: false,
-              });
+              })}`;
             },
             label: (context) => {
               const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
@@ -1186,23 +1195,24 @@ export default function TodayPage() {
               if (value === null) return `${label}: N/D`;
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
+              return `${label}: ${value} ${unit}`;
+            },
+            afterLabel: (context) => {
+              const label = context.dataset.label ?? "Serie";
+              const isHydration = label.includes("Hidratación");
+              const unit = isHydration ? "cm3 (aprox)" : "g";
               const sessions =
                 context.datasetIndex === 0 ? bowlIntakeSessions : waterIntakeSessions;
               const session = findSessionForPoint(sessions, context.dataIndex);
-              if (!session) {
-                return [
-                  `${label}: ${value} ${unit}`,
-                  "Proceso: sin evento detectado",
-                ];
-              }
+              if (!session) return ["Proceso: sin evento detectado"];
               return [
-                `${label}: ${value} ${unit}`,
                 `Inicio: ${formatSessionClock(session.startT)}`,
                 `Fin: ${formatSessionClock(session.endT)}`,
                 `Duración: ${formatSessionDuration(session.durationMinutes)}`,
                 `Consumo proceso: ${Math.round(session.consumed)} ${unit}`,
               ];
             },
+            footer: () => "KittyPaw · Ciclo diario",
           },
         },
       },
