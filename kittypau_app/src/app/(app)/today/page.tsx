@@ -699,7 +699,12 @@ export default function TodayPage() {
     <div className="min-h-screen px-6 py-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-4">
-          <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
+          <section
+            id="today-hero"
+            role="region"
+            aria-label="Hero estado de platos y mascota"
+            className="today-hero surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+          >
             <div className="grid gap-4 md:grid-cols-[180px_1fr]">
               <div className="flex flex-col items-center gap-2">
                 <div className="relative">
