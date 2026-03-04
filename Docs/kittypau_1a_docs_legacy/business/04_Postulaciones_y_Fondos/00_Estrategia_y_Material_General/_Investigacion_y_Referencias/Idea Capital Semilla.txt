@@ -1,0 +1,158 @@
+PetBot
+
+
+
+
+
+
+
+
+App que te muestra el consumo de agua y comida de tu mascota, su peso y con esa data mas tecnologias de maching learning predecir y detectar enfermedades de tu mascota.
+
+
+
+
+XXXX es un producto para el monitoreo y el cuidado de la salud de tu mascota, midiendo el historial del consumo de agua, alimento y peso.  Es un proyecto que  fusiona el internet de las cosas junto con modelamientos estadísticos como machine learning para poder obtener registros y predicciones que ayuden a prevenir futuras enfermedades de las mascotas.
+Problema que Resuelve:
+
+Detección temprana de enfermedades: Permite identificar problemas de salud en etapas tempranas, mejorando el pronóstico y reduciendo costos de tratamiento.
+Mejora la calidad de vida de las mascotas: Alerta sobre posibles problemas de salud y nutrición, permitiendo tomar medidas preventivas.
+Tranquilidad para los dueños: Brinda información valiosa sobre el estado de salud de su mascota, reduciendo la incertidumbre y el estrés.
+
+Mercado Objetivo:
+
+Dueños de perros y gatos en Chile.
+Personas preocupadas por la salud y bienestar de sus mascotas.
+Usuarios de tecnología que buscan soluciones innovadoras para el cuidado de sus mascotas.
+
+Potencial de Crecimiento:
+
+Alto: Crecimiento del mercado de productos y servicios para mascotas en Chile.
+Escalable: La app puede adaptarse a diferentes tipos de mascotas y países.
+Modelo de negocio replicable: Suscripción mensual por usuario.
+
+Equipo:
+
+Ingenieros en software con experiencia en desarrollo de aplicaciones móviles.
+Veterinarios con experiencia en diagnóstico y tratamiento de enfermedades de mascotas.
+Expertos en marketing y ventas con experiencia en el mercado de mascotas.
+Hitos y Proyecciones:
+
+Lanzamiento de la app en Chile: Q4 2024.
+Expansión a otros países de Latinoamérica: 2025.
+100.000 usuarios activos: 2026.
+Impacto:
+
+Mejora la salud y bienestar de las mascotas en Chile.
+Reduce los costos de atención veterinaria para los dueños de mascotas.
+Promueve la tenencia responsable de mascotas.
+Financiación:
+
+$50.000 USD para desarrollo de la app.
+$20.000 USD para marketing y publicidad.
+Uso de los Fondos:
+
+Desarrollo de la app móvil.
+Marketing y publicidad.
+Contratación de personal.
+Viabilidad del Negocio:
+
+Mercado en crecimiento: El mercado de productos y servicios para mascotas en Chile está creciendo a un ritmo constante.
+Necesidad real: Existe una necesidad real por parte de los dueños de mascotas de tener información sobre la salud y bienestar de sus animales.
+Solución innovadora: La app ofrece una solución innovadora y única al problema de la detección temprana de enfermedades en mascotas.
+
+Conclusión:
+
+La app tiene un gran potencial de éxito por su viabilidad, escalabilidad, impacto y el equipo que la respalda. La financiación del fondo semilla permitirá desarrollar la app y lanzarla al mercado, lo que tendrá un impacto positivo en la salud y bienestar de las mascotas en Chile.
+
+Respuestas a las preguntas específicas:
+
+1. ¿Quiénes son los clientes a los cuales les estamos entregando valor? ¿Cuáles son los segmentos más importantes de clientes a los que apunta nuestro negocio?
+
+Segmento de clientes: Dueños de perros y gatos en Chile.
+Necesidades:
+Detectar enfermedades en sus mascotas de forma temprana.
+Mejorar la calidad de vida de sus mascotas.
+Tener tranquilidad sobre la salud de sus mascotas.
+2. ¿Por qué debería preferirme el segmento de clientes al que apunta mi idea de negocio, y no quedarse con la competencia?
+
+Propuesta de valor:
+Detección temprana de enfermedades mediante machine learning.
+Monitoreo del consumo de agua, comida y peso de la mascota.
+Información valiosa sobre la salud de la mascota.
+Tranquilidad para los dueños de mascotas.
+
+3. ¿A través de qué canales quiero llegar a mis clientes? ¿Cuáles son los canales que funcionan mejor para mi/s segmento/s de clientes? ¿Cuáles son los canales más rentables de mi modelo de negocio?
+
+Canales de distribución:
+
+Canal directo: App móvil disponible en App Store y Google Play.
+Canal indirecto:
+Redes sociales (Instagram, Facebook, YouTube).
+Marketing de influencers.
+Publicidad online.
+Colaboraciones con veterinarias y tiendas de mascotas.
+Canales más rentables:
+
+Canal directo: App móvil (mayor margen de beneficio).
+Redes sociales: Bajo costo y alto alcance.
+4. ¿Qué relación espera tener con cada segmento de clientes descrito? ¿Cuál es el costo de cada una de las formas de relacionarse con cada segmento?
+
+Relación con los clientes:
+
+Relación personalizada:
+Soporte técnico a través de la app.
+Chat en vivo dentro de la app.
+Consejos y recomendaciones sobre la salud de las mascotas.
+Relación automatizada:
+Notificaciones push sobre la salud de la mascota.
+Recordatorios para alimentar y dar agua a la mascota.
+Informes personalizados sobre el estado de salud de la mascota.
+Costos de la relación con los clientes:
+
+Relación personalizada: Costo de desarrollo y mantenimiento del soporte técnico y chat en vivo.
+Relación automatizada: Costo de desarrollo y mantenimiento de las notificaciones push y los informes personalizados.
+5. ¿Por qué están dispuestos a pagar nuestros diferentes segmentos de clientes? ¿Por qué pagan actualmente nuestros segmentos potenciales de clientes? ¿Por qué medio prefiere pagar cada segmento de clientes?
+
+Disposición a pagar:
+
+Los clientes están dispuestos a pagar por la tranquilidad de saber que sus mascotas están sanas.
+La app les ayuda a prevenir enfermedades y ahorrar dinero en costos de atención veterinaria.
+La app les ofrece información valiosa sobre la salud de sus mascotas.
+Medios de pago:
+
+Tarjetas de crédito/débito
+PayPal
+Transferencia bancaria
+6. ¿Qué recursos clave se deben gestionar para que nuestra oferta de valor llegue a los diferentes segmentos de clientes definidos en el modelo de negocios?
+
+Recursos clave:
+App móvil: Desarrollada por un equipo de ingenieros en software.
+Base de datos: Almacena información sobre las mascotas y sus dueños.
+Algoritmos de machine learning: Para la detección temprana de enfermedades.
+Equipo de marketing y ventas: Para dar a conocer la app a los clientes potenciales.
+7. ¿Qué actividades clave se deben desarrollar para que nuestra oferta de valor llegue a los diferentes segmentos de clientes definidos en el modelo de negocios?
+
+Actividades clave:
+Desarrollo y mantenimiento de la app móvil.
+Recopilación de datos sobre las mascotas y sus dueños.
+Entrenamiento de los algoritmos de machine learning.
+Marketing y publicidad de la app.
+Atención al cliente.
+8. Defina cuáles son los costos (fijos y variables), en que debe incurrir su negocio a través de las actividades y recursos clave para llegar a sus clientes con su oferta de valor
+
+Costos fijos:
+
+Salarios del equipo de desarrollo y mantenimiento de la app.
+Costos de alojamiento de la app y la base de datos.
+Costos de marketing y publicidad.
+Costos variables:
+
+Costos de transacción por pagos en la app.
+Costos de almacenamiento de datos.
+9. ¿Cuáles son las alianzas gestionadas para mejorar la satisfacción de mis clientes a través de la oferta de valor?
+
+Alianzas estratégicas:
+Asociaciones con veterinarias: Para ofrecer descuentos a los usuarios de la app.
+Colaboraciones con tiendas de mascotas: Para promocionar la app y ofrecer productos relacionados.
+Acuerdos con universidades: Para realizar investigaciones sobre la salud de las mascotas.

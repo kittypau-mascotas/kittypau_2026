@@ -1,0 +1,1044 @@
+                          
+ 1 
+ 
+Boletín Técnico 
+ 
+ 
+ 
+ 
+ 
+ 
+“Estimación de la población canina y felina del 
+país y diagnóstico de la tenencia responsable”  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Santiago de Chile, febrero de 2022 
+                          
+ 2 
+Título: BOLETÍN TÉCNICO “Estimación de la población canina y felina del país y 
+diagnóstico de la tenencia responsable” 
+Propiedad 
+Este documento es de propiedad de la Subsecretaría de Desarrollo Regional y 
+Administrativo (SUBDERE). Se autoriza su difusión citando la fuente. 
+ 
+Programa Nacional de Tenencia Responsable de Animales de Compañía (PTRAC) 
+División de Municipalidades. Subsecretaría de Desarrollo Regional y Administrativo 
+Ministerio del Interior y Seguridad Pública 
+ 
+Coordinadora Nacional Programa 
+Carolina Guerrero Alvarado 
+ 
+Profesionales Programa 
+Claudia Aguirre Sapiente 
+César Sánchez Moya 
+ 
+Página web www.tenenciaresponsable.subdere.gov.cl, www.subdere.gov.cl 
+Twitter @MascotaGob Instagram @MascotaGob 
+ 
+Teatinos 92, Santiago de Chile 
+ 
+Proyecto SUBDERE Licitación N° ID  761-30-B221 “Estimación de la población canina y 
+felina del país y diagnóstico de la tenencia responsable” 
+ 
+Entidad ejecutora 
+Escuela Medicina Veterinaria, Pontificia Universidad Católica de Chile. 
+ 
+Equipo de investigación 
+Fernando Mardones 
+Marília Salgado-Caxito 
+Nicolhole Atero 
+Miriam Fernández 
+Julio Benavides 
+Mauricio Lima 
+Francisca Córdova 
+Romina Ramos 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 3 
+Introducción 
+ 
+El aumento de animales de compañía, 
+especialmente perros y gatos, a nivel 
+mundial es una tendencia que se observa 
+en las últimas décadas (GFK, 2020; P FMA, 
+2014; AVMA, 2012; CVMA, 2011). Por una 
+parte, se atribuyen beneficios sociales y 
+emocionales a la tenencia de animales de 
+compañía en distinto niveles etarios (Cleary 
+et al., 2020; Hartwig and Signal, 2020)  y 
+grupos étnicos -culturales (Senior et al., 
+2006)  
+ 
+La Subsecretaría de Desarrollo Regional y 
+Administrativo del Ministerio del Interior y 
+Seguridad Pública (SUBDERE), a través del 
+Programa de Tenencia Responsable de 
+Animales de Compañía (PTRAC), es un 
+actor fundamental para la implementación 
+de la Ley N° 21.020 sobre tenencia 
+responsable de mascotas y animales de 
+compañía, y por ello requiere información 
+actualizada. 
+ 
+En Chile , a la fecha , no se ha podido 
+evaluar a cabalidad la efectividad de los 
+planes y programas de esterilización canina 
+a nivel c omunal en todo el territorio. Por lo 
+tanto, se requiere trabajar en herramientas 
+que permitan conocer la real magnitud y 
+carga del problema, el tamaño y la dinámica 
+de dichas poblaciones; con la finalidad de 
+planificar políticas de salud pública, y de 
+tenencia responsable a nivel nacional. 
+ 
+Este resumen ejecutivo presenta un 
+compendio de los resultados del proyecto 
+de “Estimación de la población canina y 
+felina del país y diagnóstico de la tenencia 
+responsable” (ID 761 -30-B221) realizado 
+entre los meses de octubre 2021 y febrero 
+2022. Sus resultados han permitido la 
+identificación de  aspectos claves en la 
+tenencia responsable (TR) de mascotas a lo 
+largo del país , constituyéndose como el 
+primer estudio a nivel nacional e 
+internacional de gran magnitud que propone 
+una metodología inédita, la que permite la 
+colección de datos poblacionales de 
+caninos y/o felinos, mediante un conjunto 
+de métodos, en un orden espec ífico de 
+acción, lo que permite realizar la estimación 
+de una población, denominada ENTORE , 
+posicionando a Chile como referencia en la 
+temática. 
+ 
+Antecedentes, Relevancia y 
+Justificación 
+ 
+La SUBDERE a través del programa 
+PTRAC ha sido el principal órgano estatal a 
+cargo de la implementación de la Ley N° 
+21.020 desde su promulgación en agosto 
+de 2017. 
+ 
+El PTRAC también gestiona a través de una 
+plataforma varios Registros, entre ellos el 
+Registro Nacional de Mascotas o Animales 
+de Compañía, y a escala comunal, dispone 
+de información sobre diversas actividades 
+de tenencia responsable que las 
+municipalidades le reportan anualmente.  
+Actualizar información sobre la tenencia 
+responsable de caninos y felinos es 
+determinante para el desarrollo de políticas 
+públicas relacionadas y para la evaluación 
+de diferentes estrategias e intervenciones 
+ 
+ 
+ 
+ 
+ 
+ 
+ 4 
+públicas, tales como el control demográfico 
+de la población animal, la reducción del 
+abandono y el fomento de la 
+concientización sobre la importancia de las 
+prácticas de tenencia y convivencia 
+responsable con mascotas, entre otras. Por 
+lo anterior, el presente estudio estimó y 
+caracterizó la población canina y felina del 
+país (incluyendo animales con y sin dueño), 
+investigó sobre la percepción y actitudes de 
+las personas con relación a los perros y 
+gatos en Chile,  e identificó prioridades  y 
+métodos de control para un ordenamiento 
+territorial a nivel comunal y regional. Esto se 
+llevó a cabo mediante encuestas aplicadas 
+en viviendas y  con la observación 
+sistemática de perros y gatos , que se 
+encontraban deambulando sin supervisión  
+en la vía pública por parte de una persona.  
+ 
+A contin uación, se presenta un resumen 
+ejecutivo de los principales resultados 
+obtenidos a través del proyecto “Estimación 
+de la población canina y felina del país y 
+diagnóstico de la tenencia responsable” del 
+Programa de Tenencia Responsable de 
+Animales de Compañía de la SUBDERE. El 
+que fue  adjudicado mediante licitación (ID 
+761-30-B221) por la Escuela de Medicina 
+Veterinaria de la Pontificia Universidad 
+Católica (UC), y que contó con el trabajo 
+conjunto con el Programa PTRAC y la 
+colaboración voluntaria de municipalidades, 
+y delegaciones presidenciales provinciales.   
+ 
+ 
+ 
+ 
+Revisión sistemática y meta -
+análisis 
+ 
+Se realizó una revisión sistemática y meta -
+análisis previo al trabajo en terreno, c on la 
+finalidad de complementar la base de datos 
+utilizada para la estrati ficación de las 
+comunas y comparar cronológicamente la 
+situación existente a la fecha,  tanto de 
+demografía de las poblaciones canina y 
+felina, y  sobre algunos  aspectos de la 
+tenencia responsable en Chile.  
+ 
+ 
+Figura 1. Proporción de estudios de estimacione s de caninos y felinos en 
+Chile, a nivel comunal entre los años 1966 a 2020.  
+ 
+En general, 74,1% (103/139) de los 
+estudios se llevaron a cabo exclusivamente 
+en perros, 19,4% (27/139) se realizaron 
+exclusivamente en gatos y el 6, 5% (9/139) 
+restante realizó estimaciones en ambas 
+especies animales  (Figura 1) . Casi todos 
+los estudios efectuaron la estimación 
+utilizando métodos de encuestas en 
+hogares y observación sistemática para 
+detectar los animales de compañía. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 5 
+ 
+Figura 2. Comunas reportando estudios so bre tamaño y densidad 
+poblacional de animales de compañía (perro y/o gato) con y sin dueño. 
+ 
+La gran mayoría de los estudios  
+encontrados se concentra ban en las 
+macrozonas Austral, Sur y Centro Sur 
+además de la Región Metropolitana (Figura 
+2). Pocos estudio s fueron identificados en 
+las otras macrozonas, especialmente la 
+Macrozona Norte. 
+ 
+ 
+Resultados 
+ 
+Para el trabajo en terreno se utilizó l a 
+metodología ENTORE, la que  es descrita 
+como: E de Estratificación, que involucra un 
+N muestral, diseño de Transecto, 
+Observación en terreno, Recopilación 
+análisis de datos, y Estimación poblacional 
+canina y/o felina. 
+ 
+Entre los días 13 y 17 de diciembre del año 
+2021 se realizó el trabajo en terreno entre 
+participantes del equipo de la  UC y otro 
+conformado por funcionarios/ as 
+voluntarios/as de  municipalidades, 
+delegaciones presidenciales provinciales  y 
+otras entidades, previamente inscritos.  
+ 
+Todas las personas que participaron en la 
+aplicación de la encuesta en terreno, y en la 
+observación de perros y gatos  sin 
+supervisión en la vía pública , fueron 
+capacitadas mediante un entrenamiento 
+previo realizado durante los días 9 y 10 de 
+diciembre de 2021. 
+ 
+ 
+Tasa de Respuesta 
+ 
+Se aplic ó una encuesta de tenencia 
+responsable a nivel de vivienda de forma 
+simultánea en 35 comunas del pa ís, tanto 
+en sectores urbanos como rurales. A nivel 
+nacional, se accedió un total de 17 .458 
+viviendas (puertas tocadas), de las cuales 
+el 49,7% (n=8 .674) se encontraba con 
+moradores presentes. Obteniendo una tasa 
+de respuesta de un 72,3% (n=6.275). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 6 
+ 
+Figura 3. Tasa de Respuesta de encuesta aplicada en terreno, según 
+comuna. 
+ 
+Las comunas con mayores tasas de 
+respuesta fueron Panquehue (98.4%), 
+Hualañé (96.7%) y Santa María  (94.4%), 
+siendo las de menor tasa de respuesta las 
+comunas de Padre Hurtado  (53.8%), 
+Valparaíso (47.7%), y Las Condes (40,6%) 
+(Figura 3). 
+ 
+A continuación, se presentan los principales 
+resultados obtenidos: 
+  
+ 
+1. Resultados de encuesta en 
+viviendas 
+Del total de 6.275 viviendas encuestadas, el 
+75,9% (n=4.754) tenía mascota. Se registró 
+un total  de 4.062 (85,4%) viviendas con al 
+menos un perro, 1 .956 (41.1%) con al 
+menos un gato y 1 .300 viviendas con 
+ambas especies (27,35%), es decir, al 
+menos un perro y un gato. S ólo 176 (3,7%) 
+viviendas reportaron tener otra especie de 
+mascota (tortugas, hámster, conejos, entre 
+otros).  
+Figura 2. Viviendas con mascotas.  
+De las 6 .275 viviendas encuestadas un 
+74,6% se encontraba en zona urbana y un 
+25,4% en zona rural, con un total de 7 .797 
+mascotas con dueño en zonas urbanas y 
+3.292 en zonas rurales. Se estima que hay 
+una mayor cantidad de perros por persona 
+que gatos  por persona, con razones 
+persona:animal de 2,2 y 4,5 , 
+respectivamente (Tabla 1).  
+En la zona urbana, se puede observar una 
+razón de 2,5 persona:perro , es decir  por 
+cada 2,5 personas en la población , habría 
+un perro en zonas urbanas. Esta relación 
+disminuye en el sector rural a 1,7 
+persona:perro, lo que significa que habrían 
+más perros por persona en sectores 
+rurales.  
+En el caso de la razón persona:gato, es 4 ,9 
+en sector urbano  y 3,8 en sector rural . 
+Existiendo, por lo tanto, más gatos por 
+persona en sectores rurales que urbanos.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 7 
+ 
+Tabla 1. Razón persona:mascota y mascota:vivienda según zona urbana 
+y rural 2021. 
+ 
+A continuación, se presenta la estimación 
+de la población canina y felina a nivel 
+nacional según zona urbana y rural, en 
+base a los datos obtenidos previamente en 
+la encuesta en viviendas.  
+ 
+ 
+2. Estimación y caracterización 
+de la población canina y 
+felina a nivel nacional  
+ 
+A nivel a nacional se estimó un total de 
+8.306.650 perros, 4.176.029 de gatos y un 
+total de 4.916.792 viviendas con mascotas , 
+con una mayor proporción de perros que 
+gatos (Figura 4). 
+ 
+ 
+Figura 4. Estimación de la proporción de perros y gatos a nivel nacional.  
+ 
+Del total de la población estimada de perros 
+un 84% se encuentra en zona urbana y un 
+16% en zona rural (Figura 5).  
+ 
+ 
+Figura 5. Estimación de la proporción de perros en zona urbana y rural.  
+ 
+Del total de la población estimada de gatos 
+un 86% se encuentra en zona urbana y un 
+14% en zona rural (Figura 6). 
+ 
+ 
+Figura 6. Estimación de la proporción de gatos en zona urbana y rural. 
+ 
+Según la encuesta de hogares en el caso 
+de los perros 3.820 eran machos y 3.195 
+eran hembras; en el caso de los gatos 
+1.447 eran machos y 1.771 eran hembras. 
+Con una razón macho:hembra de 1,2 p ara 
+la especie canina y 0,8 para la especie 
+felina (Figura 7).  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 8 
+ 
+Figura 7. Caracterización de la población canina y felina según sexo 
+(macho/hembra). 
+ 
+ 
+3. Conteo sistemático 
+ 
+Para llegar a esta primera aproximación de 
+la población de caninos y felinos sin 
+supervisión en la vía pública, se realizó una 
+observación sistemática en 29 de las 35 
+comunas encuestadas, la que registró un 
+total de 2.783 caninos (85,3%) y 481 felinos 
+(14,7%) en la calle sin supervisión (Figura 
+8). A partir de estas cifras se calculó la  
+razón animal con -dueño:animal en la calle  
+(entendiendo " en la calle " como aquellos 
+animales que fueron vistos en la vía pública 
+sin supervisión). Se estimó entonces que 
+por cada 2,4 perros con dueño hay 1 en la 
+calle y que, por cada 7,1 gatos con dueño, 
+hay 1 en la calle. Es importante señalar que 
+esta estimación fue basada en el terreno 
+específico de l estudio, y los datos poseen 
+un sesgo  por las limitaciones presentadas 
+en la investigación  y por la inherente 
+complejidad de la dinámica y 
+comportamiento de la población de 
+animales en la vía pública  sin supervisión. 
+Por lo tanto, este resultado corresponde 
+sólo a una aproximación inicial  que estima 
+un total de 3.46 1.104 caninos y 588.173 
+felinos en la vía pública sin supervisión 
+actualmente en Chile.  
+ 
+Figura 8. Proporción de perros y gatos sin supervisión observados en 29 
+comunas de Chile.  
+ 
+4. Diagnóstico de la 
+convivencia humano -animal 
+de compañía a nivel nacional 
+Según la encuesta  en hogares , el 84,9% 
+(4.035/4.754) de los informantes que 
+reportaron mascota(s ) en la vivienda se 
+declaró como responsable de todas  las 
+mascotas o de al menos 5 perros y/o gatos 
+del hogar. Mientras que un 91,2% 
+(4.334/4.754) de los encuestados report ó 
+ser el responsable de al menos una 
+mascota en la vivienda. 
+La principal razón de t enencia de las 
+mascotas fue como animal de compañía , 
+con un 89,1% (9.199/10.319  mascotas), 
+mientras que los otros dos principales 
+motivos para tener a la mascota fue por 
+seguridad (4,7%, 490/10.319  mascotas) y 
+para la caza (1,5%, 151/10.319 mascotas)  
+(Figura 9).  
+ 
+ 
+ 
+ 
+ 
+ 
+ 9 
+ 
+Figura 9. Motivo de tenencia de mascotas según encuesta realizada en 
+hogares.   
+ 
+La tenencia de mascotas tiene 
+externalidades positivas para los tenedores 
+con relación a su salud física y mental.  El 
+estudio confirmó el apego emocional de los 
+dueños con sus mascotas, debido a que un 
+92,1% de las mascotas fue reportada 
+simultáneamente como un miembro de la 
+familia y como motivo de felicidad para su 
+tenedor (9.504/10.319) (Figura 10).  
+ 
+ 
+Figura 10. Proporción de mascotas consideradas por el informan te como 
+un miembro de la familia y motivo de felicidad.   
+ 
+Se realizó una evaluación cuantitativa del 
+vínculo tenedor -mascota, en relación a la 
+consideración de la mascota como miembro 
+de la familia o que contribuye a la felicidad 
+de su dueño según un punt aje (scores de 0 
+a 4). Las respuestas “Muy en desacuerdo” y 
+“En desacuerdo ” fueron asignadas al 
+puntaje 0, mientras que las respuestas “De 
+acuerdo” y “Muy de acuerdo”  fueron 
+asignadas a los puntajes 1 y 2, 
+respectivamente.  En general, se estim ó 
+que el 92,6% (9.559/10.319) de las 
+mascotas tiene algún grado de vínculo 
+afectivo (puntaje igual o superior a 2)  con 
+sus dueños , y que el 70% probablemente 
+tiene un nivel expresivo de conexión 
+emocional con su tenedor (Figura 11).  
+ 
+ 
+Figura 11. Proporción de mascot as según score del vínculo tenedor -
+mascota.  
+ 
+ 
+La mayoría de las mascotas fue adquirida 
+sin que hubiera costos financieros 
+asociados (89,8%, 9.272/10.319) , mientras 
+que un 8,6% (891/10.319) de las mascotas 
+reportadas fue adquirida como resultado de 
+una compra (por el mismo dueño o por otra 
+persona antes de regalárselo) (Figura 12). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 10 
+ 
+Figura 12. Cantidad de mascotas según costos implicados en su 
+adquisición para los tenedores. 
+ 
+Con relación al  registro de la mascota, 
+solamente un 27,4% de las mascotas tiene  
+microchip y está inscrita en el "REGISTRO 
+NACIONAL DE MASCOTAS" 
+(www.registratumascota.cl). Por otro lado,  
+un número importante de mascotas no 
+están inscritas en el registro (60%, 
+6.197/10.319) y  el 58,4% no p osee 
+microchip de identificación (6.026/10.319). 
+Cabe mencionar que el registro de una 
+mascota por parte de su tenedor es de 
+carácter obligatorio (Tabla 2).  
+ 
+ 
+Tabla 2 . Proporción de mascotas con microchip y/o registrada en el 
+"REGISTRO NACIONAL DE MASCOTAS". 
+ 
+Identificar el lugar donde duerme la 
+mascota (interior o  exterior de la vivienda) 
+ha sido asociada en estudios anteriores 
+como un parámetro posible para identificar 
+una estrecha relación entre tenedor y su 
+mascota (Aragunde-Kohl et al., 2020; 
+Bouma et al., 2021; Machado et al., 2020) . 
+En este estudio se identificó que un 51% 
+(5.265/10.319) de las mascotas duerme en 
+el exterior de la vivienda y un 48% 
+(4.954/10.319) de los animales son 
+permitidos para  dormir en el interior de la 
+misma (Figura 13). 
+ 
+ 
+Figura 13. Proporción de mascotas que duermen al interior y exterior de la 
+vivienda. 
+ 
+Otro factor considerado en el diagnóstico de 
+la convivencia humano-animal de compañía 
+fue con relaci ón al  confinamiento de la 
+mascota. El estudio identificó que el 79,6% 
+de las mascotas  (8.215/10.319) tiene 
+acceso restrictivo a la calle (Figura 1 4), 
+corroborando los resultados obtenidos con 
+relación al considerable vínculo afectivo 
+demostrado por los inf ormantes, por medio 
+de las preguntas sobre la incorporación de 
+la mascota como un miembro de la familia y 
+del sentimiento de felicidad proporcionada 
+por la misma.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 11 
+ 
+Figura 14. Proporción de mascotas por tipo de confinamiento (acceso o no 
+a la calle, con o sin supervisión de un humano). 
+ 
+En relación con los cuidados de la salud de 
+la mascota, los informantes fueron 
+consultados sobre si la mascota es 
+examinada por un veterinario /a al menos 
+una vez al año, y sobre la vacunación y 
+desparasitación periódica. La mayoría de 
+los informantes reportaron que sus 
+mascotas son chequeadas por un médico /a 
+veterinario/a al menos una vez al año 
+(65%), presentan su esquema de 
+vacunación actualizado (50,3%) y realizan 
+desparasitación regularmente a cada 6 
+meses (71,3%) (Figura 15). 
+ 
+ 
+Figura 1 5. Proporción de mascotas que son chequeadas al menos una 
+vez al año por un medico veterinario, presentan esquema de vacunas 
+actualizado y son desparasitadas periódicamente. 
+ 
+ 
+También se consideró incluir los patrones 
+de uso de antimicro bianos en mascotas sin 
+prescripción veterinaria (o la influencia que 
+podrían ejercer los dueños /as sobre las 
+prácticas de prescripción de los médicos /as 
+veterinarios/as), estos antecedentes fueron 
+considerados como un modelo para 
+estudiar un inconveniente de salud global 
+en el ámbito de Una Salud. Según la 
+información recolectada sólo un 3,1% de las 
+mascotas han recibido antimicrobianos sin 
+prescripción veterinaria. Adicionalmente, no 
+se pudo acceder a la información de  un 
+3,7% de las mascotas , por lo que e l uso 
+inapropiado en estos animales no puede 
+ser descartado (Figura 16). 
+ 
+ 
+Figura 1 6. Proporción de mascotas que recibieron antibióticos sin 
+prescripción veterinaria. 
+ 
+ 
+La Tabla 3 muestra de forma inédita los 
+principales antibióticos utilizados de manera 
+inapropiada, es decir,  sin prescripción 
+veterinaria en Chile. Los principales 
+antibióticos reportados por los informantes 
+fueron aquellos considerados de 
+importancia para la medicina humana por la 
+OMS, incluyendo los de prioridad crítica 
+como amoxicilina y  enrofloxacino  (WHO, 
+2019). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 12 
+ 
+ 
+Tabla 3. Principales antimicrobianos administrados a las mascotas sin 
+prescripción veterinaria. 
+ 
+5. Razones para la no -tenencia 
+de mascotas en Chile 
+ 
+También fueron realizadas entrevistas a 
+residentes que no ten ían mascotas, con el 
+objetivo de comprender los motivos de no 
+tener un perro o gato. Del total de personas 
+que accedieron participar de la encuesta, el 
+24,2% (1.521/6.275) report ó no tener un 
+animal de compañía. La principal razón 
+para no tener mascotas fu e el hecho de no 
+tener un estilo de vida compatible con la 
+responsabilidad de tener un perro y/o gato, 
+es decir, no tenían el tiempo y/o el espacio 
+suficientes (Figura 17). 
+ 
+ 
+Figura 1 7. Razones para no tener una mascota y el porcentaje de no -
+tenedores que mencionó cada uno de los motivos presentados. 
+ 
+6. Problemas asociados a la 
+presencia de perros y/o 
+gatos en la vía pública 
+El 88% (n=5 .507) de los encuestados ha 
+visto perros y/o gatos sin supervisión en la 
+vía pública de su barrio. De estos, el 66.6% 
+(n=3.649) considera que dicha situación es 
+un problema. Los accidentes con personas 
+fueron el problema más común , señalado 
+por el 63,2% (n=2.305) de los encuestados, 
+seguido de la suciedad con un 59,2% 
+(n=2.159) (Figura 18).  
+Figura 1 8. Problemas percibidos por  encuestados asociados a la 
+presencia de perros y/o gatos en la calle. 
+7. Construcción de un índice de 
+Tenencia Responsable (ITR) 
+Se construyó un “score” a nivel de comuna 
+para el país a partir de la ponderación de 
+las características comunales que se 
+relacionan con aspectos directos o 
+indirectos de la tenencia responsable.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 13 
+La aproximación de un indicador comunal 
+se basó en una evaluación espacial 
+multicriterio (AEMC) para el mapeo 
+integrado de la tenencia responsable en 
+Chile. Es la primera vez en el mundo que se 
+plantea una propuesta para la construcción 
+de un índice de tenencia responsable, por 
+lo que se espera que el ITR propuesto en 
+este estudio pueda ser extrapolado a 
+cualquier lugar que cuente con las variables 
+propuestas.  
+El ITR se construyó a partir de la 
+información disponible a nivel comunal, 
+ajustando por la importancia relativa de 
+cada componente (Tabla 3). Esta 
+importancia relativa fue definida en conjunto 
+con la SUBDERE y por medio de una 
+encuesta a médicos/as veterinario/as de las 
+Unidades Regi onales de SUBDERE, 
+encargados/as del tema en 
+municipalidades, y otros actores locales, 
+considerando la definición de una “mesa de 
+expertos intersectoriales” incluyendo 
+agencias gubernamentales y no 
+gubernamentales, la academia y el sector 
+privado.  
+ 
+Tabla 3. Descripción del Índice de Tenencia Responsable (IndexTR) 
+propuesto para clasificar espacialmente el desarrollo comunal con relación 
+a la tenencia responsable de perros y gatos. 
+A continuación, se presenta el ITR de 
+manera espacial a nivel regional y de  
+municipalidades, incluyendo 
+representaciones cartográficas de las 
+estimaciones como un mapa nacional con 
+la distribución de los índices (Figura 19). 
+Dicha representación espacial permite 
+identificar estadísticamente el agrupamiento 
+de comunas, e identific ar las que pudiesen 
+requerir en forma prioritaria alguna 
+intervención (Figura 20). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 14 
+ 
+ 
+Figura 19. Representación del Índice de Tenencia Responsable por 
+región, Chile.  
+ 
+ 
+ 
+ 
+Las comunas con menores valores de ITR 
+fueron Alto Biobío, Galvarino , Melipeuco, 
+Saavedra y  Lo Espejo. Por otro lado , las 
+comunas de Coyhaique, Coelemu, 
+Licantén, Pichilemu y Curacaví presentaron 
+un alt o score de TR (mayor ITR). Cuand o 
+una comuna presenta un menor  ITR, es 
+decir un bajo score de TR, es mayor la 
+prioridad de ser interveni da en temas de 
+tenencia responsable. Por otro lado, a 
+mayores valores de ITR, es decir con un 
+alto score de TR, la comuna posee menor 
+prioridad o menor necesidad de 
+intervención en TR.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 15 
+ 
+ 
+Figura 20. Mapa de representación comunal a nivel nacional de Índice de Tenencia de Responsable, Chile. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+8. Modelo demográfico 
+ 
+Se elaboró  un prototipo de modelo 
+epidemiológico conceptual de dinámica de 
+población para caninos, basado en 
+indicadores poblacionales obtenidos a partir 
+del análisis de datos PTRAC,  la literatura 
+científica disponible y la obtención de 
+información en terreno. Esta nueva 
+información define parámetros que no 
+estaban disponibles o actualizados y que 
+permiten la formulación de modelos 
+demográficos de la dinámica de población 
+de canes a e scala comunal con la 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 16 
+posibilidad de intervenciones para el control 
+poblacional. 
+ 
+La esterilización quirúrgica fue la principal 
+intervención incluida en el modelo, la cual 
+puede estar asociada a un costo monetario. 
+Esta intervención se enfoca en la 
+esterilización de hembras enteras en la 
+población y puede variar desde escenarios 
+de un 0% a un 10%, 20%, 30% y 40%. El 
+modelo podría expandirse a otras 
+intervenciones, como por ejemplo el 
+incremento de tasas de adopción.  
+ 
+El modelo se programó con una población 
+inicial estimada para cada comuna y de 
+esta forma , aproximar en escenarios 
+realistas las complejidades del manejo de 
+poblaciones caninas.   
+ 
+ 
+Limitaciones del estudio y 
+recomendaciones para futuras 
+iniciativas 
+ 
+Si bien  pudieron desarrollarse todas las 
+actividades contempladas en la 
+planificación, y el estudio resulta ser un 
+gran aporte en el desarrollo de las políticas 
+públicas sobre tenencia responsable de 
+mascotas en Chile,  el plazo establecido 
+para realización del estudio dificult ó 
+profundizar en algunos  aspectos del 
+estudio.  
+ 
+Algunos equipos de municipalidades 
+voluntarias presentaron dificultades al 
+aplicar la metodología en terreno, lo cual 
+podría explicarse con la falta de tiempo 
+para adquirir correctamente las 
+herramientas para la adecuada recolecció n  
+de datos. Esto se refleja en algunos datos 
+que no son concordantes o son 
+insuficientes. También se identificó una 
+limitante al aplicar el instrumento encuesta , 
+en este caso, no se completaron todos los 
+ítems del instrumento . Es por esto que  en 
+futuras iniciativas se debiese considerar un 
+mayor tiempo de desarrollo  para cada 
+etapa.  
+ 
+Respecto a la observación sistemática de 
+perros y gatos sin supervisión en las calles, 
+se presentaron algunas limitaciones: 
+horarios menos adecuados de la 
+observación en terr eno de acuerdo a los 
+hábitos de dichos animales; no se logró  
+diferenciar entre perro con  y sin dueño. Se 
+recomienda que en iniciativas futuras se 
+considere la aplicación de metodologías de  
+seguimiento y marcación del animal 
+observado en vías públicas.  
+ 
+Estimar y caracterizar de manera confiable 
+la población felina  es complejo dadas las 
+características propias de la especie  (más 
+ariscos, agresivos (por miedo), son 
+considerados animales de “altura”, entre 
+otras). Por lo tanto , se requiere de una 
+metodología especie-específica para 
+estimar y caracterizar de la forma más 
+precisa posible la población felina del país.  
+ 
+Conclusiones 
+Este estudio es inédito en la estimación a 
+escala nacional de la población canina y 
+felina. A partir de sus resultados, se marca 
+ 
+ 
+ 
+ 
+ 
+ 
+ 17 
+un precedente tanto a nivel estatal como 
+académico, en el ámbito de generación de 
+metodologías que evalú an a nivel país las 
+dinámicas poblacionales de las especies 
+caninas y felinas, especies que 
+corresponden a un gran porcentaje de las 
+mascotas. A partir de esto, Chile se 
+posiciona como referente de Tenencia 
+Responsable de caninos y felinos.  
+Los resultados obtenidos sobre la 
+convivencia persona -animal de compañía 
+indican una tendencia a un mayor vínculo 
+emocional y/o sentimiento de 
+responsabilidad de las per sonas con 
+relación a las mascotas , y evidencian los 
+factores claves que deben ser abordados 
+para promover la tenencia responsable de 
+mascotas como también para la prevención 
+de enfermedades en Chile. 
+Fomentar el conocimiento sobre la tenencia 
+responsable, el cuidado y bienestar animal 
+puede ser un factor clave para observar 
+mejoras en la salud humana, animal y 
+medioambiental. La educación es un eje 
+fundamental para internalizar conceptos de 
+conciencia animal y tenencia responsable, 
+por que  es esencial su incorporación desde 
+la primera infancia, siendo una manera 
+efectiva de abordar el tema a nivel social. 
+Se pudo identificar un aumento de las 
+poblaciones caninas y felinas en Chile, 
+información que se condice con la 
+tendencia obtenida del meta -análisis 
+generado para este estudio. La población 
+predominante es la población canina, 
+siendo aproximadamente dos veces la 
+felina. Cabe destacar que la principal razón 
+de la tenencia de una mascota (perro y/o 
+gato) fue principalmente para tenerla como 
+compañía. 
+Promover el uso de la metodología 
+ENTORE descrita en este estudio , 
+contribuye a estandarizar los análisis 
+poblacionales de las especies canina y 
+felina.  
+Es necesario continuar implementando 
+políticas públicas que promuevan la 
+transdisciplinariedad (profesionales de 
+diferentes áreas trabajando en conjunto) y 
+multisectorialidad (academia, servicio 
+público y sector privado), para robustecer la 
+solución de las problemáticas asociadas a 
+la falta de  tenencia responsable  de 
+animales de compañía de manera integral.  
+El mo delo demográfico propuesto, y que 
+amalgama conceptos desde la ecología a la 
+epidemiología para la población canina, 
+permitirá profundizar en el desarrollo futuro 
+de una herramienta que evalúe el costo -
+beneficio de un número de estrategias 
+basados en indica dores poblacionales de 
+las comunas donde fueron obtenid os los 
+antecedentes en terreno . Además, permite 
+la extrapolación a todas las comunas del 
+país y es capaz de evaluar diferentes 
+estrategias en el corto y largo plazo (1 a 10 
+años), basando un control pr incipalmente 
+en las estrategias de esterilización.  
+El ITR es una herramienta que permitirá 
+intervenir comunas con bajo ITR , el que 
+ 
+ 
+ 
+ 
+ 
+ 
+ 18 
+refleja una alta necesidad de apoyo en 
+temas de tenencia responsable. 
+Finalmente, el mantener mascotas dentro 
+de los hogares , gatos y perros 
+principalmente, identificados con microchip, 
+inscritos en el Registro Nacional , con todos 
+los estándares de tenencia responsable 
+(alimentación, salud, paseos, bienestar 
+animal en general  y otros ) es un gran 
+desafío que debe promoverse para  
+comenzar a direccionar el comportamiento 
+humano hacia  una alta  convivencia y 
+tenencia responsable de animales en Chile. 
+ 
+Agradecimientos 
+ 
+El presente trabajo recibió colaboración de 
+municipalidades, delegaciones 
+presidenciales provinciales, profesionales 
+de otros Ministerios , académicos/as y 
+estudiantes de la UC y otras casas de 
+estudio. 
+ 
+ 
+Referencias 
+ 
+1. AVMA, 2012. Pet Ownership & Demographics 
+Sourcebook Pet Ownership & Demographics 
+Sourcebook. American Veterinary Medical 
+Association, Schaumberg, IL. 
+ 
+2. Cleary, M., Visentin, D., Thapa, D.K., West, S., 
+Raeburn, T., Kornhaber, R., 2020. The Homeless 
+and Their Animal Companions: An Integrative 
+Review. Adm Policy Ment Health 47, 47–59. 
+ 
+3. CVMA, 2011. Canada’s Pet Wellness Report: A 
+Snapshot of Canada’s Pet Health an d Wellness 
+from the Canadian Veterinary Medical 
+Association (CVMA), in Partnership with Hill’s 
+Science Diet. Canadian Veterinary Medical 
+Association. 
+ 
+4. GFK, 2020. Man’s best friend: global pet 
+ownership and feeding trends. Disponible en 
+https://www.gfk.com/insights/mans-best-friend-
+global-pet-ownership-and-feeding-
+trends#:~:text=On%20average%2C%20one%20t
+hird%20(33,no%20pets%20in%20their%20house
+hold (Fecha de acceso 8.5.20). 
+ 
+5. Hartwig, E., Signal, T., 2020. Attachment to 
+companion animals and loneliness in Australian 
+adolescents. Australian Journal of Psychology
+ 72, 337–346.  
+ 
+6. PFMA, 2014. Pet Population. 
+ 
+7. Senior, K., Chenhall, R., McRae -Williams, E., 
+Daniels, D., Rogers, K., 2006. Dogs and people 
+in Aboriginal communities: Exploring the 
+relationship within the context of the social 
+determinants of health. Environmental Health 6, 
+3. 

@@ -1,0 +1,300 @@
+2.1 Descripción proyecto 
+
+KittyPau!  está diseñado para el cuidado y monitoreo del consumo de agua, alimento y el entorno  de mascotas. 
+
+
+KittyPau! Es la combinación de un dispositivo IoT (Internet de las Cosas) y una aplicación móvil para mejorar el bienestar y potenciar la tenencia responsable de mascotas. Este dispositivo se compone de 1 plato inteligente que tienen integrados distintos sensores para medir el consumo de agua y alimento de tu mascota, como también el entorno en el cual habita por medio de sensores de peso (de la comida o agua), temperatura, humedad y luz. Estos sensores envían los datos a la aplicación, donde son vinculados con la información del perfil de la mascota y de esta forma entregar un servicio personalizado de monitoreo y análisis de los datos por medio de machine learning, lo que permite identificar ciclos de consumo de alimento, diversas variaciones y posibles predicciones en el bienestar de la mascota.
+
+El modelo de negocio se compone de la venta del dispositivo y la suscripción de los usuarios a la aplicación para acceder a un análisis avanzado, diversas notificaciones y reportes customizables en la versión pagada, dando paso a una forma innovadora de cuidado y tenencia responsable de nuestras mascotas.  
+Los principales segmentos de clientes objetivo son: personas dueñas de mascotas, personas nativas tecnológicas (millennials) y empresas de servicios y productos para mascotas.
+Los canales de venta incluyen establecimientos físicos como pet shops y clínicas veterinarias, así como canales digitales como sitio web y redes sociales. Se busca establecer relaciones ágiles y digitales con los clientes, aprovechando las plataformas tecnológicas.
+
+
+
+
+La propuesta de valor se centra en ofrecer una solución innovadora y tecnológica que permita monitorear de manera  personalizada el consumo de las mascotas, con análisis de datos y notificaciones. Se venderá el dispositivo físico (plato inteligente) y se ofrecerá una suscripción a la aplicación móvil con funciones avanzadas.
+
+
+Se plantean alianzas estratégicas con veterinarios, tiendas de mascotas, ONG's y marcas reconocidas para mejorar la satisfacción del cliente. Además, se menciona la implementación de acciones digitales para la eficiencia energética y el monitoreo del consumo de agua de las mascotas como medida de sustentabilidad.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OK
+4.1¿Quiénes son los principales clientes? ¿A qué tipo de clientes apunta nuestro negocio?
+
+Los clientes son la razón de ser de cualquier organización, no existe ningún negocio que no tenga clientes. Algunos pueden pagar y otros no, pero siempre hay clientes que sustentan un negocio. Para poder identificarlos es importante segmentarlos, o sea armar grupos de clientes de acuerdo a sus características. Por ejemplo: en el caso de algunas redes sociales, hay clientes que no pagan por el uso de las plataformas, y existen los que sí pagan, como por ejemplo las empresas de publicidad. Ambos son clientes, pero de un segmento diferente y se les ofrecen diferentes servicios desde la empresa. En un restorán, también hay diferentes segmentos de clientes, algunos son por ejemplo niños, otros vegetarianos, alérgicos o celiacas, etc. Y a cada uno se les ofrece un producto diferente, lo importante es identificarlos bien, o sea segmentarlos para satisfacer sus necesidades.
+TIPS: Muchas veces como emprendedores/as no sabemos con claridad cuales son los segmentos de clientes que tendremos, pero sí a los que queremos llegar. Es por ello que prototipar o probar nuestro negocio con amigos, vecinos, etc., nos ayudará a entender mejor a quienes queremos venderles y quienes realmente estan interesados en nuestro producto o servicio
+
+
+
+La construcción de nuestro negocio y selección de clientes se fundamentan en cuatro fenómenos importantes a nivel nacional, que también ayudan a entender la proyección de nuestra propuesta. En primer lugar, la baja sostenida en la tasa de natalidad durante la última década, según datos del INE. En segundo lugar, el incremento en la adopción de mascotas, según el Registro Nacional de Mascotas. En tercer lugar, el aumento en el número de tiendas de mascotas desde 2019, con un crecimiento del sector que alcanza el 225%, según informa el Diario Financiero. Y por último, la creciente adopción de soluciones digitales innovadoras basadas en el Internet de las Cosas (IoT) tanto en empresas como en personas, según el Diario Financiero.
+
+Segmento de Personas Dueñas de Mascotas:  Personas naturales de 18 a 80 años, sin distinción de género, económicamente solventes y responsables de sus mascotas, ya sean perros o gatos. Se enfocan principalmente en la Región Metropolitana de Chile, aunque también consideramos a clientes provenientes de otras regiones del país. Según el Boletín Técnico de Estimación de Población Canina y Felina del 2022, el 89% de los encuestados indica que la compañía es la principal razón para tener mascotas, y un 92% las percibe como miembros adicionales de su familia. Además, un estudio de GFK revela que el 64% de los hogares en Chile posee mascotas y el 70% de ellos se ubica en la Región Metropolitana.
+
+
+Segmento de Personas Nativas Tecnológicas: Personas naturales, sin distinción de género, nacidas entre 1981 y 1997, clasificadas como Millennials, quienes se caracterizan por su adaptación tecnológica en el uso de aplicaciones móviles y productos de Internet de las Cosas (IoT) relacionados con el bienestar y la tenencia responsable de mascotas. Según el estudio "Hábitos de consumo de los dueños de mascotas en Chile" de GFK en 2023, el 64% de los Millennials tiene mascota. Este segmento aborda el bienestar de las mascotas desde una perspectiva tecnológica e innovadora.
+
+
+Segmento Empresas de Servicios y Productos para Mascotas: Nuestros clientes también incluyen empresas del rubro de servicios y productos para mascotas, tales como clínicas veterinarias, pet shops, criaderos, hoteles para mascotas, empresas de alimentos y accesorios para mascotas, entre otras. Estas empresas buscan soluciones tecnológicas innovadoras que les permitan optimizar sus operaciones, mejorar la experiencia de sus clientes (dueños de mascotas), y mantenerse a la vanguardia en un mercado cada vez más competitivo y exigente.
+
+
+
+
+
+OK
+
+4.2¿Por qué los clientes deberían preferirme por sobre los demás? ¿Por qué los clientes deberían preferir mi producto/servicio por sobre los demás?
+La oferta de valor es el elemento diferenciador que nos ayuda a elegir un producto o servicio. El cliente se guiará por los elementos adicionales que se le ofrecen, como por ejemplo: comodidad (pin pass para hacer transacciones electrónicas, es más cómodo que ir al banco), precio (hay aplicaciones que ofrecen llamadas gratis a todas partes del mundo), diseño (principalmente en la ropa se privilegia el diseño por sobre la calidad o comodidad), novedad (existen juguetes que son atractivos para los niños ya que están de moda). Sin embargo pueden existir otros elementos para definir la oferta de valor, como los productos personalizados, alguna marca que represente algo que queremos decir, etc. Sin embargo la pregunta clave es ¿por qué me eligen mis clientes por sobre la competencia?
+TIPS: La oferta de valor es lo que nos diferencia de la competencia, por eso es bueno que como emprendedores/as podamos entender bien que es lo que ofrece la competencia en relación a nuestro producto o servicio, y así diferenciarnos
+
+
+
+
+Propuesta de valor para personas dueñas de mascotas: se centra en ofrecer una solución innovadora y tecnológicamente avanzada para el cuidado y bienestar de sus mascotas, cambiando el enfoque de tenencia responsable a un monitoreo digital fácil de utilizar. A diferencia de otros productos en el mercado, que en su mayoría son dispensadores de comida que automatizan la relación con las mascotas,  nuestro dispositivo (plato inteligente) no solo proporciona una manera conveniente y precisa de monitorear el consumo de agua y alimento de las mascotas, sino que también se adapta a las necesidades específicas de cada mascota mediante perfiles personalizados basados en edad, raza, enfermedades entre otros.  Con KittyPau! , los clientes pueden sentirse seguros de que están proporcionando el más alto nivel de cuidado y monitoreo del bienestar de sus mascotas, por lo sencillo e intuitivo de la aplicación y su vinculación con el dispositivo.
+Propuesta de valor para personas nativas tecnológicas: Para los Millennials o personas tecnológicamente nativos, nuestra oferta representa la combinación perfecta entre la pasión por la tecnología y el amor por las mascotas, brindándoles una solución completa y moderna para el cuidado de los nuevos integrantes de las familias, sus mascotas. A diferencia de los productos que automatizan la entrega de alimento a las mascotas, nuestro dispositivo (plato inteligente) y la aplicación móvil ofrecen una experiencia completamente nueva y moderna para el monitoreo y la gestión del consumo de agua y alimento de las mascotas, ya que utilizaremos machine learning para el análisis de datos. Con sensores de peso, temperatura y el perfil de las mascotas, los clientes pueden acceder a datos precisos en tiempo real e históricos sobre el comportamiento alimenticio de sus mascotas, todo desde sus dispositivos móviles. Además, KittyPau!  les permite crear perfiles detallados para cada mascota y recibir recomendaciones personalizadas para mejorar su salud y bienestar.
+Propuesta de valor para las empresas de servicios y productos para mascotas: se centra en ofrecer un producto innovador y atractivo, con un enfoque especial en la optimización de costos de producción. Buscamos simplificar el proceso de distribución y adquisición al por mayor del dispositivo (plato inteligente), facilitando así su venta por parte de empresas del rubro, como clínicas veterinarias y pet shops. Esto garantiza una operación fluida y eficiente, permitiendo que las empresas puedan acceder fácilmente al producto y ponerlo a disposición de sus clientes de manera rápida. Reconocemos que el verdadero valor agregado reside en los servicios y membresías ofrecidos a través de nuestra aplicación, lo que representa una oportunidad importante para generar ingresos adicionales y fomentar la fidelidad de los clientes. 
+
+
+
+
+
+
+
+
+OK
+4.3¿A través de qué medios realizo las ventas a mis clientes? ¿Cuáles son los medios, para dar a conocer mi producto/servicio, que prefieren mi/s tipo/s de clientes? ¿Cuáles son los medios con los que obtendría mayor venta en mi modelo de negocio?
+Los canales tienen la función de dar a conocer el producto o servicio a los clientes, posibilita y facilita la compra, por ejemplo, a través de canales web o presenciales. Al tener claridad respecto al segmento de clientes que quiero apuntar, debo ver cuáles son los canales más adecuados. Por ejemplo; si elijo un producto dedicado a la tercera edad, tal vez mi mejor canal deberá ser presencial. Otro ejemplo, si queremos ofrecer servicio de capacitación en todo el territorio nacional, tal vez debemos evaluar una alternativa de un canal virtual. Si mi negocio es turismo aventura, debo tener un canal presencial, sin embargo podría tener un canal virtual para el pago o reserva de los servicios.
+TIPS: Los canales de distribución o atención son la forma de llegar a los clientes, por eso cuando partes un negocio es importante evaluar todas las alternativas para llegar a nuestro segmento de cliente objetivo y comparar costos y efectividad de los mismos.
+
+Nuestro modelo de negocio se basa en 2 productos , la venta del dispositivo y la suscripción a la aplicación para un servicio de análisis y alertas más avanzado, entendiendo que existirá un servicio básico gratuito de monitoreo.  Tanto para el segmento Personas Dueñas de Mascotas y Personas Nativas Tecnológicas la venta del dispositivo en el caso de ser presencial podrá realizarse a través de pet shops, clínicas veterinarias y otros establecimientos especializados en productos para mascotas, donde los clientes puedan ver y probar el producto antes de comprarlo. Por otro lado la compra del dispositivo también se podrá realizar vía online, a través de una plataforma web propia de KittyPau!  o mediante la comunicación por instagram, en este caso se sumará el costo de envío del producto.  También para estos segmentos la venta del servicio de análisis y alertas de KittyPau!  se realizará por medio de la suscripción a una membresía de la aplicación, la cual se basará en un análisis personalizado, vinculando la información del perfil de la mascota con la data obtenida por el dispositivo,   por ejemplo cambios significativos en los ciclos de consumo de alimento o alertas relacionadas con visitas al veterinario (vacunas, antiparasitarios, etc).
+Para estos 2 tipos de clientes las formas para dar a conocer KittyPau!  serán principalmente digitales en redes sociales, reels y publicaciones de instagram,  shorts, videos y compra de espacios publicitarios en canales de streaming de Youtube,Twitch etc. 
+Los medios por los cuales se obtendrán mayores ganancias será en primera instancia por medio de las suscripciones a la app y también a través de acuerdos de publicidad y colaboraciones con marcas relacionadas con mascotas y estilo de vida para incentivar el uso de la aplicación. Esto podría incluir patrocinios de contenido en nuestra aplicación móvil, colaboraciones con influencers en redes sociales y espacios publicitarios en nuestro sitio web.
+Segmento Empresas de Servicios y Productos para Mascotas: Para este segmento la venta será únicamente del dispositivo, y se realizará por medio de canales de comunicación tanto correo electrónico, llamadas y ventas presenciales que permitirán concretar diversos acuerdos de compra con las empresas interesadas. En este segmento la forma en que se dará a conocer el producto será mediante la comunicación con las áreas de ventas de estas empresas , coordinación de reuniones para la presentación del producto y la toma de acuerdos económicos para su distribución y venta. También suponemos que la publicidad en RRSS puede potenciar la comunicación de estas empresas e interés con KittyPau! . 
+
+OK
+4.4¿Qué relación tiene o espera tener con cada tipo de cliente descrito? ¿Alguno de los medios por los cuales busca relacionarse con el cliente, tiene algún costo asociado?
+Dependiendo del producto o servicio que se entrega, se definirá qué relación con el cliente se quiere establecer. Existen negocios donde las relaciones son personales, por ejemplo, una peluquería. Hay otros donde la relación es automática, como con el Servicio de Impuestos Internos a través de su plataforma, u otros, como la suscripción de un periódico. Las relaciones con los clientes deben apuntar a fidelizarlos, por ello es crucial conocer sus preferencias y así definir la relación que queremos entregarles.
+TIPS: La relación con el cliente nos ayuda a fidelizar, por ello en caso de tener un canal del tipo virtual (que no es tan personalizado como el presencial), siempre debemos buscar cómo acercarnos a los clientes, por ejemplo, a través de un saludo de cumpleaños o a través de un correo, envío de promociones, etc.
+
+Para los segmentos de clientes Dueños de Mascotas y Nativos Digitales buscamos establecer una relación ágil y digital, aprovechando al máximo las herramientas y plataformas tecnológicas disponibles, donde la relación tendrá la característica de automática.  Queremos ser percibidos como una marca innovadora y moderna, que comprende y se adapta a las preferencias y hábitos tecnológicos de estos 2 segmentos.Los medios por los cuales buscamos relacionarnos con este cliente pueden incluir comunicación a través de redes sociales, mensajes instantáneos, correos electrónicos automatizados y notificaciones push en la aplicación móvil. Estos medios pueden tener costos asociados, como el mantenimiento de perfiles en redes sociales, el envío de correos electrónicos masivos y el desarrollo de estrategias de marketing digital. Otro tipo de costo asociado a la relación con el cliente y su fidelización está vinculado con asesorías UX/UI para mejorar la experiencia del cliente en el uso de la aplicación KittyPau! 
+
+Segmento Empresas de Servicios y Productos para Mascotas: Con este segmento de clientes, buscamos establecer una relación profesional y colaborativa, enfocada en el beneficio mutuo y el crecimiento conjunto. Deseamos ser percibidos como un socio estratégico que ofrezca soluciones innovadoras y efectivas para ayudarles a alcanzar sus objetivos comerciales mediante la venta del dispositivo KittyPau! . Los medios por los cuales buscamos relacionarnos con este cliente pueden incluir reuniones comerciales presenciales, comunicación a través de correo electrónico y llamadas telefónicas. Estos medios pueden tener costos asociados, como los gastos de viaje y hospedaje para asistir a eventos, el desarrollo de material promocional y la contratación de personal para la atención al cliente y la gestión de relaciones comerciales.
+
+
+4.5¿Por cuál tipo de producto/servicio estarían dispuestos a pagar más nuestros clientes? ¿Por cuál tipo de producto/servicio pagan actualmente los clientes? ¿Qué tipo de medio de pago prefieren utilizar mis clientes?
+El/la emprendedor/a debe averiguar cuál es el valor por el cual está dispuesto a pagar cada segmento de clientes por los diferentes productos o servicios que ofrece. Además, debe tener claridad sobre cuáles son los mejores métodos de pago que ocupa cada segmento. Dentro de los tipos de ingresos existen los que son por venta directa, por ejemplo, la venta de empanadas; por arriendo o alquiler, como los hostales; por cuota de uso o servicio, como la visita de un doctor; y por suscripción, como una suscripción a revistas. Lo importante es tener claro por qué están dispuestos a pagar los diferentes segmentos de clientes y a través de que medio.
+TIPS: es importante tener claridad como emprendedores/as que nuestra fuente de ingresos pueden variar a medida que nuestro negocio crece, no solo aumentar sino variar en los medios de pago que se reciben.
+
+Para el Segmento Dueños de Mascotas y Nativos Digitales, la utilización de la aplicación está condicionada a la compra del dispositivo. Una vez adquirido el dispositivo, tendrán dos opciones de suscripción: una gratuita y otra de pago. La opción de pago incluirá un análisis personalizado de la mascota y acceso a datos históricos, lo que permitirá el procesamiento y análisis del consumo de agua, alimento, temperatura del entorno y su correlación con el perfil de la mascota. Esta será la opción por la cual estarán más dispuestos a pagar una parte del segmento de dueños de mascotas y, en su gran mayoría, los nativos digitales.
+Los clientes podrán inicialmente descargar la aplicación de forma gratuita y conectarla a un dispositivo KittyPau! . Si el cliente quisiera tener dos o más dispositivos por aplicación, deberá considerar un costo adicional que estará incluido en la versión de pago con acceso a análisis de datos de la mascota. Nuestra aplicación estará vinculada con entidades bancarias para generar pagos seguros que den confianza a nuestros clientes y faciliten la llegada de nuevos ingresos, evitando la pérdida de potenciales clientes debido a un funcionamiento engorroso en el proceso de suscripción a la aplicación y pago online del dispositivo. Por otro lado, la compra presencial del dispositivo se adaptará a las características de pago de la empresa encargada de su venta y distribución.
+Hoy en día, lo más cercano o similar a KittyPau!  son los dispensadores de alimentos, y los clientes pagan por un producto que únicamente automatiza la entrega de alimento a las mascotas. La vinculación con las aplicaciones tiene relación con la definición de un horario para dispensar el alimento, reproducción de sonidos y grabaciones de los dueños para las mascotas.
+Para el Segmento Empresas de Servicios y Productos para Mascotas, estas tendrán acceso a la compra del dispositivo para la venta y distribución, y según las características de los acuerdos con las empresas será lo que estén dispuestas a gastar. La venta del dispositivo a las empresas tendrá dos modelos: la venta al por mayor del dispositivo y la colocación del dispositivo en tiendas con una ganancia de un porcentaje por venta. Tanto la definición del valor como los porcentajes de ganancia estarán sujetos a los acuerdos con las empresas.
+
+
+
+
+
+
+
+
+
+4.6¿Qué elementos se debe adquirir para generar mi producto/servicio y entregue a los diferentes tipos de clientes?
+Corresponde a los recursos más importantes necesarios e indispensables para el funcionamiento del negocio. Pueden ser recursos físicos, humanos y/o financieros. Considere aquellos elementos de infraestructura, equipamiento y conocimientos específicos necesarios para poder elaborar sus productos o generar las condiciones para la prestación de sus servicios. Considere, incluso, aquellos con los que ya cuenta. Por ejemplo: se requerirá la compra de una máquina especializada y un asesor que deje instalada las capacidades para su operación; adquisición de un software de control de inventario y ventas, servicio de distribución o delivery, habilitar un espacio con el que ya cuenta para implementar la unidad productiva, entre otros.
+TIPS: los recursos claves son importantes ya que al entenderlos, podremos tener claridad de nuestros costos. Cuando tu negocio se consolide irán cambiando tus recursos claves, ya que, por ejemplo, aumentaras el número de clientes y necesitarás un sistema para gestionarlos. Por eso siempre se debe tener claridad de ellos antes de comprometerte en un crecimiento.
+
+Segmento Personas Dueñas de Mascotas: Para satisfacer las necesidades de este segmento, requerimos recursos físicos como placas electrónicas de desarrollo como la ESP8266, sensores de presión, temperatura, humedad y luz, de calidad para el funcionamiento del dispositivo KittyPau!  y un espacio adecuado para la producción, como un taller. En cuanto a los recursos humanos, precisamos personal capacitado en configuración e implementación de protocolos de comunicación MQTT para integración en la App, diseño y fabricación, así como veterinarios para garantizar la seguridad del producto. Y en términos financieros, necesitamos invertir en investigación, marketing dirigido a dueños de mascotas y alianzas con negocios relacionados.
+Segmento Personas Nativas Tecnológicas: Este segmento tiene una alta exigencia en la experiencia con la aplicación; debemos ser atentos a las necesidades y demanda de recursos físicos necesarios para sostener el funcionamiento, como equipos de última generación para el desarrollo de la aplicación móvil y servidores para gestionar los datos de KittyPau! . En cuanto a los recursos humanos, requerimos desarrolladores de software especializados y diseñadores de experiencia de usuario. Financieramente, necesitamos invertir en tecnología, marketing digital y desarrollo continuo de la aplicación.
+Segmento Empresas de Servicios y Productos para Mascotas: Para atender a estas empresas se requiere de un fuerte plan de marketing y una infraestructura logística eficiente para cumplir con la demanda. En términos de recursos humanos, requerimos personal de producción, ventas y logística. Y para acceder a los recursos financieros, debemos invertir en equipos de producción, establecer relaciones comerciales sólidas y de conocimiento con otras marcas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.7¿Qué acciones se deben realizar para que mi producto/servicio se entregue a los diferentes tipos de clientes?
+Considere aquellas actividades que son necesarias para que usted pueda llevar a cabo su actividad productiva/comercial, entre ellas tenemos por ejemplo: vender, publicitar, producir, etc. Por ejemplo: se llevará a cabo la tramitación de permisos y/o cumplimiento normativo exigidos (patente municipal, resolución sanitaria; normativa SEC); proceso de selección y contratación de personal; diseño, desarrollo y prototipaje de productos; creación de página web y elementos gráficos; habilitación del taller o local de venta.
+TIPS: Las actividades claves son las que hacen que los recursos claves lleguen al segmento de clientes que nuestro emprendimiento espera abarcar. Por ello es importante detallarlos, para tener claridad respecto a las horas hombres necesarias para llevar a cabo nuestra actividad de producción, venta, etc.
+
+Para los segmentos de Personas Dueñas de Mascotas y Personas Nativas Tecnológicas, las acciones clave en la producción y diseño incluyen el desarrollo del dispositivo inteligente, desde la selección de los componentes hasta la comunicación de los sensores y el almacenamiento de información en servicios cloud para la posterior implementación en la aplicación. También la creación del prototipo y pruebas para garantizar su óptimo funcionamiento. Finalmente, se lleva a cabo la fabricación en serie del dispositivo para satisfacer la demanda del mercado, junto con el diseño y desarrollo de la aplicación móvil, asegurando su compatibilidad con diversos sistemas operativos y dispositivos, e integrando funcionalidades clave como el monitoreo del consumo de agua y alimento, análisis de datos y notificaciones, todo ello sometido a pruebas exhaustivas para garantizar su eficacia y facilidad de uso. En este punto se necesitará la contratación de personal experto para la asesoría en el diseño del prototipo óptimo y el funcionamiento de la app.
+En cuanto a hora hombres dentro un año, tenemos el cálculo que este desarrollo puede tomar 5 horas semanales , 20 horas mensuales o 240 horas anuales, debido al avance que tenemos en el prototipo.  
+
+ 
+En el caso de la venta y publicidad se necesitará el registro en diversas redes sociales, el diseño de una propuesta de marketing  innovador enfocado en los clientes más nativos digitales , ya que nuestras mayores ganancias están enfocadas en los medios digitales.  
+Segmento Empresas de Servicios y Productos para Mascotas: Para llegar a este tipo de cliente, necesitamos aumentar la cantidad de producción y establecer una red logística eficiente para distribuir nuestros productos a gran escala. Además, es fundamental negociar acuerdos comerciales sólidos y contratos de distribución con estas empresas. Desarrollar estrategias de marketing empresarial, como participación en ferias comerciales y presentaciones comerciales, también será crucial. Por último, ofrecer un servicio posventa especializado para empresas garantizará relaciones comerciales duraderas y sólidas.
+
+
+
+
+4.8¿Cuáles son los costos (fijos y variables) para el funcionamiento de los elementos y acciones clave definidos?
+Existen dos tipos de costos: los fijos, que casi no varían independiente de las ventas o servicios entregados. (salarios, rentas, instalaciones, fabricación, etc.; y los variables, que, como su nombre lo indica, varían proporcionalmente al volumen de bienes o servicios producidos. Por ejemplo: Si usted produce empanadas en los meses de septiembre, sus costos variables serán los primeros afectados, ya que deberá producir más ante el aumento de la demanda, deberá comprar más cebolla, carne, contratar más personal, etc.
+TIPS: como emprendedor/a te darás cuenta que puedes estimar los costos, sin embargo cuando tu negocio comience a operar estos pueden cambiar, es algo normal, ya que siempre existirán elementos externos que varían.
+
+5.3. Indique total de Costos fijos estimados (en cifras) de su emprendimiento en un mes.
+El total de Costos fijos mensuales estimados de KittyPau!  en un mes es $191.666. Este monto se obtiene sumando los valores mensuales correspondientes a "Habilitación de infraestructura" ($30.000) y "Capital de trabajo (2 personas)" ($161.667).
+Habilitación de infraestructura:
+·         Todos los meses (mes 1 a mes 12) con un monto de $30.000 cada mes.
+Capital de trabajo (2 personas):
+·         Todos los meses (mes 1 a mes 12) con un monto de $161.667 cada mes.  
+ 
+5.4. Indique total de Costos variables estimados (en cifras) de su emprendimiento en un mes
+El total de Costos variables estimados de KittyPau!  varía dependiendo del mes en cuestión, como esta es una proyección a 1 año podemos plantear lo siguiente: Se presenta el desglose de los costos variables mensuales según la tabla de gastos que se encuentra en el Canvas.
+Asistencia técnica y asesoría en gestión:
+·         Meses 1, 6 y 9 ($90.000 cada mes)
+Capacitación:
+·         Mes 1 ($100.000)
+Gastos de formalización:
+·         Mes 1 ($30.000)
+Acciones de marketing:
+·         Meses 6 al 12 ($16.667 cada mes)
+Activos:
+·         Meses 1 al 4 ($175.000 cada mes)
+ 
+De igual manera el promedio de gastos fijos mensuales en un año es de $100.000.
+Cabe mencionar que estos costos variables son estimados y pueden variar en la práctica dependiendo de los requerimientos específicos del proyecto KittyPau!  cada mes.
+ 
+5.3 5.5. Indique total de Ingresos estimados (en cifras) de su emprendimiento en un mes
+No se estiman ingresos durante esta etapa del emprendimiento, ya que se trata de un proyecto de desarrollo que no contempla la generación de ganancias inicialmente. El propósito es trabajar en el diseño, implementación y validación del proyecto para poder concursar posteriormente por otro fondo que permita llevarlo a una fase de comercialización o escalamiento.
+En este escenario, los costos detallados en la tabla representan la inversión necesaria para las actividades de desarrollo, sin contemplar aún una entrada de ingresos. Una vez que el proyecto logre avanzar a una siguiente etapa con un fondo adicional, se podrían estimar los potenciales ingresos al momento de definir un modelo de negocio y comercialización.
+Por lo tanto, al tratarse de una fase previa enfocada exclusivamente en el desarrollo, los ingresos estimados para este emprendimiento en un mes serían $0, ya que no se esperan ganancias durante esta etapa inicial."
+ 
+4.9¿Cuáles son las alianzas realizadas o a realizar para mejorar la satisfacción de mis clientes?
+Las alianzas clave son fundamentales para que nuestro modelo sea más eficiente, es decir, que mis clientes estén más satisfechos con mi oferta de valor. Por ejemplo: Una alianza clave puede ser un proveedor que nos entrega un producto único, que es fundamental para la producción. Otro ejemplo puede ser la alianza que tenemos con Sernatur, en caso de trabajar en temas de turismo. Existen líneas aéreas que se asocian con bancos, para fidelizar a través de beneficios a sus clientes.
+TIPS: Las alianzas clave o redes de trabajo, son importantes en todas las etapas del negocio, no solo cuando se esta partiendo, sino durante toda la vida, ya que, por ejemplo, nos pueden ayudar a entrar a nuevos mercados, vender en otras zonas del país, aumentar la oferta de valor, etc. Por ello debemos evaluar muy bien si podemos crecer con ayuda de otros, analizando ventajas y riesgos.
+
+Para mejorar la satisfacción de los clientes de KittyPau! , algunas alianzas estratégicas que podrían ser beneficiosas son con veterinarios y clínicas veterinarias y así establecer alianzas para integrar sus conocimientos y recomendaciones directamente en la app. Esto añadiría un componente profesional de salud para las mascotas y haría que los dueños confíen más en el servicio.
+Alianzas con tiendas de mascotas reconocidas podrían permitir descuentos, suscripciones de alimentos, accesorios recomendados según el perfil de la mascota, etc. Esto ampliaría el ecosistema de servicios. Colaborar con ONG's podría permitir campañas conjuntas de concientización y tenencia responsable de mascotas, además de fomentar las adopciones responsables. Alianzas de co-marketing con marcas reconocidas podría dar más visibilidad al producto y confianza a los usuarios.
+En resumen, buscar alianzas con actores clave de la industria de mascotas agregaría valor, credibilidad y oportunidades extras que mejorarían la propuesta de KittyPau!  y la satisfacción del cliente usando el dispositivo y la app.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4.10¿Qué acciones puedo implementar en mi negocio, desde el punto de vista de la eficiencia energética, energías renovables y economía circular? de manera de hacer mi producto o servicio más sustentable. ¿Tenía ya incorporada alguna de esta acciones en el proceso de mi producto o servicio?
+Existen diversidades posibilidades de acciones sustentables a realizar según el rubro en el cual se inserte el negocio. A continuación, se entrega un listado de ideas generales que podrías realizar. Como consejo realiza una lluvia de ideas e identifica los aspectos más importantes para tu negocio.
+Para Eficiencia Energética y Energías Renovables: acciones para disminuir costos energéticos, por ejemplo; cambio de letreros luminosos por opciones eficientes, recambio de luminarias a eficientes, mejora en calefacción y enfriamiento, entre otras. Realización de acciones para la implementación de componentes que mejoren la eficiencia energética en las instalaciones: automatizar la calefacción, el sistema eléctrico, las persianas, los artefactos eléctricos, el sistema de alarma, entre otros.
+Realizar acciones de Eficiencia energética en el uso de maquinaria y equipamiento, por ejemplo; la compra de hornos eficientes, vitrinas eficientes, sistemas de aire acondicionado, entre otros. Asesoría para identificar que energía renovable es la más adecuada para mi negocio y como poder implementarla.
+Para Economía Circular: implementación de compostaje, reducción, reutilización, reciclaje y/o valorización de residuos sólidos o líquidos. Actividades relacionadas con la reducción de residuo, valorización de residuos y/o transformación de un residuo en una nueva materia prima o subproducto. Realización de convenios y/o alianzas con otros empresarios para trabajar en conjunto en la gestión de residuos de sus procesos, productos y/o actividades relacionadas. Generación de envases y embalajes sustentables y/o eco-etiquetado.
+
+
+En KittyPau! , podemos implementar acciones digitales que contribuyan a la eficiencia energética. Esto incluye ajustarnos a las Digital Green Skills, desde la construcción de una página web alojada en sitios que utilicen energías renovables, hasta la selección de proveedores de servicios en la nube que cumplan con estándares de eficiencia y sustentabilidad energética. Además, es importante contar con habilidades en diseño web responsivo para garantizar que la página sea accesible y funcione correctamente en una variedad de dispositivos y tamaños de pantalla. Este enfoque no solo mejora la experiencia del usuario, sino que también puede reducir el consumo de energía al evitar el uso excesivo de recursos en dispositivos móviles.
+
+Por otro lado, medir el consumo de agua de nuestras mascotas con KittyPau!  puede ser sumamente beneficioso. Al tener una idea clara de cuánta agua necesitan las mascotas, los propietarios pueden evitar el desperdicio de agua al proporcionar solo la cantidad necesaria. Además, al monitorear de manera precisa la cantidad de agua que consumen las mascotas, los propietarios pueden desarrollar una mayor conciencia sobre el uso de este recurso. Esto puede llevar a una mayor responsabilidad en cuanto a no desperdiciar agua y utilizarla de manera más eficiente.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+KittyPau! , diseñado para el cuidado y monitoreo del consumo de agua y alimento de mascotas como perros y gatos. Los principales segmentos de clientes objetivo son: personas dueñas de mascotas, personas nativas tecnológicas (millennials) y empresas de servicios y productos para mascotas.
+La propuesta de valor se centra en ofrecer una solución innovadora y tecnológica que permita monitorear de manera precisa y personalizada el consumo de las mascotas, con análisis de datos y notificaciones. Se venderá el dispositivo físico (plato inteligente) y se ofrecerá una suscripción a la aplicación móvil con funciones avanzadas.
+Los canales de venta incluyen establecimientos físicos como pet shops y clínicas veterinarias, así como canales digitales como sitio web y redes sociales. Se busca establecer relaciones ágiles y digitales con los clientes, aprovechando las plataformas tecnológicas.
+Los recursos claves incluyen componentes electrónicos, personal capacitado en desarrollo de hardware y software, veterinarios, infraestructura de producción y marketing. Las acciones clave abarcan el diseño y fabricación del dispositivo, desarrollo de la aplicación, establecimiento de acuerdos comerciales y estrategias de marketing.
+Se plantean alianzas estratégicas con veterinarios, tiendas de mascotas, ONG's y marcas reconocidas para mejorar la satisfacción del cliente. Además, se menciona la implementación de acciones digitales para la eficiencia energética y el monitoreo del consumo de agua de las mascotas como medida de sustentabilidad.
+
+
+
+
+
+
+
+
+
+
+
+
+
