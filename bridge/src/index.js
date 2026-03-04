@@ -1,5 +1,5 @@
 /**
- * Kittypau Bridge v2.4 - MQTT to Supabase (Schema Unificado)
+ * Kittypau Bridge v2.6 - MQTT to Supabase (Schema Unificado)
  * Escucha mensajes MQTT de los dispositivos y los almacena en Supabase
  *
  * v2.4: Upsert bridge_heartbeats y bridge_status_live con cada STATUS de KPBR0001
@@ -195,6 +195,63 @@ async function handleSensorData(deviceId, data) {
     console.error(`[SUPABASE] Error insertando sensor: ${error.message}`);
   } else {
     console.log(`[SUPABASE] ✓ Sensor data guardado para ${deviceId}`);
+  }
+
+  // Escribir también en tabla readings (UUID-based, leída por la app)
+  await writeToReadings(deviceId, data);
+}
+
+async function writeToReadings(deviceId, data) {
+  const { data: device, error: lookupError } = await supabase
+    .from('devices')
+    .select('id, pet_id')
+    .eq('device_id', deviceId)
+    .not('owner_id', 'is', null)
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error(`[READINGS] Error buscando device UUID para ${deviceId}: ${lookupError.message}`);
+    return;
+  }
+  if (!device) return; // No reclamado por usuario, no escribir en readings
+
+  const serverNow = Date.now();
+  let recordedAt = new Date(serverNow).toISOString();
+  let clockInvalid = false;
+
+  if (data.timestamp) {
+    const deviceTs = Date.parse(data.timestamp);
+    if (Number.isFinite(deviceTs)) {
+      if (Math.abs(serverNow - deviceTs) > 10 * 60 * 1000) {
+        clockInvalid = true;
+      } else {
+        recordedAt = new Date(deviceTs).toISOString();
+      }
+    } else {
+      clockInvalid = true;
+    }
+  }
+
+  const { error: readingsError } = await supabase
+    .from('readings')
+    .upsert(
+      {
+        device_id: device.id,
+        pet_id: device.pet_id ?? null,
+        weight_grams: data.weight != null ? Math.round(data.weight) : null,
+        temperature: data.temp ?? null,
+        humidity: data.hum ?? null,
+        recorded_at: recordedAt,
+        ingested_at: new Date().toISOString(),
+        clock_invalid: clockInvalid
+      },
+      { onConflict: 'device_id,recorded_at', ignoreDuplicates: true }
+    );
+
+  if (readingsError) {
+    console.error(`[READINGS] Error upsert para ${deviceId}: ${readingsError.message}`);
+  } else {
+    console.log(`[READINGS] ✓ Reading sincronizado para ${deviceId} (clock_invalid=${clockInvalid})`);
   }
 }
 

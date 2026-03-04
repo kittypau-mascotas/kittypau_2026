@@ -8,3 +8,4 @@ void sensorsTareWeight();
 void sensorsSetCalibrationFactor(float factor);
 float loadCalibrationFactor();
 void saveCalibrationFactor(float factor);
+long sensorsGetRawValue(int times = 10);
