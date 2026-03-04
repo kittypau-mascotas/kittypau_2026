@@ -442,10 +442,15 @@ export default function TodayPage() {
             : null;
         const petSuffix = parsePetNumberSuffix(primaryPet?.name);
         const expectedFoodDeviceId = petSuffix ? kpclLabelFromNumber(petSuffix) : null;
+        const devicesByPet = devices.filter((device) => device.pet_id === primaryPet?.id);
         const primaryDevice =
+          devicesByPet.find((device) => device.id === storedDeviceId) ??
+          devicesByPet.find(
+            (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId
+          ) ??
+          devicesByPet[0] ??
           devices.find((device) => device.id === storedDeviceId) ??
           devices.find((device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId) ??
-          devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
 
         let readings: ApiReading[] = [];
@@ -626,12 +631,16 @@ export default function TodayPage() {
     const base = state.devices.filter((device) => device.pet_id === primaryPet?.id);
     const byFoodCode = expectedFoodDeviceCode
       ? state.devices.find(
-          (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+          (device) =>
+            (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode &&
+            (device.pet_id === primaryPet?.id || !device.pet_id)
         )
       : null;
     const byWaterCode = expectedWaterDeviceCode
       ? state.devices.find(
-          (device) => (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode
+          (device) =>
+            (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode &&
+            (device.pet_id === primaryPet?.id || !device.pet_id)
         )
       : null;
     const merged = [...base];
@@ -684,6 +693,34 @@ export default function TodayPage() {
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
     [latestReading?.recorded_at]
   );
+
+  useEffect(() => {
+    // Keep the live panel aligned with the hero food device for the selected pet.
+    if (!bowlDevice?.id || selectedDeviceId === bowlDevice.id) return;
+    let active = true;
+    const syncSelectedDevice = async () => {
+      setSelectedDeviceId(bowlDevice.id);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("kittypau_device_id", bowlDevice.id);
+      }
+      try {
+        const result = await loadReadings(bowlDevice.id);
+        if (!active) return;
+        setState((prev) => ({
+          ...prev,
+          readings: result.data,
+          readingsCursor: result.nextCursor,
+        }));
+        setLastRefreshAt(new Date().toISOString());
+      } catch {
+        // Keep current state if sync fetch fails; hero still reads from dedicated device map.
+      }
+    };
+    void syncSelectedDevice();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, selectedDeviceId]);
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -942,11 +979,17 @@ export default function TodayPage() {
     const pet = state.pets[nextIndex];
     const suffix = parsePetNumberSuffix(pet.name);
     const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
+    const nextPetDevices = state.devices.filter((device) => device.pet_id === pet.id);
     const nextDevice =
-      state.devices.find(
+      nextPetDevices.find(
         (device) => (device.device_id ?? "").toUpperCase() === foodCode
       ) ??
-      state.devices.find((device) => device.pet_id === pet.id) ??
+      nextPetDevices[0] ??
+      state.devices.find(
+        (device) =>
+          (device.device_id ?? "").toUpperCase() === foodCode &&
+          (!device.pet_id || device.pet_id === pet.id)
+      ) ??
       null;
 
     setSelectedPetId(pet.id);
