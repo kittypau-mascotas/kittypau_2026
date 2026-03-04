@@ -906,7 +906,7 @@ export default function TodayPage() {
     return (
       <span
         aria-hidden="true"
-        className={`ml-1 inline-flex text-[9px] leading-none opacity-80 ${up ? "text-emerald-700" : "text-rose-700"}`}
+        className="ml-1 inline-flex text-[9px] leading-none opacity-80 text-sky-600"
       >
         {up ? "▲" : "▼"}
       </span>
