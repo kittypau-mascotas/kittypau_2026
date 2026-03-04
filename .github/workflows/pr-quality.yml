@@ -1,0 +1,74 @@
+name: PR Quality
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app-quality:
+    name: App Lint + Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: kittypau_app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: kittypau_app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  policy-checks:
+    name: Repo Policy Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Block tracked .env files
+        shell: bash
+        run: |
+          set -euo pipefail
+          tracked_env="$(git ls-files | grep -E '(^|/)\.env($|\.|_)' || true)"
+          if [ -n "$tracked_env" ]; then
+            echo "Tracked env-like files detected:"
+            echo "$tracked_env"
+            exit 1
+          fi
+
+      - name: Ensure DB SQL changes are migration-based
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          changed_sql="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- '*.sql' || true)"
+          if [ -z "$changed_sql" ]; then
+            exit 0
+          fi
+          invalid="$(echo "$changed_sql" | grep -Ev '^supabase/migrations/|^Docs/' || true)"
+          if [ -n "$invalid" ]; then
+            echo "SQL files changed outside allowed paths (supabase/migrations or Docs):"
+            echo "$invalid"
+            exit 1
+          fi

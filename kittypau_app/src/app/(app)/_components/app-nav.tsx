@@ -143,6 +143,9 @@ export default function AppNav() {
   }, [pathname, adminGeneratedAt]);
 
   if (pathname?.startsWith("/admin")) {
+    const isAdminHome = pathname === "/admin";
+    const isJavoSection = pathname?.startsWith("/admin/javo");
+
     return (
       <nav className="app-nav">
         <div className="app-nav-inner app-nav-inner-admin">
@@ -150,6 +153,22 @@ export default function AppNav() {
             <span className="brand-title">MODO ADMIN</span>
           </div>
           <div className="app-nav-admin-actions">
+            <Link
+              href="/admin"
+              className={`app-nav-admin-pill app-nav-admin-link ${
+                isAdminHome ? "border-slate-300 bg-slate-100 text-slate-900" : ""
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/admin/javo"
+              className={`app-nav-admin-pill app-nav-admin-link ${
+                isJavoSection ? "border-slate-300 bg-slate-100 text-slate-900" : ""
+              }`}
+            >
+              Javo
+            </Link>
             <span className="app-nav-admin-pill">Rol: {adminRole}</span>
             <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
             <span className="app-nav-admin-pill">Auto refresh: 5 min</span>

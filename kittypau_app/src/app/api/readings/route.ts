@@ -18,6 +18,8 @@ export async function GET(req: NextRequest) {
   const deviceId = searchParams.get("device_id");
   const limitParam = searchParams.get("limit");
   const cursor = searchParams.get("cursor");
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
   const limit = limitParam ? Number(limitParam) : 50;
   const paginate = Boolean(limitParam || cursor);
 
@@ -26,13 +28,35 @@ export async function GET(req: NextRequest) {
   }
 
   if (limitParam) {
-    if (!Number.isFinite(limit) || limit < 1 || limit > 200) {
+    if (!Number.isFinite(limit) || limit < 1 || limit > 1200) {
       return apiError(
         req,
         400,
         "INVALID_LIMIT",
-        "limit must be between 1 and 200"
+        "limit must be between 1 and 1200"
       );
+    }
+  }
+
+  if (from) {
+    const parsedFrom = new Date(from);
+    if (Number.isNaN(parsedFrom.getTime())) {
+      return apiError(req, 400, "INVALID_FROM", "from must be a valid ISO date");
+    }
+  }
+
+  if (to) {
+    const parsedTo = new Date(to);
+    if (Number.isNaN(parsedTo.getTime())) {
+      return apiError(req, 400, "INVALID_TO", "to must be a valid ISO date");
+    }
+  }
+
+  if (from && to) {
+    const fromMs = new Date(from).getTime();
+    const toMs = new Date(to).getTime();
+    if (fromMs > toMs) {
+      return apiError(req, 400, "INVALID_RANGE", "from must be before or equal to to");
     }
   }
 
@@ -59,6 +83,12 @@ export async function GET(req: NextRequest) {
 
   if (cursor) {
     query = query.lt("recorded_at", cursor);
+  }
+  if (from) {
+    query = query.gte("recorded_at", from);
+  }
+  if (to) {
+    query = query.lte("recorded_at", to);
   }
 
   const { data, error } = await query;

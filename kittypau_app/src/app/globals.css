@@ -395,7 +395,7 @@ body {
   background:
     radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
-    linear-gradient(180deg, #ffffff 0%, #ffffff 18%, #f6dbd6 100%);
+    linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
 }
 
 .app-nav {
@@ -711,7 +711,7 @@ body {
   background:
     radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
-    linear-gradient(180deg, #ffffff 0%, #ffffff 18%, #f6dbd6 100%);
+    linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
   overflow-x: hidden;
   overflow-y: hidden;
 }
@@ -1061,7 +1061,7 @@ body {
 
 .login-register-body-registro {
   padding: 10px 14px 14px;
-  background: linear-gradient(180deg, #ffffff 0%, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 100%);
+  background: linear-gradient(180deg, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 0%, #ffffff 100%);
   overflow-y: hidden;
 }
 

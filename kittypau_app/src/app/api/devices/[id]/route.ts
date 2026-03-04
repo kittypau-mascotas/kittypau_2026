@@ -53,6 +53,7 @@ export async function PATCH(
     device_state?: string;
     pet_id?: string;
     device_type?: string;
+    plate_weight_grams?: number;
   };
 
   try {
@@ -79,6 +80,20 @@ export async function PATCH(
     return apiError(req, 400, "INVALID_PET_ID", "pet_id cannot be null");
   }
 
+  if (
+    body.plate_weight_grams !== undefined &&
+    (!Number.isFinite(body.plate_weight_grams) ||
+      body.plate_weight_grams <= 0 ||
+      body.plate_weight_grams > 5000)
+  ) {
+    return apiError(
+      req,
+      400,
+      "INVALID_PLATE_WEIGHT",
+      "plate_weight_grams must be between 1 and 5000"
+    );
+  }
+
   const { data: device, error: deviceError } = await supabase
     .from("devices")
     .select("id, owner_id")
@@ -98,6 +113,9 @@ export async function PATCH(
   if (body.device_state) updatePayload.device_state = body.device_state;
   if (body.device_type) updatePayload.device_type = body.device_type;
   if (body.pet_id) updatePayload.pet_id = body.pet_id;
+  if (body.plate_weight_grams !== undefined) {
+    updatePayload.plate_weight_grams = body.plate_weight_grams;
+  }
 
   if (Object.keys(updatePayload).length === 0) {
     return apiError(req, 400, "NO_FIELDS", "No fields to update");
