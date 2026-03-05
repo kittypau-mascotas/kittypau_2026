@@ -1,6 +1,6 @@
 # Kittypau IoT — PMO Index
 **Estandar**: PMBOK 6ta + 7ma Edicion (PMI)
-**Estado**: En construccion | Iniciado: 2026-03-05
+**Estado**: Completo v1.0 | Iniciado: 2026-03-05 | Completado: 2026-03-05
 **PM**: Javier Suarez / Mauro Carcamo
 **Version**: 1.0
 
@@ -18,16 +18,16 @@ Todos son adaptables a distintos fondos concursables — ver seccion de adaptaci
 
 | # | Documento | Area PMBOK 6 | Dominio PMBOK 7 | Estado |
 |---|-----------|-------------|-----------------|--------|
-| 01 | [Project Charter](01_PROJECT_CHARTER.md) | Integracion (4.1) | Stakeholders / Entrega | Disponible |
-| 02 | [Alcance y WBS](02_SCOPE_WBS.md) | Alcance (5) | Planificacion | Pendiente |
-| 03 | [Cronograma de Hitos](03_SCHEDULE.md) | Tiempo (6) | Planificacion | Pendiente |
-| 04 | [Business Case y Modelo de Negocio](04_BUSINESS_CASE.md) | Integracion (4.1) | Entrega de Valor | Disponible |
-| 05 | [Plan de Costos y Presupuesto](05_COST_BUDGET.md) | Costos (7) | Planificacion | Pendiente |
-| 06 | [Registro de Riesgos](06_RISK_REGISTER.md) | Riesgos (11) | Incertidumbre | Pendiente |
-| 07 | [Registro de Interesados](07_STAKEHOLDERS.md) | Interesados (13) | Stakeholders | Pendiente |
-| 08 | [Plan de Calidad](08_QUALITY_PLAN.md) | Calidad (8) | Entrega | Pendiente |
-| 09 | [Plan de Comunicaciones](09_COMMUNICATIONS.md) | Comunicaciones (10) | Equipo / Stakeholders | Pendiente |
-| 10 | [Guia de Adaptacion por Fondo](10_FONDOS_ADAPTACION.md) | -- | -- | Pendiente |
+| 01 | [Project Charter](01_PROJECT_CHARTER.md) | Integracion (4.1) | Stakeholders / Entrega | Completo |
+| 02 | [Alcance y WBS](02_SCOPE_WBS.md) | Alcance (5) | Planificacion | Completo |
+| 03 | [Cronograma de Hitos](03_SCHEDULE.md) | Tiempo (6) | Planificacion | Completo |
+| 04 | [Business Case y Modelo de Negocio](04_BUSINESS_CASE.md) | Integracion (4.1) | Entrega de Valor | Completo |
+| 05 | [Plan de Costos y Presupuesto](05_COST_BUDGET.md) | Costos (7) | Planificacion | Completo |
+| 06 | [Registro de Riesgos](06_RISK_REGISTER.md) | Riesgos (11) | Incertidumbre | Completo |
+| 07 | [Registro de Interesados](07_STAKEHOLDERS.md) | Interesados (13) | Stakeholders | Completo |
+| 08 | [Plan de Calidad](08_QUALITY_PLAN.md) | Calidad (8) | Entrega | Completo |
+| 09 | [Plan de Comunicaciones](09_COMMUNICATIONS.md) | Comunicaciones (10) | Equipo / Stakeholders | Completo |
+| 10 | [Guia de Adaptacion por Fondo](10_FONDOS_ADAPTACION.md) | -- | -- | Completo |
 
 ---
 
