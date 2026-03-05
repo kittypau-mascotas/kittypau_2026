@@ -14,19 +14,25 @@
 
 ## DATOS DEL EMPRENDEDOR
 
-**Nombre completo**: Javier [APELLIDO]
-**RUT**: [RUT]
-**Edad**: [EDAD] anos
-**Email**: javomauro.contacto@gmail.com
+**Nombre completo**: Mauricio Cristian Carcamo Diaz
+**RUT**: 17.402.237-2
+**Edad**: [EDAD — verificar, ~36 anos si nacio en 1989]
+**Email**: mauro.carcamo89@gmail.com
 **Telefono**: [TELEFONO]
-**Region de postulacion**: [REGION — verificar convocatoria activa]
-**Nivel educacional**: [NIVEL]
-**Situacion laboral**: [SITUACION]
+**Region de postulacion**: Region Metropolitana
+**Nivel educacional**: [NIVEL — ej: Universitario completo / Tecnico / En curso]
+**Situacion laboral**: Independiente / Otro
 
-**Co-emprendedor** (si aplica):
-**Nombre**: Mauro Carcamo
-**RUT**: [RUT MAURO]
-**Rol**: Co-fundador, Director de Producto y Desarrollo de Software
+**Empresa**: IOT CHILE SpA
+**RUT empresa**: [RUT SpA — verificar en SII]
+**Fecha constitucion**: 10 de julio de 2025
+**Rol en empresa**: Representante legal / Gerente General
+
+**Co-emprendedor**:
+**Nombre**: Javier Suarez
+**RUT**: [RUT JAVIER — pendiente]
+**Email**: javomauro.contacto@gmail.com
+**Rol**: Co-fundador, Director Tecnico (firmware IoT, hardware, sistemas embebidos)
 
 ---
 
@@ -201,21 +207,24 @@ primeros 30-50 usuarios del piloto.
 *(max ~600 caracteres)*
 
 ```
-JAVIER [APELLIDO] — Co-fundador y Director Tecnico
-Especialista en sistemas embebidos, firmware IoT y hardware.
-Responsable del desarrollo completo del dispositivo fisico:
-firmware en C++ (PlatformIO), electronica, carcasa 3D y sistema
-de conectividad MQTT. [AGREGAR: estudios/experiencia previa]
-
-MAURO CARCAMO — Co-fundador y Director de Producto
+MAURICIO CARCAMO DIAZ — Co-fundador y Director de Producto
 Desarrollador full-stack con especialidad en Next.js, TypeScript
-y arquitectura de datos. Responsable de la aplicacion web, API REST,
-base de datos Supabase y estrategia de producto.
-[AGREGAR: estudios/experiencia previa]
+y arquitectura de datos. Representante legal de IOT CHILE SpA.
+Responsable de la aplicacion web, API REST, base de datos Supabase
+y estrategia de producto y negocio.
+[AGREGAR: nivel educacional, institucion, experiencia laboral previa]
+
+JAVIER SUAREZ — Co-fundador y Director Tecnico
+Especialista en sistemas embebidos, firmware IoT y hardware.
+Responsable del desarrollo del dispositivo fisico: firmware en
+C++ (PlatformIO), electronica, carcasa 3D y sistema de
+conectividad MQTT.
+[AGREGAR: nivel educacional, institucion, experiencia laboral previa]
 
 Complementariedad total: el equipo cubre el 100% del stack tecnico
 sin dependencia externa — desde el firmware del chip hasta el
-frontend de la aplicacion.
+frontend de la aplicacion. IOT CHILE SpA, constituida julio 2025,
+es el vehiculo legal del proyecto.
 ```
 
 ---
@@ -325,11 +334,11 @@ HITO CLAVE MES 12: 50+ usuarios, MRR > $100.000 CLP, COGS < $19.000
 ## DOCUMENTOS ADJUNTOS A PREPARAR
 
 ### Obligatorios
-- [ ] Cedula de identidad Javier (vigente, ambas caras)
-- [ ] Cedula de identidad Mauro (vigente, ambas caras)
-- [ ] Declaracion jurada (sin inicio de actividades / inicio reciente)
-- [ ] CV Javier (max 2 paginas — ver plantilla abajo)
-- [ ] CV Mauro (max 2 paginas)
+- [ ] Cedula de identidad Mauricio Carcamo (vigente, ambas caras) — RUT 17.402.237-2
+- [ ] Cedula de identidad Javier Suarez (vigente, ambas caras)
+- [ ] Certificado de Estatuto / Escritura IOT CHILE SpA (constitucion 10-07-2025)
+- [ ] CV Mauricio Carcamo (max 2 paginas — ver plantilla abajo)
+- [ ] CV Javier Suarez (max 2 paginas)
 
 ### Recomendados (evidencia del prototipo)
 - [ ] Video corto (1-2 min) mostrando dispositivo enviando datos + app en tiempo real
@@ -411,5 +420,26 @@ R: Si. El modelo hardware + suscripcion permite break-even con 26 suscriptores a
 
 ---
 
+---
+
+## DATOS PENDIENTES DE COMPLETAR
+
+Los siguientes campos estan marcados con [CORCHETES] en el documento y requieren informacion:
+
+| Campo | Estado | Donde aparece |
+|-------|--------|--------------|
+| [EDAD] Mauro | ~36 anos (inferido de email "89") — **confirmar** | DATOS DEL EMPRENDEDOR |
+| [TELEFONO] Mauro | Pendiente | DATOS DEL EMPRENDEDOR |
+| [RUT SpA] IOT CHILE SpA | Pendiente — verificar en SII | DATOS DEL EMPRENDEDOR |
+| [NIVEL] educacional Mauro | Pendiente | DATOS DEL EMPRENDEDOR |
+| [RUT JAVIER] | Pendiente | Co-emprendedor |
+| Experiencia previa Mauro | Pendiente | CAMPO 8 + CV |
+| Experiencia previa Javier | Pendiente | CAMPO 8 + CV |
+| [X] lecturas en BD | Consultar Supabase | CAMPO 10 |
+
+---
+
 _Ultimo revision: 2026-03-05 | Basado en PMO documentos 01, 04, 05, 07_
+_Datos personales verificados desde postulacion Sercotec 2024 (RUT 17402237-2)_
+_Empresa: IOT CHILE SpA, constituida 10-07-2025_
 _Deadline postulacion: 16 de marzo 2026_
