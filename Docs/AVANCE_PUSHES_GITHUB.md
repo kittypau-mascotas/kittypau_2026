@@ -44,3 +44,12 @@ git log --oneline -n 5 origin/main
 1. Este documento muestra "estado de pushes" consolidado.
 2. `GITHUB_MAURO.md` y `GITHUB_JAVO.md` guardan detalle narrativo por jornada.
 3. La revisión mensual obligatoria usa este documento como fuente primaria.
+
+## Actualizacion 2026-03-05
+| Fecha | Colaborador | Rama | Commit (hash corto) | Mensaje commit | PR | Estado |
+|---|---|---|---|---|---|---|
+| 2026-03-04 | Mauro | main | 633130b | merge: integrate feat/mauro-curcuma into main | n/a | merge manual completado en rama comun |
+| 2026-03-05 | Mauro | main | a3a51fa | chore(devx): add kittypau dev toolkit scripts and pre-commit hook | n/a | toolkit dev agregado y publicado en main |
+| 2026-03-05 | Javo | feat/javo-mauro | 738c07d | fix(ci): resolve all App Lint + Build errors blocking PR #14 | #14 | push para destrabar CI del PR |
+| 2026-03-05 | Javo | feat/javo-mauro | e41f98e | fix(ci): use valid supabase placeholders for CI build | #14 | checks en verde (lint/build + policy + vercel) |
+| 2026-03-05 | Mauro | feat/mauro-curcuma | 92e0d95 | merge origin/main into feat/mauro-curcuma | n/a | rama de trabajo mauro sincronizada con main |

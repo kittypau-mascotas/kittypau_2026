@@ -117,3 +117,6 @@
 ## Env Examples
 - [.env.bridge.example](.env.bridge.example)
 - [.env.test.example](.env.test.example)
+
+## Actualizacion reciente
+- [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md) (toolkit de desarrollo: scripts, lint-staged y pre-commit)
