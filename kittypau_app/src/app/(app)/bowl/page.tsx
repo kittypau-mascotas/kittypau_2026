@@ -47,6 +47,8 @@ type LoadState = {
   devices: ApiDevice[];
 };
 
+type ChartRangeKey = "5m" | "15m" | "1h" | "1d" | "1w";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -54,7 +56,7 @@ ChartJS.register(
   LineElement,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 const defaultState: LoadState = {
@@ -62,6 +64,52 @@ const defaultState: LoadState = {
   error: null,
   devices: [],
 };
+
+const CHART_RANGES: {
+  key: ChartRangeKey;
+  label: string;
+  windowMs: number;
+  queryLimit: number;
+  fromLabel: string;
+}[] = [
+  {
+    key: "5m",
+    label: "5 min",
+    windowMs: 5 * 60 * 1000,
+    queryLimit: 120,
+    fromLabel: "-5m",
+  },
+  {
+    key: "15m",
+    label: "15 min",
+    windowMs: 15 * 60 * 1000,
+    queryLimit: 220,
+    fromLabel: "-15m",
+  },
+  {
+    key: "1h",
+    label: "1 hora",
+    windowMs: 60 * 60 * 1000,
+    queryLimit: 420,
+    fromLabel: "-1h",
+  },
+  {
+    key: "1d",
+    label: "1 dia",
+    windowMs: 24 * 60 * 60 * 1000,
+    queryLimit: 1500,
+    fromLabel: "-1d",
+  },
+  {
+    key: "1w",
+    label: "1 semana",
+    windowMs: 7 * 24 * 60 * 60 * 1000,
+    queryLimit: 3500,
+    fromLabel: "-1sem",
+  },
+];
+
+const READINGS_BUFFER_MAX = 4000;
 
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
@@ -86,7 +134,7 @@ const formatTimestamp = (value: string | null) => {
 const buildSeries = (
   readings: ApiReading[],
   key: "weight_grams" | "temperature" | "humidity" | "light_percent",
-  windowMs: number
+  windowMs: number,
 ) => {
   const cutoff = Date.now() - windowMs;
   return readings
@@ -108,16 +156,21 @@ const ChartCard = ({
   unit,
   series,
   accent,
+  latestValue,
+  rangeStartLabel,
+  integerDisplay = false,
   className,
 }: {
   title: string;
   unit: string;
   series: { value: number; timestamp: string }[];
   accent: string;
+  latestValue: number | null;
+  rangeStartLabel: string;
+  integerDisplay?: boolean;
   className?: string;
 }) => {
   const values = series.map((item) => item.value);
-  const latest = values[0] ?? null;
   const ordered = series.slice(0, 30).reverse();
   const labels = ordered.map((item) => {
     const ts = new Date(item.timestamp);
@@ -169,7 +222,12 @@ const ChartCard = ({
         borderWidth: 1,
         displayColors: false,
         callbacks: {
-          label: (ctx) => `${ctx.parsed.y} ${unit}`,
+          label: (ctx) => {
+            const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+            const value =
+              integerDisplay && raw !== null ? Math.round(raw) : raw;
+            return `${value ?? "-"} ${unit}`;
+          },
         },
       },
     },
@@ -183,7 +241,8 @@ const ChartCard = ({
         grid: { display: false },
         border: {
           display: true,
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
         },
         ticks: {
           maxTicksLimit: 2,
@@ -194,7 +253,7 @@ const ChartCard = ({
           maxRotation: 0,
           minRotation: 0,
           callback: (_value, index, ticks) => {
-            if (index === 0) return "-5m";
+            if (index === 0) return rangeStartLabel;
             if (index === ticks.length - 1) return "Ahora";
             return "";
           },
@@ -209,13 +268,21 @@ const ChartCard = ({
         },
         border: {
           display: true,
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
         },
         ticks: {
           color: "hsl(var(--muted-foreground))",
           font: { size: 11 },
           maxTicksLimit: 3,
-          callback: (value) => `${value} ${unit}`,
+          callback: (value) => {
+            const numeric = Number(value);
+            const rendered =
+              integerDisplay && Number.isFinite(numeric)
+                ? Math.round(numeric)
+                : value;
+            return `${rendered} ${unit}`;
+          },
         },
       },
     },
@@ -231,7 +298,9 @@ const ChartCard = ({
         {title}
       </p>
       <p className="chart-card-value mt-2 text-2xl font-semibold text-slate-900">
-        {latest !== null ? `${latest} ${unit}` : "Sin datos"}
+        {latestValue !== null
+          ? `${integerDisplay ? Math.round(latestValue) : latestValue} ${unit}`
+          : "Sin datos"}
       </p>
       <div className="chart-card-canvas mt-4 h-56 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
         {values.length > 1 ? (
@@ -256,6 +325,7 @@ export default function BowlPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [readings, setReadings] = useState<ApiReading[]>([]);
+  const [selectedRange, setSelectedRange] = useState<ChartRangeKey>("5m");
   const [isReadingsLoading, setIsReadingsLoading] = useState(false);
   const [readingsError, setReadingsError] = useState<string | null>(null);
 
@@ -269,10 +339,14 @@ export default function BowlPage() {
     return parseListResponse<ApiDevice>(payload);
   };
 
-  const loadReadings = async (deviceId: string, token: string) => {
+  const loadReadings = async (
+    deviceId: string,
+    token: string,
+    limit: number,
+  ) => {
     const params = new URLSearchParams();
     params.set("device_id", deviceId);
-    params.set("limit", "30");
+    params.set("limit", String(limit));
     const res = await fetch(`/api/readings?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -313,7 +387,14 @@ export default function BowlPage() {
         setSelectedDeviceId(initialId);
         if (initialId) {
           setIsReadingsLoading(true);
-          const readingData = await loadReadings(initialId, token);
+          const selectedConfig =
+            CHART_RANGES.find((range) => range.key === selectedRange) ??
+            CHART_RANGES[0];
+          const readingData = await loadReadings(
+            initialId,
+            token,
+            selectedConfig.queryLimit,
+          );
           if (mounted) {
             setReadings(readingData);
             setReadingsError(null);
@@ -341,7 +422,7 @@ export default function BowlPage() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [selectedRange]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -351,14 +432,23 @@ export default function BowlPage() {
       if (!token || !active) return;
       try {
         setIsReadingsLoading(true);
-        const readingData = await loadReadings(selectedDeviceId, token);
+        const selectedConfig =
+          CHART_RANGES.find((range) => range.key === selectedRange) ??
+          CHART_RANGES[0];
+        const readingData = await loadReadings(
+          selectedDeviceId,
+          token,
+          selectedConfig.queryLimit,
+        );
         if (!active) return;
         setReadings(readingData);
         setReadingsError(null);
       } catch (err) {
         if (!active) return;
         setReadingsError(
-          err instanceof Error ? err.message : "No se pudieron cargar lecturas."
+          err instanceof Error
+            ? err.message
+            : "No se pudieron cargar lecturas.",
         );
       } finally {
         if (active) setIsReadingsLoading(false);
@@ -368,7 +458,7 @@ export default function BowlPage() {
     return () => {
       active = false;
     };
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, selectedRange]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -377,7 +467,14 @@ export default function BowlPage() {
       const token = await getValidAccessToken();
       if (!token || !active) return;
       try {
-        const readingData = await loadReadings(selectedDeviceId, token);
+        const selectedConfig =
+          CHART_RANGES.find((range) => range.key === selectedRange) ??
+          CHART_RANGES[0];
+        const readingData = await loadReadings(
+          selectedDeviceId,
+          token,
+          selectedConfig.queryLimit,
+        );
         if (!active) return;
         setReadings(readingData);
       } catch {
@@ -389,7 +486,7 @@ export default function BowlPage() {
       active = false;
       clearInterval(interval);
     };
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, selectedRange]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -418,9 +515,9 @@ export default function BowlPage() {
             setReadings((prev) => {
               const exists = prev.some((item) => item.id === nextReading.id);
               if (exists) return prev;
-              return [nextReading, ...prev].slice(0, 60);
+              return [nextReading, ...prev].slice(0, READINGS_BUFFER_MAX);
             });
-          }
+          },
         )
         .subscribe();
     };
@@ -469,7 +566,10 @@ export default function BowlPage() {
 
   const actionNotes = useMemo(() => {
     const notes: string[] = [];
-    if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
+    if (
+      selectedDevice?.battery_level !== null &&
+      selectedDevice?.battery_level !== undefined
+    ) {
       if (selectedDevice.battery_level <= 15) {
         notes.push("Carga el plato en las próximas horas.");
       } else if (selectedDevice.battery_level <= 35) {
@@ -496,21 +596,53 @@ export default function BowlPage() {
     return "Sin datos suficientes para diagnóstico completo.";
   }, [selectedDevice, statusSummary.tone]);
 
+  const selectedRangeConfig = useMemo(() => {
+    return (
+      CHART_RANGES.find((range) => range.key === selectedRange) ??
+      CHART_RANGES[0]
+    );
+  }, [selectedRange]);
+
+  const latestWeightValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.weight_grams === "number")
+        ?.weight_grams ?? null,
+    [readings],
+  );
+  const latestTempValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.temperature === "number")
+        ?.temperature ?? null,
+    [readings],
+  );
+  const latestHumidityValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.humidity === "number")?.humidity ??
+      null,
+    [readings],
+  );
+  const latestLightValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.light_percent === "number")
+        ?.light_percent ?? null,
+    [readings],
+  );
+
   const weightSeries = useMemo(
-    () => buildSeries(readings, "weight_grams", 5 * 60 * 1000),
-    [readings]
+    () => buildSeries(readings, "weight_grams", selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
   const tempSeries = useMemo(
-    () => buildSeries(readings, "temperature", 5 * 60 * 1000),
-    [readings]
+    () => buildSeries(readings, "temperature", selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
   const humiditySeries = useMemo(
-    () => buildSeries(readings, "humidity", 5 * 60 * 1000),
-    [readings]
+    () => buildSeries(readings, "humidity", selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
   const lightSeries = useMemo(
-    () => buildSeries(readings, "light_percent", 5 * 60 * 1000),
-    [readings]
+    () => buildSeries(readings, "light_percent", selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
 
   return (
@@ -543,17 +675,19 @@ export default function BowlPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">Cargando estado...</div>
+        <div className="surface-card freeform-rise px-6 py-6">
+          Cargando estado...
+        </div>
       ) : state.devices.length === 0 ? (
         <EmptyState
           title="No hay dispositivos vinculados."
           actions={
             <Link
               href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir a registro 
-            </Link> 
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a registro
+            </Link>
           }
         >
           Conecta un plato para ver batería, conexión y diagnóstico.
@@ -565,9 +699,30 @@ export default function BowlPage() {
               <h2 className="text-lg font-semibold text-slate-900">
                 Lecturas en vivo
               </h2>
-              <span className="text-xs text-slate-500">
-                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
-              </span>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <span className="text-xs text-slate-500">
+                  {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
+                </span>
+                <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
+                  {CHART_RANGES.map((range) => {
+                    const isActive = selectedRange === range.key;
+                    return (
+                      <button
+                        key={range.key}
+                        type="button"
+                        onClick={() => setSelectedRange(range.key)}
+                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        {range.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             {readingsError ? (
               <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
@@ -578,18 +733,25 @@ export default function BowlPage() {
                   unit="g"
                   series={weightSeries}
                   accent="#EBB7AA"
+                  latestValue={latestWeightValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
                 />
                 <ChartCard
                   title="Temperatura"
                   unit="°C"
                   series={tempSeries}
                   accent="#D99686"
+                  latestValue={latestTempValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
+                  integerDisplay
                 />
                 <ChartCard
                   title="Luz entorno"
                   unit="%"
                   series={lightSeries}
                   accent="hsl(44 90% 52%)"
+                  latestValue={latestLightValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
                   className="lg:col-start-1"
                 />
                 <ChartCard
@@ -597,6 +759,9 @@ export default function BowlPage() {
                   unit="%"
                   series={humiditySeries}
                   accent="hsl(198 70% 45%)"
+                  latestValue={latestHumidityValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
+                  integerDisplay
                   className="lg:col-start-2"
                 />
               </div>
@@ -633,7 +798,7 @@ export default function BowlPage() {
                       if (nextId && typeof window !== "undefined") {
                         window.localStorage.setItem(
                           "kittypau_device_id",
-                          nextId
+                          nextId,
                         );
                       }
                     }}
@@ -677,8 +842,8 @@ export default function BowlPage() {
                     statusSummary.tone === "warn"
                       ? "bg-rose-100 text-rose-700"
                       : statusSummary.tone === "ok"
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-slate-100 text-slate-600"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-slate-100 text-slate-600"
                   }`}
                 >
                   Estado general: {statusSummary.label}
@@ -693,7 +858,7 @@ export default function BowlPage() {
                   {selectedDevice?.battery_level !== null &&
                   selectedDevice?.battery_level !== undefined
                     ? `${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level
+                        selectedDevice.battery_level,
                       )}`
                     : "Sin datos"}
                 </p>
@@ -726,8 +891,8 @@ export default function BowlPage() {
                   {connectionHint === "Conectado en tiempo real."
                     ? "Datos en vivo. Todo responde bien."
                     : connectionHint === "Conectado recientemente."
-                    ? "Último check-in dentro de la ventana esperada."
-                    : "Sin check-in reciente. Revisa energía y Wi-Fi."}
+                      ? "Último check-in dentro de la ventana esperada."
+                      : "Sin check-in reciente. Revisa energía y Wi-Fi."}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
@@ -738,7 +903,7 @@ export default function BowlPage() {
                   {selectedDevice?.battery_level !== null &&
                   selectedDevice?.battery_level !== undefined
                     ? `Batería ${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level
+                        selectedDevice.battery_level,
                       )}`
                     : "Sin datos de batería."}
                 </p>
@@ -779,14 +944,8 @@ export default function BowlPage() {
               </button>
             </div>
           </section>
-
         </>
       )}
     </main>
   );
 }
-
-
-
-
-

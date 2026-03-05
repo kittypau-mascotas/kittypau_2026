@@ -128,13 +128,17 @@ function getFreshnessLabelByTimestamp(value?: string | null) {
 }
 
 function resolveDevicePowerState(
-  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined
+  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
 ): "on" | "off" | "nodata" {
   if (!device) return "nodata";
   const state = (device.device_state ?? "").toLowerCase();
   const status = (device.status ?? "").toLowerCase();
   if (!state && !status) return "nodata";
-  if (state.includes("offline") || status === "offline" || status === "inactive") {
+  if (
+    state.includes("offline") ||
+    status === "offline" ||
+    status === "inactive"
+  ) {
     return "off";
   }
   if (
@@ -148,7 +152,9 @@ function resolveDevicePowerState(
   return "nodata";
 }
 
-function parsePetNumberSuffix(petName: string | null | undefined): number | null {
+function parsePetNumberSuffix(
+  petName: string | null | undefined,
+): number | null {
   if (!petName) return null;
   const match = petName.match(/test[_\s-]*(\d{3,4})/i);
   if (!match) return null;
@@ -161,8 +167,15 @@ function kpclLabelFromNumber(value: number): string {
 }
 
 function toNullableNumber(value: number | null | undefined): number | null {
-  if (value === null || value === undefined || !Number.isFinite(value)) return null;
+  if (value === null || value === undefined || !Number.isFinite(value))
+    return null;
   return value;
+}
+
+function toRoundedSensorValue(value: number | null | undefined): number | null {
+  const numeric = toNullableNumber(value);
+  if (numeric === null) return null;
+  return Math.round(numeric);
 }
 
 function getDayNightWindow(now = new Date()) {
@@ -180,7 +193,7 @@ function getDayNightWindow(now = new Date()) {
 
 function formatHourFromOffset(offsetHours: number) {
   const rounded = Math.round(offsetHours);
-  const hour = ((6 + rounded) % 24 + 24) % 24;
+  const hour = (((6 + rounded) % 24) + 24) % 24;
   return `${String(hour).padStart(2, "0")}:00`;
 }
 
@@ -220,13 +233,14 @@ function toDayNightPoints(
   readings: ApiReading[],
   startMs: number,
   endMs: number,
-  valueSelector: (reading: ApiReading) => number | null
+  valueSelector: (reading: ApiReading) => number | null,
 ): DayNightPoint[] {
   return readings
     .map((reading) => {
       const ts = new Date(reading.recorded_at).getTime();
       const value = valueSelector(reading);
-      if (Number.isNaN(ts) || ts < startMs || ts > endMs || value === null) return null;
+      if (Number.isNaN(ts) || ts < startMs || ts > endMs || value === null)
+        return null;
       return {
         x: (ts - startMs) / (60 * 60 * 1000),
         y: value,
@@ -302,12 +316,12 @@ function detectIntakeSessions(points: DayNightPoint[]): IntakeSession[] {
 
 function findSessionForPoint(
   sessions: IntakeSession[],
-  pointIndex: number
+  pointIndex: number,
 ): IntakeSession | null {
   return (
     sessions.find(
       (session) =>
-        pointIndex >= session.startIndex && pointIndex <= session.endIndex
+        pointIndex >= session.startIndex && pointIndex <= session.endIndex,
     ) ?? null
   );
 }
@@ -316,9 +330,14 @@ export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
-  const [devicePreviousReadings, setDevicePreviousReadings] = useState<Record<string, ApiReading | null>>({});
-  const [deviceChartReadings, setDeviceChartReadings] = useState<DeviceReadingsMap>({});
+  const [deviceLatestReadings, setDeviceLatestReadings] = useState<
+    Record<string, ApiReading | null>
+  >({});
+  const [devicePreviousReadings, setDevicePreviousReadings] = useState<
+    Record<string, ApiReading | null>
+  >({});
+  const [deviceChartReadings, setDeviceChartReadings] =
+    useState<DeviceReadingsMap>({});
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -366,7 +385,7 @@ export default function TodayPage() {
     deviceId: string,
     cursor?: string | null,
     limit = 50,
-    range?: { from?: string; to?: string }
+    range?: { from?: string; to?: string },
   ) => {
     const params = new URLSearchParams({
       device_id: deviceId,
@@ -434,23 +453,30 @@ export default function TodayPage() {
             ? window.localStorage.getItem("kittypau_pet_id")
             : null;
         const primaryPet =
-          pets.find((pet) => pet.id === storedPetId) ??
-          pets[0];
+          pets.find((pet) => pet.id === storedPetId) ?? pets[0];
         const storedDeviceId =
           typeof window !== "undefined"
             ? window.localStorage.getItem("kittypau_device_id")
             : null;
         const petSuffix = parsePetNumberSuffix(primaryPet?.name);
-        const expectedFoodDeviceId = petSuffix ? kpclLabelFromNumber(petSuffix) : null;
-        const devicesByPet = devices.filter((device) => device.pet_id === primaryPet?.id);
+        const expectedFoodDeviceId = petSuffix
+          ? kpclLabelFromNumber(petSuffix)
+          : null;
+        const devicesByPet = devices.filter(
+          (device) => device.pet_id === primaryPet?.id,
+        );
         const primaryDevice =
           devicesByPet.find((device) => device.id === storedDeviceId) ??
           devicesByPet.find(
-            (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId
+            (device) =>
+              (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
           ) ??
           devicesByPet[0] ??
           devices.find((device) => device.id === storedDeviceId) ??
-          devices.find((device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId) ??
+          devices.find(
+            (device) =>
+              (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+          ) ??
           devices[0];
 
         let readings: ApiReading[] = [];
@@ -536,7 +562,7 @@ export default function TodayPage() {
             const nextReading = payload.new as ApiReading;
             setState((prev) => {
               const exists = prev.readings.some(
-                (reading) => reading.id === nextReading.id
+                (reading) => reading.id === nextReading.id,
               );
               if (exists) return prev;
               return {
@@ -546,7 +572,7 @@ export default function TodayPage() {
             });
             setLastRefreshAt(new Date().toISOString());
             setRefreshError(null);
-          }
+          },
         )
         .subscribe();
     };
@@ -587,9 +613,15 @@ export default function TodayPage() {
         }));
       }
     };
-    window.addEventListener("kittypau-device-change", onDeviceChange as EventListener);
+    window.addEventListener(
+      "kittypau-device-change",
+      onDeviceChange as EventListener,
+    );
     return () => {
-      window.removeEventListener("kittypau-device-change", onDeviceChange as EventListener);
+      window.removeEventListener(
+        "kittypau-device-change",
+        onDeviceChange as EventListener,
+      );
     };
   }, [selectedDeviceId]);
 
@@ -620,59 +652,72 @@ export default function TodayPage() {
   };
 
   const primaryPet =
-    state.pets.find((pet) => pet.id === selectedPetId) ??
-    state.pets[0];
+    state.pets.find((pet) => pet.id === selectedPetId) ?? state.pets[0];
   const selectedPetSuffix = parsePetNumberSuffix(primaryPet?.name);
-  const expectedFoodDeviceCode = selectedPetSuffix ? kpclLabelFromNumber(selectedPetSuffix) : null;
+  const expectedFoodDeviceCode = selectedPetSuffix
+    ? kpclLabelFromNumber(selectedPetSuffix)
+    : null;
   const expectedWaterDeviceCode = selectedPetSuffix
     ? kpclLabelFromNumber(selectedPetSuffix + 1)
     : null;
   const petDevices = useMemo(() => {
-    const base = state.devices.filter((device) => device.pet_id === primaryPet?.id);
+    const base = state.devices.filter(
+      (device) => device.pet_id === primaryPet?.id,
+    );
     const byFoodCode = expectedFoodDeviceCode
       ? state.devices.find(
           (device) =>
             (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode &&
-            (device.pet_id === primaryPet?.id || !device.pet_id)
+            (device.pet_id === primaryPet?.id || !device.pet_id),
         )
       : null;
     const byWaterCode = expectedWaterDeviceCode
       ? state.devices.find(
           (device) =>
-            (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode &&
-            (device.pet_id === primaryPet?.id || !device.pet_id)
+            (device.device_id ?? "").toUpperCase() ===
+              expectedWaterDeviceCode &&
+            (device.pet_id === primaryPet?.id || !device.pet_id),
         )
       : null;
     const merged = [...base];
-    if (byFoodCode && !merged.some((item) => item.id === byFoodCode.id)) merged.push(byFoodCode);
-    if (byWaterCode && !merged.some((item) => item.id === byWaterCode.id)) merged.push(byWaterCode);
+    if (byFoodCode && !merged.some((item) => item.id === byFoodCode.id))
+      merged.push(byFoodCode);
+    if (byWaterCode && !merged.some((item) => item.id === byWaterCode.id))
+      merged.push(byWaterCode);
     return merged;
-  }, [state.devices, primaryPet?.id, expectedFoodDeviceCode, expectedWaterDeviceCode]);
+  }, [
+    state.devices,
+    primaryPet?.id,
+    expectedFoodDeviceCode,
+    expectedWaterDeviceCode,
+  ]);
   const ownerLabel =
-    state.profile?.owner_name ||
-    state.profile?.user_name ||
-    "tu";
+    state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
   const primaryDevice =
     petDevices.find((device) => device.id === selectedDeviceId) ??
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode,
     ) ??
     petDevices[0] ??
     state.devices.find((device) => device.id === selectedDeviceId) ??
     state.devices[0];
   const bowlDevice =
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode,
     ) ??
     petDevices.find(
       (device) =>
         device.device_id?.toUpperCase().includes("KPCL") ||
-        (device.device_type ?? "").toLowerCase().includes("comedero")
-    ) ?? primaryDevice;
+        (device.device_type ?? "").toLowerCase().includes("comedero"),
+    ) ??
+    primaryDevice;
   const waterDevice =
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode,
     ) ??
     petDevices.find((device) => {
       const id = (device.device_id ?? "").toUpperCase();
@@ -683,15 +728,24 @@ export default function TodayPage() {
         type.includes("bebedero") ||
         type.includes("water")
       );
-    }) ?? null;
+    }) ??
+    null;
   const latestReading = state.readings[0] ?? null;
-  const bowlLatestReading = bowlDevice?.id ? (deviceLatestReadings[bowlDevice.id] ?? null) : null;
-  const bowlPreviousReading = bowlDevice?.id ? (devicePreviousReadings[bowlDevice.id] ?? null) : null;
-  const waterLatestReading = waterDevice?.id ? (deviceLatestReadings[waterDevice.id] ?? null) : null;
-  const waterPreviousReading = waterDevice?.id ? (devicePreviousReadings[waterDevice.id] ?? null) : null;
+  const bowlLatestReading = bowlDevice?.id
+    ? (deviceLatestReadings[bowlDevice.id] ?? null)
+    : null;
+  const bowlPreviousReading = bowlDevice?.id
+    ? (devicePreviousReadings[bowlDevice.id] ?? null)
+    : null;
+  const waterLatestReading = waterDevice?.id
+    ? (deviceLatestReadings[waterDevice.id] ?? null)
+    : null;
+  const waterPreviousReading = waterDevice?.id
+    ? (devicePreviousReadings[waterDevice.id] ?? null)
+    : null;
   const freshnessLabel = useMemo(
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
-    [latestReading?.recorded_at]
+    [latestReading?.recorded_at],
   );
 
   useEffect(() => {
@@ -725,7 +779,7 @@ export default function TodayPage() {
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
       (value, index, arr): value is string =>
-        Boolean(value) && arr.indexOf(value) === index
+        Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
     let active = true;
@@ -734,20 +788,28 @@ export default function TodayPage() {
         targetIds.map(async (deviceId) => {
           try {
             const result = await loadReadings(deviceId, null, 2);
-            return [deviceId, result.data[0] ?? null, result.data[1] ?? null] as const;
+            return [
+              deviceId,
+              result.data[0] ?? null,
+              result.data[1] ?? null,
+            ] as const;
           } catch {
             return [deviceId, null, null] as const;
           }
-        })
+        }),
       );
       if (!active) return;
       setDeviceLatestReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(entries.map(([deviceId, latest]) => [deviceId, latest])),
+        ...Object.fromEntries(
+          entries.map(([deviceId, latest]) => [deviceId, latest]),
+        ),
       }));
       setDevicePreviousReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(entries.map(([deviceId, _latest, previous]) => [deviceId, previous])),
+        ...Object.fromEntries(
+          entries.map(([deviceId, _latest, previous]) => [deviceId, previous]),
+        ),
       }));
     };
     void loadTargets();
@@ -759,7 +821,7 @@ export default function TodayPage() {
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
       (value, index, arr): value is string =>
-        Boolean(value) && arr.indexOf(value) === index
+        Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
     let active = true;
@@ -782,7 +844,7 @@ export default function TodayPage() {
           } catch {
             return [deviceId, []] as const;
           }
-        })
+        }),
       );
       if (!active) return;
       setDeviceChartReadings((prev) => ({
@@ -790,7 +852,11 @@ export default function TodayPage() {
         ...Object.fromEntries(entries),
       }));
       const hasAnyData = entries.some(([, values]) => values.length > 0);
-      setChartLoadError(hasAnyData ? null : "Sin lecturas suficientes para construir el gráfico.");
+      setChartLoadError(
+        hasAnyData
+          ? null
+          : "Sin lecturas suficientes para construir el gráfico.",
+      );
     };
     void loadChartTargets();
     return () => {
@@ -805,7 +871,10 @@ export default function TodayPage() {
     if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
       return `Hidratación elevada detectada hoy en ${petLabel}.`;
     }
-    if (latestReading.weight_grams !== null && latestReading.weight_grams >= 3500) {
+    if (
+      latestReading.weight_grams !== null &&
+      latestReading.weight_grams >= 3500
+    ) {
       return `Consumo estable en el último registro de ${petLabel}.`;
     }
     if (latestReading.temperature !== null && latestReading.temperature >= 26) {
@@ -837,11 +906,17 @@ export default function TodayPage() {
       });
     }
     if (latestReading.temperature !== null || latestReading.humidity !== null) {
+      const temperatureText =
+        latestReading.temperature !== null
+          ? String(toRoundedSensorValue(latestReading.temperature))
+          : "-";
+      const humidityText =
+        latestReading.humidity !== null
+          ? String(toRoundedSensorValue(latestReading.humidity))
+          : "-";
       items.push({
         title: "Ambiente",
-        description: `Temp ${latestReading.temperature ?? "-"}° · Humedad ${
-          latestReading.humidity ?? "-"
-        }%.`,
+        description: `Temp ${temperatureText}° · Humedad ${humidityText}%.`,
         tone: "warning",
       });
     }
@@ -851,8 +926,16 @@ export default function TodayPage() {
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
-        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/green_water_full.png" },
-        { label: "Alimento", value: "Sin datos", icon: "/illustrations/pink_food_full.png" },
+        {
+          label: "Hidratación",
+          value: "Sin datos",
+          icon: "/illustrations/green_water_full.png",
+        },
+        {
+          label: "Alimento",
+          value: "Sin datos",
+          icon: "/illustrations/pink_food_full.png",
+        },
         { label: "Ambiente", value: "Sin datos" },
       ] as StatCard[];
     }
@@ -866,11 +949,21 @@ export default function TodayPage() {
         : "Sin peso";
     const ambient =
       latestReading.temperature !== null && latestReading.humidity !== null
-        ? `${latestReading.temperature}° · ${latestReading.humidity}%`
+        ? `${toRoundedSensorValue(latestReading.temperature)}° · ${toRoundedSensorValue(
+            latestReading.humidity,
+          )}%`
         : "Sin ambiente";
     return [
-      { label: "Hidratación", value: hydration, icon: "/illustrations/green_water_full.png" },
-      { label: "Alimento", value: food, icon: "/illustrations/pink_food_full.png" },
+      {
+        label: "Hidratación",
+        value: hydration,
+        icon: "/illustrations/green_water_full.png",
+      },
+      {
+        label: "Alimento",
+        value: food,
+        icon: "/illustrations/pink_food_full.png",
+      },
       { label: "Ambiente", value: ambient },
     ] as StatCard[];
   }, [latestReading]);
@@ -881,49 +974,75 @@ export default function TodayPage() {
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
   };
   const bowlTempText =
-    bowlLatestReading?.temperature !== null && bowlLatestReading?.temperature !== undefined
-      ? `${bowlLatestReading.temperature}°C`
+    bowlLatestReading?.temperature !== null &&
+    bowlLatestReading?.temperature !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.temperature)}°C`
       : "N/D";
   const bowlHumidityText =
-    bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
-      ? `${bowlLatestReading.humidity}%`
+    bowlLatestReading?.humidity !== null &&
+    bowlLatestReading?.humidity !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.humidity)}%`
       : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
-  const bowlGrossWeightGrams = toNullableNumber(bowlLatestReading?.weight_grams);
+  const bowlGrossWeightGrams = toNullableNumber(
+    bowlLatestReading?.weight_grams,
+  );
   const bowlContentWeightGrams =
     bowlPlateWeightGrams !== null && bowlGrossWeightGrams !== null
       ? Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams)
       : null;
   const bowlContentWeightText =
-    bowlContentWeightGrams !== null ? `${Math.round(bowlContentWeightGrams)} g` : "N/D";
+    bowlContentWeightGrams !== null
+      ? `${Math.round(bowlContentWeightGrams)} g`
+      : "N/D";
   const bowlPlateWeightText =
-    bowlPlateWeightGrams !== null ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g` : "N/D";
+    bowlPlateWeightGrams !== null
+      ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g`
+      : "N/D";
   const bowlSensorWeightText =
-    bowlGrossWeightGrams !== null ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g` : "N/D";
+    bowlGrossWeightGrams !== null
+      ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g`
+      : "N/D";
   const waterTempText =
-    waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
-      ? `${waterLatestReading.temperature}°C`
+    waterLatestReading?.temperature !== null &&
+    waterLatestReading?.temperature !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.temperature)}°C`
       : "N/D";
   const waterHumidityText =
-    waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
-      ? `${waterLatestReading.humidity}%`
+    waterLatestReading?.humidity !== null &&
+    waterLatestReading?.humidity !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.humidity)}%`
       : "N/D";
-  const waterPlateWeightGrams = toNullableNumber(waterDevice?.plate_weight_grams);
-  const waterGrossWeightGrams = toNullableNumber(waterLatestReading?.weight_grams);
+  const waterPlateWeightGrams = toNullableNumber(
+    waterDevice?.plate_weight_grams,
+  );
+  const waterGrossWeightGrams = toNullableNumber(
+    waterLatestReading?.weight_grams,
+  );
   const waterContentWeightGrams =
     waterPlateWeightGrams !== null && waterGrossWeightGrams !== null
       ? Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams)
       : null;
   const waterContentWeightText =
-    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} g` : "N/D";
+    waterContentWeightGrams !== null
+      ? `${Math.round(waterContentWeightGrams)} g`
+      : "N/D";
   const waterPlateWeightText =
-    waterPlateWeightGrams !== null ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g` : "N/D";
+    waterPlateWeightGrams !== null
+      ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g`
+      : "N/D";
   const waterSensorWeightText =
-    waterGrossWeightGrams !== null ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g` : "N/D";
+    waterGrossWeightGrams !== null
+      ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g`
+      : "N/D";
   const waterVolumeCm3Text =
-    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} cm3` : "N/D";
+    waterContentWeightGrams !== null
+      ? `${Math.round(waterContentWeightGrams)} cm3`
+      : "N/D";
 
-  const bowlPrevGrossWeightGrams = toNullableNumber(bowlPreviousReading?.weight_grams);
+  const bowlPrevGrossWeightGrams = toNullableNumber(
+    bowlPreviousReading?.weight_grams,
+  );
   const bowlPrevContentWeightGrams =
     bowlPlateWeightGrams !== null && bowlPrevGrossWeightGrams !== null
       ? Math.max(0, bowlPrevGrossWeightGrams - bowlPlateWeightGrams)
@@ -931,7 +1050,9 @@ export default function TodayPage() {
   const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
   const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
 
-  const waterPrevGrossWeightGrams = toNullableNumber(waterPreviousReading?.weight_grams);
+  const waterPrevGrossWeightGrams = toNullableNumber(
+    waterPreviousReading?.weight_grams,
+  );
   const waterPrevContentWeightGrams =
     waterPlateWeightGrams !== null && waterPrevGrossWeightGrams !== null
       ? Math.max(0, waterPrevGrossWeightGrams - waterPlateWeightGrams)
@@ -974,7 +1095,7 @@ export default function TodayPage() {
   }, [dayCycleOffsetDays, dayNightWindow.startMs]);
   const selectedPetIndex = Math.max(
     0,
-    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? ""))
+    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? "")),
   );
   const switchPetByOffset = async (offset: -1 | 1) => {
     if (!state.pets.length) return;
@@ -983,16 +1104,18 @@ export default function TodayPage() {
     const pet = state.pets[nextIndex];
     const suffix = parsePetNumberSuffix(pet.name);
     const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
-    const nextPetDevices = state.devices.filter((device) => device.pet_id === pet.id);
+    const nextPetDevices = state.devices.filter(
+      (device) => device.pet_id === pet.id,
+    );
     const nextDevice =
       nextPetDevices.find(
-        (device) => (device.device_id ?? "").toUpperCase() === foodCode
+        (device) => (device.device_id ?? "").toUpperCase() === foodCode,
       ) ??
       nextPetDevices[0] ??
       state.devices.find(
         (device) =>
           (device.device_id ?? "").toUpperCase() === foodCode &&
-          (!device.pet_id || device.pet_id === pet.id)
+          (!device.pet_id || device.pet_id === pet.id),
       ) ??
       null;
 
@@ -1019,12 +1142,16 @@ export default function TodayPage() {
       setRefreshError(
         err instanceof Error
           ? err.message
-          : "No se pudieron cargar las lecturas."
+          : "No se pudieron cargar las lecturas.",
       );
     }
   };
-  const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
-  const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
+  const bowlChartReadings = bowlDevice?.id
+    ? (deviceChartReadings[bowlDevice.id] ?? [])
+    : [];
+  const waterChartReadings = waterDevice?.id
+    ? (deviceChartReadings[waterDevice.id] ?? [])
+    : [];
 
   const selectBowlSeriesValue = (reading: ApiReading) => {
     const gross = toNullableNumber(reading.weight_grams);
@@ -1050,9 +1177,14 @@ export default function TodayPage() {
         bowlChartReadings,
         dayNightWindow.startMs,
         dayNightWindow.endMs,
-        selectBowlSeriesValue
+        selectBowlSeriesValue,
       ),
-    [bowlChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, bowlDevice?.plate_weight_grams]
+    [
+      bowlChartReadings,
+      dayNightWindow.endMs,
+      dayNightWindow.startMs,
+      bowlDevice?.plate_weight_grams,
+    ],
   );
 
   const waterDayNightPoints = useMemo(
@@ -1061,19 +1193,24 @@ export default function TodayPage() {
         waterChartReadings,
         dayNightWindow.startMs,
         dayNightWindow.endMs,
-        selectWaterSeriesValue
+        selectWaterSeriesValue,
       ),
-    [waterChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, waterDevice?.plate_weight_grams]
+    [
+      waterChartReadings,
+      dayNightWindow.endMs,
+      dayNightWindow.startMs,
+      waterDevice?.plate_weight_grams,
+    ],
   );
 
   const bowlIntakeSessions = useMemo(
     () => detectIntakeSessions(bowlDayNightPoints),
-    [bowlDayNightPoints]
+    [bowlDayNightPoints],
   );
 
   const waterIntakeSessions = useMemo(
     () => detectIntakeSessions(waterDayNightPoints),
-    [waterDayNightPoints]
+    [waterDayNightPoints],
   );
 
   const foodPointStyle = useMemo(() => {
@@ -1102,12 +1239,15 @@ export default function TodayPage() {
       id: "kittypau-day-night-background",
       beforeDatasetsDraw: (chart) => {
         const { ctx, chartArea } = chart;
-        if (!chartArea || !dayNightBackground || !dayNightBackground.complete) return;
+        if (!chartArea || !dayNightBackground || !dayNightBackground.complete)
+          return;
         const areaWidth = chartArea.right - chartArea.left;
         const areaHeight = chartArea.bottom - chartArea.top;
         if (areaWidth <= 0 || areaHeight <= 0) return;
-        const imageWidth = dayNightBackground.naturalWidth || dayNightBackground.width;
-        const imageHeight = dayNightBackground.naturalHeight || dayNightBackground.height;
+        const imageWidth =
+          dayNightBackground.naturalWidth || dayNightBackground.width;
+        const imageHeight =
+          dayNightBackground.naturalHeight || dayNightBackground.height;
         if (!imageWidth || !imageHeight) return;
 
         // Draw in "cover" mode to keep proportions and avoid stretched background.
@@ -1139,12 +1279,12 @@ export default function TodayPage() {
           chartArea.left,
           chartArea.top,
           areaWidth,
-          areaHeight
+          areaHeight,
         );
         ctx.restore();
       },
     }),
-    [dayNightBackground]
+    [dayNightBackground],
   );
 
   const dayNightChartData = useMemo<ChartData<"line", DayNightPoint[]>>(
@@ -1176,7 +1316,14 @@ export default function TodayPage() {
         },
       ],
     }),
-    [bowlDayNightPoints, bowlDevice?.device_id, foodPointStyle, waterDayNightPoints, waterDevice?.device_id, waterPointStyle]
+    [
+      bowlDayNightPoints,
+      bowlDevice?.device_id,
+      foodPointStyle,
+      waterDayNightPoints,
+      waterDevice?.device_id,
+      waterPointStyle,
+    ],
   );
 
   const dayNightChartOptions = useMemo<ChartOptions<"line">>(
@@ -1200,7 +1347,8 @@ export default function TodayPage() {
             boxHeight: 14,
             font: {
               size: 12,
-              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
@@ -1239,7 +1387,10 @@ export default function TodayPage() {
             },
             label: (context) => {
               const point = context.parsed;
-              const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
+              const value =
+                typeof context.parsed.y === "number"
+                  ? Math.round(context.parsed.y)
+                  : null;
               const label = String(context.dataset.label ?? "Serie");
               const seriesTitle = label.includes("Hidratación")
                 ? "Hidratación"
@@ -1248,7 +1399,9 @@ export default function TodayPage() {
                   : "Lectura";
               const pointTime =
                 typeof point.x === "number"
-                  ? new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000).toLocaleString("es-CL", {
+                  ? new Date(
+                      dayNightWindow.startMs + point.x * 60 * 60 * 1000,
+                    ).toLocaleString("es-CL", {
                       day: "2-digit",
                       month: "2-digit",
                       hour: "2-digit",
@@ -1266,7 +1419,9 @@ export default function TodayPage() {
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const sessions =
-                context.datasetIndex === 0 ? bowlIntakeSessions : waterIntakeSessions;
+                context.datasetIndex === 0
+                  ? bowlIntakeSessions
+                  : waterIntakeSessions;
               const session = findSessionForPoint(sessions, context.dataIndex);
               if (!session) return ["Proceso: sin evento detectado"];
               return [
@@ -1304,7 +1459,8 @@ export default function TodayPage() {
             },
             font: {
               size: 12,
-              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
@@ -1324,7 +1480,7 @@ export default function TodayPage() {
         },
       },
     }),
-    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions]
+    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
   );
 
   return (
@@ -1386,38 +1542,53 @@ export default function TodayPage() {
                           bowlPowerState === "on"
                             ? "Prendido"
                             : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
+                              ? "Apagado"
+                              : "Sin data"
                         }
                         title={
                           bowlPowerState === "on"
                             ? "Prendido"
                             : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
+                              ? "Apagado"
+                              : "Sin data"
                         }
                       />
-                      <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <BatteryStatusIcon
+                        level={bowlDevice?.battery_level ?? null}
+                        className="h-5 w-5 text-slate-700"
+                      />
                     </div>
                     <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <p className="text-[10px] font-semibold text-slate-700">
                         {bowlContentWeightText} (contenido)
-                        {renderTrend(bowlContentWeightGrams, bowlPrevContentWeightGrams)}
+                        {renderTrend(
+                          bowlContentWeightGrams,
+                          bowlPrevContentWeightGrams,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-700">
                         {bowlPlateWeightText} (plato)
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
                         {bowlSensorWeightText} (sensor)
-                        {renderTrend(bowlGrossWeightGrams, bowlPrevGrossWeightGrams)}
+                        {renderTrend(
+                          bowlGrossWeightGrams,
+                          bowlPrevGrossWeightGrams,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
                         {bowlTempText}
-                        {renderTrend(toNullableNumber(bowlLatestReading?.temperature), bowlPrevTemp)}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.temperature),
+                          bowlPrevTemp,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-500">
                         {bowlHumidityText}
-                        {renderTrend(toNullableNumber(bowlLatestReading?.humidity), bowlPrevHumidity)}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.humidity),
+                          bowlPrevHumidity,
+                        )}
                       </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
@@ -1447,38 +1618,53 @@ export default function TodayPage() {
                           waterPowerState === "on"
                             ? "Prendido"
                             : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
+                              ? "Apagado"
+                              : "Sin data"
                         }
                         title={
                           waterPowerState === "on"
                             ? "Prendido"
                             : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
+                              ? "Apagado"
+                              : "Sin data"
                         }
                       />
-                      <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
+                      <BatteryStatusIcon
+                        level={waterDevice?.battery_level ?? null}
+                        className="h-5 w-5 text-slate-700"
+                      />
                     </div>
                     <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
                       <p className="text-[10px] font-semibold text-slate-700">
                         {waterVolumeCm3Text} (aprox)
-                        {renderTrend(waterContentWeightGrams, waterPrevContentWeightGrams)}
+                        {renderTrend(
+                          waterContentWeightGrams,
+                          waterPrevContentWeightGrams,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-700">
                         {waterPlateWeightText} (plato)
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
                         {waterSensorWeightText} (sensor)
-                        {renderTrend(waterGrossWeightGrams, waterPrevGrossWeightGrams)}
+                        {renderTrend(
+                          waterGrossWeightGrams,
+                          waterPrevGrossWeightGrams,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
                         {waterTempText}
-                        {renderTrend(toNullableNumber(waterLatestReading?.temperature), waterPrevTemp)}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.temperature),
+                          waterPrevTemp,
+                        )}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-500">
                         {waterHumidityText}
-                        {renderTrend(toNullableNumber(waterLatestReading?.humidity), waterPrevHumidity)}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.humidity),
+                          waterPrevHumidity,
+                        )}
                       </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
@@ -1525,7 +1711,9 @@ export default function TodayPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))}
+                  onClick={() =>
+                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
+                  }
                   disabled={dayCycleOffsetDays === 0}
                   className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Ciclo siguiente"
@@ -1582,7 +1770,7 @@ export default function TodayPage() {
                   setRefreshError(
                     err instanceof Error
                       ? err.message
-                      : "No se pudieron cargar las lecturas."
+                      : "No se pudieron cargar las lecturas.",
                   );
                 } finally {
                   setIsRefreshing(false);
@@ -1613,7 +1801,9 @@ export default function TodayPage() {
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   {stat.label}
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">{stat.value}</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">
+                  {stat.value}
+                </p>
               </div>
             ))}
           </div>
@@ -1675,20 +1865,18 @@ export default function TodayPage() {
           </section>
         ) : null}
 
-        {!state.isLoading &&
-        !state.error &&
-        (!primaryPet || !primaryDevice) ? (
+        {!state.isLoading && !state.error && (!primaryPet || !primaryDevice) ? (
           <section className="surface-card freeform-rise px-6 py-5 text-sm text-slate-600">
             <p className="mb-3">
-              Aún no tienes todo el registro completo. Completa perfil,
-              mascota y dispositivo para ver el feed. 
-            </p> 
-            <Link 
-              href="/registro" 
-              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir al registro 
-            </Link> 
+              Aún no tienes todo el registro completo. Completa perfil, mascota
+              y dispositivo para ver el feed.
+            </p>
+            <Link
+              href="/registro"
+              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+            >
+              Ir al registro
+            </Link>
           </section>
         ) : null}
 
@@ -1749,8 +1937,8 @@ export default function TodayPage() {
                       {card.tone === "ok"
                         ? "Estable"
                         : card.tone === "warning"
-                        ? "Atención"
-                        : "Info"}
+                          ? "Atención"
+                          : "Info"}
                     </span>
                   </div>
                   <p className="text-sm text-slate-600">{card.description}</p>
@@ -1778,7 +1966,6 @@ export default function TodayPage() {
             </div>
           ) : null}
         </section>
-
       </div>
       {showGuide ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
@@ -1816,16 +2003,16 @@ export default function TodayPage() {
               </button>
               <Link
                 href="/registro"
-                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700" 
-                onClick={() => { 
-                  if (typeof window !== "undefined") { 
-                    window.localStorage.setItem("kittypau_guide_seen", "1"); 
-                  } 
-                  setShowGuide(false); 
-                }} 
-              > 
-                Completar registro 
-              </Link> 
+                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem("kittypau_guide_seen", "1");
+                  }
+                  setShowGuide(false);
+                }}
+              >
+                Completar registro
+              </Link>
             </div>
           </div>
         </div>
@@ -1833,7 +2020,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-
-
-
