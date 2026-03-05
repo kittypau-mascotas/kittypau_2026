@@ -9,6 +9,8 @@ import {
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
+export const runtime = "edge";
+
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
 const ALLOWED_PET_STATE = new Set([
   "created",
@@ -64,19 +66,28 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  const cacheHeaders = {
+    "Cache-Control": "private, max-age=60, stale-while-revalidate=300",
+  };
+
   if (!paginate) {
     logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
-    return NextResponse.json(data ?? []);
+    return NextResponse.json(data ?? [], { headers: cacheHeaders });
   }
 
   const nextCursor =
-    data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
+    data && data.length > 0
+      ? (data[data.length - 1]?.created_at ?? null)
+      : null;
 
   logRequestEnd(req, startedAt, 200, {
     count: data?.length ?? 0,
     next_cursor: nextCursor,
   });
-  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+  return NextResponse.json(
+    { data: data ?? [], next_cursor: nextCursor },
+    { headers: cacheHeaders },
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -90,14 +101,9 @@ export async function POST(req: NextRequest) {
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_post`;
   const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
   let body: Record<string, unknown>;
   try {
@@ -158,7 +164,7 @@ export async function POST(req: NextRequest) {
         req,
         400,
         "WEIGHT_OUT_OF_RANGE",
-        "weight_kg must be between 0 and 50"
+        "weight_kg must be between 0 and 50",
       );
     }
   }
@@ -175,7 +181,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_PET_STEP",
-      "Invalid pet_onboarding_step"
+      "Invalid pet_onboarding_step",
     );
   }
 

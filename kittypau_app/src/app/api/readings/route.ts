@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         req,
         400,
         "INVALID_LIMIT",
-        "limit must be between 1 and 1200"
+        "limit must be between 1 and 1200",
       );
     }
   }
@@ -41,7 +41,12 @@ export async function GET(req: NextRequest) {
   if (from) {
     const parsedFrom = new Date(from);
     if (Number.isNaN(parsedFrom.getTime())) {
-      return apiError(req, 400, "INVALID_FROM", "from must be a valid ISO date");
+      return apiError(
+        req,
+        400,
+        "INVALID_FROM",
+        "from must be a valid ISO date",
+      );
     }
   }
 
@@ -56,7 +61,12 @@ export async function GET(req: NextRequest) {
     const fromMs = new Date(from).getTime();
     const toMs = new Date(to).getTime();
     if (fromMs > toMs) {
-      return apiError(req, 400, "INVALID_RANGE", "from must be before or equal to to");
+      return apiError(
+        req,
+        400,
+        "INVALID_RANGE",
+        "from must be before or equal to to",
+      );
     }
   }
 
@@ -76,7 +86,9 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("readings")
-    .select("*")
+    .select(
+      "id,device_id,recorded_at,weight_grams,water_ml,flow_rate,temperature,humidity,light_percent,battery_level",
+    )
     .eq("device_id", deviceId)
     .order("recorded_at", { ascending: false })
     .limit(Number.isFinite(limit) ? limit : 50);
@@ -103,7 +115,9 @@ export async function GET(req: NextRequest) {
   }
 
   const nextCursor =
-    data && data.length > 0 ? data[data.length - 1]?.recorded_at ?? null : null;
+    data && data.length > 0
+      ? (data[data.length - 1]?.recorded_at ?? null)
+      : null;
 
   logRequestEnd(req, startedAt, 200, {
     count: data?.length ?? 0,

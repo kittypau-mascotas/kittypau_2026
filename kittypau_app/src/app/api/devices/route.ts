@@ -10,6 +10,8 @@ import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
 
+export const runtime = "edge";
+
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
 
@@ -27,7 +29,7 @@ function triggerBackgroundHealthCheck(req: NextRequest) {
       headers: { "x-bridge-token": token },
       cache: "no-store",
       signal: controller.signal,
-    }
+    },
   )
     .catch(() => {
       // Best-effort trigger only.
@@ -68,19 +70,28 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  const cacheHeaders = {
+    "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
+  };
+
   if (!paginate) {
     logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
-    return NextResponse.json(data ?? []);
+    return NextResponse.json(data ?? [], { headers: cacheHeaders });
   }
 
   const nextCursor =
-    data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
+    data && data.length > 0
+      ? (data[data.length - 1]?.created_at ?? null)
+      : null;
 
   logRequestEnd(req, startedAt, 200, {
     count: data?.length ?? 0,
     next_cursor: nextCursor,
   });
-  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+  return NextResponse.json(
+    { data: data ?? [], next_cursor: nextCursor },
+    { headers: cacheHeaders },
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -94,14 +105,9 @@ export async function POST(req: NextRequest) {
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:devices_post`;
   const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
   let body: {
     pet_id?: string;
@@ -139,7 +145,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "MISSING_FIELDS",
-      "device_id, device_type, and pet_id are required"
+      "device_id, device_type, and pet_id are required",
     );
   }
 
@@ -148,7 +154,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_DEVICE_CODE",
-      "device_id must match KPCL0000 format"
+      "device_id must match KPCL0000 format",
     );
   }
 
@@ -169,7 +175,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "BATTERY_OUT_OF_RANGE",
-      "battery_level must be between 0 and 100"
+      "battery_level must be between 0 and 100",
     );
   }
 
@@ -184,7 +190,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_PLATE_WEIGHT",
-      "plate_weight_grams must be between 1 and 5000"
+      "plate_weight_grams must be between 1 and 5000",
     );
   }
 
@@ -227,7 +233,7 @@ export async function POST(req: NextRequest) {
           req,
           500,
           "SUPABASE_ERROR",
-          retry.error?.message ?? "RPC failed"
+          retry.error?.message ?? "RPC failed",
         );
       }
 
@@ -253,7 +259,7 @@ export async function POST(req: NextRequest) {
           ...retry.data,
           plate_weight_grams: payload.plate_weight_grams,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);
@@ -281,7 +287,6 @@ export async function POST(req: NextRequest) {
       ...data,
       plate_weight_grams: payload.plate_weight_grams,
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
-
