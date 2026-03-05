@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 const navItems = [
@@ -24,6 +24,7 @@ export default function AppNav() {
   const [devices, setDevices] = useState<Array<{ id: string; device_id: string; pet_id?: string | null }>>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [accountType, setAccountType] = useState<"admin" | "tester" | "client">(
     "client"
@@ -142,6 +143,23 @@ export default function AppNav() {
     };
   }, [pathname, adminGeneratedAt]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [menuOpen]);
+
   if (pathname?.startsWith("/admin")) {
     const isAdminHome = pathname === "/admin";
     const isJavoSection = pathname?.startsWith("/admin/javo");
@@ -172,6 +190,12 @@ export default function AppNav() {
             <span className="app-nav-admin-pill">Rol: {adminRole}</span>
             <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
             <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
+            <Link href="/admin" className="app-nav-admin-pill app-nav-admin-link">
+              Dashboard
+            </Link>
+            <Link href="/admin/javo" className="app-nav-admin-pill app-nav-admin-link">
+              Javo
+            </Link>
             <Link href="/today" className="app-nav-admin-pill app-nav-admin-link">
               Volver a la app
             </Link>
@@ -220,7 +244,7 @@ export default function AppNav() {
           })}
         </div>
 
-        <div className="relative app-nav-profile-menu">
+        <div ref={menuRef} className="relative app-nav-profile-menu">
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
