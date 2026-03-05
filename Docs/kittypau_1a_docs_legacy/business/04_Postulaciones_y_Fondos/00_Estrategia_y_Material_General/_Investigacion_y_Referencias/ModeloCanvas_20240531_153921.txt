@@ -1,0 +1,606 @@
+ 
+MODELO CANVAS
+Socios clave Actividad clave Propuesta de valor Relación con los clientes Segmento de clientes
+Para mejorar la satisfacción de
+los clientes de Kitty-Paw,
+algunas alianzas estratégicas
+que podrían ser beneficiosas
+son con veterinarios y clínicas
+veterinarias y así establecer
+alianzas para integrar sus
+conocimientos y
+recomendaciones directamente
+en la app. Esto añadiría un
+componente profesional de
+salud para las mascotas y haría
+que los dueños confíen más en
+el servicio. Alianzas con tiendas
+de mascotas reconocidas
+podrían permitir descuentos,
+suscripciones de alimentos,
+accesorios recomendados
+según el perfil de la mascota,
+etc. Esto ampliaría el
+ecosistema de servicios.
+Colaborar con ONG's podría
+permitir campañas conjuntas de
+concientización y tenencia
+responsable de mascotas,
+además de fomentar las
+adopciones responsables.
+Alianzas de co-marketing con
+marcas reconocidas podría dar
+más visibilidad al producto y
+confianza a los usuarios. En
+resumen, buscar alianzas con
+actores clave de la industria de
+mascotas agregaría valor,
+credibilidad y oportunidades
+extras que mejorarían la
+propuesta de Kitty-Paw y la
+Para los segmentos de
+Personas Dueñas de Mascotas
+y Personas Nativas
+Tecnológicas, las acciones
+clave en la producción y diseño
+incluyen el desarrollo del
+dispositivo inteligente, desde la
+selección de los componentes
+hasta la comunicación de los
+sensores y el almacenamiento
+de información en servicios en
+la nube para su posterior
+implementación en la
+aplicación. También se
+contempla la creación del
+prototipo y pruebas para
+garantizar su óptimo
+funcionamiento.
+Posteriormente, se procede a la
+fabricación en serie del
+dispositivo para satisfacer la
+demanda del mercado, junto
+con el diseño y desarrollo de la
+aplicación móvil, asegurando su
+compatibilidad con diversos
+sistemas operativos y
+dispositivos. Se integran
+funcionalidades clave como el
+monitoreo del consumo de
+agua y alimento, análisis de
+datos y notificaciones, todo ello
+sometido a pruebas
+exhaustivas para garantizar su
+eficacia y facilidad de uso. En
+este punto, se requerirá la
+contratación de personal
+experto para asesorar en el
+Propuesta de valor para
+personas dueñas de mascotas:
+Nos enfocamos en proporcionar
+una solución innovadora y
+tecnológicamente avanzada
+para el cuidado y bienestar de
+las mascotas, transformando el
+concepto de tenencia
+responsable en un monitoreo
+digital de fácil uso. A diferencia
+de otros productos en el
+mercado, que mayormente
+consisten en dispensadores de
+comida automatizados, nuestro
+dispositivo (plato inteligente) no
+solo ofrece una manera
+conveniente y precisa de
+supervisar el consumo de agua
+y alimento de las mascotas,
+sino que también se adapta a
+las necesidades específicas de
+cada animal mediante perfiles
+personalizados basados en
+edad, raza, y condiciones de
+salud, entre otros aspectos.
+Con Kitty-Paw, los clientes
+pueden tener la certeza de que
+están brindando el más alto
+nivel de cuidado y monitoreo
+del bienestar de sus mascotas,
+gracias a la simplicidad e
+intuición de la aplicación y su
+integración con el dispositivo.
+Propuesta de valor para
+personas nativas tecnológicas:
+Para los Millennials y aquellos
+naturalmente inclinados hacia
+Para los segmentos de clientes
+Dueños de Mascotas y Nativos
+Digitales, buscamos establecer
+una relación ágil y digital,
+aprovechando al máximo las
+herramientas y plataformas
+tecnológicas disponibles, donde
+la interacción sea
+principalmente automatizada.
+Queremos ser percibidos como
+una marca innovadora y
+moderna, que comprende y se
+adapta a las preferencias y
+hábitos tecnológicos de estos
+dos segmentos. Los medios por
+los cuales buscamos
+relacionarnos con este cliente
+pueden incluir comunicación a
+través de redes sociales,
+mensajes instantáneos, correos
+electrónicos automatizados y
+notificaciones push en la
+aplicación móvil. Estos medios
+pueden conllevar costos
+asociados, como el
+mantenimiento de perfiles en
+redes sociales, el envío de
+correos electrónicos masivos y
+el desarrollo de estrategias de
+marketing digital. Otro tipo de
+costo asociado a la relación con
+el cliente y su fidelización está
+vinculado con asesorías UX/UI
+para mejorar la experiencia del
+cliente en el uso de la
+aplicación Kitty-Paw. Segmento
+Empresas de Servicios y
+La construcción de nuestro
+negocio y la selección de
+clientes se fundamentan en
+cuatro fenómenos importantes
+a nivel nacional, los cuales
+también ayudan a comprender
+la proyección de nuestra
+propuesta. En primer lugar, la
+baja sostenida en la tasa de
+natalidad durante la última
+década, según datos del INE.
+En segundo lugar, el
+incremento en la adopción de
+mascotas, según el Registro
+Nacional de Mascotas. En
+tercer lugar, el aumento en el
+número de tiendas de mascotas
+desde 2019, con un crecimiento
+del sector que alcanza el 225%,
+según informa el Diario
+Financiero. Y por último, la
+creciente adopción de
+soluciones digitales
+innovadoras basadas en el
+Internet de las Cosas (IoT)
+tanto en empresas como en
+personas, según el Diario
+Financiero. Segmento de
+Personas Dueñas de Mascotas:
+Personas naturales de 18 a 80
+años, sin distinción de género,
+económicamente solventes y
+responsables de sus mascotas,
+ya sean perros o gatos. Se
+enfocan principalmente en la
+Región Metropolitana de Chile,
+aunque también consideramos
+satisfacción del cliente usando
+el dispositivo y la app.
+diseño del prototipo óptimo y el
+funcionamiento de la aplicación.
+En cuanto a las horas de
+trabajo estimadas para un año,
+se calcula que este desarrollo
+puede requerir 5 horas
+semanales, 20 horas
+mensuales o 240 horas
+anuales, considerando el
+avance que se ha logrado en el
+prototipo. Para la venta y
+publicidad, será necesario
+registrar en diversas redes
+sociales y diseñar una
+propuesta de marketing
+innovadora, enfocada
+especialmente en los clientes
+más nativos digitales, dado que
+nuestras mayores ganancias
+están relacionadas con los
+medios digitales. En cuanto al
+segmento de Empresas de
+Servicios y Productos para
+Mascotas, es necesario
+aumentar la producción y
+establecer una red logística
+eficiente para la distribución a
+gran escala. Además, se debe
+negociar acuerdos comerciales
+sólidos y contratos de
+distribución con estas
+empresas. Desarrollar
+estrategias de marketing
+empresarial, como participación
+en ferias comerciales y
+presentaciones comerciales,
+será crucial. Por último, ofrecer
+un servicio postventa
+especializado para las
+empresas garantizará
+relaciones comerciales
+duraderas y sólidas.
+la tecnología, nuestra oferta
+representa la fusión perfecta
+entre la pasión por la
+innovación y el amor por las
+mascotas, ofreciendo una
+solución completa y
+contemporánea para el cuidado
+de sus animales domésticos. A
+diferencia de los productos que
+simplemente automatizan la
+entrega de comida a las
+mascotas, nuestro dispositivo
+(plato inteligente) y la aplicación
+móvil proporcionan una
+experiencia totalmente nueva y
+moderna para monitorear y
+gestionar el consumo de agua y
+alimento de los animales,
+haciendo uso de técnicas de
+aprendizaje automático para el
+análisis de datos. Con sensores
+de peso, temperatura y perfiles
+personalizados de las
+mascotas, los clientes pueden
+acceder a datos precisos en
+tiempo real e históricos sobre el
+comportamiento alimenticio de
+sus animales, todo desde sus
+dispositivos móviles. Además,
+Kitty-Paw les permite crear
+perfiles detallados para cada
+mascota y recibir
+recomendaciones
+personalizadas para mejorar su
+salud y bienestar. Propuesta de
+valor para las empresas de
+servicios y productos para
+mascotas: Nos enfocamos en
+ofrecer un producto innovador y
+atractivo, con especial atención
+en la optimización de los costos
+de producción. Nuestro objetivo
+es simplificar el proceso de
+distribución y adquisición al por
+mayor del dispositivo (plato
+Productos para Mascotas: Con
+este segmento de clientes,
+buscamos establecer una
+relación profesional y
+colaborativa, enfocada en el
+beneficio mutuo y el
+crecimiento conjunto.
+Deseamos ser percibidos como
+un socio estratégico que ofrece
+soluciones innovadoras y
+efectivas para ayudarles a
+alcanzar sus objetivos
+comerciales mediante la venta
+del dispositivo Kitty-Paw. Los
+medios por los cuales
+buscamos relacionarnos con
+este cliente pueden incluir
+reuniones comerciales
+presenciales, comunicación a
+través de correo electrónico y
+llamadas telefónicas. Estos
+medios pueden tener costos
+asociados, como los gastos de
+viaje y hospedaje para asistir a
+eventos, el desarrollo de
+material promocional y la
+contratación de personal para
+la atención al cliente y la
+gestión de relaciones
+comerciales.
+a clientes provenientes de otras
+regiones del país. Según el
+Boletín Técnico de Estimación
+de Población Canina y Felina
+del 2022, el 89% de los
+encuestados indica que la
+compañía es la principal razón
+para tener mascotas, y un 92%
+las percibe como miembros
+adicionales de su familia.
+Además, un estudio de GFK
+revela que el 64% de los
+hogares en Chile posee
+mascotas y el 70% de ellos se
+ubica en la Región
+Metropolitana. Segmento de
+Personas Nativas
+Tecnológicas: Personas
+naturales, sin distinción de
+género, nacidas entre 1981 y
+1997, clasificadas como
+Millennials, quienes se
+caracterizan por su adaptación
+tecnológica en el uso de
+aplicaciones móviles y
+productos de Internet de las
+Cosas (IoT) relacionados con el
+bienestar y la tenencia
+responsable de mascotas.
+Según el estudio "Hábitos de
+consumo de los dueños de
+mascotas en Chile" de GFK en
+2023, el 64% de los Millennials
+tiene mascota. Este segmento
+aborda el bienestar de las
+mascotas desde una
+perspectiva tecnológica e
+innovadora. Segmento
+Empresas de Servicios y
+Productos para Mascotas:
+Nuestros clientes también
+incluyen empresas del rubro de
+servicios y productos para
+mascotas, tales como clínicas
+veterinarias, pet shops,
+Recursos clave Canales
+Segmento Personas Dueñas de
+Mascotas: Para satisfacer las
+necesidades de este segmento,
+requerimos recursos físicos
+como placas electrónicas de
+desarrollo como la ESP8266,
+sensores de presión,
+temperatura, humedad y luz, de
+calidad para el funcionamiento
+del dispositivo Kitty-Paw y un
+espacio adecuado para la
+producción, como un taller. En
+cuanto a los recursos humanos,
+precisamos personal
+capacitado en configuración e
+implementación de protocolos
+de comunicación MQTT para
+integración en la App, diseño y
+fabricación, así como
+veterinarios para garantizar la
+seguridad del producto. Y en
+términos financieros,
+necesitamos invertir en
+investigación, marketing dirigido
+a dueños de mascotas y
+alianzas con negocios
+relacionados. Segmento
+Personas Nativas
+Tecnológicas: Este segmento
+tiene una alta exigencia en la
+experiencia con la aplicación;
+debemos ser atentos a las
+necesidades y demanda de
+recursos físicos necesarios
+para sostener el
+funcionamiento, como equipos
+de última generación para el
+desarrollo de la aplicación móvil
+y servidores para gestionar los
+datos de Kitty-Paw. En cuanto a
+los recursos humanos,
+requerimos desarrolladores de
+software especializados y
+diseñadores de experiencia de
+usuario. Financieramente,
+inteligente), facilitando así su
+venta por parte de empresas
+del sector, como clínicas
+veterinarias y tiendas
+especializadas en mascotas.
+Esto garantiza una operación
+fluida y eficiente, permitiendo
+que las empresas accedan
+fácilmente al producto y lo
+pongan a disposición de sus
+clientes de manera rápida.
+Reconocemos que el verdadero
+valor agregado reside en los
+servicios y membresías
+ofrecidos a través de nuestra
+aplicación, lo que representa
+una oportunidad importante
+para generar ingresos
+adicionales y fomentar la
+fidelidad de los clientes.
+Nuestro modelo de negocio se
+basa en dos productos: la venta
+del dispositivo y la suscripción a
+la aplicación para acceder a un
+servicio de análisis y alertas
+más avanzado. Habrá también
+un servicio básico gratuito de
+monitoreo, accesible para
+todos. Tanto para el segmento
+de Personas Dueñas de
+Mascotas como para Personas
+Nativas Tecnológicas, la venta
+del dispositivo, en caso de ser
+presencial, podrá realizarse a
+través de pet shops, clínicas
+veterinarias y otros
+establecimientos
+especializados en productos
+para mascotas, donde los
+clientes puedan ver y probar el
+producto antes de adquirirlo.
+Por otro lado, la compra del
+dispositivo también podrá
+hacerse vía online, a través de
+nuestra plataforma web propia
+de Kitty-Paw o mediante
+comunicación por Instagram, en
+este último caso se añadirá el
+costo de envío del producto.
+Para estos segmentos, la venta
+del servicio de análisis y alertas
+de Kitty-Paw se llevará a cabo
+mediante la suscripción a una
+membresía de la aplicación, la
+cual se basará en un análisis
+personalizado vinculando la
+información del perfil de la
+mascota con los datos
+obtenidos por el dispositivo. Por
+ejemplo, cambios significativos
+en los ciclos de consumo de
+alimento o alertas relacionadas
+con visitas al veterinario
+(vacunas, antiparasitarios, etc.).
+Las principales formas de dar a
+criaderos, hoteles para
+mascotas, empresas de
+alimentos y accesorios para
+mascotas, entre otras. Estas
+empresas buscan soluciones
+tecnológicas innovadoras que
+les permitan optimizar sus
+operaciones, mejorar la
+experiencia de sus clientes
+(dueños de mascotas), y
+mantenerse a la vanguardia en
+un mercado cada vez más
+competitivo y exigente.
+necesitamos invertir en
+tecnología, marketing digital y
+desarrollo continuo de la
+aplicación. Segmento
+Empresas de Servicios y
+Productos para Mascotas: Para
+atender a estas empresas se
+requiere de un fuerte plan de
+marketing y una infraestructura
+logística eficiente para cumplir
+con la demanda. En términos
+de recursos humanos,
+requerimos personal de
+producción, ventas y logística.
+Y para acceder a los recursos
+financieros, debemos invertir en
+equipos de producción,
+establecer relaciones
+comerciales sólidas y de
+conocimiento con otras marcas.
+conocer Kitty-Paw para estos
+dos tipos de clientes serán
+principalmente digitales, a
+través de redes sociales, reels,
+publicaciones en Instagram,
+shorts, videos y compra de
+espacios publicitarios en
+canales de streaming como
+YouTube y Twitch. Nuestra
+principal fuente de ingresos
+será mediante las suscripciones
+a la aplicación y también a
+través de acuerdos de
+publicidad y colaboraciones con
+marcas relacionadas con
+mascotas y estilo de vida para
+incentivar el uso de la
+aplicación. Esto podría incluir
+patrocinios de contenido en
+nuestra aplicación móvil,
+colaboraciones con influencers
+en redes sociales y espacios
+publicitarios en nuestro sitio
+web. Segmento Empresas de
+Servicios y Productos para
+Mascotas: Para este segmento,
+la venta será únicamente del
+dispositivo, y se realizará a
+través de canales de
+comunicación como correo
+electrónico, llamadas y ventas
+presenciales, lo que permitirá
+concretar diversos acuerdos de
+compra con las empresas
+interesadas. En este segmento,
+la forma de dar a conocer el
+producto será mediante la
+comunicación con las áreas de
+ventas de estas empresas,
+coordinación de reuniones para
+la presentación del producto y
+la negociación de acuerdos
+económicos para su
+distribución y venta. También
+consideramos que la publicidad
+en redes sociales puede
+potenciar la comunicación de
+estas empresas e interés con
+Kitty-Paw.
+Estructura de costes Vías de ingresos
+El total de Costos fijos mensuales estimados de Kitty-Paw en un mes es $191.666.
+Este monto se obtiene sumando los valores mensuales correspondientes a
+"Habilitación de infraestructura" ($30.000) y "Capital de trabajo (2 personas)"
+($161.667). Habilitación de infraestructura: • Todos los meses (mes 1 a mes 12) con
+un monto de $30.000 cada mes. Capital de trabajo (2 personas): • Todos los meses
+(mes 1 a mes 12) con un monto de $161.667 cada mes. El total de Costos variables
+estimados de Kitty-Paw varía dependiendo del mes en cuestión, como esta es una
+proyección a 1 año podemos plantear lo siguiente: Se presenta el desglose de los
+costos variables mensuales según la tabla de gastos que se encuentra en el Canvas.
+Asistencia técnica y asesoría en gestión: • Meses 1, 6 y 9 ($90.000 cada mes)
+Capacitación: • Mes 1 ($100.000) Gastos de formalización: • Mes 1 ($30.000)
+Acciones de marketing: • Meses 6 al 12 ($16.667 cada mes) Activos: • Meses 1 al 4
+($175.000 cada mes) De igual manera el promedio de gastos variables mensuales
+en un año es de $100.000. Cabe mencionar que estos costos variables son
+estimados y pueden variar en la práctica dependiendo de los requerimientos
+específicos del proyecto Kitty-Paw cada mes.
+Para el Segmento Dueños de Mascotas y Nativos Digitales, la utilización de la
+aplicación está condicionada a la compra del dispositivo. Una vez adquirido el
+dispositivo, tendrán dos opciones de suscripción: una gratuita y otra de pago. La
+opción de pago incluirá un análisis personalizado de la mascota y acceso a datos
+históricos, lo que permitirá el procesamiento y análisis del consumo de agua,
+alimento, temperatura del entorno y su correlación con el perfil de la mascota. Esta
+será la opción por la cual estarán más dispuestos a pagar una parte del segmento de
+dueños de mascotas y, en su gran mayoría, los nativos digitales. Los clientes podrán
+inicialmente descargar la aplicación de forma gratuita y conectarla a un dispositivo
+Kitty-Paw. Si el cliente quisiera tener dos o más dispositivos por aplicación, deberá
+considerar un costo adicional que estará incluido en la versión de pago con acceso a
+análisis de datos de la mascota. Nuestra aplicación estará vinculada con entidades
+bancarias para generar pagos seguros que den confianza a nuestros clientes y
+faciliten la llegada de nuevos ingresos, evitando la pérdida de potenciales clientes
+debido a un funcionamiento engorroso en el proceso de suscripción a la aplicación y
+pago online del dispositivo. Por otro lado, la compra presencial del dispositivo se
+adaptará a las características de pago de la empresa encargada de su venta y
+distribución. Hoy en día, lo más cercano o similar a Kitty-Paw son los dispensadores
+de alimentos, y los clientes pagan por un producto que únicamente automatiza la
+entrega de alimento a las mascotas. La vinculación con las aplicaciones tiene
+relación con la definición de un horario para dispensar el alimento, reproducción de
+sonidos y grabaciones de los dueños para las mascotas. Para el Segmento
+Empresas de Servicios y Productos para Mascotas, estas tendrán acceso a la
+compra del dispositivo para la venta y distribución, y según las características de los
+acuerdos con las empresas será lo que estén dispuestas a gastar. La venta del
+dispositivo a las empresas tendrá dos modelos: la venta al por mayor del dispositivo
+y la colocación del dispositivo en tiendas con una ganancia de un porcentaje por
+venta. Tanto la definición del valor como los porcentajes de ganancia estarán sujetos
+a los acuerdos con las empresas.
+RUT POSTULANTE 
+17402237-2
+NOMBRE POSTULANTE 
+Mauricio Cristian
+Cárcamo Díaz
+RUT PERSONA 
+17402237-2
+NOMBRE PERSONA 
+MAURICIO CRISTIAN 
+CÁRCAMO DÍAZ 
+CONVOCATORIA - REGIÓN METROPOLITANA - ABRIL
+- 2024
+CAPITAL SEMILLA
+EMPRENDE 2024 - REGION
+METROPOLITANA

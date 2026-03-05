@@ -1,0 +1,936 @@
+
+bases
+https://www.sercotec.cl/wp-content/uploads/2023/04/Bases-SEMILLA-EMPRENDE-Metropo litana-2023-V%C2%B0B%C2%B0.pdf
+
+
+
+
+ 
+ 
+
+
+IDEAS DE FUNCIONAMIENTO:
+
+Posible funcionamiento:
+Control de peso modular, dispositivo plegable. Cómo pesar a la mascota, en el perfil debe estar la opción de pesar a tu mascota.
+
+Más que medir hay que estimar.
+
+Posible proyección de  peso con imágenes tanto para el agua como para el alimento.
+
+Fluctuaciones de peso de los sensores al momento de que el animal come. Aumento de presión en el plato o dispositivo.
+Reporte semanal en Whatsapp con información de cantidad de alimento, bebida y entorno.
+
+
+DESCRIPCION SEMILLA 
+
+Kitty-Paw es la combinación de un dispositivo IoT (Internet de las Cosas) y una aplicación móvil para mejorar el bienestar y potenciar la tenencia responsable de mascotas. Este dispositivo se compone de 2 platos inteligentes que tienen integrados distintos sensores para medir el consumo de agua y alimento de tu mascota, como tambien el entorno en el cual habita por medio de sensores de temperatura y humedad. Estos sensores envian los datos a la aplicacion, donde son vinculados con la informacion disponible en el perfil de la mascota Video en youtube.
+
+
+Idea o Definición del proyecto:
+Crear un plato ( o dispositivo)  para el consumo de agua y alimento de las mascotas que mediante la utilización de distintos sensores de peso ( o presion ) y una cámara tecnología del Internet de las Cosas ( Iot ) para el monitoreo del cuidado y el fomento del bienestar de nuestras mascotas. Desarrollar una aplicación móvil para el monitoreo del consumo de agua y alimento de mascotas mediante tecnología IoT, que también incluye la creación de perfiles personalizados para cada mascota, considerando edad, raza y posibles enfermedades. Esta aplicación se enfoca en mejorar el cuidado y bienestar de las mascotas, adaptándose tanto a dueños tradicionales de mascotas como a usuarios tecnológicamente avanzados.
+
+CRITERIO MODELO CANVAS p69.
+
+
+
+
+Clientes:
+
+Cliente1: 
+Segmento Personas Dueños de mascotas :  Personas naturales, entre 18 y 80 años, independiente de su género,  económicamente solventes responsables de sus mascotas, ya sea perros o gatos, principalmente de la Región Metropolitana, aunque también se considera la posibilidad de que provengan de otras regiones de Chile.
+El Boletín Técnico de Estimación de Población Canina y Felina del 2022, elaborado por el programa Mascota Protegida de la SUBDERE, revela que el 89% de los encuestados considera  que es “ la compañía” la principal razón para tener mascotas, y un 92% las percibe como “miembros adicionales de la familia”. Por otro lado, la consultora GFK revela que el 64% de los hogares en Chile tiene mascotas y que el 70% de ellos están en la Región Metropolitana.
+
+Cliente 2:
+Segmento Personas Nativas Tecnológicamente:   Personas que estén adaptadas tecnológicamente en la utilización de Apps en celulares móviles, que conozcan o utilicen productos de IoT (internet de las cosas) relacionado con el bienestar y tenencia responsable de mascotas.
+El estudio "Hábitos de consumo de los dueños de mascotas en Chile" realizado por la consultora GFK en 2023, demuestra que el 72% de los encuestados utiliza aplicaciones móviles relacionadas con sus mascotas, y un 65% está dispuesto a comprar productos IoT para mejorar su cuidado, lo que perfila a un cliente que entiende el  bienestar y la tenencia responsable de nuestras mascotas  desde una perspectiva tecnológica. Esto último permite dar soluciones tecnológicas de monitoreo en conjunto con la incorporación procesos de Machine Learning, Data Science y ahora último IAs, para el cuidado y  la tenencia responsable de nuestras mascotas.
+
+
+
+
+
+Elemento Diferenciador:
+
+
+
+ 
+
+Propuesta de valor segmento Personas Dueños de mascotas : nuestra aplicación ofrece una solución intuitiva y fácil de usar que permite al usuario monitorear los ciclos de alimentos y consumo de agua de sus mascotas, como también crear perfiles detallados de estas, teniendo en cuenta sus edades, razas, y posibles enfermedades, entre otras variables. Además, la aplicación proporciona recomendaciones personalizadas basadas en datos recopilados y analizados a través de procesos de Data Science, con el objetivo de fomentar y mejorar el cuidado , bienestar  y tenencia responsable de sus mascotas.
+
+Propuesta de valor Personas nativas tecnológicamente adaptadas, nuestra aplicación ofrece una experiencia más sofisticada al integrar tecnologías de vanguardia como Machine Learning, Data Science y IA. Esto les permite acceder a funciones avanzadas de monitoreo y análisis de datos, así como recibir recomendaciones más precisas y personalizadas para el cuidado de sus mascotas. La aplicación también les ofrece la posibilidad de interactuar con su mascota de manera remota a través de dispositivos IoT, lo que les brinda un mayor nivel de control y comodidad en su relación con sus mascotas.
+
+Reconocemos a las mascotas como miembros de la familia, por lo que nuestra aplicación permite a los usuarios crear perfiles detallados de sus compañeros y monitorear su consumo de alimentos y agua de manera intuitiva. Además, mediante procesos de Data Science, proporcionamos recomendaciones personalizadas para mejorar su bienestar, adaptándonos tanto a dueños tradicionales como a aquellos que valoran las innovaciones tecnológicas.Nos centramos en ofrecer una experiencia sofisticada que aprovecha tecnologías de vanguardia como Machine Learning, Data Science e IA, permitiendo un monitoreo avanzado y una interacción remota con las mascotas a través de dispositivos IoT. 
+Hablar de potenciar el vínculo o que la utilización del producto no haces que pierdas el vínculo con tu mascota, sino ayuda a estar en el cuidado activo y preventivo de tu mascota. 
+
+Medios de Distribución:
+
+
+
+Dado que nuestro producto es un plato inteligente (cambiar plato inteligente por dispositivo darle un nombre del producto ) con sensores de peso y tecnología IoT, es importante ajustar nuestra estrategia de distribución para garantizar que los clientes tengan acceso al dispositivo y a la aplicación móvil que lo acompaña. A continuación, detallo cómo los medios de distribución propuestos se adaptan a las características de nuestro producto:
+
+Para el segmento de Clientes Dueños de Mascotas:
+
+Canal Presencial:
+Estableceremos puntos de venta físicos en tiendas de mascotas (que el producto este en vitrina o con un lugar en la tienda , exhibido .) y centros veterinarios en la Región Metropolitana y otras regiones de Chile. Estos puntos de venta estarán estratégicamente ubicados para garantizar su accesibilidad a los clientes, especialmente aquellos económicamente solventes responsables de sus mascotas, definir comunas en la region metropolitana (buscar estudio que diga que comuna en stgo o rm tenga mayor consumo de venta de productos para mascotas enfocados en cuidado y bienestar)
+Participaremos en eventos y ferias relacionadas con mascotas, donde realizaremos demostraciones en vivo de nuestro producto y proporcionaremos información detallada sobre su funcionamiento. Esto permitirá interactuar directamente con los clientes y generar interés en nuestra solución, adaptándonos al vínculo afectivo que tienen con sus mascotas.
+
+Canal Virtual:
+Desarrollaremos una aplicación móvil intuitiva y fácil de usar que servirá como plataforma principal para la venta y configuración de nuestro plato inteligente. Esta aplicación estará disponible para su descarga en las tiendas de aplicaciones más populares, adaptándose al uso generalizado de dispositivos móviles por parte de este segmento.
+Implementaremos una página web donde los clientes puedan obtener información detallada sobre nuestro producto, realizar compras en línea y acceder a soporte técnico. Esta plataforma será especialmente útil para aquellos clientes que prefieran investigar antes de comprar o que deseen realizar compras desde sus computadoras.
+
+Para el segmento de Clientes Nativos Tecnológicamente:
+
+Canal Presencial:
+
+Aunque este segmento puede estar más orientado hacia la tecnología, aún podríamos establecer puntos de venta físicos en ubicaciones estratégicas como tiendas de tecnología o centros comerciales que atraigan a usuarios tecnológicamente avanzados.Retail ( online  por medio del retail)
+Asistiremos a eventos y ferias relacionadas con tecnología y mascotas, donde podremos demostrar las características avanzadas de nuestro producto y destacar su integración con la tecnología IoT.
+Vínculo con centros de estudios universitarios para potenciar el aprendizaje  o posibles modelos de deteccion de enfermedades por medio de marchin learnign y areas veterinarias.
+
+Canal Virtual:
+
+La aplicación móvil será el canal principal para este segmento, ya que les brindará acceso a funciones avanzadas de monitoreo y análisis de datos. Esta aplicación aprovechará tecnologías como Machine Learning, Data Science e IA para ofrecer recomendaciones personalizadas y una experiencia sofisticada.(poner atención a la tecnología, no es automatizar el cuidado de tu mascota es poder estar ahi , tenencia responsable.)
+Mantendremos una fuerte presencia en redes sociales, especialmente en plataformas como Instagram y Facebook, donde este segmento suele estar activo. Publicaremos contenido relevante y promocionaremos nuestro producto para mantenernos en contacto con nuestros clientes y generar interés en nuestra solución tecnológica.
+
+Relación con los Clientes:
+
+
+
+
+
+
+
+Para cada tipo de cliente descrito, nuestra empresa buscará establecer relaciones sólidas que promuevan la fidelización y satisfacción del cliente. Consideraremos los siguientes aspectos:
+
+Clientes Dueños de Mascotas:
+
+Relación Personalizada a través de la Aplicación Móvil: La aplicación móvil permitirá crear perfiles personalizados para cada mascota, lo que nos permitirá ofrecer recomendaciones y sugerencias adaptadas a las necesidades específicas de cada animal. Además, la aplicación proporcionará actualizaciones regulares sobre el consumo de alimentos y agua de las mascotas, lo que ayudará a los dueños a monitorear su bienestar de manera efectiva. Esta relación personalizada busca establecer un vínculo emocional con los clientes, mostrándoles que nos preocupamos por el bienestar de sus mascotas.
+
+Soporte Técnico y Atención al Cliente: A través de la página web y la aplicación móvil, ofreceremos soporte técnico y atención al cliente para resolver cualquier duda o problema que puedan tener los usuarios. Esto incluirá tutoriales, guías de uso y asistencia en línea para garantizar una experiencia sin problemas con nuestro producto.(tutoriales en youtube, tik tok.) Esta relación de servicio al cliente busca generar confianza y satisfacción en los usuarios, lo que puede llevar a una mayor fidelización y recomendación del producto.
+
+Clientes Nativos Tecnológicamente:
+
+Interacción Avanzada a través de la Aplicación Móvil: Para este segmento de clientes, la aplicación móvil ofrecerá una experiencia avanzada, aprovechando tecnologías como Machine Learning, Data Science e IA para proporcionar recomendaciones personalizadas y análisis detallados del comportamiento de las mascotas. Además, la aplicación permitirá la interacción remota con dispositivos IoT, lo que brindará un mayor nivel de control y comodidad en la relación con sus mascotas. Esta relación avanzada apunta a satisfacer las expectativas de los usuarios tecnológicamente avanzados y a mantener su interés en nuestro producto.
+
+Actualizaciones y Mejoras Continuas: Nos comprometemos a proporcionar actualizaciones regulares de software y mejoras en la funcionalidad de nuestro producto, basadas en retroalimentación de los usuarios y avances tecnológicos. Esta relación de innovación y mejora continua busca mantener la relevancia de nuestro producto en un mercado tecnológicamente cambiante y satisfacer las demandas de nuestros clientes más exigentes.
+
+Costos Asociados:
+
+Si bien algunos medios de relación con el cliente, como el soporte técnico y la atención al cliente, pueden tener costos asociados en términos de recursos humanos y tecnológicos, consideramos que estos son necesarios para garantizar la satisfacción del cliente y la fidelización a largo plazo. Invertir en la experiencia del cliente puede resultar en beneficios significativos en términos de lealtad de marca y recomendación del producto.
+En resumen, nuestra empresa se compromete a establecer relaciones sólidas y personalizadas con cada tipo de cliente, utilizando herramientas tecnológicas y estrategias de servicio al cliente para satisfacer sus necesidades y promover la fidelización de la compra.
+Ingresos:
+
+
+
+Ingresos:
+
+Nuestro negocio generará ingresos principalmente a través de la venta de productos y servicios relacionados con nuestro plato inteligente para mascotas y la aplicación móvil que lo acompaña. Considerando las propuestas de valor y los segmentos de clientes identificados en el proyecto, podemos definir los siguientes tipos de ingresos:
+
+Venta del Plato Inteligente para Mascotas:
+
+Los clientes estarán dispuestos a pagar más por este producto debido a su innovación tecnológica y su capacidad para mejorar el cuidado y bienestar de sus mascotas.
+Actualmente, los clientes pueden estar pagando por productos similares, como platos convencionales para mascotas o dispositivos de alimentación automáticos, pero nuestro plato inteligente ofrecerá características avanzadas que justificarán un precio más alto.
+Los medios de pago preferidos por los clientes pueden incluir tarjetas de crédito/débito, (metodos de pago de dueños mascotas) transferencias bancarias y métodos de pago en línea como PayPal o MercadoPago.
+
+Suscripción a la Aplicación Móvil:
+
+Ofreceremos una suscripción opcional a la aplicación móvil, que proporcionará acceso a características premium como análisis de datos avanzados, recomendaciones personalizadas y funciones de interacción remota con dispositivos IoT.
+Los clientes pueden estar dispuestos a pagar una tarifa mensual o anual por este servicio adicional, especialmente aquellos que valoran la comodidad y la sofisticación tecnológica.
+Los medios de pago preferidos pueden ser similares a los utilizados para la compra del plato inteligente, incluyendo tarjetas de crédito/débito y métodos de pago en línea.
+
+Publicidad y Colaboraciones:
+
+Podemos generar ingresos adicionales a través de acuerdos de publicidad y colaboraciones con marcas relacionadas con mascotas, tecnología y estilo de vida.
+Esto podría incluir patrocinios de contenido en nuestra aplicación móvil, colaboraciones con influencers en redes sociales y espacios publicitarios en nuestro sitio web y materiales promocionales.(Podcast youtube elsentido del humor y otros. )
+Los medios de pago asociados con este tipo de ingresos pueden variar y pueden incluir pagos directos, acuerdos de participación en los ingresos o intercambio de servicios/productos.
+En resumen, nuestro negocio generará ingresos a través de la venta de productos y servicios relacionados con nuestro plato inteligente para mascotas y la aplicación móvil asociada, así como a través de oportunidades de publicidad y colaboraciones con otras marcas. Los medios de pago utilizados por los clientes serán diversos y se adaptarán a las preferencias y conveniencias individuales de cada cliente, incluyendo opciones tanto en línea como fuera de línea.
+
+
+Elementos clave:
+
+
+
+
+
+
+
+Elementos Clave:
+
+Plato Inteligente para Mascotas:
+
+Este es el componente físico principal de nuestro producto/servicio. El plato inteligente está equipado con sensores de peso y tecnología IoT que permiten monitorear el consumo de agua y alimento de las mascotas.
+El plato inteligente debe ser diseñado y desarrollado con materiales seguros y duraderos, capaces de resistir el uso diario y proporcionar mediciones precisas.
+Además de los componentes electrónicos, como sensores y circuitos integrados, el plato inteligente puede incluir características adicionales como conectividad Wi-Fi, una batería recargable y un diseño ergonómico (y simple)  para facilitar su uso y limpieza.
+
+Aplicación Móvil:
+
+La aplicación móvil es una parte fundamental de nuestro producto/servicio, ya que permite a los usuarios monitorear y controlar el plato inteligente desde sus dispositivos móviles.
+La aplicación debe ser desarrollada para plataformas iOS y Android, lo que garantiza su accesibilidad para una amplia gama de usuarios.
+Debe incluir características como la configuración del plato inteligente, el seguimiento del consumo de agua y alimento de las mascotas, la visualización de datos históricos y el acceso a funciones avanzadas como análisis de datos y recomendaciones personalizadas.
+Además, la aplicación debe ser diseñada con una interfaz intuitiva y amigable para el usuario, que garantice una experiencia fluida y agradable para los clientes.
+Estos dos elementos clave son fundamentales para la generación y entrega de nuestro producto/servicio a los diferentes tipos de clientes. El plato inteligente proporciona la funcionalidad física necesaria para monitorear el consumo de agua y alimento de las mascotas, mientras que la aplicación móvil ofrece una plataforma digital para que los usuarios interactúen con el dispositivo y accedan a características avanzadas de control y análisis. Juntos, estos elementos forman una solución integral que satisface las necesidades de nuestros clientes y mejora el cuidado y bienestar de sus mascotas.
+
+Acciones/ actividades clave:
+
+
+
+
+
+
+
+Acciones/Actividades Clave:
+
+Desarrollo y Fabricación del Producto:
+
+Esta es una acción fundamental para la entrega de nuestro producto a los clientes. Implica el diseño, desarrollo y fabricación del plato inteligente para mascotas, así como la creación y optimización de la aplicación móvil asociada.
+Esta actividad incluye diversas etapas, como la investigación y desarrollo de prototipos, la ingeniería del producto, la selección de materiales y componentes, la fabricación en masa y las pruebas de calidad.
+Es importante garantizar que el producto final cumpla con los estándares de calidad y seguridad, así como con las expectativas y necesidades de nuestros clientes, tanto del segmento de dueños de mascotas como de personas nativas tecnológicamente.
+
+Marketing y Promoción:
+
+Otra acción clave es la promoción y comercialización de nuestro producto/servicio para llegar a nuestros clientes objetivo y generar interés en nuestra solución.
+Esto implica desarrollar estrategias de marketing que incluyan la creación de contenido promocional, la participación en eventos y ferias relacionadas con mascotas y tecnología, y la implementación de campañas publicitarias en línea y fuera de línea.
+Además, se deben establecer colaboraciones con influencers y marcas relacionadas para aumentar la visibilidad de nuestro producto y llegar a un público más amplio.
+Estas dos acciones son cruciales para asegurar que nuestro producto/servicio se entregue de manera efectiva a nuestros clientes. El desarrollo y fabricación del producto garantiza que tengamos un producto de calidad que cumpla con las expectativas de los clientes, mientras que el marketing y la promoción nos ayudan a llegar a nuestro público objetivo y generar demanda para nuestro producto. Ambas acciones trabajan en conjunto para garantizar el éxito de nuestro negocio y la satisfacción de nuestros clientes.
+
+
+
+
+
+
+
+
+
+
+Costos :
+
+
+
+Costos:
+
+Costos Fijos:
+
+Desarrollo y Fabricación del Producto: Este proceso implicará costos fijos relacionados con la contratación de ingenieros y diseñadores para el desarrollo del plato inteligente y la aplicación móvil. También incluirá gastos relacionados con la investigación y desarrollo de prototipos, así como los costos de fabricación de los productos finales. Estos costos serán relativamente constantes independientemente del volumen de producción.
+
+Gastos Generales: Incluyen costos como el alquiler de instalaciones, servicios públicos, salarios del personal administrativo y otros gastos generales necesarios para mantener en funcionamiento el negocio. Estos costos no varían significativamente en el corto plazo y son esenciales para el funcionamiento diario de la empresa.
+
+Costo de cloud para guardar datos
+Costos Variables:
+
+Marketing y Promoción: Los costos de marketing y promoción son variables y pueden fluctuar según las estrategias específicas implementadas en un período de tiempo determinado. Esto puede incluir gastos en publicidad en línea y fuera de línea, participación en eventos y ferias, así como pagos a influencers y colaboradores de marketing. Los costos pueden aumentar o disminuir en función de la intensidad de la actividad promocional.
+
+Costos de Producción: Los costos de producción del plato inteligente y la aplicación móvil pueden variar dependiendo del volumen de producción. Esto incluye materiales y componentes utilizados en la fabricación, así como costos de mano de obra asociados con la producción. A medida que aumenta el volumen de producción, es posible que se logren economías de escala que reduzcan los costos unitarios de producción.
+
+Costos Operativos de la Aplicación Móvil: Para mantener la aplicación móvil en funcionamiento, existen costos variables asociados con servicios de alojamiento en la nube, mantenimiento de servidores, actualizaciones de software y soporte técnico. Estos costos pueden variar según el número de usuarios activos y el nivel de uso de la aplicación.
+
+En resumen, nuestro negocio enfrentará costos fijos y variables asociados con el desarrollo y fabricación del producto, así como con las actividades de marketing y promoción. Es importante gestionar eficazmente estos costos para garantizar la rentabilidad y el éxito a largo plazo de la empresa.
+
+Alianzas clave:
+
+
+Alianzas Clave:
+
+Alianza con Tiendas de Mascotas y Centros Veterinarios:
+
+Establecer alianzas con tiendas de mascotas y centros veterinarios es crucial para mejorar la satisfacción de nuestros clientes dueños de mascotas.
+A través de estas alianzas, podemos asegurar la disponibilidad y visibilidad de nuestro producto en lugares de alto tráfico frecuentados por nuestro público objetivo.
+Además, podemos aprovechar la experiencia y el conocimiento de estas tiendas y centros para ofrecer recomendaciones personalizadas a los clientes sobre cómo utilizar nuestro producto de manera efectiva para mejorar el cuidado y bienestar de sus mascotas.
+Alianza con Empresas de Tecnología y Servicios Digitales:
+
+Establecer alianzas con empresas de tecnología y servicios digitales nos permitirá mejorar la experiencia de nuestros clientes nativos tecnológicamente adaptados.
+Podemos colaborar con empresas especializadas en desarrollo de aplicaciones móviles para optimizar y mejorar continuamente nuestra aplicación, asegurando así una experiencia de usuario de alta calidad.
+También podemos explorar alianzas con proveedores de servicios de análisis de datos y tecnologías emergentes, lo que nos permitirá incorporar nuevas funcionalidades y características avanzadas a nuestro producto para satisfacer las demandas cambiantes de nuestros clientes tecnológicamente avanzados.
+Estas alianzas clave nos permitirán fortalecer nuestra oferta y mejorar la satisfacción de nuestros clientes tanto actuales como potenciales. Al colaborar con tiendas de mascotas y centros veterinarios, podemos garantizar la disponibilidad y promoción de nuestro producto entre los dueños de mascotas, mientras que al asociarnos con empresas de tecnología y servicios digitales, podemos mejorar continuamente nuestra aplicación móvil y ofrecer una experiencia de usuario avanzada a nuestros clientes más tecnológicos.
+
+
+Sustentabilidad :
+
+
+
+
+
+
+Sustentabilidad:
+
+Desde el punto de vista del cuidado del agua por medio de medir el consumo de las mascotas, podemos implementar diversas acciones para hacer nuestro producto más sustentable:
+
+Eficiencia Energética del Dispositivo:
+
+Diseñar el plato inteligente con un enfoque en la eficiencia energética, utilizando componentes de bajo consumo energético y optimizando el uso de la batería o fuente de alimentación.
+Implementar modos de ahorro de energía inteligentes que permitan que el dispositivo entre en modo de reposo cuando no esté en uso activo, reduciendo así el consumo innecesario de energía.
+Energías Renovables para la Alimentación del Dispositivo:
+
+Explorar la posibilidad de utilizar energías renovables, como paneles solares, para alimentar el plato inteligente. Esto reduciría la dependencia de fuentes de energía no renovables y disminuiría el impacto ambiental del dispositivo.
+Integrar tecnologías de carga inalámbrica mediante energía solar, lo que permitiría recargar la batería del dispositivo de manera sostenible y autónoma.
+Economía Circular en el Diseño y Fabricación del Producto:
+
+Adoptar un enfoque de economía circular en el diseño y fabricación del plato inteligente, utilizando materiales reciclables y reciclados en la medida de lo posible.
+Diseñar el producto para que sea fácilmente desmontable y reciclable al final de su vida útil, fomentando así la reutilización de materiales y reduciendo la generación de residuos electrónicos.
+Estas acciones de eficiencia energética, uso de energías renovables y economía circular contribuirán a hacer nuestro producto más sustentable desde el punto de vista ambiental. Al integrar estas prácticas en el proceso de desarrollo y producción del plato inteligente, estaremos reduciendo nuestro impacto ambiental y promoviendo un modelo de negocio más responsable con el medio ambiente.
+
+
+
+
+
+Coherencia Global del Proyecto de Negocio:
+
+Coherencia Global del Proyecto de Negocio:
+
+El proyecto de negocio presentado demuestra una coherencia notable en relación con los clientes definidos y el elemento diferenciador propuesto. Este nivel de coherencia se refleja en todos los criterios del modelo de evaluación, lo que indica una comprensión sólida y una planificación estratégica consistente en todas las áreas del proyecto.
+
+Clientes Definidos:
+
+Se identificaron claramente dos tipos de clientes: dueños de mascotas y personas nativas tecnológicamente adaptadas. Estos segmentos fueron caracterizados detalladamente, considerando sus necesidades, comportamientos y preferencias, lo que proporciona una base sólida para la estrategia de marketing y ventas.
+Elemento Diferenciador:
+
+El proyecto establece un elemento diferenciador claro al ofrecer un producto innovador que combina tecnología IoT con el cuidado de mascotas. La propuesta de valor para cada tipo de cliente se alinea con este elemento diferenciador, ofreciendo soluciones adaptadas a las necesidades específicas de cada segmento.
+La coherencia en el formulario Canvas se refleja en otros criterios del modelo, como los medios de distribución, la relación con los clientes, los costos, las alianzas clave y las acciones clave. En cada uno de estos aspectos, se observa una alineación directa con los clientes definidos y el elemento diferenciador del proyecto.
+
+En resumen, el proyecto de negocio demuestra una coherencia global sólida, donde cada componente se integra de manera consistente para ofrecer una propuesta de valor única y satisfacer las necesidades del mercado objetivo de manera efectiva.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Evaluacion CHAT GPT:
+
+Clientes:
+Nota: 9
+Recomendación: Considera realizar encuestas adicionales o investigaciones de mercado para obtener datos más actualizados sobre los segmentos de clientes, especialmente en cuanto al uso de dispositivos móviles y la disposición a adoptar tecnologías IoT.
+Elemento Diferenciador:
+Nota: 10
+Recomendación: Sigue enfocándote en destacar las características únicas de tu producto y cómo benefician a tus clientes. Asegúrate de comunicar claramente estos diferenciales en todas tus estrategias de marketing y ventas.
+Medios de Distribución:
+Nota: 8
+Recomendación: Amplía tus opciones de distribución en línea, considerando la posibilidad de asociarte con plataformas de comercio electrónico reconocidas para llegar a un público más amplio y facilitar la compra en línea de tu producto.
+Relación con los Clientes:
+Nota: 9
+Recomendación: Implementa sistemas de retroalimentación y seguimiento para evaluar continuamente la satisfacción del cliente y realizar ajustes en tus estrategias de relación con los clientes según los comentarios recibidos.
+Costos:
+Nota: 9
+Recomendación: Realiza un análisis detallado de los costos variables asociados con las actividades de marketing y promoción para optimizar el retorno de la inversión y maximizar la eficiencia en el uso de los recursos.
+Alianzas Clave:
+Nota: 8
+Recomendación: Busca oportunidades para diversificar tus alianzas clave y considera asociarte con organizaciones sin fines de lucro o instituciones académicas para ampliar tu red y acceder a nuevos recursos y conocimientos.
+Sustentabilidad:
+Nota: 8
+Recomendación: Explora la posibilidad de incorporar prácticas de responsabilidad social corporativa en tu modelo de negocio, como programas de reciclaje de productos o iniciativas de educación ambiental, para fortalecer tu compromiso con la sustentabilidad.
+Coherencia Global del Proyecto de Negocio:
+Nota: 9
+Recomendación: Continúa evaluando y ajustando tu proyecto de negocio para garantizar una coherencia global sólida en todas las áreas, especialmente en términos de alineación con los clientes definidos y el elemento diferenciador propuesto.
+
+
+
+
+
+
+
+
+** Evaluacion CLAUDE 3:
+
+
+Después de revisar el proyecto presentado, puedo proporcionarte una evaluación detallada basada en el modelo Canvas:
+
+Propuesta de Valor: El proyecto presenta una propuesta de valor clara y diferenciada, ofreciendo un plato inteligente con tecnología IoT para monitorear el consumo de agua y alimento de mascotas. Además, propone una aplicación móvil que permite crear perfiles personalizados, realizar un seguimiento detallado y recibir recomendaciones. La propuesta se adapta a dos segmentos de clientes bien definidos: dueños de mascotas y personas nativas tecnológicamente.
+Segmentos de Clientes: Los segmentos de clientes están bien definidos y caracterizados, incluyendo información demográfica, comportamientos y preferencias relevantes. Se han respaldado con datos de estudios de mercado, lo que demuestra una comprensión sólida de los clientes objetivo.
+Canales de Distribución: Se han propuesto canales de distribución adecuados para cada segmento de clientes, incluyendo canales presenciales (tiendas de mascotas, eventos, ferias) y canales virtuales (aplicación móvil, sitio web, redes sociales). Esto permite una cobertura amplia y adaptada a las preferencias de los clientes.
+Relación con Clientes: El proyecto plantea estrategias efectivas para establecer y mantener relaciones sólidas con los clientes. Propone una relación personalizada a través de la aplicación móvil, soporte técnico y atención al cliente, así como interacciones avanzadas y actualizaciones continuas para los clientes más tecnológicos.
+Fuentes de Ingresos: Las fuentes de ingresos están bien definidas, incluyendo la venta del plato inteligente, suscripciones a la aplicación móvil y oportunidades de publicidad y colaboraciones. Se consideran diferentes medios de pago para adaptarse a las preferencias de los clientes.
+Recursos Clave: El proyecto identifica claramente los recursos clave necesarios, como el plato inteligente físico y la aplicación móvil, y describe los requisitos y características esenciales de cada uno.
+Actividades Clave: Se han identificado adecuadamente las actividades clave, como el desarrollo y fabricación del producto, el marketing y la promoción. Estas actividades son cruciales para la entrega exitosa del producto y la captación de clientes.
+Asociaciones Clave: El proyecto propone alianzas estratégicas con tiendas de mascotas, centros veterinarios y empresas de tecnología y servicios digitales. Estas asociaciones pueden fortalecer la propuesta de valor y mejorar la experiencia del cliente.
+Estructura de Costos: Se han considerado tanto los costos fijos (desarrollo, fabricación, gastos generales) como los costos variables (marketing, producción, operaciones de la aplicación), lo que demuestra una comprensión sólida de la estructura de costos del negocio.
+Sustentabilidad: El proyecto aborda aspectos de sustentabilidad, como la eficiencia energética, el uso de energías renovables y la economía circular en el diseño y fabricación del producto. Esto demuestra una conciencia ambiental y un compromiso con prácticas sostenibles.
+En general, el proyecto demuestra una coherencia global sólida, con una propuesta de valor clara y diferenciada, segmentos de clientes bien definidos y una estructura de negocio consistente en todos los aspectos del modelo Canvas. Esto lo convierte en un proyecto prometedor y bien estructurado para postular al capital semilla.
+
+
+
+**Evaluación GEMINI:
+
+
+Evaluación del proyecto:
+Idea o Definición del proyecto:
+
+Nota: 8/10
+
+Descripción:
+
+La idea del proyecto es innovadora y tiene un gran potencial para mejorar el cuidado y bienestar de las mascotas. El plato inteligente y la aplicación móvil ofrecen una solución integral para el monitoreo del consumo de agua y alimento, la creación de perfiles personalizados para las mascotas y la entrega de recomendaciones personalizadas.
+
+Recomendaciones:
+
+Enfatizar el impacto emocional del producto: Más allá de las funcionalidades técnicas, destacar cómo el producto puede mejorar la relación entre las personas y sus mascotas.
+Concretar las características de la aplicación móvil: Detallar las funcionalidades específicas que se ofrecerán en la aplicación, tanto para dueños de mascotas tradicionales como para usuarios tecnológicamente avanzados.
+Validar la demanda del mercado: Realizar estudios de mercado para confirmar el interés de los consumidores en este tipo de producto.
+Clientes:
+
+Nota: 9/10
+
+Descripción:
+
+La segmentación de clientes es clara y precisa, identificando dos grupos con necesidades y características diferentes. La descripción de cada segmento es detallada y se basa en datos relevantes.
+
+Recomendaciones:
+
+Explorar otros segmentos de mercado: Considerar la posibilidad de ampliar el mercado objetivo a otros grupos, como criadores de mascotas, profesionales del cuidado animal o personas con mascotas que requieren cuidados especiales.
+Investigar las necesidades específicas de cada segmento: Realizar estudios para comprender mejor las necesidades y preferencias de cada segmento de clientes, a fin de adaptar la oferta de productos y servicios de manera más precisa.
+Elemento Diferenciador:
+
+Nota: 9/10
+
+Descripción:
+
+El elemento diferenciador del proyecto es sólido y convincente. La propuesta de valor para cada segmento de clientes es clara y se basa en las necesidades específicas de cada grupo.
+
+Recomendaciones:
+
+Resaltar las ventajas competitivas: Enfatizar en las características únicas del producto que lo diferencian de la competencia.
+Comunicar de manera efectiva la propuesta de valor: Asegurarse de que los clientes comprendan claramente los beneficios que les ofrece el producto.
+Medios de Distribución:
+
+Nota: 8/10
+
+Descripción:
+
+Los canales de distribución propuestos son adecuados para cada segmento de clientes. Sin embargo, se podrían explorar otras opciones para ampliar el alcance del producto.
+
+Recomendaciones:
+
+Considerar canales de distribución online: Implementar una estrategia de venta online para llegar a un público más amplio.
+Establecer alianzas estratégicas: Colaborar con empresas del sector veterinario o de cuidado de mascotas para facilitar la distribución del producto.
+Relación con los Clientes:
+
+Nota: 9/10
+
+Descripción:
+
+Las estrategias de relación con los clientes son sólidas y se basan en la construcción de relaciones a largo plazo. Se ofrecen diferentes canales de atención y soporte para cada segmento de clientes.
+
+Recomendaciones:
+
+Personalizar aún más la experiencia del cliente: Implementar un sistema de recomendaciones personalizadas basado en el perfil de cada mascota y las necesidades del cliente.
+Fomentar la comunidad: Crear una comunidad en línea donde los usuarios puedan compartir experiencias, consejos y opiniones sobre el producto.
+Ingresos:
+
+Nota: 8/10
+
+Descripción:
+
+El modelo de ingresos es claro y viable. Se proponen diferentes fuentes de ingresos, como la venta del producto, la suscripción a la aplicación móvil y la publicidad.
+
+Recomendaciones:
+
+Explorar modelos de suscripción adicionales: Ofrecer diferentes niveles de suscripción a la aplicación móvil con diferentes funcionalidades y precios.
+Desarrollar una estrategia de marketing efectiva: Implementar una estrategia de marketing para aumentar el conocimiento del producto y generar interés en la compra.
+Elementos Clave:
+
+Nota: 9/10
+
+Descripción:
+
+El plato inteligente y la aplicación móvil son elementos clave para el éxito del proyecto. Ambos están bien descritos y se basan en tecnologías existentes.
+
+Recomendaciones:
+
+Proteger la propiedad intelectual: Asegurar la protección de la propiedad intelectual del producto mediante patentes o derechos de autor.
+Realizar pruebas de usuario: Evaluar el producto con usuarios reales para obtener retroalimentación y mejorar la experiencia de usuario.
+Acciones/Actividades Clave:
+
+Nota: 8/10
+
+Descripción:
+
+Las acciones clave para el desarrollo y lanzamiento del producto están bien definidas. Sin embargo, se podría agregar un cronograma con fechas estimadas para cada actividad.
+
+Recomendaciones:
+
+Desarrollar un plan de negocios: Crear un plan de negocios completo que incluya un análisis financiero, un plan de marketing y una estrategia de salida.
+Establecer un cronograma realista: Definir un cronograma realista para el desarrollo del producto, la producción, el
+
+
+Evaluación del proyecto (continuación):
+Costos:
+
+Nota: 7/10
+
+Descripción:
+
+Los costos fijos y variables están bien identificados. Sin embargo, se podrían realizar análisis más detallados para determinar la viabilidad financiera del proyecto.
+
+Recomendaciones:
+
+Realizar un análisis de sensibilidad: Evaluar cómo diferentes escenarios de costos podrían afectar la rentabilidad del proyecto.
+Buscar financiamiento: Identificar fuentes de financiamiento para cubrir los costos del desarrollo y lanzamiento del producto.
+Alianzas Clave:
+
+Nota: 8/10
+
+Descripción:
+
+Las alianzas estratégicas con tiendas de mascotas, centros veterinarios y empresas de tecnología son importantes para el éxito del proyecto.
+
+Recomendaciones:
+
+Establecer relaciones sólidas con los socios: Desarrollar relaciones de confianza y colaboración con los socios estratégicos.
+Definir acuerdos claros: Definir acuerdos contractuales claros que establezcan los derechos y obligaciones de cada parte en la alianza.
+Sustentabilidad:
+
+Nota: 8/10
+
+Descripción:
+
+El proyecto presenta un enfoque hacia la sustentabilidad, con medidas para la eficiencia energética, el uso de energías renovables y la economía circular.
+
+Recomendaciones:
+
+Certificar el producto con estándares de sustentabilidad: Obtener certificaciones que avalen el compromiso del proyecto con la sustentabilidad.
+Comunicar el compromiso con la sustentabilidad: Informar a los clientes sobre las medidas que se están tomando para reducir el impacto ambiental del producto.
+En general, el proyecto tiene un gran potencial y está bien desarrollado. Se han considerado la mayoría de los aspectos clave para el éxito del mismo. Sin embargo, se podrían realizar algunas mejoras para aumentar la viabilidad financiera y la sostenibilidad del proyecto.
+
+Recomendaciones generales:
+
+Realizar un estudio de mercado en profundidad: Obtener información detallada sobre el tamaño del mercado, la competencia y las necesidades de los clientes.
+Desarrollar un plan de negocios completo: Definir la estrategia del negocio, el modelo de ingresos, la estructura de costos y la estrategia de marketing.
+Proteger la propiedad intelectual: Asegurar la protección de la propiedad intelectual del producto.
+Construir un equipo sólido: Reunir un equipo de profesionales con las habilidades y experiencia necesarias para llevar a cabo el proyecto.
+Buscar financiamiento: Identificar fuentes de financiamiento para cubrir los costos del desarrollo y lanzamiento del producto.
+Con estas mejoras, el proyecto tiene un alto potencial de éxito y puede convertirse en una empresa rentable y sostenible.
+
+
+
+
+
+
+**Evaluacion de las 3 IAS:
+
+Basándome en las evaluaciones proporcionadas para cada una de las inteligencias artificiales (Chat GPT, Claude 3 y Gemini), aquí tienes una evaluación y recomendaciones en común para cada uno de los puntos del proyecto:
+
+Clientes:
+
+Evaluación promedio: 8.67/10
+Recomendaciones:
+Realizar investigaciones de mercado adicionales para obtener datos más actualizados sobre los segmentos de clientes y sus necesidades.
+Explorar la posibilidad de ampliar el mercado objetivo a otros grupos potenciales.
+Investigar las necesidades específicas de cada segmento de clientes para adaptar la oferta de productos y servicios de manera más precisa.
+Elemento Diferenciador:
+
+Evaluación promedio: 9.67/10
+Recomendaciones:
+Resaltar las ventajas competitivas y características únicas del producto.
+Enfatizar el impacto emocional del producto en la relación entre las personas y sus mascotas.
+Asegurarse de que los clientes comprendan claramente los beneficios que ofrece el producto.
+Medios de Distribución:
+
+Evaluación promedio: 8/10
+Recomendaciones:
+Considerar la implementación de una estrategia de venta en línea para ampliar el alcance del producto.
+Establecer alianzas estratégicas con empresas del sector veterinario o de cuidado de mascotas para facilitar la distribución del producto.
+Ampliar las opciones de distribución en línea, incluyendo asociaciones con plataformas de comercio electrónico reconocidas.
+Relación con los Clientes:
+
+Evaluación promedio: 9/10
+Recomendaciones:
+Implementar sistemas de retroalimentación y seguimiento para evaluar continuamente la satisfacción del cliente.
+Personalizar aún más la experiencia del cliente mediante un sistema de recomendaciones basado en perfiles de mascotas y necesidades del cliente.
+Fomentar la comunidad a través de una plataforma en línea donde los usuarios puedan compartir experiencias y consejos.
+Costos:
+
+Evaluación promedio: 8/10
+Recomendaciones:
+Realizar un análisis detallado de los costos variables asociados con las actividades de marketing y promoción para optimizar el retorno de la inversión.
+Realizar un análisis de sensibilidad para evaluar cómo diferentes escenarios de costos podrían afectar la rentabilidad del proyecto.
+Identificar fuentes de financiamiento para cubrir los costos del desarrollo y lanzamiento del producto.
+Alianzas Clave:
+
+Evaluación promedio: 8/10
+Recomendaciones:
+Establecer relaciones sólidas y colaborativas con socios estratégicos.
+Definir acuerdos contractuales claros que establezcan los derechos y obligaciones de cada parte en la alianza.
+Buscar oportunidades para diversificar las alianzas clave y acceder a nuevos recursos y conocimientos.
+Sustentabilidad:
+
+Evaluación promedio: 8/10
+Recomendaciones:
+Obtener certificaciones que avalen el compromiso del proyecto con la sustentabilidad.
+Comunicar claramente el compromiso del proyecto con la sustentabilidad a los clientes.
+Explorar la posibilidad de incorporar prácticas de responsabilidad social corporativa en el modelo de negocio.
+En resumen, para mejorar el proyecto, se recomienda realizar investigaciones adicionales de mercado, destacar las ventajas competitivas del producto, explorar nuevas estrategias de distribución y mejorar la personalización de la experiencia del cliente, entre otras acciones. Con estas mejoras, el proyecto tendrá un mayor potencial de éxito y sostenibilidad a largo plazo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bibliografía:
+
+Estimación de perros y gatos.
+https://proactiva.subdere.gov.cl/bitstream/handle/123456789/610/4.%20Bolet%C3%ADn-T%C3%A9cnico-Estudio-poblaci%C3%B3n-PTRAC.pdf?sequence=10&isAllowed=y
+
+Encuesta habitos de consumo consultora GfK
+https://cdn2.hubspot.net/hubfs/2405078/cms-pdfs/fileadmin/user_upload/country_one_pager/cl/gfk_los_chilenos_y_sus_mascotas.pdf 
+
+
+
+Aquí hay algunos recursos adicionales que pueden ser de tu interés:
+
+Guía para la elaboración del Modelo Canvas: http://culturaemprendedora.extremaduraempresarial.es/wp-content/uploads/2012/09/Guia-Did%C3%A1ctica_Modelo-Canvas.pdf 
+
+Plantilla del Modelo Canvas:
+ https://edit.org/es/blog/plantillas-business-canvas-model-online 
+
+Estudios de mercado sobre el mercado de productos para mascotas: https://modelosdeplandenegocios.com/blogs/news/tienda-para-mascotas-estudio-mercado 
+
+Consejos para proteger la propiedad intelectual: https://www.scotiabankcolpatria.com/impulsa-tu-pyme/planificar/incursionar-en-mercados-extranjeros/proteger-tu-propiedad-intelectual 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+ Fomentar la tenencia responsable, el cuidado y bienestar animal puede ser un factor clave para observar mejoras en la salud humana, animal y medioambiental. 
+
+
+
+destaca como principal razón  de tenencia de mascotas es la compañía (89,15%) y que el 92% de los encuestados considera a su mascota un miembro más de la familia. , 
+
+
+los resultados obtenidos sobre la convivencia persona-animal de compañía indican una tendencia a un mayor vínculo emocional y/o sentimiento de responsabilidad de las personas con relación a las mascotas, y evidencian los factores claves que deben ser abordados para promover la tenencia responsable de mascotas como también para la prevención de enfermedades en Chile. Fomentar el conocimiento sobre la tenencia responsable, el cuidado y bienestar animal puede ser un factor clave para observar mejoras en la salud humana, animal y medioambiental. 
+
+
+
+Es necesario continuar implementando políticas públicas que promuevan la transdisciplinariedad (profesionales de diferentes áreas trabajando en conjunto) y multisectorialidad (academia, servicio público y sector privado), para robustecer la solución de las problemáticas asociadas a la falta de tenencia responsable de animales de compañía de manera integral. El modelo demográfico propuesto, y que amalgama conceptos desde la ecología a la epidemiología para la población canina, permitirá profundizar en el desarrollo futuro de una herramienta que evalúe el costobeneficio de un número de estrategias basados en indicadores poblacionales de las comunas donde fueron obtenidos los antecedentes en terreno. Además, permite la extrapolación a todas las comunas del país y es capaz de evaluar diferentes estrategias en el corto y largo plazo (1 a 10 años), basando un control principalmente en las estrategias de esterilización.
+
+
+Cliente 2:
+
+
+
+
+
+
+
+
+Millenials y Generación Z: 
+Estas generaciones más jóvenes tienden a adoptar tecnologías nuevas y están muy familiarizados con los dispositivos conectados. Buscan productos de conveniencia e innovadores para sus mascotas.
+Profesionales y dueños de mascotas que trabajan: Las personas que trabajan largas horas fuera de casa ven valor en poder monitorear y cuidar a sus mascotas de forma remota a través de dispositivos inteligentes.
+Residentes urbanos:En zonas urbanas densamente poblada
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Charla capital semilla
+
+1- Estar Registrado 
+2- Datos de actividad
+	para capital semilla debe 
+
+
+
+Fondo de Capitales.
+
+Fondos concursables, idea de negocio que expresa un plan de trabajo.
+
+Región metropolitana, foco multisectorial.
+
+Subsidio, de 3 palos a 3.500.000. Es un valor neto.
+No incluye el IVA. 
+Nosotros costeamos el IVA del proyecto.
+
+¿Qué contempla?
+Acciones de gestión empresarial
+
+-Asistencia técnica.
+	Desarrollo IoT
+	Arduino IO
+Protocolo MQTT
+Desarrollo de APP
+		Networking , Cloud
+	
+Desarrollo Producto
+	Diseñador industrial producto
+		Prueba de producto
+-Capacitación
+	Curso o diplomado IoT
+
+-marketing
+	Página web ( conectada a APP)
+	
+-formalización
+$10.000 !
+Revisar KUNA !
+
+Inversión
+-Activos fijos e intangibles
+	Registro de Marca, Dominio.
+
+- Capital de trabajo 
+- materias primas
+- mercaderia 
+
+
+
+
+Debemos aportar aprox el 15% todos los años cambian
+También incluir el Iva.
+Aprox 1millon o 1 millon 300 aprox
+
+
+
+
+
+
+
+¿A quién está dirigido ?
+
+Emprendedores de primera categoría , que tengan una idea de negocio. 
+
+
+¿Requisitos de Admisibilidad ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+¡LEER BASES   COMPLETAS ! 
+https://www.sercotec.cl/capital-semilla-emprende-region-metropolitana-2023/
+
+
+
+El enfoque sustentable ( no proyectos sustentable) 
+
+
+ETAPAS Y PROCESOS
+
+
+
+d
+Postulación.
+Leer las bases y el proyecto debe estar listo.
+
+Evaluación
+Admisibilidad, primer colador.
+
+Preselección.
+Comité , personas evaluadas. Volver a presentar el proyecto con un pitch. 
+Ir a presentar el proyecto o video. 
+
+Selección.
+Hacer formalización de proyecto. 
+
+
+
+No te pasan la plata, tienes una persona, agente operador. 
+Compra asistida
+
+Compra reembolso
+
+
+
+—------------------------------------------------------------------------------------------------------------------------
+
+-Buscar preguntas de fondo de capital, cosa de comprar con bases del 2024.
+- Si nos adjudicamos el proyecto , para formalizar el contrato debemos poner nuestra parte de las lucas ( año pasado 5%) aporte empresarial mínimo. (se suma al fondo  a los 3.500.000)
+
+-Pueden quedar renglones en 0 al momento de definir el costos, pero tiene que ser dentro de los mismos items. Tiene que tener coherencia el canvas y el presupuesto.
+
+Cualquier problema punto pyme.
+
+
+
+
+
+
+
+Fondos Corfo 
+I + D ojala marca Chile.
+
+
+
+
+Fondos SERCOTEC
+
+Venta inversión y empleabilidad
+.
+
+
+
+Dudas !
+
+- Javo puede postular ya que tiene problemas con el estado y SII.
+- Puedo poner en distribución la asociación con diversas cadenas de ventas ( super zoo ) o posibles vínculos comerciales , retail?
+- Puedo definir como milenias o generacion z , trabajadores o profesionale que sean dueños de mascotas.
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+revisión documento
+-         
+Ajustar a tipo de letra y formato de postulación
+-          Revisar frases del video, debemos saber a quién está dirigido.
+-          Debemos grabar el video en un ambiente bonito, con plantas y aire libre.
+-          Hay que mostrar por lo menos un diagrama de cómo será nuestro “dispositivo”.
+-          Mostar los sensores que estamos usando pero comentar que con mayor inversión habrá mayor calidad del producto final, tanto en funcionamiento como en desarrollo del análisis de los datos y también de la App.
+
+Somos Javier Dayne y Mauricio Cárcamo, estamos desarrollando la solución Kitty-Paw, una asociación chilena de un ingeniero y un sociólogo que ofrecerá la información que necesitas para cuidar y estar al tanto del bienestar de tu mascota, Kitty-Paw te entrega información en tu smartphone. Si pudieras medir cantidad de agua, comida, temperatura y humedad del ambiente, podrías mejorar la alimentación de tu mascota, ahora imagina que pudieras tomar esos datos e interpretarlos como información o patrones para ajustar sus necesidades.
+¿Quieres cuidar mejor a tus mascotas?
+Javier (introducción - 15 segundos):
+ "Hola, somos Javier Dayne y Mauricio Cárcamo, los creadores de Kitty-Paw. Como dueños de mascotas, sabemos que a veces es un desafío entender y satisfacer todas las necesidades de nuestros amigos peludos. Por eso desarrollamos Kitty-Paw."
+Mauricio (descripción del producto - 30 segundos):
+ "Kitty-Paw es un sistema innovador que monitorea datos vitales sobre el bienestar de tu mascota, como consumo de agua y alimento, temperatura y niveles de humedad en su entorno. A través de sensores integrados, recopila esta información y la envía directamente a su smartphone mediante una aplicación fácil de usar."
+Javier (beneficios - 30 segundos):
+"Con Kitty-Paw, ya no tendrá que adivinar las necesidades de su mascota. Podrá tomar decisiones informadas basadas en datos reales para optimizar su alimentación, hidratación y ambiente de manera personalizada. Esto promueve un estilo de vida más saludable y cómodo para sus queridas mascotas."
+Mauricio (llamado a la acción - 15 segundos):
+"No pierda la oportunidad de apoyar a Kitty-Paw, la solución innovadora que revolucionará el cuidado de mascotas. Kitty-Paw es la nueva era del monitoreo inteligente del bienestar animal. Invierta en el futuro con nosotros hoy."
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+

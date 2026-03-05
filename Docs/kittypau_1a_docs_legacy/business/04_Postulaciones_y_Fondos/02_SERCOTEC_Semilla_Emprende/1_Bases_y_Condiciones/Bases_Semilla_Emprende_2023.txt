@@ -1,0 +1,934 @@
+
+
+BASES DE CONVOCATORIA
+
+
+
+
+CAPITAL SEMILLA EMPRENDE
+
+
+REGIÓN METROPOLITANA DE SANTIAGO
+2023
+
+1. DESCRIPCIÓN DEL INSTRUMENTO
+
+1.1	¿Qué es?
+
+Es un fondo concursable que promueve la creación de nuevos negocios con oportunidad de participación en el mercado, a través de su formalización y de la formulación de un Plan de Trabajo para implementar un negocio que se encuentre dentro de la focalización regional a ejecutar por cada Dirección Regional.
+
+Para esto, el Servicio de Cooperación Técnica, Sercotec, brindará apoyo consistente en:
+
+Guía para la postulación presentación de Proyectos de Negocio, bajo el modelo “Elevator Pitch” .
+Videos tutoriales para el proceso de postulación en línea y presentación efectiva de “Elevator Pitch”. 
+Formulación de un Plan de Trabajo (acciones de gestión empresarial e inversiones).
+Acompañamiento técnico y administrativo en la implementación del Plan de Trabajo. 
+
+Para acceder a este instrumento, los/as emprendedores/as deberán elaborar y postular un proyecto de negocio a través de la página https://www.sercotec.cl/ previa validación de los requisitos de admisibilidad establecidos en el punto 1.5.1 de las presentes bases de convocatoria.
+
+El Programa Emprende permite a los/as emprendedores/as, cuyos proyectos de negocio hayan sido seleccionadas, recibir asesoría de parte de un Agente Operador Sercotec, para la formulación técnica y financiera de un Plan de Trabajo, junto con la implementación de Acciones de Gestión Empresarial, para el desarrollo de competencias y capacidades, e Inversiones, consistentes en la adquisición de bienes para cumplir los objetivos del proyecto de Negocio.
+
+El Agente Operador de Sercotec y el Comité de Evaluación Regional evaluarán los Proyectos de Negocio postulados que previamente hayan cumplido con los requisitos de admisibilidad establecidos en estas Bases, y hayan pasado el puntaje de corte definido por la Dirección Regional de Sercotec en función de la disponibilidad presupuestaria.
+
+Los emprendedores y emprendedoras que resulten seleccionados/as, por el Comité de Evaluación Regional (CER), deberán formalizar su relación con Sercotec para la Fase de Desarrollo del instrumento, a través de la firma de un contrato con el Agente Operador de Sercotec, en el cual se estipulen los derechos y las obligaciones de las partes. Posteriormente el/la beneficiario/a dará comienzo a la etapa de la formulación de su Plan de Trabajo, donde el Agente Operador Sercotec apoya al emprendedor/a a construir el Plan de Trabajo del Proyecto de Negocio seleccionado, proponiendo elementos en su estructura técnica y financiamiento, junto al diseño de planificación para ejecución del mismo.
+
+Posteriormente, se llevarán a cabo el conjunto de actividades necesarias para la implementación del Plan de Trabajo; es decir, las Inversiones identificadas y Acciones de Gestión Empresarial que derivan de la primera fase. 
+
+Sercotec financiará las actividades identificadas en el Plan de Trabajo por un valor de $3.500.000.- netos. El Plan de Trabajo debe contemplar:
+
+Acciones de Gestión Empresarial, a las que debe destinar un monto mínimo de $200.000.- y un monto máximo de $500.000.- El monto mínimo tiene carácter obligatorio y debe estar distribuido en al menos uno de los siguientes ítems de financiamiento: a) Asistencia técnica y asesoría en gestión; b) Capacitación; y c) Acciones de marketing.
+Inversiones, hasta un máximo de $3.300.000.- 
+
+El Plan de Trabajo debe considerar, obligatoriamente, un aporte empresarial del 3% del valor del subsidio de Sercotec destinado para las Acciones de Gestión Empresarial (por cada ítem o subítem a financiar) y un 3% del valor del subsidio de Sercotec destinado a las Inversiones (por cada ítem o subítem a financiar).
+
+Los Proyectos de Negocios a ser financiados, deben implementarse íntegramente en el territorio focalizado de la presente convocatoria.
+
+El número estimado de emprendedores y emprendedoras a beneficiar en esta convocatoria es de 130 a nivel regional.
+
+
+1.2 	¿A quiénes está dirigido?
+
+A emprendedores y emprendedoras, sin inicio de actividades en primera categoría ante el Servicio de Impuestos Internos que cuenten con un proyecto de negocio para implementar un Plan de Trabajo coherente con el foco a implementar por cada Dirección Regional, y requieran de financiamiento para poder concretarlo.
+
+
+1.3	¿Quiénes no pueden participar?
+
+Los emprendedores/as que tengan contrato vigente, incluso a honorarios, con Sercotec, o con el Agente Operador a cargo de la convocatoria, o quienes participen en la asignación de recursos correspondientes a la convocatoria, ya sea que este contrato se celebre con anterioridad a la postulación o durante el proceso de evaluación y selección.
+El/la cónyuge o conviviente civil y los parientes hasta el tercer grado de consanguinidad y segundo de afinidad inclusive respecto del personal directivo de Sercotec, o del personal del Agente Operador a cargo de la convocatoria o de quienes participen en la asignación de recursos correspondientes a la presente convocatoria.
+El/la gerente, administrador, representante, director o socio de sociedades en que tenga participación el personal de Sercotec, o del Agente Operador a cargo de la convocatoria o de quienes participen en la asignación de recursos correspondientes a la convocatoria o personas unidas a ellos por vínculos de parentesco hasta tercer grado de consanguinidad y segundo de afinidad inclusive.
+Los emprendedores/as que tengan vigente o suscriban, ya sea como personas naturales o a través de personas jurídicas en que éstos tengan participación, contratos de prestación de servicios con Sercotec, o con el Agente Operador a cargo de la convocatoria, o quienes participen en la asignación de recursos correspondientes a la presente convocatoria.
+Las personas naturales que tengan inscripción vigente en el Registro Nacional de Deudores de Pensiones de Alimentos en calidad de deudor de alimentos, según lo dispuesto en la Ley N° 21.389.
+Aquellas empresas en que uno de los socios, en el caso de una persona jurídica, ejerza un cargo de público de elección popular, sea funcionario/a público/a que requiera de exclusividad en el ejercicio de sus funciones o ejerza un cargo público que tenga injerencia en la asignación de los fondos, evaluación de los/as postulantes o selección de los/as beneficiarios/as del presente instrumento. Igual restricción se aplicará a las empresas que estén constituidas como personas naturales por las referidas autoridades o funcionarios/as.
+Cualquier persona que se encuentre en otra circunstancia que implique un conflicto de interés, incluso potencial, y en general, afecte el principio de probidad, según determine Sercotec, en cualquier etapa del Programa, aún con posterioridad a la selección.
+
+1.4 	Focalización de la convocatoria
+
+La presente convocatoria está dirigida a emprendedores y emprendedoras, mayores de edad, que tienen domicilio en la Región Metropolitana de Santiago, y es de carácter multisectorial.
+
+1.5 	Requisitos de la convocatoria
+
+Los/as postulantes deberán cumplir con todos los requisitos establecidos en las presentes bases de convocatoria, los que serán verificados en las distintas etapas, ya sea a través de la plataforma de postulación y/o por el Agente Operador designado por Sercotec para estos efectos. Se solicitará al emprendedor o emprendedora, cuando corresponda, los documentos indicados en el Anexo Nº1, que permitirán acreditar su cumplimiento.
+
+Los interesados/as en postular deben cumplir con los siguientes requisitos:
+
+1.5.1 Requisitos de Admisibilidad
+
+1.5.1.1 Validación automática
+
+Ser persona natural, de nacionalidad chilena o extranjera, mayor de edad, sin inicio de actividades ante el Servicio de Impuestos Internos (SII) en primera categoría a la fecha de inicio de la convocatoria.
+
+El Proyecto de Negocio debe considerar un monto de $3.500.000.- (neto) de subsidio Sercotec y un aporte empresarial de un 3% del subsidio Sercotec. Además, el proyecto de Negocio en el Plan de Trabajo deberá considerar Acciones de Gestión Empresarial por un monto mínimo de $200.000.- hasta un máximo de $500.000.- en al menos uno de los siguientes ítems de financiamiento: a) Asistencia técnica y asesoría en gestión; b) Capacitación; y c) Acciones de marketing.
+
+En caso de existir un error en los montos postulados, tanto para subsidio como para aporte empresarial, éstos deberán ajustarse durante la evaluación del CER.
+
+No tener deudas laborales y/o previsionales ni multas impagas, asociadas al Rut del/la postulante, a la fecha de envío y cierre de postulaciones. Sercotec validará nuevamente esta condición al momento de formalizar.
+
+No tener deudas tributarias liquidadas morosas, asociadas al Rut del/la postulante, a la fecha de envío y cierre de postulaciones. Sercotec validará nuevamente esta condición al momento de formalizar.
+
+No tener condenas por prácticas antisindicales o por infracción a derechos fundamentales del trabajador, dentro de los dos años anteriores a la fecha de cierre de la postulación de la presente convocatoria. Sercotec validará nuevamente esta condición al momento de formalizar.
+
+No tener rendiciones pendientes con Sercotec y/o con el Agente Operador a la fecha de inicio de la convocatoria.
+
+No haber incumplido las obligaciones contractuales de un proyecto Sercotec, con el Agente Operador Sercotec (término anticipado de contrato o incumplimiento de contrato, por hecho o acto imputable al/la beneficiario/a), dentro de los dos años anteriores a la fecha de inicio de la convocatoria.
+
+No haber sido beneficiario/a de alguna convocatoria Emprende, financiada con fondos regulares de Sercotec y/o extrapresupuestarios, durante los años 2021, 2022 y/o 2023, para la empresa beneficiaria y a su representante legal (postulante seleccionado/a de convocatoria emprende anterior).
+
+No haber sido beneficiario/a del Programa Formalízate de Sercotec, durante el año 2021, para la empresa beneficiaria y a su representante legal (postulante seleccionado/a de convocatoria Formalízate).
+
+1.5.1.2 Validación Manual
+
+No tener inscripción vigente en el Registro Nacional de Deudores de Pensiones de Alimentos en calidad de deudor de alimentos, según lo dispuesto en la Ley N° 21.389. Sercotec validará nuevamente esta condición al momento de formalizar.
+
+
+1.5.2. Requisitos de Evaluación Técnica
+
+Los/as postulantes que resulten admisibles y sean preseleccionados/as por la Dirección Regional de Sercotec, deben cumplir con los siguientes requisitos: 
+
+En caso de que existan 2 (dos) o más convocatorias simultáneas de Capital Semilla, Capital Abeja o Capital Adulto Mejor Emprende en la Región, sólo se procederá a realizar una evaluación técnica por Rut. Por lo tanto, de resultar preseleccionado/a en ambas, el emprendedor o emprendedora debe decidir en qué convocatoria continuará su evaluación.
+
+De no existir convocatorias simultáneas Capital Semilla, Capital Abeja o Capital Adulto Mejor, sólo se evaluará el primer formulario enviado por Rut. Se entiende por convocatorias simultáneas aquellas que inician su periodo de postulación el mismo día.
+
+El proyecto de Negocio debe ser coherente con la focalización de la presente convocatoria.
+
+El detalle de los criterios y ponderaciones de la Evaluación Técnica, se encuentran establecidos en el Anexo N° 6.
+
+
+1.5.3. Requisitos de Formalización 
+
+Los/as postulantes que resulten seleccionados/as deben cumplir con los siguientes requisitos:
+
+No tener deudas laborales y/o previsionales ni multas impagas, que se encuentren asociadas al Rut del/la postulante seleccionado/a, al momento de formalizar.
+
+No tener deudas tributarias liquidadas morosas, que se encuentren asociadas al Rut del/la postulante seleccionado/a, al momento de formalizar
+
+No haber sido condenado/a por prácticas antisindicales y/o por una infracción a los derechos fundamentales del trabajador, asociado al Rut del/la postulante seleccionado/a, dentro de los dos años anteriores a la fecha de la firma del contrato.
+
+El/la postulante seleccionado/a debe tener domicilio en el territorio focalizado de la convocatoria a la que postula y donde implementará su proyecto. No se financiarán proyectos a ser implementados en una región diferente a la cual postula.
+
+En caso que el Proyecto de Negocio considere financiamiento para habilitación de infraestructura, ya sea un inmueble o un vehículo, y ésta haya sido aprobado con dicha característica por el Comité de Evaluación Regional (CER), el/la postulante seleccionado/a deberá acreditar una de las siguientes condiciones: ser propietario/a, usufructuario/a, comodatario/a, arrendatario/a; propietario/a del inmueble en régimen de sociedad conyugal o unión civil o acreditar cualquier otro antecedente en que el titular del derecho de dominio o quien tenga la facultad de realizarlo (por ejemplo, organismo público encargado de entregar la concesión) ceda el uso al  emprendedor o emprendedora.
+
+Estar inscrito/a en el curso virtual de Sercotec: “Diseño de Modelos de Negocios”, disponible en https://capacitacion.sercotec.cl, a la fecha de firma del contrato. Este curso debe aprobarse, como máximo, durante la etapa destinada a la implementación del Plan de Trabajo.
+
+Estar inscrito/a en el curso virtual de Sercotec: “Sustentabilidad”, disponible en https://capacitacion.sercotec.cl, a la fecha de firma del contrato. Este curso debe aprobarse, como máximo, durante la etapa destinada a la implementación del Plan de Trabajo.
+
+El/la postulante seleccionado/a no debe ejercer un cargo de público de elección popular, ser funcionario/a público/a que requiera de exclusividad en el ejercicio de sus funciones y/o ejercer un cargo público que tenga injerencia en la asignación de los fondos, evaluación de los/as postulantes o selección de los/as beneficiarios/as del presente instrumento, a la fecha de firma del contrato.
+
+El/la postulante seleccionado/a no debe tener inscripción vigente en el Registro Nacional de Deudores de Pensiones de Alimentos en calidad de deudor de alimentos, según lo dispuesto en la Ley N° 21.389, a la fecha de firma del contrato.
+
+En caso que la Dirección Regional utilice la opción de suscripción digital del contrato, el/la postulante seleccionado/a deberá contar previamente con su contraseña digital para trámites en línea del Estado o Clave Única. Para obtener la clave única, se tiene a disposición el sitio https://claveunica.gob.cl/ del Ministerio de la Secretaría General de la Presidencia.
+
+El/la postulante seleccionado/a no podrá tener contrato vigente, incluso a honorarios, con Sercotec, o con el Agente a cargo de la convocatoria, o con quienes participen en la asignación de recursos, ni podrá ser cónyuge, conviviente civil o pariente hasta el tercer grado de consanguinidad y segundo de afinidad inclusive, respecto del personal directivo de Sercotec, o del personal del Agente a cargo de la convocatoria, o de quienes participen en la asignación de recursos, incluido el personal de la Dirección Regional Sercotec que intervenga en la convocatoria.
+
+Previo a la firma de contrato, el/la postulante seleccionado/a debe entregar al Agente Operador de Sercotec el aporte empresarial en efectivo, transferencia electrónica o depósito bancario, por concepto de Inversiones y Acciones de Gestión Empresarial, definidos en el proyecto de negocio postulada y aprobada.
+
+Previo a la firma de contrato, el/la postulante seleccionado/a deberá contar con inicio de actividades ante el SII en primera categoría, para ejercer actividad comercial. Este inicio de actividades deberá tener fecha posterior al inicio de la convocatoria, puede ser realizado con el rut del/la seleccionado/a o con una nueva persona jurídica donde el/la postulante seleccionado/a debe ser el/la representante legal y contar con al menos el 51% del capital social. Finalmente, el inicio de actividades debe contar con al menos 1 (una) actividad económica coherente con el rubro del Proyecto de Negocio postulado y aprobado.
+
+En caso de ser persona jurídica, ésta debe estar legalmente constituida y vigente, para lo cual debe adjuntar los documentos de su constitución, los antecedentes en donde conste la personería del representante legal y el certificado de vigencia.
+
+Los gastos ejecutados para las Inversiones y Acciones de Gestión Empresarial no pueden corresponder a la remuneración del/la seleccionado/a, ni de socios/a, ni representantes, ni de sus respectivos cónyuges/conviviente civil, hijos y parientes por consanguineidad y afinidad hasta segundo grado inclusive.
+
+Es responsabilidad del emprendedor o emprendedora beneficiario/a, el estar en conocimiento respecto a posibles cambios en su condición para el acceso a otros beneficios o subsidios sociales entregados por el Estado. Para mayor información puede visitar el sitio del Instituto de Previsión Social (IPS): https://www.ips.gob.cl/servlet/internet/inicio y/o comunicarse con la red de atención “Chile Atiende” disponible en su región y/o comuna: https://www.chileatiende.gob.cl/ayuda/sucursales. 
+
+
+1.6 	¿Qué financia?
+
+Sólo los/as postulantes cuyos proyectos de negocio hayan sido seleccionados por el Comité de Evaluación Regional (CER), elaborarán e implementarán un Plan de Trabajo, para lo cual Sercotec entregará un subsidio de $3.500.000.-, de los cuales un mínimo de $200.000.- hasta un máximo de $500.000.- deberán destinarse a Acciones de Gestión Empresarial, distribuidos en al menos 1 (uno) de los siguientes ítems de financiamiento: a) Asistencia técnica y asesoría en gestión; b) Capacitación; y c) Acciones de marketing.
+
+El subsidio NO considera el financiamiento de IVA u otro tipo de impuestos, siendo éstos cargo de cada beneficiario/a.
+
+Los Planes de Trabajo deberán contener, uno o más de los ítems de financiamiento agrupados en Acciones de Gestión Empresarial, y uno o más, para el caso de ítems de financiamiento agrupados en Inversiones.
+
+Los ítems de financiamiento a considerar en el Plan de Trabajo son los siguientes:
+
+
+El detalle de cada ítem y su desagregación por sub ítem se presentan en el Anexo N° 2.
+
+
+1.7 	Ítems con restricciones de financiamiento
+
+Para los ítems se puede destinar el monto máximo de Inversión o Acciones de Gestión Empresarial, según corresponda, excepto en los siguientes:
+
+Infraestructura: se podrá destinar el 100% del monto de Inversión cuando el beneficiario/a acredite las condiciones de propietario/a, usufructuario/a, o propietario/a del inmueble en régimen de sociedad conyugal o unión civil con autorización del otro cónyuge o conviviente civil. En caso que acredite ser arrendatario/a, comodatario/a o cualquiera otra condición a la descrita en 1.6, sólo se podrá destinar hasta el 30% del monto de Inversión a este ítem.
+
+Capital de Trabajo: se puede destinar como máximo el 40% del monto total de Inversiones (Subsidio Sercotec más Aporte Empresarial).
+
+
+1.8 	¿Qué NO financia este instrumento?
+
+Con recursos del subsidio de Sercotec, los beneficiarios o beneficiarias del instrumento NO PUEDEN financiar:
+
+Ningún tipo de impuestos que tengan carácter de recuperables, por parte del beneficiario/a y/o del Agente Operador Sercotec, o que genera un crédito a favor del contribuyente, tales como el impuesto al valor agregado (IVA), impuesto territorial, impuesto a la renta u otro. El pago de los impuestos de todo el proyecto los debe realizar el beneficiario/a y no se considera aporte empresarial. No obstante, cuando se trate de contribuyentes que debido a su condición tributaria no tengan derecho a hacer uso de estos impuestos como crédito fiscal, se pueden contemplar como aporte empresarial y ser parte de su rendición. Para esto, en la primera rendición deberá(n) presentar la “Carpeta Tributaria para Solicitar Créditos”, disponible en la página web del SII, en la cual acredite dicha situación, y en las rendiciones posteriores el Formulario 29 del mes respectivo, en que se efectuó la imputación de este impuesto, a fin de acreditar que la situación tributaria del contribuyente se mantiene. 
+
+En caso que existiesen contribuyentes que por su condición tributaria sean susceptibles de recuperar estos impuestos y opten por acogerse a la excepción del párrafo anterior, deben además acreditar mediante la presentación de copia del Libro de Compraventa y una copia del Formulario 29 donde declare estos documentos tributarios como “sin derecho a crédito” (Línea 24 Códigos 564 y 521).
+
+Sólo en el caso de aquellos instrumentos que no exijan aporte empresarial o que el porcentaje de aporte empresarial no cubra el impuesto, los impuestos no recuperables podrán ser cargados al subsidio Sercotec.
+
+La compra de bienes raíces, valores e instrumentos financieros (ahorros a plazo, depósitos en fondos mutuos, entre otros).
+
+Las transacciones de los beneficiarios/as consigo mismos, ni de sus respectivos cónyuges, convivientes civiles, hijos/as, ni auto contrataciones. En el caso de personas jurídicas, se excluye a la totalidad de los socios/as que la conforman y a sus respectivos/as cónyuges, conviviente civil y/o hijos/as.
+
+Garantías en obligaciones financieras, prenda, endoso ni transferencias a terceros, el pago de deudas (ejemplo deudas de casas comerciales), intereses o dividendos.
+
+Pago a consultores (terceros) por asistencia en la etapa de postulación al instrumento.
+
+
+
+
+
+
+
+
+Pago de consumos básicos como agua, energía eléctrica, gas, teléfono, gastos comunes de propiedad arrendada o propia, y otros de similar índole.
+
+Cualquier tipo de vehículo que requiera permiso de circulación (patente). 
+
+Adicionalmente, los reglamentos y los documentos de operación del instrumento podrán establecer restricciones adicionales de financiamiento sobre el subsidio de Sercotec y/o el aporte empresarial.
+
+
+2. POSTULACIÓN
+
+2.1 	Plazos de postulación
+
+Las personas interesadas podrán comenzar su postulación completando y enviando su proyecto de negocio a contar de las 12:00 horas del día 14 de abril de 2023 hasta las 15:00 horas del día 24 de abril de 2023.
+
+La hora a considerar para efectos del cierre de la convocatoria, será aquella configurada en los servidores de Sercotec.
+
+Los plazos anteriormente señalados podrán ser modificados por Sercotec y serán oportunamente informados a través de la página web www.sercotec.cl.
+
+
+El número estimado de emprendedores y emprendedoras a beneficiar en esta convocatoria es de 130 a nivel regional.
+
+2.2 	Pasos para postular
+
+Para hacer efectiva la postulación, el emprendedor o emprendedora deberá realizar las siguientes acciones: 
+
+a.- Registro de usuario/a Sercotec 
+
+Registrarse como usuario/a en https://www.sercotec.cl/, o bien, actualizar sus antecedentes de registro. El emprendedor o emprendedora realiza la postulación con la información ingresada en este registro y es utilizada por Sercotec durante todo el proceso. El emprendedor/a postula mediante el llenado de un formulario en el sitio web de Sercotec, que incluye responder un test de preselección, un formulario de modelo de negocio, realizar y adjuntar un video de presentación y llenar una estructura de costos.  
+
+b.-Test de preselección de Caracterización del Emprendimiento
+
+Contestar el Test de Caracterización del Emprendimiento, que consiste en una herramienta cuyo objeto es determinar, preliminarmente, la presencia de factores de éxito para la ejecución de un proyecto empresarial. Con él se evalúan los siguientes ámbitos:
+
+
+
+c.- Formulario Proyecto de Negocio (CANVAS)
+
+Completar el formulario de proyecto para Implementar un Negocio, el cual es un instrumento elaborado por Sercotec, cuyo objeto es describir el negocio que desea llevar a cabo el/la emprendedor/a interesado/a. Este instrumento se compone de los siguientes ámbitos:
+
+
+El detalle de cada ámbito y sus ponderaciones, se encuentran establecidos en el Anexo N°6.
+
+Para mayor información respecto a cómo abordar el criterio de sustentabilidad en un proyecto de negocio, favor ver Guía de Proyectos Sustentables en Anexo N°8.
+
+
+d.- Video de Presentación-Pitch
+
+El/la postulante deberá grabar un video de presentación de su proyecto de negocio a postular, el cual debe tener como máximo 90 segundos de duración.
+
+El concepto de Elevator Pitch fue creado en 1980 por Philip B. Crosby para comunicar a las personas objetivo o stakeholder, un posible negocio. Como su nombre indica, está diseñada para presentar un proyecto de negocio en un ascensor donde nos encontramos con un potencial cliente o inversionista. Su objetivo es generar un “gancho” o reunión para recibir asesoría, financiamiento, asociación, etc. Por ello, es importante que la presentación sea atractiva, clara e innovadora, ya que, al ser en un ascensor, el tiempo para conversar no sobrepasa los 90 segundos.
+
+El video podrá ser grabado con cualquier tipo de dispositivo y para efectos de esta convocatoria y su correspondiente evaluación, deberá contar con la siguiente información:
+ 
+Presentación del/la emprendedor/a postulante.
+Descripción de la problemática de negocio a resolver (referido a una necesidad colectiva, y no a la de carácter personal del/la postulante) y potenciales clientes. 
+Descripción de la solución a la problemática identificada, oferta de valor y elementos que la diferencian.
+Evaluación Global del Video Pitch.
+
+
+e.- Estructura de Costos (Presupuesto)
+
+Completar un esquema general del presupuesto para la ejecución del proyecto de negocio que se quiere implementar, en base a los siguientes ítems:
+
+Acciones de Gestión Empresarial.
+Inversiones.
+
+Una vez realizado los puntos mencionados, se podrá enviar el Formulario de Postulación a través de la plataforma, siempre y cuando el emprendedor/a cumpla con los requisitos de admisibilidad establecidos.
+
+Sólo aquellos/as postulantes, que cumplan con todos los requisitos de admisibilidad establecidos en bases de convocatoria punto 1.5.1.1, los que son validados automáticamente a través de la plataforma, podrán enviar su Formulario de Postulación. Una vez enviado el Formulario de Postulación, el sistema remitirá un correo electrónico a la casilla del/la postulante registrado en https://www.sercotec.cl/, indicando la recepción exitosa de la postulación. 
+
+UNA VEZ ENVIADO EL FORMULARIO, NO PODRÁ SER MODIFICADO O REENVIADO. 
+
+
+2.3 	Apoyo en el proceso de postulación
+Para que las personas interesadas realicen consultas, puede comunicarse al Punto Mipe, dirección: Huérfanos 1147, piso 6, Of. 646, Santiago; teléfonos: 23242 5432 – 23242 5424 – 23242 5425 – 23242 5430. Correos electrónicos: puntomipedrmsercotec@gmail.com, puntomipedrmsercotec2@gmail.com, puntomipedrmsercotec3@gmail.com, mipesantiago@sercotec.cl, horario de atención: de lunes a jueves desde las 9:00 - 13:00 hrs y de 14:00 – 18:00 hrs; día viernes desde las 9:00 - 13:00 hrs y de 14:00 – 16:00 hrs, o en forma virtual ingresando a “Contáctanos” en https://www.sercotec.cl/
+
+
+3. EVALUACIÓN Y SELECCIÓN
+
+3.1 	Evaluación de admisibilidad automática
+
+Iniciada la postulación, la revisión del cumplimiento de los requisitos de admisibilidad establecidos en 1.5.1.1 Validación automática de las Bases de Convocatoria, será realizada automáticamente a través de la plataforma de postulación, lo que determinará quienes podrán enviar el formulario de postulación. El resto de los criterios se evaluarán en las siguientes etapas. El no cumplimiento de alguno de ellos según verificación respectiva dará lugar a la eliminación del/la postulante del proceso, en cuyo caso Sercotec le comunicará dicha situación vía correo electrónico.
+
+Los requisitos de la validación automática, junto a sus correspondientes medios de verificación, se identifican y describen en el Anexo N° 1.
+
+Finalizado el plazo para la postulación, se abrirá un período de 5 (cinco) días hábiles administrativos, en el cual los/as postulantes podrán apelar, en caso de no haber podido enviar el formulario de postulación, debido al no cumplimiento de alguno de los requisitos de admisibilidad establecidos. Para lo anterior, deberá presentar al Agente Operador correspondiente, los antecedentes necesarios que acrediten dicho cumplimiento, los cuales serán revisados y, en los casos que corresponda, se procederá a cambiar su estado a admisible. Una vez modificado el estado, se le enviará al postulante un link, a través del cual podrá tener acceso a su formulario de postulación y proceder a su envío. Dicho envío no podrá ser posterior a 3 (tres) días hábiles administrativos contados desde la fecha de envío del link.
+
+
+
+3.2	Evaluación de admisibilidad manual
+
+El Agente Operador procederá a revisar el cumplimiento de requisitos de admisibilidad dispuestos en 1.5.1.2 Validación Manual de las presentes Bases de Convocatoria, a todos aquellos/as postulantes que hayan enviado su postulación. Los requisitos de validación manual, junto a sus medios de verificación, se identifican y describen en el Anexo N° 1.
+
+
+3.3 	Test de Preselección
+
+Una vez finalizado el plazo de postulación, con los resultados del Test de Caracterización del Emprendimiento respondido por cada emprendedor/a durante el proceso de postulación, y en base a su disponibilidad presupuestaria, cada Dirección Regional establecerá un puntaje de corte y realizará la selección de aquellos/as postulantes que serán evaluados técnicamente.
+
+El puntaje de corte corresponde al que obtuvo el/la último/a postulante que admite el número de evaluaciones técnicas disponibles. En caso de que uno o más emprendedores/as hayan obtenido la misma nota en el Test y ésta coincida con la nota de corte establecida por la Dirección Regional, se priorizará a aquel o aquella postulante que haya enviado primero su postulación.
+
+El/la postulante que quede situado por debajo del puntaje de corte establecido por la Dirección Regional, dado los fundamentos anteriores, y por lo tanto fuera del proceso de selección, no podrá llegar a la instancia de evaluación de su Formulario de Proyecto de Negocio, estructura de costos y video de presentación.
+
+3.4	Evaluación Técnica
+
+Una vez definido puntaje de corte y nómina de emprendedores/as que serán evaluados técnicamente, el Agente Operador de Sercotec, procederá a realizar la evaluación técnica, que considera dos ámbitos: el Formulario de Proyecto de Negocio y el Video de Presentación enviados.
+
+Las ponderaciones a considerar son las siguientes:
+
+
+El detalle de los criterios y ponderaciones se encuentran establecidos en el Anexo N°6.
+
+El resultado de cada etapa de evaluación considerará una nota de hasta dos decimales. Por lo tanto, en caso de que una nota contenga más de dos decimales, se aproximará a la centésima superior si el tercer decimal es igual o superior a 5 y se mantendrá la centésima si el tercer decimal es inferior a 5. Por ejemplo; en el caso de obtener una nota igual a 5,546 la nota será aproximada a 5,55; y en caso de ser nota 6,154 la nota será aproximada a 6,15.
+
+Con el resultado de la evaluación al Formulario de proyecto de negocio y video de presentación, de acuerdo a los criterios y ponderaciones indicados en el Anexo N°6 de las presentes bases; la Dirección Regional de Sercotec determinará una nota de corte sobre la base de su análisis de cobertura y disponibilidad presupuestaria y establecerá aquellos/as postulantes que continuarán en el proceso de selección. El/al postulante que quede situado por debajo de la nota de corte, no continuará a la siguiente etapa de evaluación, del Comité de Evaluación Regional (CER).
+
+El Agente Operador deberá entregar a Sercotec un informe con el resultado de cada uno de los ámbitos evaluados, el correspondiente ranking de notas, identificando la nómina de los/as postulantes que estén dentro de la nota de corte, que continuarán en la siguiente etapa y realizar una recomendación justificada, señalando si el proyecto de negocio cuenta o no con factibilidad técnica para ser implementada, y otros antecedentes que pudieran ser relevantes para la evaluación del Comité de Evaluación Regional. El/la postulante que quede situado dentro de la nota de corte, continuará en el proceso de selección, y su nota final se ponderará de acuerdo a lo indicado el punto 3.5 de las presentes bases, respecto a los resultados obtenidos en ambas etapas de evaluación.
+
+El/la postulante que quede situado por debajo de la nota de corte establecida por la Dirección Regional, y por lo tanto fuera del proceso de selección, se le notificará de este resultado a través de correo electrónico, según registro de usuario/a en https://www.sercotec.cl/, al momento de informar los seleccionados y seleccionadas de la presente convocatoria.
+
+3.5 	Comité de Evaluación Regional (CER)
+
+El Comité de Evaluación Regional (CER) es una instancia colegiada, que se constituye en cada una de las Direcciones Regionales de Sercotec, para realizar la evaluación técnica y financiera de los proyectos para su aprobación y asignación de recursos. Este Comité de Evaluación Regional (CER) se establecerá salvaguardando la integridad, probidad, ecuanimidad y transparencia del proceso. 
+
+El Comité de Evaluación Regional, definirá y requerirá que los/as postulantes sean convocados por Sercotec para realizar una presentación de su Proyecto de Negocio, considerando un tiempo máximo de 5 minutos. La forma y lugar en que se realizará esta actividad será oportunamente comunicada por el Agente Operador de Sercotec, a través de un correo electrónico enviado a la dirección establecida en el registro de usuario/a correspondiente (www.sercotec.cl). En casos excepcionales y debidamente justificados, el/la Director/a Regional podrá aprobar la realización de dicha presentación en forma remota, a través de videoconferencia, teléfono, Skype u otra modalidad similar que permita concretar su desarrollo.
+
+Si el emprendedor o emprendedora postulante no se presenta a la actividad, en el lugar y/o forma definido por la Dirección Regional, se entenderá que renuncia al proceso de selección del instrumento y no podrá continuar en el marco de la correspondiente convocatoria.
+
+La evaluación del Comité de Evaluación Regional se realizará en base a los siguientes criterios:
+
+
+El detalle de los criterios y ponderaciones se encuentran establecidos en el Anexo N° 7. 
+
+Son atribuciones del Comité de Evaluación Regional (CER):
+
+Dar fe de la transparencia y legitimidad del proceso de evaluación previo.
+Evaluar la totalidad de los Proyectos de Negocio que han llegado a la instancia del CER.
+Sancionar lista de emprendedores/as beneficiarios/as y lista de espera.
+Asignar recursos a los proyectos de negocio de emprendedores/as beneficiarios/as, que deben materializarse en la estructura financiera del Plan de Trabajo al momento de su formulación.
+Ajustar los montos de subsidio Sercotec y de aporte empresarial cuando la disponibilidad presupuestaria no permita la entrega del subsidio solicitado por el último postulante en el listado de seleccionados. En dicho caso, aplicará el procedimiento de Orden de Prelación. Es rol del CER resguardar que estos ajustes, en ningún momento, contravengan las bases de convocatoria, y que cuenten con la aprobación del/la postulante.
+Realizar ajustes presupuestarios a los Proyectos de Negocio que lo requieran (al momento de la selección de los emprendedores/as beneficiarios/as).
+Rechazar proyectos en caso que se detecte algún incumplimiento a los requisitos descritos en el punto 1.5 de las presentes bases.
+
+
+Las notas finales de los/as postulantes, se ponderarán de la siguiente forma:
+
+
+Luego, como resultado de la ponderación de notas de cada una de los Proyectos de Negocio, se obtendrá un Ranking Final. El Comité de Evaluación Regional (CER), sobre la base del ranking y el presupuesto disponible, establece una nota de corte y sanciona la lista de postulantes seleccionados/as y lista de espera correspondiente. 
+
+Además, el CER podrá aprobar los proyectos de negocio con modificaciones que considere pertinentes, siempre que no se altere su naturaleza y el objetivo general, pudiendo solicitar reformulaciones técnicas y/o presupuestarias.
+
+Se aplicará el procedimiento de “Orden de Prelación” en aquellos casos en que un seleccionado/a renuncie al concurso, incumpla algún requisito establecido en bases de convocatoria o se encuentre en otra situación calificada por Sercotec que no permita materializar la entrega del subsidio, o bien, cuando la Dirección Regional disponga de mayores recursos para asignar a la convocatoria. 
+
+En caso que el/la postulante seleccionado/a no acepte las condiciones para formalizar, se procederá de igual manera con el/la postulante que sigue en orden de puntaje, y así sucesivamente.
+
+
+Es importante recordar que el resultado de la postulación se informará a los/as postulantes a través de correo electrónico, según registro de usuario/a en https://www.sercotec.cl/. La ausencia de notificación no obsta a la validez o eficacia del resultado de la etapa.
+
+
+
+
+
+
+
+
+
+
+
+
+4. FASE DE DESARROLLO
+
+Los/las postulantes que resulten seleccionados/as deberán formalizar su relación con Sercotec para la Fase de Desarrollo, a través de la firma de un contrato entre el Agente Operador de Sercotec y el beneficiario/a, en el cual se estipulen los derechos y las obligaciones de las partes. La Dirección Regional informará oportunamente el procedimiento y condiciones para su materialización.
+
+4.1 Formalización
+
+
+
+4.1.1 Plazo de entrega de verificadores
+
+Previo a la firma del contrato, el emprendedor/a seleccionado/a deben acompañar todos los verificadores de los requisitos de formalización descritos en el punto 1.5.3. Requisitos de Formalización de las Bases de Convocatoria, y que se detallan en el Anexo N° 1, al Agente Operador Sercotec. Lo anterior, en un plazo máximo de 10 días hábiles administrativos, contados desde la fecha de notificación que se efectúe a través del sistema de evaluación. Junto con la notificación antes señalada, el Agente Operador Sercotec deberá tomar contacto dentro de las 24 horas siguientes con los emprendedores/as seleccionados/as, para informar respecto de los pasos a seguir en este proceso.
+
+
+4.1.2 Ampliación plazo de entrega de verificadores
+
+Excepcionalmente, el emprendedor/a seleccionado/a podrá solicitar una ampliación del plazo de entrega de los verificadores detallados en el Anexo N° 1. La solicitud de ampliación debe ser enviada previo a la expiración del plazo inicial dispuesto para la entrega de los documentos requeridos. El/la Ejecutivo/a de Fomento a cargo de la convocatoria, en consideración de los antecedentes presentados, podrá autorizar la extensión de este plazo hasta por un máximo de 7 días hábiles administrativos adicionales. En caso que proceda la ampliación de plazo, ésta se podrá otorgar por 1 (una) sola vez por emprendedor/a. Si el/la emprendedor/a seleccionado/a no cumple con algún requisito y/o no hace entrega de los verificadores solicitados para su formalización, dentro del plazo establecido, o dentro de la ampliación autorizada, se entenderá que renuncia a la firma de contrato para ejecutar su proyecto.
+
+4.1.3 Revisión de verificadores y suscripción del contrato
+
+Una vez recibidos los antecedentes, el Agente Operador Sercotec revisará la documentación y, en los casos que corresponda, levantará posibles observaciones destinadas a aclarar y/o corregir algún/os de los documentos ya enviados. La situación comentada no permite la entrega de verificadores pendientes de otros requisitos por parte del emprendedor/ha seleccionado/a. 
+
+El Agente Operador deberá notificar su conformidad al emprendedor/a mediante correo electrónico para luego gestionar la firma del contrato correspondiente. De existir alguna observación, el Agente Operador deberá notificar de éstas al emprendedor/a, para su correspondiente subsanación. El emprendedor/a tendrá un plazo máximo de 3 días hábiles administrativos para el envío de la información solicitada, contados desde la fecha de la notificación correspondiente. Si el/la emprendedor/a seleccionado/a no hace entrega de la información requerida por el Agente Operador Sercotec, dentro del plazo establecido, se entenderá que renuncia a la firma de contrato para ejecutar su proyecto.
+
+Una vez que el Agente Operador tiene toda la información necesaria y conforme para la formalización o vencido el plazo antes señalado, deberá notificar de lo anterior al emprendedor/a y en un plazo no superior a 3 días hábiles administrativos, contado desde dicha notificación, deberán suscribir el contrato correspondiente el Agente Operador y el Beneficiario o Beneficiaria.
+
+La suscripción del contrato se podrá realizar de forma digital, de acuerdo al procedimiento establecido por Sercotec para estos efectos. Cada seleccionado/a deberá contar previamente con su contraseña digital para trámites en línea del Estado o Clave Única, para proceder a la firma digital del documento, el cual será enviado mediante un correo electrónico, dentro de los plazos establecidos para ello.
+
+Sercotec, en conjunto con el Agente Operador Sercotec orientarán y supervisarán esta actividad para su correcta ejecución.
+
+Frente a cualquier información o situación entregada que falte a la verdad, se dejará sin efecto la adjudicación realizada, reservándose Sercotec el derecho a iniciar las acciones civiles o penales que correspondan.
+
+En el contrato, debe quedar reflejado el monto del subsidio Sercotec y del aporte empresarial contenido en el cuadro presupuestario enviado por el/la postulante en el formulario del proyecto de negocio, o en su defecto el monto modificado y aprobado por Comité de Evaluación Regional (CER).
+
+
+Los/as postulantes seleccionados/as serán considerados como beneficiarios/as de la correspondiente convocatoria, una vez hayan formalizado su condición como tal mediante la firma del contrato con el agente operador. 
+
+4.2	Formulación del Plan de Trabajo
+
+Los/as postulantes que hayan sido seleccionados/as, y hayan formalizado su condición de beneficiarios/as del Instrumento Emprende, deberán elaborar su respectivo Plan de Trabajo, para lo cual contarán con la asesoría del Agente Operador Sercotec. 
+
+Durante esta etapa, el/la beneficiario/a en conjunto con el Agente Operador Sercotec, deberá realizar una descripción más detallada del proyecto de Negocio aprobado y cuadro presupuestario postulado, a través de un formato que será provisto por Sercotec, de acuerdo a los lineamientos generales entregados por la Gerencia de Desarrollo Empresarial para este instrumento. El monto total del subsidio de Sercotec, deberá ser igual al establecido en el contrato, pudiendo existir modificaciones entre los ítems a financiar, en los casos que sea pertinente. 
+
+Esta etapa es obligatoria, por lo tanto, se aplica a todos los proyectos de negocio aprobados por el CER y tiene una duración máxima de 1 (un) mes, contado desde la fecha de firma del contrato. El/la Director/a Regional podrá autorizar la extensión de este plazo, considerando un máximo de 10 días hábiles administrativos, contados desde la fecha de término original de la etapa, a quienes soliciten la ampliación justificando las razones de esta solicitud. En caso que proceda la ampliación de plazo, ésta se podrá otorgar por 1 (una) sola vez por empresa.
+
+El Agente Operador deberá realizar una planificación, previo acuerdo con los beneficiarios/as, para la realización de al menos 2 (dos) reuniones a ejecutar en esta etapa, definiendo las fechas y modalidad respectiva, de manera de garantizar la formalidad y registro de dichas actividades.
+
+El producto resultante de esta fase, es el Plan de Trabajo que permita al/la beneficiario/a implementar el proyecto de negocio seleccionado, y cumplir de mejor manera los objetivos de la convocatoria, es decir, desarrollar las Acciones de Gestión Empresarial que le permitan desarrollar competencias y capacidades y ejecutar un plan de inversiones que posibilite la creación de un nuevo negocio con participación en el mercado. 
+
+El Plan de Trabajo se compone de los siguientes segmentos:
+
+Modelo de Negocio (Canvas)
+
+El modelo de negocios (Canvas) contiene los objetivos y descripción del proyecto que el beneficiario va a ejecutar, además de mejorar los ámbitos presentados en el formulario postulado. El Modelo de Negocio contiene los siguientes ámbitos:
+
+
+Estructura de financiamiento
+La Estructura de Financiamiento contiene actividades de Acciones de Gestión Empresarial e Inversión para la implementación del negocio.
+
+Ejemplo de Cuadro Presupuestario para Acciones de Gestión Empresarial
+
+
+
+Ejemplo de Cuadro Presupuestario para Inversiones
+
+
+Para cada ítem y/o subitem a financiar ingresado en el Plan de Trabajo, su presupuesto deberá cumplir con la proporción establecida entre el subsidio de Sercotec y el aporte entregado por el empresario/a, de acuerdo al punto 1.1 de las bases de convocatoria. 
+
+Al final de esta etapa, el Agente Operador de Sercotec deberá hacer entrega de un informe a la Dirección Regional de Sercotec que contenga, el Plan de Trabajo formulado y, todas las actividades realizadas, con sus respectivos medios de verificación, en el marco de la formulación del Plan de Trabajo a implementar. 
+
+Este informe debe estar aprobado y firmado por el/la beneficiario/a y debe ser coherente con el Proyecto de Negocio postulado y sancionado por el CER y será revisado por Sercotec para su aprobación, quien podrá solicitar ajustes al Plan de Trabajo formulado. Antes de comenzar la ejecución de las actividades establecidas en el Plan de Trabajo, éste debe ser aprobado por el/la Ejecutivo/a de Fomento correspondiente.
+
+El Agente Operador deberá presentar este informe a la Dirección Regional de Sercotec, en un plazo no superior a 15 días hábiles administrativos, contados desde la aprobación del/la beneficiario/a al Plan de Trabajo. La Dirección Regional de Sercotec tendrá un plazo máximo de 15 días hábiles administrativos contados desde la recepción de dicho informe para su aprobación.
+
+
+4.3 	Implementación del Plan de Trabajo
+
+Los/as beneficiarios/as de la presente convocatoria deberán ejecutar el Plan de Trabajo aprobado, conforme a las condiciones comprometidas en el contrato suscrito con el Agente Operador Sercotec, respetando los tiempos contemplados para la realización de los gastos asociados. 
+
+Las compras deberán realizarse con posterioridad a la fecha de suscripción del contrato y podrán realizarse a través de las siguientes modalidades:
+
+Compra asistida por el Agente Operador Sercotec. Un profesional designado por el Agente Operador de Sercotec acompañará al beneficiario/a, de manera presencial y/o virtual, y en conjunto proceden a realizar las compras correspondientes. El beneficiario/a debe financiar los impuestos asociados a la/s compra/s realizada/s y no podrán corresponder al monto de su aporte. 
+
+Para la modalidad de compra asistida, el monto de las mismas deberá ser igual o superior a $100.000.- (cien mil pesos) netos. De esta forma, todas las compras bajo dicho monto, deberán ser financiadas a través del mecanismo de reembolso.
+
+Reembolso de gastos realizados, de acuerdo al detalle y montos de gastos aprobados en el Plan de Trabajo. En caso de emitir factura de manera física o electrónica, el beneficiario/a deberá presentar o enviar escaneada la factura original del bien o servicio cancelado, para posterior reembolso. El Agente operador reembolsará los recursos correspondientes en un plazo no superior a 10 (diez) días hábiles administrativos contados desde la recepción conforme por parte del agente de toda la documentación requerida para efectos de la rendición del gasto correspondiente (el beneficiario debe financiar impuestos asociados a compras realizadas). Excepcionalmente, la Dirección Regional podrá autorizar la ampliación de este plazo considerando antecedentes presentados por el Agente Operador Sercotec, que justifiquen algún impedimento para poder realizar el reembolso en el plazo antes señalado.
+
+En todos aquellos casos en que el Plan de Trabajo considere la realización de una compra internacional, por regla general, el mecanismo de compra será a través de un reembolso.  Excepcionalmente, la Dirección Regional podrá autorizar que éstas se realicen mediante compra asistida, previo análisis de pertinencia y factibilidad con el Agente Operador.
+
+Los/as beneficiarios/as deben proceder a las compras de acuerdo a lo establecido por Sercotec y el Agente Operador, para lo cual Sercotec informará el procedimiento de rendición correspondiente. El gasto en cada ítem y/o subitem debe realizarse cumpliendo la proporción entre el subsidio de Sercotec y el aporte entregado por el empresario/a, de acuerdo al porcentaje establecido en la presente convocatoria.
+
+El beneficiario/a deberá realizar las actividades contempladas en el Plan de Trabajo en su totalidad, junto con la entrega de documentación técnica y/o contable correspondiente, en un plazo máximo de 4 (cuatro) meses, contado desde la fecha de firma del contrato, salvo autorización expresa del Director/a Regional de Sercotec, previa solicitud formal por escrito de parte del/la beneficiario/a. Dicha solicitud debe realizarse previo a la fecha de expiración del contrato y deberá dar cuenta de las razones que avalen la solicitud. Analizados los argumentos, el/la Directora Regional podrá autorizar o no la ampliación del plazo, lo que debe ser informado oportunamente al empresario/a y al Agente. 
+
+En caso que proceda la ampliación de contrato, ésta se podrá otorgar por 1 (una) sola vez por empresa. El/la Director/a Regional deberá consignar el plazo en días corridos que concede, considerando un máximo de 30 días corridos, contados desde la fecha de expiración original del contrato. Si el beneficiario/a no cumple con la totalidad de las actividades contempladas en el Plan de Trabajo, dentro del plazo establecido por contrato o de la respectiva ampliación, si aplicase; quedará establecido con el correspondiente incumplimiento, pudiendo Sercotec condicionar su acceso a futuras convocatorias de su oferta programática.
+
+El plazo máximo de ejecución (4 meses) incluye el plazo de formulación del Plan de Trabajo.
+
+
+El Agente Operador deberá realizar una planificación, previo acuerdo con los beneficiarios/as, para la realización de reuniones durante el desarrollo del proyecto, definiendo las fechas y la modalidad respectiva, de manera de garantizar la formalidad y registro de dichas actividades. Asimismo, en estas reuniones se podrá dar a conocer la oferta de servicios (capacitaciones, asesorías, talleres, entre otros) que entregan los Centros de Negocios de la región, procurando la realización de éstos por parte de los beneficiarios/as en los casos que sea pertinente para su proyecto.
+
+En el caso que el/la beneficiario/a requiera modificar o reasignar alguna de las actividades del Plan de Trabajo de manera parcial -por cambio de precios, maquinaria o servicio de mejor calidad u otra circunstancia justificada-, o incorporar nuevas actividades y/o ítems vinculados al objetivo del proyecto, si existieran excedentes de recursos, esto debe ser solicitado por el beneficiario/a de manera escrita al Agente Operador Sercotec antes de la compra del bien y/o servicio modificado o reasignado. El ejecutivo/a de Fomento, contraparte de Sercotec, tendrá la facultad de aceptar o rechazar tal petición, informando por escrito, bajo la premisa del cumplimiento del objetivo del Plan de Trabajo, considerando un movimiento máximo del 25% del monto total del proyecto. Esta modificación, en ningún caso, podrá vulnerar alguna de las restricciones de financiamiento establecidas en las bases de convocatoria.
+
+
+Los beneficiarios/as deberán facilitar y contribuir a la supervisión, seguimiento y rendición del plan de trabajo por parte de Sercotec y/o del Agente Operador contraparte, entregando elementos mínimos tales como fotografías u otros verificadores gráficos de los bienes/servicios adquiridos en el marco del proyecto financiado, que permitan corroborar su correcta instalación y/o funcionamiento.
+
+El/la beneficiario/a deberá entregar, a solicitud de Sercotec, a sus funcionarios/as o terceros que actúen en su representación, toda la información necesaria para evaluar el impacto de su Plan de Trabajo, hasta después de tres años contados desde la fecha de inicio de ejecución de contrato.
+
+El Agente Operador Sercotec debe mantener el control de la documentación relativa a los planes de trabajo, siempre junto a los respectivos contratos de los/as beneficiarios/as, a fin que la Contraloría u otro órgano auditor pueda, por una parte, compararlo con las rendiciones de cuenta presentadas por los/as beneficiarios/as y, por la otra, verificar el avance de la ejecución y cumplimiento del proyecto.
+
+
+5. TÉRMINO DEL PROYECTO
+
+El proyecto de entenderá como terminado una vez que se haya implementado la totalidad de las actividades, acciones de gestión empresarial e inversiones contempladas en el Plan de Trabajo aprobado, y sus modificaciones; lo cual se refleja en la aprobación por parte de la Dirección Regional del informe de cierre preparado por el Agente Operador Sercotec.
+
+El Agente Operador Sercotec, debe velar por el cumplimiento efectivo por parte de los beneficiarios/as, de todos los requisitos establecidos para el correcto término de los proyectos, según las presentes bases de convocatoria, documentos de operación y demás normativa relacionada al instrumento.
+
+5.1 	Término Anticipado del Proyecto
+
+Se podrá terminar anticipadamente el contrato suscrito entre el Agente Operador de Sercotec y la empresa beneficiaria en los siguientes casos:
+
+a)	Término anticipado del proyecto por causas no imputables al beneficiario/a:
+
+Se podrá terminar anticipadamente el contrato por causas no imputables a la empresa beneficiaria, por ejemplo, a causa de fuerza mayor o caso fortuito, las cuales deberán ser calificadas debidamente por la Dirección Regional de Sercotec.
+
+La solicitud de término anticipado por estas causales, deberá ser presentada por la empresa beneficiaria al Agente Operador Sercotec por escrito, acompañada de antecedentes que fundamentan dicha solicitud. El Agente Operador Sercotec, dentro de un plazo de 5 días hábiles administrativos, contados desde el ingreso de la solicitud, deberá remitir dichos antecedentes a la Dirección Regional de Sercotec. En caso de ser aceptada la solicitud, se autorizará el término anticipado por causas no imputables a la empresa beneficiaria, y el Agente Operador Sercotec deberá realizar una resciliación de contrato con la empresa beneficiaria, fecha desde la cual se entenderá terminado el proyecto. 
+
+El Agente Operador Sercotec a cargo del proyecto debe hacer entrega de un informe final de cierre, en un plazo no superior a 10 días hábiles administrativos, contados desde la firma de la resciliación. 
+
+b)	Término anticipado del proyecto por hecho o acto imputable al beneficiario/a:
+
+Se podrá terminar anticipadamente el contrato por causas imputables a la empresa beneficiaria, las cuales deberán ser calificadas debidamente por la Dirección Regional de Sercotec.
+
+Constituyen incumplimiento imputable a la empresa beneficiaria las siguientes situaciones, entre otras:
+
+Disconformidad grave entre la información técnica y/o legal entregada, y la efectiva (presentación de información y/o documentación falsa o adulterada);
+Incumplimiento grave en la ejecución del Plan de Trabajo, lo que deberá ser determinado por el/la Director/a Regional de Sercotec;
+Incumplimiento de cualquier disposición establecida en el Reglamento y/o Bases de Convocatoria;
+En caso que el/la beneficiario/a renuncie sin expresión de causa a continuar el proyecto; 
+Otras causas imputables a la falta de diligencia del/la beneficiario/a en el desempeño de sus actividades relacionadas con el Plan de Trabajo y las obligaciones que establece el contrato, calificadas debidamente por el/la Director/a Regional de Sercotec.
+
+La solicitud de término anticipado por alguna de estas causales (u otras de carácter imputable a la empresa beneficiaria) debe ser presentada a la Dirección Regional de Sercotec, por el Agente Operador por escrito, acompañada de los antecedentes que fundamentan dicha solicitud. Lo anterior, en un plazo de 10 (diez) días hábiles administrativos desde que tuvo conocimiento del incumplimiento. 
+
+En el caso de ser aceptada la solicitud, se autorizará el término anticipado de contrato por causas imputables a la empresa beneficiaria, mediante la firma de un acta por parte del/la Director/a Regional de Sercotec. Se entenderá establecido el estado de incumplimiento del contrato, desde la fecha de notificación del mismo. Lo anterior es realizado por el Agente Operador a través de correo electrónico dirigido a la dirección del/la beneficiario/a registrado/a en las bases de datos de Sercotec.
+
+En el caso de término anticipado por causas imputables a la empresa beneficiaria, ésta y su representante legal (postulante seleccionado/a de la convocatoria) no podrán postular por un período de tres años a un instrumento de Sercotec que considere entrega de un subsidio. El plazo antes mencionado, comenzará a regir desde la fecha de notificación de dicho incumplimiento.
+
+5.2 	Incumplimiento del Contrato (verificado con posterioridad a la vigencia del contrato).
+
+Se podrá establecer incumplimiento del contrato con posterioridad a la fecha de término del mismo, cuando se evidencie que la empresa beneficiaria no implementó la totalidad de las actividades definidas en su Plan de Trabajo, o se detecte que hubo algún tipo de incumplimiento imputable en la ejecución del proyecto. Las causas deberán ser calificadas debidamente por el/la Director/a Regional de Sercotec. 
+
+Constituyen incumplimiento imputable a la empresa beneficiaria las siguientes situaciones, entre otras:
+
+Incumplimiento grave en la ejecución del Plan de Trabajo, lo que deberá ser determinado por el/la Director/a Regional de Sercotec;
+Incumplimiento de cualquier disposición establecida en el Reglamento y/o Bases de Convocatoria;
+Disconformidad grave entre la información técnica y/o legal entregada, y la efectiva (presentación de información y/o documentación falsa o adulterada);
+Otras causas imputables a la falta de diligencia de la empresa beneficiaria en el desempeño de sus actividades relacionadas con el Plan de Trabajo y las obligaciones que establecía el contrato, calificadas debidamente por el/la Director/a Regional de Sercotec.
+
+La solicitud para establecer el incumplimiento de contrato por alguna de estas causales (u otras de carácter imputable a la empresa beneficiaria), debe ser presentada a la Dirección Regional de Sercotec, por el Agente Operador Sercotec por escrito, acompañada de los antecedentes que fundamentan dicha solicitud, en un plazo de 10 (diez) días hábiles administrativos desde que tuvo conocimiento del incumplimiento. 
+
+En el caso de ser aceptada la solicitud, se establecerá el incumplimiento del contrato mediante la firma de un acta por parte del/la Director/a Regional de Sercotec. Se entenderá establecido el estado de incumplimiento de contrato, desde la fecha de notificación del mismo. Lo anterior es realizado por el Agente Operador a través de correo electrónico dirigido a la dirección del/la beneficiario/a registrado/a en las bases de datos de Sercotec.
+
+En el caso de incumplimiento de contrato por parte de la empresa beneficiaria, ésta y su representante legal (postulante seleccionado/a de la convocatoria) no podrán postular por un período de tres años a un instrumento de Sercotec que considere entrega de un subsidio. El plazo antes mencionado, comenzará a regir desde la fecha de notificación de dicho incumplimiento.
+
+Sin perjuicio de lo anteriormente señalado, en el caso que se detecten acciones dolosas o fraudulentas por parte de la empresa beneficiaria, Sercotec se reserva el derecho a iniciar las acciones civiles o penales que correspondan.
+
+En cualquiera de las situaciones antes descritas en el punto 5 de las Bases, en el caso de que no se haya ejecutado la totalidad del subsidio asignado, tanto en inversiones como en acciones de gestión empresarial, el Agente Operador restituirá a la empresa beneficiaria, el monto del aporte empresarial que no haya sido ejecutado, en un plazo no superior a 15 días hábiles administrativos, contados desde la fecha de firma de la resciliación del contrato o desde la fecha de notificación del incumplimiento del contrato, según corresponda. Para lo anterior, el saldo a favor de la empresa beneficiaria, deberá ser calculado porcentualmente, en relación al total del subsidio ejecutado versus el aporte empresarial, y en consideración del 3% establecido para efectos del aporte empresarial en las Bases de Convocatoria correspondientes. 
+
+Por su parte, en caso que no se hayan ejecutado los recursos asignados del proyecto, será restituido el total del aporte empresarial a la empresa beneficiaria, en el plazo mencionado anteriormente.
+
+
+6. OTROS
+
+Los beneficiarios/as autorizan desde ya a Sercotec para la difusión de su proyecto a través de los medios de comunicación y a la incorporación en éste, del sello físico y/o virtual distintivo que da cuenta del apoyo entregado por el Servicio. La participación en la presente convocatoria implica el conocimiento y aceptación de las características y normativa que regula el Instrumento.
+
+Con su participación, el/ postulante acepta entregar, a solicitud de Sercotec, a sus funcionarios/as o terceros que actúen en su representación, toda la información necesaria para evaluar el Plan de Trabajo y su impacto en el tiempo, desde su inicio y hasta después de tres años, contados desde la fecha de inicio de ejecución del contrato. Dentro de esta colaboración, se deberá considerar a lo menos, la entrega de la información respecto de las ventas mensuales del negocio, a través de los Formularios 29. Los indicadores a evaluar podrán ser, entre otros: 
+
+Inicio de actividades ante el Servicio de Impuestos Internos (SII).
+Generación de ventas.
+Generación de empleos.
+Acceso a canales de comercialización.
+Implementación de servicios o productos.
+Adquisición de activos tecnológicos para aumento de la productividad o competitividad.
+Ahorro en el gasto de energía.
+
+Sercotec se reserva el derecho de descalificar de la convocatoria, en cualquier etapa del proceso, al/la postulante que proporcione información falsa, y con ello atente contra la transparencia del proceso, igualdad de condiciones y los objetivos del instrumento, incluso luego de formalizado el/la beneficiario/a, reservándose Sercotec la facultad de iniciar todas las acciones legales que estime pertinentes. Además, Sercotec tiene el derecho de verificar todos los requisitos en cualquier etapa del proceso (por ejemplo, cambio de domicilio en la implementación del proyecto que atente contra la focalización de la convocatoria) y el/la postulante podrá ser eliminado/a de la convocatoria, si corresponde.
+
+Por otra parte, el/la postulante debe actualizar sus datos en el portal web de Sercotec o en la plataforma de clientes que corresponda, ante cualquier cambio de domicilio y/o de correo electrónico que se genere en cualquier etapa del proceso, con el fin de propiciar adecuados mecanismos de supervisión del proyecto por parte de Sercotec y/o del Agente Operador contraparte.
+
+Los postulantes, al momento de completar el Plan de Trabajo, autorizan expresamente a Sercotec para incorporar sus antecedentes personales a una base de datos, para su uso y tratamiento en acciones de apoyo, con organismos públicos o privados, así como también para la confirmación de antecedentes por parte de fuentes oficiales, tales como Servicio de Impuestos Internos (SII), Registro Civil, Dirección del Trabajo, Ministerio de Desarrollo Social, Tesorería General de la República, entre otros.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXOS
+
+
+
+CAPITAL SEMILLA EMPRENDE
+
+
+
+REGIÓN METROPOLITANA DE SANTIAGO
+2023
+ANEXO N° 1
+
+MEDIOS DE VERIFICACIÓN DEL CUMPLIMIENTO DE LOS REQUISITOS DE LA CONVOCATORIA
+
+ADMISIBILIDAD / Validación Automática
+
+
+ADMISIBILIDAD / Validación Manual
+
+
+
+EVALUACIÓN TÉCNICA
+
+
+
+FORMALIZACIÓN 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 2
+ITEMS FINANCIABLES
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 3
+DECLARACIÓN JURADA SIMPLE PRÁCTICAS ANTISINDICALES
+
+
+
+En___________, a _______de_____________________________ de 2023, don/doña________________, Rut N°__________, domiciliado en ___________, postulante seleccionado/a a la convocatoria _____________ del instrumento Capital Semilla Emprende 2023, Región Metropolitana de Santiago, declara bajo juramento que NO ha sido condenado/a por prácticas antisindicales y/o por infracción a los derechos fundamentales del trabajador, dentro de los dos años anteriores a la fecha de firma del contrato de la presente convocatoria.
+ 
+
+
+
+
+Nombre: 
+
+Nombre representante legal: 
+
+Firma: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 4
+DECLARACIÓN JURADA SIMPLE PROBIDAD
+
+
+
+….. de …………….….. de 2023.
+
+En ___________, a _______ de____________________________ de 2023, don/doña_________________, cédula de identidad N°____________, domiciliado/a en ________________, declara bajo juramento, para efectos de la convocatoria “Capital Semilla Emprende 2023, Región Metropolitana de Santiago”, que:
+
+No tiene contrato vigente, incluso a honorarios, con el Servicio de Cooperación Técnica, Sercotec, con el Agente Operador a cargo de la convocatoria, o con quienes participen en la asignación de recursos correspondientes a la convocatoria, y no es cónyuge o conviviente civil ni tiene parentesco hasta el tercer grado de consanguineidad y segundo de afinidad inclusive con el personal directivo de Sercotec, con el personal del Agente Operador de Sercotec a cargo de la convocatoria o quienes participen en la asignación de recursos correspondientes a la convocatoria, incluido el personal de la Dirección Regional que interviene en la presente convocatoria.
+
+Asimismo, declara no ejercer un cargo de público de elección popular, ser funcionario público que requiere de exclusividad en el ejercicio de sus funciones ni ejercer un cargo público que tenga injerencia en la asignación de los fondos, evaluación de los postulantes o selección de los beneficiarios del Programa Emprende 2023.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 5
+DECLARACIÓN JURADA SIMPLE
+DE RENDICIÓN DE GASTOS
+
+En___________, a _______de_________________________ de 2023, Don/ña _____________________, cédula de identidad Nº______________, participante del proyecto ____________________ declara que:
+
+El gasto a rendir en el ítem de Asistencia técnica y asesoría en gestión NO corresponderá a mis propias boletas de honorarios, de socios, de representantes legales ni tampoco de los respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos, entre otros).
+El gasto a rendir en el ítem de Capacitación NO corresponderá a mis propias boletas de honorarios, de socios, de representantes legales, ni tampoco de respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos, entre otros).
+El gasto a rendir en el ítem de Acciones de Marketing NO corresponderá a mis propias boletas de honorarios, de socios, de representantes legales, ni tampoco de respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos, entre otros).
+El gasto a rendir en ítem de Gastos de formalización NO corresponderá a mis propias boletas de honorarios, de socios, de representantes legales, ni tampoco de respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos entre otros).
+El gasto a rendir en ítem de Activos NO corresponderá a mis propios bienes, de socios, de representantes legales, ni tampoco de respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos entre otros).
+El gasto a rendir asociado al servicio de flete en sub ítem Habilitación de infraestructura NO corresponderá al pago a alguno de los socios, representantes legales o de su respectivo cónyuge, conviviente civil, familiares por consanguineidad y afinidad hasta segundo grado inclusive (hijos, padre, madre y hermanos entre otros).
+El gasto a rendir en ítem de habilitación de infraestructura NO corresponderá a mis propios bienes, de socios, de representantes legales, ni de respectivos cónyuges, conviviente civil y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos, hermanos, entre otros).
+El gasto a rendir en ítem Nuevas contrataciones NO corresponderá a mi propia remuneración, ni de mis socios, representantes legales, ni de mi respectivo cónyuge, conviviente civil, hijos y parientes por consanguineidad y afinidad hasta segundo grado inclusive (hijos, padres, abuelos y hermanos, entre otros).
+El gasto a rendir en el ítem Nuevos arriendos de bienes raíces (industriales, comerciales o agrícolas), y/o maquinarias necesarias para el desarrollo del proyecto, contratados con posterioridad a la firma de contrato con SERCOTEC, NO corresponderá al arrendamiento de bienes propios ni de alguno de los socios/as, representantes legales ni tampoco de sus respectivos cónyuges, conviviente civil, y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos y hermanos, entre otros).
+El gasto a rendir en el ítem materias primas, materiales y mercadería, NO corresponderá a bienes propios ni de alguno de los socios/as, representantes legales ni tampoco de sus respectivos cónyuges, conviviente civil, y parientes por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padres, abuelos y hermanos, entre otros).
+El gasto a rendir asociado al servicio de flete en el sub ítem Ferias, exposiciones, eventos NO corresponderá al pago a alguno de los socios/as, representantes legales o de sus respectivos cónyuges, conviviente civil, familiares por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padre, madre y hermanos, entre otros).
+El gasto a rendir asociado al servicio de flete en el sub ítem Promoción, publicidad y difusión NO corresponderá al pago a alguno de los socios/as, representantes legales o de sus respectivos cónyuges, conviviente civil, familiares por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padre, madre y hermanos, entre otros).
+El gasto a rendir asociado al servicio de flete en el sub ítem Misiones comerciales y/o tecnológicas, visitas y pasantías NO corresponderá al pago de alguno de los socios/as, representantes o su respectivo cónyuge, conviviente civil, familiares por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padre, madre y hermanos, entre otros).
+El gasto a rendir asociado al servicio de flete en el sub ítem de Materias Primas y Materiales NO corresponderá al pago de alguno de los socios/as, representantes legales o de su respectivo cónyuge, conviviente civil, familiares por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padre, madre y hermanos, entre otros).
+El gasto a rendir asociado al servicio de flete en el sub ítem de Mercadería NO corresponderá al pago a alguno de los socios/as, representantes legales o de su respectivo cónyuge, conviviente civil, familiares por consanguineidad y afinidad hasta el segundo grado inclusive (hijos, padre, madre y hermanos, entre otros).
+
+
+
+Da fe con su firma;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 6
+CRITERIOS DE EVALUACIÓN TÉCNICA 
+CAPITAL SEMILLA EMPRENDE 2023
+
+REGIÓN METROPOLITANA DE SANTIAGO
+
+Para efectos del registro electrónico de la Evaluación Técnica: el/la postulante que renuncia y/o no presenta/adjunta los documentos definidos por Sercotec para esta etapa y/o no cumple con las condiciones señaladas en Bases de Convocatoria tendrá Nota 0, y quedará fuera del proceso de la convocatoria.
+
+
+i). Formulario Modelo de Proyecto de Negocio (60%)
+
+
+
+ii). Video de Presentación, Pitch (40%)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 7
+
+Criterios de Evaluación del Comité de Evaluación Regional
+
+
+Para efectuar la evaluación final, el Comité de Evaluación Regional (CER) analiza los proyectos de negocio que llegaron a esta etapa. Esto debe hacerse considerando los recursos disponibles en la Dirección Regional para la presente convocatoria, en base a los cuales se deberá establecer una lista final de postulantes seleccionados/as y una lista de espera, además de los siguientes antecedentes y criterios:
+
+Potencial del Proyecto de Negocio, considerando principalmente las fortalezas y debilidades del modelo de negocio descrito en el Formulario de Postulación, la pertinencia de las Acciones de Gestión Empresarial e Inversiones, y recomendaciones por parte del Agente Operador Sercotec.
+
+Fundamentación de la Oportunidad de Negocio, en consideración al nivel de conocimiento y apropiación del proyecto por parte del/la emprendedor/a postulante. 
+
+Coherencia del Proyecto de Negocio, en relación al rubro económico que apunta y las actividades estimadas para el desarrollo del potencial proyecto.
+
+Postulantes entre 18 y 40 años en edad a la fecha de cierre de postulación.
+
+
+
+
+
+Para efectos del registro electrónico de la Evaluación del Comité de Evaluación Regional: el/la postulante que renuncia y/o no se presenta a la actividad en el lugar y/o forma definido por la Dirección Regional de Sercotec y/o no cumple con las condiciones señaladas en Bases de Convocatoria tendrá Nota 0, y quedará fuera del proceso de la convocatoria.
+
+
+
+Esta evaluación se lleva a cabo en base al siguiente detalle:
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO N° 8
+
+GUIA DE PROYECTOS CON ENFOQUE SUSTENTABLE 
+Criterio Formulario Proyecto de Negocio: Sustentabilidad
+
+
+¿Qué significa crear proyectos sustentables?
+
+Crear un proyecto sustentable en el marco de los instrumentos de fomento de Sercotec significa generar un plan de trabajo, donde el negocio, proyecto y/o las actividades que lo componen puedan orientarse paulatinamente hacia la sustentabilidad, ya sea; generando una nueva área de negocio, realizando la migración de un servicio, ajustando un producto hacia uno más sustentable, ejecutando actividades sustentables, comprando activos eficientes, implementando sistemas de generación con energías renovables que abastezcan total o parcialmente su demanda  o la creación de guías de acciones y mejores prácticas con foco en la sustentabilidad. Lo anterior, siempre diseñando un enfoque hacia los ámbitos de; Eficiencia Energética, Energías Renovables y/o Economía Circular. Si deseas buscar mayor profundidad o entendimiento sobre lo que la sustentabilidad es, te invitamos mirar este video: 
+https://capacitacion.sercotec.cl/portal/content/capsula-sustentabilidad 
+
+¿Cómo puedo migrar a la sustentabilidad?
+Para implementar la sustentabilidad en tu negocio, existen grandes y pequeñas acciones que puedes realizar; el primer paso que te recomendamos es identificar estas medidas y evaluar si generan un beneficio en tu negocio, para luego generar un plan de trabajo y de esta forma comenzar a implementarlas gradualmente en el tiempo.  Existe un gran abanico de posibilidades de acciones sustentables a realizar según el rubro en el cual se inserte el negocio, sin embargo, en el siguiente listado podrás encontrar ideas generales de qué podrías realizar. Como consejo has una lluvia de ideas e identifica los aspectos más importantes para tu negocio.
+
+EFICIENCIA ENERGÉTICA Y ENERGÍAS RENOVABLES
+¿Qué puedo hacer en mi negocio?  
+
+Realización de acciones para disminuir costos energéticos, por ejemplo; cambio de letreros luminosos por opciones eficientes, recambio de luminarias a eficientes, habilitación y mejora de envolvente térmica, mejoras en climatización (calefacción y enfriamiento), entre otras.
+Realización de acciones para la implementación de componentes que mejoren la eficiencia energética en las instalaciones como lo es la implementación de domótica, migrando a un “negocio inteligente” ejemplos de ello son: automatizar la calefacción, la iluminación el sistema eléctrico, las persianas, los artefactos eléctricos, el sistema de alarma, entre otros.
+Realizar acciones de Eficiencia energética en el uso de maquinaria y equipamiento, por ejemplo; la compra de hornos eficientes, vitrinas eficientes, sistemas de aire acondicionado, sistemas de refrigeración, vehículos, lavadoras o secadoras de ropa, televisores, pantallas o artículos de oficina, calefones, entre otros.
+Asesoría para la realización de auditorías o inventario energético de tu negocio con el fin de poder identificar y cuantificar el potencial de ahorro de energía en las instalaciones y equipamiento energético y evaluar las alternativas de mejora viables, técnica y económicamente.
+Asesoría para identificar maneras de cómo migrar a que tu negocio utilice energía y combustibles menos contaminantes.
+Asesoría y capacitación para efectuar de forma informada la comprar de equipamiento eficiente para mi negocio.
+Asesoría para identificar cual o cuales metodologías de generación de energía renovable es la más adecuada para mi negocio y como poder implementarla.
+Asesoría para la creación de guías y/o capacitaciones en temáticas de: Conducción eficiente, disminución de gastos energéticos en tu negocio, eficiencia energética y el uso de energías renovables en los procesos productivos.
+
+
+ECONOMÍA CIRCULAR
+
+¿Qué puedo hacer en mi negocio?  
+
+Articulación de un proyecto de negocio que involucre directamente la recolección y reciclaje de materiales para su reutilización directa o su reproceso, como la recolección de vidrios, textiles, metales, madera, u otros elementos. 
+Actividades que migren hace un modelo de gestión de sus residuos, ya sea implementación de compostaje, reducción, reutilización, reciclaje y/o valorización de residuos sólidos o líquidos.
+Actividades relacionadas con la reducción de residuos, ya sea por una baja en las mermas, valorización de residuos y/o transformación de un residuo en una nueva materia prima o subproducto.
+Estudio de gastos operativos (optimización de logística, envases y embalajes, limpieza, gestión de residuos, negociación de precios de insumos, entre otros).
+Realización de convenios y/o alianzas con otros empresarios para trabajar en conjunto en la gestión de residuos de sus procesos, productos y/o actividades relacionadas. Integrando siempre a la cadena el trabajo con proveedores sustentables.
+Generación de envases y embalajes sustentables y/o eco-etiquetado.
+Implementación de acciones para venta de productos a granel a través de envases reutilizables.
+Diseño e implementación de servicios de reparación o arriendo de productos.
+
+Creación de guías y/o capacitaciones en:
+Estudio de generación interna y externa de residuos en mi negocio y como poder gestionarlos eficientemente en la cadena de utilización.
+Innovación y nuevas líneas de trabajo en base a la gestión de residuos.
+Identificación y categorización de proveedores según buenas prácticas ambientales.
+Cómo implementar compostaje y reciclaje en mi negocio desde la caracterización de residuos.
+
+
+USO EFICIENTE DEL AGUA 
+
+¿Qué puedo hacer en mi negocio?  
+
+Compra e implementación de equipamiento eficiente para reducción de uso del recurso hídrico.
+Automatización de un sistema de riego o humidificación de ambientes para el beneficio de la producción agrícola u otros rubros donde es relevante.
+Sistemas de recolección de aguas lluvia o cosecha de agua desde el ambiente, u otro sistema de recuperación de agua.
+Sistema de reutilización y/o tratamiento de aguas grises. 
+Creación de guías y/o capacitaciones en:
+Diseño de sistema de gestión hídrica, con la finalidad de un manejo óptimo del recurso y maximización de recursos económicos.
+Detección de oportunidades para la implementación de medidas para un mejor uso del recurso hídrico.
+Medición de huella hídrica en la producción de bienes y/o servicios.
+

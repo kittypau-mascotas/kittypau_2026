@@ -1,0 +1,23 @@
+Somos Javier Dayne y Mauricio Cárcamo, estamos desarrollando la solución Kitty-Paw, una asociación chilena de un ingeniero y un sociólogo que ofrecerá la información que necesitas para cuidar y estar al tanto del bienestar de tu mascota, Kitty-Paw te entrega información en tu smartphone. Si pudieras medir cantidad de agua, comida, temperatura y humedad del ambiente, podrías mejorar la alimentación de tu mascota, ahora imagina que pudieras tomar esos datos e interpretarlos como información o patrones para ajustar sus necesidades.
+¿Quieres cuidar mejor a tus mascotas?
+Javier (introducción - 15 segundos):
+ "Hola, somos Javier Dayne y Mauricio Cárcamo, los creadores de Kitty-Paw. Como dueños de mascotas, sabemos que a veces es un desafío entender y satisfacer todas las necesidades de nuestros amigos peludos. Por eso desarrollamos Kitty-Paw."
+Mauricio (descripción del producto - 30 segundos):
+ "Kitty-Paw es un sistema innovador que monitorea datos vitales sobre el bienestar de tu mascota, como consumo de agua y alimento, temperatura y niveles de humedad en su entorno. A través de sensores integrados, recopila esta información y la envía directamente a su smartphone mediante una aplicación fácil de usar."
+Javier (beneficios - 30 segundos):
+"Con Kitty-Paw, ya no tendrá que adivinar las necesidades de su mascota. Podrá tomar decisiones informadas basadas en datos reales para optimizar su alimentación, hidratación y ambiente de manera personalizada. Esto promueve un estilo de vida más saludable y cómodo para sus queridas mascotas."
+Mauricio (llamado a la acción - 15 segundos):
+"No pierda la oportunidad de apoyar a Kitty-Paw, la solución innovadora que revolucionará el cuidado de mascotas. Kitty-Paw es la nueva era del monitoreo inteligente del bienestar animal. Invierta en el futuro con nosotros hoy."
+
+
+
+
+
+
+
+Hola, mi nombre es Mauricio Càrcamo,  postulante al capital semilla y cofundador del proyecto Kitty-Paw en conjunto con Javier Dayne.
+Según un Boletín de la Subdere del año 2022, en Chile existen  8.306.650 perros y 4.176.029 de gatos en Chile . El 97% de los encuestados considera a su mascota un miembro de la familia, teniendo como el mayor motivo de tenencia la Compañía. 
+Por otro lado la consultora de mercado GFK estima que el 64% de los hogares en Chile tiene una mascota, que el 70% de estos se encuentra en la Región metropolitana y que un 75% del segmento de tenencia pertenece a los Milenials, una generación altamente digitalizada a la espera de una nueva perspectiva de cuidado y tenencia responsable.
+Nuestra propuesta, Kitty -Paw, en su versión prototipo y la cual buscamos reducir su electronica 	a esto,  tiene relación con el  monitoreo inteligente de tu mascota en una aplicación movil por medio de un dispositivo que medirá frecuencias de alimentación y consumo de agua , como también factores de su entorno. Todos estos datos estarán vinculados con la creación del perfil de tu mascota, para un posterior análisis mediante machine learning. Nuestro fuerte son los datos, como te los presentaremos y un análisis que a futuro podrá predecir el bienestar de tu mascota.
+Nos diferenciamos de las competencia porque no somos un dispensador de alimentos, nos importa potenciar el vínculo y la tenencia responsable de tu mascota mediante el uso inteligente de los datos. Apoya a Kitty Paw.
+º
