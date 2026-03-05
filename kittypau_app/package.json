@@ -6,7 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "clean:imports": "eslint . --fix --rule \"unused-imports/no-unused-imports:error\"",
+    "type-check": "tsc --noEmit",
+    "build-check": "next build",
+    "security-check": "npm audit --audit-level=high",
+    "fix:all": "npm run lint:fix && npm run clean:imports && npm run format",
+    "dev:check": "npm run fix:all && npm run type-check",
+    "ci:check": "npm run dev:check && npm run build-check",
+    "staged:check": "lint-staged"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
@@ -24,6 +34,13 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-sonarjs": "^4.0.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

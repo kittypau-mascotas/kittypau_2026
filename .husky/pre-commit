@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+echo "KittyPau pre-commit: lint-staged"
+npm --prefix kittypau_app run staged:check
