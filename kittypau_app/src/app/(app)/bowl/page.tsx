@@ -7,18 +7,7 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Filler,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Legend,
-  type ChartOptions,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+import { buildSeries, ChartCard } from "@/lib/charts";
 
 type ApiDevice = {
   id: string;
@@ -48,16 +37,6 @@ type LoadState = {
 };
 
 type ChartRangeKey = "5m" | "15m" | "1h" | "1d" | "1w";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler,
-);
 
 const defaultState: LoadState = {
   isLoading: true,
@@ -129,188 +108,6 @@ const formatTimestamp = (value: string | null) => {
     hour: "2-digit",
     minute: "2-digit",
   });
-};
-
-const buildSeries = (
-  readings: ApiReading[],
-  key: "weight_grams" | "temperature" | "humidity" | "light_percent",
-  windowMs: number,
-) => {
-  const cutoff = Date.now() - windowMs;
-  return readings
-    .map((reading) => ({
-      value: reading[key],
-      timestamp: reading.recorded_at,
-    }))
-    .filter((item): item is { value: number; timestamp: string } => {
-      if (typeof item.value !== "number") return false;
-      if (!item.timestamp) return false;
-      const ts = new Date(item.timestamp).getTime();
-      if (Number.isNaN(ts)) return false;
-      return ts >= cutoff;
-    });
-};
-
-const ChartCard = ({
-  title,
-  unit,
-  series,
-  accent,
-  latestValue,
-  rangeStartLabel,
-  integerDisplay = false,
-  className,
-}: {
-  title: string;
-  unit: string;
-  series: { value: number; timestamp: string }[];
-  accent: string;
-  latestValue: number | null;
-  rangeStartLabel: string;
-  integerDisplay?: boolean;
-  className?: string;
-}) => {
-  const values = series.map((item) => item.value);
-  const ordered = series.slice(0, 30).reverse();
-  const labels = ordered.map((item) => {
-    const ts = new Date(item.timestamp);
-    if (Number.isNaN(ts.getTime())) return "";
-    return ts.toLocaleTimeString("es-CL", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  });
-  const dataPoints = ordered.map((item) => item.value);
-
-  const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
-  const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: title,
-        data: dataPoints,
-        borderColor: accent,
-        backgroundColor: accent,
-        borderWidth: 2.8,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        tension: 0.3,
-        fill: false,
-      },
-    ],
-  };
-
-  const options: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 340,
-      easing: "easeOutQuart",
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-        backgroundColor: "rgba(15, 23, 42, 0.92)",
-        titleColor: "#f8fafc",
-        bodyColor: "#f8fafc",
-        borderColor: "rgba(148, 163, 184, 0.35)",
-        borderWidth: 1,
-        displayColors: false,
-        callbacks: {
-          label: (ctx) => {
-            const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
-            const value =
-              integerDisplay && raw !== null ? Math.round(raw) : raw;
-            return `${value ?? "-"} ${unit}`;
-          },
-        },
-      },
-    },
-    interaction: {
-      mode: "nearest",
-      intersect: false,
-    },
-    scales: {
-      x: {
-        offset: true,
-        grid: { display: false },
-        border: {
-          display: true,
-          color:
-            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-        },
-        ticks: {
-          maxTicksLimit: 2,
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11 },
-          autoSkip: false,
-          padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          callback: (_value, index, ticks) => {
-            if (index === 0) return rangeStartLabel;
-            if (index === ticks.length - 1) return "Ahora";
-            return "";
-          },
-        },
-      },
-      y: {
-        beginAtZero: false,
-        suggestedMin: min,
-        suggestedMax: max,
-        grid: {
-          drawOnChartArea: false,
-        },
-        border: {
-          display: true,
-          color:
-            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-        },
-        ticks: {
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11 },
-          maxTicksLimit: 3,
-          callback: (value) => {
-            const numeric = Number(value);
-            const rendered =
-              integerDisplay && Number.isFinite(numeric)
-                ? Math.round(numeric)
-                : value;
-            return `${rendered} ${unit}`;
-          },
-        },
-      },
-    },
-  };
-
-  return (
-    <div
-      className={`chart-card rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
-        className ?? ""
-      }`}
-    >
-      <p className="chart-card-title text-[11px] uppercase tracking-[0.2em] text-slate-500">
-        {title}
-      </p>
-      <p className="chart-card-value mt-2 text-2xl font-semibold text-slate-900">
-        {latestValue !== null
-          ? `${integerDisplay ? Math.round(latestValue) : latestValue} ${unit}`
-          : "Sin datos"}
-      </p>
-      <div className="chart-card-canvas mt-4 h-56 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
-        {values.length > 1 ? (
-          <Line data={data} options={options} />
-        ) : (
-          <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
-        )}
-      </div>
-    </div>
-  );
 };
 
 const batteryLabel = (battery: number | null) => {
@@ -678,19 +475,31 @@ export default function BowlPage() {
   );
 
   const weightSeries = useMemo(
-    () => buildSeries(readings, "weight_grams", selectedRangeConfig.windowMs),
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.weight_grams,
+        selectedRangeConfig.windowMs,
+      ),
     [readings, selectedRangeConfig.windowMs],
   );
   const tempSeries = useMemo(
-    () => buildSeries(readings, "temperature", selectedRangeConfig.windowMs),
+    () =>
+      buildSeries(readings, (r) => r.temperature, selectedRangeConfig.windowMs),
     [readings, selectedRangeConfig.windowMs],
   );
   const humiditySeries = useMemo(
-    () => buildSeries(readings, "humidity", selectedRangeConfig.windowMs),
+    () =>
+      buildSeries(readings, (r) => r.humidity, selectedRangeConfig.windowMs),
     [readings, selectedRangeConfig.windowMs],
   );
   const lightSeries = useMemo(
-    () => buildSeries(readings, "light_percent", selectedRangeConfig.windowMs),
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.light_percent,
+        selectedRangeConfig.windowMs,
+      ),
     [readings, selectedRangeConfig.windowMs],
   );
 

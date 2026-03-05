@@ -696,6 +696,13 @@ body {
   }
 }
 
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 20px 14px 40px;
+    gap: 16px;
+  }
+}
+
 .glass-panel {
   background: color-mix(in oklab, hsl(var(--card)) 75%, transparent);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);

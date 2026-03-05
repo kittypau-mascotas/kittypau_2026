@@ -24,6 +24,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#f6dbd6",
+};
+
 export const metadata: Metadata = {
   title: "Kittypau",
   description: "Kittypau - IoT para bienestar de mascotas",
@@ -58,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased`}
       >
