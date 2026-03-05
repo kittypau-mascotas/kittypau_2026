@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
@@ -1541,9 +1542,11 @@ export default function TodayPage() {
                   title="Ajustar foto"
                   aria-label="Ajustar foto"
                 >
-                  <img
+                  <Image
                     src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                     alt={`Foto de ${petLabel}`}
+                    width={96}
+                    height={96}
                     className="h-24 w-24 rounded-full object-cover border border-slate-200"
                   />
                 </Link>
@@ -1609,9 +1612,11 @@ export default function TodayPage() {
                       </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <img
+                      <Image
                         src="/illustrations/pink_food_full.png"
                         alt="Kittypau comedero"
+                        width={160}
+                        height={112}
                         className="mx-auto h-28 w-40 object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
@@ -1685,9 +1690,11 @@ export default function TodayPage() {
                       </p>
                     </div>
                     <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <img
+                      <Image
                         src="/illustrations/green_water_full.png"
                         alt="Kittypau bebedero"
+                        width={160}
+                        height={112}
                         className="mx-auto h-28 w-40 object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
@@ -1811,10 +1818,12 @@ export default function TodayPage() {
               >
                 {stat.icon ? (
                   <div className="absolute inset-y-3 right-4 flex w-16 items-center justify-center md:w-20">
-                    <img
+                    <Image
                       src={stat.icon}
                       alt=""
-                      aria-hidden="true"
+                      aria-hidden={true}
+                      width={80}
+                      height={80}
                       className="max-h-full max-w-full object-contain opacity-95"
                     />
                   </div>
@@ -1921,10 +1930,12 @@ export default function TodayPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {card.icon ? (
-                        <img
+                        <Image
                           src={card.icon}
                           alt=""
-                          aria-hidden="true"
+                          aria-hidden={true}
+                          width={36}
+                          height={36}
                           className="h-9 w-9 rounded-[14px] border border-slate-200 bg-white object-contain p-1"
                         />
                       ) : null}

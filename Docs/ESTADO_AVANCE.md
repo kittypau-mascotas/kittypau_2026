@@ -299,6 +299,42 @@
 - Fix aplicado al catalogo admin para evitar error 500 por tablas sin `created_at/updated_at`:
   - `supabase/migrations/20260219202000_fix_admin_object_stats_timestamp_columns.sql`
 
+## Actualizado (2026-03-05) - Performance, next/image y AppDataContext
+
+### Graficos compartidos (`src/lib/charts/index.tsx`)
+- Extraido `buildSeries<T>` y `ChartCard` a libreria compartida (`@/lib/charts`).
+- `ChartJS.register(...)` centralizado una sola vez; eliminados ~180 lineas duplicadas de `/bowl`.
+- `/bowl` y `/today` consumen la misma libreria; `canvasClassName` parametrizable.
+- Graficos añadidos a `/today`: Comida (3h, `#EBB7AA`), Temperatura (3h, `#D99686`, enteros), Humedad (3h, `hsl(198,70%,45%)`, enteros). Grid 3 columnas en desktop.
+- Peso en graficos de `/today` muestra contenido neto (bruto − `plate_weight_grams`).
+
+### Edge Runtime + Cache-Control en APIs
+- `export const runtime = "edge"` añadido a `/api/profiles`, `/api/pets`, `/api/devices`, `/api/account/type`.
+- `Cache-Control: private, max-age=N, stale-while-revalidate=N` en GET de cada endpoint:
+  - profiles: 60s / 300s, pets: 60s / 300s, devices: 30s / 120s, account/type: 300s / 3600s.
+- Columnas explicitas en `readings` SELECT (elimina transferencia de campos innecesarios).
+
+### next/image — migración completa
+- `next.config.ts`: añadido `images.remotePatterns` para `zgwqtzazvkjkfocxnxsh.supabase.co/storage/v1/object/public/**`.
+- Todos los `<img>` reemplazados por `<Image>` de `next/image`:
+  - `app-nav.tsx`: logo 44×44, avatar 38×38.
+  - `today/page.tsx`: foto mascota 96×96, ilustraciones comedero/bebedero 160×112.
+  - `loading.tsx` y `route-loading-overlay.tsx`: logo de carga 200×200.
+- Beneficios: lazy loading automático, WebP/AVIF en navegadores compatibles, prevención de CLS.
+
+### AppDataContext — estado compartido para evitar fetch duplicado
+- Nuevo archivo `src/lib/context/app-context.tsx`:
+  - `AppDataProvider`: fetcha profiles, pets, devices, account/type **una sola vez** al montar el shell de la app.
+  - `useAppData()`: hook para consumir `{ profile, petName, devices, accountType, isAdmin, ready }`.
+- `(app)/layout.tsx`: wrapeado con `<AppDataProvider>`.
+- `app-nav.tsx`: eliminados los 4 `fetch` paralelos y sus 6 estados; ahora lee de `useAppData()`. Solo quedan los fetch admin-específicos (admin/access, admin/overview).
+- Resultado: en cada navegación de página el nav ya no dispara 4 peticiones duplicadas.
+
+### Optimizaciones menores
+- `next.config.ts`: añadido `optimizePackageImports: ["lucide-react", "chart.js", "react-chartjs-2"]`.
+- `globals.css`: override mobile para `.page-shell` (padding reducido en <640px).
+- `layout.tsx` raíz: corregido `lang="en"` → `lang="es"`, añadido `viewport` export (`maximumScale: 1`, `themeColor`).
+
 ## Actualizado (2026-02-21) - UI today/login + assets unificados
 - `/today` usa fondo global de app (mismo gradiente visual del login), eliminando el fondo inline local.
 - Hero de `/today` actualizado:

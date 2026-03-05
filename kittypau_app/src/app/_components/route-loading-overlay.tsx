@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -11,20 +12,27 @@ export default function RouteLoadingOverlay() {
   useEffect(() => {
     let delay = 350;
     if (typeof window !== "undefined") {
-      const shouldPlay = window.sessionStorage.getItem("kittypau_play_login_sound");
+      const shouldPlay = window.sessionStorage.getItem(
+        "kittypau_play_login_sound",
+      );
       if (shouldPlay) {
         delay = 2000;
       }
     }
-    setVisible(true);
-    const timeout = setTimeout(() => setVisible(false), delay);
-    return () => clearTimeout(timeout);
+    const showTimeout = setTimeout(() => setVisible(true), 0);
+    const hideTimeout = setTimeout(() => setVisible(false), delay);
+    return () => {
+      clearTimeout(showTimeout);
+      clearTimeout(hideTimeout);
+    };
   }, [pathname]);
 
   useEffect(() => {
     if (!visible) return;
     if (typeof window === "undefined") return;
-    const shouldPlay = window.sessionStorage.getItem("kittypau_play_login_sound");
+    const shouldPlay = window.sessionStorage.getItem(
+      "kittypau_play_login_sound",
+    );
     if (!shouldPlay) return;
     window.sessionStorage.removeItem("kittypau_play_login_sound");
     const audio = audioRef.current;
@@ -37,7 +45,13 @@ export default function RouteLoadingOverlay() {
     <div className="route-loading-overlay" data-visible={visible}>
       <audio ref={audioRef} src="/audio/sonido_marca.mp3" preload="auto" />
       <div className="route-loading-badge" aria-hidden="true">
-        <img src="/logo_carga.jpg" alt="" className="route-loading-hero" />
+        <Image
+          src="/logo_carga.jpg"
+          alt=""
+          width={200}
+          height={200}
+          className="route-loading-hero"
+        />
       </div>
       <div className="route-loading-indicator" aria-hidden />
       <span className="route-loading-label">Cargando</span>

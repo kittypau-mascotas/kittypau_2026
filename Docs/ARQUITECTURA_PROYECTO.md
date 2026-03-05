@@ -85,10 +85,27 @@ ESP32 -> HiveMQ Cloud
 /kittypau_app
   /src
     /app
+      /(app)
+        /layout.tsx          ← wrappea con AppDataProvider
+        /_components
+          /app-nav.tsx       ← consume useAppData(), sin fetches propios
+        /today /bowl /pet /story /settings
+      /api
+        /profiles /pets /devices /account /readings
+                             ← runtime="edge" + Cache-Control en GETs
     /lib
+      /auth                  ← token.ts, auth-fetch.ts
+      /charts
+        /index.tsx           ← ChartJS.register + buildSeries<T> + ChartCard (shared)
+      /context
+        /app-context.tsx     ← AppDataProvider + useAppData()
+      /supabase              ← browser.ts, server.ts
+      /ui
     /components
   /scripts
   /public
+    /illustrations           ← pink_food_full.png, green_water_full.png, etc.
+    /audio                   ← sonido_marca.mp3, comer_*.mp3
 ```
 
 ---
@@ -105,6 +122,25 @@ ESP32 -> HiveMQ Cloud
 3. **HiveMQ Webhook**:
    - Pros: sencillo, compatible con serverless.
    - Contras: depende de endpoint publico y token seguro.
+
+4. **Edge Runtime en APIs clave** (`runtime = "edge"`):
+   - Cold start ~0ms vs ~250ms Node.js en Vercel Hobby.
+   - Compatible con `@supabase/supabase-js` (fetch nativo). No usar APIs Node.js exclusivas.
+   - Aplicado a: profiles, pets, devices, account/type.
+
+5. **AppDataContext** (`src/lib/context/app-context.tsx`):
+   - Fetcha profiles/pets/devices/account **una vez** al montar `(app)/layout`.
+   - `app-nav` y otras vistas consumen `useAppData()` sin hacer sus propias peticiones.
+   - Cache-Control en los endpoints deduplica fetches durante navegacion del mismo TTL.
+
+6. **Libreria de graficos compartida** (`src/lib/charts/index.tsx`):
+   - `ChartJS.register(...)` ejecutado una vez; evita registros duplicados entre paginas.
+   - `buildSeries<T>` acepta callback para transformaciones flexibles (e.g. peso neto).
+   - `ChartCard` parametrizable: accent, unit, canvasClassName, integerDisplay.
+
+7. **next/image**:
+   - Todas las imagenes usan `<Image>` de `next/image` (lazy, WebP/AVIF, CLS zero).
+   - Imagenes remotas Supabase habilitadas via `remotePatterns` en `next.config.ts`.
 
 ---
 

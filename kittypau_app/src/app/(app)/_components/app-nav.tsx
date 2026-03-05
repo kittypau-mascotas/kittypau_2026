@@ -1,9 +1,11 @@
-﻿"use client";
+"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { useAppData } from "@/lib/context/app-context";
 
 const navItems = [
   { href: "/today", label: "Hoy" },
@@ -14,85 +16,26 @@ const navItems = [
 
 export default function AppNav() {
   const pathname = usePathname();
-  const [profile, setProfile] = useState<{
-    user_name?: string | null;
-    owner_name?: string | null;
-    photo_url?: string | null;
-    email?: string | null;
-  } | null>(null);
-  const [petName, setPetName] = useState<string | null>(null);
-  const [devices, setDevices] = useState<Array<{ id: string; device_id: string; pet_id?: string | null }>>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const { profile, petName, devices, accountType, isAdmin } = useAppData();
+  const [userSelectedDeviceId, setUserSelectedDeviceId] = useState<
+    string | null
+  >(null);
+  const selectedDeviceId = useMemo(() => {
+    if (userSelectedDeviceId !== null) return userSelectedDeviceId;
+    if (devices.length === 0) return null;
+    const stored =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("kittypau_device_id")
+        : null;
+    return (devices.find((d) => d.id === stored) ?? devices[0])?.id ?? null;
+  }, [userSelectedDeviceId, devices]);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [accountType, setAccountType] = useState<"admin" | "tester" | "client">(
-    "client"
-  );
   const [adminRole, setAdminRole] = useState<string>("owner_admin");
   const [adminGeneratedAt, setAdminGeneratedAt] = useState<string | null>(null);
-  const [adminFreshnessLabel, setAdminFreshnessLabel] = useState("Actualizado recientemente");
-
-  if (pathname?.startsWith("/registro")) {
-    return null;
-  }
-
-  useEffect(() => {
-    if (pathname?.startsWith("/admin")) return;
-    let isMounted = true;
-    getValidAccessToken().then((token) => {
-      if (!token || !isMounted) return;
-      Promise.all([
-        fetch("/api/profiles", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/pets?limit=20", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/devices?limit=20", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/account/type", { headers: { Authorization: `Bearer ${token}` } }),
-      ])
-        .then(async ([profileRes, petsRes, devicesRes, accountRes]) => {
-          const profilePayload = profileRes.ok ? await profileRes.json().catch(() => null) : null;
-          const petsPayload = petsRes.ok ? await petsRes.json().catch(() => null) : null;
-          const devicesPayload = devicesRes.ok ? await devicesRes.json().catch(() => null) : null;
-          const accountPayload = accountRes.ok ? await accountRes.json().catch(() => null) : null;
-          if (!isMounted) return;
-          const profileData = profilePayload?.data ?? profilePayload;
-          if (profileData?.id) {
-            setProfile({
-              user_name: profileData.user_name,
-              owner_name: profileData.owner_name,
-              photo_url: profileData.photo_url,
-              email: profileData.email,
-            });
-          }
-          const pets = Array.isArray(petsPayload?.data)
-            ? petsPayload.data
-            : Array.isArray(petsPayload)
-            ? petsPayload
-            : [];
-          const nextDevices = Array.isArray(devicesPayload?.data)
-            ? devicesPayload.data
-            : Array.isArray(devicesPayload)
-            ? devicesPayload
-            : [];
-          setPetName(pets[0]?.name ?? null);
-          setDevices(nextDevices);
-          const stored =
-            typeof window !== "undefined" ? window.localStorage.getItem("kittypau_device_id") : null;
-          const primary = nextDevices.find((d: { id: string }) => d.id === stored) ?? nextDevices[0] ?? null;
-          setSelectedDeviceId(primary?.id ?? null);
-          setIsAdmin(Boolean(accountPayload?.is_admin));
-          setAccountType(
-            accountPayload?.account_type === "admin" ||
-              accountPayload?.account_type === "tester"
-              ? accountPayload.account_type
-              : "client"
-          );
-        })
-        .catch(() => undefined);
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const [adminFreshnessLabel, setAdminFreshnessLabel] = useState(
+    "Actualizado recientemente",
+  );
 
   useEffect(() => {
     if (!pathname?.startsWith("/admin")) return;
@@ -160,6 +103,10 @@ export default function AppNav() {
     };
   }, [menuOpen]);
 
+  if (pathname?.startsWith("/registro")) {
+    return null;
+  }
+
   if (pathname?.startsWith("/admin")) {
     const isAdminHome = pathname === "/admin";
     const isJavoSection = pathname?.startsWith("/admin/javo");
@@ -174,7 +121,9 @@ export default function AppNav() {
             <Link
               href="/admin"
               className={`app-nav-admin-pill app-nav-admin-link ${
-                isAdminHome ? "border-slate-300 bg-slate-100 text-slate-900" : ""
+                isAdminHome
+                  ? "border-slate-300 bg-slate-100 text-slate-900"
+                  : ""
               }`}
             >
               Dashboard
@@ -182,7 +131,9 @@ export default function AppNav() {
             <Link
               href="/admin/javo"
               className={`app-nav-admin-pill app-nav-admin-link ${
-                isJavoSection ? "border-slate-300 bg-slate-100 text-slate-900" : ""
+                isJavoSection
+                  ? "border-slate-300 bg-slate-100 text-slate-900"
+                  : ""
               }`}
             >
               Javo
@@ -190,13 +141,22 @@ export default function AppNav() {
             <span className="app-nav-admin-pill">Rol: {adminRole}</span>
             <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
             <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
-            <Link href="/admin" className="app-nav-admin-pill app-nav-admin-link">
+            <Link
+              href="/admin"
+              className="app-nav-admin-pill app-nav-admin-link"
+            >
               Dashboard
             </Link>
-            <Link href="/admin/javo" className="app-nav-admin-pill app-nav-admin-link">
+            <Link
+              href="/admin/javo"
+              className="app-nav-admin-pill app-nav-admin-link"
+            >
               Javo
             </Link>
-            <Link href="/today" className="app-nav-admin-pill app-nav-admin-link">
+            <Link
+              href="/today"
+              className="app-nav-admin-pill app-nav-admin-link"
+            >
               Volver a la app
             </Link>
             <button
@@ -215,7 +175,6 @@ export default function AppNav() {
     );
   }
 
-  const isTester = accountType === "tester";
   const isSpecial = accountType === "admin" || accountType === "tester";
 
   return (
@@ -223,7 +182,13 @@ export default function AppNav() {
       <div className="app-nav-inner">
         <div className="app-nav-brand">
           <span className="app-nav-logo-wrap" aria-hidden="true">
-            <img src="/logo.jpg" alt="Kittypau" className="brand-mark app-nav-logo" />
+            <Image
+              src="/logo.jpg"
+              alt="Kittypau"
+              width={44}
+              height={44}
+              className="brand-mark app-nav-logo"
+            />
           </span>
           <span className="brand-title app-nav-brand-title">Kittypau</span>
         </div>
@@ -252,9 +217,11 @@ export default function AppNav() {
             aria-expanded={menuOpen}
             aria-haspopup="menu"
           >
-            <img
+            <Image
               src={profile?.photo_url || "/avatar_1.png"}
               alt="Avatar"
+              width={38}
+              height={38}
               className="app-nav-avatar"
             />
             <span className="app-nav-user-meta">
@@ -263,8 +230,8 @@ export default function AppNav() {
                 {accountType === "admin"
                   ? " · Admin"
                   : accountType === "tester"
-                  ? " · Tester"
-                  : ""}
+                    ? " · Tester"
+                    : ""}
               </span>
               <span className="app-nav-user-sub">
                 {petName ?? "Sin mascota"}
@@ -279,7 +246,8 @@ export default function AppNav() {
             <div className="app-nav-menu" role="menu">
               {isSpecial ? (
                 <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                  Cuenta especial: {accountType === "admin" ? "Admin" : "Tester"}
+                  Cuenta especial:{" "}
+                  {accountType === "admin" ? "Admin" : "Tester"}
                 </p>
               ) : null}
               {devices.length > 1 ? (
@@ -291,11 +259,16 @@ export default function AppNav() {
                       value={selectedDeviceId ?? ""}
                       onChange={(event) => {
                         const nextId = event.target.value || null;
-                        setSelectedDeviceId(nextId);
+                        setUserSelectedDeviceId(nextId);
                         if (nextId && typeof window !== "undefined") {
-                          window.localStorage.setItem("kittypau_device_id", nextId);
+                          window.localStorage.setItem(
+                            "kittypau_device_id",
+                            nextId,
+                          );
                           window.dispatchEvent(
-                            new CustomEvent("kittypau-device-change", { detail: { deviceId: nextId } })
+                            new CustomEvent("kittypau-device-change", {
+                              detail: { deviceId: nextId },
+                            }),
                           );
                         }
                       }}
