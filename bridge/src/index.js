@@ -280,7 +280,7 @@ async function handleStatusData(deviceId, data) {
   if (data.wifi_ssid !== undefined) updateFields.wifi_ssid = data.wifi_ssid;
   if (newIp) updateFields.wifi_ip = newIp;
   if (data.sensor_health !== undefined) updateFields.sensor_health = data.sensor_health;
-  if (data.device_type) updateFields.device_type = DEVICE_TYPE_MAP[data.device_type] ?? data.device_type;
+  if (data.device_type) updateFields.device_type = data.device_type; // guardar valor raw del firmware
   if (data.device_model) updateFields.device_model = data.device_model;
 
   const { error } = await supabase
