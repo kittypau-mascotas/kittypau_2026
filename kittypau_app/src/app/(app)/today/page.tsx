@@ -898,6 +898,8 @@ export default function TodayPage() {
     bowlContentWeightGrams !== null ? `${Math.round(bowlContentWeightGrams)} g` : "N/D";
   const bowlPlateWeightText =
     bowlPlateWeightGrams !== null ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g` : "N/D";
+  const bowlSensorWeightText =
+    bowlGrossWeightGrams !== null ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g` : "N/D";
   const waterTempText =
     waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
       ? `${waterLatestReading.temperature}°C`
@@ -916,6 +918,8 @@ export default function TodayPage() {
     waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} g` : "N/D";
   const waterPlateWeightText =
     waterPlateWeightGrams !== null ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g` : "N/D";
+  const waterSensorWeightText =
+    waterGrossWeightGrams !== null ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g` : "N/D";
   const waterVolumeCm3Text =
     waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} cm3` : "N/D";
 
@@ -1377,6 +1381,10 @@ export default function TodayPage() {
                         {bowlPlateWeightText} (plato)
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
+                        {bowlSensorWeightText} (sensor)
+                        {renderTrend(bowlGrossWeightGrams, bowlPrevGrossWeightGrams)}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-600">
                         {bowlTempText}
                         {renderTrend(toNullableNumber(bowlLatestReading?.temperature), bowlPrevTemp)}
                       </p>
@@ -1432,6 +1440,10 @@ export default function TodayPage() {
                       </p>
                       <p className="text-[10px] font-semibold text-slate-700">
                         {waterPlateWeightText} (plato)
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-600">
+                        {waterSensorWeightText} (sensor)
+                        {renderTrend(waterGrossWeightGrams, waterPrevGrossWeightGrams)}
                       </p>
                       <p className="text-[10px] font-semibold text-slate-600">
                         {waterTempText}

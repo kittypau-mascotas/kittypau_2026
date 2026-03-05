@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 
 const navItems = [
@@ -24,6 +24,7 @@ export default function AppNav() {
   const [devices, setDevices] = useState<Array<{ id: string; device_id: string; pet_id?: string | null }>>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [accountType, setAccountType] = useState<"admin" | "tester" | "client">(
     "client"
@@ -138,6 +139,23 @@ export default function AppNav() {
     };
   }, [pathname, adminGeneratedAt]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [menuOpen]);
+
   if (pathname?.startsWith("/registro")) {
     return null;
   }
@@ -226,7 +244,7 @@ export default function AppNav() {
           })}
         </div>
 
-        <div className="relative app-nav-profile-menu">
+        <div ref={menuRef} className="relative app-nav-profile-menu">
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -312,15 +330,6 @@ export default function AppNav() {
                   onClick={() => setMenuOpen(false)}
                 >
                   Dashboard admin
-                </Link>
-              ) : null}
-              {isSpecial ? (
-                <Link
-                  href="/admin/javo"
-                  className="mt-1 block rounded-[calc(var(--radius)-6px)] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Módulo Javo
                 </Link>
               ) : null}
               <button
