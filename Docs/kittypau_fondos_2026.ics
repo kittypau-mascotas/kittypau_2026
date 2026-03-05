@@ -1,0 +1,112 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Kittypau IoT//Fondos Concursables 2026//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Kittypau - Fondos Concursables
+X-WR-TIMEZONE:America/Santiago
+
+BEGIN:VEVENT
+UID:kittypau-semilla-inicia-20260316@kittypau
+DTSTART;VALUE=DATE:20260316
+DTEND;VALUE=DATE:20260317
+SUMMARY:🚨 CIERRE Semilla Inicia CORFO (O'Higgins)
+DESCRIPTION:Postulacion CORFO Semilla Inicia - Region O'Higgins.\nMonto: hasta $17M CLP (85% si mujer lidera).\nPostular en: https://www.corfo.cl/sites/cpp/inf/semilla-inicia\n\nREQUISITOS:\n- Persona natural mayor 18 anos\n- Proyecto innovador en etapa temprana\n- Sin inicio de actividades o inicio reciente\nCOFINANCIAMIENTO: 75% CORFO / 25% emprendedor
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P7D
+ACTION:DISPLAY
+DESCRIPTION:⚠️ KITTYPAU: Cierra Semilla Inicia CORFO en 7 dias. Revisar documentos.
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P2D
+ACTION:DISPLAY
+DESCRIPTION:🚨 KITTYPAU: Cierra Semilla Inicia CORFO en 2 dias. Ultima llamada.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-semilla-inicia-regional-20260401@kittypau
+DTSTART;VALUE=DATE:20260401
+DTEND;VALUE=DATE:20260402
+SUMMARY:📋 Revisar convocatorias Semilla Inicia (otras regiones)
+DESCRIPTION:Verificar si otras regiones tienen convocatoria Semilla Inicia abierta.\nConsultar en: https://fondos.gob.cl\nBuscar convocatoria por region en CORFO.\n\nKittypau: preparar carpeta de postulacion con prototipo IoT documentado.
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:KITTYPAU: Revisar convocatorias regionales Semilla Inicia CORFO.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-startup-chile-big12-20260601@kittypau
+DTSTART;VALUE=DATE:20260601
+DTEND;VALUE=DATE:20260602
+SUMMARY:📋 Vigilar apertura StartUp Chile BIG 12
+DESCRIPTION:Start-Up Chile lanza convocatorias aproximadamente cada 6 meses.\nBIG 11 cerro nov 2025 - BIG 12 esperado ~2do semestre 2026.\n\nMontos disponibles:\n- Build (prototipo): hasta $15M CLP\n- Ignite (MVP validado): hasta $30M CLP\n- BIG (scale): hasta $75M CLP\n\nVerificar en: https://startupchile.org/apply\n\nKittypau encaja en IGNITE: prototipo IoT funcional, mercado mascotas.
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:KITTYPAU: Verificar si abrio StartUp Chile BIG 12 en startupchile.org.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-anid-startup-ciencia-20260701@kittypau
+DTSTART;VALUE=DATE:20260701
+DTEND;VALUE=DATE:20260702
+SUMMARY:📋 Vigilar apertura ANID Startup Ciencia 2027
+DESCRIPTION:ANID Startup Ciencia abre convocatoria tipicamente en julio-agosto.\nLa edicion 2026 cerro en septiembre 2025.\n\nMonto: hasta $134.550.000 CLP (85% cofinanciamiento ANID).\n\nREQUISITOS CLAVE para Kittypau:\n- Empresa constituida en Chile < 10 anos\n- Ventas anuales < 25.000 UF\n- Equipo de al menos 3 personas con roles definidos\n- Director proyecto: min 20h/semana\n- Gerente proyecto: 40h/semana\n- Personal cientifico-tecnico: 40h/semana\n\nVerificar en: https://anid.cl/concursos/
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:KITTYPAU: Verificar apertura ANID Startup Ciencia en anid.cl.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-anid-preparacion-20260801@kittypau
+DTSTART;VALUE=DATE:20260801
+DTEND;VALUE=DATE:20260802
+SUMMARY:⚠️ Preparar postulacion ANID Startup Ciencia — deadline sep 2026
+DESCRIPTION:ANID cierra tipicamente en septiembre. Comenzar preparacion AHORA.\n\nChecklist postulacion:\n[ ] Empresa constituida (SII + notaria)\n[ ] Equipo de 3 personas confirmado\n[ ] Prototipo documentado con evidencia tecnica\n[ ] Plan de negocio con proyeccion de mercado mascotas\n[ ] Presupuesto detallado 12 meses\n[ ] Carta Gantt del proyecto\n[ ] CVs equipo tecnico-cientifico\n\nKittypau: documentar arquitectura IoT (ESP8266+ESP32-CAM+Bridge+Supabase) como base tecnico-cientifica.
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:🚨 KITTYPAU: Iniciar preparacion postulacion ANID. Cierre estimado septiembre.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-startup-chile-cierre-20261001@kittypau
+DTSTART;VALUE=DATE:20261001
+DTEND;VALUE=DATE:20261002
+SUMMARY:⚠️ Verificar cierre StartUp Chile BIG 12 — preparar postulacion
+DESCRIPTION:Si BIG 12 abrio en junio, el cierre estaria aproximadamente en oct-nov 2026.\nVerificar fechas exactas en https://startupchile.org\n\nDocumentos tipicos requeridos:\n[ ] Video pitch 2-3 minutos\n[ ] Deck presentacion (10-15 slides)\n[ ] Prototipo o demo funcional\n[ ] Traccion / primeros usuarios / validacion\n[ ] Modelo de negocio y proyeccion\n\nKittypau: tener demo del sistema IoT + app web funcionando.
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:KITTYPAU: Verificar cierre StartUp Chile BIG 12 y preparar postulacion.
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:kittypau-semilla-expande-20270101@kittypau
+DTSTART;VALUE=DATE:20270101
+DTEND;VALUE=DATE:20270102
+SUMMARY:📋 Vigilar apertura Semilla Expande 2027 (CORFO)
+DESCRIPTION:Semilla Expande 2026 abrio el 15 enero 2026 y cerro el 24 febrero 2026.\nProxima convocatoria esperada: enero 2027.\n\nMonto: hasta $28M CLP (etapa 1) + $22M CLP (etapa 2).\nBonus si lidera mujer: hasta 85% cofinanciamiento.\n\nRequisito clave: tener ventas y clientes activos.\n\nVerificar en: https://www.corfo.cl/sites/cpp/inf/semilla-expande
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT0S
+ACTION:DISPLAY
+DESCRIPTION:KITTYPAU: Verificar apertura Semilla Expande 2027 en CORFO.
+END:VALARM
+END:VEVENT
+
+END:VCALENDAR
