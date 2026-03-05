@@ -321,6 +321,38 @@ const batteryLabel = (battery: number | null) => {
   return "Óptima";
 };
 
+const resolveDevicePowerState = (
+  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
+): "on" | "off" | "nodata" => {
+  if (!device) return "nodata";
+  const state = (device.device_state ?? "").toLowerCase();
+  const status = (device.status ?? "").toLowerCase();
+  if (!state && !status) return "nodata";
+  if (
+    state.includes("offline") ||
+    status === "offline" ||
+    status === "inactive"
+  ) {
+    return "off";
+  }
+  if (
+    state.includes("online") ||
+    state.includes("linked") ||
+    status === "active" ||
+    status === "linked"
+  ) {
+    return "on";
+  }
+  return "nodata";
+};
+
+const deviceToTestLabel = (deviceId: string | null | undefined) => {
+  if (!deviceId) return "Test_----";
+  const match = deviceId.match(/(\d{3,4})$/);
+  if (!match) return deviceId;
+  return `Test_${match[1]}`;
+};
+
 export default function BowlPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
@@ -536,6 +568,38 @@ export default function BowlPage() {
     return state.devices.find((device) => device.id === selectedDeviceId);
   }, [selectedDeviceId, state.devices]);
 
+  const selectedDeviceIndex = useMemo(() => {
+    return state.devices.findIndex((device) => device.id === selectedDeviceId);
+  }, [selectedDeviceId, state.devices]);
+
+  const selectedDeviceTestLabel = useMemo(() => {
+    return deviceToTestLabel(selectedDevice?.device_id);
+  }, [selectedDevice?.device_id]);
+
+  const selectorPowerState = useMemo(() => {
+    return resolveDevicePowerState(selectedDevice);
+  }, [selectedDevice]);
+
+  const selectorDotClass =
+    selectorPowerState === "on"
+      ? "bg-emerald-500 border-emerald-400"
+      : selectorPowerState === "off"
+        ? "bg-rose-500 border-rose-400"
+        : "bg-white border-slate-300";
+
+  const cycleDevice = (offset: -1 | 1) => {
+    if (state.devices.length <= 1 || selectedDeviceIndex < 0) return;
+    const nextIndex =
+      (selectedDeviceIndex + offset + state.devices.length) %
+      state.devices.length;
+    const nextDeviceId = state.devices[nextIndex]?.id ?? null;
+    if (!nextDeviceId) return;
+    setSelectedDeviceId(nextDeviceId);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("kittypau_device_id", nextDeviceId);
+    }
+  };
+
   const connectionHint = useMemo(() => {
     if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
     const last = new Date(selectedDevice.last_seen).getTime();
@@ -647,16 +711,6 @@ export default function BowlPage() {
 
   return (
     <main className="page-shell">
-      <div className="page-header">
-        <div>
-          <p className="eyebrow">Estado del plato</p>
-          <h1>Dispositivo</h1>
-        </div>
-        <Link href="/today" className="ghost-link">
-          Volver a hoy
-        </Link>
-      </div>
-
       {state.error && (
         <Alert
           variant="error"
@@ -700,7 +754,42 @@ export default function BowlPage() {
                 Lecturas en vivo
               </h2>
               <div className="flex flex-wrap items-center justify-end gap-2">
-                <span className="text-xs text-slate-500">
+                <div className="mr-1 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => cycleDevice(-1)}
+                    className="text-sm font-semibold text-slate-600 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                    disabled={state.devices.length <= 1}
+                    aria-label="Plato anterior"
+                  >
+                    ◀
+                  </button>
+                  <div className="flex min-w-[108px] items-center justify-center text-center leading-none">
+                    <span className="text-sm font-semibold text-slate-800">
+                      {selectedDeviceTestLabel}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => cycleDevice(1)}
+                    className="text-sm font-semibold text-slate-600 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                    disabled={state.devices.length <= 1}
+                    aria-label="Siguiente plato"
+                  >
+                    ▶
+                  </button>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                  <span
+                    className={`inline-block h-2.5 w-2.5 rounded-full border ${selectorDotClass}`}
+                    title={
+                      selectorPowerState === "on"
+                        ? "Prendido"
+                        : selectorPowerState === "off"
+                          ? "Apagado"
+                          : "Sin vinculación"
+                    }
+                  />
                   {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
                 </span>
                 <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
@@ -766,66 +855,6 @@ export default function BowlPage() {
                 />
               </div>
             )}
-          </section>
-
-          <section className="surface-card freeform-rise px-6 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-slate-500">Plato activo</p>
-                <p className="text-xl font-semibold text-slate-900">
-                  {selectedDevice?.device_id ?? "Sin dispositivo"}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {selectedDevice
-                    ? `${selectedDevice.device_type} · ${selectedDevice.status}`
-                    : "Conecta un dispositivo para ver el estado."}
-                </p>
-                {selectedDevice?.device_state ? (
-                  <span className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
-                    Estado técnico: {selectedDevice.device_state}
-                  </span>
-                ) : null}
-              </div>
-              {state.devices.length > 1 && (
-                <label className="flex flex-col text-xs text-slate-500">
-                  Cambiar dispositivo
-                  <select
-                    className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                    value={selectedDeviceId ?? ""}
-                    onChange={(event) => {
-                      const nextId = event.target.value || null;
-                      setSelectedDeviceId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem(
-                          "kittypau_device_id",
-                          nextId,
-                        );
-                      }
-                    }}
-                  >
-                    {state.devices.map((device) => (
-                      <option key={device.id} value={device.id}>
-                        {device.device_id}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-              <Link
-                href="/pet"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
-              >
-                Ver mascota
-              </Link>
-              <Link
-                href="/settings"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
-              >
-                Ajustes
-              </Link>
-            </div>
           </section>
 
           <section className="surface-card freeform-rise px-6 py-5">
