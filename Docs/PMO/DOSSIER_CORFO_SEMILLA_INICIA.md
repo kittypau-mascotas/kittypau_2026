@@ -273,7 +273,7 @@ ETAPA: Prototipo funcional
 El proyecto cuenta con:
 - 8 dispositivos IoT activos enviando datos en tiempo real
 - Aplicacion web deployada y accesible en internet
-- Sistema de base de datos con mas de [X] lecturas recolectadas
+- Sistema de base de datos con mas de 387.000 lecturas recolectadas (activo en tiempo real)
 - Pipeline CI/CD automatizado (GitHub Actions + Vercel)
 - Arquitectura documentada y codigo versionado en GitHub
 
@@ -435,7 +435,7 @@ Los siguientes campos estan marcados con [CORCHETES] en el documento y requieren
 | [RUT JAVIER] | Pendiente | Co-emprendedor |
 | Experiencia previa Mauro | Pendiente | CAMPO 8 + CV |
 | Experiencia previa Javier | Pendiente | CAMPO 8 + CV |
-| [X] lecturas en BD | Consultar Supabase | CAMPO 10 |
+| [X] lecturas en BD | ✅ 387.000+ (verificado 05-03-2026) | CAMPO 10 |
 
 ---
 
