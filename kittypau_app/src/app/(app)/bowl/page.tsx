@@ -388,6 +388,8 @@ export default function BowlPage() {
     return parseListResponse<ApiReading>(payload);
   };
 
+  // Carga de devices: solo se ejecuta al montar el componente.
+  // Las lecturas son responsabilidad del siguiente useEffect (deps: selectedDeviceId + selectedRange).
   useEffect(() => {
     let mounted = true;
     const run = async () => {
@@ -407,32 +409,15 @@ export default function BowlPage() {
       try {
         const devices = await loadDevices(token);
         const storedDeviceId =
-          typeof window !== "undefined"
-            ? window.localStorage.getItem("kittypau_device_id")
-            : null;
+          window.localStorage.getItem("kittypau_device_id");
         const primaryDevice =
           devices.find((device) => device.id === storedDeviceId) ?? devices[0];
         const initialId = primaryDevice?.id ?? null;
-        if (initialId && typeof window !== "undefined") {
+        if (initialId) {
           window.localStorage.setItem("kittypau_device_id", initialId);
         }
-        setSelectedDeviceId(initialId);
-        if (initialId) {
-          setIsReadingsLoading(true);
-          const selectedConfig =
-            CHART_RANGES.find((range) => range.key === selectedRange) ??
-            CHART_RANGES[0];
-          const readingData = await loadReadings(
-            initialId,
-            token,
-            selectedConfig.queryLimit,
-          );
-          if (mounted) {
-            setReadings(readingData);
-            setReadingsError(null);
-          }
-        }
         if (!mounted) return;
+        setSelectedDeviceId(initialId);
         setState({
           isLoading: false,
           error: null,
@@ -454,7 +439,7 @@ export default function BowlPage() {
     return () => {
       mounted = false;
     };
-  }, [selectedRange]);
+  }, []);
 
   useEffect(() => {
     if (!selectedDeviceId) return;

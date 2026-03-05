@@ -7,7 +7,9 @@ import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
+  CategoryScale,
   Chart as ChartJS,
+  Filler,
   LinearScale,
   PointElement,
   LineElement,
@@ -102,7 +104,15 @@ const defaultState: LoadState = {
   isLoadingMore: false,
 };
 
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler,
+);
 
 function formatTimestamp(value?: string | null) {
   if (!value) return "Sin datos";
@@ -326,6 +336,178 @@ function findSessionForPoint(
   );
 }
 
+const buildTodaySeries = (
+  readings: ApiReading[],
+  key: "weight_grams" | "temperature" | "humidity",
+  windowMs: number,
+) => {
+  const cutoff = Date.now() - windowMs;
+  return readings
+    .map((reading) => ({
+      value: reading[key],
+      timestamp: reading.recorded_at,
+    }))
+    .filter((item): item is { value: number; timestamp: string } => {
+      if (typeof item.value !== "number") return false;
+      if (!item.timestamp) return false;
+      const ts = new Date(item.timestamp).getTime();
+      if (Number.isNaN(ts)) return false;
+      return ts >= cutoff;
+    });
+};
+
+const TodayChartCard = ({
+  title,
+  unit,
+  series,
+  accent,
+  latestValue,
+  integerDisplay = false,
+}: {
+  title: string;
+  unit: string;
+  series: { value: number; timestamp: string }[];
+  accent: string;
+  latestValue: number | null;
+  integerDisplay?: boolean;
+}) => {
+  const values = series.map((item) => item.value);
+  const ordered = series.slice(0, 30).reverse();
+  const labels = ordered.map((item) => {
+    const ts = new Date(item.timestamp);
+    if (Number.isNaN(ts.getTime())) return "";
+    return ts.toLocaleTimeString("es-CL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  });
+  const dataPoints = ordered.map((item) => item.value);
+
+  const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
+  const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: title,
+        data: dataPoints,
+        borderColor: accent,
+        backgroundColor: accent,
+        borderWidth: 2.8,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  };
+
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 340,
+      easing: "easeOutQuart",
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        titleColor: "#f8fafc",
+        bodyColor: "#f8fafc",
+        borderColor: "rgba(148, 163, 184, 0.35)",
+        borderWidth: 1,
+        displayColors: false,
+        callbacks: {
+          label: (ctx) => {
+            const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+            const value =
+              integerDisplay && raw !== null ? Math.round(raw) : raw;
+            return `${value ?? "-"} ${unit}`;
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        offset: true,
+        grid: { display: false },
+        border: {
+          display: true,
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+        },
+        ticks: {
+          maxTicksLimit: 2,
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+          autoSkip: false,
+          padding: 8,
+          maxRotation: 0,
+          minRotation: 0,
+          callback: (_value, index, ticks) => {
+            if (index === 0) return "-3h";
+            if (index === ticks.length - 1) return "Ahora";
+            return "";
+          },
+        },
+      },
+      y: {
+        beginAtZero: false,
+        suggestedMin: min,
+        suggestedMax: max,
+        grid: { drawOnChartArea: false },
+        border: {
+          display: true,
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+        },
+        ticks: {
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+          maxTicksLimit: 3,
+          callback: (value) => {
+            const numeric = Number(value);
+            const rendered =
+              integerDisplay && Number.isFinite(numeric)
+                ? Math.round(numeric)
+                : value;
+            return `${rendered} ${unit}`;
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="chart-card rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5">
+      <p className="chart-card-title text-[11px] uppercase tracking-[0.2em] text-slate-500">
+        {title}
+      </p>
+      <p className="chart-card-value mt-2 text-2xl font-semibold text-slate-900">
+        {latestValue !== null
+          ? `${integerDisplay ? Math.round(latestValue) : latestValue} ${unit}`
+          : "Sin datos"}
+      </p>
+      <div className="chart-card-canvas mt-4 h-40 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
+        {values.length > 1 ? (
+          <Line data={data} options={options} />
+        ) : (
+          <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function TodayPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
@@ -340,7 +522,6 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
@@ -1153,6 +1334,23 @@ export default function TodayPage() {
     ? (deviceChartReadings[waterDevice.id] ?? [])
     : [];
 
+  const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+  const todayWeightSeries = useMemo(
+    () => buildTodaySeries(bowlChartReadings, "weight_grams", THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
+  const todayTempSeries = useMemo(
+    () => buildTodaySeries(bowlChartReadings, "temperature", THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
+  const todayHumiditySeries = useMemo(
+    () => buildTodaySeries(bowlChartReadings, "humidity", THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
+  const todayLatestWeight = todayWeightSeries[0]?.value ?? null;
+  const todayLatestTemp = todayTempSeries[0]?.value ?? null;
+  const todayLatestHumidity = todayHumiditySeries[0]?.value ?? null;
+
   const selectBowlSeriesValue = (reading: ApiReading) => {
     const gross = toNullableNumber(reading.weight_grams);
     const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
@@ -1738,6 +1936,32 @@ export default function TodayPage() {
           </section>
         </header>
 
+        <section className="surface-card freeform-rise grid gap-4 px-6 py-5 md:grid-cols-3">
+          <TodayChartCard
+            title="Comida"
+            unit="g"
+            series={todayWeightSeries}
+            accent="#EBB7AA"
+            latestValue={todayLatestWeight}
+          />
+          <TodayChartCard
+            title="Temperatura"
+            unit="°C"
+            series={todayTempSeries}
+            accent="#D99686"
+            latestValue={todayLatestTemp}
+            integerDisplay
+          />
+          <TodayChartCard
+            title="Humedad"
+            unit="%"
+            series={todayHumiditySeries}
+            accent="hsl(198, 70%, 45%)"
+            latestValue={todayLatestHumidity}
+            integerDisplay
+          />
+        </section>
+
         <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -1752,34 +1976,6 @@ export default function TodayPage() {
                 {lastRefreshAt ? formatTimestamp(lastRefreshAt) : "Sin datos"}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={async () => {
-                if (!selectedDeviceId) return;
-                setIsRefreshing(true);
-                try {
-                  const result = await loadReadings(selectedDeviceId);
-                  setState((prev) => ({
-                    ...prev,
-                    readings: result.data,
-                    readingsCursor: result.nextCursor,
-                  }));
-                  setLastRefreshAt(new Date().toISOString());
-                  setRefreshError(null);
-                } catch (err) {
-                  setRefreshError(
-                    err instanceof Error
-                      ? err.message
-                      : "No se pudieron cargar las lecturas.",
-                  );
-                } finally {
-                  setIsRefreshing(false);
-                }
-              }}
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-            >
-              {isRefreshing ? "Actualizando..." : "Actualizar lecturas"}
-            </button>
           </div>
 
           <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -1808,26 +2004,6 @@ export default function TodayPage() {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-600">
-            <Link
-              href="/story"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Abrir diario
-            </Link>
-            <Link
-              href="/pet"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Ver mascota
-            </Link>
-            <Link
-              href="/bowl"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Estado del plato
-            </Link>
-          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">
               Frescura: {freshnessLabel}
