@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 export default function RouteLoadingOverlay() {
@@ -16,7 +16,7 @@ export default function RouteLoadingOverlay() {
         delay = 2000;
       }
     }
-    setVisible(true);
+    startTransition(() => setVisible(true));
     const timeout = setTimeout(() => setVisible(false), delay);
     return () => clearTimeout(timeout);
   }, [pathname]);
