@@ -5,7 +5,8 @@ function requireEnv(name: string): string {
   if (!value) {
     // GitHub CI can run `next build` without runtime secrets loaded.
     if (process.env.CI === "true") {
-      return `ci-placeholder-${name.toLowerCase()}`;
+      if (name.includes("URL")) return "https://example.supabase.co";
+      return "ci-placeholder-key";
     }
     throw new Error(`Missing env var: ${name}`);
   }
