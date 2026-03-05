@@ -728,18 +728,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="login-bandida-action"
-              aria-label="Crear cuenta"
-              onMouseEnter={() => setHighlightRegister(true)}
-              onMouseLeave={() => setHighlightRegister(false)}
-              onFocus={() => setHighlightRegister(true)}
-              onBlur={() => setHighlightRegister(false)}
-              onClick={openRegister}
-            >
-              Crear cuenta
-            </button>
           </div>
         </div>
       </div>
