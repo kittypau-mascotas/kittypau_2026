@@ -33,10 +33,6 @@ export default function AppNav() {
   const [adminGeneratedAt, setAdminGeneratedAt] = useState<string | null>(null);
   const [adminFreshnessLabel, setAdminFreshnessLabel] = useState("Actualizado recientemente");
 
-  if (pathname?.startsWith("/registro")) {
-    return null;
-  }
-
   useEffect(() => {
     if (pathname?.startsWith("/admin")) return;
     let isMounted = true;
@@ -159,6 +155,10 @@ export default function AppNav() {
       document.removeEventListener("touchstart", onPointerDown);
     };
   }, [menuOpen]);
+
+  if (pathname?.startsWith("/registro")) {
+    return null;
+  }
 
   if (pathname?.startsWith("/admin")) {
     const isAdminHome = pathname === "/admin";

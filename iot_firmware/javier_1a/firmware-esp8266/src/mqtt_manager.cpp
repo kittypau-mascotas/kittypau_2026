@@ -188,8 +188,13 @@ void reconnectMQTT() {
             Serial.print(asctime(&timeinfo));
             timeSynchronized = true;
         } else {
-            Serial.println("\nTimeout en NTP, continuando sin sincronización.");
-            timeSynchronized = true;  // Marcar como hecho para no bloquear
+            Serial.println("\nTimeout en NTP, usando fecha de referencia.");
+            // Setear 2024-01-01 para que la validacion TLS del cert (valido 2015-2035) no falle
+            struct timeval tv;
+            tv.tv_sec = 1704067200;  // 2024-01-01 00:00:00 UTC
+            tv.tv_usec = 0;
+            settimeofday(&tv, nullptr);
+            timeSynchronized = true;
         }
     }
 

@@ -2,11 +2,48 @@
 
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
 import SocialLinks from "@/app/_components/social-links";
+
+interface StepperProps {
+  stepMeta: Array<{ label: string }>;
+  completedMap: Record<number, boolean>;
+  modalStep: number;
+  onStepperClick: (step: number) => void;
+}
+
+function Stepper({ stepMeta, completedMap, modalStep, onStepperClick }: StepperProps) {
+  return (
+    <div className="login-stepper2" aria-label="Progreso del registro">
+      <div className="login-stepper2-track" aria-hidden="true" />
+      {stepMeta.map((step, idx) => {
+        const number = idx + 1;
+        const state = completedMap[number]
+          ? "done"
+          : number === modalStep
+            ? "active"
+            : "todo";
+        return (
+          <button
+            key={step.label}
+            type="button"
+            onClick={() => onStepperClick(number)}
+            className={`login-step2 login-step2-btn ${state}`}
+            aria-current={number === modalStep ? "step" : undefined}
+          >
+            <span className="login-step2-dot" aria-hidden="true">
+              {completedMap[number] ? "✓" : number}
+            </span>
+            <span className="login-step2-label">{step.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -111,34 +148,6 @@ export default function LoginPage() {
     setManualRegistroStep(Math.min(3, Math.max(1, targetStep - 1)));
   };
 
-  const Stepper = () => (
-    <div className="login-stepper2" aria-label="Progreso del registro">
-      <div className="login-stepper2-track" aria-hidden="true" />
-      {stepMeta.map((step, idx) => {
-        const number = idx + 1;
-        const state = completedMap[number]
-          ? "done"
-          : number === modalStep
-            ? "active"
-            : "todo";
-        return (
-          <button
-            key={step.label}
-            type="button"
-            onClick={() => onStepperClick(number)}
-            className={`login-step2 login-step2-btn ${state}`}
-            aria-current={number === modalStep ? "step" : undefined}
-          >
-            <span className="login-step2-dot" aria-hidden="true">
-              {completedMap[number] ? "✓" : number}
-            </span>
-            <span className="login-step2-label">{step.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const wantsRegister = params.get("register") === "1";
@@ -147,12 +156,12 @@ export default function LoginPage() {
     if (verified && wantsRegister) {
       // Resume the registration popup after email confirmation. We'll advance to step 2+
       // as soon as Supabase session becomes available (code/token_hash exchange or auth state change).
-      setShowRegister(true);
+      startTransition(() => setShowRegister(true));
     } else if (verified) {
-      setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
+      startTransition(() => setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión."));
     }
     if (params.get("reset") === "1") {
-      setVerifiedMessage("Contraseña actualizada. Inicia sesión.");
+      startTransition(() => setVerifiedMessage("Contraseña actualizada. Inicia sesión."));
     }
   }, []);
 
@@ -728,18 +737,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="login-bandida-action"
-              aria-label="Crear cuenta"
-              onMouseEnter={() => setHighlightRegister(true)}
-              onMouseLeave={() => setHighlightRegister(false)}
-              onFocus={() => setHighlightRegister(true)}
-              onBlur={() => setHighlightRegister(false)}
-              onClick={openRegister}
-            >
-              Crear cuenta
-            </button>
           </div>
         </div>
       </div>
@@ -776,7 +773,7 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div className="mt-4 space-y-3">
-                  <Stepper />
+                  <Stepper stepMeta={stepMeta} completedMap={completedMap} modalStep={modalStep} onStepperClick={onStepperClick} />
                   {registerStep === "account" && registerConfirmed && registerConfirmedMessage ? (
                     <p className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
                       {registerConfirmedMessage}
