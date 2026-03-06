@@ -36,6 +36,13 @@ export default function LoginPage() {
   const [registerConfirmedMessage, setRegisterConfirmedMessage] = useState<string | null>(null);
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [heroBowlCycleIndex, setHeroBowlCycleIndex] = useState(0);
+  const [showTrialModal, setShowTrialModal] = useState(false);
+  const [trialOwnerName, setTrialOwnerName] = useState("");
+  const [trialPetName, setTrialPetName] = useState("");
+  const [trialError, setTrialError] = useState<string | null>(null);
+  const bubbleCoreRef = useRef<HTMLSpanElement | null>(null);
+  const bubbleTopRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const bubbleBottomRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -336,6 +343,13 @@ export default function LoginPage() {
       return;
     }
 
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem("kittypau_demo_mode");
+      window.localStorage.removeItem("kittypau_demo_owner_name");
+      window.localStorage.removeItem("kittypau_demo_pet_name");
+      window.localStorage.removeItem("kittypau_demo_device_id");
+    }
+
     const supabase = getSupabaseBrowser();
     if (!supabase) {
       setError("Faltan variables públicas de Supabase en el entorno.");
@@ -360,19 +374,21 @@ export default function LoginPage() {
       refreshToken: data.session.refresh_token,
     });
 
-    let targetPath = "/today";
+    let targetPath = "/inicio";
     try {
-      const adminRes = await fetch("/api/admin/access", {
+      const accountRes = await fetch("/api/account/type", {
         headers: { Authorization: `Bearer ${data.session.access_token}` },
       });
-      if (adminRes.ok) {
-        const adminPayload = await adminRes.json();
-        if (adminPayload?.is_admin === true) {
+      if (accountRes.ok) {
+        const accountPayload = await accountRes.json();
+        if (accountPayload?.account_type === "admin") {
           targetPath = "/admin";
+        } else if (accountPayload?.account_type === "tester") {
+          targetPath = "/today";
         }
       }
     } catch {
-      // If admin check fails, keep default user route.
+      // If account check fails, keep default client route.
     }
 
     if (typeof window !== "undefined") {
@@ -522,8 +538,104 @@ export default function LoginPage() {
     setRegisterError(null);
   };
 
+  const openTrial = () => {
+    setTrialError(null);
+    setShowTrialModal(true);
+  };
+
+  const closeTrial = () => {
+    setShowTrialModal(false);
+    setTrialError(null);
+  };
+
+  const startTrial = () => {
+    const owner = trialOwnerName.trim();
+    const pet = trialPetName.trim();
+    if (!owner || !pet) {
+      setTrialError("Ingresa tu nombre y el nombre de tu mascota.");
+      return;
+    }
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("kittypau_demo_mode", "1");
+      window.localStorage.setItem("kittypau_demo_owner_name", owner);
+      window.localStorage.setItem("kittypau_demo_pet_name", pet);
+      if (!window.localStorage.getItem("kittypau_demo_device_id")) {
+        window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
+      }
+    }
+    closeTrial();
+    router.push("/demo");
+  };
+
+  const playTrialButtonEffect = () => {
+    const top = bubbleTopRefs.current.filter(
+      (item): item is HTMLSpanElement => Boolean(item),
+    );
+    const bottom = bubbleBottomRefs.current.filter(
+      (item): item is HTMLSpanElement => Boolean(item),
+    );
+    const core = bubbleCoreRef.current;
+
+    [...top, ...bottom, core]
+      .filter((item): item is HTMLSpanElement => Boolean(item))
+      .forEach((item) => {
+        item.getAnimations().forEach((anim) => anim.cancel());
+      });
+
+    const topMoves = [
+      { x: -26, y: -24, scaleX: 0.2, scaleY: 0.2 },
+      { x: -18, y: -28, scaleX: 1, scaleY: 0.8 },
+      { x: -30, y: -14, scaleX: 0.2, scaleY: 0.2 },
+    ];
+    const bottomMoves = [
+      { x: 26, y: 24, scaleX: 0.2, scaleY: 0.2 },
+      { x: 18, y: 28, scaleX: 0.8, scaleY: 0.8 },
+      { x: 30, y: 14, scaleX: 0.2, scaleY: 0.2 },
+    ];
+
+    top.forEach((el, idx) => {
+      const move = topMoves[idx] ?? topMoves[topMoves.length - 1];
+      el.animate(
+        [
+          { opacity: 0, transform: "translate(0, 0) scale(0.6)" },
+          { opacity: 0.84, offset: 0.18, transform: "translate(0, 0) scale(1.05)" },
+          {
+            opacity: 0,
+            transform: `translate(${move.x}px, ${move.y}px) scale(${move.scaleX}, ${move.scaleY})`,
+          },
+        ],
+        { duration: 980, easing: "cubic-bezier(0.1, 0.7, 0.2, 1)", fill: "forwards" },
+      );
+    });
+
+    bottom.forEach((el, idx) => {
+      const move = bottomMoves[idx] ?? bottomMoves[bottomMoves.length - 1];
+      el.animate(
+        [
+          { opacity: 0, transform: "translate(0, 0) scale(0.6)" },
+          { opacity: 0.84, offset: 0.18, transform: "translate(0, 0) scale(1.05)" },
+          {
+            opacity: 0,
+            transform: `translate(${move.x}px, ${move.y}px) scale(${move.scaleX}, ${move.scaleY})`,
+          },
+        ],
+        { duration: 920, easing: "cubic-bezier(0.1, 0.7, 0.2, 1)", fill: "forwards" },
+      );
+    });
+
+    core?.animate(
+      [
+        { transform: "translateY(-50%) scale(1)" },
+        { transform: "translateY(-50%) scale(1.08, 1.18)", offset: 0.2 },
+        { transform: "translateY(-50%) scale(0.98, 1.02)", offset: 0.45 },
+        { transform: "translateY(-50%) scale(1)" },
+      ],
+      { duration: 1200, easing: "cubic-bezier(0.2, 0.9, 0.25, 1)", fill: "forwards" },
+    );
+  };
+
   return (
-    <div className="login-bg">
+    <div className="login-bg login-ui-font">
       <div className="login-layer">
         <div className="login-collage" />
       </div>
@@ -554,11 +666,11 @@ export default function LoginPage() {
             </button>
           </div>
           <h1 className="login-hero-title display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
-            Tu plato inteligente, tu historia diaria.
+            Descubre lo que tu mascota intenta decirte.
           </h1>
           <p className="login-hero-copy text-base leading-relaxed text-slate-600 md:text-lg">
-            Accede a la lectura interpretada del comportamiento de tu mascota.
-            Sin dashboards fríos, solo claridad y calma.
+            Monitorea ciclos de alimentación e hidratación en tiempo real y recibe alertas tempranas para cuidar su salud.
+            Es la tenencia responsable que marca el futuro del bienestar animal.
           </p>
         </div>
 
@@ -579,10 +691,80 @@ export default function LoginPage() {
           <div className="login-panel-wrap">
             <div className="glass-panel freeform-rise w-full p-7">
               <div className="stagger login-login-stack">
-                <div>
+                <div className="flex items-start justify-between gap-3">
                   <h2 className="display-title text-2xl font-semibold text-slate-900">
                     Iniciar sesión
                   </h2>
+                  <div className="kp-bubble-wrap shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" className="kp-goo">
+                      <defs>
+                        <filter id="kp-goo">
+                          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                          <feColorMatrix
+                            in="blur"
+                            mode="matrix"
+                            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
+                            result="goo"
+                          />
+                          <feComposite in="SourceGraphic" in2="goo" />
+                        </filter>
+                      </defs>
+                    </svg>
+
+                    <span className="kp-bubble-container">
+                      <button
+                        type="button"
+                        onClick={openTrial}
+                        onMouseEnter={playTrialButtonEffect}
+                        onFocus={playTrialButtonEffect}
+                        onPointerEnter={playTrialButtonEffect}
+                        className="kp-bubble-button"
+                      >
+                        Cuenta de prueba
+                      </button>
+                      <span className="kp-bubble-effect" aria-hidden="true">
+                        <span
+                          ref={(el) => {
+                            bubbleTopRefs.current[0] = el;
+                          }}
+                          className="kp-bubble-circle top-left"
+                        />
+                        <span
+                          ref={(el) => {
+                            bubbleTopRefs.current[1] = el;
+                          }}
+                          className="kp-bubble-circle top-left"
+                        />
+                        <span
+                          ref={(el) => {
+                            bubbleTopRefs.current[2] = el;
+                          }}
+                          className="kp-bubble-circle top-left"
+                        />
+                        <span ref={bubbleCoreRef} className="kp-bubble-core" />
+                        <span
+                          ref={(el) => {
+                            bubbleBottomRefs.current[0] = el;
+                          }}
+                          className="kp-bubble-circle bottom-right"
+                        />
+                        <span
+                          ref={(el) => {
+                            bubbleBottomRefs.current[1] = el;
+                          }}
+                          className="kp-bubble-circle bottom-right"
+                        />
+                        <span
+                          ref={(el) => {
+                            bubbleBottomRefs.current[2] = el;
+                          }}
+                          className="kp-bubble-circle bottom-right"
+                        />
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <div>
                   <p className="mt-2 text-sm text-slate-500">
                     Usa tu correo para ver el estado de tu plato.
                   </p>
@@ -889,6 +1071,74 @@ export default function LoginPage() {
                   /> 
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showTrialModal ? (
+        <div className="login-trial-overlay fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
+          <div className="login-register-modal login-trial-modal glass-panel w-full max-w-md rounded-[var(--radius)] p-6">
+            <div className="mb-4">
+              <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
+                Modo prueba
+              </p>
+              <h2 className="login-trial-title mt-1 text-xl font-semibold">
+                Personaliza tu demo
+              </h2>
+              <p className="login-trial-copy mt-1 text-sm">
+                Te mostraremos Kittypau con tus datos para una sesión de prueba.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block space-y-1">
+                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                  Tu nombre
+                </span>
+                <input
+                  type="text"
+                  value={trialOwnerName}
+                  onChange={(event) => setTrialOwnerName(event.target.value)}
+                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                  placeholder="Ej: Mauricio"
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                  Nombre de tu mascota
+                </span>
+                <input
+                  type="text"
+                  value={trialPetName}
+                  onChange={(event) => setTrialPetName(event.target.value)}
+                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                  placeholder="Ej: Luna"
+                />
+              </label>
+            </div>
+
+            {trialError ? (
+              <p className="login-trial-error mt-3 rounded-[var(--radius)] border px-3 py-2 text-xs">
+                {trialError}
+              </p>
+            ) : null}
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={closeTrial}
+                className="login-trial-cancel rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={startTrial}
+                className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
+              >
+                Entrar a prueba
+              </button>
             </div>
           </div>
         </div>

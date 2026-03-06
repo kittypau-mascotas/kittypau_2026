@@ -123,6 +123,7 @@ export default function RegistroFlow({
 
   const [token, setToken] = useState<string | null>(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [entryPath, setEntryPath] = useState<string>("/inicio");
   const [profileSummary, setProfileSummary] = useState<{
     user_name?: string | null;
     city?: string | null;
@@ -339,7 +340,7 @@ export default function RegistroFlow({
     toastTimeout.current = window.setTimeout(() => {
       setToastMessage(null);
       if (shouldRedirect) {
-        router.push("/today");
+        router.push(entryPath);
       }
     }, 1400);
   };
@@ -348,7 +349,7 @@ export default function RegistroFlow({
     if (!accessToken) return;
 
     try {
-      const [statusRes, petsRes, profileRes] = await Promise.all([
+      const [statusRes, petsRes, profileRes, accountRes] = await Promise.all([
         fetch("/api/registro/status", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
@@ -358,10 +359,18 @@ export default function RegistroFlow({
         fetch("/api/profiles", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
+        fetch("/api/account/type", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }),
       ]);
 
       if (
-        (statusRes.status === 401 || petsRes.status === 401 || profileRes.status === 401) &&
+        (
+          statusRes.status === 401 ||
+          petsRes.status === 401 ||
+          profileRes.status === 401 ||
+          accountRes.status === 401
+        ) &&
         allowRetry
       ) {
         const supabase = getSupabaseBrowser();
@@ -395,6 +404,9 @@ export default function RegistroFlow({
       const statusData = (await statusRes.json()) as RegistroStatus;
       const petsData = (await petsRes.json()) as Pet[];
       const profileDataRaw = await profileRes.json();
+      const accountPayload = accountRes.ok
+        ? await accountRes.json().catch(() => null)
+        : null;
       const profileData = (profileDataRaw?.profile ?? profileDataRaw) as
         | {
             user_name?: string | null;
@@ -410,6 +422,12 @@ export default function RegistroFlow({
       setPets(petsData ?? []);
       setProfileSummary(profileData ?? null);
       setAccountEmail((prev) => profileData?.email ?? prev);
+      setEntryPath(
+        accountPayload?.account_type === "admin" ||
+          accountPayload?.account_type === "tester"
+          ? "/today"
+          : "/inicio"
+      );
       setDeviceForm((prev) => ({
         ...prev,
         pet_id: prev.pet_id || petsData?.[0]?.id || "",
@@ -686,7 +704,7 @@ export default function RegistroFlow({
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
               <Link
-                href="/today"
+                href={entryPath}
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
               >
                 Volver al feed
@@ -1454,7 +1472,7 @@ export default function RegistroFlow({
               </div>
             ) : null}
             <Link
-              href="/today"
+              href={entryPath}
               className="mt-4 inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
             >
               Continuar al dashboard

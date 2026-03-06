@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -14,6 +15,11 @@ import { buildSeries, ChartCard } from "@/lib/charts";
 type ApiPet = {
   id: string;
   name: string;
+  type?: string | null;
+  origin?: string | null;
+  size?: string | null;
+  age_range?: string | null;
+  weight_kg?: number | null;
   pet_state?: string | null;
   photo_url?: string | null;
 };
@@ -70,6 +76,24 @@ type StatCard = {
   label: string;
   value: string;
   icon?: string;
+};
+
+type PeriodStats = {
+  consumed: number | null;
+  cycles: number;
+};
+
+type ConsumptionSummary = {
+  day: PeriodStats;
+  week: PeriodStats;
+  month: PeriodStats;
+};
+type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
+
+type SessionDetailStats = {
+  events: number;
+  avgConsumed: number | null;
+  avgDurationMinutes: number | null;
 };
 
 type LoadState = {
@@ -316,9 +340,72 @@ function findSessionForPoint(
   );
 }
 
+function summarizeSessionsByPeriods(
+  sessions: IntakeSession[],
+  nowMs: number,
+): ConsumptionSummary {
+  const boundaries = {
+    day: nowMs - 24 * 60 * 60 * 1000,
+    week: nowMs - 7 * 24 * 60 * 60 * 1000,
+    month: nowMs - 30 * 24 * 60 * 60 * 1000,
+  };
+
+  const build = (startMs: number): PeriodStats => {
+    const filtered = sessions.filter((session) => session.endT >= startMs);
+    if (!filtered.length) return { consumed: null, cycles: 0 };
+    const consumed = filtered.reduce(
+      (acc, session) => acc + Math.max(0, session.consumed),
+      0,
+    );
+    return { consumed: Math.round(consumed), cycles: filtered.length };
+  };
+
+  return {
+    day: build(boundaries.day),
+    week: build(boundaries.week),
+    month: build(boundaries.month),
+  };
+}
+
+function summarizeSessionDetailsByPeriod(
+  sessions: IntakeSession[],
+  nowMs: number,
+  period: keyof ConsumptionSummary,
+): SessionDetailStats {
+  const startMsByPeriod = {
+    day: nowMs - 24 * 60 * 60 * 1000,
+    week: nowMs - 7 * 24 * 60 * 60 * 1000,
+    month: nowMs - 30 * 24 * 60 * 60 * 1000,
+  };
+  const filtered = sessions.filter(
+    (session) => session.endT >= startMsByPeriod[period],
+  );
+  if (!filtered.length) {
+    return {
+      events: 0,
+      avgConsumed: null,
+      avgDurationMinutes: null,
+    };
+  }
+  const totalConsumed = filtered.reduce(
+    (acc, session) => acc + Math.max(0, session.consumed),
+    0,
+  );
+  const totalDuration = filtered.reduce(
+    (acc, session) => acc + Math.max(0, session.durationMinutes),
+    0,
+  );
+  return {
+    events: filtered.length,
+    avgConsumed: Math.round(totalConsumed / filtered.length),
+    avgDurationMinutes: Math.round(totalDuration / filtered.length),
+  };
+}
+
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
 
 export default function TodayPage() {
+  const router = useRouter();
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -330,22 +417,57 @@ export default function TodayPage() {
   >({});
   const [deviceChartReadings, setDeviceChartReadings] =
     useState<DeviceReadingsMap>({});
+  const [deviceHistoryReadings, setDeviceHistoryReadings] =
+    useState<DeviceReadingsMap>({});
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [accountType, setAccountType] = useState<
+    "admin" | "tester" | "client" | null
+  >(null);
+  const [consumptionPeriod, setConsumptionPeriod] =
+    useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
 
   useEffect(() => {
     let mounted = true;
-    getValidAccessToken().then((value) => {
-      if (mounted) setIsAuthed(Boolean(value));
+    getValidAccessToken().then(async (value) => {
+      if (!mounted) return;
+      setIsAuthed(Boolean(value));
+      if (!value) {
+        setAccountType(null);
+        return;
+      }
+      try {
+        const res = await fetch("/api/account/type", {
+          headers: { Authorization: `Bearer ${value}` },
+        });
+        if (!mounted) return;
+        if (!res.ok) {
+          setAccountType(null);
+          return;
+        }
+        const payload = await res.json().catch(() => null);
+        const nextType =
+          payload?.account_type === "admin" || payload?.account_type === "tester"
+            ? payload.account_type
+            : "client";
+        setAccountType(nextType);
+        if (nextType === "client") {
+          router.replace("/inicio");
+        } else if (nextType === "admin") {
+          router.replace("/admin");
+        }
+      } catch {
+        if (mounted) setAccountType(null);
+      }
     });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [router]);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
     if (Array.isArray(payload)) {
@@ -477,9 +599,20 @@ export default function TodayPage() {
         setSelectedDeviceId(initialDeviceId);
         if (primaryPet?.id && typeof window !== "undefined") {
           window.localStorage.setItem("kittypau_pet_id", primaryPet.id);
+          window.localStorage.setItem("kittypau_pet_name", primaryPet.name ?? "");
+          window.dispatchEvent(
+            new CustomEvent("kittypau-pet-change", {
+              detail: { petId: primaryPet.id, petName: primaryPet.name ?? "" },
+            }),
+          );
         }
         if (initialDeviceId && typeof window !== "undefined") {
           window.localStorage.setItem("kittypau_device_id", initialDeviceId);
+          window.dispatchEvent(
+            new CustomEvent("kittypau-device-change", {
+              detail: { deviceId: initialDeviceId },
+            }),
+          );
         }
         if (initialDeviceId) {
           const result = await loadReadings(initialDeviceId);
@@ -685,6 +818,21 @@ export default function TodayPage() {
   const ownerLabel =
     state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
+  const petTypeLabel =
+    primaryPet?.type === "dog"
+      ? "Perro"
+      : primaryPet?.type === "cat"
+        ? "Gato"
+        : null;
+  const petMeta = [
+    petTypeLabel,
+    primaryPet?.origin ?? null,
+    primaryPet?.size ?? null,
+    primaryPet?.age_range ?? null,
+    typeof primaryPet?.weight_kg === "number"
+      ? `${primaryPet.weight_kg} kg`
+      : null,
+  ].filter(Boolean) as string[];
   const primaryDevice =
     petDevices.find((device) => device.id === selectedDeviceId) ??
     petDevices.find(
@@ -738,6 +886,18 @@ export default function TodayPage() {
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
     [latestReading?.recorded_at],
   );
+  const heroUpdatedAt = useMemo(() => {
+    const candidates = [
+      bowlLatestReading?.recorded_at ?? null,
+      waterLatestReading?.recorded_at ?? null,
+    ].filter((value): value is string => Boolean(value));
+    if (!candidates.length) return null;
+    return candidates
+      .map((value) => ({ value, ts: new Date(value).getTime() }))
+      .filter((item) => Number.isFinite(item.ts))
+      .sort((a, b) => b.ts - a.ts)[0]?.value ?? null;
+  }, [bowlLatestReading?.recorded_at, waterLatestReading?.recorded_at]);
+  const heroUpdatedLabel = heroUpdatedAt ? formatTimestamp(heroUpdatedAt) : "Sin datos";
 
   useEffect(() => {
     // Keep the live panel aligned with the hero food device for the selected pet.
@@ -854,6 +1014,41 @@ export default function TodayPage() {
       active = false;
     };
   }, [bowlDevice?.id, dayCycleOffsetDays, waterDevice?.id]);
+
+  useEffect(() => {
+    const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
+      (value, index, arr): value is string =>
+        Boolean(value) && arr.indexOf(value) === index,
+    );
+    if (!targetIds.length) return;
+    let active = true;
+    const loadHistoryTargets = async () => {
+      const now = new Date();
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const from = monthAgo.toISOString();
+      const to = now.toISOString();
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const result = await loadReadings(deviceId, null, 1200, { from, to });
+            return [deviceId, result.data] as const;
+          } catch {
+            return [deviceId, []] as const;
+          }
+        }),
+      );
+      if (!active) return;
+      setDeviceHistoryReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+    };
+    void loadHistoryTargets();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, waterDevice?.id]);
+
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -1113,12 +1308,23 @@ export default function TodayPage() {
     setSelectedPetId(pet.id);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kittypau_pet_id", pet.id);
+      window.localStorage.setItem("kittypau_pet_name", pet.name ?? "");
+      window.dispatchEvent(
+        new CustomEvent("kittypau-pet-change", {
+          detail: { petId: pet.id, petName: pet.name ?? "" },
+        }),
+      );
     }
 
     if (!nextDevice) return;
     setSelectedDeviceId(nextDevice.id);
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kittypau_device_id", nextDevice.id);
+      window.dispatchEvent(
+        new CustomEvent("kittypau-device-change", {
+          detail: { deviceId: nextDevice.id },
+        }),
+      );
     }
     try {
       const result = await loadReadings(nextDevice.id);
@@ -1372,32 +1578,32 @@ export default function TodayPage() {
           },
         },
         tooltip: {
-          backgroundColor: "rgba(255,251,253,0.98)",
-          titleColor: "#be185d",
-          bodyColor: "#334155",
-          footerColor: "#64748b",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          titleColor: "#f8fafc",
+          bodyColor: "#f8fafc",
+          footerColor: "#cbd5e1",
           titleFont: {
-            family: "Arial, Helvetica, sans-serif",
-            size: 13,
+            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 12,
             weight: 700,
           },
           bodyFont: {
-            family: "Arial, Helvetica, sans-serif",
-            size: 12,
+            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 11,
             weight: 600,
           },
           footerFont: {
-            family: "Arial, Helvetica, sans-serif",
-            size: 11,
+            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 10,
             weight: 500,
           },
-          borderColor: "rgba(244,114,182,0.32)",
+          borderColor: "rgba(148, 163, 184, 0.35)",
           borderWidth: 1,
-          cornerRadius: 12,
-          padding: 12,
-          displayColors: true,
-          usePointStyle: true,
-          boxPadding: 4,
+          cornerRadius: 10,
+          padding: 10,
+          displayColors: false,
+          usePointStyle: false,
+          boxPadding: 2,
           callbacks: {
             title: (items) => {
               void items;
@@ -1501,41 +1707,119 @@ export default function TodayPage() {
     [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
   );
 
+  const nowMs = useMemo(
+    () => Date.now(),
+    [deviceHistoryReadings, bowlDevice?.id, waterDevice?.id],
+  );
+  const monthStartMs = nowMs - 30 * 24 * 60 * 60 * 1000;
+  const bowlHistoryPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        bowlDevice?.id ? (deviceHistoryReadings[bowlDevice.id] ?? []) : [],
+        monthStartMs,
+        nowMs,
+        (reading) => {
+          const gross = toNullableNumber(reading.weight_grams);
+          if (gross === null) return null;
+          const tare = Math.max(0, bowlDevice?.plate_weight_grams ?? 0);
+          return Math.max(0, gross - tare);
+        },
+      ),
+    [
+      bowlDevice?.id,
+      bowlDevice?.plate_weight_grams,
+      deviceHistoryReadings,
+      monthStartMs,
+      nowMs,
+    ],
+  );
+  const waterHistoryPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        waterDevice?.id ? (deviceHistoryReadings[waterDevice.id] ?? []) : [],
+        monthStartMs,
+        nowMs,
+        (reading) => {
+          const gross = toNullableNumber(reading.weight_grams);
+          if (gross === null) return null;
+          const tare = Math.max(0, waterDevice?.plate_weight_grams ?? 0);
+          return Math.max(0, gross - tare);
+        },
+      ),
+    [
+      waterDevice?.id,
+      waterDevice?.plate_weight_grams,
+      deviceHistoryReadings,
+      monthStartMs,
+      nowMs,
+    ],
+  );
+  const bowlHistorySessions = useMemo(
+    () => detectIntakeSessions(bowlHistoryPoints),
+    [bowlHistoryPoints],
+  );
+  const waterHistorySessions = useMemo(
+    () => detectIntakeSessions(waterHistoryPoints),
+    [waterHistoryPoints],
+  );
+  const bowlConsumptionSummary = useMemo(
+    () => summarizeSessionsByPeriods(bowlHistorySessions, nowMs),
+    [bowlHistorySessions, nowMs],
+  );
+  const waterConsumptionSummary = useMemo(
+    () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
+    [waterHistorySessions, nowMs],
+  );
+  const summaryPeriod: keyof ConsumptionSummary =
+    consumptionPeriod === "one" ? "day" : consumptionPeriod;
+  const detailPeriod: keyof ConsumptionSummary =
+    consumptionPeriod === "one" ? "month" : consumptionPeriod;
+  const bowlDetailSummary = useMemo(
+    () =>
+      summarizeSessionDetailsByPeriod(
+        bowlHistorySessions,
+        nowMs,
+        detailPeriod,
+      ),
+    [bowlHistorySessions, nowMs, detailPeriod],
+  );
+  const waterDetailSummary = useMemo(
+    () =>
+      summarizeSessionDetailsByPeriod(
+        waterHistorySessions,
+        nowMs,
+        detailPeriod,
+      ),
+    [waterHistorySessions, nowMs, detailPeriod],
+  );
+  const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
+    value === null ? "N/D" : `${value} ${unit}`;
+  const periodLabels: Array<{ key: ConsumptionViewPeriod; label: string }> = [
+    { key: "one", label: "Uno" },
+    { key: "day", label: "Día" },
+    { key: "week", label: "Semana" },
+    { key: "month", label: "Mes" },
+  ];
+  const activePeriodLabel =
+    periodLabels.find((item) => item.key === summaryPeriod)?.label.toLowerCase() ??
+    "día";
+
+  if (accountType === "client" || accountType === "admin") {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen px-4 pb-10 pt-4 md:px-6 md:pt-4">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-4">
           <section
             id="today-hero"
             role="region"
-            aria-label="Hero estado de platos y mascota"
-            className="today-hero surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+            aria-label="Hero de mascota"
+            className="today-hero surface-card freeform-rise px-4 py-3 md:px-6 md:py-3"
           >
-            <div className="grid gap-4 md:grid-cols-[180px_1fr]">
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(-1)}
-                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Mascota anterior"
-                    title="Mascota anterior"
-                  >
-                    ◀
-                  </button>
-                  <p className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-900">
-                    {petLabel}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(1)}
-                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Siguiente mascota"
-                    title="Siguiente mascota"
-                  >
-                    ▶
-                  </button>
-                </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
+              <div className="flex min-w-0 items-center gap-3 md:gap-4">
                 <Link
                   href="/pet"
                   className="inline-flex"
@@ -1545,16 +1829,138 @@ export default function TodayPage() {
                   <Image
                     src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                     alt={`Foto de ${petLabel}`}
-                    width={96}
-                    height={96}
-                    className="h-24 w-24 rounded-full object-cover border border-slate-200"
+                    width={128}
+                    height={128}
+                    className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                   />
                 </Link>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(-1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Mascota anterior"
+                      title="Mascota anterior"
+                    >
+                      ◀
+                    </button>
+                    <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
+                      {petLabel}
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Siguiente mascota"
+                      title="Siguiente mascota"
+                    >
+                      ▶
+                    </button>
+                  </div>
+                  <p className="truncate text-xs text-slate-500 md:text-sm">
+                    {petMeta.length ? petMeta.join(" · ") : "Sin datos de registro"}
+                  </p>
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="relative min-h-[132px]">
+              <aside className="ml-auto flex w-full flex-col items-center gap-1 sm:w-auto">
+                <p className="text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
+                  Actualizado el {heroUpdatedLabel}
+                </p>
+                <div className="inline-flex items-center gap-2">
+                  <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
+                  <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2">
+                    <p className="text-xs font-semibold text-emerald-700">
+                      Alimentación
+                    </p>
+                    <div className="mt-1 space-y-0.5">
+                      <p className="text-[11px] text-slate-600">
+                        {consumptionPeriod === "one"
+                          ? `${bowlDetailSummary.events} eventos (30d)`
+                          : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                      </p>
+                      {consumptionPeriod === "one" ? (
+                        <p className="text-[11px] text-slate-600">
+                          Unit: {formatConsumedValue(bowlDetailSummary.avgConsumed, "g")} ·{" "}
+                          {bowlDetailSummary.avgDurationMinutes === null
+                            ? "N/D"
+                            : formatSessionDuration(bowlDetailSummary.avgDurationMinutes)}
+                        </p>
+                      ) : (
+                        <p className="text-[11px] text-slate-600">
+                          Consumo: {formatConsumedValue(
+                            bowlConsumptionSummary[summaryPeriod].consumed,
+                            "g",
+                          )}{" "}
+                          /{activePeriodLabel}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2">
+                    <p className="text-xs font-semibold text-sky-700">
+                      Hidratación
+                    </p>
+                    <div className="mt-1 space-y-0.5">
+                      <p className="text-[11px] text-slate-600">
+                        {consumptionPeriod === "one"
+                          ? `${waterDetailSummary.events} eventos (30d)`
+                          : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                      </p>
+                      {consumptionPeriod === "one" ? (
+                        <p className="text-[11px] text-slate-600">
+                          Unit: {formatConsumedValue(waterDetailSummary.avgConsumed, "ml")} ·{" "}
+                          {waterDetailSummary.avgDurationMinutes === null
+                            ? "N/D"
+                            : formatSessionDuration(waterDetailSummary.avgDurationMinutes)}
+                        </p>
+                      ) : (
+                        <p className="text-[11px] text-slate-600">
+                          Consumo: {formatConsumedValue(
+                            waterConsumptionSummary[summaryPeriod].consumed,
+                            "ml",
+                          )}{" "}
+                          /{activePeriodLabel}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  </div>
+                  <div className="my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
+                  {periodLabels.map(({ key, label }) => {
+                    const isActive = key === consumptionPeriod;
+                    return (
+                      <button
+                        key={`period-${key}`}
+                        type="button"
+                        onClick={() => setConsumptionPeriod(key)}
+                        className={`rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-none transition ${
+                          isActive
+                            ? "bg-emerald-400 text-slate-900"
+                            : "text-slate-900 hover:bg-slate-100"
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section
+            id="today-bowls"
+            role="region"
+            aria-label="Estado de platos"
+            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                  <div className="relative min-h-[180px]">
                     <div className="absolute right-2 top-2 flex items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
@@ -1575,35 +1981,35 @@ export default function TodayPage() {
                       />
                       <BatteryStatusIcon
                         level={bowlDevice?.battery_level ?? null}
-                        className="h-5 w-5 text-slate-700"
+                        className="h-6 w-6 text-slate-700"
                       />
                     </div>
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">
+                    <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                      <p className="text-[14px] font-semibold text-slate-700">
                         {bowlContentWeightText} (contenido)
                         {renderTrend(
                           bowlContentWeightGrams,
                           bowlPrevContentWeightGrams,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-700">
+                      <p className="text-[14px] font-semibold text-slate-700">
                         {bowlPlateWeightText} (plato)
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
+                      <p className="text-[14px] font-semibold text-slate-600">
                         {bowlSensorWeightText} (sensor)
                         {renderTrend(
                           bowlGrossWeightGrams,
                           bowlPrevGrossWeightGrams,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
+                      <p className="text-[14px] font-semibold text-slate-600">
                         {bowlTempText}
                         {renderTrend(
                           toNullableNumber(bowlLatestReading?.temperature),
                           bowlPrevTemp,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-500">
+                      <p className="text-[14px] font-semibold text-slate-500">
                         {bowlHumidityText}
                         {renderTrend(
                           toNullableNumber(bowlLatestReading?.humidity),
@@ -1611,28 +2017,28 @@ export default function TodayPage() {
                         )}
                       </p>
                     </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
+                    <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                      <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                          Alimentación
+                        </span>
+                      </div>
                       <Image
                         src="/illustrations/pink_food_full.png"
                         alt="Kittypau comedero"
-                        width={160}
-                        height={112}
-                        className="mx-auto h-28 w-40 object-contain object-center"
+                        width={208}
+                        height={150}
+                        className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {bowlDevice?.device_id ?? "KPCLXXXX"}
                       </p>
-                      <div className="mt-2 flex w-full items-start justify-center gap-2">
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                          Alimentación
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </article>
 
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="relative min-h-[132px]">
+                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                  <div className="relative min-h-[180px]">
                     <div className="absolute right-2 top-2 flex items-center gap-1">
                       <span
                         className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
@@ -1653,35 +2059,35 @@ export default function TodayPage() {
                       />
                       <BatteryStatusIcon
                         level={waterDevice?.battery_level ?? null}
-                        className="h-5 w-5 text-slate-700"
+                        className="h-6 w-6 text-slate-700"
                       />
                     </div>
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">
+                    <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                      <p className="text-[14px] font-semibold text-slate-700">
                         {waterVolumeCm3Text} (aprox)
                         {renderTrend(
                           waterContentWeightGrams,
                           waterPrevContentWeightGrams,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-700">
+                      <p className="text-[14px] font-semibold text-slate-700">
                         {waterPlateWeightText} (plato)
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
+                      <p className="text-[14px] font-semibold text-slate-600">
                         {waterSensorWeightText} (sensor)
                         {renderTrend(
                           waterGrossWeightGrams,
                           waterPrevGrossWeightGrams,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
+                      <p className="text-[14px] font-semibold text-slate-600">
                         {waterTempText}
                         {renderTrend(
                           toNullableNumber(waterLatestReading?.temperature),
                           waterPrevTemp,
                         )}
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-500">
+                      <p className="text-[14px] font-semibold text-slate-500">
                         {waterHumidityText}
                         {renderTrend(
                           toNullableNumber(waterLatestReading?.humidity),
@@ -1689,26 +2095,25 @@ export default function TodayPage() {
                         )}
                       </p>
                     </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
+                    <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                      <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                          Hidratación
+                        </span>
+                      </div>
                       <Image
                         src="/illustrations/green_water_full.png"
                         alt="Kittypau bebedero"
-                        width={160}
-                        height={112}
-                        className="mx-auto h-28 w-40 object-contain object-center"
+                        width={208}
+                        height={150}
+                        className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
                       />
                       <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                         {waterDevice?.device_id ?? "KPBWXXXX"}
                       </p>
-                      <div className="mt-2 flex w-full items-start justify-center gap-2">
-                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
-                          Hidratación
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </article>
-              </div>
             </div>
           </section>
 
