@@ -2,23 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { useAppData } from "@/lib/context/app-context";
 
-const specialNavItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  demoMenu?: "today" | "story" | "pet" | "bowl";
+};
+
+const specialNavItems: NavItem[] = [
   { href: "/today", label: "Hoy" },
   { href: "/story", label: "Story" },
   { href: "/pet", label: "Mascota" },
   { href: "/bowl", label: "Plato" },
 ];
 
-const clientNavItems = [{ href: "/inicio", label: "Inicio" }];
+const demoNavItems: NavItem[] = [
+  { href: "/demo?menu=today", label: "Hoy", demoMenu: "today" },
+  { href: "/demo?menu=story", label: "Story", demoMenu: "story" },
+  { href: "/demo?menu=pet", label: "Mascota", demoMenu: "pet" },
+  { href: "/demo?menu=bowl", label: "Plato", demoMenu: "bowl" },
+];
+
+const clientNavItems: NavItem[] = [{ href: "/inicio", label: "Inicio" }];
 
 export default function AppNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { profile, petName, devices, accountType, isAdmin } = useAppData();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoOwnerName, setDemoOwnerName] = useState<string | null>(null);
@@ -263,7 +277,16 @@ export default function AppNav() {
     effectiveAccountType === "admin" || effectiveAccountType === "tester";
   const useSidebarNav =
     effectiveAccountType === "tester" || effectiveAccountType === "client";
-  const navItems = isSpecial ? specialNavItems : clientNavItems;
+  const demoMenu = (searchParams.get("menu") ?? "today") as
+    | "today"
+    | "story"
+    | "pet"
+    | "bowl";
+  const navItems = isDemoMode
+    ? demoNavItems
+    : isSpecial
+      ? specialNavItems
+      : clientNavItems;
   const resolvedDeviceLabel = isDemoMode
     ? demoDeviceId || "KPCL-DEMO"
     : selectedDeviceId
@@ -388,9 +411,10 @@ export default function AppNav() {
         {useSidebarNav ? <div className="app-nav-user-top">{userSummary}</div> : null}
         <div className="app-nav-links">
           {navItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/today" && pathname?.startsWith(item.href));
+            const isActive = isDemoMode
+              ? pathname?.startsWith("/demo") && item.demoMenu === demoMenu
+              : pathname === item.href ||
+                (item.href !== "/today" && pathname?.startsWith(item.href));
             return (
               <Link
                 key={item.href}
