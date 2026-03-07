@@ -375,3 +375,24 @@
   - `50% aprox` -> plato medio (`pink_food_medium` / `pink_water_medium`).
   - `100%` -> plato lleno (`pink_food_full` / `green_water_full`).
   - la transicion final debe estar basada en dato real por KPCL (comida/agua), no en click manual.
+
+## Actualizado (2026-03-06) - APK Android Studio + Capacitor
+- Se consolida app Android nativa via Capacitor en `kittypau_app/android`.
+- `capacitor.config.ts` configurado para consumir datos reales desde `https://kittypau-app.vercel.app`.
+- Endurecimiento Android aplicado:
+  - `allowBackup=false`
+  - `usesCleartextTraffic=false`
+  - `network_security_config.xml`
+  - `data_extraction_rules.xml`
+- Modo visual exclusivo para APK (`kp-native-apk`) implementado para diferenciar distribucion nativa vs web mobile.
+- Branding APK unificado con `public/logo_carga.jpg`:
+  - iconos launcher
+  - splash screen
+  - logo en vistas clave
+  - metadata de iconos/manifest para compartir
+- Version Android actual:
+  - `versionCode: 3`
+  - `versionName: 1.2.0`
+- Build APK validado localmente:
+  - Debug: `android/app/build/outputs/apk/debug/app-debug.apk`
+  - Release unsigned: `android/app/build/outputs/apk/release/app-release-unsigned.apk`

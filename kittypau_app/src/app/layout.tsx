@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Fraunces, Inter, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
+import NativeApkMode from "./_components/native-apk-mode";
 
 const inter = Inter({
   variable: "--font-ui",
@@ -32,19 +33,22 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Kittypau",
-  description: "Kittypau - IoT para bienestar de mascotas",
+  title: "KittyPau",
+  applicationName: "KittyPau",
+  description: "KittyPau - IoT para bienestar de mascotas",
   metadataBase: new URL("https://kittypau-app.vercel.app"),
+  manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/logo.jpg",
-    apple: "/logo.jpg",
+    icon: "/logo_carga.jpg",
+    apple: "/logo_carga.jpg",
   },
   openGraph: {
-    title: "Kittypau",
-    description: "Kittypau - IoT para bienestar de mascotas",
+    title: "KittyPau | Bienestar Inteligente para Mascotas",
+    description:
+      "Controla comida, hidratación y actividad en tiempo real con KittyPau.",
     images: [
       {
-        url: "/logo.jpg",
+        url: "/logo_carga.jpg",
         width: 1200,
         height: 630,
         alt: "Kittypau",
@@ -53,9 +57,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kittypau",
-    description: "Kittypau - IoT para bienestar de mascotas",
-    images: ["/logo.jpg"],
+    title: "KittyPau | Bienestar Inteligente para Mascotas",
+    description:
+      "Controla comida, hidratación y actividad en tiempo real con KittyPau.",
+    images: ["/logo_carga.jpg"],
   },
 };
 
@@ -69,6 +74,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased`}
       >
+        <NativeApkMode />
         <RouteLoadingOverlay />
         {children}
       </body>

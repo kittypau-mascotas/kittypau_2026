@@ -6,6 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "android:add": "npx cap add android",
+    "android:assets": "npx @capacitor/assets generate --android",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build:debug": "cd android && .\\gradlew assembleDebug",
     "lint": "eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -28,6 +33,10 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.6.0",
+    "@capacitor/core": "^8.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

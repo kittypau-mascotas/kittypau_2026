@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local
+.env.production
+.env.development
+!.env.example
 
 # vercel
 .vercel
@@ -40,3 +44,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# android build and local machine files
+/android/.gradle/
+/android/local.properties
+/android/app/build/
+/android/build/
+*.jks
+*.keystore

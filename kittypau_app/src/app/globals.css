@@ -44,12 +44,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
   font-feature-settings: "ss01" 1, "ss02" 1;
   text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 .brand-title {
@@ -413,7 +422,7 @@ body {
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
@@ -421,7 +430,8 @@ body {
 }
 
 .app-content {
-  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
 }
 
 .app-nav {
@@ -432,6 +442,7 @@ body {
   background: color-mix(in oklab, white 92%, transparent);
   border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
   box-shadow: 0 10px 34px -28px rgba(15, 23, 42, 0.5);
+  padding-top: env(safe-area-inset-top);
 }
 
 .app-nav-inner {
@@ -441,7 +452,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 12px 24px;
+  padding: 12px max(24px, env(safe-area-inset-right))
+    12px max(24px, env(safe-area-inset-left));
 }
 
 .app-nav-brand {
@@ -639,7 +651,8 @@ body {
       "links links";
     align-items: center;
     gap: 10px 12px;
-    padding: 10px 12px;
+    padding: 10px max(12px, env(safe-area-inset-right))
+      10px max(12px, env(safe-area-inset-left));
   }
 
   .app-nav-brand {
@@ -675,9 +688,11 @@ body {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     padding-bottom: 2px;
+    padding-inline: 2px;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
 
@@ -699,6 +714,7 @@ body {
   .app-nav-link {
     white-space: nowrap;
     padding: 6px 10px;
+    scroll-snap-align: start;
   }
 
   .app-nav-user {
@@ -712,17 +728,17 @@ body {
   }
 
   .app-nav-user-name {
-    max-width: 96px;
+    max-width: 110px;
   }
 
   .app-nav-user-sub {
-    max-width: 96px;
+    max-width: 110px;
     font-size: 10px;
   }
 
   .app-nav-menu {
-    right: 0;
-    width: 210px;
+    right: max(0px, env(safe-area-inset-right));
+    width: min(210px, calc(100vw - 16px));
   }
 }
 
@@ -1893,6 +1909,83 @@ textarea::placeholder {
 .route-loading-overlay[data-visible="true"] {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* APK-specific distribution (Capacitor native app only) */
+.kp-native-apk .app-shell {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.9), transparent 40%),
+    linear-gradient(180deg, #f7e4e0 0%, #fffaf8 75%, #ffffff 100%);
+}
+
+.kp-native-apk .app-content {
+  padding-top: 8px;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode {
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  border-bottom: none;
+  border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 74%, transparent);
+  box-shadow: 0 -12px 28px -24px rgba(15, 23, 42, 0.45);
+  background: color-mix(in oklab, white 96%, transparent);
+  padding-top: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-inner {
+  max-width: none;
+  display: block;
+  padding: 8px max(10px, env(safe-area-inset-right)) 8px
+    max(10px, env(safe-area-inset-left));
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-user-top,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-contact,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-links-extra,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-profile-menu {
+  display: none;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-links {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  overflow: visible;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-link {
+  text-align: center;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 9px 4px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-link.is-active {
+  box-shadow: none;
+  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
+}
+
+.kp-native-apk .app-nav.app-nav-admin-mode {
+  position: sticky;
+  top: 0;
+  bottom: auto;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
+  border-top: none;
+  border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
 }
 
 .route-loading-indicator {

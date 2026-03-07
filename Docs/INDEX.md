@@ -75,6 +75,7 @@
 - [CHECKLIST_DEPLOY.md](CHECKLIST_DEPLOY.md)
 - [PIPELINE_CICD.md](PIPELINE_CICD.md)
 - [VERCEL_UPSTASH_CHECKLIST.md](VERCEL_UPSTASH_CHECKLIST.md)
+- [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
 
 ## CLI y Herramientas
 - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) ← **índice GitHub/colaboración**
@@ -120,3 +121,10 @@
 
 ## Actualizacion reciente
 - [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md) (toolkit de desarrollo: scripts, lint-staged y pre-commit)
+
+## Actualizado (2026-03-06)
+- APK Android operativa con Capacitor + Android Studio documentada en `APK_ANDROID_STUDIO_KITTYPAU.md`.
+- Branding de APK unificado con `public/logo_carga.jpg` para iconos/splash/logo.
+- Flujo de build y ubicacion de APKs locales confirmado:
+  - `kittypau_app/android/app/build/outputs/apk/debug/app-debug.apk`
+  - `kittypau_app/android/app/build/outputs/apk/release/app-release-unsigned.apk`

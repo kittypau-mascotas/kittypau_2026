@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <base-config cleartextTrafficPermitted="false" />
+  <domain-config cleartextTrafficPermitted="false">
+    <domain includeSubdomains="true">kittypau-app.vercel.app</domain>
+    <domain includeSubdomains="true">zgwqtzazvkjkfocxnxsh.supabase.co</domain>
+    <domain includeSubdomains="true">musical-arachnid-50372.upstash.io</domain>
+  </domain-config>
+</network-security-config>

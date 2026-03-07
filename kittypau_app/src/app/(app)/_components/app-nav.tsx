@@ -209,7 +209,7 @@ export default function AppNav() {
     const isJavoSection = pathname?.startsWith("/admin/javo");
 
     return (
-      <nav className="app-nav app-nav-top">
+      <nav className="app-nav app-nav-top app-nav-admin-mode">
         <div className="app-nav-inner app-nav-inner-admin">
           <div className="app-nav-brand">
             <span className="brand-title">MODO ADMIN</span>
@@ -238,18 +238,6 @@ export default function AppNav() {
             <span className="app-nav-admin-pill">Rol: {adminRole}</span>
             <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
             <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
-            <Link
-              href="/admin"
-              className="app-nav-admin-pill app-nav-admin-link"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/javo"
-              className="app-nav-admin-pill app-nav-admin-link"
-            >
-              Javo
-            </Link>
             <Link
               href="/inicio"
               className="app-nav-admin-pill app-nav-admin-link"
@@ -389,12 +377,14 @@ export default function AppNav() {
   );
 
   return (
-    <nav className={`app-nav ${useSidebarNav ? "app-nav-sidebar" : "app-nav-top"}`}>
+    <nav
+      className={`app-nav app-nav-main-mode ${useSidebarNav ? "app-nav-sidebar" : "app-nav-top"}`}
+    >
       <div className="app-nav-inner">
         <div className="app-nav-brand">
           <span className="app-nav-logo-wrap" aria-hidden="true">
             <Image
-              src="/logo.jpg"
+              src="/logo_carga.jpg"
               alt="Kittypau"
               width={44}
               height={44}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 export default function InicioClientePage() {
   return (
@@ -20,4 +20,3 @@ export default function InicioClientePage() {
     </div>
   );
 }
-

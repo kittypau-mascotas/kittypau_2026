@@ -374,7 +374,7 @@ export default function LoginPage() {
       refreshToken: data.session.refresh_token,
     });
 
-    let targetPath = "/inicio";
+    let targetPath = "/today";
     try {
       const accountRes = await fetch("/api/account/type", {
         headers: { Authorization: `Bearer ${data.session.access_token}` },
@@ -388,7 +388,7 @@ export default function LoginPage() {
         }
       }
     } catch {
-      // If account check fails, keep default client route.
+      // If account check fails, keep default route to Hoy.
     }
 
     if (typeof window !== "undefined") {

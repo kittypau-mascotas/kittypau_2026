@@ -109,7 +109,7 @@ export default function RegisterPage() {
         <div className="mt-2 flex items-center gap-3">
           <div className="h-10 w-10 overflow-hidden rounded-full">
             <img
-              src="/logo.jpg"
+              src="/logo_carga.jpg"
               alt="Kittypau"
               className="h-full w-full object-cover"
             />

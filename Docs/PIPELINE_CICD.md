@@ -66,3 +66,16 @@ flowchart LR
 ## 8. Riesgos conocidos
 - Realtime aún no integrado en frontend.
 - Refresh token no implementado en UI.
+
+## 9. Distribucion Android (actualizado 2026-03-06)
+- Build Android integrado al flujo de release manual:
+  1. `npm run build` (web app)
+  2. `npx cap sync android` (sync nativo)
+  3. `cd android && .\gradlew.bat assembleDebug assembleRelease` (artefactos APK)
+- Artefactos esperados:
+  - `kittypau_app/android/app/build/outputs/apk/debug/app-debug.apk`
+  - `kittypau_app/android/app/build/outputs/apk/release/app-release-unsigned.apk`
+- Fuente de branding oficial APK:
+  - `kittypau_app/public/logo_carga.jpg` -> iconos/splash Android.
+- Documento operativo de referencia:
+  - `Docs/APK_ANDROID_STUDIO_KITTYPAU.md`
