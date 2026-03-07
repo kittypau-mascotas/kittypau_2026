@@ -86,9 +86,9 @@ export default function DemoPage() {
                     <Image
                       src="/pet_profile.jpeg"
                       alt={`Foto de ${petName}`}
-                      width={96}
-                      height={96}
-                      className="rounded-full border border-slate-200 object-cover"
+                      width={128}
+                      height={128}
+                      className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                     />
                     <div>
                       <h1 className="text-3xl font-semibold text-slate-900">{petName}</h1>
