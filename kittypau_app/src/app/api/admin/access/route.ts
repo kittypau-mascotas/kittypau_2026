@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../_utils";
+import {
+  apiError,
+  getUserClient,
+  isAdminFallbackEmail,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
@@ -22,15 +28,16 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
-  const isAdmin = Boolean(data);
-  logRequestEnd(req, startedAt, 200, { is_admin: isAdmin, role: data?.role ?? null });
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const isAdmin = Boolean(data) || fallbackAdmin;
+  const resolvedRole = data?.role ?? (fallbackAdmin ? "owner_admin" : null);
+  logRequestEnd(req, startedAt, 200, { is_admin: isAdmin, role: resolvedRole });
   return NextResponse.json(
     {
       ok: true,
       is_admin: isAdmin,
-      role: data?.role ?? null,
+      role: resolvedRole,
     },
     { status: 200 }
   );
 }
-

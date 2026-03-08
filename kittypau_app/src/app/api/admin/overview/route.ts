@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../_utils";
+import {
+  apiError,
+  getUserClient,
+  isAdminFallbackEmail,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 import { getAdminOverviewCacheVersion, getCacheJson, setCacheJson } from "../../_cache";
 import {
   DEFAULT_KPCL_COST_CATALOG,
@@ -236,7 +242,9 @@ export async function GET(req: NextRequest) {
   if (roleError) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
-  if (!adminRole) {
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const resolvedAdminRole = adminRole?.role ?? (fallbackAdmin ? "owner_admin" : null);
+  if (!resolvedAdminRole) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
 
@@ -280,10 +288,10 @@ export async function GET(req: NextRequest) {
     if (cached) {
       const payload = {
         ...cached,
-        admin_role: adminRole.role,
+        admin_role: resolvedAdminRole,
       };
       logRequestEnd(req, startedAt, 200, {
-        admin_role: adminRole.role,
+        admin_role: resolvedAdminRole,
         cache: "hit",
       });
       return NextResponse.json(payload, {
@@ -963,7 +971,7 @@ export async function GET(req: NextRequest) {
   }
 
   logRequestEnd(req, startedAt, 200, {
-    admin_role: adminRole.role,
+    admin_role: resolvedAdminRole,
     audit_count: dedupedAuditEvents?.length ?? 0,
     bridge_count: currentBridgeStatus.length,
     offline_device_count: offlineDevices?.length ?? 0,
@@ -971,7 +979,7 @@ export async function GET(req: NextRequest) {
   });
 
   const payload = {
-    admin_role: adminRole.role,
+    admin_role: resolvedAdminRole,
     summary: summary ?? null,
     audit_events: dedupedAuditEvents ?? [],
     bridges: currentBridgeStatus,

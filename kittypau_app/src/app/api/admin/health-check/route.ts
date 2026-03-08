@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../_utils";
+import {
+  apiError,
+  getUserClient,
+  isAdminFallbackEmail,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 import { logAudit } from "../../_audit";
 import { bumpAdminOverviewCacheVersion } from "../../_cache";
 
@@ -24,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (roleError) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
-  if (!adminRole) {
+  if (!adminRole && !isAdminFallbackEmail(user.email ?? null)) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
 

@@ -190,3 +190,24 @@ Esperamos acelerar la validacion tecnico-comercial con mentoria especializada, r
 - Motivo: aunque es opcional, mejora la claridad de evaluacion y permite mostrar narrativa, evidencia tecnica, mercado y roadmap en formato ejecutivo.
 - Entregable esperado: PDF de 10-12 slides, coherente con el formulario y sin contradicciones de datos.
 - Ruta de trabajo: `Docs/Postulaciones Fondos/2026/BOSQUEJO_DECK_STARTUPLAB01.md`.
+
+## Marco AIoT / PetTech (Alineacion 2026)
+
+KittyPau se posiciona oficialmente como una plataforma **AIoT** (Artificial Intelligence of Things) para salud preventiva de mascotas.
+
+Definicion oficial:
+**KittyPau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+
+Categoria estrategica:
+- **PetTech AIoT** = PetTech + IoT + IA.
+- Hardware como puerta de entrada; datos + analitica como motor de valor.
+
+Implicancia para postulaciones 2026:
+- El producto no se presenta como "solo comedero inteligente".
+- Se presenta como **plataforma de datos longitudinales de salud animal**.
+- Modelo esperado: hardware + suscripcion + analitica/alertas preventivas.
+
+Mensajes recomendados para formularios/pitch:
+- AIoT pet care platform.
+- AIoT platform for preventive pet health monitoring.
+- The Fitbit for pets (como analogia de mercado).

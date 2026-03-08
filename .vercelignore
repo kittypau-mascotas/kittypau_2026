@@ -4,3 +4,6 @@ Test Graficos/
 kittypau_1a/
 kittypau_1a-main/
 kittypau_iot_firmware-main/
+kittypau_app/android/
+kittypau_app/.gradle/
+kittypau_app/node_modules/

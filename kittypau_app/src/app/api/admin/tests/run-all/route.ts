@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient } from "@/app/api/_utils";
+import { apiError, getUserClient, isAdminFallbackEmail } from "@/app/api/_utils";
 
 type AdminTestResult = {
   id: string;
@@ -22,7 +22,9 @@ async function ensureAdmin(req: NextRequest) {
     .eq("active", true)
     .maybeSingle();
   if (error) return { error: error.message, status: 500 as const };
-  if (!role) return { error: "Admin role required", status: 403 as const };
+  if (!role && !isAdminFallbackEmail(user.email ?? null)) {
+    return { error: "Admin role required", status: 403 as const };
+  }
   return { userId: user.id };
 }
 

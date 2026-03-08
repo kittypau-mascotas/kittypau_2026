@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient } from "@/app/api/_utils";
+import { apiError, getUserClient, isAdminFallbackEmail } from "@/app/api/_utils";
 import {
   DEFAULT_KPCL_COST_CATALOG,
   type KpclCatalog,
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
   if (roleError) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
-  if (!adminRole) {
+  if (!adminRole && !isAdminFallbackEmail(user.email ?? null)) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
 

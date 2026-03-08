@@ -101,3 +101,15 @@ export async function getUserClient(req: NextRequest) {
 
   return { supabase, user: data.user };
 }
+
+export function isAdminFallbackEmail(email: string | null): boolean {
+  if (!email) return false;
+  const normalized = email.trim().toLowerCase();
+  const defaultAdmins = ["javomauro.contacto@gmail.com"];
+  const envAdmins = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  const allowed = new Set([...defaultAdmins, ...envAdmins]);
+  return allowed.has(normalized);
+}

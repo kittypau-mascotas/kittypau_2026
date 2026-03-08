@@ -29,7 +29,6 @@ export default function LoginPage() {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [highlightRegister, setHighlightRegister] = useState(false);
   const [registroProgress, setRegistroProgress] = useState(1);
   const [manualRegistroStep, setManualRegistroStep] = useState<number | null>(null);
   const [registerConfirmed, setRegisterConfirmed] = useState(false);
@@ -866,11 +865,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                className={`rounded-full px-2 py-1 transition ${
-                  highlightRegister
-                    ? "bg-primary/10 text-slate-900 ring-1 ring-primary/40"
-                    : "hover:text-slate-900"
-                }`}
+                className="rounded-full px-2 py-1 transition hover:text-slate-900"
                 onClick={openRegister}
               >
                 Crear cuenta
@@ -909,19 +904,6 @@ export default function LoginPage() {
               ) : null}
               </div>
             </div>
-
-            <button
-              type="button"
-              className="login-bandida-action"
-              aria-label="Crear cuenta"
-              onMouseEnter={() => setHighlightRegister(true)}
-              onMouseLeave={() => setHighlightRegister(false)}
-              onFocus={() => setHighlightRegister(true)}
-              onBlur={() => setHighlightRegister(false)}
-              onClick={openRegister}
-            >
-              Crear cuenta
-            </button>
           </div>
         </div>
       </div>

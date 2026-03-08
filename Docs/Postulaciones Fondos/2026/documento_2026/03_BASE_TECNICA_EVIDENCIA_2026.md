@@ -18,3 +18,24 @@ Dispositivo -> MQTT -> Bridge -> API -> Supabase -> App.
 
 ## Mensaje tecnico para evaluadores
 Existe base implementada y verificable para convertir el proyecto en despliegue comercial controlado.
+
+## Marco AIoT / PetTech (Alineacion 2026)
+
+KittyPau se posiciona oficialmente como una plataforma **AIoT** (Artificial Intelligence of Things) para salud preventiva de mascotas.
+
+Definicion oficial:
+**KittyPau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+
+Categoria estrategica:
+- **PetTech AIoT** = PetTech + IoT + IA.
+- Hardware como puerta de entrada; datos + analitica como motor de valor.
+
+Implicancia para postulaciones 2026:
+- El producto no se presenta como "solo comedero inteligente".
+- Se presenta como **plataforma de datos longitudinales de salud animal**.
+- Modelo esperado: hardware + suscripcion + analitica/alertas preventivas.
+
+Mensajes recomendados para formularios/pitch:
+- AIoT pet care platform.
+- AIoT platform for preventive pet health monitoring.
+- The Fitbit for pets (como analogia de mercado).

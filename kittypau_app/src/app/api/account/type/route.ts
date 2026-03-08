@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserClient, apiError } from "../../_utils";
+import { getUserClient, apiError, isAdminFallbackEmail } from "../../_utils";
 import { supabaseServer } from "@/lib/supabase/server";
 
 export const runtime = "edge";
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
 
-  const isAdmin = Boolean(adminRole);
+  const isAdmin = Boolean(adminRole) || isAdminFallbackEmail(user.email ?? null);
   const isTester = isTesterEmail(user.email ?? null);
 
   const accountType: AccountType = isAdmin
