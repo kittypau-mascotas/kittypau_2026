@@ -52,6 +52,7 @@ type ApiReading = {
   flow_rate: number | null;
   temperature: number | null;
   humidity: number | null;
+  light_percent: number | null;
   battery_level: number | null;
 };
 
