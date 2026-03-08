@@ -46,3 +46,54 @@ Mejorar rendimiento y estabilidad de telemetria manteniendo el esquema actual y 
 - Queries en `/api/readings` siguen funcionando.
 - UI carga lecturas en /today y /story.
 
+---
+
+## Marco estrategico AIoT para KittyPau (integrado)
+
+### Terminologia oficial recomendada
+- **AIoT (Artificial Intelligence of Things)**: termino principal para KittyPau.
+- **Intelligent IoT**: variante de comunicacion comercial.
+- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Smart IoT**: termino marketing, menos tecnico.
+
+### Definicion recomendada de producto
+**KittyPau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+
+### Categoria estrategica
+**PetTech AIoT** = PetTech + IoT + IA.
+
+Esto posiciona a KittyPau no como "solo hardware", sino como:
+- infraestructura de datos longitudinales de salud animal,
+- analitica preventiva,
+- plataforma escalable con suscripcion.
+
+### Arquitectura actual (ya compatible con AIoT)
+1. Dispositivo IoT (ESP8266/ESP32).
+2. Ingestion por MQTT.
+3. Bridge Node.js.
+4. Persistencia en PostgreSQL/Supabase.
+5. Capa de analitica/IA.
+6. Dashboard web para usuario/admin.
+
+### Estrategia tipo “Fitbit de mascotas”
+- Hardware = punto de entrada.
+- Datos longitudinales = ventaja competitiva.
+- IA = diferencial de valor.
+- Suscripcion = recurrencia (modelo SaaS).
+
+### Casos de uso preventivos (objetivo)
+- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
+- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+
+### Modelo de negocio recomendado (3 capas)
+1. **Hardware**: ingreso inicial por unidad.
+2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
+3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
+
+### Implicancias directas para este plan DB
+- Priorizar calidad, continuidad e historial de datos (`readings` + agregados).
+- Mantener trazabilidad temporal para modelos de IA (datos longitudinales).
+- Diseñar retencion por capas: crudo corto plazo + consolidado largo plazo.
+- Asegurar compatibilidad API para no frenar adopcion del producto AIoT.
+
