@@ -464,6 +464,12 @@ body {
   color: hsl(var(--foreground));
 }
 
+.app-nav-brand-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
 .app-nav-logo-wrap {
   width: 56px;
   height: 56px;
@@ -488,6 +494,16 @@ body {
   font-size: 2.05rem;
   line-height: 1;
   color: hsl(var(--primary-strong));
+}
+
+.app-nav-brand-subtitle {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, hsl(var(--primary-strong)) 72%, #0f766e);
+  opacity: 0.9;
 }
 
 .app-nav-dot {
@@ -667,6 +683,12 @@ body {
 
   .app-nav-brand-title {
     font-size: 1.35rem;
+  }
+
+  .app-nav-brand-subtitle {
+    margin-top: 2px;
+    font-size: 8px;
+    letter-spacing: 0.14em;
   }
 
   .app-nav-logo-wrap {
@@ -1293,16 +1315,6 @@ body {
   position: relative;
 }
 
-.login-bandida-action {
-  position: absolute;
-  right: 28px;
-  bottom: -122px;
-  z-index: 5;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
 
 .login-login-stack {
   display: flex;
@@ -1316,11 +1328,6 @@ body {
   gap: 14px;
 }
 
-.login-bandida-action:focus-visible {
-  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 70%, transparent);
-  outline-offset: 6px;
-  border-radius: 999px;
-}
 
 .login-stepper {
   display: grid;
@@ -1667,20 +1674,11 @@ body {
     width: clamp(96px, 9vw, 130px);
   }
 
-  .login-bandida-action {
-    right: 24px;
-    bottom: -110px;
-  }
 }
 
 @media (max-width: 420px) {
   .login-bandida {
     width: 134px;
-  }
-
-  .login-bandida-action {
-    right: 4px;
-    bottom: -118px;
   }
 }
 

@@ -391,7 +391,10 @@ export default function AppNav() {
               className="brand-mark app-nav-logo"
             />
           </span>
-          <span className="brand-title app-nav-brand-title">Kittypau</span>
+          <span className="app-nav-brand-stack">
+            <span className="brand-title app-nav-brand-title">Kittypau</span>
+            <span className="app-nav-brand-subtitle">PetTech AIoT</span>
+          </span>
         </div>
         {useSidebarNav ? (
           <div className="app-nav-social-top">
