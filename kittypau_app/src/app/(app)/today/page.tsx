@@ -451,7 +451,8 @@ export default function TodayPage() {
         }
         const payload = await res.json().catch(() => null);
         const nextType =
-          payload?.account_type === "admin" || payload?.account_type === "tester"
+          payload?.account_type === "admin" ||
+          payload?.account_type === "tester"
             ? payload.account_type
             : "client";
         setAccountType(nextType);
@@ -599,7 +600,10 @@ export default function TodayPage() {
         setSelectedDeviceId(initialDeviceId);
         if (primaryPet?.id && typeof window !== "undefined") {
           window.localStorage.setItem("kittypau_pet_id", primaryPet.id);
-          window.localStorage.setItem("kittypau_pet_name", primaryPet.name ?? "");
+          window.localStorage.setItem(
+            "kittypau_pet_name",
+            primaryPet.name ?? "",
+          );
           window.dispatchEvent(
             new CustomEvent("kittypau-pet-change", {
               detail: { petId: primaryPet.id, petName: primaryPet.name ?? "" },
@@ -892,12 +896,16 @@ export default function TodayPage() {
       waterLatestReading?.recorded_at ?? null,
     ].filter((value): value is string => Boolean(value));
     if (!candidates.length) return null;
-    return candidates
-      .map((value) => ({ value, ts: new Date(value).getTime() }))
-      .filter((item) => Number.isFinite(item.ts))
-      .sort((a, b) => b.ts - a.ts)[0]?.value ?? null;
+    return (
+      candidates
+        .map((value) => ({ value, ts: new Date(value).getTime() }))
+        .filter((item) => Number.isFinite(item.ts))
+        .sort((a, b) => b.ts - a.ts)[0]?.value ?? null
+    );
   }, [bowlLatestReading?.recorded_at, waterLatestReading?.recorded_at]);
-  const heroUpdatedLabel = heroUpdatedAt ? formatTimestamp(heroUpdatedAt) : "Sin datos";
+  const heroUpdatedLabel = heroUpdatedAt
+    ? formatTimestamp(heroUpdatedAt)
+    : "Sin datos";
 
   useEffect(() => {
     // Keep the live panel aligned with the hero food device for the selected pet.
@@ -1030,7 +1038,10 @@ export default function TodayPage() {
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
-            const result = await loadReadings(deviceId, null, 1200, { from, to });
+            const result = await loadReadings(deviceId, null, 1200, {
+              from,
+              to,
+            });
             return [deviceId, result.data] as const;
           } catch {
             return [deviceId, []] as const;
@@ -1048,7 +1059,6 @@ export default function TodayPage() {
       active = false;
     };
   }, [bowlDevice?.id, waterDevice?.id]);
-
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -1169,6 +1179,11 @@ export default function TodayPage() {
     bowlLatestReading?.humidity !== undefined
       ? `${toRoundedSensorValue(bowlLatestReading.humidity)}%`
       : "N/D";
+  const bowlLightText =
+    bowlLatestReading?.light_percent !== null &&
+    bowlLatestReading?.light_percent !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.light_percent)}%`
+      : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
   const bowlGrossWeightGrams = toNullableNumber(
     bowlLatestReading?.weight_grams,
@@ -1198,6 +1213,11 @@ export default function TodayPage() {
     waterLatestReading?.humidity !== null &&
     waterLatestReading?.humidity !== undefined
       ? `${toRoundedSensorValue(waterLatestReading.humidity)}%`
+      : "N/D";
+  const waterLightText =
+    waterLatestReading?.light_percent !== null &&
+    waterLatestReading?.light_percent !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.light_percent)}%`
       : "N/D";
   const waterPlateWeightGrams = toNullableNumber(
     waterDevice?.plate_weight_grams,
@@ -1235,6 +1255,7 @@ export default function TodayPage() {
       : null;
   const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
   const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
+  const bowlPrevLight = toNullableNumber(bowlPreviousReading?.light_percent);
 
   const waterPrevGrossWeightGrams = toNullableNumber(
     waterPreviousReading?.weight_grams,
@@ -1245,6 +1266,7 @@ export default function TodayPage() {
       : null;
   const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
   const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
+  const waterPrevLight = toNullableNumber(waterPreviousReading?.light_percent);
 
   const renderTrend = (current: number | null, previous: number | null) => {
     if (current === null || previous === null) return null;
@@ -1583,17 +1605,20 @@ export default function TodayPage() {
           bodyColor: "#f8fafc",
           footerColor: "#cbd5e1",
           titleFont: {
-            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
             size: 12,
             weight: 700,
           },
           bodyFont: {
-            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
             size: 11,
             weight: 600,
           },
           footerFont: {
-            family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
             size: 10,
             weight: 500,
           },
@@ -1776,11 +1801,7 @@ export default function TodayPage() {
     consumptionPeriod === "one" ? "month" : consumptionPeriod;
   const bowlDetailSummary = useMemo(
     () =>
-      summarizeSessionDetailsByPeriod(
-        bowlHistorySessions,
-        nowMs,
-        detailPeriod,
-      ),
+      summarizeSessionDetailsByPeriod(bowlHistorySessions, nowMs, detailPeriod),
     [bowlHistorySessions, nowMs, detailPeriod],
   );
   const waterDetailSummary = useMemo(
@@ -1801,8 +1822,9 @@ export default function TodayPage() {
     { key: "month", label: "Mes" },
   ];
   const activePeriodLabel =
-    periodLabels.find((item) => item.key === summaryPeriod)?.label.toLowerCase() ??
-    "día";
+    periodLabels
+      .find((item) => item.key === summaryPeriod)
+      ?.label.toLowerCase() ?? "día";
 
   if (accountType === "client" || accountType === "admin") {
     return null;
@@ -1859,7 +1881,9 @@ export default function TodayPage() {
                     </button>
                   </div>
                   <p className="truncate text-xs text-slate-500 md:text-sm">
-                    {petMeta.length ? petMeta.join(" · ") : "Sin datos de registro"}
+                    {petMeta.length
+                      ? petMeta.join(" · ")
+                      : "Sin datos de registro"}
                   </p>
                 </div>
               </div>
@@ -1870,82 +1894,98 @@ export default function TodayPage() {
                 </p>
                 <div className="inline-flex items-center gap-2">
                   <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
-                  <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2">
-                    <p className="text-xs font-semibold text-emerald-700">
-                      Alimentación
-                    </p>
-                    <div className="mt-1 space-y-0.5">
-                      <p className="text-[11px] text-slate-600">
-                        {consumptionPeriod === "one"
-                          ? `${bowlDetailSummary.events} eventos (30d)`
-                          : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                    <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2">
+                      <p className="text-xs font-semibold text-emerald-700">
+                        Alimentación
                       </p>
-                      {consumptionPeriod === "one" ? (
+                      <div className="mt-1 space-y-0.5">
                         <p className="text-[11px] text-slate-600">
-                          Unit: {formatConsumedValue(bowlDetailSummary.avgConsumed, "g")} ·{" "}
-                          {bowlDetailSummary.avgDurationMinutes === null
-                            ? "N/D"
-                            : formatSessionDuration(bowlDetailSummary.avgDurationMinutes)}
+                          {consumptionPeriod === "one"
+                            ? `${bowlDetailSummary.events} eventos (30d)`
+                            : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                         </p>
-                      ) : (
-                        <p className="text-[11px] text-slate-600">
-                          Consumo: {formatConsumedValue(
-                            bowlConsumptionSummary[summaryPeriod].consumed,
-                            "g",
-                          )}{" "}
-                          /{activePeriodLabel}
-                        </p>
-                      )}
+                        {consumptionPeriod === "one" ? (
+                          <p className="text-[11px] text-slate-600">
+                            Unit:{" "}
+                            {formatConsumedValue(
+                              bowlDetailSummary.avgConsumed,
+                              "g",
+                            )}{" "}
+                            ·{" "}
+                            {bowlDetailSummary.avgDurationMinutes === null
+                              ? "N/D"
+                              : formatSessionDuration(
+                                  bowlDetailSummary.avgDurationMinutes,
+                                )}
+                          </p>
+                        ) : (
+                          <p className="text-[11px] text-slate-600">
+                            Consumo:{" "}
+                            {formatConsumedValue(
+                              bowlConsumptionSummary[summaryPeriod].consumed,
+                              "g",
+                            )}{" "}
+                            /{activePeriodLabel}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2">
-                    <p className="text-xs font-semibold text-sky-700">
-                      Hidratación
-                    </p>
-                    <div className="mt-1 space-y-0.5">
-                      <p className="text-[11px] text-slate-600">
-                        {consumptionPeriod === "one"
-                          ? `${waterDetailSummary.events} eventos (30d)`
-                          : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                    <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2">
+                      <p className="text-xs font-semibold text-sky-700">
+                        Hidratación
                       </p>
-                      {consumptionPeriod === "one" ? (
+                      <div className="mt-1 space-y-0.5">
                         <p className="text-[11px] text-slate-600">
-                          Unit: {formatConsumedValue(waterDetailSummary.avgConsumed, "ml")} ·{" "}
-                          {waterDetailSummary.avgDurationMinutes === null
-                            ? "N/D"
-                            : formatSessionDuration(waterDetailSummary.avgDurationMinutes)}
+                          {consumptionPeriod === "one"
+                            ? `${waterDetailSummary.events} eventos (30d)`
+                            : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                         </p>
-                      ) : (
-                        <p className="text-[11px] text-slate-600">
-                          Consumo: {formatConsumedValue(
-                            waterConsumptionSummary[summaryPeriod].consumed,
-                            "ml",
-                          )}{" "}
-                          /{activePeriodLabel}
-                        </p>
-                      )}
+                        {consumptionPeriod === "one" ? (
+                          <p className="text-[11px] text-slate-600">
+                            Unit:{" "}
+                            {formatConsumedValue(
+                              waterDetailSummary.avgConsumed,
+                              "ml",
+                            )}{" "}
+                            ·{" "}
+                            {waterDetailSummary.avgDurationMinutes === null
+                              ? "N/D"
+                              : formatSessionDuration(
+                                  waterDetailSummary.avgDurationMinutes,
+                                )}
+                          </p>
+                        ) : (
+                          <p className="text-[11px] text-slate-600">
+                            Consumo:{" "}
+                            {formatConsumedValue(
+                              waterConsumptionSummary[summaryPeriod].consumed,
+                              "ml",
+                            )}{" "}
+                            /{activePeriodLabel}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
                   </div>
                   <div className="my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
-                  {periodLabels.map(({ key, label }) => {
-                    const isActive = key === consumptionPeriod;
-                    return (
-                      <button
-                        key={`period-${key}`}
-                        type="button"
-                        onClick={() => setConsumptionPeriod(key)}
-                        className={`rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-none transition ${
-                          isActive
-                            ? "bg-emerald-400 text-slate-900"
-                            : "text-slate-900 hover:bg-slate-100"
-                        }`}
-                        aria-pressed={isActive}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
+                    {periodLabels.map(({ key, label }) => {
+                      const isActive = key === consumptionPeriod;
+                      return (
+                        <button
+                          key={`period-${key}`}
+                          type="button"
+                          onClick={() => setConsumptionPeriod(key)}
+                          className={`rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-none transition ${
+                            isActive
+                              ? "bg-emerald-400 text-slate-900"
+                              : "text-slate-900 hover:bg-slate-100"
+                          }`}
+                          aria-pressed={isActive}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </aside>
@@ -1959,161 +1999,185 @@ export default function TodayPage() {
             className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
           >
             <div className="grid gap-4 sm:grid-cols-2">
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
-                  <div className="relative min-h-[180px]">
-                    <div className="absolute right-2 top-2 flex items-center gap-1">
-                      <span
-                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                        aria-label={
-                          bowlPowerState === "on"
-                            ? "Prendido"
-                            : bowlPowerState === "off"
-                              ? "Apagado"
-                              : "Sin data"
-                        }
-                        title={
-                          bowlPowerState === "on"
-                            ? "Prendido"
-                            : bowlPowerState === "off"
-                              ? "Apagado"
-                              : "Sin data"
-                        }
-                      />
-                      <BatteryStatusIcon
-                        level={bowlDevice?.battery_level ?? null}
-                        className="h-6 w-6 text-slate-700"
-                      />
-                    </div>
-                    <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
-                      <p className="text-[14px] font-semibold text-slate-700">
-                        {bowlContentWeightText} (contenido)
-                        {renderTrend(
-                          bowlContentWeightGrams,
-                          bowlPrevContentWeightGrams,
-                        )}
+              <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                <div className="relative min-h-[180px]">
+                  <div className="absolute right-2 top-2 flex items-center gap-1">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                      aria-label={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                      title={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                    />
+                    <BatteryStatusIcon
+                      level={bowlDevice?.battery_level ?? null}
+                      className="h-6 w-6 text-slate-700"
+                    />
+                  </div>
+                  <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {bowlContentWeightText} (contenido)
+                      {renderTrend(
+                        bowlContentWeightGrams,
+                        bowlPrevContentWeightGrams,
+                      )}
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {bowlPlateWeightText} (plato)
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-600">
+                      {bowlSensorWeightText} (sensor)
+                      {renderTrend(
+                        bowlGrossWeightGrams,
+                        bowlPrevGrossWeightGrams,
+                      )}
+                    </p>
+                    <div className="mt-0.5 flex flex-col gap-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                        Ambiente
                       </p>
-                      <p className="text-[14px] font-semibold text-slate-700">
-                        {bowlPlateWeightText} (plato)
-                      </p>
-                      <p className="text-[14px] font-semibold text-slate-600">
-                        {bowlSensorWeightText} (sensor)
-                        {renderTrend(
-                          bowlGrossWeightGrams,
-                          bowlPrevGrossWeightGrams,
-                        )}
-                      </p>
-                      <p className="text-[14px] font-semibold text-slate-600">
-                        {bowlTempText}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Temp: {bowlTempText}
                         {renderTrend(
                           toNullableNumber(bowlLatestReading?.temperature),
                           bowlPrevTemp,
                         )}
                       </p>
-                      <p className="text-[14px] font-semibold text-slate-500">
-                        {bowlHumidityText}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Hum: {bowlHumidityText}
                         {renderTrend(
                           toNullableNumber(bowlLatestReading?.humidity),
                           bowlPrevHumidity,
                         )}
                       </p>
-                    </div>
-                    <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
-                      <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                          Alimentación
-                        </span>
-                      </div>
-                      <Image
-                        src="/illustrations/pink_food_full.png"
-                        alt="Kittypau comedero"
-                        width={208}
-                        height={150}
-                        className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
-                      />
-                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                        {bowlDevice?.device_id ?? "KPCLXXXX"}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Luz: {bowlLightText}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.light_percent),
+                          bowlPrevLight,
+                        )}
                       </p>
                     </div>
                   </div>
-                </article>
-
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
-                  <div className="relative min-h-[180px]">
-                    <div className="absolute right-2 top-2 flex items-center gap-1">
-                      <span
-                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                        aria-label={
-                          waterPowerState === "on"
-                            ? "Prendido"
-                            : waterPowerState === "off"
-                              ? "Apagado"
-                              : "Sin data"
-                        }
-                        title={
-                          waterPowerState === "on"
-                            ? "Prendido"
-                            : waterPowerState === "off"
-                              ? "Apagado"
-                              : "Sin data"
-                        }
-                      />
-                      <BatteryStatusIcon
-                        level={waterDevice?.battery_level ?? null}
-                        className="h-6 w-6 text-slate-700"
-                      />
+                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                        Alimentación
+                      </span>
                     </div>
-                    <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
-                      <p className="text-[14px] font-semibold text-slate-700">
-                        {waterVolumeCm3Text} (aprox)
-                        {renderTrend(
-                          waterContentWeightGrams,
-                          waterPrevContentWeightGrams,
-                        )}
+                    <Image
+                      src="/illustrations/pink_food_full.png"
+                      alt="Kittypau comedero"
+                      width={208}
+                      height={150}
+                      className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
+                    />
+                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                      {bowlDevice?.device_id ?? "KPCLXXXX"}
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                <div className="relative min-h-[180px]">
+                  <div className="absolute right-2 top-2 flex items-center gap-1">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                      aria-label={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                      title={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                    />
+                    <BatteryStatusIcon
+                      level={waterDevice?.battery_level ?? null}
+                      className="h-6 w-6 text-slate-700"
+                    />
+                  </div>
+                  <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {waterVolumeCm3Text} (aprox)
+                      {renderTrend(
+                        waterContentWeightGrams,
+                        waterPrevContentWeightGrams,
+                      )}
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {waterPlateWeightText} (plato)
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-600">
+                      {waterSensorWeightText} (sensor)
+                      {renderTrend(
+                        waterGrossWeightGrams,
+                        waterPrevGrossWeightGrams,
+                      )}
+                    </p>
+                    <div className="mt-0.5 flex flex-col gap-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                        Ambiente
                       </p>
-                      <p className="text-[14px] font-semibold text-slate-700">
-                        {waterPlateWeightText} (plato)
-                      </p>
-                      <p className="text-[14px] font-semibold text-slate-600">
-                        {waterSensorWeightText} (sensor)
-                        {renderTrend(
-                          waterGrossWeightGrams,
-                          waterPrevGrossWeightGrams,
-                        )}
-                      </p>
-                      <p className="text-[14px] font-semibold text-slate-600">
-                        {waterTempText}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Temp: {waterTempText}
                         {renderTrend(
                           toNullableNumber(waterLatestReading?.temperature),
                           waterPrevTemp,
                         )}
                       </p>
-                      <p className="text-[14px] font-semibold text-slate-500">
-                        {waterHumidityText}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Hum: {waterHumidityText}
                         {renderTrend(
                           toNullableNumber(waterLatestReading?.humidity),
                           waterPrevHumidity,
                         )}
                       </p>
-                    </div>
-                    <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
-                      <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
-                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-700">
-                          Hidratación
-                        </span>
-                      </div>
-                      <Image
-                        src="/illustrations/green_water_full.png"
-                        alt="Kittypau bebedero"
-                        width={208}
-                        height={150}
-                        className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
-                      />
-                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                        {waterDevice?.device_id ?? "KPBWXXXX"}
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Luz: {waterLightText}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.light_percent),
+                          waterPrevLight,
+                        )}
                       </p>
                     </div>
                   </div>
-                </article>
+                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                      <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                        Hidratación
+                      </span>
+                    </div>
+                    <Image
+                      src="/illustrations/green_water_full.png"
+                      alt="Kittypau bebedero"
+                      width={208}
+                      height={150}
+                      className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
+                    />
+                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                      {waterDevice?.device_id ?? "KPBWXXXX"}
+                    </p>
+                  </div>
+                </div>
+              </article>
             </div>
           </section>
 
