@@ -1816,11 +1816,31 @@ export default function TodayPage() {
   );
   const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
     value === null ? "N/D" : `${value} ${unit}`;
-  const periodLabels: Array<{ key: ConsumptionViewPeriod; label: string }> = [
-    { key: "one", label: "Uno" },
-    { key: "day", label: "Día" },
-    { key: "week", label: "Semana" },
-    { key: "month", label: "Mes" },
+  const periodLabels: Array<{
+    key: ConsumptionViewPeriod;
+    label: string;
+    description: string;
+  }> = [
+    {
+      key: "one",
+      label: "Unidad",
+      description: "Promedio por evento individual durante los últimos 30 días.",
+    },
+    {
+      key: "day",
+      label: "Día",
+      description: "Resumen acumulado de consumo y frecuencia en 24 horas.",
+    },
+    {
+      key: "week",
+      label: "Semana",
+      description: "Vista semanal para detectar cambios de patrón de rutina.",
+    },
+    {
+      key: "month",
+      label: "Mes",
+      description: "Tendencia mensual para evaluar hábitos de largo plazo.",
+    },
   ];
   const activePeriodLabel =
     periodLabels
@@ -1895,96 +1915,125 @@ export default function TodayPage() {
                 </p>
                 <div className="inline-flex items-center gap-2">
                   <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
-                    <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2">
-                      <p className="text-xs font-semibold text-emerald-700">
-                        Alimentación
-                      </p>
-                      <div className="mt-1 space-y-0.5">
-                        <p className="text-[11px] text-slate-600">
-                          {consumptionPeriod === "one"
-                            ? `${bowlDetailSummary.events} eventos (30d)`
-                            : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                    <div className="flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
+                      <div>
+                        <p className="text-xs font-semibold text-emerald-700">
+                          Alimentación
                         </p>
-                        {consumptionPeriod === "one" ? (
+                        <div className="mt-1 space-y-0.5">
                           <p className="text-[11px] text-slate-600">
-                            Unit:{" "}
-                            {formatConsumedValue(
-                              bowlDetailSummary.avgConsumed,
-                              "g",
-                            )}{" "}
-                            ·{" "}
-                            {bowlDetailSummary.avgDurationMinutes === null
-                              ? "N/D"
-                              : formatSessionDuration(
-                                  bowlDetailSummary.avgDurationMinutes,
-                                )}
+                            {consumptionPeriod === "one"
+                              ? `${bowlDetailSummary.events} eventos (30d)`
+                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                           </p>
-                        ) : (
-                          <p className="text-[11px] text-slate-600">
-                            Consumo:{" "}
-                            {formatConsumedValue(
-                              bowlConsumptionSummary[summaryPeriod].consumed,
-                              "g",
-                            )}{" "}
-                            /{activePeriodLabel}
-                          </p>
-                        )}
+                          {consumptionPeriod === "one" ? (
+                            <p className="text-[11px] text-slate-600">
+                              Unit:{" "}
+                              {formatConsumedValue(
+                                bowlDetailSummary.avgConsumed,
+                                "g",
+                              )}{" "}
+                              ·{" "}
+                              {bowlDetailSummary.avgDurationMinutes === null
+                                ? "N/D"
+                                : formatSessionDuration(
+                                    bowlDetailSummary.avgDurationMinutes,
+                                  )}
+                            </p>
+                          ) : (
+                            <p className="text-[11px] text-slate-600">
+                              Consumo:{" "}
+                              {formatConsumedValue(
+                                bowlConsumptionSummary[summaryPeriod].consumed,
+                                "g",
+                              )}{" "}
+                              /{activePeriodLabel}
+                            </p>
+                          )}
+                        </div>
                       </div>
+                      <Image
+                        src="/illustrations/icono_comida.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={36}
+                        height={36}
+                        className="h-9 w-9 shrink-0 object-contain opacity-90"
+                      />
                     </div>
-                    <div className="flex min-h-[76px] min-w-[176px] flex-col justify-center rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2">
-                      <p className="text-xs font-semibold text-sky-700">
-                        Hidratación
-                      </p>
-                      <div className="mt-1 space-y-0.5">
-                        <p className="text-[11px] text-slate-600">
-                          {consumptionPeriod === "one"
-                            ? `${waterDetailSummary.events} eventos (30d)`
-                            : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                    <div className="flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
+                      <div>
+                        <p className="text-xs font-semibold text-sky-700">
+                          Hidratación
                         </p>
-                        {consumptionPeriod === "one" ? (
+                        <div className="mt-1 space-y-0.5">
                           <p className="text-[11px] text-slate-600">
-                            Unit:{" "}
-                            {formatConsumedValue(
-                              waterDetailSummary.avgConsumed,
-                              "ml",
-                            )}{" "}
-                            ·{" "}
-                            {waterDetailSummary.avgDurationMinutes === null
-                              ? "N/D"
-                              : formatSessionDuration(
-                                  waterDetailSummary.avgDurationMinutes,
-                                )}
+                            {consumptionPeriod === "one"
+                              ? `${waterDetailSummary.events} eventos (30d)`
+                              : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                           </p>
-                        ) : (
-                          <p className="text-[11px] text-slate-600">
-                            Consumo:{" "}
-                            {formatConsumedValue(
-                              waterConsumptionSummary[summaryPeriod].consumed,
-                              "ml",
-                            )}{" "}
-                            /{activePeriodLabel}
-                          </p>
-                        )}
+                          {consumptionPeriod === "one" ? (
+                            <p className="text-[11px] text-slate-600">
+                              Unit:{" "}
+                              {formatConsumedValue(
+                                waterDetailSummary.avgConsumed,
+                                "ml",
+                              )}{" "}
+                              ·{" "}
+                              {waterDetailSummary.avgDurationMinutes === null
+                                ? "N/D"
+                                : formatSessionDuration(
+                                    waterDetailSummary.avgDurationMinutes,
+                                  )}
+                            </p>
+                          ) : (
+                            <p className="text-[11px] text-slate-600">
+                              Consumo:{" "}
+                              {formatConsumedValue(
+                                waterConsumptionSummary[summaryPeriod].consumed,
+                                "ml",
+                              )}{" "}
+                              /{activePeriodLabel}
+                            </p>
+                          )}
+                        </div>
                       </div>
+                      <Image
+                        src="/illustrations/icono_agua.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={36}
+                        height={36}
+                        className="h-9 w-9 shrink-0 object-contain opacity-90"
+                      />
                     </div>
                   </div>
                   <div className="my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
-                    {periodLabels.map(({ key, label }) => {
+                    {periodLabels.map(({ key, label, description }) => {
                       const isActive = key === consumptionPeriod;
                       return (
-                        <button
-                          key={`period-${key}`}
-                          type="button"
-                          onClick={() => setConsumptionPeriod(key)}
-                          className={`rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-none transition ${
-                            isActive
-                              ? "bg-emerald-400 text-slate-900"
-                              : "text-slate-900 hover:bg-slate-100"
-                          }`}
-                          aria-pressed={isActive}
-                        >
-                          {label}
-                        </button>
+                        <div key={`period-${key}`} className="group relative w-full">
+                          <button
+                            type="button"
+                            onClick={() => setConsumptionPeriod(key)}
+                            className={`w-full rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-[1.05] tracking-tight transition ${
+                              isActive
+                                ? "bg-emerald-400 text-slate-900"
+                                : "text-slate-900 hover:bg-slate-100"
+                            }`}
+                            aria-pressed={isActive}
+                            aria-label={`${label}: ${description}`}
+                          >
+                            {label}
+                          </button>
+                          <span className="pointer-events-none absolute right-full top-1/2 z-20 mr-2 hidden w-44 -translate-y-1/2 rounded-[10px] border border-rose-200/70 bg-rose-50/95 px-2.5 py-2 text-[10px] font-semibold leading-relaxed text-slate-700 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.55)] group-hover:block group-focus-within:block">
+                            {description}
+                            <span
+                              aria-hidden="true"
+                              className="absolute left-full top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-t border-rose-200/70 bg-rose-50/95"
+                            />
+                          </span>
+                        </div>
                       );
                     })}
                   </div>
@@ -2081,7 +2130,7 @@ export default function TodayPage() {
                       alt="Kittypau comedero"
                       width={208}
                       height={150}
-                      className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
+                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
                     />
                     <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                       {bowlDevice?.device_id ?? "KPCLXXXX"}
@@ -2171,7 +2220,7 @@ export default function TodayPage() {
                       alt="Kittypau bebedero"
                       width={208}
                       height={150}
-                      className="mx-auto mt-3 h-36 w-52 scale-[1.22] object-contain object-center"
+                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
                     />
                     <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
                       {waterDevice?.device_id ?? "KPBWXXXX"}

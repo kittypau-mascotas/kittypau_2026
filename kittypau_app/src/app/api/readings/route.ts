@@ -84,43 +84,64 @@ export async function GET(req: NextRequest) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
-  let query = supabase
-    .from("readings")
-    .select(
-      "id,device_id,recorded_at,weight_grams,water_ml,flow_rate,temperature,humidity,light_percent,battery_level",
+  const applyFilters = <T extends { lt: Function; gte: Function; lte: Function }>(q: T): T => {
+    let next = q;
+    if (cursor) {
+      next = next.lt("recorded_at", cursor) as T;
+    }
+    if (from) {
+      next = next.gte("recorded_at", from) as T;
+    }
+    if (to) {
+      next = next.lte("recorded_at", to) as T;
+    }
+    return next;
+  };
+
+  const baseSelect =
+    "id,device_id,recorded_at,weight_grams,water_ml,flow_rate,temperature,humidity,light_percent,battery_level";
+  const extendedSelect = `${baseSelect},battery_voltage,battery_state,battery_source,battery_is_estimated`;
+  const queryLimit = Number.isFinite(limit) ? limit : 50;
+
+  const runReadingsQuery = async (selectClause: string) =>
+    applyFilters(
+      supabase
+        .from("readings")
+        .select(selectClause)
+        .eq("device_id", deviceId)
+        .order("recorded_at", { ascending: false })
+        .limit(queryLimit),
+    );
+
+  let { data, error } = await runReadingsQuery(extendedSelect);
+
+  if (
+    error &&
+    /(column|schema cache).*(battery_voltage|battery_state|battery_source|battery_is_estimated)/i.test(
+      error.message,
     )
-    .eq("device_id", deviceId)
-    .order("recorded_at", { ascending: false })
-    .limit(Number.isFinite(limit) ? limit : 50);
-
-  if (cursor) {
-    query = query.lt("recorded_at", cursor);
+  ) {
+    ({ data, error } = await runReadingsQuery(baseSelect));
   }
-  if (from) {
-    query = query.gte("recorded_at", from);
-  }
-  if (to) {
-    query = query.lte("recorded_at", to);
-  }
-
-  const { data, error } = await query;
 
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  const readingsRows = (data ?? []) as Array<{ recorded_at?: string | null }>;
+
   if (!paginate) {
-    logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
+    logRequestEnd(req, startedAt, 200, { count: readingsRows.length });
     return NextResponse.json(data ?? []);
   }
 
   const nextCursor =
-    data && data.length > 0
-      ? (data[data.length - 1]?.recorded_at ?? null)
+    readingsRows.length > 0
+      ? (readingsRows[readingsRows.length - 1]?.recorded_at ?? null)
       : null;
 
   logRequestEnd(req, startedAt, 200, {
-    count: data?.length ?? 0,
+    count: readingsRows.length,
     next_cursor: nextCursor,
   });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
