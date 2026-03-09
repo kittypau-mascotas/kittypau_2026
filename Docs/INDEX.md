@@ -82,6 +82,7 @@
 - [PIPELINE_CICD.md](PIPELINE_CICD.md)
 - [VERCEL_UPSTASH_CHECKLIST.md](VERCEL_UPSTASH_CHECKLIST.md)
 - [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
+- [CHECKLIST_UX_UI_APK.md](CHECKLIST_UX_UI_APK.md)
 
 ## CLI y Herramientas
 - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) ← **índice GitHub/colaboración**
@@ -134,6 +135,7 @@
 - Produccion vigente:
   - `https://kittypau-app.vercel.app`
   - deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+
 
 
 
