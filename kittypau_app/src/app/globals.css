@@ -2170,12 +2170,40 @@ textarea::placeholder {
 
   .kp-native-apk .login-hero-column,
   .kp-flavor-native .login-hero-column {
-    gap: 6px;
+    gap: 0;
     width: 100%;
     max-width: 100%;
     margin-inline: auto;
+    min-height: 78dvh;
     align-items: center;
     text-align: center;
+  }
+
+  .kp-native-apk .login-fold-box,
+  .kp-flavor-native .login-fold-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .kp-native-apk .login-fold-box-plate,
+  .kp-flavor-native .login-fold-box-plate {
+    min-height: 34dvh;
+  }
+
+  .kp-native-apk .login-fold-box-message,
+  .kp-flavor-native .login-fold-box-message {
+    min-height: 22dvh;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .kp-native-apk .login-fold-box-brand,
+  .kp-flavor-native .login-fold-box-brand {
+    min-height: 22dvh;
   }
 
   .kp-native-apk .login-hero-asset,
@@ -2185,7 +2213,7 @@ textarea::placeholder {
 
   .kp-native-apk .login-hero-asset-img,
   .kp-flavor-native .login-hero-asset-img {
-    width: min(262px, 73vw);
+    width: min(246px, 69vw);
   }
 
   .kp-native-apk .login-hero-title,
@@ -2198,9 +2226,9 @@ textarea::placeholder {
 
   .kp-native-apk .login-hero-title,
   .kp-flavor-native .login-hero-title {
-    font-size: clamp(2rem, 9.5vw, 2.45rem);
+    font-size: clamp(2rem, 9.2vw, 2.35rem);
     line-height: 1.02;
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
 
   .kp-native-apk .login-hero-copy,
@@ -2212,7 +2240,7 @@ textarea::placeholder {
   .kp-flavor-native .login-auth-column {
     width: 100%;
     max-width: 100%;
-    margin-top: -28px;
+    margin-top: 2px;
     margin-inline: auto;
     align-items: center;
   }
@@ -2221,21 +2249,21 @@ textarea::placeholder {
   .kp-flavor-native .login-card-brand {
     width: 100%;
     max-width: 100%;
-    gap: 4px;
-    margin-bottom: 2px;
+    gap: 2px;
+    margin-bottom: 0;
     align-items: center;
     text-align: center;
   }
 
   .kp-native-apk .brand-logo-badge,
   .kp-flavor-native .brand-logo-badge {
-    width: 92px;
-    height: 92px;
+    width: 90px;
+    height: 90px;
   }
 
   .kp-native-apk .brand-title,
   .kp-flavor-native .brand-title {
-    font-size: clamp(2.1rem, 10.5vw, 2.65rem);
+    font-size: clamp(2.08rem, 10.2vw, 2.55rem);
     line-height: 0.95;
     text-align: center;
   }

@@ -669,39 +669,36 @@ export default function LoginPage() {
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
-          <div className="login-hero-asset freeform-rise freeform-float">
-            <button
-              type="button"
-              onClick={() => {
-                const nextIndex = (heroBowlCycleIndex + 1) % heroBowlCycle.length;
-                const nextState = heroBowlCycle[nextIndex];
-                playBowlClickSound(nextState.soundGroup);
-                setHeroBowlCycleIndex(nextIndex);
-              }}
-              className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
-              aria-label="Cambiar nivel visual del plato"
-              title="Cambiar nivel visual del plato"
-            >
-              <img
-                src={currentHeroBowlState.image}
-                alt="Plato de comida Kittypau"
-                className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
-                loading="eager"
-                draggable={false}
-              />
-            </button>
+          <div className="login-fold-box login-fold-box-plate">
+            <div className="login-hero-asset freeform-rise freeform-float">
+              <button
+                type="button"
+                onClick={() => {
+                  const nextIndex = (heroBowlCycleIndex + 1) % heroBowlCycle.length;
+                  const nextState = heroBowlCycle[nextIndex];
+                  playBowlClickSound(nextState.soundGroup);
+                  setHeroBowlCycleIndex(nextIndex);
+                }}
+                className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
+                aria-label="Cambiar nivel visual del plato"
+                title="Cambiar nivel visual del plato"
+              >
+                <img
+                  src={currentHeroBowlState.image}
+                  alt="Plato de comida Kittypau"
+                  className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                  loading="eager"
+                  draggable={false}
+                />
+              </button>
+            </div>
           </div>
-          <h1 className="login-hero-title display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
-            Descubre lo que tu mascota intenta decirte.
-          </h1>
-          <p className="login-hero-copy text-base leading-relaxed text-slate-600 md:text-lg">
-            Monitorea ciclos de alimentación e hidratación en tiempo real y recibe alertas tempranas para cuidar su salud.
-            Es la tenencia responsable que marca el futuro del bienestar animal.
-          </p>
-        </div>
-
-        <div className="login-auth-column w-full max-w-md">
-          <div className="login-card-brand freeform-rise">
+          <div className="login-fold-box login-fold-box-message">
+            <h1 className="login-hero-title display-title text-4xl font-semibold leading-[1.1] text-slate-900 md:text-5xl">
+              Descubre lo que tu mascota intenta decirte.
+            </h1>
+          </div>
+          <div className="login-fold-box login-fold-box-brand login-card-brand freeform-rise">
             <div className="brand-logo-badge" aria-hidden="true">
               <img
                 src="/logo_carga.jpg"
@@ -714,6 +711,15 @@ export default function LoginPage() {
             <p className="kp-pettech-tagline mt-1">
               PetTech AIoT
             </p>
+          </div>
+          <p className="login-hero-copy text-base leading-relaxed text-slate-600 md:text-lg">
+            Monitorea ciclos de alimentación e hidratación en tiempo real y recibe alertas tempranas para cuidar su salud.
+            Es la tenencia responsable que marca el futuro del bienestar animal.
+          </p>
+        </div>
+
+        <div className="login-auth-column w-full max-w-md">
+          <div className="login-card-brand freeform-rise">
             <SocialLinks className="login-deferred-social social-header social-header-center" size="md" />
           </div>
 
