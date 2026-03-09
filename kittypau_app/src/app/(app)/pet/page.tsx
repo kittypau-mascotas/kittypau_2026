@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -164,8 +165,8 @@ export default function PetPage() {
         const primaryPet =
           pets.find((pet) => pet.id === storedPetId) ?? pets[0];
         const initialPetId = primaryPet?.id ?? null;
-        if (initialPetId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_pet_id", initialPetId);
+        if (initialPetId) {
+          syncSelectedPet(initialPetId, primaryPet?.name ?? "");
         }
         setSelectedPetId(initialPetId);
         setEditPayload(primaryPet ?? {});
@@ -400,15 +401,12 @@ export default function PetPage() {
                       onChange={async (event) => {
                         const nextId = event.target.value || null;
                         setSelectedPetId(nextId);
-                        if (nextId && typeof window !== "undefined") {
-                          window.localStorage.setItem(
-                            "kittypau_pet_id",
-                            nextId,
-                          );
-                        }
                         const nextPet = state.pets.find(
                           (pet) => pet.id === nextId,
                         );
+                        if (nextId) {
+                          syncSelectedPet(nextId, nextPet?.name ?? "");
+                        }
                         setEditPayload(nextPet ?? {});
                         const token = await getValidAccessToken();
                         if (!token || !nextId) return;

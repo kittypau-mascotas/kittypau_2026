@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -199,8 +200,14 @@ export default function StoryPage() {
           devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
         const initialDeviceId = primaryDevice?.id ?? null;
-        if (initialDeviceId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_device_id", initialDeviceId);
+        if (initialDeviceId) {
+          syncSelectedDevice(initialDeviceId);
+        }
+        if (primaryDevice?.pet_id) {
+          const linkedPet = pets.find((pet) => pet.id === primaryDevice.pet_id);
+          if (linkedPet) {
+            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+          }
         }
         setSelectedDeviceId(initialDeviceId);
 
@@ -411,11 +418,19 @@ export default function StoryPage() {
                     onChange={async (event) => {
                       const nextId = event.target.value || null;
                       setSelectedDeviceId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem(
-                          "kittypau_device_id",
-                          nextId,
+                      if (nextId) {
+                        syncSelectedDevice(nextId);
+                        const nextDevice = state.devices.find(
+                          (device) => device.id === nextId,
                         );
+                        if (nextDevice?.pet_id) {
+                          const linkedPet = state.pets.find(
+                            (pet) => pet.id === nextDevice.pet_id,
+                          );
+                          if (linkedPet) {
+                            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+                          }
+                        }
                       }
                       if (!nextId) return;
                       const token = await getValidAccessToken();

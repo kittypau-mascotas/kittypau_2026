@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
 
   const { supabase, user } = auth;
   const { searchParams } = new URL(req.url);
-  const deviceId = searchParams.get("device_id");
+  const deviceId =
+    searchParams.get("device_id") ?? searchParams.get("device_uuid");
   const limitParam = searchParams.get("limit");
   const cursor = searchParams.get("cursor");
   const from = searchParams.get("from");

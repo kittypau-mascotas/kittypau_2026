@@ -40,6 +40,42 @@ Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para a
 
 `Indice de Coherencia Ecosistema = 3.74 / 5.00`
 
+### Meta de mejora (proxima auditoria: 2026-03-31)
+Objetivo: pasar de `3.74` a `>= 4.10`, priorizando cierre de brechas en Producto/UX y Datos/IA sin degradar operacion.
+
+| Dimension | Score actual | Meta | Gap |
+|---|---:|---:|---:|
+| Estrategia | 4.2 | 4.4 | +0.2 |
+| Producto y UX | 3.2 | 4.1 | +0.9 |
+| Datos e IA | 3.2 | 4.0 | +0.8 |
+| Arquitectura y Backend | 4.0 | 4.2 | +0.2 |
+| Operacion y DevOps | 4.0 | 4.3 | +0.3 |
+| Negocio y Finanzas | 3.4 | 4.0 | +0.6 |
+| Marca y Narrativa | 4.2 | 4.4 | +0.2 |
+
+### Palancas concretas para subir score
+1. Producto y UX (`P0`):
+- cerrar coherencia del selector tester/KPCL en `/today` + `navbar` con evidencia multi-cuenta,
+- ejecutar checklist UX/UI APK completo (3 resoluciones objetivo + dispositivo real),
+- registrar capturas antes/despues en documento de release.
+
+2. Datos e IA (`P0/P1`):
+- homologar migraciones de bateria en todos los entornos,
+- implementar pruebas de contrato para `/api/readings` (casos OK, vacio y error),
+- definir protocolo minimo de validacion de formulas (consumo e hidratacion) con dataset controlado.
+
+3. Negocio y Finanzas (`P1`):
+- consolidar trazabilidad KPI tecnico -> KPI negocio (retencion, activacion, costo operativo),
+- documentar supuestos economicos vigentes por version de producto.
+
+4. Operacion y DevOps (`P1`):
+- estandarizar evidencia por deploy (commit, URL, smoke test, riesgos abiertos),
+- asegurar que cada cambio UX/API/SQL actualice su documento canonico asociado.
+
+### Criterio de recalculo del indice
+- Se recalcula solo con evidencia verificable (commit + prueba + doc actualizado).
+- Cada dimension sube puntaje cuando cierra su gap con evidencia minima definida en este documento.
+
 ### Lectura del resultado
 - Estado general: **coherencia aceptable con deuda**.
 - Fortalezas: estrategia, narrativa, arquitectura y operacion.
@@ -75,8 +111,8 @@ Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para a
 |---|---|---|---|---|---|---|---|---|
 | C-001 | Documentacion | `Docs/contexto.md` (version previa) | docs maestros | Mezcla de nota cruda vs definicion canonica | Alto | P1 | Producto/Docs | Cerrado |
 | C-002 | Gobernanza | propuesta transcripcion | `Docs/GUIA_DECISION.md` | Multiples cuentas Vercel por DB sin control | Alto | P1 | Tech Lead | Cerrado |
-| C-003 | Flujo UX | `Docs/VISTAS_APP.md` | estado real `/today` | Deuda de consistencia completa en selector tester/KPCL | Alto | P0 | Frontend | Abierto |
-| C-004 | Datos/API | contratos bateria | entorno local parcial | Migraciones bateria no homogeneas entre entornos | Alto | P0 | Backend/DB | Abierto |
+| C-003 | Flujo UX | `Docs/VISTAS_APP.md` | estado real `/today` | Deuda de consistencia completa en selector tester/KPCL | Alto | P0 | Frontend | En curso |
+| C-004 | Datos/API | contratos bateria | entorno local parcial | Migraciones bateria no homogeneas entre entornos | Alto | P0 | Backend/DB | En curso |
 | C-005 | Evidencia IA | docs estrategicos | pruebas operativas | Falta protocolo formal de validacion de formulas IA | Medio | P1 | Data/Backend | Abierto |
 
 ---
@@ -99,8 +135,8 @@ Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para a
 
 | Accion | Dimension | Prioridad | Fecha objetivo | Responsable | Dependencias | Estado |
 |---|---|---|---|---|---|---|
-| Cerrar coherencia selector tester/KPCL en `/today` + `navbar` | Producto y UX | P0 | 2026-03-13 | Frontend | pruebas multi-cuenta tester | Pendiente |
-| Homologar migraciones bateria en todos los entornos | Datos/API | P0 | 2026-03-13 | Backend/DB | acceso Supabase + migraciones | Pendiente |
+| Cerrar coherencia selector tester/KPCL en `/today` + `navbar` | Producto y UX | P0 | 2026-03-13 | Frontend | pruebas multi-cuenta tester | En curso |
+| Homologar migraciones bateria en todos los entornos | Datos/API | P0 | 2026-03-13 | Backend/DB | acceso Supabase + migraciones | En curso |
 | Implementar pruebas de contrato para `/api/readings` | Datos/API | P1 | 2026-03-16 | Backend | dataset controlado | Pendiente |
 | Definir protocolo minimo de validacion IA (consumo e hidratacion) | Datos e IA | P1 | 2026-03-20 | Data/Backend | historico de lecturas | Pendiente |
 
@@ -123,9 +159,39 @@ Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para a
   - `b8ef5f5` (sincronizacion amplia docs/app/sql)
   - `4d55aae` (login APK: mantener titulo y ocultar copy pequena)
   - `6e74853` (rebalanceo dimensiones mobile APK)
+  - `daff54f` (APK login: bloque marca centrado y agrandado, sin regresion web intencional)
 - Produccion Vercel actualizada y verificada:
   - `https://kittypau-app.vercel.app`
-  - deploy confirmado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+  - deploy confirmado: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
 - Estado de cierre UX APK:
   - login mobile nativo con jerarquia visual corregida (plato -> titulo -> marca -> card),
   - `/today` mobile nativo compactado para mejorar visibilidad en primera pantalla.
+
+## Mini-auditoria incremental (2026-03-09, post `daff54f`)
+- Alcance: login APK (centrado y escala de marca) + validacion de no-regresion web por alcance CSS.
+- Resultado:
+  - Coherencia de marca en APK: mejora perceptible (alineacion con narrativa PetTech AIoT).
+  - Riesgo residual: revisar en dispositivo real 360x800 y 393x852 para confirmar proporciones finales.
+- Estado:
+  - C-003 (flujo UX `/today` + selector tester/KPCL): **sigue abierto**.
+  - C-004 (migraciones bateria multi-entorno): **sigue abierto**.
+
+## Avance de ejecucion (2026-03-09, coherencia selector/nav)
+- Se implemento sincronizacion transversal de seleccion mascota/dispositivo para reducir desalineacion entre vistas y navbar:
+  - nuevo helper: `src/lib/runtime/selection-sync.ts`,
+  - adopcion en `/today`, `/story`, `/pet`, `/bowl`.
+- Resultado esperado:
+  - cambios de mascota/dispositivo propagan a navbar en tiempo real (evento + localStorage),
+  - mejora de consistencia para cuentas tester multi-mascota y flujos KPCL.
+- Estado:
+  - C-003 pasa de **Abierto** a **En curso** (pendiente cierre con pruebas multi-cuenta tester).
+
+## Avance de ejecucion (2026-03-09, datos/API bateria + contrato readings)
+- Se reforzo robustez de contrato `/api/readings`:
+  - acepta `device_id` (actual) y `device_uuid` (alias retrocompatible).
+- Se agrego evidencia tecnica para C-004:
+  - asserts SQL de bateria en `Docs/SQL_ASSERTS.md` (columnas, constraints e indice),
+  - script de contrato `Docs/TEST_READINGS_CONTRACT.ps1`,
+  - referencia en `Docs/PRUEBAS_E2E.md` e `Docs/INDEX.md`.
+- Estado:
+  - C-004 pasa de **Abierto** a **En curso** (pendiente ejecucion formal en entorno Supabase objetivo).

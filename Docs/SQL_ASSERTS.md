@@ -107,5 +107,55 @@ Esperado: 1 fila en `public.readings`.
 - Validar constraint `profiles_onboarding_step_check`.
 - Validar constraint `pets_onboarding_step_check`.
 
+---
+
+## 7) Columnas de bateria estimada (readings + devices)
+```sql
+select
+  table_name,
+  column_name
+from information_schema.columns
+where table_schema = 'public'
+  and (
+    (table_name = 'readings' and column_name in ('battery_voltage','battery_state','battery_source','battery_is_estimated')) or
+    (table_name = 'devices' and column_name in ('battery_voltage','battery_state','battery_source','battery_is_estimated'))
+  )
+order by table_name, column_name;
+```
+
+Esperado: 8 filas.
+
+---
+
+## 8) Constraints de bateria (rango + estado)
+```sql
+select conname, pg_get_constraintdef(c.oid) as def
+from pg_constraint c
+join pg_class t on t.oid = c.conrelid
+where t.relname in ('readings','devices')
+  and c.contype = 'c'
+  and conname in (
+    'readings_battery_voltage_check',
+    'devices_battery_voltage_check',
+    'readings_battery_state_check',
+    'devices_battery_state_check'
+  )
+order by conname;
+```
+
+Esperado: 4 filas.
+
+---
+
+## 9) Indice de lecturas para bateria
+```sql
+select indexname, indexdef
+from pg_indexes
+where schemaname = 'public'
+  and indexname = 'idx_readings_device_recorded_cover';
+```
+
+Esperado: 1 fila.
+
 
 

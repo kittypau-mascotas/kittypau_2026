@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
@@ -599,25 +600,11 @@ export default function TodayPage() {
         const initialDeviceId = primaryDevice?.id ?? null;
         setSelectedPetId(primaryPet?.id ?? null);
         setSelectedDeviceId(initialDeviceId);
-        if (primaryPet?.id && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_pet_id", primaryPet.id);
-          window.localStorage.setItem(
-            "kittypau_pet_name",
-            primaryPet.name ?? "",
-          );
-          window.dispatchEvent(
-            new CustomEvent("kittypau-pet-change", {
-              detail: { petId: primaryPet.id, petName: primaryPet.name ?? "" },
-            }),
-          );
+        if (primaryPet?.id) {
+          syncSelectedPet(primaryPet.id, primaryPet.name ?? "");
         }
-        if (initialDeviceId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_device_id", initialDeviceId);
-          window.dispatchEvent(
-            new CustomEvent("kittypau-device-change", {
-              detail: { deviceId: initialDeviceId },
-            }),
-          );
+        if (initialDeviceId) {
+          syncSelectedDevice(initialDeviceId);
         }
         if (initialDeviceId) {
           const result = await loadReadings(initialDeviceId);
@@ -912,11 +899,9 @@ export default function TodayPage() {
     // Keep the live panel aligned with the hero food device for the selected pet.
     if (!bowlDevice?.id || selectedDeviceId === bowlDevice.id) return;
     let active = true;
-    const syncSelectedDevice = async () => {
+    const syncLivePanelDevice = async () => {
       setSelectedDeviceId(bowlDevice.id);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("kittypau_device_id", bowlDevice.id);
-      }
+      syncSelectedDevice(bowlDevice.id);
       try {
         const result = await loadReadings(bowlDevice.id);
         if (!active) return;
@@ -930,7 +915,7 @@ export default function TodayPage() {
         // Keep current state if sync fetch fails; hero still reads from dedicated device map.
       }
     };
-    void syncSelectedDevice();
+    void syncLivePanelDevice();
     return () => {
       active = false;
     };
@@ -1329,26 +1314,11 @@ export default function TodayPage() {
       null;
 
     setSelectedPetId(pet.id);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("kittypau_pet_id", pet.id);
-      window.localStorage.setItem("kittypau_pet_name", pet.name ?? "");
-      window.dispatchEvent(
-        new CustomEvent("kittypau-pet-change", {
-          detail: { petId: pet.id, petName: pet.name ?? "" },
-        }),
-      );
-    }
+    syncSelectedPet(pet.id, pet.name ?? "");
 
     if (!nextDevice) return;
     setSelectedDeviceId(nextDevice.id);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("kittypau_device_id", nextDevice.id);
-      window.dispatchEvent(
-        new CustomEvent("kittypau-device-change", {
-          detail: { deviceId: nextDevice.id },
-        }),
-      );
-    }
+    syncSelectedDevice(nextDevice.id);
     try {
       const result = await loadReadings(nextDevice.id);
       setState((prev) => ({

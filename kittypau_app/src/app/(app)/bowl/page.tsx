@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
@@ -226,7 +227,7 @@ export default function BowlPage() {
           devices.find((device) => device.id === storedDeviceId) ?? devices[0];
         const initialId = primaryDevice?.id ?? null;
         if (initialId) {
-          window.localStorage.setItem("kittypau_device_id", initialId);
+          syncSelectedDevice(initialId);
         }
         if (!mounted) return;
         setSelectedDeviceId(initialId);
@@ -392,9 +393,7 @@ export default function BowlPage() {
     const nextDeviceId = state.devices[nextIndex]?.id ?? null;
     if (!nextDeviceId) return;
     setSelectedDeviceId(nextDeviceId);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("kittypau_device_id", nextDeviceId);
-    }
+    syncSelectedDevice(nextDeviceId);
   };
 
   const connectionHint = useMemo(() => {
