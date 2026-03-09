@@ -2494,10 +2494,11 @@ textarea::placeholder {
   .kp-native-apk .login-fold-box-brand,
   .kp-flavor-native .login-fold-box-brand {
     display: flex;
-    min-height: 26dvh;
+    min-height: 24dvh;
     align-items: center;
     justify-content: center;
-    transition: min-height 320ms ease;
+    transform: translateY(-10px);
+    transition: min-height 320ms ease, transform 320ms ease;
   }
 
   .kp-native-apk .login-brand-core,
@@ -2552,6 +2553,8 @@ textarea::placeholder {
     margin-bottom: 0;
     align-items: center;
     text-align: center;
+    transform: translateY(-6px);
+    transition: transform 320ms ease;
   }
 
   .kp-native-apk .brand-logo-badge,
@@ -2577,8 +2580,15 @@ textarea::placeholder {
     text-align: center;
     font-size: 1.44rem;
     line-height: 1.16;
+    margin-top: 8px;
     margin-inline: auto;
     transition: font-size 320ms ease, line-height 320ms ease;
+  }
+
+  .kp-native-apk .login-login-stack .login-panel-cat,
+  .kp-flavor-native .login-login-stack .login-panel-cat {
+    right: -6px;
+    top: 4px;
   }
 
   .kp-native-apk .login-card-brand .social-links,
@@ -2626,6 +2636,7 @@ textarea::placeholder {
   .kp-native-apk.kp-login-scrolled .login-fold-box-brand,
   .kp-flavor-native.kp-login-scrolled .login-fold-box-brand {
     min-height: 12dvh;
+    transform: translateY(0);
   }
 
   .kp-native-apk.kp-login-scrolled .brand-logo-badge,
@@ -2644,6 +2655,18 @@ textarea::placeholder {
   .kp-flavor-native.kp-login-scrolled .kp-pettech-tagline {
     font-size: 1.06rem;
     line-height: 1.05;
+    margin-top: 6px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-card-brand,
+  .kp-flavor-native.kp-login-scrolled .login-card-brand {
+    transform: translateY(0);
+    margin-bottom: 10px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
+    margin-top: 6px;
   }
 
   .kp-native-apk.kp-login-scrolled .login-hero-title,

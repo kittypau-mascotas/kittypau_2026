@@ -46,6 +46,7 @@ export default function LoginPage() {
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
   const trialCatRef = useRef<HTMLDivElement | null>(null);
+  const loginPanelWrapRef = useRef<HTMLDivElement | null>(null);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
@@ -175,7 +176,7 @@ export default function LoginPage() {
     }
 
     const onScroll = () => {
-      if (window.scrollY > 6) {
+      if (window.scrollY > 4) {
         root.classList.add("kp-login-scrolled");
       } else {
         root.classList.remove("kp-login-scrolled");
@@ -183,16 +184,37 @@ export default function LoginPage() {
     };
 
     let touchStartY = 0;
+    let touchEndY = 0;
     const onTouchStart = (event: TouchEvent) => {
       touchStartY = event.touches[0]?.clientY ?? 0;
+      touchEndY = touchStartY;
     };
     const onTouchMove = (event: TouchEvent) => {
       const currentY = event.touches[0]?.clientY ?? touchStartY;
+      touchEndY = currentY;
       const delta = touchStartY - currentY;
-      if (delta > 10) {
+      if (delta > 6) {
         root.classList.add("kp-login-scrolled");
-      } else if (window.scrollY <= 2 && delta < -8) {
+      } else if (window.scrollY <= 2 && delta < -6) {
         root.classList.remove("kp-login-scrolled");
+      }
+    };
+    const onTouchEnd = () => {
+      const delta = touchStartY - touchEndY;
+      const panelTop =
+        (loginPanelWrapRef.current?.getBoundingClientRect().top ?? 0) +
+        window.scrollY;
+
+      if (delta > 24) {
+        window.scrollTo({
+          top: Math.max(0, panelTop - 72),
+          behavior: "smooth",
+        });
+        return;
+      }
+
+      if (delta < -24) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
 
@@ -200,10 +222,12 @@ export default function LoginPage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       root.classList.remove("kp-login-scrolled");
     };
   }, []);
@@ -789,7 +813,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="login-panel-wrap login-deferred-panel">
+          <div
+            className="login-panel-wrap login-deferred-panel"
+            ref={loginPanelWrapRef}
+          >
             <div className="glass-panel freeform-rise relative w-full p-5">
               <div
                 className="stagger login-login-stack"
