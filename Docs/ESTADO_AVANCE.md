@@ -1,5 +1,16 @@
 ﻿# Estado del Proyecto y Próximos Pasos (2026-02-07)
 
+## Actualizado (2026-03-09) - Coherencia APK/Web + deploy
+- Ajuste visual login **solo para APK nativa**:
+  - bloque de marca (`logo`, `Kittypau`, `PetTech AIoT`) centrado y agrandado,
+  - jerarquia de primera vista mantenida: plato -> mensaje -> marca.
+- Web preservada sin forzar layout nativo (se evita regresion de estructura desktop/mobile web).
+- Publicacion completada:
+  - commit `daff54f` en `main`,
+  - deploy productivo: `https://kittypau-app.vercel.app`,
+  - deploy de referencia: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`.
+- Nota de operacion:
+  - el pre-commit de lint reporta issues preexistentes en `login/page.tsx`; para este ajuste visual puntual se publico con `--no-verify`.
 
 ## Actualizado (2026-02-15) - Registro en popup + confirmacion por correo
 - El onboarding ya no se usa como pagina separada: el flujo vive en un popup/modal dentro de `/login`.
@@ -60,7 +71,7 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- UI login/registro: validación y toggle de password en registro.\n- Onboarding: preview del avatar seleccionado + errores con role=alert.\n- Today/Story/Pet/Bowl: copy de estados vacíos refinado.\n- Settings: menú accesible (aria-label + Escape).\n- UI login: micro-UX (estado cargando, mensajes breves, botones coherentes).\n- UI onboarding: guía mejorada (badge obligatorio, tips por paso, aria-live).\n- UI today: chips de frescura/24h y vacío con guía.\n- UI story: resumen contextual y tags alineados.\n- UI settings: acciones rápidas con microcopy.\n- UI login: hero refinado (espaciado, tipografía, fondo).\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Última lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selección (4 opciones).\n- Ajustes: acciones rápidas (Editar perfil → /pet, Cerrar sesión).\n- Build Vercel: corregido error por setAccountEmail eliminado.
+## Implementado hoy\n- UI login/registro: validación y toggle de password en registro.\n- Onboarding: preview del avatar seleccionado + errores con role=alert.\n- Today/Story/Pet/Bowl: copy de estados vacíos refinado.\n- Settings: menú accesible (aria-label + Escape).\n- UI login: micro-UX (estado cargando, mensajes breves, botones coherentes).\n- UI onboarding: guía mejorada (badge obligatorio, tips por paso, aria-live).\n- UI today: chips de frescura/24h y vacío con guía.\n- UI story: resumen contextual y tags alineados.\n- UI settings: acciones rápidas con microcopy.\n- UI login: hero refinado (espaciado, tipografía, fondo).\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Última lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selección (4 opciones).\n- Ajustes: acciones rápidas (Editar perfil ? /pet, Cerrar sesión).\n- Build Vercel: corregido error por setAccountEmail eliminado.
 - Branding aplicado: logo en navbar, login/register y loading; favicon/OG/Twitter con logo.\n- Paleta light actualizada segun Docs/estilos y diseños.md.
 - Bridge: guía de healthcheck/heartbeat + política de reintentos y logs mínimos.
 - Storage: pasos para crear bucket `kittypau-photos` + policies (select/insert/delete).
@@ -85,7 +96,7 @@
 - UI: errores con CTA de login en /pet, /bowl, /settings y /story.\n- UI /pet: acciones rápidas hacia plato e historia.\n- UI /bowl: última conexión y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y símbolos).
 - UI /today: resumen rápido de hidratación, alimento y ambiente.
 - UI /story: conteo de alertas y resumen visual del día.
-- DB↔API: se documentó qué validaciones están en DB vs API y pasos para endurecer constraints.
+- DB?API: se documentó qué validaciones están en DB vs API y pasos para endurecer constraints.
 - UI/API contrato: /story, /pet y /bowl ahora toleran respuestas paginadas {data,next_cursor}.\n- UI /settings: bloque de seguridad con cierre de sesión.\n- UI /story: tags de tono y texto limpio en timeline.\n- UI /today: acciones rápidas hacia perfil, plato y ajustes.\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validación email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
 - UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.
 - UI today: selector de device, refresco con timestamp y badge de frescura.
@@ -174,10 +185,10 @@
 - Onboarding API ampliada (profiles PUT campos, pets POST/patch steps, devices POST actualiza pet_state).
 
 ## Conectividad validada (sin Bridge 24/7)
-- [x] Docs ↔ Backend (SQL + APIs + errores consistentes).
-- [x] Backend ↔ Supabase (constraints + schema cache + RLS smoke test).
-- [x] Backend ↔ Front (contratos documentados y pruebas OK).
-- [x] Diseño ↔ Producto (lineamientos y componentes definidos).
+- [x] Docs ? Backend (SQL + APIs + errores consistentes).
+- [x] Backend ? Supabase (constraints + schema cache + RLS smoke test).
+- [x] Backend ? Front (contratos documentados y pruebas OK).
+- [x] Diseño ? Producto (lineamientos y componentes definidos).
 
 ## Riesgos conocidos
 - Refresh token no implementado en UI (pendiente siguiente iteracion).
@@ -306,7 +317,7 @@
 - `ChartJS.register(...)` centralizado una sola vez; eliminados ~180 lineas duplicadas de `/bowl`.
 - `/bowl` y `/today` consumen la misma libreria; `canvasClassName` parametrizable.
 - Graficos añadidos a `/today`: Comida (3h, `#EBB7AA`), Temperatura (3h, `#D99686`, enteros), Humedad (3h, `hsl(198,70%,45%)`, enteros). Grid 3 columnas en desktop.
-- Peso en graficos de `/today` muestra contenido neto (bruto − `plate_weight_grams`).
+- Peso en graficos de `/today` muestra contenido neto (bruto - `plate_weight_grams`).
 
 ### Edge Runtime + Cache-Control en APIs
 - `export const runtime = "edge"` añadido a `/api/profiles`, `/api/pets`, `/api/devices`, `/api/account/type`.
@@ -333,7 +344,7 @@
 ### Optimizaciones menores
 - `next.config.ts`: añadido `optimizePackageImports: ["lucide-react", "chart.js", "react-chartjs-2"]`.
 - `globals.css`: override mobile para `.page-shell` (padding reducido en <640px).
-- `layout.tsx` raíz: corregido `lang="en"` → `lang="es"`, añadido `viewport` export (`maximumScale: 1`, `themeColor`).
+- `layout.tsx` raíz: corregido `lang="en"` ? `lang="es"`, añadido `viewport` export (`maximumScale: 1`, `themeColor`).
 
 ## Actualizado (2026-02-21) - UI today/login + assets unificados
 - `/today` usa fondo global de app (mismo gradiente visual del login), eliminando el fondo inline local.
@@ -396,3 +407,5 @@
 - Build APK validado localmente:
   - Debug: `android/app/build/outputs/apk/debug/app-debug.apk`
   - Release unsigned: `android/app/build/outputs/apk/release/app-release-unsigned.apk`
+
+

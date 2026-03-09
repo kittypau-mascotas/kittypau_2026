@@ -1,4 +1,4 @@
-# Contexto Canonico - Sesion 260703_planificacion
+﻿# Contexto Canonico - Sesion 260703_planificacion
 
 ## Metadatos
 - Fuente: transcripcion interna `260703_planificacion.m4a`.
@@ -89,4 +89,20 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 - reduccion tipografica de metricas dentro de cards de plato.
 4. Despliegue productivo vigente:
 - URL productiva: `https://kittypau-app.vercel.app`
-- ultimo deploy confirmado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+- ultimo deploy confirmado: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
+
+## Actualizacion de coherencia (2026-03-09, post despliegue)
+1. Se consolido ajuste **APK-only** en login para primera vista:
+- orden visual mantenido: `plato -> mensaje -> logo -> Kittypau -> PetTech AIoT`,
+- bloque de marca centrado y agrandado en flavor nativo (`kp-native-apk` / `kp-flavor-native`),
+- redes sociales + card de login conservadas como contenido de scroll.
+
+2. Se reforzo separacion de alcance Web vs APK:
+- web conserva estructura base de login (sin forzar layout de APK),
+- APK aplica compactacion/centrado con reglas CSS acotadas por clase de entorno nativo.
+
+3. Trazabilidad tecnica:
+- commit principal: `daff54f` (main),
+- produccion actual: `https://kittypau-app.vercel.app`,
+- deploy asociado: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`.
+

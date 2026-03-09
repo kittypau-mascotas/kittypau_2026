@@ -19,6 +19,22 @@ order by table_name, column_name;
 
 Esperado: 3 filas.
 
+## 1.1) Canon de FK en readings (device_id UUID)
+```sql
+select
+  table_name,
+  column_name,
+  data_type
+from information_schema.columns
+where table_schema = 'public'
+  and table_name = 'readings'
+  and column_name in ('device_id','device_uuid');
+```
+
+Esperado:
+- `device_id` existe con tipo `uuid`.
+- `device_uuid` no debe ser la columna canonica del entorno actual.
+
 ---
 
 ## 2) Constraints de enums

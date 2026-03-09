@@ -53,3 +53,4 @@ git log --oneline -n 5 origin/main
 | 2026-03-05 | Javo | feat/javo-mauro | 738c07d | fix(ci): resolve all App Lint + Build errors blocking PR #14 | #14 | push para destrabar CI del PR |
 | 2026-03-05 | Javo | feat/javo-mauro | e41f98e | fix(ci): use valid supabase placeholders for CI build | #14 | checks en verde (lint/build + policy + vercel) |
 | 2026-03-05 | Mauro | feat/mauro-curcuma | 92e0d95 | merge origin/main into feat/mauro-curcuma | n/a | rama de trabajo mauro sincronizada con main |
+| 2026-03-09 | Mauro | main | daff54f | feat(apk): center and enlarge login brand block without web regressions | n/a | push realizado + deploy productivo en Vercel |

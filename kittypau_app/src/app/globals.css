@@ -25,6 +25,16 @@
   --danger: 350 55% 44%;
 
   --radius: 18px;
+
+  /* pelaje Nebelung */
+  --fur-dark: #3F474F;
+  --fur-main: #5A646E;
+  --fur-highlight: #8C97A3;
+
+  /* ojos */
+  --eye-gold: #C9A227;
+  --eye-highlight: #E1C542;
+  --pupil: #000000;
 }
 
 @theme inline {
@@ -1004,91 +1014,300 @@ body {
   font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
 }
 
-.kp-bubble-wrap {
-  position: relative;
-  display: inline-block;
+.login-ui-font .login-card-brand .brand-title {
+  font-size: clamp(34px, 3.9vw, 48px);
+  line-height: 1;
+  margin-top: -14px;
 }
 
-.kp-goo {
-  position: absolute;
-  visibility: hidden;
-  width: 0;
-  height: 0;
+.login-ui-font .kp-pettech-tagline {
+  font-size: clamp(14px, 1.45vw, 18px);
+  line-height: 1.08;
+  letter-spacing: 0.06em;
+  margin-top: -8px;
 }
 
-.kp-bubble-container {
-  position: relative;
-  display: inline-block;
-}
-
-.kp-bubble-button {
-  position: relative;
-  z-index: 2;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 62%, transparent);
-  border-radius: 999px;
-  background: hsl(var(--primary));
-  color: #fff;
-  padding: 7px 13px;
-  font-size: 11px;
+.login-ui-font .login-hero-title-pettech {
+  font-family: var(--font-ui), system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.login-bg.login-ui-font .login-hero-title.login-hero-title-web {
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  line-height: 1.1;
+}
+
+.login-bg button:not(:disabled),
+.login-bg [role="button"]:not([aria-disabled="true"]) {
   cursor: pointer;
-  box-shadow: 0 8px 18px -14px color-mix(in oklab, hsl(var(--primary)) 65%, transparent);
-  transition: transform 120ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
-.kp-bubble-button:active {
-  transform: scale(0.97);
+.login-bg button:disabled,
+.login-bg [role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
-.kp-bubble-button:hover {
-  background: hsl(var(--primary-strong));
-  box-shadow: 0 10px 22px -14px color-mix(in oklab, hsl(var(--primary)) 68%, transparent);
+.login-bg .login-submit-button,
+.login-bg .login-forgot-button,
+.login-bg .login-create-button {
+  cursor: pointer !important;
 }
 
-.kp-bubble-effect {
+.kp-trial-cat {
+  padding: 0;
+  display: inline-flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.kp-trial-cat .cat {
+  position: relative;
+  padding-top: 10px;
+  overflow: visible;
+}
+
+.kp-trial-button {
+  min-width: 128px;
+  min-height: 30px;
+  padding: 5px 11px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--border)));
+  background: #ffffff;
+  color: #7a6a65;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px -7px rgba(15, 23, 42, 0.35);
+  transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.kp-trial-button:hover {
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 42%, hsl(var(--border)));
+  color: hsl(var(--primary-strong));
+}
+
+.kp-trial-button:active {
+  transform: scale(0.98);
+}
+
+.kp-trial-cat .sleep-symbol {
   position: absolute;
+  right: 44px;
+  top: -58px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.kp-trial-cat .sleep-symbol span {
+  display: inline-block;
+  animation: kp-trial-sleep 4s ease-in-out infinite;
+}
+
+.kp-trial-cat .sleep-symbol span:nth-child(2) {
+  animation-delay: 1s;
+  margin-left: -6px;
+}
+
+.kp-trial-cat .sleep-symbol span:nth-child(3) {
+  animation-delay: 2s;
+  margin-left: -6px;
+}
+
+.kp-trial-cat .thecat {
+  position: absolute;
+  width: 78px;
+  height: auto;
+  right: -6px;
+  top: -48px;
+  z-index: 80;
+  pointer-events: none;
+  overflow: visible;
+  line-height: 0;
+}
+
+.login-panel-cat {
+  position: relative;
+  z-index: 70;
+  pointer-events: auto;
+}
+
+.login-trial-inline {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  min-height: 26px;
+}
+
+.login-login-stack {
+  position: relative;
+}
+
+.login-login-head {
+  min-height: 28px;
+  padding-right: 178px;
+}
+
+.login-login-intro p {
+  margin-top: -2px;
+  line-height: 1.2;
+}
+
+.login-login-stack .login-panel-cat {
+  position: absolute;
+  right: 10px;
+  top: -10px;
+}
+
+.login-form-compact {
+  margin-top: -2px;
+}
+
+.kp-trial-cat .thecat svg {
+  width: 100%;
+  height: auto;
   display: block;
-  width: 180%;
-  height: 340%;
-  top: -120%;
-  left: -40%;
-  filter: url("#kp-goo");
+  overflow: visible !important;
+  transform-origin: top right;
+}
+
+/* Gato completo gris oscuro */
+.kp-trial-cat .thecat svg > g > path {
+  fill: var(--fur-dark) !important;
+}
+
+/* Solo patas un poco mas oscuras */
+.kp-trial-cat .thecat svg > g > path:nth-of-type(2),
+.kp-trial-cat .thecat svg > g > path:nth-of-type(3),
+.kp-trial-cat .thecat svg > g > path:nth-of-type(4),
+.kp-trial-cat .thecat svg > g > path:nth-of-type(9) {
+  fill: #323940 !important;
+}
+
+/* Bigotes negros */
+.kp-trial-cat .thecat svg > g > g:nth-of-type(1) path,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(2) path {
+  stroke: #000000 !important;
+}
+
+/* Ojos cerrados integrados al pelaje */
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) ellipse,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) path,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) ellipse,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) path {
+  fill: var(--fur-dark) !important;
+}
+
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) path[style*="stroke:#ffffff"],
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) path[style*="stroke:#ffffff"] {
+  stroke: var(--fur-dark) !important;
+}
+
+/* Ojos abiertos dorados: sin blanco, pupila negra y brillo blanco */
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  fill: #C9A227 !important;
+}
+
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(5) {
+  fill: #000000 !important;
+}
+
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(3),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(6) {
+  fill: #ffffff !important;
+}
+
+/* Si hay ojos superiores visibles, tambien dorados (evitar blanco) */
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(1),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(4) {
+  fill: #C9A227 !important;
+}
+
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(2),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(5) {
+  fill: #000000 !important;
+}
+
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(3),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(6) {
+  fill: #ffffff !important;
+}
+
+/* Movimiento de pupila y brillo con mouse cuando esta despierto */
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(3),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(5),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(6) {
+  translate: var(--cat-eye-x, 0px) var(--cat-eye-y, 0px);
+  transition: translate 120ms ease-out;
+}
+
+.kp-trial-cat #tail {
+  visibility: visible;
+}
+
+.kp-trial-cat #longtail {
+  visibility: hidden;
+  transform: translateY(-4px);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kp-trial-cat .thecat #eyesdown {
+  opacity: 0;
+  transition: opacity 220ms ease-out;
   pointer-events: none;
 }
 
-.kp-bubble-core {
-  position: absolute;
-  width: 48%;
-  height: 22%;
-  top: 50%;
-  left: 26%;
-  transform: translateY(-50%);
-  border-radius: 999px;
-  background: hsl(var(--primary));
-  opacity: 0.42;
-  box-shadow: 0 8px 20px color-mix(in oklab, hsl(var(--primary)) 35%, transparent);
+.kp-trial-cat #lefteyelid,
+.kp-trial-cat #righteyelid {
+  opacity: 1;
+  transition: opacity 170ms ease-out;
 }
 
-.kp-bubble-circle {
-  position: absolute;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  background: hsl(var(--primary));
-  box-shadow: 0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 55%, transparent);
+.kp-trial-cat.is-awake #lefteyelid,
+.kp-trial-cat.is-awake .sleep-symbol {
+  visibility: hidden;
+}
+
+.kp-trial-cat.is-awake #lefteyelid {
   opacity: 0;
+  transition-delay: 0ms;
 }
 
-.kp-bubble-circle.top-left {
-  top: 44%;
-  left: 26%;
+.kp-trial-cat.is-awake #righteyelid {
+  opacity: 0;
+  transition-delay: 220ms;
 }
 
-.kp-bubble-circle.bottom-right {
-  bottom: 44%;
-  right: 26%;
+.kp-trial-cat.is-awake #eyesdown {
+  opacity: 1;
+  transition-delay: 170ms;
+}
+
+@keyframes kp-trial-sleep {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-3px, -14px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-26px) scale(1.25);
+  }
 }
 
 .login-layer {
@@ -1227,6 +1446,16 @@ body {
   justify-content: center;
 }
 
+.login-hero-social {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.login-hero-social-web .social-link-md {
+  width: 44px;
+  height: 44px;
+}
+
 .login-brand-block {
   align-self: center;
 }
@@ -1261,10 +1490,17 @@ body {
   justify-content: center;
 }
 
+.login-hero-divider {
+  width: min(420px, 78%);
+  margin: 2px auto 4px;
+  border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+}
+
 .login-hero-asset-img {
   width: min(448px, 100%);
   height: auto;
   display: block;
+  transform: translateY(24px);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -1272,7 +1508,7 @@ body {
 
 @media (min-width: 1024px) {
   .login-hero-column {
-    transform: translateY(-8%);
+    transform: translateY(-12%);
   }
 
   .login-auth-column {
@@ -1286,6 +1522,14 @@ body {
   .login-hero-asset-img {
     width: min(390px, 100%);
   }
+
+  .login-auth-social {
+    display: none;
+  }
+
+  .login-hero-copy {
+    margin-top: -6px;
+  }
 }
 
 @media (max-width: 1023px) {
@@ -1297,6 +1541,10 @@ body {
   .login-hero-column,
   .login-auth-column {
     transform: none;
+  }
+
+  .login-hero-social-web {
+    display: none;
   }
 }
 
@@ -1314,6 +1562,12 @@ body {
   transform: translateY(0);
 }
 
+.login-auth-column > .login-card-brand {
+  position: relative;
+  top: -40px;
+  margin-bottom: -8px;
+}
+
 .login-card-logo {
   width: 112px;
   height: auto;
@@ -1321,8 +1575,8 @@ body {
 }
 
 .brand-logo-badge {
-  width: 112px;
-  height: 112px;
+  width: 132px;
+  height: 132px;
   border-radius: 9999px;
   background: #ffffff;
   display: grid;
@@ -1333,8 +1587,8 @@ body {
 }
 
 .brand-logo-img {
-  width: 78%;
-  height: 78%;
+  width: 88%;
+  height: 88%;
   object-fit: contain;
   border-radius: 9999px;
 }
@@ -1343,17 +1597,22 @@ body {
   position: relative;
 }
 
+.login-panel-wrap .glass-panel {
+  display: flex;
+  justify-content: center;
+}
 
 .login-login-stack {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 14px;
+  width: min(100%, 560px);
 }
 
 .login-login-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 
@@ -1680,9 +1939,9 @@ body {
     width: min(340px, 100%);
   }
 
-  .login-hero-title {
-    font-size: clamp(2.2rem, 3.2vw, 3rem);
-    line-height: 1.04;
+  .login-hero-title.login-hero-title-web {
+    font-size: clamp(1.25rem, 1.9vw, 1.8rem);
+    line-height: 1.12;
   }
 
   .login-hero-copy {

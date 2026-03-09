@@ -189,6 +189,9 @@ Objetivo: pasar de `3.74` a `>= 4.10`, priorizando cierre de brechas en Producto
 ## Avance de ejecucion (2026-03-09, datos/API bateria + contrato readings)
 - Se reforzo robustez de contrato `/api/readings`:
   - acepta `device_id` (actual) y `device_uuid` (alias retrocompatible).
+- Se normalizo documentacion de esquema para evitar drift:
+  - `Docs/SQL_SCHEMA.sql` ahora usa canon `readings.device_id` (UUID FK),
+  - `Docs/PRUEBAS_E2E.md` alineado a `device_id=<UUID interno>` como parametro principal.
 - Se agrego evidencia tecnica para C-004:
   - asserts SQL de bateria en `Docs/SQL_ASSERTS.md` (columnas, constraints e indice),
   - script de contrato `Docs/TEST_READINGS_CONTRACT.ps1`,

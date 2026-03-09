@@ -72,3 +72,18 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 - Captura 2: login con scroll (redes + card visible)
 - Captura 3: `/today` hero completo
 - Captura 4: `/today` cards de alimentación/hidratación
+
+---
+
+## Ejecucion reciente (2026-03-09)
+- Commit aplicado: `daff54f` (main).
+- Deploy validado:
+  - `https://kittypau-app.vercel.app`
+  - `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
+- Cambios cerrados en APK (solo flavor nativo):
+  - bloque de marca centrado y agrandado (`logo + Kittypau + PetTech AIoT`),
+  - mantenimiento del flujo por scroll para redes sociales + card de login.
+- Verificacion tecnica:
+  - `npm run type-check` OK.
+- Pendiente para cierre DoD completo:
+  - validar visualmente en 360x800, 393x852, 412x915 con evidencia adjunta.
