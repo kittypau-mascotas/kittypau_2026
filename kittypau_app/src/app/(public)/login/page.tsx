@@ -42,6 +42,7 @@ export default function LoginPage() {
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [trialOwnerName, setTrialOwnerName] = useState("");
   const [trialPetName, setTrialPetName] = useState("");
+  const [trialEmail, setTrialEmail] = useState("");
   const [trialError, setTrialError] = useState<string | null>(null);
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
@@ -701,6 +702,7 @@ export default function LoginPage() {
 
   const openTrial = () => {
     setTrialError(null);
+    setTrialEmail((current) => current || email);
     setShowTrialModal(true);
   };
 
@@ -712,14 +714,21 @@ export default function LoginPage() {
   const startTrial = () => {
     const owner = trialOwnerName.trim();
     const pet = trialPetName.trim();
-    if (!owner || !pet) {
-      setTrialError("Ingresa tu nombre y el nombre de tu mascota.");
+    const emailValue = trialEmail.trim().toLowerCase();
+    const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+    if (!owner || !pet || !emailValue) {
+      setTrialError("Ingresa tu nombre, el de tu mascota y tu correo.");
+      return;
+    }
+    if (!emailLooksValid) {
+      setTrialError("Ingresa un correo válido para continuar.");
       return;
     }
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kittypau_demo_mode", "1");
       window.localStorage.setItem("kittypau_demo_owner_name", owner);
       window.localStorage.setItem("kittypau_demo_pet_name", pet);
+      window.localStorage.setItem("kittypau_demo_email", emailValue);
       if (!window.localStorage.getItem("kittypau_demo_device_id")) {
         window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
       }
@@ -1246,6 +1255,36 @@ export default function LoginPage() {
                   placeholder="Ej: Luna"
                 />
               </label>
+              <label className="block space-y-1">
+                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                  Correo
+                </span>
+                <input
+                  type="email"
+                  value={trialEmail}
+                  onChange={(event) => setTrialEmail(event.target.value)}
+                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                  placeholder="tu@email.com"
+                  autoComplete="email"
+                />
+              </label>
+
+              <a
+                href="https://www.instagram.com/kittypau"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  className="h-4 w-4 text-[#E1306C]"
+                  fill="currentColor"
+                >
+                  <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                </svg>
+                <span>Síguenos en Instagram</span>
+              </a>
             </div>
 
             {trialError ? (
