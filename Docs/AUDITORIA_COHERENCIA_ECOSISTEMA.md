@@ -117,3 +117,15 @@ Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para a
 - Auditado por: Codex
 - Alcance (branch/commit): `main` workspace local
 - Observacion general: se mejoro coherencia estrategica y documental; resta cierre tecnico en producto/datos.
+
+## Actualizacion Operativa (post auditoria)
+- Commits relevantes aplicados en `main`:
+  - `b8ef5f5` (sincronizacion amplia docs/app/sql)
+  - `4d55aae` (login APK: mantener titulo y ocultar copy pequena)
+  - `6e74853` (rebalanceo dimensiones mobile APK)
+- Produccion Vercel actualizada y verificada:
+  - `https://kittypau-app.vercel.app`
+  - deploy confirmado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+- Estado de cierre UX APK:
+  - login mobile nativo con jerarquia visual corregida (plato -> titulo -> marca -> card),
+  - `/today` mobile nativo compactado para mejorar visibilidad en primera pantalla.

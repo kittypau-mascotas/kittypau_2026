@@ -97,6 +97,33 @@ export default function LoginPage() {
     void instance.play().catch(() => undefined);
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+    const isNativeView =
+      root.classList.contains("kp-native-apk") ||
+      root.classList.contains("kp-flavor-native");
+    if (!isNativeView) {
+      root.classList.remove("kp-login-scrolled");
+      return;
+    }
+
+    const onScroll = () => {
+      if (window.scrollY > 16) {
+        root.classList.add("kp-login-scrolled");
+      } else {
+        root.classList.remove("kp-login-scrolled");
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      root.classList.remove("kp-login-scrolled");
+    };
+  }, []);
+
   const stepMeta = useMemo(
     () => [
       { label: "Cuenta" },
@@ -687,10 +714,10 @@ export default function LoginPage() {
             <p className="kp-pettech-tagline mt-1">
               PetTech AIoT
             </p>
-            <SocialLinks className="social-header social-header-center" size="md" />
+            <SocialLinks className="login-deferred-social social-header social-header-center" size="md" />
           </div>
 
-          <div className="login-panel-wrap">
+          <div className="login-panel-wrap login-deferred-panel">
             <div className="glass-panel freeform-rise w-full p-7">
               <div className="stagger login-login-stack">
                 <div className="flex items-start justify-between gap-3">

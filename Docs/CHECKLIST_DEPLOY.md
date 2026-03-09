@@ -64,3 +64,9 @@ Agregar en **Settings -> Environment Variables**:
 - [x] Script local `scripts/test-webhook.ps1` funciona.
 - [x] Prueba local con `success: true`.
 
+## Estado operativo actualizado (2026-03-09)
+- [x] Cambios recientes publicados en `main` y desplegados en Vercel.
+- [x] Produccion activa: `https://kittypau-app.vercel.app`.
+- [x] Ultimo deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`.
+- [x] Ajustes UX APK nativa aplicados (login + `/today` mobile).
+

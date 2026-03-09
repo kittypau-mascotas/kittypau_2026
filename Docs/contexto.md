@@ -76,3 +76,17 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 - `Docs/GUIA_DECISION.md`
 - `Docs/DOC_MAESTRO_DOMINIO.md`
 - `Docs/ARQUITECTURA_PROYECTO.md`
+
+## Estado Operativo Actual (2026-03-09)
+1. `main` actualizado con ajustes de UX APK nativa en login y `/today`.
+2. Ajuste mobile APK aplicado en login:
+- mantener titulo principal visible,
+- ocultar texto pequeno descriptivo,
+- compactar distancias verticales (plato, bloque marca, card login),
+- rebalancear dimensiones para vista de telefono real.
+3. Ajuste mobile APK aplicado en `/today`:
+- compactacion de hero (resumen alimentacion/hidratacion + selector de periodo),
+- reduccion tipografica de metricas dentro de cards de plato.
+4. Despliegue productivo vigente:
+- URL productiva: `https://kittypau-app.vercel.app`
+- ultimo deploy confirmado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`

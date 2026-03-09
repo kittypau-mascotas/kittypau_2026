@@ -144,6 +144,14 @@ Valores pensados para scroll suave o movimiento leve en mouse:
 - Velocidades mas bajas (0.08x, 0.12x, 0.18x).
 - Evitar recortes grandes para no tapar el formulario.
 
+### Dimensiones esperadas APK nativa (mobile real)
+- Objetivo de jerarquia visual: `plato -> titulo principal -> bloque marca -> card login`.
+- Hero bowl (`login-hero-asset-img`): ancho recomendado `73vw` a `80vw` segun dispositivo.
+- Titulo principal (`login-hero-title`): visible y dominante.
+- Copy secundaria (`login-hero-copy`): oculta en APK nativa para liberar alto util.
+- Bloque marca (`logo + Kittypau + PetTech AIoT + redes`): espaciado compacto.
+- Card login: debe iniciar mas arriba que en web mobile, sin cortar campos.
+
 ### Reglas de legibilidad
 - El formulario siempre sobre un fondo limpio (overlay o blur suave).
 - Contraste minimo AA para textos.

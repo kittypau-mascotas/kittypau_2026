@@ -15,6 +15,9 @@
 
 ## Plan y Estado
 - [contexto.md](contexto.md) (contexto canonico de expansion y decisiones vigentes)
+- [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
+- [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md)
+- [PLAN_PENDIENTES_APP_WEB_KITTYPAU.md](PLAN_PENDIENTES_APP_WEB_KITTYPAU.md)
 - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) — Planes y roadmap
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md)
 - [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md)
@@ -43,6 +46,7 @@
 - [SQL_MAESTRO.md](SQL_MAESTRO.md) ← **índice SQL (orden de ejecución)**
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql)
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
+- [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
 - [GUIA_SQL_SUPABASE.md](GUIA_SQL_SUPABASE.md)
 - [GUIA_MIGRACION_SQL.md](GUIA_MIGRACION_SQL.md)
 - [CLEANUP_SQL.sql](CLEANUP_SQL.sql)
@@ -124,9 +128,12 @@
 ## Actualizacion reciente
 - [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md) (toolkit de desarrollo: scripts, lint-staged y pre-commit)
 
-## Actualizado (2026-03-06)
-- APK Android operativa con Capacitor + Android Studio documentada en `APK_ANDROID_STUDIO_KITTYPAU.md`.
-- Branding de APK unificado con `public/logo_carga.jpg` para iconos/splash/logo.
-- Flujo de build y ubicacion de APKs locales confirmado:
-  - `kittypau_app/android/app/build/outputs/apk/debug/app-debug.apk`
-  - `kittypau_app/android/app/build/outputs/apk/release/app-release-unsigned.apk`
+## Actualizado (2026-03-09)
+- Documentacion canonica sincronizada con estado real de `main`.
+- Ajustes UX APK nativa (login y `/today` mobile) documentados.
+- Produccion vigente:
+  - `https://kittypau-app.vercel.app`
+  - deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+
+
+

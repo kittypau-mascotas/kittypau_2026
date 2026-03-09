@@ -88,3 +88,19 @@ Use Android Studio:
 2. `today` view loads real readings.
 3. `pet`, `bowl`, and `story` load linked device data.
 4. If API fails, check Vercel env vars and Supabase status.
+
+## UI notes for APK native distribution (2026-03-09)
+- Mobile login in native flavor (`kp-native-apk` / `kp-flavor-native`) is tuned to:
+  - keep only the main hero title visible,
+  - hide the small descriptive copy,
+  - reduce top visual load and keep the login card higher.
+- `/today` native mobile is tuned to:
+  - compact hero summary cards and period selector,
+  - reduce metric typography inside bowl cards for better first-screen fit.
+
+## Latest production deployment
+- Main URL: `https://kittypau-app.vercel.app`
+- Verified deploy: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`
+- Related commits:
+  - `4d55aae`
+  - `6e74853`

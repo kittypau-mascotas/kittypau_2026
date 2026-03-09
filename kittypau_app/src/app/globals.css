@@ -2231,6 +2231,25 @@ textarea::placeholder {
     margin-top: 2px;
   }
 
+  .kp-native-apk .login-deferred-social,
+  .kp-flavor-native .login-deferred-social,
+  .kp-native-apk .login-deferred-panel,
+  .kp-flavor-native .login-deferred-panel {
+    opacity: 0;
+    transform: translateY(18px);
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-deferred-social,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-social,
+  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
   .kp-native-apk .login-panel-wrap .glass-panel,
   .kp-flavor-native .login-panel-wrap .glass-panel {
     padding: 20px 18px;
