@@ -21,7 +21,7 @@
     "fix:all": "npm run lint:fix && npm run clean:imports && npm run format",
     "dev:check": "npm run fix:all && npm run type-check",
     "ci:check": "npm run dev:check && npm run build-check",
-    "staged:check": "lint-staged"
+    "staged:check": "lint-staged --no-stash"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
