@@ -2171,6 +2171,11 @@ textarea::placeholder {
   .kp-native-apk .login-hero-column,
   .kp-flavor-native .login-hero-column {
     gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    align-items: center;
+    text-align: center;
   }
 
   .kp-native-apk .login-hero-asset,
@@ -2188,6 +2193,7 @@ textarea::placeholder {
     display: block;
     margin: 0 auto;
     max-width: 92%;
+    text-align: center;
   }
 
   .kp-native-apk .login-hero-title,
@@ -2204,14 +2210,21 @@ textarea::placeholder {
 
   .kp-native-apk .login-auth-column,
   .kp-flavor-native .login-auth-column {
+    width: 100%;
     max-width: 100%;
     margin-top: -28px;
+    margin-inline: auto;
+    align-items: center;
   }
 
   .kp-native-apk .login-card-brand,
   .kp-flavor-native .login-card-brand {
+    width: 100%;
+    max-width: 100%;
     gap: 4px;
     margin-bottom: 2px;
+    align-items: center;
+    text-align: center;
   }
 
   .kp-native-apk .brand-logo-badge,
@@ -2224,6 +2237,13 @@ textarea::placeholder {
   .kp-flavor-native .brand-title {
     font-size: clamp(2.1rem, 10.5vw, 2.65rem);
     line-height: 0.95;
+    text-align: center;
+  }
+
+  .kp-native-apk .kp-pettech-tagline,
+  .kp-flavor-native .kp-pettech-tagline {
+    width: 100%;
+    text-align: center;
   }
 
   .kp-native-apk .login-card-brand .social-links,
