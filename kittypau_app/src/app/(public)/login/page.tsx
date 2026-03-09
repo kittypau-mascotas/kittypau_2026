@@ -152,7 +152,7 @@ export default function LoginPage() {
     }
 
     const onScroll = () => {
-      if (window.scrollY > 16) {
+      if (window.scrollY > 8) {
         root.classList.add("kp-login-scrolled");
       } else {
         root.classList.remove("kp-login-scrolled");

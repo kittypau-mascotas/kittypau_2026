@@ -2474,7 +2474,7 @@ textarea::placeholder {
   .kp-native-apk .login-fold-box-brand,
   .kp-flavor-native .login-fold-box-brand {
     display: flex;
-    min-height: 24dvh;
+    min-height: 26dvh;
     align-items: center;
     justify-content: center;
   }
@@ -2535,15 +2535,15 @@ textarea::placeholder {
 
   .kp-native-apk .brand-logo-badge,
   .kp-flavor-native .brand-logo-badge {
-    width: 126px;
-    height: 126px;
+    width: 142px;
+    height: 142px;
     margin-inline: auto;
   }
 
   .kp-native-apk .brand-title,
   .kp-flavor-native .brand-title {
-    font-size: clamp(2.9rem, 13.5vw, 3.45rem);
-    line-height: 0.95;
+    font-size: clamp(3.2rem, 14.6vw, 3.9rem);
+    line-height: 0.94;
     text-align: center;
     margin-inline: auto;
   }
@@ -2552,8 +2552,8 @@ textarea::placeholder {
   .kp-flavor-native .kp-pettech-tagline {
     width: 100%;
     text-align: center;
-    font-size: 1.28rem;
-    line-height: 1.2;
+    font-size: 1.44rem;
+    line-height: 1.16;
     margin-inline: auto;
   }
 
@@ -2579,6 +2579,53 @@ textarea::placeholder {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-hero-column,
+  .kp-flavor-native.kp-login-scrolled .login-hero-column {
+    min-height: 46dvh;
+    gap: 0;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-plate,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-plate {
+    min-height: 23dvh;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-message,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-message {
+    min-height: 12dvh;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-brand,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-brand {
+    min-height: 11dvh;
+  }
+
+  .kp-native-apk.kp-login-scrolled .brand-logo-badge,
+  .kp-flavor-native.kp-login-scrolled .brand-logo-badge {
+    width: 86px;
+    height: 86px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .brand-title,
+  .kp-flavor-native.kp-login-scrolled .brand-title {
+    font-size: clamp(2rem, 9.2vw, 2.35rem);
+    line-height: 0.95;
+  }
+
+  .kp-native-apk.kp-login-scrolled .kp-pettech-tagline,
+  .kp-flavor-native.kp-login-scrolled .kp-pettech-tagline {
+    font-size: 0.94rem;
+    line-height: 1.05;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-hero-title,
+  .kp-flavor-native.kp-login-scrolled .login-hero-title {
+    font-size: clamp(1.3rem, 6vw, 1.55rem);
+    line-height: 1.05;
   }
 
   .kp-native-apk .login-panel-wrap .glass-panel,
