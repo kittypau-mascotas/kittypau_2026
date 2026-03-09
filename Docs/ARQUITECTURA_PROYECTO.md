@@ -1,8 +1,8 @@
-﻿# Arquitectura del Proyecto Kittypau (MVP $0)
+# Arquitectura del Proyecto Kittypau (MVP $0)
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesión.
+1. Se registra e inicia sesi�n.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
@@ -14,8 +14,8 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El código fuente vive en el repo (`/bridge`).
-   - El runtime real está fuera del repo (Raspberry).
+   - El c�digo fuente vive en el repo (`/bridge`).
+   - El runtime real est� fuera del repo (Raspberry).
 
 ---
 
@@ -34,16 +34,16 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ## Regla de conexion (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenv�a a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetría)
+## Flujo de datos (telemetr�a)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
+2. Raspberry Bridge escucha MQTT y reenv�a a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
@@ -86,26 +86,26 @@ ESP32 -> HiveMQ Cloud
   /src
     /app
       /(app)
-        /layout.tsx          ← wrappea con AppDataProvider
+        /layout.tsx          ? wrappea con AppDataProvider
         /_components
-          /app-nav.tsx       ← consume useAppData(), sin fetches propios
+          /app-nav.tsx       ? consume useAppData(), sin fetches propios
         /today /bowl /pet /story /settings
       /api
         /profiles /pets /devices /account /readings
-                             ← runtime="edge" + Cache-Control en GETs
+                             ? runtime="edge" + Cache-Control en GETs
     /lib
-      /auth                  ← token.ts, auth-fetch.ts
+      /auth                  ? token.ts, auth-fetch.ts
       /charts
-        /index.tsx           ← ChartJS.register + buildSeries<T> + ChartCard (shared)
+        /index.tsx           ? ChartJS.register + buildSeries<T> + ChartCard (shared)
       /context
-        /app-context.tsx     ← AppDataProvider + useAppData()
-      /supabase              ← browser.ts, server.ts
+        /app-context.tsx     ? AppDataProvider + useAppData()
+      /supabase              ? browser.ts, server.ts
       /ui
     /components
   /scripts
   /public
-    /illustrations           ← pink_food_full.png, green_water_full.png, etc.
-    /audio                   ← sonido_marca.mp3, comer_*.mp3
+    /illustrations           ? pink_food_full.png, green_water_full.png, etc.
+    /audio                   ? sonido_marca.mp3, comer_*.mp3
 ```
 
 ---
@@ -162,7 +162,7 @@ ESP32 -> HiveMQ Cloud
 ```
 **Notas**
 - La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
-- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
+- El `device_id` es el c�digo humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -270,21 +270,56 @@ El deploy incluye:
 
 ## Marco AIoT / PetTech (Alineacion 2026)
 
-KittyPau se posiciona oficialmente como una plataforma **AIoT** (Artificial Intelligence of Things) para salud preventiva de mascotas.
+### Terminologia oficial recomendada
+- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
+- **Intelligent IoT**: variante de comunicacion comercial.
+- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Smart IoT**: termino marketing, menos tecnico.
 
-Definicion oficial:
-**KittyPau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+### Definicion recomendada de producto
+**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
 
-Categoria estrategica:
-- **PetTech AIoT** = PetTech + IoT + IA.
-- Hardware como puerta de entrada; datos + analitica como motor de valor.
+### Categoria estrategica
+**PetTech AIoT** = PetTech + IoT + IA.
 
-Implicancia de negocio:
-- El producto no se presenta como "solo comedero inteligente".
-- Se presenta como **plataforma de datos longitudinales de salud animal**.
-- Modelo esperado: hardware + suscripcion + analitica/alertas preventivas.
+Esto posiciona a Kittypau no como "solo hardware", sino como:
+- infraestructura de datos longitudinales de salud animal,
+- analitica preventiva,
+- plataforma escalable con suscripcion.
 
-Mensajes recomendados para pitch:
-- AIoT pet care platform.
-- AIoT platform for preventive pet health monitoring.
-- The Fitbit for pets (como analogia de mercado).
+### Arquitectura actual (ya compatible con AIoT)
+1. Dispositivo IoT (ESP8266/ESP32).
+2. Ingestion por MQTT.
+3. Bridge Node.js.
+4. Persistencia en PostgreSQL/Supabase.
+5. Capa de analitica/IA.
+6. Dashboard web para usuario/admin.
+
+### Estrategia tipo "Fitbit de mascotas"
+- Hardware = punto de entrada.
+- Datos longitudinales = ventaja competitiva.
+- IA = diferencial de valor.
+- Suscripcion = recurrencia (modelo SaaS).
+
+### Casos de uso preventivos (objetivo)
+- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
+- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+
+### Modelo de negocio recomendado (3 capas)
+1. **Hardware**: ingreso inicial por unidad.
+2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
+3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
+## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
+- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
+- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
+- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
+
+### Implicancias para App/Web (Kittypau)
+1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
+2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
+4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.

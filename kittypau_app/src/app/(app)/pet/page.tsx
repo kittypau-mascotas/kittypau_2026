@@ -171,6 +171,11 @@ export default function PetPage() {
         setEditPayload(primaryPet ?? {});
 
         const primaryDevice =
+          devices.find(
+            (device) =>
+              device.pet_id === initialPetId &&
+              (device.device_type ?? "").toLowerCase().includes("food"),
+          ) ??
           devices.find((device) => device.pet_id === initialPetId) ??
           devices[0];
         const readings =
@@ -253,6 +258,14 @@ export default function PetPage() {
   const petDevices = state.devices.filter(
     (device) => device.pet_id === selectedPetId,
   );
+  const petFoodDevice =
+    petDevices.find((device) =>
+      (device.device_type ?? "").toLowerCase().includes("food"),
+    ) ?? petDevices[0] ?? null;
+  const petWaterDevice =
+    petDevices.find((device) =>
+      (device.device_type ?? "").toLowerCase().includes("water"),
+    ) ?? (petDevices.length > 1 ? petDevices[1] : null);
   const latestReading = state.readings[0] ?? null;
 
   const insights = useMemo(() => {
@@ -401,8 +414,16 @@ export default function PetPage() {
                         if (!token || !nextId) return;
                         const device =
                           state.devices.find(
+                            (item) =>
+                              item.pet_id === nextId &&
+                              (item.device_type ?? "")
+                                .toLowerCase()
+                                .includes("food"),
+                          ) ??
+                          state.devices.find(
                             (item) => item.pet_id === nextId,
-                          ) ?? null;
+                          ) ??
+                          null;
                         if (!device) {
                           setState((prev) => ({ ...prev, readings: [] }));
                           return;
@@ -621,20 +642,29 @@ export default function PetPage() {
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-slate-500">Dispositivo asociado</p>
+                <p className="text-sm text-slate-500">Platos asociados</p>
                 <p className="text-lg font-semibold text-slate-900">
-                  {petDevices[0]?.device_id ?? "Sin dispositivo"}
+                  {petFoodDevice?.device_id ?? "Sin comedero"}
+                  {" · "}
+                  {petWaterDevice?.device_id ?? "Sin bebedero"}
                 </p>
                 <p className="text-xs text-slate-500">
-                  {petDevices[0]
-                    ? `${petDevices[0].device_type} · ${petDevices[0].status}`
-                    : "Conecta un dispositivo para completar el perfil."}
+                  {petFoodDevice || petWaterDevice
+                    ? `Comedero: ${petFoodDevice?.status ?? "sin estado"} · Bebedero: ${petWaterDevice?.status ?? "sin estado"}`
+                    : "Conecta los platos para completar el perfil."}
                 </p>
-                {petDevices[0]?.device_state ? (
-                  <span className="mt-2 inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    {petDevices[0].device_state}
-                  </span>
-                ) : null}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {petFoodDevice?.device_state ? (
+                    <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      Comedero: {petFoodDevice.device_state}
+                    </span>
+                  ) : null}
+                  {petWaterDevice?.device_state ? (
+                    <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      Bebedero: {petWaterDevice.device_state}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>
@@ -655,7 +685,7 @@ export default function PetPage() {
                 >
                   Ver historia
                 </Link>
-                {!petDevices[0] ? (
+                {!petFoodDevice && !petWaterDevice ? (
                   <Link
                     href="/registro"
                     className="rounded-[var(--radius)] bg-primary px-3 py-2 text-[11px] font-semibold text-primary-foreground"

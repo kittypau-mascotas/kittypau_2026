@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "KittyPau - Bienestar Inteligente para Mascotas",
-    short_name: "KittyPau",
+    name: "Kittypau - Bienestar Inteligente para Mascotas",
+    short_name: "Kittypau",
     description:
       "Monitorea hidratación, alimento y actividad de tu mascota en tiempo real.",
     start_url: "/",

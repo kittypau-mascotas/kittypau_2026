@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { useAppData } from "@/lib/context/app-context";
+import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 
 type NavItem = {
   href: string;
@@ -58,6 +59,28 @@ export default function AppNav() {
   const [adminFreshnessLabel, setAdminFreshnessLabel] = useState(
     "Actualizado recientemente",
   );
+  const [isNativeApkMode, setIsNativeApkMode] = useState<boolean>(
+    isNativeFlavorEnabled(),
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (isNativeFlavorEnabled()) {
+      setIsNativeApkMode(true);
+      return;
+    }
+    const cap = (window as Window & { Capacitor?: unknown }).Capacitor as
+      | {
+          isNativePlatform?: () => boolean;
+          getPlatform?: () => string;
+        }
+      | undefined;
+    if (!cap) return;
+    const isNative =
+      (typeof cap.isNativePlatform === "function" && cap.isNativePlatform()) ||
+      (typeof cap.getPlatform === "function" && cap.getPlatform() !== "web");
+    if (isNative) setIsNativeApkMode(true);
+  }, []);
 
   useEffect(() => {
     if (!pathname?.startsWith("/admin")) return;
@@ -252,7 +275,7 @@ export default function AppNav() {
               }}
               className="kp-brand-soft-action rounded-full px-3 py-2 text-xs font-semibold"
             >
-              Cerrar sesion
+              Cerrar sesión
             </button>
           </div>
         </div>
@@ -264,7 +287,8 @@ export default function AppNav() {
   const isSpecial =
     effectiveAccountType === "admin" || effectiveAccountType === "tester";
   const useSidebarNav =
-    effectiveAccountType === "tester" || effectiveAccountType === "client";
+    !isNativeApkMode &&
+    (effectiveAccountType === "tester" || effectiveAccountType === "client");
   const demoMenu = (searchParams.get("menu") ?? "today") as
     | "today"
     | "story"
@@ -371,7 +395,7 @@ export default function AppNav() {
         }}
         className="kp-brand-soft-action mt-1 block w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs font-semibold"
       >
-        Cerrar sesion
+        Cerrar sesión
       </button>
     </>
   );
@@ -391,9 +415,11 @@ export default function AppNav() {
               className="brand-mark app-nav-logo"
             />
           </span>
-          <span className="app-nav-brand-stack">
+          <span className="app-nav-brand-stack text-center">
             <span className="brand-title app-nav-brand-title">Kittypau</span>
-            <span className="app-nav-brand-subtitle">PetTech AIoT</span>
+            <span className="app-nav-brand-subtitle kp-pettech-tagline block text-center">
+              PetTech AIoT
+            </span>
           </span>
         </div>
         {useSidebarNav ? (
@@ -418,10 +444,10 @@ export default function AppNav() {
               </Link>
             );
           })}
-          {useSidebarNav ? (
-            <div className="app-nav-links-extra">{accountActions}</div>
-          ) : null}
         </div>
+        {useSidebarNav ? (
+          <div className="app-nav-links-extra">{accountActions}</div>
+        ) : null}
 
         {!useSidebarNav ? (
           <div ref={menuRef} className="relative app-nav-profile-menu">
@@ -442,7 +468,10 @@ export default function AppNav() {
           </div>
         ) : null}
         <div className="app-nav-contact">
-          <span>Kittypau · IoT Chile S.A</span>
+          <span className="text-center">Kittypau · IoT Chile S.A</span>
+          <span className="kp-pettech-tagline">
+            PetTech AIoT
+          </span>
           <a href="mailto:kittypau.mascotas@gmail.com">
             kittypau.mascotas@gmail.com
           </a>

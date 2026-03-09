@@ -694,13 +694,16 @@ export default function RegistroFlow({
       >
         {!isModal ? (
           <header className="flex flex-wrap items-center justify-between gap-4">
-            <div>
+            <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Registro Kittypau
               </p>
               <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
                 Registro Kittypau
               </h1>
+              <p className="kp-pettech-tagline mt-1">
+                PetTech AIoT
+              </p>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
               <Link
@@ -1413,6 +1416,9 @@ export default function RegistroFlow({
         {displayStep === 4 && (
           <section className={sectionClass}>
             <h2 className="text-lg font-semibold text-slate-900">Bienvenido a Kittypau</h2>
+            <p className="kp-pettech-tagline mt-1">
+              PetTech AIoT
+            </p>
             <p className="text-sm text-slate-500">
               Registro completado. Este es el resumen de tu configuración.
             </p>

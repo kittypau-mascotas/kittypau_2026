@@ -14,7 +14,9 @@
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) (modelos de negocio y KPIs)
 
 ## Plan y Estado
-- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) ← **índice de planes**
+- [contexto.md](contexto.md) (contexto canonico de expansion y decisiones vigentes)
+- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) — Planes y roadmap
+- [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md)
 - [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md)
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md)

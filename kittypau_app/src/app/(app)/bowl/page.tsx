@@ -17,6 +17,10 @@ type ApiDevice = {
   status: string;
   device_state: string | null;
   battery_level: number | null;
+  battery_voltage?: number | null;
+  battery_state?: string | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
   last_seen: string | null;
 };
 
@@ -28,6 +32,11 @@ type ApiReading = {
   temperature: number | null;
   humidity: number | null;
   light_percent: number | null;
+  battery_level?: number | null;
+  battery_voltage?: number | null;
+  battery_state?: string | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
 };
 
 type LoadState = {
@@ -116,6 +125,12 @@ const batteryLabel = (battery: number | null) => {
   if (battery <= 35) return "Baja";
   if (battery <= 70) return "Media";
   return "Óptima";
+};
+
+const formatBatterySource = (source?: string | null) => {
+  if (source === "usb") return "USB";
+  if (source === "battery") return "Batería";
+  return "Sin fuente";
 };
 
 const resolveDevicePowerState = (
@@ -474,6 +489,47 @@ export default function BowlPage() {
     [readings],
   );
 
+  const latestBatteryReading = useMemo(
+    () =>
+      readings.find(
+        (item) =>
+          typeof item.battery_level === "number" ||
+          typeof item.battery_voltage === "number" ||
+          typeof item.battery_source === "string",
+      ) ?? null,
+    [readings],
+  );
+
+  const batteryLevelValue =
+    selectedDevice?.battery_level ??
+    latestBatteryReading?.battery_level ??
+    null;
+  const batteryVoltageValue =
+    selectedDevice?.battery_voltage ??
+    latestBatteryReading?.battery_voltage ??
+    null;
+  const batterySourceValue =
+    selectedDevice?.battery_source ??
+    latestBatteryReading?.battery_source ??
+    null;
+  const batteryEstimatedValue =
+    selectedDevice?.battery_is_estimated ??
+    latestBatteryReading?.battery_is_estimated ??
+    false;
+  const batterySummary =
+    batteryLevelValue !== null && batteryLevelValue !== undefined
+      ? `${batteryLevelValue}% · ${batteryLabel(batteryLevelValue)}`
+      : "Sin datos";
+  const batteryExtra = [
+    batteryEstimatedValue ? "estimada" : null,
+    formatBatterySource(batterySourceValue),
+    typeof batteryVoltageValue === "number"
+      ? `${batteryVoltageValue.toFixed(2)}V`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   const weightSeries = useMemo(
     () =>
       buildSeries(
@@ -677,14 +733,12 @@ export default function BowlPage() {
                   Batería
                 </p>
                 <p className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-                  <BatteryStatusIcon level={selectedDevice?.battery_level} />
-                  {selectedDevice?.battery_level !== null &&
-                  selectedDevice?.battery_level !== undefined
-                    ? `${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level,
-                      )}`
-                    : "Sin datos"}
+                  <BatteryStatusIcon level={batteryLevelValue} />
+                  {batterySummary}
                 </p>
+                {batteryExtra ? (
+                  <p className="mt-1 text-xs text-slate-500">{batteryExtra}</p>
+                ) : null}
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
@@ -723,12 +777,10 @@ export default function BowlPage() {
                   Energía
                 </p>
                 <p className="mt-2 text-slate-700">
-                  {selectedDevice?.battery_level !== null &&
-                  selectedDevice?.battery_level !== undefined
-                    ? `Batería ${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level,
-                      )}`
-                    : "Sin datos de batería."}
+                  {batterySummary === "Sin datos"
+                    ? "Sin datos de batería."
+                    : `Batería ${batterySummary}`}
+                  {batteryExtra ? ` (${batteryExtra})` : ""}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">

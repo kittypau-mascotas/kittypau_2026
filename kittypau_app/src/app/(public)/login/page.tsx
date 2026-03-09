@@ -684,6 +684,9 @@ export default function LoginPage() {
               />
             </div>
             <span className="brand-title text-3xl text-primary">Kittypau</span>
+            <p className="kp-pettech-tagline mt-1">
+              PetTech AIoT
+            </p>
             <SocialLinks className="social-header social-header-center" size="md" />
           </div>
 

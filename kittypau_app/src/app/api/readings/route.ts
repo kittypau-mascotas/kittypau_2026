@@ -84,7 +84,13 @@ export async function GET(req: NextRequest) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
-  const applyFilters = <T extends { lt: Function; gte: Function; lte: Function }>(q: T): T => {
+  const applyFilters = <
+    T extends {
+      lt: (column: string, value: string) => T;
+      gte: (column: string, value: string) => T;
+      lte: (column: string, value: string) => T;
+    },
+  >(q: T): T => {
     let next = q;
     if (cursor) {
       next = next.lt("recorded_at", cursor) as T;

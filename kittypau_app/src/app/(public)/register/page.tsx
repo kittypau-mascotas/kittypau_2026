@@ -106,15 +106,20 @@ export default function RegisterPage() {
     <main className="login-bg flex items-center justify-center px-4 py-16">
       <div className="surface-card w-full max-w-md px-6 py-8">
         <p className="eyebrow">Registro</p>
-        <div className="mt-2 flex items-center gap-3">
-          <div className="h-10 w-10 overflow-hidden rounded-full">
-            <img
-              src="/logo_carga.jpg"
-              alt="Kittypau"
-              className="h-full w-full object-cover"
-            />
+        <div className="mt-2">
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-10 w-10 overflow-hidden rounded-full">
+              <img
+                src="/logo_carga.jpg"
+                alt="Kittypau"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <h1 className="display-title text-3xl text-slate-900">Kittypau</h1>
           </div>
-          <h1 className="display-title text-3xl text-slate-900">Kittypau</h1>
+          <p className="kp-pettech-tagline mt-1">
+            PetTech AIoT
+          </p>
         </div>
         <p className="mt-2 text-sm text-slate-600">
           Crea tu cuenta y conecta tu plato en menos de 2 minutos.

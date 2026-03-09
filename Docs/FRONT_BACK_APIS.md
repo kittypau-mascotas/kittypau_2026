@@ -174,6 +174,9 @@ Ejemplo:
   "humidity": 65,
   "weight_grams": 3500,
   "battery_level": 85,
+  "battery_voltage": 3.92,
+  "power_source": "battery",
+  "is_charging": false,
   "flow_rate": 120,
   "timestamp": "2026-02-03T18:30:00Z"
 }
@@ -184,6 +187,8 @@ Notas:
 - Si se envía `device_uuid` (UUID), se busca por `devices.id`.
 - Si se envían `device_id` y `device_uuid`, deben corresponder al mismo dispositivo.
 - Los campos numéricos pueden llegar como string y se normalizan.
+- Si no llega `battery_level` y llega `battery_voltage`, el backend estima `%` (3.3V..4.2V).
+- Nuevos campos persistidos en `readings/devices`: `battery_voltage`, `battery_state`, `battery_source`, `battery_is_estimated`.
 - La inserción de readings es idempotente por `device_uuid + recorded_at`.
 - Se guardan dos tiempos: `recorded_at` (dispositivo) y `ingested_at` (servidor).
 - Si `recorded_at` difiere más de ±10 min del servidor, se reemplaza por `ingested_at` y se marca `clock_invalid = true`.

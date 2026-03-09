@@ -114,10 +114,14 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
             accountPayload?.account_type === "tester"
               ? accountPayload.account_type
               : "client";
+          const storedPetName =
+            typeof window !== "undefined"
+              ? window.localStorage.getItem("kittypau_pet_name")
+              : null;
 
           setData({
             profile,
-            petName: pets[0]?.name ?? null,
+            petName: pets[0]?.name ?? storedPetName ?? null,
             devices,
             accountType,
             isAdmin: Boolean(accountPayload?.is_admin),

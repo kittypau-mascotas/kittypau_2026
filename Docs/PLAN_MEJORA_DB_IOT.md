@@ -1,4 +1,4 @@
-Ôªø# Plan de Mejora DB (Supabase) sin romper front
+# Plan de Mejora DB (Supabase) sin romper front
 
 ## Objetivo
 Mejorar rendimiento y estabilidad de telemetria manteniendo el esquema actual y compatibilidad con el frontend.
@@ -48,21 +48,21 @@ Mejorar rendimiento y estabilidad de telemetria manteniendo el esquema actual y 
 
 ---
 
-## Marco estrategico AIoT para KittyPau (integrado)
+## Marco estrategico AIoT para Kittypau (integrado)
 
 ### Terminologia oficial recomendada
-- **AIoT (Artificial Intelligence of Things)**: termino principal para KittyPau.
+- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
 - **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
-**KittyPau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
 
 ### Categoria estrategica
 **PetTech AIoT** = PetTech + IoT + IA.
 
-Esto posiciona a KittyPau no como "solo hardware", sino como:
+Esto posiciona a Kittypau no como "solo hardware", sino como:
 - infraestructura de datos longitudinales de salud animal,
 - analitica preventiva,
 - plataforma escalable con suscripcion.
@@ -75,7 +75,7 @@ Esto posiciona a KittyPau no como "solo hardware", sino como:
 5. Capa de analitica/IA.
 6. Dashboard web para usuario/admin.
 
-### Estrategia tipo ‚ÄúFitbit de mascotas‚Äù
+### Estrategia tipo ìFitbit de mascotasî
 - Hardware = punto de entrada.
 - Datos longitudinales = ventaja competitiva.
 - IA = diferencial de valor.
@@ -94,6 +94,18 @@ Esto posiciona a KittyPau no como "solo hardware", sino como:
 ### Implicancias directas para este plan DB
 - Priorizar calidad, continuidad e historial de datos (`readings` + agregados).
 - Mantener trazabilidad temporal para modelos de IA (datos longitudinales).
-- Dise√±ar retencion por capas: crudo corto plazo + consolidado largo plazo.
+- DiseÒar retencion por capas: crudo corto plazo + consolidado largo plazo.
 - Asegurar compatibilidad API para no frenar adopcion del producto AIoT.
+## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
+- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
+- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
+- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
 
+### Implicancias para App/Web (Kittypau)
+1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
+2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
+4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.

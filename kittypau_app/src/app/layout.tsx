@@ -3,6 +3,7 @@ import { Geist_Mono, Fraunces, Inter, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
 import NativeApkMode from "./_components/native-apk-mode";
+import { resolveAppFlavorFromEnv } from "@/lib/runtime/app-flavor";
 
 const inter = Inter({
   variable: "--font-ui",
@@ -33,9 +34,9 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "KittyPau",
-  applicationName: "KittyPau",
-  description: "KittyPau - IoT para bienestar de mascotas",
+  title: "Kittypau",
+  applicationName: "Kittypau",
+  description: "Kittypau - IoT para bienestar de mascotas",
   metadataBase: new URL("https://kittypau-app.vercel.app"),
   manifest: "/manifest.webmanifest",
   icons: {
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
     apple: "/logo_carga.jpg",
   },
   openGraph: {
-    title: "KittyPau | Bienestar Inteligente para Mascotas",
+    title: "Kittypau | Bienestar Inteligente para Mascotas",
     description:
-      "Controla comida, hidratación y actividad en tiempo real con KittyPau.",
+      "Controla comida, hidratación y actividad en tiempo real con Kittypau.",
     images: [
       {
         url: "/logo_carga.jpg",
@@ -57,9 +58,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KittyPau | Bienestar Inteligente para Mascotas",
+    title: "Kittypau | Bienestar Inteligente para Mascotas",
     description:
-      "Controla comida, hidratación y actividad en tiempo real con KittyPau.",
+      "Controla comida, hidratación y actividad en tiempo real con Kittypau.",
     images: ["/logo_carga.jpg"],
   },
 };
@@ -69,10 +70,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const appFlavor = resolveAppFlavorFromEnv();
+
   return (
-    <html lang="es">
+    <html
+      lang="es"
+      data-app-flavor={appFlavor}
+      className={appFlavor === "native" ? "kp-flavor-native" : "kp-flavor-web"}
+    >
       <body
-        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased app-flavor-${appFlavor}`}
       >
         <NativeApkMode />
         <RouteLoadingOverlay />

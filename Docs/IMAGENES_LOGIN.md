@@ -212,8 +212,8 @@ Objetivo: composicion balanceada entre contenido y fondo.
 Objetivo: onboarding claro, rapido y confiable.
 
 ### Estructura (orden)
-1. Logo pequeño + nombre: `KittyPau`
-2. Titulo: `Bienvenido a KittyPau`
+1. Logo pequeño + nombre: `Kittypau`
+2. Titulo: `Bienvenido a Kittypau`
 3. Subtitulo: `Monitorea la alimentacion y salud de tu mascota`
 4. Campo email (placeholder: `tu@correo.com`)
 5. Campo password (placeholder: `••••••••`)

@@ -1,19 +1,21 @@
-# APK Android Studio (KittyPau)
+# APK Android Studio (Kittypau)
 
 ## Objective
-Generate a KittyPau APK that uses real data from `https://kittypau-app.vercel.app` without exposing server secrets inside the mobile app.
+Generate a Kittypau APK that uses real data from `https://kittypau-app.vercel.app` without exposing server secrets inside the mobile app.
 
 ## Technical decision
 - Mobile app: `Capacitor + Android WebView`.
-- APK loads KittyPau production URL (`server.url`) and uses real Next/Supabase APIs.
+- APK loads Kittypau production URL (`server.url`) and uses real Next/Supabase APIs.
 - Server secrets stay in Vercel/Supabase, not in the APK.
 
 ## What is already configured
-- `kittypau_app/capacitor.config.ts` targets `https://kittypau-app.vercel.app`.
+- `kittypau_app/capacitor.config.ts` reads `CAPACITOR_SERVER_URL`.
+  - Default: `https://app.kittypau-app.vercel.app` (frontend exclusivo APK).
+  - Web publica se mantiene en `https://kittypau-app.vercel.app`.
 - Android hardening:
   - `android:allowBackup="false"`
   - `android:usesCleartextTraffic="false"`
-  - `network_security_config.xml` allows only KittyPau/Supabase/Upstash domains.
+  - `network_security_config.xml` allows only Kittypau/Supabase/Upstash domains.
   - `data_extraction_rules.xml` excludes backup/device-transfer app data.
 - Android branding:
   - Launcher icons and splash generated from `public/logo_carga.jpg`.
@@ -23,6 +25,8 @@ Generate a KittyPau APK that uses real data from `https://kittypau-app.vercel.ap
   - Bottom navigation layout for native APK mode.
   - Safe-area handling for Android WebView.
 - `kittypau_app/.env.example` separates public vs server-only variables.
+  - `NEXT_PUBLIC_APP_FLAVOR` (`web` | `native`)
+  - `CAPACITOR_SERVER_URL` (URL cargada por la APK)
 
 ## Secrets policy (required)
 1. Never put `SUPABASE_SERVICE_ROLE_KEY`, `MQTT_WEBHOOK_SECRET`, `BRIDGE_HEARTBEAT_SECRET`, `VERCEL_API_TOKEN` in client code or Capacitor config.
@@ -80,7 +84,7 @@ Use Android Studio:
 4. Build `release`
 
 ## Validate real-data behavior
-1. Login works with real KittyPau account.
+1. Login works with real Kittypau account.
 2. `today` view loads real readings.
 3. `pet`, `bowl`, and `story` load linked device data.
 4. If API fails, check Vercel env vars and Supabase status.

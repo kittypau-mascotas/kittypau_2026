@@ -1861,8 +1861,8 @@ export default function TodayPage() {
             aria-label="Hero de mascota"
             className="today-hero surface-card freeform-rise px-4 py-3 md:px-6 md:py-3"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
-              <div className="flex min-w-0 items-center gap-3 md:gap-4">
+            <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
+              <div className="today-hero-pet flex min-w-0 items-center gap-3 md:gap-4">
                 <Link
                   href="/pet"
                   className="inline-flex"
@@ -1909,13 +1909,13 @@ export default function TodayPage() {
                 </div>
               </div>
 
-              <aside className="ml-auto flex w-full flex-col items-center gap-1 sm:w-auto">
-                <p className="text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
+              <aside className="today-hero-aside ml-auto flex w-full flex-col items-center gap-1 sm:w-auto">
+                <p className="today-hero-updated text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
                   Actualizado el {heroUpdatedLabel}
                 </p>
-                <div className="inline-flex items-center gap-2">
-                  <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
-                    <div className="flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
+                <div className="today-hero-summary inline-flex items-center gap-2">
+                  <div className="today-hero-summary-cards grid grid-cols-1 gap-1.5 md:grid-cols-2">
+                    <div className="today-hero-summary-card today-hero-summary-card-food flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
                       <div>
                         <p className="text-xs font-semibold text-emerald-700">
                           Alimentación
@@ -1958,10 +1958,10 @@ export default function TodayPage() {
                         aria-hidden={true}
                         width={36}
                         height={36}
-                        className="h-9 w-9 shrink-0 object-contain opacity-90"
+                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
                       />
                     </div>
-                    <div className="flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
+                    <div className="today-hero-summary-card today-hero-summary-card-water flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
                       <div>
                         <p className="text-xs font-semibold text-sky-700">
                           Hidratación
@@ -2004,11 +2004,11 @@ export default function TodayPage() {
                         aria-hidden={true}
                         width={36}
                         height={36}
-                        className="h-9 w-9 shrink-0 object-contain opacity-90"
+                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
                       />
                     </div>
                   </div>
-                  <div className="my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
+                  <div className="today-hero-period my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
                     {periodLabels.map(({ key, label, description }) => {
                       const isActive = key === consumptionPeriod;
                       return (
@@ -2049,7 +2049,7 @@ export default function TodayPage() {
             className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
           >
             <div className="grid gap-4 sm:grid-cols-2">
-              <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
                 <div className="relative min-h-[180px]">
                   <div className="absolute right-2 top-2 flex items-center gap-1">
                     <span
@@ -2074,7 +2074,7 @@ export default function TodayPage() {
                       className="h-6 w-6 text-slate-700"
                     />
                   </div>
-                  <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
                     <p className="text-[14px] font-semibold text-slate-700">
                       {bowlContentWeightText} (contenido)
                       {renderTrend(
@@ -2092,7 +2092,7 @@ export default function TodayPage() {
                         bowlPrevGrossWeightGrams,
                       )}
                     </p>
-                    <div className="mt-0.5 flex flex-col gap-1">
+                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
                         Ambiente
                       </p>
@@ -2139,7 +2139,7 @@ export default function TodayPage() {
                 </div>
               </article>
 
-              <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
                 <div className="relative min-h-[180px]">
                   <div className="absolute right-2 top-2 flex items-center gap-1">
                     <span
@@ -2164,7 +2164,7 @@ export default function TodayPage() {
                       className="h-6 w-6 text-slate-700"
                     />
                   </div>
-                  <div className="absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
                     <p className="text-[14px] font-semibold text-slate-700">
                       {waterVolumeCm3Text} (aprox)
                       {renderTrend(
@@ -2182,7 +2182,7 @@ export default function TodayPage() {
                         waterPrevGrossWeightGrams,
                       )}
                     </p>
-                    <div className="mt-0.5 flex flex-col gap-1">
+                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
                         Ambiente
                       </p>
