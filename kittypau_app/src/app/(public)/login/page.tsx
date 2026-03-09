@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
@@ -116,22 +116,29 @@ export default function LoginPage() {
     setIsTrialCatAwake(false);
     setCatEyeOffset({ x: 0, y: 0 });
   };
+  const updateCatEyesFromPoint = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!isTrialCatAwake) return;
+      const rect = trialCatRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const catCenterX = rect.left + rect.width * 0.46;
+      const catCenterY = rect.top + rect.height * 0.46;
+      const dx = clientX - catCenterX;
+      const dy = clientY - catCenterY;
+      const clamp = (value: number, min: number, max: number) =>
+        Math.max(min, Math.min(max, value));
+
+      // Movimiento sutil y centrado, dentro de rangos seguros.
+      const subtleY = dy / 70 - 0.12;
+      setCatEyeOffset({
+        x: clamp(dx / 60, -0.95, 0.95),
+        y: clamp(subtleY, -0.75, 0.45),
+      });
+    },
+    [isTrialCatAwake],
+  );
   const onTrialCatMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    if (!isTrialCatAwake) return;
-    const rect =
-      trialCatRef.current?.getBoundingClientRect() ??
-      event.currentTarget.getBoundingClientRect();
-    const catCenterX = rect.left + rect.width * 0.46;
-    const catCenterY = rect.top + rect.height * 0.46;
-    const dx = event.clientX - catCenterX;
-    const dy = event.clientY - catCenterY;
-    const clamp = (value: number, min: number, max: number) =>
-      Math.max(min, Math.min(max, value));
-    const subtleY = dy / 64 - 0.22;
-    setCatEyeOffset({
-      x: clamp(dx / 52, -1.05, 1.05),
-      y: clamp(subtleY, -0.9, 0.35),
-    });
+    updateCatEyesFromPoint(event.clientX, event.clientY);
   };
   const catWakeInteractions = {
     onMouseEnter: wakeTrialCat,
@@ -139,6 +146,22 @@ export default function LoginPage() {
     onFocus: wakeTrialCat,
     onBlur: sleepTrialCat,
   } as const;
+
+  useEffect(() => {
+    if (!isTrialCatAwake) return;
+
+    const onWindowPointerMove = (event: PointerEvent) => {
+      updateCatEyesFromPoint(event.clientX, event.clientY);
+    };
+
+    window.addEventListener("pointermove", onWindowPointerMove, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("pointermove", onWindowPointerMove);
+    };
+  }, [isTrialCatAwake, updateCatEyesFromPoint]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -152,17 +175,35 @@ export default function LoginPage() {
     }
 
     const onScroll = () => {
-      if (window.scrollY > 8) {
+      if (window.scrollY > 6) {
         root.classList.add("kp-login-scrolled");
       } else {
         root.classList.remove("kp-login-scrolled");
       }
     };
 
+    let touchStartY = 0;
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const currentY = event.touches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - currentY;
+      if (delta > 10) {
+        root.classList.add("kp-login-scrolled");
+      } else if (window.scrollY <= 2 && delta < -8) {
+        root.classList.remove("kp-login-scrolled");
+      }
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       root.classList.remove("kp-login-scrolled");
     };
   }, []);

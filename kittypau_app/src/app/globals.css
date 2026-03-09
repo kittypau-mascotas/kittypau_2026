@@ -1131,6 +1131,8 @@ body {
   pointer-events: none;
   overflow: visible;
   line-height: 0;
+  filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5))
+    drop-shadow(0 10px 16px rgba(15, 23, 42, 0.42));
 }
 
 .login-panel-cat {
@@ -1163,8 +1165,8 @@ body {
 
 .login-login-stack .login-panel-cat {
   position: absolute;
-  right: 10px;
-  top: -10px;
+  right: -8px;
+  top: -7px;
 }
 
 .login-form-compact {
@@ -1182,20 +1184,14 @@ body {
 /* Gato completo gris oscuro */
 .kp-trial-cat .thecat svg > g > path {
   fill: var(--fur-dark) !important;
-}
-
-/* Solo patas un poco mas oscuras */
-.kp-trial-cat .thecat svg > g > path:nth-of-type(2),
-.kp-trial-cat .thecat svg > g > path:nth-of-type(3),
-.kp-trial-cat .thecat svg > g > path:nth-of-type(4),
-.kp-trial-cat .thecat svg > g > path:nth-of-type(9) {
-  fill: #323940 !important;
+  fill-opacity: 1 !important;
 }
 
 /* Bigotes negros */
 .kp-trial-cat .thecat svg > g > g:nth-of-type(1) path,
 .kp-trial-cat .thecat svg > g > g:nth-of-type(2) path {
   stroke: #000000 !important;
+  stroke-opacity: 1 !important;
 }
 
 /* Ojos cerrados integrados al pelaje */
@@ -1204,11 +1200,25 @@ body {
 .kp-trial-cat .thecat svg > g > g:nth-of-type(4) ellipse,
 .kp-trial-cat .thecat svg > g > g:nth-of-type(4) path {
   fill: var(--fur-dark) !important;
+  fill-opacity: 1 !important;
+}
+
+/* Refuerzo por ID para evitar cualquier ojo negro residual */
+.kp-trial-cat #lefteyelid ellipse,
+.kp-trial-cat #righteyelid ellipse,
+.kp-trial-cat #lefteyelid path,
+.kp-trial-cat #righteyelid path {
+  fill: var(--fur-dark) !important;
 }
 
 .kp-trial-cat .thecat svg > g > g:nth-of-type(3) path[style*="stroke:#ffffff"],
 .kp-trial-cat .thecat svg > g > g:nth-of-type(4) path[style*="stroke:#ffffff"] {
-  stroke: var(--fur-dark) !important;
+  stroke: #000000 !important;
+}
+
+.kp-trial-cat #lefteyelid path[style*="stroke:#ffffff"],
+.kp-trial-cat #righteyelid path[style*="stroke:#ffffff"] {
+  stroke: #000000 !important;
 }
 
 /* Ojos abiertos dorados: sin blanco, pupila negra y brillo blanco */
@@ -1235,7 +1245,7 @@ body {
 
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(2),
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(5) {
-  fill: #000000 !important;
+  fill: var(--fur-dark) !important;
 }
 
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(3),
@@ -1269,6 +1279,11 @@ body {
   pointer-events: none;
 }
 
+/* Ojos base del SVG: siempre ocultos (evita ojo negro fantasma) */
+.kp-trial-cat .thecat svg > g > ellipse {
+  opacity: 0 !important;
+}
+
 .kp-trial-cat #lefteyelid,
 .kp-trial-cat #righteyelid {
   opacity: 1;
@@ -1294,6 +1309,8 @@ body {
   opacity: 1;
   transition-delay: 170ms;
 }
+
+/* Se mantiene oculto en todos los estados */
 
 @keyframes kp-trial-sleep {
   0% {
@@ -2447,6 +2464,7 @@ textarea::placeholder {
     min-height: 78dvh;
     align-items: center;
     text-align: center;
+    transition: min-height 320ms ease, gap 320ms ease;
   }
 
   .kp-native-apk .login-fold-box,
@@ -2462,6 +2480,7 @@ textarea::placeholder {
   .kp-native-apk .login-fold-box-plate,
   .kp-flavor-native .login-fold-box-plate {
     min-height: 34dvh;
+    transition: min-height 320ms ease;
   }
 
   .kp-native-apk .login-fold-box-message,
@@ -2469,6 +2488,7 @@ textarea::placeholder {
     min-height: 22dvh;
     padding-top: 4px;
     padding-bottom: 4px;
+    transition: min-height 320ms ease, padding 320ms ease;
   }
 
   .kp-native-apk .login-fold-box-brand,
@@ -2477,6 +2497,7 @@ textarea::placeholder {
     min-height: 26dvh;
     align-items: center;
     justify-content: center;
+    transition: min-height 320ms ease;
   }
 
   .kp-native-apk .login-brand-core,
@@ -2538,6 +2559,7 @@ textarea::placeholder {
     width: 142px;
     height: 142px;
     margin-inline: auto;
+    transition: width 320ms ease, height 320ms ease, transform 320ms ease;
   }
 
   .kp-native-apk .brand-title,
@@ -2546,6 +2568,7 @@ textarea::placeholder {
     line-height: 0.94;
     text-align: center;
     margin-inline: auto;
+    transition: font-size 320ms ease, line-height 320ms ease;
   }
 
   .kp-native-apk .kp-pettech-tagline,
@@ -2555,6 +2578,7 @@ textarea::placeholder {
     font-size: 1.44rem;
     line-height: 1.16;
     margin-inline: auto;
+    transition: font-size 320ms ease, line-height 320ms ease;
   }
 
   .kp-native-apk .login-card-brand .social-links,
@@ -2567,9 +2591,9 @@ textarea::placeholder {
   .kp-native-apk .login-deferred-panel,
   .kp-flavor-native .login-deferred-panel {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
     pointer-events: none;
-    transition: opacity 220ms ease, transform 220ms ease;
+    transition: opacity 320ms ease, transform 320ms ease;
   }
 
   .kp-native-apk.kp-login-scrolled .login-deferred-social,
@@ -2583,42 +2607,42 @@ textarea::placeholder {
 
   .kp-native-apk.kp-login-scrolled .login-hero-column,
   .kp-flavor-native.kp-login-scrolled .login-hero-column {
-    min-height: 46dvh;
+    min-height: 50dvh;
     gap: 0;
   }
 
   .kp-native-apk.kp-login-scrolled .login-fold-box-plate,
   .kp-flavor-native.kp-login-scrolled .login-fold-box-plate {
-    min-height: 23dvh;
+    min-height: 25dvh;
   }
 
   .kp-native-apk.kp-login-scrolled .login-fold-box-message,
   .kp-flavor-native.kp-login-scrolled .login-fold-box-message {
-    min-height: 12dvh;
+    min-height: 13dvh;
     padding-top: 0;
     padding-bottom: 0;
   }
 
   .kp-native-apk.kp-login-scrolled .login-fold-box-brand,
   .kp-flavor-native.kp-login-scrolled .login-fold-box-brand {
-    min-height: 11dvh;
+    min-height: 12dvh;
   }
 
   .kp-native-apk.kp-login-scrolled .brand-logo-badge,
   .kp-flavor-native.kp-login-scrolled .brand-logo-badge {
-    width: 86px;
-    height: 86px;
+    width: 108px;
+    height: 108px;
   }
 
   .kp-native-apk.kp-login-scrolled .brand-title,
   .kp-flavor-native.kp-login-scrolled .brand-title {
-    font-size: clamp(2rem, 9.2vw, 2.35rem);
+    font-size: clamp(2.35rem, 10.6vw, 2.85rem);
     line-height: 0.95;
   }
 
   .kp-native-apk.kp-login-scrolled .kp-pettech-tagline,
   .kp-flavor-native.kp-login-scrolled .kp-pettech-tagline {
-    font-size: 0.94rem;
+    font-size: 1.06rem;
     line-height: 1.05;
   }
 
