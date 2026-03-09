@@ -1301,7 +1301,7 @@ body {
 }
 
 
-.login-card-brand {
+.login-card-brand:not(.login-fold-box-brand) {
   display: flex;
   flex-direction: column;
   align-items: center;
