@@ -2164,7 +2164,7 @@ textarea::placeholder {
     min-height: auto;
     justify-content: flex-start;
     gap: 6px;
-    padding-top: calc(8px + env(safe-area-inset-top));
+    padding-top: calc(4px + env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
@@ -2180,7 +2180,7 @@ textarea::placeholder {
 
   .kp-native-apk .login-hero-asset-img,
   .kp-flavor-native .login-hero-asset-img {
-    width: min(288px, 80vw);
+    width: min(262px, 73vw);
   }
 
   .kp-native-apk .login-hero-title,
@@ -2194,6 +2194,7 @@ textarea::placeholder {
   .kp-flavor-native .login-hero-title {
     font-size: clamp(2rem, 9.5vw, 2.45rem);
     line-height: 1.02;
+    margin-bottom: 8px;
   }
 
   .kp-native-apk .login-hero-copy,
@@ -2204,12 +2205,13 @@ textarea::placeholder {
   .kp-native-apk .login-auth-column,
   .kp-flavor-native .login-auth-column {
     max-width: 100%;
+    margin-top: -28px;
   }
 
   .kp-native-apk .login-card-brand,
   .kp-flavor-native .login-card-brand {
-    gap: 6px;
-    margin-bottom: 6px;
+    gap: 4px;
+    margin-bottom: 2px;
   }
 
   .kp-native-apk .brand-logo-badge,
@@ -2220,8 +2222,13 @@ textarea::placeholder {
 
   .kp-native-apk .brand-title,
   .kp-flavor-native .brand-title {
-    font-size: clamp(2.2rem, 11vw, 2.8rem);
+    font-size: clamp(2.1rem, 10.5vw, 2.65rem);
     line-height: 0.95;
+  }
+
+  .kp-native-apk .login-card-brand .social-links,
+  .kp-flavor-native .login-card-brand .social-links {
+    margin-top: 2px;
   }
 
   .kp-native-apk .login-panel-wrap .glass-panel,
