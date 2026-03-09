@@ -720,6 +720,20 @@ export default function LoginPage() {
 
         <div className="login-auth-column w-full max-w-md">
           <div className="login-card-brand freeform-rise">
+            <div className="login-brand-core">
+              <div className="brand-logo-badge" aria-hidden="true">
+                <img
+                  src="/logo_carga.jpg"
+                  alt=""
+                  className="brand-logo-img"
+                  draggable={false}
+                />
+              </div>
+              <span className="brand-title text-3xl text-primary">Kittypau</span>
+              <p className="kp-pettech-tagline mt-1">
+                PetTech AIoT
+              </p>
+            </div>
             <SocialLinks className="login-deferred-social social-header social-header-center" size="md" />
           </div>
 
