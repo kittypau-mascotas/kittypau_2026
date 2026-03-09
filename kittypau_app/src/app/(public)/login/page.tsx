@@ -775,9 +775,19 @@ export default function LoginPage() {
           </div>
           <div className="login-hero-divider" aria-hidden="true" />
           <div className="login-fold-box login-fold-box-message">
-            <h1 className="login-hero-title login-hero-title-pettech login-hero-title-web font-semibold text-slate-900">
+            <p className="login-hero-static text-slate-700">
               Descubre lo que tu mascota intenta decirte.
-            </h1>
+            </p>
+            <div className="login-hero-slider" aria-live="polite">
+              <div className="login-hero-slider-viewport scroller">
+                <div className="login-hero-slider-track inner">
+                  <p>Monitorea ciclos de comida y agua</p>
+                  <p>Recibe alertas tempranas de salud</p>
+                  <p>Tenencia responsable y tecnología</p>
+                  <p>Bienestar Animal - IA - IoT</p>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="login-fold-box login-fold-box-brand login-card-brand freeform-rise">
             <div className="brand-logo-badge" aria-hidden="true">
@@ -791,11 +801,6 @@ export default function LoginPage() {
             <span className="brand-title text-3xl text-primary">Kittypau</span>
             <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
           </div>
-          <p className="login-hero-copy text-base leading-relaxed text-slate-600 md:text-lg">
-            Monitorea ciclos de alimentación e hidratación en tiempo real y
-            recibe alertas tempranas para cuidar su salud. Es la tenencia
-            responsable que marca el futuro del bienestar animal.
-          </p>
           <SocialLinks
             className="login-hero-social login-hero-social-web social-header"
             size="md"
@@ -1240,7 +1245,6 @@ export default function LoginPage() {
                   value={trialOwnerName}
                   onChange={(event) => setTrialOwnerName(event.target.value)}
                   className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                  placeholder="Ej: Mauricio"
                 />
               </label>
               <label className="block space-y-1">
@@ -1252,7 +1256,6 @@ export default function LoginPage() {
                   value={trialPetName}
                   onChange={(event) => setTrialPetName(event.target.value)}
                   className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                  placeholder="Ej: Luna"
                 />
               </label>
               <label className="block space-y-1">
@@ -1264,13 +1267,12 @@ export default function LoginPage() {
                   value={trialEmail}
                   onChange={(event) => setTrialEmail(event.target.value)}
                   className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                  placeholder="tu@email.com"
                   autoComplete="email"
                 />
               </label>
 
               <a
-                href="https://www.instagram.com/kittypau"
+                href="https://www.instagram.com/kittypau.mascotas/"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white"

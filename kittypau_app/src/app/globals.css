@@ -1038,6 +1038,92 @@ body {
   line-height: 1.1;
 }
 
+.login-hero-static {
+  margin: 0 0 8px;
+  font-size: clamp(1.18rem, 1.95vw, 1.55rem);
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.login-hero-slider {
+  width: min(100%, 680px);
+  margin-inline: auto;
+  --hero-line-h: clamp(1.65rem, 3.2vw, 2.15rem);
+}
+
+.login-hero-slider-viewport {
+  height: var(--hero-line-h);
+  overflow: hidden;
+}
+
+.login-hero-slider-track {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  animation: login-hero-scroll 10s normal infinite running;
+}
+
+.login-hero-slider-track p {
+  margin: 0;
+  height: var(--hero-line-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-slider), var(--font-ui), sans-serif;
+  font-size: clamp(0.95rem, 1.65vw, 1.2rem);
+  line-height: 1.05;
+  font-weight: 900;
+  color: hsl(var(--foreground));
+}
+
+@keyframes login-hero-scroll {
+  0%,
+  15% {
+    margin-top: 0;
+  }
+
+  25%,
+  40% {
+    margin-top: calc(-1 * var(--hero-line-h));
+  }
+
+  50%,
+  65% {
+    margin-top: calc(-2 * var(--hero-line-h));
+  }
+
+  75%,
+  90% {
+    margin-top: calc(-3 * var(--hero-line-h));
+  }
+
+  100% {
+    margin-top: 0;
+  }
+}
+
+/* Refuerzo del patrón original: scroller + inner */
+.login-hero-slider .scroller {
+  height: var(--hero-line-h);
+  line-height: var(--hero-line-h);
+  overflow: hidden;
+}
+
+.login-hero-slider .inner {
+  animation: login-hero-scroll 10s normal infinite running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-hero-slider-track {
+    animation: none;
+    margin-top: 0;
+  }
+}
+
 .login-bg button:not(:disabled),
 .login-bg [role="button"]:not([aria-disabled="true"]) {
   cursor: pointer;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Fraunces, Inter, Titan_One } from "next/font/google";
+import { Geist_Mono, Fraunces, Inter, Lato, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
 import NativeApkMode from "./_components/native-apk-mode";
@@ -23,6 +23,12 @@ const titanOne = Titan_One({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const lato = Lato({
+  variable: "--font-slider",
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
 });
 
@@ -79,7 +85,7 @@ export default function RootLayout({
       className={appFlavor === "native" ? "kp-flavor-native" : "kp-flavor-web"}
     >
       <body
-        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased app-flavor-${appFlavor}`}
+        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} ${lato.variable} antialiased app-flavor-${appFlavor}`}
       >
         <NativeApkMode />
         <RouteLoadingOverlay />
