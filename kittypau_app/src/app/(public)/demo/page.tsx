@@ -64,20 +64,26 @@ export default function DemoPage() {
   const guideLines = useMemo(() => {
     const owner = ownerName.trim();
     const ownerLine = owner
-      ? `${owner} es un nombre aburrido.`
-      : "Tu nombre es aburrido.";
+      ? `“${owner}”... qué nombre más aburrido`
+      : "Tu nombre es aburrido, muy aburrido";
     return [
       "…¿Otra vez un humano?",
       ownerLine,
-      "Supongo que quieres saber qué hace esta app.",
-      "Yo vigilo a tu mascota.",
-      "Reviso si tu mascota está comiendo.",
-      "Si está tomando agua.",
-      "Y si algo anda mal.",
-      "Básicamente… hago tu trabajo.",
+      "¿Y ahora qué? ¿Quieres saber qué hace esta app?",
+      "Yo vigilo a tu mascota",
+      "Reviso si está comiendo",
+      "Si está tomando agua",
+      "Y si algo anda mal",
+      "Básicamente… hago tu trabajo",
       "...",
-      "Los humanos se distraen fácil.",
-      "Redes sociales, reuniones, stalkear a tu ex, horas desarrollando su inteligencia en TikTok.",
+      "Los humanos se distraen fácil",
+      "Son un éxito de la evolución... jajajaja",
+      "Redes sociales",
+      "Reuniones",
+      "Stalkear a tu ex",
+      "Horas en TikTok",
+      "Y les quita tiempo muy importante para nuestro cuidado",
+      "Para eso está Kittypau",
     ] as const;
   }, [ownerName]);
 
