@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   apiError,
   getUserClient,
@@ -6,14 +7,12 @@ import {
   startRequestTimer,
 } from "../_utils";
 
-export async function GET(req: NextRequest) {
-  const startedAt = startRequestTimer(req);
-  const auth = await getUserClient(req);
-  if ("error" in auth) {
-    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
-  }
-
-  const { supabase, user } = auth;
+export async function handleReadingsGet(
+  req: NextRequest,
+  startedAt: number,
+  auth: { supabase: SupabaseClient; userId: string },
+) {
+  const { supabase, userId } = auth;
   const { searchParams } = new URL(req.url);
   const deviceId =
     searchParams.get("device_id") ?? searchParams.get("device_uuid");
@@ -81,7 +80,7 @@ export async function GET(req: NextRequest) {
     return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
-  if (device.owner_id !== user.id) {
+  if (device.owner_id !== userId) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
@@ -91,7 +90,9 @@ export async function GET(req: NextRequest) {
       gte: (column: string, value: string) => T;
       lte: (column: string, value: string) => T;
     },
-  >(q: T): T => {
+  >(
+    q: T,
+  ): T => {
     let next = q;
     if (cursor) {
       next = next.lt("recorded_at", cursor) as T;
@@ -152,4 +153,15 @@ export async function GET(req: NextRequest) {
     next_cursor: nextCursor,
   });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+}
+
+export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
+  const auth = await getUserClient(req);
+  if ("error" in auth) {
+    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
+  }
+
+  const { supabase, user } = auth;
+  return handleReadingsGet(req, startedAt, { supabase, userId: user.id });
 }
