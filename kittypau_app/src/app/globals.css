@@ -1043,8 +1043,9 @@ body {
 
 .login-hero-static {
   margin: 0 0 8px;
-  font-size: clamp(1.18rem, 1.95vw, 1.55rem);
-  line-height: 1.12;
+  /* Keep smaller than the moving lines below */
+  font-size: clamp(1.02rem, 1.7vw, 1.3rem);
+  line-height: 1.14;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-align: center;
@@ -1053,7 +1054,8 @@ body {
 .login-hero-slider {
   width: min(100%, 680px);
   margin-inline: auto;
-  --hero-line-h: clamp(1.65rem, 3.2vw, 2.15rem);
+  /* Slightly taller to accommodate larger moving lines without clipping */
+  --hero-line-h: clamp(3.05rem, 5.6vw, 3.85rem);
 }
 
 .login-hero-slider-viewport {
@@ -1077,10 +1079,10 @@ body {
   text-align: center;
   white-space: nowrap;
   font-family: var(--font-slider), var(--font-ui), sans-serif;
-  font-size: clamp(0.95rem, 1.65vw, 1.2rem);
+  font-size: clamp(1.7rem, 3.25vw, 2.2rem);
   line-height: 1.05;
-  font-weight: 900;
-  color: hsl(var(--foreground));
+  font-weight: 950;
+  color: color-mix(in oklab, hsl(var(--foreground)) 82%, hsl(var(--muted-foreground)));
 }
 
 @keyframes login-hero-scroll {
@@ -1646,9 +1648,14 @@ body {
 }
 
 .social-link svg {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   fill: currentColor;
+}
+
+.social-link-md svg {
+  width: 74%;
+  height: 74%;
 }
 
 .social-link-sm {
@@ -1721,8 +1728,9 @@ body {
 
 .login-hero-divider {
   width: min(420px, 78%);
-  margin: 2px auto 4px;
+  margin: 0 auto 12px;
   border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  transform: translateY(-2px);
 }
 
 .login-hero-asset-img {
