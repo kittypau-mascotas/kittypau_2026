@@ -55,27 +55,41 @@ export async function POST(req: NextRequest) {
   const referer = req.headers.get("referer");
   const forwardedFor = req.headers.get("x-forwarded-for");
 
-  const { error } = await supabaseServer.from("audit_events").insert({
-    event_type: "Ingreso a Demo",
-    actor_id: null,
-    entity_type: "demo_app",
-    entity_id: null,
-    payload: {
-      user_category: "Ingreso a Demo",
-      owner_name: ownerName,
-      pet_name: petName,
-      email,
-      source,
-      user_agent: userAgent,
-      referer,
-      forwarded_for: forwardedFor,
-      recorded_at: new Date().toISOString(),
-    },
+  const { error: leadError } = await supabaseServer.rpc("record_demo_ingreso", {
+    p_email: email,
+    p_owner_name: ownerName,
+    p_pet_name: petName,
+    p_source: source,
   });
 
-  if (error) {
+  if (leadError) {
     logRequestEnd(req, startedAt, 500);
-    return apiError(req, 500, "SUPABASE_ERROR", error.message);
+    return apiError(req, 500, "SUPABASE_ERROR", leadError.message);
+  }
+
+  const { error: auditError } = await supabaseServer
+    .from("audit_events")
+    .insert({
+      event_type: "Ingreso a Demo",
+      actor_id: null,
+      entity_type: "demo_app",
+      entity_id: null,
+      payload: {
+        user_category: "Ingreso a Demo",
+        owner_name: ownerName,
+        pet_name: petName,
+        email,
+        source,
+        user_agent: userAgent,
+        referer,
+        forwarded_for: forwardedFor,
+        recorded_at: new Date().toISOString(),
+      },
+    });
+
+  if (auditError) {
+    logRequestEnd(req, startedAt, 500);
+    return apiError(req, 500, "SUPABASE_ERROR", auditError.message);
   }
 
   logRequestEnd(req, startedAt, 200);

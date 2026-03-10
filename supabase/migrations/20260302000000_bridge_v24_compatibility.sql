@@ -22,6 +22,11 @@ create table if not exists public.sensor_readings (
   ingested_at timestamptz not null default now()
 );
 
+-- If the table already exists with a different schema (older/newer),
+-- ensure `ingested_at` exists so the index creation below is idempotent.
+alter table public.sensor_readings
+  add column if not exists ingested_at timestamptz not null default now();
+
 create index if not exists idx_sensor_readings_device_ingested
   on public.sensor_readings (device_id, ingested_at desc);
 
