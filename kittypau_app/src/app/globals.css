@@ -1234,7 +1234,12 @@ body {
   animation: none;
 }
 
-.mouse-detector:hover #path5{
+.kp-trial-cat:not(.is-awake) .thecat svg {
+  transform-origin: center bottom;
+  animation: kp-cat-sleep-float 4.5s ease-in-out infinite;
+}
+
+.kp-trial-cat.is-awake .thecat svg {
   animation: none;
 }
 
@@ -1463,6 +1468,18 @@ body {
   }
   100%{
     transform: translateY(0px) scaleY(1) scaleX(1);
+  }
+}
+
+@keyframes kp-cat-sleep-float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-0.6px) scale(1.003);
+  }
+  100% {
+    transform: translateY(0px) scale(1);
   }
 }
 
