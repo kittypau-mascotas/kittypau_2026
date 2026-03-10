@@ -1232,7 +1232,7 @@ body {
   line-height: 0;
 }
 
-.kp-trial-cat:not(.is-awake) #path5 {
+.kp-trial-cat #path5 {
   fill: var(--fur-dark) !important;
   transform-box: fill-box;
   transform-origin: 50% 60%;
@@ -1240,29 +1240,21 @@ body {
   animation: kp-cat-breath-belly 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.kp-trial-cat.is-awake #path5 {
-  animation: none;
-}
-
-.kp-trial-cat:not(.is-awake) .thecat svg {
+.kp-trial-cat .thecat svg {
   transform-origin: center bottom;
   will-change: transform;
   animation: kp-cat-breath-body 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.kp-trial-cat.is-awake .thecat svg {
-  animation: none;
-}
-
-.kp-trial-cat:not(.is-awake) #head {
+.kp-trial-cat #head {
   transform-box: fill-box;
   transform-origin: 52% 55%;
   will-change: transform;
   animation: kp-cat-breath-head 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.kp-trial-cat:not(.is-awake) #tail,
-.kp-trial-cat:not(.is-awake) #longtail {
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
   transform-box: fill-box;
   transform-origin: 12% 50%;
   will-change: transform;
@@ -1489,13 +1481,13 @@ body {
     transform: translateY(0px) scale(1);
   }
   38% {
-    transform: translateY(-0.9px) scale(1.004);
+    transform: translateY(-1.4px) scale(1.006);
   }
   48% {
-    transform: translateY(-1.0px) scale(1.0045);
+    transform: translateY(-1.6px) scale(1.007);
   }
   78% {
-    transform: translateY(-0.25px) scale(1.001);
+    transform: translateY(-0.35px) scale(1.0015);
   }
 }
 
@@ -1505,13 +1497,13 @@ body {
     transform: translateY(0px) scaleY(1) scaleX(1);
   }
   36% {
-    transform: translateY(-0.7px) scaleY(1.055) scaleX(1.02);
+    transform: translateY(-0.9px) scaleY(1.07) scaleX(1.025);
   }
   48% {
-    transform: translateY(-0.9px) scaleY(1.065) scaleX(1.025);
+    transform: translateY(-1.1px) scaleY(1.082) scaleX(1.03);
   }
   80% {
-    transform: translateY(-0.2px) scaleY(1.012) scaleX(1.006);
+    transform: translateY(-0.25px) scaleY(1.015) scaleX(1.007);
   }
 }
 
@@ -1521,13 +1513,13 @@ body {
     transform: translateY(0px) rotate(0deg);
   }
   38% {
-    transform: translateY(-0.35px) rotate(-0.15deg);
+    transform: translateY(-0.55px) rotate(-0.18deg);
   }
   48% {
-    transform: translateY(-0.4px) rotate(-0.2deg);
+    transform: translateY(-0.65px) rotate(-0.25deg);
   }
   80% {
-    transform: translateY(-0.1px) rotate(-0.05deg);
+    transform: translateY(-0.15px) rotate(-0.06deg);
   }
 }
 
@@ -1537,23 +1529,13 @@ body {
     transform: rotate(0deg);
   }
   38% {
-    transform: rotate(0.8deg);
-  }
-  48% {
     transform: rotate(1.05deg);
   }
-  80% {
-    transform: rotate(0.25deg);
+  48% {
+    transform: rotate(1.35deg);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kp-trial-cat:not(.is-awake) .thecat svg,
-  .kp-trial-cat:not(.is-awake) #path5,
-  .kp-trial-cat:not(.is-awake) #head,
-  .kp-trial-cat:not(.is-awake) #tail,
-  .kp-trial-cat:not(.is-awake) #longtail {
-    animation: none !important;
+  80% {
+    transform: rotate(0.3deg);
   }
 }
 
