@@ -930,6 +930,7 @@ export default function LoginPage() {
       window.localStorage.setItem("kittypau_demo_owner_name", owner);
       window.localStorage.setItem("kittypau_demo_pet_name", pet);
       window.localStorage.setItem("kittypau_demo_email", emailValue);
+      window.localStorage.setItem("kittypau_demo_show_rpg", "1");
       if (!window.localStorage.getItem("kittypau_demo_device_id")) {
         window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
       }

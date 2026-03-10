@@ -37,10 +37,10 @@ export default function DemoPage() {
 
     if (pet) setPetName(pet);
 
-    const alreadyShown =
-      window.sessionStorage.getItem("kittypau_demo_rpg_shown") === "1";
-    if (!alreadyShown) {
-      window.sessionStorage.setItem("kittypau_demo_rpg_shown", "1");
+    const shouldShow =
+      window.localStorage.getItem("kittypau_demo_show_rpg") === "1";
+    if (shouldShow) {
+      window.localStorage.removeItem("kittypau_demo_show_rpg");
 
       setIsGuideVisible(true);
 
@@ -258,6 +258,7 @@ export default function DemoPage() {
       window.localStorage.removeItem("kittypau_demo_owner_name");
       window.localStorage.removeItem("kittypau_demo_pet_name");
       window.localStorage.removeItem("kittypau_demo_device_id");
+      window.localStorage.removeItem("kittypau_demo_show_rpg");
     }
     router.push("/login");
   };
