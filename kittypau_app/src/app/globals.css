@@ -2125,7 +2125,8 @@ body {
 
 .trial-rpg-controls {
   position: absolute;
-  left: 8px;
+  left: auto;
+  right: 10px;
   top: 8px;
   display: inline-flex;
   gap: 6px;
@@ -2243,7 +2244,7 @@ body {
 .trial-rpg-cat {
   flex: 0 0 74px;
   align-self: center;
-  margin-top: -4px;
+  margin-top: 6px;
   margin-bottom: 0;
   margin-right: -2px;
   position: relative;
