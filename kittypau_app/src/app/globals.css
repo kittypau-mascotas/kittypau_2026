@@ -2138,8 +2138,8 @@ body {
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0.01em;
   color: #000000;
@@ -2320,7 +2320,8 @@ body {
 
   .trial-rpg-line {
     min-height: 32px;
-    font-size: 11px;
+    font-size: 13px;
+    font-weight: 700;
     line-height: 1.35;
   }
 
