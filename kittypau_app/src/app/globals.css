@@ -1185,132 +1185,39 @@ body {
 
 .kp-trial-cat .sleep-symbol {
   position: absolute;
-  right: 18px;
+  right: 34px;
   top: -76px;
+  width: 56px;
+  height: 48px;
   font-size: 12px;
   font-weight: 700;
   color: #64748b;
   line-height: 1;
-  pointer-events: auto;
+  pointer-events: none;
   z-index: 120;
-  user-select: none;
-}
-
-.kp-trial-cat .sleep-symbol .z-stack {
-  display: inline-flex;
-  gap: 6px;
-  align-items: baseline;
-  justify-content: flex-end;
 }
 
 .kp-trial-cat .sleep-symbol .z {
-  display: inline-block;
+  position: absolute;
+  left: 18px;
+  top: 28px;
+  display: block;
   animation: kp-trial-sleep 4s ease-in-out infinite;
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45));
 }
 
 .kp-trial-cat .sleep-symbol .z2 {
-  animation-delay: 0.6s;
+  animation-delay: 1.25s;
+  left: 28px;
+  top: 24px;
+  font-size: 11px;
 }
 
 .kp-trial-cat .sleep-symbol .z3 {
-  animation-delay: 1.2s;
-}
-
-.kp-trial-cat .sleep-symbol .z4 {
-  animation-delay: 1.8s;
-}
-
-.kp-trial-cat .sleep-symbol .z5 {
-  animation-delay: 2.4s;
-}
-
-.kp-trial-cat .sleep-symbol .z6 {
-  animation-delay: 3s;
-}
-
-.kp-trial-cat .sleep-symbol .dream-stack {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 12px;
-}
-
-.kp-trial-cat .sleep-symbol .dream-text {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(2px) scale(0.98);
-  filter: blur(0.4px);
-}
-
-.kp-trial-cat:not(.is-awake) .sleep-symbol .dream-text {
-  animation: kp-dream-pop 12s linear infinite;
-}
-
-.kp-trial-cat:not(.is-awake) .sleep-symbol .instagram-link {
-  animation: kp-ig-pop 12s linear infinite;
-}
-
-.kp-trial-cat .sleep-symbol .instagram-link{
-  opacity: 0;
-  transform: translateY(2px) scale(0.98);
-  transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
-  pointer-events: auto;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35));
-}
-
-.kp-trial-cat .sleep-symbol .instagram-link:hover{
-  opacity: 1;
-  transform: translateY(0) scale(1.08);
-  filter: drop-shadow(0 2px 2px rgba(15, 23, 42, 0.25));
-}
-
-.kp-trial-cat .sleep-symbol .instagram-icon{
-  width: 16px;
-  height: 16px;
-  display: block;
-}
-
-@keyframes kp-dream-pop {
-  0%,
-  70% {
-    opacity: 0;
-    transform: translateY(2px) scale(0.98);
-    filter: blur(0.4px);
-  }
-  71%,
-  90% {
-    opacity: 0.9;
-    transform: translateY(0px) scale(1);
-    filter: blur(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(2px) scale(0.98);
-    filter: blur(0.4px);
-  }
-}
-
-@keyframes kp-ig-pop {
-  0%,
-  74% {
-    opacity: 0;
-    transform: translateY(2px) scale(0.98);
-  }
-  75%,
-  90% {
-    opacity: 0.95;
-    transform: translateY(0px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(2px) scale(0.98);
-  }
+  animation-delay: 2.5s;
+  left: 10px;
+  top: 20px;
+  font-size: 11px;
 }
 
 .kp-trial-cat .thecat {
@@ -2261,9 +2168,26 @@ body {
 }
 
 .trial-rpg-cat.kp-trial-cat .sleep-symbol {
-  right: 30px;
-  top: -14px;
+  right: 26px;
+  top: -18px;
+  width: 52px;
+  height: 40px;
   font-size: 10px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z {
+  left: 16px;
+  top: 22px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z2 {
+  left: 26px;
+  top: 18px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z3 {
+  left: 8px;
+  top: 14px;
 }
 
 .trial-rpg-cat.kp-trial-cat .thecat {
