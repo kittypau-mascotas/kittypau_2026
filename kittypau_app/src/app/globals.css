@@ -1225,7 +1225,8 @@ body {
 .kp-trial-cat:not(.is-awake) #path5 {
   fill: var(--fur-dark) !important;
   transform-box: fill-box;
-  transform-origin: center;
+  transform-origin: 50% 60%;
+  will-change: transform;
   animation: kp-cat-belly-breathing 4.5s ease-in-out infinite;
 }
 
@@ -1452,16 +1453,16 @@ body {
 
 @keyframes kp-cat-belly-breathing{
   0%{
-    transform:scaleY(1) scaleX(1);
+    transform: translateY(0px) scaleY(1) scaleX(1);
   }
   45%{
-    transform:scaleY(1.05) scaleX(1.02);
+    transform: translateY(-0.6px) scaleY(1.05) scaleX(1.02);
   }
   55%{
-    transform:scaleY(1.06) scaleX(1.025);
+    transform: translateY(-0.8px) scaleY(1.06) scaleX(1.025);
   }
   100%{
-    transform:scaleY(1) scaleX(1);
+    transform: translateY(0px) scaleY(1) scaleX(1);
   }
 }
 
