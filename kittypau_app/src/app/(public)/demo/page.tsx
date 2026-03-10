@@ -282,7 +282,7 @@ export default function DemoPage() {
             />
             {isGuideVisible ? (
               <div className="pointer-events-none fixed bottom-4 left-0 right-0 z-[120] flex justify-center px-4">
-                <div className="pointer-events-auto trial-rpg-modal w-full max-w-md">
+                <div className="pointer-events-auto trial-rpg-modal w-full max-w-lg">
                   <div
                     className="trial-rpg-shell"
                     role="button"

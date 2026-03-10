@@ -1537,7 +1537,7 @@ export default function LoginPage() {
             </div>
           </div>
           {isTrialDialogVisible ? (
-            <div className="trial-rpg-modal w-full max-w-md">
+            <div className="trial-rpg-modal w-full max-w-lg">
               <div
                 className="trial-rpg-shell"
                 role="button"

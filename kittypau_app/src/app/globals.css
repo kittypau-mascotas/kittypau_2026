@@ -2126,11 +2126,12 @@ body {
 .trial-rpg-controls {
   position: absolute;
   left: auto;
-  right: 10px;
+  /* Keep controls on the right side, but never under the cat */
+  right: 84px;
   top: 8px;
   display: inline-flex;
   gap: 6px;
-  z-index: 3;
+  z-index: 6;
 }
 
 .trial-rpg-iconbtn {
@@ -2248,6 +2249,7 @@ body {
   margin-bottom: 0;
   margin-right: -2px;
   position: relative;
+  z-index: 1;
 }
 
 .trial-rpg-cat::after {
