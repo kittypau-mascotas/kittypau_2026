@@ -41,12 +41,13 @@ export default function DemoPage() {
       window.localStorage.getItem("kittypau_demo_show_rpg") === "1";
     if (shouldShow) {
       window.localStorage.removeItem("kittypau_demo_show_rpg");
+      const showTimer = window.setTimeout(() => {
+        setIsGuideVisible(true);
+        setGuideIndex(0);
+        setGuideTypedText("");
+      }, 1700);
 
-      setIsGuideVisible(true);
-
-      setGuideIndex(0);
-
-      setGuideTypedText("");
+      return () => window.clearTimeout(showTimer);
     }
   }, [router]);
 
@@ -281,7 +282,7 @@ export default function DemoPage() {
               preload="auto"
             />
             {isGuideVisible ? (
-              <div className="pointer-events-none fixed bottom-4 left-0 right-0 z-[120] flex justify-center px-4">
+              <div className="pointer-events-none fixed bottom-6 left-0 right-0 z-[120] flex justify-center px-4">
                 <div className="pointer-events-auto trial-rpg-modal w-full max-w-lg">
                   <div
                     className="trial-rpg-shell"

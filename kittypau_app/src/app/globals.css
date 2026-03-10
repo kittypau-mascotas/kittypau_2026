@@ -2121,6 +2121,15 @@ body {
   box-shadow: 0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55));
   font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
   cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.trial-rpg-shell:hover {
+  transform: translateY(-1px) scale(1.015);
+}
+
+.trial-rpg-shell:active {
+  transform: translateY(0) scale(1.01);
 }
 
 .trial-rpg-controls {
