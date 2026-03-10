@@ -1043,10 +1043,45 @@ export default function LoginPage() {
                   }
                 >
                   <div className="cat">
-                    <div className="sleep-symbol" aria-hidden="true">
-                      <span>Z</span>
-                      <span>z</span>
-                      <span>z</span>
+                    <div className="sleep-symbol">
+                      <span className="z z1" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z2" aria-hidden="true">
+                        z
+                      </span>
+                      <span className="z z3" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z4" aria-hidden="true">
+                        z
+                      </span>
+                      <span className="z z5" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z6" aria-hidden="true">
+                        z
+                      </span>
+
+                      <span className="dream-text" aria-hidden="true">
+                        KittyPau
+                      </span>
+
+                      <a
+                        className="instagram-link"
+                        href="https://www.instagram.com/kittypau.mascotas/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Síguenos en Instagram"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="instagram-icon"
+                          aria-hidden="true"
+                        >
+                          <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z" />
+                        </svg>
+                      </a>
                     </div>
                     <div
                       className="thecat"
@@ -1546,10 +1581,45 @@ export default function LoginPage() {
                   aria-hidden="true"
                 >
                   <div className="cat">
-                    <div className="sleep-symbol" aria-hidden="true">
-                      <span>Z</span>
-                      <span>z</span>
-                      <span>z</span>
+                    <div className="sleep-symbol">
+                      <span className="z z1" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z2" aria-hidden="true">
+                        z
+                      </span>
+                      <span className="z z3" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z4" aria-hidden="true">
+                        z
+                      </span>
+                      <span className="z z5" aria-hidden="true">
+                        Z
+                      </span>
+                      <span className="z z6" aria-hidden="true">
+                        z
+                      </span>
+
+                      <span className="dream-text" aria-hidden="true">
+                        KittyPau
+                      </span>
+
+                      <a
+                        className="instagram-link"
+                        href="https://www.instagram.com/kittypau.mascotas/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Síguenos en Instagram"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="instagram-icon"
+                          aria-hidden="true"
+                        >
+                          <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z" />
+                        </svg>
+                      </a>
                     </div>
                     <div
                       className="thecat"
