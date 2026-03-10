@@ -29,6 +29,8 @@
 
   /* pelaje Nebelung */
   --fur-dark: #3F474F;
+  --fur-shadow: #2F363D;
+  --fur-light: #515A63;
   --fur-main: #5A646E;
   --fur-highlight: #8C97A3;
 
@@ -1218,30 +1220,20 @@ body {
   pointer-events: none;
   overflow: visible;
   line-height: 0;
-  filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.5))
-    drop-shadow(0 10px 16px rgba(15, 23, 42, 0.42));
 }
 
 .kp-trial-cat:not(.is-awake) #path5 {
+  fill: var(--fur-dark) !important;
   transform-box: fill-box;
   transform-origin: center;
-  animation: kp-belly-breathing 5s ease-in-out infinite;
+  animation: kp-cat-belly-breathing 4.5s ease-in-out infinite;
 }
 
-.kp-trial-cat:not(.is-awake) #tail {
-  transform-box: fill-box;
-  transform-origin: left center;
-  animation: kp-tail-relax 5s ease-in-out infinite;
-  animation-delay: .5s;
-}
-
-.kp-trial-cat.is-awake #path5,
-.kp-trial-cat.is-awake #tail {
+.kp-trial-cat.is-awake #path5 {
   animation: none;
 }
 
-.mouse-detector:hover #path5,
-.mouse-detector:hover #tail{
+.mouse-detector:hover #path5{
   animation: none;
 }
 
@@ -1289,12 +1281,33 @@ body {
   display: block;
   overflow: visible !important;
   transform-origin: top right;
+  filter:
+    drop-shadow(0 3px 4px rgba(15,23,42,0.42))
+    drop-shadow(0 6px 8px rgba(15,23,42,0.25));
 }
 
 /* Gato completo gris oscuro */
 .kp-trial-cat .thecat svg > g > path {
   fill: var(--fur-dark) !important;
   fill-opacity: 1 !important;
+}
+
+/* Profundidad por pieza (IDs agregados en el SVG inline) */
+.kp-trial-cat #paw-front-right,
+.kp-trial-cat #paw-front-left,
+.kp-trial-cat #paw-back {
+  fill: var(--fur-shadow) !important;
+}
+
+.kp-trial-cat #head,
+.kp-trial-cat #ear-left,
+.kp-trial-cat #ear-right {
+  fill: var(--fur-light) !important;
+}
+
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
+  fill: var(--fur-dark) !important;
 }
 
 /* Bigotes negros */
@@ -1437,27 +1450,18 @@ body {
   }
 }
 
-@keyframes kp-belly-breathing {
+@keyframes kp-cat-belly-breathing{
   0%{
-    transform: scaleY(1) scaleX(1);
+    transform:scaleY(1) scaleX(1);
   }
-  50%{
-    transform: scaleY(1.04) scaleX(1.02);
+  45%{
+    transform:scaleY(1.05) scaleX(1.02);
+  }
+  55%{
+    transform:scaleY(1.06) scaleX(1.025);
   }
   100%{
-    transform: scaleY(1) scaleX(1);
-  }
-}
-
-@keyframes kp-tail-relax {
-  0%{
-    transform: rotate(0deg);
-  }
-  50%{
-    transform: rotate(2deg);
-  }
-  100%{
-    transform: rotate(0deg);
+    transform:scaleY(1) scaleX(1);
   }
 }
 
