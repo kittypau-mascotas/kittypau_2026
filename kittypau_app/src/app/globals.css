@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -1859,6 +1860,10 @@ body {
 }
 
 .login-trial-modal {
+  width: min(94vw, 420px);
+  max-height: min(66dvh, 560px);
+  overflow: hidden;
+  padding: 16px !important;
   border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
   background: linear-gradient(
     180deg,
@@ -1866,6 +1871,41 @@ body {
     #ffffff 78%
   );
   box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 45%, rgba(15, 23, 42, 0.5));
+}
+
+.login-trial-modal .mb-4 {
+  margin-bottom: 10px;
+}
+
+.login-trial-modal .space-y-3 {
+  display: grid;
+  gap: 8px;
+}
+
+.login-trial-modal .space-y-1 {
+  display: grid;
+  gap: 4px;
+}
+
+.login-trial-modal .login-trial-label {
+  line-height: 1.2;
+}
+
+.login-trial-modal .login-trial-input {
+  height: 38px;
+  padding-inline: 12px;
+}
+
+.login-trial-modal .mt-3 {
+  margin-top: 8px;
+}
+
+.login-trial-modal .mt-5 {
+  margin-top: 10px;
+}
+
+.login-trial-modal .flex.items-center.justify-end.gap-2 {
+  gap: 8px;
 }
 
 .login-trial-eyebrow {
@@ -1918,6 +1958,253 @@ body {
 
 .login-trial-submit:hover {
   background: hsl(var(--primary-strong));
+}
+
+.trial-rpg-modal {
+  animation: trial-rpg-pop 220ms ease-out;
+}
+
+.trial-rpg-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 92px;
+  border: 3px solid color-mix(in oklab, hsl(var(--primary)) 58%, #ffffff);
+  border-radius: 6px;
+  padding: 9px 9px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 100%
+  );
+  box-shadow: 0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55));
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  cursor: pointer;
+}
+
+.trial-rpg-shell:focus-visible {
+  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 56%, transparent);
+  outline-offset: 2px;
+}
+
+.trial-rpg-copy {
+  min-height: 62px;
+  display: flex;
+  flex: 1 1 calc(100% - 96px);
+  max-width: calc(100% - 96px);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  padding-left: 2px;
+  align-self: center;
+  margin-top: 2px;
+}
+
+.trial-rpg-line {
+  margin: 0;
+  min-height: 36px;
+  width: 100%;
+  max-width: 100%;
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--fur-dark);
+}
+
+.trial-rpg-caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-left: 4px;
+  vertical-align: -0.1em;
+  color: transparent;
+  background-color: color-mix(in oklab, hsl(var(--primary-strong)) 75%, #334155);
+  animation: trial-rpg-caret-blink 850ms steps(1) infinite;
+}
+
+.trial-rpg-instagram {
+  align-self: center;
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  min-height: 24px;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trial-rpg-actions {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.trial-rpg-instagram.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trial-rpg-instagram.is-visible {
+  opacity: 1;
+}
+
+.trial-rpg-cat {
+  flex: 0 0 74px;
+  align-self: center;
+  margin-top: -4px;
+  margin-bottom: 0;
+  margin-right: -2px;
+}
+
+.trial-rpg-cat.kp-trial-cat {
+  padding: 0;
+}
+
+.trial-rpg-cat.kp-trial-cat .cat {
+  padding-top: 0;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol {
+  right: 30px;
+  top: -14px;
+  font-size: 10px;
+}
+
+.trial-rpg-cat.kp-trial-cat .thecat {
+  position: relative;
+  width: 74px;
+  right: 0;
+  top: 0;
+  filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.16));
+}
+
+@keyframes trial-rpg-caret-blink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+  49%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes trial-rpg-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .login-trial-modal {
+    width: min(94vw, 372px);
+    max-height: min(64dvh, 500px);
+    padding: 12px !important;
+  }
+
+  .login-trial-modal .mb-4 {
+    margin-bottom: 10px;
+  }
+
+  .login-trial-modal .mt-1 {
+    margin-top: 4px;
+  }
+
+  .login-trial-modal .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0;
+  }
+
+  .login-trial-modal .space-y-3 {
+    gap: 6px;
+  }
+
+  .login-trial-modal .space-y-1 {
+    gap: 4px;
+  }
+
+  .login-trial-modal .h-11 {
+    height: 2rem;
+  }
+
+  .login-trial-modal .text-sm {
+    font-size: 0.79rem;
+    line-height: 1.28;
+  }
+
+  .login-trial-modal .text-xs {
+    font-size: 0.68rem;
+  }
+
+  .login-trial-modal .mt-5 {
+    margin-top: 8px;
+  }
+
+  .trial-rpg-shell {
+    min-height: 84px;
+    border-width: 2px;
+    border-radius: 5px;
+    padding: 8px 7px;
+    gap: 8px;
+  }
+
+  .trial-rpg-line {
+    min-height: 32px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .trial-rpg-copy {
+    flex-basis: calc(100% - 64px);
+    max-width: calc(100% - 64px);
+  }
+
+  .trial-rpg-instagram {
+    min-height: 22px;
+    padding: 4px 8px;
+    font-size: 9px;
+  }
+
+  .trial-rpg-cat {
+    flex-basis: 64px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .thecat {
+    width: 64px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
+    right: 24px;
+    top: -12px;
+    font-size: 9px;
+  }
+
+  .trial-rpg-cat {
+    flex-basis: 72px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .thecat {
+    width: 72px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
+    right: 28px;
+    top: -13px;
+    font-size: 10px;
+  }
 }
 
 .login-stepper2 {
