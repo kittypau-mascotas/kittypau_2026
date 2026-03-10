@@ -32,6 +32,163 @@ El comportamiento se arma asi:
   - `style={{ "--cat-eye-x": "...px", "--cat-eye-y": "...px" }}`
 - "Respiracion" (mientras duerme): se anima el cuerpo (`svg`) + barriga (`#path5`) + cabeza (`#head`) + cola (`#tail` y `#longtail`) con keyframes de baja amplitud.
 
+## Dimensiones y medidas (pixeles, offsets y cajas)
+
+Esta seccion documenta las medidas "reales" que usamos hoy en CSS/TS. Hay 3 niveles:
+- Geometria del SVG (coordenadas internas por `viewBox`)
+- Tamaños renderizados del wrapper (pixeles en el layout)
+- Offsets animados (respiracion, ojos) y sus rangos
+
+### 1) Geometria del SVG (interno)
+
+El gato usa el mismo `viewBox` tanto inline (login) como en el SVG externo:
+
+```svg
+viewBox="0 0 45.952225 35.678726"
+```
+
+Relaciones:
+- Ancho interno: `45.952225`
+- Alto interno: `35.678726`
+- Aspect ratio: `alto/ancho = 0.7764308692`
+
+Traduccion aproximada a pixeles (segun ancho CSS del wrapper):
+- Si `width: 78px` => alto aproximado `78px * 0.7764 = 60.56px`
+- Si `width: 74px` => alto aproximado `57.46px`
+- Si `width: 72px` => alto aproximado `55.90px`
+
+Nota:
+- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaño final lo domina el contenedor en px.
+
+### 2) Medidas del gato en Login (sobre el card de iniciar sesion)
+
+Fuente: `globals.css` (bloque `.kp-trial-cat` + `.login-panel-cat`).
+
+Wrapper de posicion (sobre el card):
+- Selector: `.login-login-stack .login-panel-cat`
+  - `position: absolute`
+  - `right: -8px`
+  - `top: -7px`
+  - `z-index: 70`
+
+SVG wrapper (caja del gato):
+- Selector: `.kp-trial-cat .thecat`
+  - `position: absolute`
+  - `width: 78px` (alto auto)
+  - `right: -6px`
+  - `top: -48px`
+  - `z-index: 80`
+  - `overflow: visible`
+
+Zzz (sleep-symbol):
+- Selector: `.kp-trial-cat .sleep-symbol`
+  - `right: 34px`
+  - `top: -76px`
+  - `width: 56px`
+  - `height: 48px`
+  - `z-index: 120`
+
+Sombra/volumen del gato (login):
+- Selector: `.kp-trial-cat .thecat svg`
+  - `filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58)) drop-shadow(0 10px 16px rgba(15, 23, 42, 0.18))`
+
+### 3) Medidas del gato en el cuadro RPG (dialogo, login y demo)
+
+Fuente: `globals.css` (bloque `.trial-rpg-*`).
+
+Caja del gato dentro del dialogo:
+- Selector: `.trial-rpg-cat`
+  - `flex: 0 0 74px` (base width)
+  - `margin-top: 14px` (baja el gato para tocar su sombra)
+  - `margin-right: -2px` (pequeño solape hacia el borde)
+  - `position: relative`
+
+SVG wrapper (RPG):
+- Selector: `.trial-rpg-cat.kp-trial-cat .thecat`
+  - `position: relative`
+  - `width: 74px`
+  - `top: 8px`
+  - `filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.16))`
+
+Zzz (RPG):
+- Selector: `.trial-rpg-cat.kp-trial-cat .sleep-symbol`
+  - `right: 26px`
+  - `top: -18px`
+  - `width: 52px`
+  - `height: 40px`
+
+Sombra "en el piso" del dialogo (debajo del gato):
+- Selector: `.trial-rpg-cat::after`
+  - `left: 16px`
+  - `right: 10px`
+  - `bottom: -2px`
+  - `height: 12px`
+  - `border-radius: 999px`
+  - `background: rgba(15, 23, 42, 0.55)`
+  - `filter: blur(4px)`
+
+### 4) Responsive (mobile)
+
+En `@media (max-width: 640px)` hay ajustes duplicados (historico); el resultado efectivo queda cerca de:
+- `.trial-rpg-line font-size: 13px`
+- `.trial-rpg-cat flex-basis: 72px`
+- `.trial-rpg-cat.kp-trial-cat .thecat width: 72px`
+
+### 5) Rangos de movimiento (ojos)
+
+Los ojos NO se mueven con CSS puro. Se mueven con CSS vars que seteamos desde TS:
+- `--cat-eye-x`
+- `--cat-eye-y`
+
+En CSS, esas variables aplican solo a pupila + brillo:
+- `#eyesdown ellipse:nth-of-type(2,3,5,6) { translate: var(--cat-eye-x) var(--cat-eye-y) }`
+
+Rangos actuales (login panel):
+- `x = clamp(dx/60, -0.95, 0.95)` => rango final: `[-0.95px, 0.95px]`
+- `y = clamp(dy/70 - 0.12, -0.75, 0.45)` => rango final: `[-0.75px, 0.45px]`
+
+Rangos actuales (demo dialog):
+- `x = clamp(dx/58, -0.95, 0.95)` => `[-0.95px, 0.95px]`
+- `y = clamp(dy/68 - 0.1, -0.74, 0.44)` => `[-0.74px, 0.44px]`
+
+Nota importante:
+- Los valores son intencionalmente pequenos (< 1px) para que el movimiento sea "sutil".
+- Si quieres que el movimiento se note mas SIN romper el ojo, el camino seguro es multiplicar por ~1.4 en CSS:
+  - `translate: calc(var(--cat-eye-x) * 1.4) calc(var(--cat-eye-y) * 1.4);`
+
+### 6) Rangos de movimiento (respiracion)
+
+La respiracion se hace en CSS y afecta 4 piezas:
+- `svg` completo (cuerpo)
+- `#path5` (panza)
+- `#head` (cabeza)
+- `#tail`/`#longtail` (cola)
+
+Las amplitudes son de 1 a 3px max (segun keyframes):
+- cuerpo: sube ~2.2px y escala ~1.01 (pico)
+- panza: escala/translate local (muy leve)
+- cabeza: micro oscilacion (para "vida")
+- cola: micro rotacion / translate
+
+### 7) Como medir en runtime (DevTools / consola)
+
+1. Medir la caja del wrapper:
+```js
+document.querySelector(".kp-trial-cat .thecat")?.getBoundingClientRect()
+```
+
+2. Medir caja del SVG (render):
+```js
+document.querySelector(".kp-trial-cat .thecat svg")?.getBoundingClientRect()
+```
+
+3. Medir geometria interna (SVG):
+```js
+const svg = document.querySelector(".kp-trial-cat .thecat svg");
+svg?.viewBox?.baseVal; // {x,y,width,height}
+svg?.getBBox();        // bounding box del contenido
+```
+
 ## Paleta/variables (CSS)
 
 En [globals.css](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/globals.css) se definen variables en `:root`:
@@ -369,4 +526,3 @@ Si queremos ordenarlo, el siguiente refactor "limpio" seria:
 1. mover el SVG a `kittypau_app/src/app/_assets/cat_sleeping.svg.ts` (export string)
 2. crear componente `kittypau_app/src/app/_components/cat-sleepy.tsx`
 3. dejar en `globals.css` solo variables/animaciones, y el resto en un css module del componente
-
