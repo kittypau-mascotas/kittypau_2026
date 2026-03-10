@@ -1044,44 +1044,53 @@ export default function LoginPage() {
                 >
                   <div className="cat">
                     <div className="sleep-symbol">
-                      <span className="z z1" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z2" aria-hidden="true">
-                        z
-                      </span>
-                      <span className="z z3" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z4" aria-hidden="true">
-                        z
-                      </span>
-                      <span className="z z5" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z6" aria-hidden="true">
-                        z
-                      </span>
+                      <div className="z-stack" aria-hidden="true">
+                        <span className="z z1">Z</span>
+                        <span className="z z2">z</span>
+                        <span className="z z3">Z</span>
+                        <span className="z z4">z</span>
+                        <span className="z z5">Z</span>
+                        <span className="z z6">z</span>
+                      </div>
 
-                      <span className="dream-text" aria-hidden="true">
-                        KittyPau
-                      </span>
-
-                      <a
-                        className="instagram-link"
-                        href="https://www.instagram.com/kittypau.mascotas/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Síguenos en Instagram"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="instagram-icon"
-                          aria-hidden="true"
+                      <div className="dream-stack">
+                        <span className="dream-text" aria-hidden="true">
+                          KittyPau
+                        </span>
+                        <a
+                          className="instagram-link"
+                          href="https://www.instagram.com/kittypau.mascotas/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Síguenos en Instagram"
                         >
-                          <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z" />
-                        </svg>
-                      </a>
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="instagram-icon"
+                            aria-hidden="true"
+                          >
+                            <defs>
+                              <linearGradient
+                                id="kp-ig-gradient-a"
+                                x1="4"
+                                y1="20"
+                                x2="20"
+                                y2="4"
+                                gradientUnits="userSpaceOnUse"
+                              >
+                                <stop offset="0" stopColor="#F9CE34" />
+                                <stop offset="0.35" stopColor="#EE2A7B" />
+                                <stop offset="0.7" stopColor="#6228D7" />
+                                <stop offset="1" stopColor="#4F5BD5" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              fill="url(#kp-ig-gradient-a)"
+                              d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z"
+                            />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                     <div
                       className="thecat"
@@ -1582,44 +1591,53 @@ export default function LoginPage() {
                 >
                   <div className="cat">
                     <div className="sleep-symbol">
-                      <span className="z z1" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z2" aria-hidden="true">
-                        z
-                      </span>
-                      <span className="z z3" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z4" aria-hidden="true">
-                        z
-                      </span>
-                      <span className="z z5" aria-hidden="true">
-                        Z
-                      </span>
-                      <span className="z z6" aria-hidden="true">
-                        z
-                      </span>
+                      <div className="z-stack" aria-hidden="true">
+                        <span className="z z1">Z</span>
+                        <span className="z z2">z</span>
+                        <span className="z z3">Z</span>
+                        <span className="z z4">z</span>
+                        <span className="z z5">Z</span>
+                        <span className="z z6">z</span>
+                      </div>
 
-                      <span className="dream-text" aria-hidden="true">
-                        KittyPau
-                      </span>
-
-                      <a
-                        className="instagram-link"
-                        href="https://www.instagram.com/kittypau.mascotas/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Síguenos en Instagram"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="instagram-icon"
-                          aria-hidden="true"
+                      <div className="dream-stack">
+                        <span className="dream-text" aria-hidden="true">
+                          KittyPau
+                        </span>
+                        <a
+                          className="instagram-link"
+                          href="https://www.instagram.com/kittypau.mascotas/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Síguenos en Instagram"
                         >
-                          <path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z" />
-                        </svg>
-                      </a>
+                          <svg
+                            viewBox="0 0 24 24"
+                            className="instagram-icon"
+                            aria-hidden="true"
+                          >
+                            <defs>
+                              <linearGradient
+                                id="kp-ig-gradient-b"
+                                x1="4"
+                                y1="20"
+                                x2="20"
+                                y2="4"
+                                gradientUnits="userSpaceOnUse"
+                              >
+                                <stop offset="0" stopColor="#F9CE34" />
+                                <stop offset="0.35" stopColor="#EE2A7B" />
+                                <stop offset="0.7" stopColor="#6228D7" />
+                                <stop offset="1" stopColor="#4F5BD5" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              fill="url(#kp-ig-gradient-b)"
+                              d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm5 5.5A4.5 4.5 0 1112 17a4.5 4.5 0 010-9.5zm6-1a1 1 0 110 2 1 1 0 010-2zM12 9a3 3 0 100 6 3 3 0 000-6z"
+                            />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
                     <div
                       className="thecat"
