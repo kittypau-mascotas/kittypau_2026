@@ -1237,7 +1237,7 @@ body {
   transform-box: fill-box;
   transform-origin: 50% 60%;
   will-change: transform;
-  animation: kp-cat-belly-breathing 4.5s ease-in-out infinite;
+  animation: kp-cat-breath-belly 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .kp-trial-cat.is-awake #path5 {
@@ -1246,11 +1246,28 @@ body {
 
 .kp-trial-cat:not(.is-awake) .thecat svg {
   transform-origin: center bottom;
-  animation: kp-cat-sleep-float 4.5s ease-in-out infinite;
+  will-change: transform;
+  animation: kp-cat-breath-body 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .kp-trial-cat.is-awake .thecat svg {
   animation: none;
+}
+
+.kp-trial-cat:not(.is-awake) #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  will-change: transform;
+  animation: kp-cat-breath-head 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.kp-trial-cat:not(.is-awake) #tail,
+.kp-trial-cat:not(.is-awake) #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  will-change: transform;
+  animation: kp-cat-breath-tail 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.12s;
 }
 
 .login-panel-cat {
@@ -1466,30 +1483,77 @@ body {
   }
 }
 
-@keyframes kp-cat-belly-breathing{
-  0%{
-    transform: translateY(0px) scaleY(1) scaleX(1);
+@keyframes kp-cat-breath-body {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
   }
-  45%{
-    transform: translateY(-0.6px) scaleY(1.05) scaleX(1.02);
+  38% {
+    transform: translateY(-0.9px) scale(1.004);
   }
-  55%{
-    transform: translateY(-0.8px) scaleY(1.06) scaleX(1.025);
+  48% {
+    transform: translateY(-1.0px) scale(1.0045);
   }
-  100%{
-    transform: translateY(0px) scaleY(1) scaleX(1);
+  78% {
+    transform: translateY(-0.25px) scale(1.001);
   }
 }
 
-@keyframes kp-cat-sleep-float {
-  0% {
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    transform: translateY(-0.6px) scale(1.003);
-  }
+@keyframes kp-cat-breath-belly {
+  0%,
   100% {
-    transform: translateY(0px) scale(1);
+    transform: translateY(0px) scaleY(1) scaleX(1);
+  }
+  36% {
+    transform: translateY(-0.7px) scaleY(1.055) scaleX(1.02);
+  }
+  48% {
+    transform: translateY(-0.9px) scaleY(1.065) scaleX(1.025);
+  }
+  80% {
+    transform: translateY(-0.2px) scaleY(1.012) scaleX(1.006);
+  }
+}
+
+@keyframes kp-cat-breath-head {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  38% {
+    transform: translateY(-0.35px) rotate(-0.15deg);
+  }
+  48% {
+    transform: translateY(-0.4px) rotate(-0.2deg);
+  }
+  80% {
+    transform: translateY(-0.1px) rotate(-0.05deg);
+  }
+}
+
+@keyframes kp-cat-breath-tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  38% {
+    transform: rotate(0.8deg);
+  }
+  48% {
+    transform: rotate(1.05deg);
+  }
+  80% {
+    transform: rotate(0.25deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kp-trial-cat:not(.is-awake) .thecat svg,
+  .kp-trial-cat:not(.is-awake) #path5,
+  .kp-trial-cat:not(.is-awake) #head,
+  .kp-trial-cat:not(.is-awake) #tail,
+  .kp-trial-cat:not(.is-awake) #longtail {
+    animation: none !important;
   }
 }
 
