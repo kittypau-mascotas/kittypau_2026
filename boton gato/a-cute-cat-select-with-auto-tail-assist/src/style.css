@@ -88,10 +88,20 @@
     position: relative;
     pointer-events: none;
   }
+
+  #path5{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bellyBreathing 5s ease-in-out infinite;
+  }
 }
 
 #tail {
   visibility: visible;
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: tailRelax 5s ease-in-out infinite;
+  animation-delay: .5s;
 }
 #longtail {
   visibility: hidden;
@@ -115,6 +125,11 @@ option {
       visibility: hidden;
     }
   }
+}
+
+.mouse-detector:hover #path5,
+.mouse-detector:hover #tail{
+  animation: none;
 }
 
 .cat {
@@ -219,5 +234,29 @@ body {
   100% {
     opacity: 0;
     transform: translateY(-60px) scale(1.5);
+  }
+}
+
+@keyframes bellyBreathing {
+  0%{
+    transform: scaleY(1) scaleX(1);
+  }
+  50%{
+    transform: scaleY(1.04) scaleX(1.02);
+  }
+  100%{
+    transform: scaleY(1) scaleX(1);
+  }
+}
+
+@keyframes tailRelax {
+  0%{
+    transform: rotate(0deg);
+  }
+  50%{
+    transform: rotate(2deg);
+  }
+  100%{
+    transform: rotate(0deg);
   }
 }

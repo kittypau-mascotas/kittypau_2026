@@ -1222,6 +1222,29 @@ body {
     drop-shadow(0 10px 16px rgba(15, 23, 42, 0.42));
 }
 
+.kp-trial-cat:not(.is-awake) #path5 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kp-belly-breathing 5s ease-in-out infinite;
+}
+
+.kp-trial-cat:not(.is-awake) #tail {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: kp-tail-relax 5s ease-in-out infinite;
+  animation-delay: .5s;
+}
+
+.kp-trial-cat.is-awake #path5,
+.kp-trial-cat.is-awake #tail {
+  animation: none;
+}
+
+.mouse-detector:hover #path5,
+.mouse-detector:hover #tail{
+  animation: none;
+}
+
 .login-panel-cat {
   position: relative;
   z-index: 70;
@@ -1411,6 +1434,30 @@ body {
   100% {
     opacity: 0;
     transform: translateY(-26px) scale(1.25);
+  }
+}
+
+@keyframes kp-belly-breathing {
+  0%{
+    transform: scaleY(1) scaleX(1);
+  }
+  50%{
+    transform: scaleY(1.04) scaleX(1.02);
+  }
+  100%{
+    transform: scaleY(1) scaleX(1);
+  }
+}
+
+@keyframes kp-tail-relax {
+  0%{
+    transform: rotate(0deg);
+  }
+  50%{
+    transform: rotate(2deg);
+  }
+  100%{
+    transform: rotate(0deg);
   }
 }
 
@@ -2013,11 +2060,11 @@ body {
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0.01em;
-  color: var(--fur-dark);
+  color: #000000;
 }
 
 .trial-rpg-caret {
@@ -2063,6 +2110,21 @@ body {
   margin-top: -4px;
   margin-bottom: 0;
   margin-right: -2px;
+  position: relative;
+}
+
+.trial-rpg-cat::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 8px;
+  bottom: -6px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.42);
+  filter: blur(3px);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .trial-rpg-cat.kp-trial-cat {
@@ -2163,7 +2225,7 @@ body {
 
   .trial-rpg-line {
     min-height: 32px;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.35;
   }
 
