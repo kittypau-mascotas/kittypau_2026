@@ -213,7 +213,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (!isTrialCatAwake) return;
 
-    let poseTimeout: ReturnType<typeof window.setTimeout> | null = null;
+    let poseTimeout: number | null = null;
 
     const interval = window.setInterval(() => {
       // 30% de probabilidad de pose especial.
@@ -223,13 +223,13 @@ export default function LoginPage() {
       const randomPose = poses[Math.floor(Math.random() * poses.length)];
       setTrialCatExtraPose(randomPose);
 
-      if (poseTimeout) window.clearTimeout(poseTimeout);
+      if (poseTimeout !== null) window.clearTimeout(poseTimeout);
       poseTimeout = window.setTimeout(() => setTrialCatExtraPose(""), 1500);
     }, 5000);
 
     return () => {
       window.clearInterval(interval);
-      if (poseTimeout) window.clearTimeout(poseTimeout);
+      if (poseTimeout !== null) window.clearTimeout(poseTimeout);
     };
   }, [isTrialCatAwake]);
 
