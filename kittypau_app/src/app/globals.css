@@ -1801,8 +1801,14 @@ body {
 
 .login-auth-column > .login-card-brand {
   position: relative;
-  top: -40px;
   margin-bottom: -8px;
+}
+
+@media (min-width: 1024px) {
+  /* Web only: raise brand block (logo + title + tagline) without affecting native APK flavor */
+  .login-bg:not(.kp-native-apk):not(.kp-flavor-native) .login-auth-column > .login-card-brand {
+    top: -54px;
+  }
 }
 
 .login-card-logo {

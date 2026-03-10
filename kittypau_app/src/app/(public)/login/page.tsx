@@ -864,6 +864,38 @@ export default function LoginPage() {
     setTrialError(null);
   };
 
+  const recordDemoIngreso = useCallback(
+    (payload: { owner: string; pet: string; email: string }) => {
+      if (typeof window === "undefined") return;
+      const body = {
+        owner_name: payload.owner,
+        pet_name: payload.pet,
+        email: payload.email,
+        source: "trial_modal",
+      };
+
+      try {
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(body)], {
+            type: "application/json",
+          });
+          const ok = navigator.sendBeacon("/api/demo/ingreso", blob);
+          if (ok) return;
+        }
+      } catch {
+        // fall through to fetch
+      }
+
+      void fetch("/api/demo/ingreso", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        keepalive: true,
+      }).catch(() => null);
+    },
+    [],
+  );
+
   const startTrial = () => {
     const owner = trialOwnerName.trim();
     const pet = trialPetName.trim();
@@ -877,6 +909,9 @@ export default function LoginPage() {
       setTrialError("Ingresa un correo válido para continuar.");
       return;
     }
+
+    // Best-effort logging for demo ingress (server-side audit_events).
+    recordDemoIngreso({ owner, pet, email: emailValue });
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kittypau_demo_mode", "1");
       window.localStorage.setItem("kittypau_demo_owner_name", owner);
