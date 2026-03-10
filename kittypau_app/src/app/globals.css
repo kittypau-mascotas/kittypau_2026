@@ -1298,6 +1298,19 @@ body {
   top: -7px;
 }
 
+.login-login-stack .login-panel-cat.login-panel-cat-copy {
+  right: 66px;
+  top: -9px;
+  opacity: 0.96;
+  pointer-events: none;
+  transform: scale(0.92);
+  transform-origin: top right;
+}
+
+.login-login-stack .login-panel-cat.login-panel-cat-copy .sleep-symbol {
+  display: none;
+}
+
 .login-form-compact {
   margin-top: -2px;
 }
@@ -1440,6 +1453,15 @@ body {
   transition: opacity 170ms ease-out;
 }
 
+.kp-trial-cat #ear-left,
+.kp-trial-cat #ear-right,
+.kp-trial-cat #paw-front-left,
+.kp-trial-cat #head,
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 170ms ease-out;
+}
+
 .kp-trial-cat.is-awake #lefteyelid,
 .kp-trial-cat.is-awake .sleep-symbol {
   visibility: hidden;
@@ -1538,6 +1560,120 @@ body {
   }
   80% {
     transform: rotate(0.45deg);
+  }
+}
+
+/* =========================
+   Poses especiales (prueba)
+   ========================= */
+
+/* Pose: Enojado */
+.kp-trial-cat.is-angry #path5,
+.kp-trial-cat.is-angry #head,
+.kp-trial-cat.is-angry #tail,
+.kp-trial-cat.is-angry #longtail {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-angry .thecat svg {
+  animation: kp-cat-angry-shiver 90ms linear infinite !important;
+  transform-origin: center bottom;
+  filter: contrast(1.18) saturate(1.08);
+}
+
+.kp-trial-cat.is-angry.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-angry.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  fill: #ff2a2a !important;
+}
+
+.kp-trial-cat.is-angry #ear-left,
+.kp-trial-cat.is-angry #ear-right {
+  transform-box: fill-box;
+  transform-origin: 50% 85%;
+  animation: none !important;
+}
+
+.kp-trial-cat.is-angry #ear-left {
+  transform: rotate(-32deg) translateY(2px);
+}
+
+.kp-trial-cat.is-angry #ear-right {
+  transform: rotate(32deg) translateY(2px);
+}
+
+@keyframes kp-cat-angry-shiver {
+  0% {
+    transform: translateX(0.55px) scaleY(1.06);
+  }
+  50% {
+    transform: translateX(-0.55px) scaleY(1.06);
+  }
+  100% {
+    transform: translateX(0.55px) scaleY(1.06);
+  }
+}
+
+/* Pose: Aseo */
+.kp-trial-cat.is-cleaning #head {
+  animation: none !important;
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  transform: translateY(4px) rotate(-14deg);
+}
+
+.kp-trial-cat.is-cleaning #paw-front-left {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+.kp-trial-cat.is-cleaning #lefteyelid,
+.kp-trial-cat.is-cleaning #righteyelid {
+  visibility: visible !important;
+  opacity: 0.55 !important;
+}
+
+.kp-trial-cat.is-cleaning #eyesdown {
+  opacity: 0 !important;
+}
+
+/* Pose: Acecho/Salto */
+.kp-trial-cat.is-pouncing #path5,
+.kp-trial-cat.is-pouncing #head {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-pouncing .thecat svg {
+  animation: none !important;
+  transform-origin: center bottom;
+  transform: translateY(3px) scaleY(0.82) scaleX(1.01);
+}
+
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(5) {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(1.7);
+}
+
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  opacity: 0.22;
+}
+
+.kp-trial-cat.is-pouncing #tail,
+.kp-trial-cat.is-pouncing #longtail {
+  animation: kp-cat-tail-wiggle 180ms ease-in-out infinite alternate !important;
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+}
+
+@keyframes kp-cat-tail-wiggle {
+  from {
+    transform: rotate(-11deg);
+  }
+  to {
+    transform: rotate(16deg);
   }
 }
 

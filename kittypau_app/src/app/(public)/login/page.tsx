@@ -58,6 +58,9 @@ export default function LoginPage() {
   const [dialogCatEyeOffset, setDialogCatEyeOffset] = useState({ x: 0, y: 0 });
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
+  const [trialCatExtraPose, setTrialCatExtraPose] = useState<
+    "" | "is-angry" | "is-cleaning" | "is-pouncing"
+  >("");
   const trialCatRef = useRef<HTMLDivElement | null>(null);
   const trialDialogCatRef = useRef<HTMLDivElement | null>(null);
   const loginPanelWrapRef = useRef<HTMLDivElement | null>(null);
@@ -157,6 +160,7 @@ export default function LoginPage() {
   const wakeTrialCat = () => setIsTrialCatAwake(true);
   const sleepTrialCat = () => {
     setIsTrialCatAwake(false);
+    setTrialCatExtraPose("");
     setCatEyeOffset({ x: 0, y: 0 });
   };
   const updateCatEyesFromPoint = useCallback(
@@ -205,6 +209,29 @@ export default function LoginPage() {
       window.removeEventListener("pointermove", onWindowPointerMove);
     };
   }, [isTrialCatAwake, updateCatEyesFromPoint]);
+
+  useEffect(() => {
+    if (!isTrialCatAwake) return;
+
+    let poseTimeout: ReturnType<typeof window.setTimeout> | null = null;
+
+    const interval = window.setInterval(() => {
+      // 30% de probabilidad de pose especial.
+      if (Math.random() <= 0.7) return;
+
+      const poses = ["is-angry", "is-cleaning", "is-pouncing"] as const;
+      const randomPose = poses[Math.floor(Math.random() * poses.length)];
+      setTrialCatExtraPose(randomPose);
+
+      if (poseTimeout) window.clearTimeout(poseTimeout);
+      poseTimeout = window.setTimeout(() => setTrialCatExtraPose(""), 1500);
+    }, 5000);
+
+    return () => {
+      window.clearInterval(interval);
+      if (poseTimeout) window.clearTimeout(poseTimeout);
+    };
+  }, [isTrialCatAwake]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1077,31 +1104,58 @@ export default function LoginPage() {
                     Iniciar sesión
                   </h2>
                 </div>
-                <div
-                  className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
-                    isTrialCatAwake ? " is-awake" : ""
-                  }`}
-                  ref={trialCatRef}
-                  onMouseEnter={wakeTrialCat}
-                  onMouseLeave={sleepTrialCat}
-                  style={
-                    {
-                      "--cat-eye-x": `${catEyeOffset.x}px`,
-                      "--cat-eye-y": `${catEyeOffset.y}px`,
-                    } as CSSProperties
-                  }
-                >
-                  <div className="cat">
-                    <div className="sleep-symbol" aria-hidden="true">
-                      <span className="z z1">Z</span>
-                      <span className="z z2">z</span>
-                      <span className="z z3">Z</span>
+                <div className="login-panel-cat-stack" aria-hidden="true">
+                  <div
+                    className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
+                      isTrialCatAwake ? " is-awake" : ""
+                    }`}
+                    ref={trialCatRef}
+                    onMouseEnter={wakeTrialCat}
+                    onMouseLeave={sleepTrialCat}
+                    style={
+                      {
+                        "--cat-eye-x": `${catEyeOffset.x}px`,
+                        "--cat-eye-y": `${catEyeOffset.y}px`,
+                      } as CSSProperties
+                    }
+                  >
+                    <div className="cat">
+                      <div className="sleep-symbol" aria-hidden="true">
+                        <span className="z z1">Z</span>
+                        <span className="z z2">z</span>
+                        <span className="z z3">Z</span>
+                      </div>
+                      <div
+                        className="thecat"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{ __html: trialCatSvg }}
+                      />
                     </div>
-                    <div
-                      className="thecat"
-                      aria-hidden="true"
-                      dangerouslySetInnerHTML={{ __html: trialCatSvg }}
-                    />
+                  </div>
+
+                  <div
+                    className={`kp-trial-cat login-panel-cat login-panel-cat-copy shrink-0${
+                      isTrialCatAwake ? " is-awake" : ""
+                    }${trialCatExtraPose ? ` ${trialCatExtraPose}` : ""}`}
+                    style={
+                      {
+                        "--cat-eye-x": `${catEyeOffset.x}px`,
+                        "--cat-eye-y": `${catEyeOffset.y}px`,
+                      } as CSSProperties
+                    }
+                  >
+                    <div className="cat">
+                      <div className="sleep-symbol" aria-hidden="true">
+                        <span className="z z1">Z</span>
+                        <span className="z z2">z</span>
+                        <span className="z z3">Z</span>
+                      </div>
+                      <div
+                        className="thecat"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{ __html: trialCatSvg }}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="login-login-intro">
