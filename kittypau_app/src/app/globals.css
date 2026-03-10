@@ -1481,13 +1481,13 @@ body {
     transform: translateY(0px) scale(1);
   }
   38% {
-    transform: translateY(-1.4px) scale(1.006);
+    transform: translateY(-2.2px) scale(1.01);
   }
   48% {
-    transform: translateY(-1.6px) scale(1.007);
+    transform: translateY(-2.5px) scale(1.0115);
   }
   78% {
-    transform: translateY(-0.35px) scale(1.0015);
+    transform: translateY(-0.55px) scale(1.0025);
   }
 }
 
@@ -1497,13 +1497,13 @@ body {
     transform: translateY(0px) scaleY(1) scaleX(1);
   }
   36% {
-    transform: translateY(-0.9px) scaleY(1.07) scaleX(1.025);
+    transform: translateY(-1.25px) scaleY(1.09) scaleX(1.032);
   }
   48% {
-    transform: translateY(-1.1px) scaleY(1.082) scaleX(1.03);
+    transform: translateY(-1.45px) scaleY(1.105) scaleX(1.038);
   }
   80% {
-    transform: translateY(-0.25px) scaleY(1.015) scaleX(1.007);
+    transform: translateY(-0.35px) scaleY(1.02) scaleX(1.009);
   }
 }
 
@@ -1513,13 +1513,13 @@ body {
     transform: translateY(0px) rotate(0deg);
   }
   38% {
-    transform: translateY(-0.55px) rotate(-0.18deg);
+    transform: translateY(-0.85px) rotate(-0.25deg);
   }
   48% {
-    transform: translateY(-0.65px) rotate(-0.25deg);
+    transform: translateY(-1.0px) rotate(-0.32deg);
   }
   80% {
-    transform: translateY(-0.15px) rotate(-0.06deg);
+    transform: translateY(-0.22px) rotate(-0.08deg);
   }
 }
 
@@ -1529,13 +1529,13 @@ body {
     transform: rotate(0deg);
   }
   38% {
-    transform: rotate(1.05deg);
+    transform: rotate(1.6deg);
   }
   48% {
-    transform: rotate(1.35deg);
+    transform: rotate(2.1deg);
   }
   80% {
-    transform: rotate(0.3deg);
+    transform: rotate(0.45deg);
   }
 }
 
