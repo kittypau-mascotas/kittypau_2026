@@ -2103,6 +2103,12 @@ body {
   animation: trial-rpg-pop 220ms ease-out;
 }
 
+/* Native APK: keep RPG dialog above the bottom navbar */
+.kp-native-apk .trial-rpg-modal,
+.kp-flavor-native .trial-rpg-modal {
+  margin-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
 .trial-rpg-shell {
   position: relative;
   display: flex;
