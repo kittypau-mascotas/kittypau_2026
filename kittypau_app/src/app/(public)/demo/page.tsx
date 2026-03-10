@@ -16,6 +16,7 @@ export default function DemoPage() {
   const [guideIndex, setGuideIndex] = useState(0);
   const [guideTypedText, setGuideTypedText] = useState("");
   const [isGuideTyping, setIsGuideTyping] = useState(false);
+  const [isGuideMuted, setIsGuideMuted] = useState(false);
   const [isGuideCatAwake, setIsGuideCatAwake] = useState(true);
   const [guideCatEyeOffset, setGuideCatEyeOffset] = useState({ x: 0, y: 0 });
   const [guideCatSvg, setGuideCatSvg] = useState<string | null>(null);
@@ -87,6 +88,24 @@ export default function DemoPage() {
     audio.currentTime = 0;
   }, []);
 
+  useEffect(() => {
+    if (!isGuideVisible) return;
+    if (!isGuideMuted) return;
+    stopGuideAudio();
+  }, [isGuideMuted, isGuideVisible, stopGuideAudio]);
+
+  const closeGuide = () => {
+    setIsGuideVisible(false);
+    setGuideIndex(0);
+    setGuideTypedText("");
+    setIsGuideTyping(false);
+    stopGuideAudio();
+  };
+
+  const toggleGuideMute = () => {
+    setIsGuideMuted((prev) => !prev);
+  };
+
   const onGuideAdvance = useCallback(() => {
     if (!isGuideVisible) return;
     const lastIndex = guideLines.length - 1;
@@ -100,9 +119,7 @@ export default function DemoPage() {
       setGuideIndex((prev) => Math.min(lastIndex, prev + 1));
       return;
     }
-    setIsGuideVisible(false);
-    setGuideIndex(0);
-    setGuideTypedText("");
+    closeGuide();
   }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
 
   const onGuideKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -196,7 +213,7 @@ export default function DemoPage() {
     setIsGuideTyping(true);
 
     const audio = guideAudioRef.current;
-    if (audio) {
+    if (audio && !isGuideMuted) {
       audio.loop = true;
       audio.volume = 0.4;
       audio.currentTime = 0;
@@ -267,6 +284,48 @@ export default function DemoPage() {
                     onKeyDown={onGuideKeyDown}
                     aria-label="Avanzar dialogo"
                   >
+                    <div
+                      className="trial-rpg-controls"
+                      aria-label="Controles de dialogo"
+                    >
+                      <button
+                        type="button"
+                        className="trial-rpg-iconbtn"
+                        aria-label="Cerrar dialogo"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          closeGuide();
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M6 6l12 12" />
+                          <path d="M18 6L6 18" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        className="trial-rpg-iconbtn"
+                        aria-label={
+                          isGuideMuted ? "Activar sonido" : "Silenciar sonido"
+                        }
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleGuideMute();
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                          {isGuideMuted ? (
+                            <>
+                              <path d="M16 9l5 6" />
+                              <path d="M21 9l-5 6" />
+                            </>
+                          ) : (
+                            <path d="M16 9a5 5 0 0 1 0 6" />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
                     <div className="trial-rpg-copy">
                       <p className="trial-rpg-line">
                         {guideTypedText}

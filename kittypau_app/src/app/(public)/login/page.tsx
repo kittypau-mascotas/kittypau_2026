@@ -53,6 +53,7 @@ export default function LoginPage() {
   const [trialDialogIndex, setTrialDialogIndex] = useState(0);
   const [trialDialogTypedText, setTrialDialogTypedText] = useState("");
   const [isTrialDialogTyping, setIsTrialDialogTyping] = useState(false);
+  const [isTrialDialogMuted, setIsTrialDialogMuted] = useState(false);
   const [isDialogCatAwake, setIsDialogCatAwake] = useState(true);
   const [dialogCatEyeOffset, setDialogCatEyeOffset] = useState({ x: 0, y: 0 });
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
@@ -141,6 +142,17 @@ export default function LoginPage() {
     audio.pause();
     audio.currentTime = 0;
   }, []);
+
+  useEffect(() => {
+    if (!showTrialModal || !isTrialDialogVisible) return;
+    if (!isTrialDialogMuted) return;
+    stopTrialDialogAudio();
+  }, [
+    isTrialDialogMuted,
+    isTrialDialogVisible,
+    showTrialModal,
+    stopTrialDialogAudio,
+  ]);
 
   const wakeTrialCat = () => setIsTrialCatAwake(true);
   const sleepTrialCat = () => {
@@ -356,7 +368,7 @@ export default function LoginPage() {
     setIsTrialDialogTyping(true);
 
     const audio = trialDialogAudioRef.current;
-    if (audio) {
+    if (audio && !isTrialDialogMuted) {
       audio.loop = true;
       audio.volume = 0.4;
       audio.currentTime = 0;
@@ -383,6 +395,7 @@ export default function LoginPage() {
     showTrialModal,
     trialDialogIndex,
     trialDialogLines,
+    isTrialDialogMuted,
     stopTrialDialogAudio,
   ]);
 
@@ -1532,6 +1545,48 @@ export default function LoginPage() {
                 onKeyDown={onTrialDialogKeyDown}
                 aria-label="Avanzar dialogo"
               >
+                <div
+                  className="trial-rpg-controls"
+                  aria-label="Controles de dialogo"
+                >
+                  <button
+                    type="button"
+                    className="trial-rpg-iconbtn"
+                    aria-label="Cerrar dialogo"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      closeTrial();
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 6l12 12" />
+                      <path d="M18 6L6 18" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="trial-rpg-iconbtn"
+                    aria-label={
+                      isTrialDialogMuted ? "Activar sonido" : "Silenciar sonido"
+                    }
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setIsTrialDialogMuted((prev) => !prev);
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                      {isTrialDialogMuted ? (
+                        <>
+                          <path d="M16 9l5 6" />
+                          <path d="M21 9l-5 6" />
+                        </>
+                      ) : (
+                        <path d="M16 9a5 5 0 0 1 0 6" />
+                      )}
+                    </svg>
+                  </button>
+                </div>
                 <div className="trial-rpg-copy">
                   <p className="trial-rpg-line">
                     {trialDialogTypedText}

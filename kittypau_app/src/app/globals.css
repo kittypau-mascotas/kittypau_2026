@@ -2123,6 +2123,50 @@ body {
   cursor: pointer;
 }
 
+.trial-rpg-controls {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  display: inline-flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.trial-rpg-iconbtn {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 40%, #ffffff);
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  color: color-mix(in oklab, hsl(var(--foreground)) 78%, #000000);
+  box-shadow: 0 10px 18px -16px rgba(15, 23, 42, 0.6);
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  cursor: pointer;
+}
+
+.trial-rpg-iconbtn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, hsl(var(--primary)) 16%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 52%, #ffffff);
+}
+
+.trial-rpg-iconbtn:active {
+  transform: translateY(0);
+}
+
+.trial-rpg-iconbtn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .trial-rpg-shell:focus-visible {
   outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 56%, transparent);
   outline-offset: 2px;
