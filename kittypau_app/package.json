@@ -24,6 +24,7 @@
     "staged:check": "lint-staged --no-stash"
   },
   "dependencies": {
+    "@capacitor/local-notifications": "^8.0.2",
     "@supabase/supabase-js": "^2.93.3",
     "chart.js": "^4.5.1",
     "lucide-react": "^0.542.0",

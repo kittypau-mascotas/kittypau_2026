@@ -3,6 +3,7 @@ import { Geist_Mono, Fraunces, Inter, Lato, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
 import NativeApkMode from "./_components/native-apk-mode";
+import NativeThanksNotification from "./_components/native-thanks-notification";
 import { resolveAppFlavorFromEnv } from "@/lib/runtime/app-flavor";
 
 const inter = Inter({
@@ -88,6 +89,7 @@ export default function RootLayout({
         className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} ${lato.variable} antialiased app-flavor-${appFlavor}`}
       >
         <NativeApkMode />
+        <NativeThanksNotification />
         <RouteLoadingOverlay />
         {children}
       </body>
