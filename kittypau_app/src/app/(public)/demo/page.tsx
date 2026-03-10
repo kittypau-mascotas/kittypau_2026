@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties, KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AppNav from "@/app/(app)/_components/app-nav";
 import { AppDataProvider } from "@/lib/context/app-context";
 
@@ -11,6 +12,15 @@ export default function DemoPage() {
   const searchParams = useSearchParams();
   const [ownerName, setOwnerName] = useState("Invitado");
   const [petName, setPetName] = useState("Tu mascota");
+  const [isGuideVisible, setIsGuideVisible] = useState(false);
+  const [guideIndex, setGuideIndex] = useState(0);
+  const [guideTypedText, setGuideTypedText] = useState("");
+  const [isGuideTyping, setIsGuideTyping] = useState(false);
+  const [isGuideCatAwake, setIsGuideCatAwake] = useState(true);
+  const [guideCatEyeOffset, setGuideCatEyeOffset] = useState({ x: 0, y: 0 });
+  const [guideCatSvg, setGuideCatSvg] = useState<string | null>(null);
+  const guideCatRef = useRef<HTMLDivElement | null>(null);
+  const guideAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -21,8 +31,22 @@ export default function DemoPage() {
     }
     const owner = window.localStorage.getItem("kittypau_demo_owner_name");
     const pet = window.localStorage.getItem("kittypau_demo_pet_name");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (owner) setOwnerName(owner);
+
     if (pet) setPetName(pet);
+
+    const alreadyShown =
+      window.sessionStorage.getItem("kittypau_demo_rpg_shown") === "1";
+    if (!alreadyShown) {
+      window.sessionStorage.setItem("kittypau_demo_rpg_shown", "1");
+
+      setIsGuideVisible(true);
+
+      setGuideIndex(0);
+
+      setGuideTypedText("");
+    }
   }, [router]);
 
   const updatedAtLabel = useMemo(
@@ -35,6 +59,166 @@ export default function DemoPage() {
       }).format(new Date()),
     [],
   );
+
+  const guideLines = useMemo(() => {
+    const owner = ownerName.trim();
+    const ownerLine = owner
+      ? `${owner} es un nombre aburrido.`
+      : "Tu nombre es aburrido.";
+    return [
+      "…¿Otra vez un humano?",
+      ownerLine,
+      "Supongo que quieres saber qué hace esta app.",
+      "Yo vigilo a tu mascota.",
+      "Reviso si tu mascota está comiendo.",
+      "Si está tomando agua.",
+      "Y si algo anda mal.",
+      "Básicamente… hago tu trabajo.",
+      "...",
+      "Los humanos se distraen fácil.",
+      "Redes sociales, reuniones, stalkear a tu ex, horas desarrollando su inteligencia en TikTok.",
+    ] as const;
+  }, [ownerName]);
+
+  const stopGuideAudio = useCallback(() => {
+    const audio = guideAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  }, []);
+
+  const onGuideAdvance = useCallback(() => {
+    if (!isGuideVisible) return;
+    const lastIndex = guideLines.length - 1;
+    if (isGuideTyping) {
+      setGuideTypedText(guideLines[guideIndex] ?? "");
+      setIsGuideTyping(false);
+      stopGuideAudio();
+      return;
+    }
+    if (guideIndex < lastIndex) {
+      setGuideIndex((prev) => Math.min(lastIndex, prev + 1));
+      return;
+    }
+    setIsGuideVisible(false);
+    setGuideIndex(0);
+    setGuideTypedText("");
+  }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
+
+  const onGuideKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onGuideAdvance();
+    }
+  };
+
+  useEffect(() => {
+    if (!isGuideVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGuideTypedText("");
+
+      setIsGuideTyping(false);
+
+      setIsGuideCatAwake(true);
+
+      setGuideCatEyeOffset({ x: 0, y: 0 });
+      stopGuideAudio();
+      return;
+    }
+
+    if (!guideCatSvg) {
+      void fetch("/illustrations/cat_awake_copy.svg")
+        .then((res) => (res.ok ? res.text() : ""))
+        .then((svgText) => setGuideCatSvg(svgText || null))
+        .catch(() => setGuideCatSvg(null));
+    }
+
+    let sleepTimer: number | null = null;
+    let wakeTimer: number | null = null;
+
+    const schedule = () => {
+      const randomDelay = 5200 + Math.floor(Math.random() * 3600);
+      sleepTimer = window.setTimeout(() => {
+        setIsGuideCatAwake(false);
+        wakeTimer = window.setTimeout(() => {
+          setIsGuideCatAwake(true);
+          schedule();
+        }, 1000);
+      }, randomDelay);
+    };
+
+    schedule();
+    return () => {
+      if (sleepTimer !== null) window.clearTimeout(sleepTimer);
+      if (wakeTimer !== null) window.clearTimeout(wakeTimer);
+      setIsGuideCatAwake(true);
+    };
+  }, [guideCatSvg, isGuideVisible, stopGuideAudio]);
+
+  useEffect(() => {
+    if (!isGuideVisible || !isGuideCatAwake) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGuideCatEyeOffset({ x: 0, y: 0 });
+      return;
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      const rect = guideCatRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const catCenterX = rect.left + rect.width * 0.46;
+      const catCenterY = rect.top + rect.height * 0.46;
+      const dx = event.clientX - catCenterX;
+      const dy = event.clientY - catCenterY;
+      const clamp = (value: number, min: number, max: number) =>
+        Math.max(min, Math.min(max, value));
+
+      setGuideCatEyeOffset({
+        x: clamp(dx / 58, -0.95, 0.95),
+        y: clamp(dy / 68 - 0.1, -0.74, 0.44),
+      });
+    };
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+    };
+  }, [isGuideCatAwake, isGuideVisible]);
+
+  useEffect(() => {
+    if (!isGuideVisible) return;
+    if (guideIndex >= guideLines.length) return;
+
+    const line = guideLines[guideIndex];
+    let pointer = 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGuideTypedText("");
+
+    setIsGuideTyping(true);
+
+    const audio = guideAudioRef.current;
+    if (audio) {
+      audio.loop = true;
+      audio.volume = 0.4;
+      audio.currentTime = 0;
+      void audio.play().catch(() => undefined);
+    }
+
+    const typingTimer = window.setInterval(() => {
+      pointer += 1;
+      setGuideTypedText(line.slice(0, pointer));
+      if (pointer >= line.length) {
+        window.clearInterval(typingTimer);
+        stopGuideAudio();
+        setIsGuideTyping(false);
+      }
+    }, 28);
+
+    return () => {
+      window.clearInterval(typingTimer);
+      stopGuideAudio();
+      setIsGuideTyping(false);
+    };
+  }, [guideIndex, guideLines, isGuideVisible, stopGuideAudio]);
 
   const selectedMenu = (searchParams.get("menu") ?? "today") as
     | "today"
@@ -67,6 +251,64 @@ export default function DemoPage() {
         <AppNav />
         <div className="app-content">
           <main className="min-h-screen px-4 py-4 md:px-6">
+            <audio
+              ref={guideAudioRef}
+              src="/audio/dialogo_rpg.mp3"
+              preload="auto"
+            />
+            {isGuideVisible ? (
+              <div className="pointer-events-none fixed bottom-4 left-0 right-0 z-[120] flex justify-center px-4">
+                <div className="pointer-events-auto trial-rpg-modal w-full max-w-md">
+                  <div
+                    className="trial-rpg-shell"
+                    role="button"
+                    tabIndex={0}
+                    onClick={onGuideAdvance}
+                    onKeyDown={onGuideKeyDown}
+                    aria-label="Avanzar dialogo"
+                  >
+                    <div className="trial-rpg-copy">
+                      <p className="trial-rpg-line">
+                        {guideTypedText}
+                        <span
+                          className="trial-rpg-caret"
+                          aria-hidden={guideTypedText.length === 0}
+                        >
+                          |
+                        </span>
+                      </p>
+                    </div>
+                    <div
+                      className={`trial-rpg-cat kp-trial-cat mouse-detector${
+                        isGuideCatAwake ? " is-awake" : ""
+                      }`}
+                      ref={guideCatRef}
+                      style={
+                        {
+                          "--cat-eye-x": `${guideCatEyeOffset.x}px`,
+                          "--cat-eye-y": `${guideCatEyeOffset.y}px`,
+                        } as CSSProperties
+                      }
+                      aria-hidden="true"
+                    >
+                      <div className="cat">
+                        <div className="sleep-symbol" aria-hidden="true">
+                          <span className="z z1">Z</span>
+                          <span className="z z2">z</span>
+                          <span className="z z3">Z</span>
+                        </div>
+                        <div
+                          className="thecat"
+                          dangerouslySetInnerHTML={{
+                            __html: guideCatSvg ?? "",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {isPendingSection ? (
               <section className="mx-auto mt-1 w-full max-w-6xl rounded-[var(--radius)] border border-slate-200/80 bg-white px-5 py-8 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.4)] md:px-6">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
@@ -76,7 +318,8 @@ export default function DemoPage() {
                   {pendingLabel} pendiente
                 </h1>
                 <p className="mt-2 text-sm text-slate-600">
-                  Esta sección se habilitará en próximas iteraciones del modo prueba.
+                  Esta sección se habilitará en próximas iteraciones del modo
+                  prueba.
                 </p>
               </section>
             ) : (
@@ -91,7 +334,9 @@ export default function DemoPage() {
                       className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                     />
                     <div>
-                      <h1 className="text-3xl font-semibold text-slate-900">{petName}</h1>
+                      <h1 className="text-3xl font-semibold text-slate-900">
+                        {petName}
+                      </h1>
                       <p className="mt-1 text-sm text-slate-500">
                         Perro · Demo · small · adult · 0 kg
                       </p>
@@ -107,14 +352,26 @@ export default function DemoPage() {
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="rounded-[10px] border border-rose-100 bg-rose-50/50 px-3 py-2">
-                        <p className="text-xs font-semibold text-rose-700">Alimentacion</p>
-                        <p className="mt-1 text-xs text-slate-600">2 veces/dia</p>
-                        <p className="text-xs text-slate-600">Consumo: 190 g /dia</p>
+                        <p className="text-xs font-semibold text-rose-700">
+                          Alimentacion
+                        </p>
+                        <p className="mt-1 text-xs text-slate-600">
+                          2 veces/dia
+                        </p>
+                        <p className="text-xs text-slate-600">
+                          Consumo: 190 g /dia
+                        </p>
                       </div>
                       <div className="rounded-[10px] border border-rose-100 bg-rose-50/50 px-3 py-2">
-                        <p className="text-xs font-semibold text-rose-700">Hidratacion</p>
-                        <p className="mt-1 text-xs text-slate-600">4 veces/dia</p>
-                        <p className="text-xs text-slate-600">Consumo: 280 ml /dia</p>
+                        <p className="text-xs font-semibold text-rose-700">
+                          Hidratacion
+                        </p>
+                        <p className="mt-1 text-xs text-slate-600">
+                          4 veces/dia
+                        </p>
+                        <p className="text-xs text-slate-600">
+                          Consumo: 280 ml /dia
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -124,7 +381,8 @@ export default function DemoPage() {
 
             <section className="mx-auto mt-4 flex w-full max-w-6xl items-center justify-between rounded-[var(--radius)] border border-slate-200/80 bg-white px-4 py-3 md:px-6">
               <p className="text-sm text-slate-600">
-                Esta es una vista de demostracion personalizada para explorar Kittypau.
+                Esta es una vista de demostracion personalizada para explorar
+                Kittypau.
               </p>
               <button
                 type="button"
