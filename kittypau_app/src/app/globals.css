@@ -29,8 +29,8 @@
 
   /* pelaje Nebelung */
   --fur-dark: #3F474F;
-  --fur-shadow: #2F363D;
-  --fur-light: #515A63;
+  --fur-shadow: #363E45;
+  --fur-light: #465058;
   --fur-main: #5A646E;
   --fur-highlight: #8C97A3;
 
@@ -1282,8 +1282,8 @@ body {
   overflow: visible !important;
   transform-origin: top right;
   filter:
-    drop-shadow(0 3px 4px rgba(15,23,42,0.42))
-    drop-shadow(0 6px 8px rgba(15,23,42,0.25));
+    drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58))
+    drop-shadow(0 10px 16px rgba(15, 23, 42, 0.18));
 }
 
 /* Gato completo gris oscuro */
