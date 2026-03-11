@@ -1103,6 +1103,11 @@ export default function LoginPage() {
                     {
                       "--cat-eye-x": `${catEyeOffset.x}px`,
                       "--cat-eye-y": `${catEyeOffset.y}px`,
+                      opacity: isLoginCatHidden ? 0 : 1,
+                      visibility: isLoginCatHidden ? "hidden" : "visible",
+                      transform: isLoginCatHidden
+                        ? "translateY(8px) scale(0.98)"
+                        : "translateY(0) scale(1)",
                     } as CSSProperties
                   }
                 >
