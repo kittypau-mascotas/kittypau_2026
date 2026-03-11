@@ -2665,22 +2665,16 @@ body {
 }
 
 .trial-rpg-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 2px 4px;
-  min-height: 24px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, hsl(var(--primary)) 86%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--brand-rose-solid)) 55%, #ffffff) 100%
-  );
-  border-bottom: 3px solid color-mix(in oklab, hsl(var(--primary)) 28%, #ffffff);
+  display: none;
 }
 
 .trial-rpg-controls {
+  position: absolute;
+  right: 10px;
+  top: 8px;
   display: inline-flex;
   gap: 8px;
+  z-index: 10;
 }
 
 .trial-rpg-body {
@@ -2688,6 +2682,7 @@ body {
   align-items: stretch;
   gap: 10px;
   padding: 10px 10px;
+  padding-top: 28px;
 }
 
 .trial-rpg-textpane {
@@ -2972,14 +2967,13 @@ body {
   }
 
   .trial-rpg-topbar {
-    min-height: 22px;
-    padding: 2px 3px;
-    border-bottom-width: 2px;
+    display: none;
   }
 
   .trial-rpg-body {
     gap: 8px;
     padding: 9px 9px;
+    padding-top: 26px;
   }
 
   .trial-rpg-textpane,
