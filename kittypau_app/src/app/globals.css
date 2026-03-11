@@ -2635,17 +2635,19 @@ body {
 .trial-rpg-shell {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 92px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  min-height: 140px;
   border: 3px solid color-mix(in oklab, hsl(var(--primary)) 58%, #ffffff);
-  border-radius: 6px;
-  padding: 9px 9px;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 100%
+    color-mix(in oklab, hsl(var(--primary)) 14%, #0f172a) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 6%, #0b1220) 100%
   );
   box-shadow: 0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55));
   font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
@@ -2661,20 +2663,59 @@ body {
   transform: translateY(0) scale(1.01);
 }
 
+.trial-rpg-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 12px;
+  min-height: 44px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 22%, #0f172a) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 10%, #0f172a) 100%
+  );
+  border-bottom: 3px solid color-mix(in oklab, hsl(var(--primary)) 28%, #ffffff);
+}
+
 .trial-rpg-controls {
-  position: absolute;
-  left: auto;
-  /* Sit over the cat (top-right) */
-  right: 10px;
-  top: 6px;
   display: inline-flex;
-  gap: 6px;
-  z-index: 6;
+  gap: 8px;
+}
+
+.trial-rpg-body {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 10px;
+}
+
+.trial-rpg-textpane {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: 10px;
+  border: 2px solid color-mix(in oklab, hsl(var(--primary)) 18%, rgba(15, 23, 42, 0.35));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 6%, #ffffff) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  padding: 10px 12px;
+}
+
+.trial-rpg-catpane {
+  flex: 0 0 128px;
+  border-radius: 10px;
+  border: 2px solid color-mix(in oklab, hsl(var(--primary)) 18%, rgba(15, 23, 42, 0.35));
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  padding: 8px 8px;
 }
 
 .trial-rpg-iconbtn {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2698,8 +2739,8 @@ body {
 }
 
 .trial-rpg-iconbtn svg {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -2713,15 +2754,15 @@ body {
 }
 
 .trial-rpg-copy {
-  min-height: 62px;
+  min-height: 72px;
   display: flex;
-  flex: 1 1 calc(100% - 96px);
-  max-width: calc(100% - 96px);
+  flex: 1 1 auto;
+  max-width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   gap: 4px;
-  padding-left: 2px;
+  padding-left: 0;
   align-self: center;
   margin-top: 2px;
 }
@@ -2740,7 +2781,7 @@ body {
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0.01em;
-  color: #000000;
+  color: rgba(15, 23, 42, 0.92);
 }
 
 .trial-rpg-caret {
@@ -2781,27 +2822,16 @@ body {
 }
 
 .trial-rpg-cat {
-  flex: 0 0 74px;
+  width: 96px;
+  height: 86px;
   align-self: center;
-  margin-top: 14px;
-  margin-bottom: 0;
-  margin-right: -2px;
+  margin: 0;
   position: relative;
   z-index: 1;
 }
 
 .trial-rpg-cat::after {
-  content: "";
-  position: absolute;
-  left: 16px;
-  right: 10px;
-  bottom: -2px;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.55);
-  filter: blur(4px);
-  pointer-events: none;
-  z-index: -1;
+  content: none;
 }
 
 .trial-rpg-cat.kp-trial-cat {
@@ -2837,9 +2867,9 @@ body {
 
 .trial-rpg-cat.kp-trial-cat .thecat {
   position: relative;
-  width: 74px;
+  width: 92px;
   right: 0;
-  top: 8px;
+  top: 2px;
   filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.16));
 }
 
@@ -2910,11 +2940,31 @@ body {
   }
 
   .trial-rpg-shell {
-    min-height: 84px;
+    min-height: 128px;
     border-width: 2px;
-    border-radius: 5px;
-    padding: 8px 7px;
+    border-radius: 10px;
+  }
+
+  .trial-rpg-topbar {
+    min-height: 40px;
+    padding: 9px 10px;
+    border-bottom-width: 2px;
+  }
+
+  .trial-rpg-body {
     gap: 8px;
+    padding: 9px 9px;
+  }
+
+  .trial-rpg-textpane,
+  .trial-rpg-catpane {
+    border-width: 1px;
+    border-radius: 9px;
+  }
+
+  .trial-rpg-catpane {
+    flex-basis: 110px;
+    padding: 6px 6px;
   }
 
   .trial-rpg-line {
@@ -2924,11 +2974,6 @@ body {
     line-height: 1.35;
   }
 
-  .trial-rpg-copy {
-    flex-basis: calc(100% - 64px);
-    max-width: calc(100% - 64px);
-  }
-
   .trial-rpg-instagram {
     min-height: 22px;
     padding: 4px 8px;
@@ -2936,11 +2981,12 @@ body {
   }
 
   .trial-rpg-cat {
-    flex-basis: 64px;
+    width: 84px;
+    height: 76px;
   }
 
   .trial-rpg-cat.kp-trial-cat .thecat {
-    width: 64px;
+    width: 84px;
   }
 
   .trial-rpg-cat.kp-trial-cat .sleep-symbol {
@@ -2949,17 +2995,9 @@ body {
     font-size: 9px;
   }
 
-  .trial-rpg-cat {
-    flex-basis: 72px;
-  }
-
-  .trial-rpg-cat.kp-trial-cat .thecat {
-    width: 72px;
-  }
-
   .trial-rpg-cat.kp-trial-cat .sleep-symbol {
-    right: 28px;
-    top: -13px;
+    right: 26px;
+    top: -12px;
     font-size: 10px;
   }
 }

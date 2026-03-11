@@ -1567,105 +1567,114 @@ export default function LoginPage() {
                 aria-label="Avanzar dialogo"
               >
                 <div
-                  className="trial-rpg-controls"
+                  className="trial-rpg-topbar"
                   aria-label="Controles de dialogo"
                 >
-                  <button
-                    type="button"
-                    className="trial-rpg-iconbtn"
-                    aria-label="Cerrar dialogo"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      closeTrial();
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M6 6l12 12" />
-                      <path d="M18 6L6 18" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="trial-rpg-iconbtn"
-                    aria-label={
-                      isTrialDialogMuted ? "Activar sonido" : "Silenciar sonido"
-                    }
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setIsTrialDialogMuted((prev) => !prev);
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M11 5L6 9H3v6h3l5 4V5z" />
-                      {isTrialDialogMuted ? (
-                        <>
-                          <path d="M16 9l5 6" />
-                          <path d="M21 9l-5 6" />
-                        </>
-                      ) : (
-                        <path d="M16 9a5 5 0 0 1 0 6" />
-                      )}
-                    </svg>
-                  </button>
-                </div>
-                <div className="trial-rpg-copy">
-                  <p className="trial-rpg-line">
-                    {trialDialogTypedText}
-                    <span
-                      className="trial-rpg-caret"
-                      aria-hidden={trialDialogTypedText.length === 0}
+                  <div className="trial-rpg-controls">
+                    <button
+                      type="button"
+                      className="trial-rpg-iconbtn"
+                      aria-label="Cerrar dialogo"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        closeTrial();
+                      }}
                     >
-                      |
-                    </span>
-                  </p>
-                  <div className="trial-rpg-actions" aria-hidden={false}>
-                    <a
-                      href="https://www.instagram.com/kittypau.mascotas/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white trial-rpg-instagram ${
-                        trialDialogIndex === trialDialogLines.length - 1 &&
-                        !isTrialDialogTyping
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-4 w-4 text-[#E1306C]"
-                        fill="currentColor"
-                      >
-                        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6l12 12" />
+                        <path d="M18 6L6 18" />
                       </svg>
-                      <span>Síguenos en Instagram</span>
-                    </a>
+                    </button>
+                    <button
+                      type="button"
+                      className="trial-rpg-iconbtn"
+                      aria-label={
+                        isTrialDialogMuted
+                          ? "Activar sonido"
+                          : "Silenciar sonido"
+                      }
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setIsTrialDialogMuted((prev) => !prev);
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                        {isTrialDialogMuted ? (
+                          <>
+                            <path d="M16 9l5 6" />
+                            <path d="M21 9l-5 6" />
+                          </>
+                        ) : (
+                          <path d="M16 9a5 5 0 0 1 0 6" />
+                        )}
+                      </svg>
+                    </button>
                   </div>
                 </div>
-                <div
-                  className={`trial-rpg-cat kp-trial-cat mouse-detector${
-                    isDialogCatAwake ? " is-awake" : ""
-                  }`}
-                  ref={trialDialogCatRef}
-                  style={
-                    {
-                      "--cat-eye-x": `${dialogCatEyeOffset.x}px`,
-                      "--cat-eye-y": `${dialogCatEyeOffset.y}px`,
-                    } as CSSProperties
-                  }
-                  aria-hidden="true"
-                >
-                  <div className="cat">
-                    <div className="sleep-symbol" aria-hidden="true">
-                      <span className="z z1">Z</span>
-                      <span className="z z2">z</span>
-                      <span className="z z3">Z</span>
+                <div className="trial-rpg-body">
+                  <div className="trial-rpg-textpane">
+                    <div className="trial-rpg-copy">
+                      <p className="trial-rpg-line">
+                        {trialDialogTypedText}
+                        <span
+                          className="trial-rpg-caret"
+                          aria-hidden={trialDialogTypedText.length === 0}
+                        >
+                          |
+                        </span>
+                      </p>
+                      <div className="trial-rpg-actions" aria-hidden={false}>
+                        <a
+                          href="https://www.instagram.com/kittypau.mascotas/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white trial-rpg-instagram ${
+                            trialDialogIndex === trialDialogLines.length - 1 &&
+                            !isTrialDialogTyping
+                              ? "is-visible"
+                              : "is-hidden"
+                          }`}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            className="h-4 w-4 text-[#E1306C]"
+                            fill="currentColor"
+                          >
+                            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                          </svg>
+                          <span>Síguenos en Instagram</span>
+                        </a>
+                      </div>
                     </div>
+                  </div>
+                  <div className="trial-rpg-catpane" aria-hidden="true">
                     <div
-                      className="thecat"
-                      dangerouslySetInnerHTML={{ __html: trialCatSvg }}
-                    />
+                      className={`trial-rpg-cat kp-trial-cat mouse-detector${
+                        isDialogCatAwake ? " is-awake" : ""
+                      }`}
+                      ref={trialDialogCatRef}
+                      style={
+                        {
+                          "--cat-eye-x": `${dialogCatEyeOffset.x}px`,
+                          "--cat-eye-y": `${dialogCatEyeOffset.y}px`,
+                        } as CSSProperties
+                      }
+                    >
+                      <div className="cat">
+                        <div className="sleep-symbol" aria-hidden="true">
+                          <span className="z z1">Z</span>
+                          <span className="z z2">z</span>
+                          <span className="z z3">Z</span>
+                        </div>
+                        <div
+                          className="thecat"
+                          dangerouslySetInnerHTML={{ __html: trialCatSvg }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
