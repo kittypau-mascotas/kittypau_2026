@@ -2644,11 +2644,11 @@ body {
   border-radius: 12px;
   padding: 0;
   overflow: hidden;
-  /* Kittypau tinted frame (close to border color). */
+  /* Kittypau pink frame (matches brand). */
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, hsl(var(--primary)) 30%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff) 100%
+    color-mix(in oklab, hsl(var(--primary)) 78%, #ffffff) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 56%, #ffffff) 100%
   );
   box-shadow: 0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55));
   font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
@@ -2672,8 +2672,8 @@ body {
   min-height: 44px;
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, hsl(var(--primary)) 40%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 26%, #ffffff) 100%
+    color-mix(in oklab, hsl(var(--primary)) 86%, #ffffff) 0%,
+    color-mix(in oklab, hsl(var(--brand-rose-solid)) 55%, #ffffff) 100%
   );
   border-bottom: 3px solid color-mix(in oklab, hsl(var(--primary)) 28%, #ffffff);
 }
@@ -2715,8 +2715,8 @@ body {
 }
 
 .trial-rpg-iconbtn {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2740,8 +2740,8 @@ body {
 }
 
 .trial-rpg-iconbtn svg {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -2973,13 +2973,13 @@ body {
   }
 
   .trial-rpg-iconbtn {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   .trial-rpg-iconbtn svg {
-    width: 11px;
-    height: 11px;
+    width: 9px;
+    height: 9px;
   }
 
   .trial-rpg-catpane .trial-rpg-cat {
