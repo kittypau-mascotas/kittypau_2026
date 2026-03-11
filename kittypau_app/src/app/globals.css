@@ -1337,16 +1337,18 @@ body {
 }
 
 .login-login-stack .login-panel-cat.login-panel-cat-hidden {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
-  transition: opacity 220ms ease, transform 260ms ease;
+  opacity: 0 !important;
+  transform: translateY(8px) scale(0.98) !important;
+  visibility: hidden;
+  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 260ms;
   pointer-events: none;
 }
 
 .login-login-stack .login-panel-cat:not(.login-panel-cat-hidden) {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: opacity 220ms ease, transform 260ms ease;
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  visibility: visible;
+  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 0s;
 }
 
 .login-form-compact {
