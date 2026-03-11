@@ -233,7 +233,7 @@ export default function DemoPage() {
     const audio = guideAudioRef.current;
     if (audio && !isGuideMuted) {
       audio.loop = true;
-      audio.volume = 0.4;
+      audio.volume = 0.3 + Math.random() * 0.1;
       audio.currentTime = 0;
       void audio.play().catch(() => undefined);
     }
