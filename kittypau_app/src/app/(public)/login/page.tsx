@@ -934,6 +934,8 @@ export default function LoginPage() {
       if (!window.localStorage.getItem("kittypau_demo_device_id")) {
         window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
       }
+      // Reuse the same branded loading overlay (with sound) used after a real login.
+      window.sessionStorage.setItem("kittypau_play_login_sound", "1");
     }
     closeTrial();
     router.push("/demo");

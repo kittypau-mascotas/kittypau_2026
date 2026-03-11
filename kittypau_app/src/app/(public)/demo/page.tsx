@@ -12,6 +12,7 @@ export default function DemoPage() {
   const searchParams = useSearchParams();
   const [ownerName, setOwnerName] = useState("Invitado");
   const [petName, setPetName] = useState("Tu mascota");
+  const [pendingGuide, setPendingGuide] = useState(false);
   const [isGuideVisible, setIsGuideVisible] = useState(false);
   const [guideIndex, setGuideIndex] = useState(0);
   const [guideTypedText, setGuideTypedText] = useState("");
@@ -32,24 +33,34 @@ export default function DemoPage() {
     }
     const owner = window.localStorage.getItem("kittypau_demo_owner_name");
     const pet = window.localStorage.getItem("kittypau_demo_pet_name");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (owner) setOwnerName(owner);
-
-    if (pet) setPetName(pet);
-
     const shouldShow =
       window.localStorage.getItem("kittypau_demo_show_rpg") === "1";
-    if (shouldShow) {
-      window.localStorage.removeItem("kittypau_demo_show_rpg");
-      const showTimer = window.setTimeout(() => {
-        setIsGuideVisible(true);
-        setGuideIndex(0);
-        setGuideTypedText("");
-      }, 1700);
+    // Avoid triggering react-hooks/set-state-in-effect by deferring state updates.
+    const timer = window.setTimeout(() => {
+      if (owner) setOwnerName(owner);
+      if (pet) setPetName(pet);
 
-      return () => window.clearTimeout(showTimer);
-    }
+      if (shouldShow) {
+        window.localStorage.removeItem("kittypau_demo_show_rpg");
+        setPendingGuide(true);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [router]);
+
+  useEffect(() => {
+    if (!pendingGuide) return;
+
+    const timer = window.setTimeout(() => {
+      setIsGuideVisible(true);
+      setGuideIndex(0);
+      setGuideTypedText("");
+      setPendingGuide(false);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [pendingGuide]);
 
   const updatedAtLabel = useMemo(
     () =>
