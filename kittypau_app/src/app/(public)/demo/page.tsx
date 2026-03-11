@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { CSSProperties, KeyboardEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AppNav from "@/app/(app)/_components/app-nav";
 import { AppDataProvider } from "@/lib/context/app-context";
+import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
 
 export default function DemoPage() {
   const router = useRouter();
@@ -139,13 +139,6 @@ export default function DemoPage() {
     }
     closeGuide();
   }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
-
-  const onGuideKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      onGuideAdvance();
-    }
-  };
 
   useEffect(() => {
     if (!isGuideVisible) {
@@ -294,101 +287,18 @@ export default function DemoPage() {
             />
             {isGuideVisible ? (
               <div className="pointer-events-none fixed bottom-6 left-0 right-0 z-[120] flex justify-center px-4">
-                <div className="pointer-events-auto trial-rpg-modal w-full max-w-lg">
-                  <div
-                    className="trial-rpg-shell"
-                    role="button"
-                    tabIndex={0}
-                    onClick={onGuideAdvance}
-                    onKeyDown={onGuideKeyDown}
-                    aria-label="Avanzar dialogo"
-                  >
-                    <div
-                      className="trial-rpg-controls"
-                      aria-label="Controles de dialogo"
-                    >
-                      <button
-                        type="button"
-                        className="trial-rpg-iconbtn trial-rpg-close"
-                        aria-label="Cerrar dialogo"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          closeGuide();
-                        }}
-                      >
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="M6 6l12 12" />
-                          <path d="M18 6L6 18" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        className="trial-rpg-iconbtn trial-rpg-mute"
-                        aria-label={
-                          isGuideMuted ? "Activar sonido" : "Silenciar sonido"
-                        }
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          toggleGuideMute();
-                        }}
-                      >
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="M11 5L6 9H3v6h3l5 4V5z" />
-                          {isGuideMuted ? (
-                            <>
-                              <path d="M16 9l5 6" />
-                              <path d="M21 9l-5 6" />
-                            </>
-                          ) : (
-                            <path d="M16 9a5 5 0 0 1 0 6" />
-                          )}
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="trial-rpg-body">
-                      <div className="trial-rpg-textpane">
-                        <div className="trial-rpg-copy">
-                          <p className="trial-rpg-line">
-                            {guideTypedText}
-                            <span
-                              className="trial-rpg-caret"
-                              aria-hidden={guideTypedText.length === 0}
-                            >
-                              |
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="trial-rpg-catpane" aria-hidden="true">
-                        <div
-                          className={`trial-rpg-cat kp-trial-cat mouse-detector${
-                            isGuideCatAwake ? " is-awake" : ""
-                          }`}
-                          ref={guideCatRef}
-                          style={
-                            {
-                              "--cat-eye-x": `${guideCatEyeOffset.x}px`,
-                              "--cat-eye-y": `${guideCatEyeOffset.y}px`,
-                            } as CSSProperties
-                          }
-                        >
-                          <div className="cat">
-                            <div className="sleep-symbol" aria-hidden="true">
-                              <span className="z z1">Z</span>
-                              <span className="z z2">z</span>
-                              <span className="z z3">Z</span>
-                            </div>
-                            <div
-                              className="thecat"
-                              dangerouslySetInnerHTML={{
-                                __html: guideCatSvg ?? "",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="pointer-events-auto">
+                  <TrialRpgDialog
+                    typedText={guideTypedText}
+                    isMuted={isGuideMuted}
+                    onToggleMute={toggleGuideMute}
+                    onClose={closeGuide}
+                    onAdvance={onGuideAdvance}
+                    catSvg={guideCatSvg ?? ""}
+                    isCatAwake={isGuideCatAwake}
+                    catEyeOffset={guideCatEyeOffset}
+                    catRef={guideCatRef}
+                  />
                 </div>
               </div>
             ) : null}

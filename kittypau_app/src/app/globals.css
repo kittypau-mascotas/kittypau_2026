@@ -2754,43 +2754,13 @@ body {
     0 calc(100% - 6px)
   );
   border: 2px solid color-mix(in oklab, hsl(var(--primary)) 18%, rgba(15, 23, 42, 0.35));
-  /* Photo background goes here (cat on top).
-     Primary: /ui/cat-dialog-bg.jpg (optional)
-     Fallback: /fondo.png (always in repo) */
-  background-color: #ffffff;
-  background-image: url("/ui/cat-dialog-bg.jpg"), url("/fondo.png");
-  background-position: center, center;
-  background-size: cover, cover;
-  background-repeat: no-repeat, no-repeat;
+  background: #ffffff;
   position: relative;
   overflow: hidden;
   isolation: isolate;
   display: grid;
   place-items: center;
   padding: 6px 6px;
-}
-
-.trial-rpg-catpane::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Slight wash to keep the cat readable over a busy photo */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
-  filter: saturate(0.95) contrast(1.05);
-  opacity: 0.9;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.trial-rpg-catpane::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Subtle vignette so edges don't fight the cat silhouette */
-  background: radial-gradient(circle at 45% 40%, rgba(255, 255, 255, 0.08) 0%, rgba(15, 23, 42, 0.18) 78%);
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .trial-rpg-catpane > * {
