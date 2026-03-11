@@ -64,6 +64,7 @@ export default function RouteLoadingOverlay() {
 
       if (audio) {
         audio.currentTime = 0;
+        audio.volume = 0.4;
         const onEnded = () => finish();
         audio.addEventListener("ended", onEnded, { once: true });
         maxTimeout = setTimeout(finish, maxVisibleMs);
