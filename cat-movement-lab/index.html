@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cat Movement Lab</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="panel" id="leftPanel">
+        <header>
+          <h1>Cat Movement Lab</h1>
+          <p>
+            Selecciona una parte (click en el SVG o desde la lista), ajusta
+            transform y colores, prueba poses y exporta el estado.
+          </p>
+        </header>
+        <div class="controls">
+          <div class="row">
+            <label for="partSelect">Parte</label>
+            <select id="partSelect"></select>
+          </div>
+
+          <div class="row">
+            <button class="btn mini secondary" id="toggleDrag" type="button">
+              Drag: Off
+            </button>
+            <button class="btn mini" id="resetPart" type="button">Reset Parte</button>
+            <button class="btn mini" id="resetAll" type="button">Reset Todo</button>
+          </div>
+
+          <div class="row">
+            <label for="xRange">X</label>
+            <input id="xRange" type="range" min="-80" max="80" step="0.1" />
+            <input id="xNum" type="number" step="0.1" />
+          </div>
+          <div class="row">
+            <label for="yRange">Y</label>
+            <input id="yRange" type="range" min="-80" max="80" step="0.1" />
+            <input id="yNum" type="number" step="0.1" />
+          </div>
+          <div class="row">
+            <label for="rotRange">Rotate</label>
+            <input id="rotRange" type="range" min="-180" max="180" step="0.1" />
+            <input id="rotNum" type="number" step="0.1" />
+          </div>
+          <div class="row">
+            <label for="sxRange">ScaleX</label>
+            <input id="sxRange" type="range" min="0.2" max="2.2" step="0.01" />
+            <input id="sxNum" type="number" step="0.01" />
+          </div>
+          <div class="row">
+            <label for="syRange">ScaleY</label>
+            <input id="syRange" type="range" min="0.2" max="2.2" step="0.01" />
+            <input id="syNum" type="number" step="0.01" />
+          </div>
+          <div class="row">
+            <label for="opRange">Opacity</label>
+            <input id="opRange" type="range" min="0" max="1" step="0.01" />
+            <input id="opNum" type="number" step="0.01" />
+          </div>
+
+          <div class="row">
+            <label for="fillColor">Fill</label>
+            <input id="fillColor" type="color" />
+            <input id="fillText" type="text" placeholder="#RRGGBB" />
+          </div>
+          <div class="row">
+            <label for="strokeColor">Stroke</label>
+            <input id="strokeColor" type="color" />
+            <input id="strokeText" type="text" placeholder="#RRGGBB / vacio" />
+          </div>
+
+          <div class="row">
+            <button class="btn mini" id="duplicatePart" type="button">
+              Duplicar Parte
+            </button>
+            <input
+              id="duplicateId"
+              type="text"
+              placeholder="nuevo-id (opcional)"
+            />
+          </div>
+
+          <div class="row">
+            <label for="breathDur">Breath (s)</label>
+            <input id="breathDur" type="range" min="1.6" max="8" step="0.1" />
+            <input id="breathDurNum" type="number" step="0.1" />
+          </div>
+          <div class="row">
+            <label for="poseMult">Pose mult</label>
+            <input id="poseMult" type="range" min="0.6" max="2.2" step="0.05" />
+            <input id="poseMultNum" type="number" step="0.05" />
+          </div>
+
+          <div class="pillbar" id="poseBar"></div>
+
+          <div class="panel" style="border-radius: 14px">
+            <header>
+              <h1 style="font-size: 13px; margin: 0">Movements</h1>
+              <p style="margin: 6px 0 0">
+                Cada movimiento es una timeline propia (frames). Selecciona uno
+                para editar/grabar y luego guÃ¡rdalo en la app.
+              </p>
+            </header>
+            <div class="controls" style="padding: 12px">
+              <div class="hint">Acciones rÃ¡pidas (carga preset + Play)</div>
+              <div class="pillbar" id="quickPoseBar"></div>
+              <div class="row">
+                <button class="btn mini secondary" id="playActiveMovement" type="button">
+                  Play movimiento
+                </button>
+                <button class="btn mini" id="stopActiveMovement" type="button">
+                  Stop
+                </button>
+              </div>
+
+              <div class="hint" style="margin-top: 6px">Movimientos guardados</div>
+              <div class="pillbar" id="movementBar"></div>
+              <div class="row">
+                <input
+                  id="movementName"
+                  type="text"
+                  placeholder="movement name (e.g. walking-fast)"
+                />
+                <button class="btn mini" id="addMovement" type="button">
+                  Add
+                </button>
+                <button class="btn mini secondary" id="renameMovement" type="button">
+                  Rename
+                </button>
+                <button class="btn mini secondary" id="deleteMovement" type="button">
+                  Delete
+                </button>
+              </div>
+              <div class="row">
+                <button class="btn mini secondary" id="recordFrame" type="button">
+                  Record Frame (append)
+                </button>
+                <button class="btn mini" id="clearFrames" type="button">
+                  Clear Frames
+                </button>
+              </div>
+              <div class="hint">
+                Tip: usa Timeline ON + Drag para ajustar, luego Record para ir
+                grabando. Puedes cargar un preset y despuÃ©s editar frame por
+                frame.
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="border-radius: 14px">
+            <header>
+              <h1 style="font-size: 13px; margin: 0">Sync (Login Copy Cat)</h1>
+              <p style="margin: 6px 0 0">
+                Lee/guarda la config real usada por el gato copia del login
+                (`kittypau_app/src/app/_data/cat-copy.motion.json`).
+              </p>
+            </header>
+            <div class="controls" style="padding: 12px">
+              <div class="row">
+                <button class="btn mini" id="loadMotion" type="button">
+                  Load from App
+                </button>
+                <button class="btn mini secondary" id="saveMotion" type="button">
+                  Save to App
+                </button>
+                <span class="hint" id="motionStatus"></span>
+              </div>
+
+              <div class="row">
+                <label for="motionSleepGap">Sleep gap (ms)</label>
+                <input id="motionSleepGap" type="number" step="50" min="0" />
+              </div>
+
+              <div class="hint">
+                Auto cycle usa esto. La pata extra se guarda desde la parte
+                `paw-back-2` (X/Y/Rotate/Scale/Opacity).
+              </div>
+
+              <div class="row" style="margin-top: 6px">
+                <strong style="font-size: 12px; color: rgba(255,255,255,0.86)"
+                  >Cycle steps</strong
+                >
+                <button class="btn mini" id="addCycleStep" type="button">
+                  Add step
+                </button>
+              </div>
+              <div id="cycleEditor" class="cycle-editor"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="border-radius: 14px">
+            <header>
+              <h1 style="font-size: 13px; margin: 0">Frames</h1>
+              <p style="margin: 6px 0 0">
+                Crea animaciones por frames. Puedes cargar movimientos
+                predefinidos y luego ajustarlos.
+              </p>
+            </header>
+            <div class="controls" style="padding: 12px">
+              <div class="row">
+                <label for="movementPreset">Preset</label>
+                <select id="movementPreset"></select>
+                <button class="btn mini" id="loadPreset" type="button">
+                  Load
+                </button>
+              </div>
+
+              <div class="row">
+                <button class="btn mini secondary is-active" id="toggleTimeline" type="button">
+                  Timeline: On
+                </button>
+                <button class="btn mini secondary" id="playTimeline" type="button">
+                  Play
+                </button>
+                <button class="btn mini" id="stopTimeline" type="button">
+                  Stop
+                </button>
+              </div>
+
+              <div class="row">
+                <label for="fpsRange">FPS</label>
+                <input id="fpsRange" type="range" min="4" max="30" step="1" />
+                <input id="fpsNum" type="number" step="1" />
+                <button class="btn mini" id="toggleLoop" type="button">
+                  Loop: On
+                </button>
+              </div>
+
+              <div class="row">
+                <label for="frameRange">Frame</label>
+                <input id="frameRange" type="range" min="0" max="0" step="1" />
+                <input id="frameNum" type="number" step="1" />
+                <span class="hint" id="frameLabel"></span>
+              </div>
+
+              <div class="row">
+                <button class="btn mini" id="prevFrame" type="button">
+                  Prev
+                </button>
+                <button class="btn mini" id="nextFrame" type="button">
+                  Next
+                </button>
+                <button class="btn mini" id="addFrame" type="button">
+                  Add
+                </button>
+                <button class="btn mini" id="dupFrame" type="button">
+                  Duplicate
+                </button>
+                <button class="btn mini" id="delFrame" type="button">
+                  Delete
+                </button>
+              </div>
+
+              <div class="row">
+                <button class="btn mini secondary" id="captureFrame" type="button">
+                  Capture Current -> Frame
+                </button>
+              </div>
+
+              <div class="hint">
+                Timeline ON: desactiva las animaciones CSS y aplica transforms de
+                frames. Usa Capture para guardar la pose actual en el frame.
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <button class="btn mini secondary" id="autoCycle" type="button">
+              Auto: On
+            </button>
+            <button class="btn mini secondary" id="selfTest" type="button">
+              Self-Test
+            </button>
+            <button class="btn mini" id="copyJson" type="button">Copy JSON</button>
+            <button class="btn mini" id="downloadJson" type="button">
+              Download JSON
+            </button>
+            <button class="btn mini" id="copyCss" type="button">Copy CSS</button>
+          </div>
+
+          <div class="hint">
+            Tip: Click sobre una parte para seleccionarla. Si Drag está ON,
+            arrástrala para mover (X/Y). Usa Duplicate Part para crear nuevas
+            piezas.
+          </div>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <div class="toolbar">
+          <button class="btn mini secondary" id="toggleAwake" type="button">
+            Awake: Off
+          </button>
+          <button class="btn mini" id="toggleBreath" type="button">
+            Breathing: On
+          </button>
+        </div>
+        <div class="canvas">
+          <div class="cat-wrap">
+            <div class="guide"></div>
+            <div class="kp-trial-cat" id="catRoot">
+              <div class="sleep-symbol" aria-hidden="true">
+                <span class="z z1">Z</span>
+                <span class="z z2">z</span>
+                <span class="z z3">Z</span>
+              </div>
+              <div class="thecat" id="catSvgMount"></div>
+            </div>
+            <div class="caption" id="statusText"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

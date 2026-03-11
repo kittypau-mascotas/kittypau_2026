@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "defaults": {
+    "breathSeconds": 3.9,
+    "poseMult": 1.35
+  },
+  "extraParts": {
+    "pawBack2": {
+      "translateX": 16.2,
+      "translateY": 3.65,
+      "rotateDeg": 6,
+      "scale": 0.88,
+      "opacity": 0.58
+    }
+  },
+  "cycle": {
+    "sleepGapMs": 500,
+    "steps": [
+      { "pose": "is-walking", "durationMs": 3200 },
+      { "pose": "is-standing", "durationMs": 2800 },
+      { "pose": "is-angry", "durationMs": 2400 },
+      { "pose": "is-cleaning", "durationMs": 2600 },
+      { "pose": "is-pouncing", "durationMs": 2400 }
+    ]
+  }
+}
+

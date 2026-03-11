@@ -1150,6 +1150,9 @@ body {
   display: inline-flex;
   align-items: flex-start;
   position: relative;
+  /* Respiracion: duracion/easing configurable por instancia */
+  --kp-cat-breath: 3.9s;
+  --kp-cat-breath-ease: cubic-bezier(0.33, 0, 0.17, 1);
 }
 
 .kp-trial-cat .cat {
@@ -1239,20 +1242,25 @@ body {
   transform-box: fill-box;
   transform-origin: 50% 60%;
   will-change: transform;
-  animation: kp-cat-breath-belly 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: kp-cat-breath-belly var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: -0.08s;
 }
 
 .kp-trial-cat .thecat svg {
   transform-origin: center bottom;
   will-change: transform;
-  animation: kp-cat-breath-body 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: kp-cat-breath-body var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
 }
 
 .kp-trial-cat #head {
   transform-box: fill-box;
   transform-origin: 52% 55%;
   will-change: transform;
-  animation: kp-cat-breath-head 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: kp-cat-breath-head var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: -0.04s;
 }
 
 .kp-trial-cat #tail,
@@ -1260,8 +1268,38 @@ body {
   transform-box: fill-box;
   transform-origin: 12% 50%;
   will-change: transform;
-  animation: kp-cat-breath-tail 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: 0.12s;
+  animation: kp-cat-breath-tail var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: 0.16s;
+}
+
+/* Frame-mode: cuando la pose viene por frames (JS) desactivar animaciones CSS. */
+.kp-trial-cat.is-frame .thecat svg,
+.kp-trial-cat.is-frame .thecat svg * {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-frame #cat-group {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.kp-trial-cat.is-frame #paw-front-left,
+.kp-trial-cat.is-frame #paw-front-right {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+}
+
+.kp-trial-cat.is-frame #paw-back,
+.kp-trial-cat.is-frame #paw-back-2 {
+  transform-box: fill-box;
+  transform-origin: 50% 35%;
+}
+
+.kp-trial-cat.is-frame #ear-left,
+.kp-trial-cat.is-frame #ear-right {
+  transform-box: fill-box;
+  transform-origin: 55% 80%;
 }
 
 .login-panel-cat {
@@ -1298,19 +1336,6 @@ body {
   top: -7px;
 }
 
-.login-login-stack .login-panel-cat.login-panel-cat-copy {
-  right: 66px;
-  top: -9px;
-  opacity: 0.96;
-  pointer-events: none;
-  transform: scale(0.92);
-  transform-origin: top right;
-}
-
-.login-login-stack .login-panel-cat.login-panel-cat-copy .sleep-symbol {
-  display: none;
-}
-
 .login-form-compact {
   margin-top: -2px;
 }
@@ -1320,7 +1345,6 @@ body {
   height: auto;
   display: block;
   overflow: visible !important;
-  transform-origin: top right;
   filter:
     drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58))
     drop-shadow(0 10px 16px rgba(15, 23, 42, 0.18));
@@ -1335,8 +1359,15 @@ body {
 /* Profundidad por pieza (IDs agregados en el SVG inline) */
 .kp-trial-cat #paw-front-right,
 .kp-trial-cat #paw-front-left,
-.kp-trial-cat #paw-back {
+.kp-trial-cat #paw-back,
+.kp-trial-cat #paw-back-2 {
   fill: var(--fur-shadow) !important;
+}
+
+.kp-trial-cat #paw-back-2 {
+  /* Pata lejana: mas sutil para que no se vea duplicado raro. */
+  opacity: var(--kp-cat-paw-back-2-opacity, 0.58);
+  transition: opacity 140ms ease-out;
 }
 
 .kp-trial-cat #head,
@@ -1502,48 +1533,66 @@ body {
 @keyframes kp-cat-breath-body {
   0%,
   100% {
-    transform: translateY(0px) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  38% {
-    transform: translateY(-2.2px) scale(1.01);
+  10% {
+    transform: translate3d(0, -0.6px, 0) scale(1.002);
+  }
+  40% {
+    transform: translate3d(0, -2.6px, 0) scale(1.012);
   }
   48% {
-    transform: translateY(-2.5px) scale(1.0115);
+    transform: translate3d(0, -2.75px, 0) scale(1.013);
   }
-  78% {
-    transform: translateY(-0.55px) scale(1.0025);
+  72% {
+    transform: translate3d(0, -1.05px, 0) scale(1.005);
+  }
+  88% {
+    transform: translate3d(0, -0.25px, 0) scale(1.001);
   }
 }
 
 @keyframes kp-cat-breath-belly {
   0%,
   100% {
-    transform: translateY(0px) scaleY(1) scaleX(1);
+    transform: translate3d(0, 0, 0) scaleY(1) scaleX(1);
   }
-  36% {
-    transform: translateY(-1.25px) scaleY(1.09) scaleX(1.032);
+  12% {
+    transform: translate3d(0, -0.7px, 0) scaleY(1.02) scaleX(1.008);
+  }
+  40% {
+    transform: translate3d(0, -1.55px, 0) scaleY(1.11) scaleX(1.04);
   }
   48% {
-    transform: translateY(-1.45px) scaleY(1.105) scaleX(1.038);
+    transform: translate3d(0, -1.7px, 0) scaleY(1.125) scaleX(1.045);
   }
-  80% {
-    transform: translateY(-0.35px) scaleY(1.02) scaleX(1.009);
+  72% {
+    transform: translate3d(0, -0.85px, 0) scaleY(1.045) scaleX(1.018);
+  }
+  88% {
+    transform: translate3d(0, -0.25px, 0) scaleY(1.012) scaleX(1.005);
   }
 }
 
 @keyframes kp-cat-breath-head {
   0%,
   100% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
-  38% {
-    transform: translateY(-0.85px) rotate(-0.25deg);
+  12% {
+    transform: translate3d(0, -0.25px, 0) rotate(-0.05deg);
+  }
+  40% {
+    transform: translate3d(0, -1.05px, 0) rotate(-0.32deg);
   }
   48% {
-    transform: translateY(-1.0px) rotate(-0.32deg);
+    transform: translate3d(0, -1.15px, 0) rotate(-0.38deg);
   }
-  80% {
-    transform: translateY(-0.22px) rotate(-0.08deg);
+  72% {
+    transform: translate3d(0, -0.48px, 0) rotate(-0.14deg);
+  }
+  88% {
+    transform: translate3d(0, -0.12px, 0) rotate(-0.04deg);
   }
 }
 
@@ -1552,14 +1601,20 @@ body {
   100% {
     transform: rotate(0deg);
   }
-  38% {
-    transform: rotate(1.6deg);
+  12% {
+    transform: rotate(0.45deg);
+  }
+  40% {
+    transform: rotate(2.25deg);
   }
   48% {
-    transform: rotate(2.1deg);
+    transform: rotate(2.75deg);
   }
-  80% {
-    transform: rotate(0.45deg);
+  72% {
+    transform: rotate(1.05deg);
+  }
+  88% {
+    transform: rotate(0.25deg);
   }
 }
 
@@ -1576,7 +1631,7 @@ body {
 }
 
 .kp-trial-cat.is-angry .thecat svg {
-  animation: kp-cat-angry-shiver 90ms linear infinite !important;
+  animation: kp-cat-angry-shiver 120ms linear infinite !important;
   transform-origin: center bottom;
   filter: contrast(1.18) saturate(1.08);
 }
@@ -1603,38 +1658,98 @@ body {
 
 @keyframes kp-cat-angry-shiver {
   0% {
-    transform: translateX(0.55px) scaleY(1.06);
+    transform: translate3d(0.65px, 0, 0) rotate(0.15deg) scaleY(1.065);
   }
-  50% {
-    transform: translateX(-0.55px) scaleY(1.06);
+  18% {
+    transform: translate3d(-0.4px, -0.1px, 0) rotate(-0.08deg) scaleY(1.065);
+  }
+  36% {
+    transform: translate3d(0.3px, 0.05px, 0) rotate(0.12deg) scaleY(1.065);
+  }
+  54% {
+    transform: translate3d(-0.7px, -0.05px, 0) rotate(-0.18deg) scaleY(1.065);
+  }
+  72% {
+    transform: translate3d(0.45px, 0.1px, 0) rotate(0.09deg) scaleY(1.065);
   }
   100% {
-    transform: translateX(0.55px) scaleY(1.06);
+    transform: translate3d(0.65px, 0, 0) rotate(0.15deg) scaleY(1.065);
   }
 }
 
 /* Pose: Aseo */
 .kp-trial-cat.is-cleaning #head {
-  animation: none !important;
   transform-box: fill-box;
   transform-origin: 52% 55%;
-  transform: translateY(4px) rotate(-14deg);
+  animation: kp-cat-clean-head calc(980ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.2, 0.9, 0.2, 1) infinite !important;
 }
 
 .kp-trial-cat.is-cleaning #paw-front-left {
   transform-box: fill-box;
   transform-origin: 50% 10%;
-  transform: translateY(-8px) rotate(-45deg);
+  animation: kp-cat-clean-paw calc(980ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.2, 0.9, 0.2, 1) infinite !important;
 }
 
 .kp-trial-cat.is-cleaning #lefteyelid,
 .kp-trial-cat.is-cleaning #righteyelid {
   visibility: visible !important;
-  opacity: 0.55 !important;
+  opacity: 0.6 !important;
+  animation: kp-cat-clean-squint calc(980ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite;
 }
 
 .kp-trial-cat.is-cleaning #eyesdown {
   opacity: 0 !important;
+}
+
+@keyframes kp-cat-clean-head {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  22% {
+    transform: translate3d(0.4px, 3.2px, 0) rotate(-14deg);
+  }
+  44% {
+    transform: translate3d(0.2px, 4px, 0) rotate(-16deg);
+  }
+  70% {
+    transform: translate3d(0.15px, 1.2px, 0) rotate(-9deg);
+  }
+}
+
+@keyframes kp-cat-clean-paw {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-10deg);
+  }
+  18% {
+    transform: translate3d(0.6px, -6.8px, 0) rotate(-42deg);
+  }
+  40% {
+    transform: translate3d(0.9px, -8.5px, 0) rotate(-50deg);
+  }
+  58% {
+    transform: translate3d(0.5px, -7.5px, 0) rotate(-44deg);
+  }
+  78% {
+    transform: translate3d(0.25px, -4.0px, 0) rotate(-28deg);
+  }
+}
+
+@keyframes kp-cat-clean-squint {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  55% {
+    opacity: 0.46;
+  }
 }
 
 /* Pose: Acecho/Salto */
@@ -1644,9 +1759,9 @@ body {
 }
 
 .kp-trial-cat.is-pouncing .thecat svg {
-  animation: none !important;
   transform-origin: center bottom;
-  transform: translateY(3px) scaleY(0.82) scaleX(1.01);
+  animation: kp-cat-pounce-tension calc(320ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite alternate !important;
 }
 
 .kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
@@ -1663,9 +1778,19 @@ body {
 
 .kp-trial-cat.is-pouncing #tail,
 .kp-trial-cat.is-pouncing #longtail {
-  animation: kp-cat-tail-wiggle 180ms ease-in-out infinite alternate !important;
+  animation: kp-cat-tail-wiggle calc(150ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite alternate !important;
   transform-box: fill-box;
   transform-origin: 12% 50%;
+}
+
+@keyframes kp-cat-pounce-tension {
+  from {
+    transform: translate3d(0, 3.2px, 0) scaleY(0.81) scaleX(1.01);
+  }
+  to {
+    transform: translate3d(0.15px, 2.6px, 0) scaleY(0.84) scaleX(1.005);
+  }
 }
 
 @keyframes kp-cat-tail-wiggle {
@@ -1674,6 +1799,253 @@ body {
   }
   to {
     transform: rotate(16deg);
+  }
+}
+
+/* Pose: Parado/Escuchando */
+.kp-trial-cat.is-standing #path5,
+.kp-trial-cat.is-standing #head,
+.kp-trial-cat.is-standing #tail,
+.kp-trial-cat.is-standing #longtail {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-standing .thecat svg {
+  animation: kp-cat-stand-rise 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+  transform-origin: center bottom;
+}
+
+.kp-trial-cat.is-standing #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  animation: kp-cat-stand-head 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+}
+
+.kp-trial-cat.is-standing #paw-front-left,
+.kp-trial-cat.is-standing #paw-front-right,
+.kp-trial-cat.is-standing #paw-back {
+  transform-box: fill-box;
+  transform-origin: 50% 30%;
+  animation: kp-cat-stand-paws 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+}
+
+.kp-trial-cat.is-standing #tail,
+.kp-trial-cat.is-standing #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  animation: kp-cat-stand-tail 1.6s ease-in-out infinite !important;
+}
+
+.kp-trial-cat.is-standing #ear-left,
+.kp-trial-cat.is-standing #ear-right {
+  transform-box: fill-box;
+  transform-origin: 55% 80%;
+  animation: kp-cat-ear-twitch 1.75s ease-in-out infinite !important;
+}
+
+.kp-trial-cat.is-standing #ear-right {
+  animation-delay: -0.62s;
+}
+
+@keyframes kp-cat-stand-rise {
+  from {
+    transform: translate3d(-0.8px, -1px, 0) rotate(-3.5deg) scaleY(1.02);
+  }
+  to {
+    transform: translate3d(-2.2px, -6.0px, 0) rotate(-7.5deg) scaleY(1.045);
+  }
+}
+
+@keyframes kp-cat-stand-head {
+  from {
+    transform: translate3d(0, -0.2px, 0) rotate(1.0deg);
+  }
+  to {
+    transform: translate3d(0.2px, -1.35px, 0) rotate(6.0deg);
+  }
+}
+
+@keyframes kp-cat-stand-paws {
+  from {
+    transform: translate3d(0, -0.2px, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(-0.35px, -1.35px, 0) rotate(1.6deg);
+  }
+}
+
+@keyframes kp-cat-stand-tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(4.5deg);
+  }
+  55% {
+    transform: rotate(1.5deg);
+  }
+  78% {
+    transform: rotate(3.3deg);
+  }
+}
+
+@keyframes kp-cat-ear-twitch {
+  0%,
+  62%,
+  100% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(-6deg);
+  }
+  74% {
+    transform: rotate(4deg);
+  }
+  78% {
+    transform: rotate(-3.5deg);
+  }
+  82% {
+    transform: rotate(2.5deg);
+  }
+  86% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Pose: Caminando */
+.kp-trial-cat.is-walking #path5,
+.kp-trial-cat.is-walking #head {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-walking .thecat svg {
+  transform-origin: center bottom;
+  animation: kp-cat-walk-body calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-front-left {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+  animation: kp-cat-walk-front-a calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-front-right {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+  animation: kp-cat-walk-front-b calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-back,
+.kp-trial-cat.is-walking #paw-back-2 {
+  transform-box: fill-box;
+  transform-origin: 50% 35%;
+  animation: kp-cat-walk-back calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  animation-delay: calc(-410ms * var(--kp-cat-pose-mult, 1));
+}
+
+.kp-trial-cat.is-walking #paw-back-2 {
+  /* Desfase contrario para que las patas traseras alternen */
+  animation-delay: calc(-820ms * var(--kp-cat-pose-mult, 1));
+  opacity: 0.9;
+}
+
+.kp-trial-cat.is-walking #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  animation: kp-cat-walk-head calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #tail,
+.kp-trial-cat.is-walking #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  animation: kp-cat-walk-tail calc(520ms * var(--kp-cat-pose-mult, 1)) ease-in-out
+    infinite alternate !important;
+}
+
+@keyframes kp-cat-walk-body {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  25% {
+    transform: translate3d(0.6px, -1.1px, 0) rotate(-2.2deg);
+  }
+  50% {
+    transform: translate3d(0, 0.4px, 0) rotate(-1deg);
+  }
+  75% {
+    transform: translate3d(-0.6px, -1.15px, 0) rotate(-2.25deg);
+  }
+}
+
+@keyframes kp-cat-walk-front-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate3d(0.7px, -2.9px, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate3d(0.35px, 0.9px, 0) rotate(3deg);
+  }
+}
+
+@keyframes kp-cat-walk-front-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0.9px, 0) rotate(3deg);
+  }
+  20% {
+    transform: translate3d(-0.1px, 0.2px, 0) rotate(0deg);
+  }
+  70% {
+    transform: translate3d(-0.65px, -2.75px, 0) rotate(-8deg);
+  }
+}
+
+@keyframes kp-cat-walk-back {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  35% {
+    transform: translate3d(-0.4px, -2.25px, 0) rotate(-6deg);
+  }
+  70% {
+    transform: translate3d(0.25px, 0.8px, 0) rotate(2deg);
+  }
+}
+
+@keyframes kp-cat-walk-head {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0.2px, -0.55px, 0) rotate(0.35deg);
+  }
+  50% {
+    transform: translate3d(0, 0.15px, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(-0.2px, -0.55px, 0) rotate(-0.35deg);
+  }
+}
+
+@keyframes kp-cat-walk-tail {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(10deg);
   }
 }
 
