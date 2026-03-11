@@ -2668,8 +2668,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 10px 12px;
-  min-height: 44px;
+  padding: 4px 6px;
+  min-height: 28px;
   background: linear-gradient(
     180deg,
     color-mix(in oklab, hsl(var(--primary)) 86%, #ffffff) 0%,
@@ -2951,8 +2951,8 @@ body {
   }
 
   .trial-rpg-topbar {
-    min-height: 40px;
-    padding: 9px 10px;
+    min-height: 26px;
+    padding: 3px 5px;
     border-bottom-width: 2px;
   }
 
