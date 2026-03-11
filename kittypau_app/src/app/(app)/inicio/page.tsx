@@ -5,9 +5,14 @@ import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
 
 export default function InicioClientePage() {
   const GUIDE_SEEN_KEY = "kittypau_client_guide_seen_v1";
-  const guideLine = "Bienvenido a Kittypau";
+  const GUIDE_CHOICE_KEY = "kittypau_client_guide_choice_v1";
+  const guideLines = [
+    "Bienvenido a Kittypau",
+    "¿Quieres que sea tu guía? 1 Sí / 2 No",
+  ] as const;
 
   const [isGuideVisible, setIsGuideVisible] = useState(false);
+  const [guideIndex, setGuideIndex] = useState(0);
   const [guideTypedText, setGuideTypedText] = useState("");
   const [isGuideTyping, setIsGuideTyping] = useState(false);
   const [isGuideMuted, setIsGuideMuted] = useState(false);
@@ -17,7 +22,7 @@ export default function InicioClientePage() {
 
   const guideCatRef = useRef<HTMLDivElement | null>(null);
   const guideAudioRef = useRef<HTMLAudioElement | null>(null);
-  const startedRef = useRef(false);
+  const typedIndexRef = useRef<number | null>(null);
 
   const stopGuideAudio = useCallback(() => {
     const audio = guideAudioRef.current;
@@ -42,23 +47,39 @@ export default function InicioClientePage() {
       window.localStorage.setItem(GUIDE_SEEN_KEY, "1");
     }
     setIsGuideVisible(false);
+    setGuideIndex(0);
     setGuideTypedText("");
     setIsGuideTyping(false);
     setGuideCatEyeOffset({ x: 0, y: 0 });
-    startedRef.current = false;
+    typedIndexRef.current = null;
     stopGuideAudio();
   }, [stopGuideAudio]);
+
+  const chooseGuide = useCallback(
+    (choice: "yes" | "no") => {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(GUIDE_CHOICE_KEY, choice);
+      }
+      closeGuide();
+    },
+    [closeGuide],
+  );
 
   const onGuideAdvance = useCallback(() => {
     if (!isGuideVisible) return;
     if (isGuideTyping) {
-      setGuideTypedText(guideLine);
+      setGuideTypedText(guideLines[guideIndex] ?? "");
       setIsGuideTyping(false);
       stopGuideAudio();
       return;
     }
-    closeGuide();
-  }, [closeGuide, guideLine, isGuideTyping, isGuideVisible, stopGuideAudio]);
+
+    // If we're on the question step, only buttons should close it.
+    if (guideIndex >= guideLines.length - 1) return;
+
+    setGuideIndex((prev) => Math.min(guideLines.length - 1, prev + 1));
+    setGuideTypedText("");
+  }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -67,6 +88,7 @@ export default function InicioClientePage() {
     // Avoid setState directly in effect body (lint rule).
     const timer = window.setTimeout(() => {
       setIsGuideVisible(true);
+      setGuideIndex(0);
       setGuideTypedText("");
     }, 0);
 
@@ -111,12 +133,15 @@ export default function InicioClientePage() {
 
   useEffect(() => {
     if (!isGuideVisible) return;
-    if (startedRef.current) return;
+    if (typedIndexRef.current === guideIndex) return;
 
-    startedRef.current = true;
+    typedIndexRef.current = guideIndex;
 
     let startTimer: number | null = null;
     let typingTimer: number | null = null;
+    let autoNextTimer: number | null = null;
+    const line = guideLines[guideIndex] ?? "";
+    const initialDelay = guideIndex === 0 ? 1000 : 450;
 
     startTimer = window.setTimeout(() => {
       setGuideTypedText("");
@@ -126,21 +151,30 @@ export default function InicioClientePage() {
       let charIndex = 0;
       typingTimer = window.setInterval(() => {
         charIndex += 1;
-        setGuideTypedText(guideLine.slice(0, charIndex));
-        if (charIndex >= guideLine.length) {
+        setGuideTypedText(line.slice(0, charIndex));
+        if (charIndex >= line.length) {
           if (typingTimer !== null) window.clearInterval(typingTimer);
           setIsGuideTyping(false);
           stopGuideAudio();
+
+          // After the welcome finishes, automatically show the question.
+          if (guideIndex === 0) {
+            autoNextTimer = window.setTimeout(() => {
+              setGuideIndex(1);
+              setGuideTypedText("");
+            }, 650);
+          }
         }
       }, 38);
-    }, 1000);
+    }, initialDelay);
 
     return () => {
       if (startTimer !== null) window.clearTimeout(startTimer);
       if (typingTimer !== null) window.clearInterval(typingTimer);
+      if (autoNextTimer !== null) window.clearTimeout(autoNextTimer);
       stopGuideAudio();
     };
-  }, [guideLine, isGuideVisible, playGuideAudio, stopGuideAudio]);
+  }, [guideIndex, guideLines, isGuideVisible, playGuideAudio, stopGuideAudio]);
 
   useEffect(() => {
     if (!isGuideVisible) return;
@@ -171,6 +205,34 @@ export default function InicioClientePage() {
                 catEyeOffset={guideCatEyeOffset}
                 catRef={guideCatRef}
                 ariaLabel="Avanzar guia"
+                actions={
+                  guideIndex === 1 && !isGuideTyping ? (
+                    <div className="trial-rpg-choices">
+                      <button
+                        type="button"
+                        className="trial-rpg-choice"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          chooseGuide("yes");
+                        }}
+                      >
+                        <span className="trial-rpg-choice-key">1</span>
+                        <span>Si</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="trial-rpg-choice"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          chooseGuide("no");
+                        }}
+                      >
+                        <span className="trial-rpg-choice-key">2</span>
+                        <span>No</span>
+                      </button>
+                    </div>
+                  ) : null
+                }
               />
             </div>
           </div>

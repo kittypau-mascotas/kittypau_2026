@@ -2892,6 +2892,52 @@ body {
   width: 100%;
 }
 
+.trial-rpg-choices {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trial-rpg-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 22%, rgba(15, 23, 42, 0.28));
+  background: rgba(255, 255, 255, 0.75);
+  color: rgba(15, 23, 42, 0.88);
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+  cursor: pointer;
+}
+
+.trial-rpg-choice:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 36%, rgba(15, 23, 42, 0.28));
+}
+
+.trial-rpg-choice:active {
+  transform: translateY(0);
+}
+
+.trial-rpg-choice-key {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
+  color: rgba(15, 23, 42, 0.9);
+}
+
 .trial-rpg-instagram.is-hidden {
   opacity: 0;
   pointer-events: none;
