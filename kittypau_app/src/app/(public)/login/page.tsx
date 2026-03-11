@@ -56,6 +56,7 @@ export default function LoginPage() {
   const [isTrialDialogMuted, setIsTrialDialogMuted] = useState(false);
   const [isDialogCatAwake, setIsDialogCatAwake] = useState(true);
   const [dialogCatEyeOffset, setDialogCatEyeOffset] = useState({ x: 0, y: 0 });
+  const [isLoginCatHidden, setIsLoginCatHidden] = useState(false);
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
   const trialCatRef = useRef<HTMLDivElement | null>(null);
@@ -288,17 +289,29 @@ export default function LoginPage() {
       setIsDialogCatAwake(true);
 
       setDialogCatEyeOffset({ x: 0, y: 0 });
+      setIsLoginCatHidden(false);
       stopTrialDialogAudio();
       return;
     }
+
+    const dialogDelayMs = 1700;
+    const hideCatBeforeDialogMs = 1000;
+    const hideDelay = Math.max(0, dialogDelayMs - hideCatBeforeDialogMs);
+
+    const hideTimer = window.setTimeout(() => {
+      setIsLoginCatHidden(true);
+    }, hideDelay);
 
     const showTimer = window.setTimeout(() => {
       setIsTrialDialogVisible(true);
       setTrialDialogIndex(0);
       setTrialDialogTypedText("");
-    }, 1700);
+    }, dialogDelayMs);
 
-    return () => window.clearTimeout(showTimer);
+    return () => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+    };
   }, [showTrialModal, stopTrialDialogAudio]);
 
   useEffect(() => {
@@ -1082,7 +1095,7 @@ export default function LoginPage() {
                 <div
                   className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
                     isTrialCatAwake ? " is-awake" : ""
-                  }`}
+                  }${isLoginCatHidden ? " login-panel-cat-hidden" : ""}`}
                   ref={trialCatRef}
                   onMouseEnter={wakeTrialCat}
                   onMouseLeave={sleepTrialCat}

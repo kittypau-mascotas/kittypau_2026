@@ -1336,6 +1336,19 @@ body {
   top: -7px;
 }
 
+.login-login-stack .login-panel-cat.login-panel-cat-hidden {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 220ms ease, transform 260ms ease;
+  pointer-events: none;
+}
+
+.login-login-stack .login-panel-cat:not(.login-panel-cat-hidden) {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 220ms ease, transform 260ms ease;
+}
+
 .login-form-compact {
   margin-top: -2px;
 }
