@@ -2715,8 +2715,8 @@ body {
 }
 
 .trial-rpg-iconbtn {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2729,10 +2729,21 @@ body {
   cursor: pointer;
 }
 
+.trial-rpg-iconbtn.trial-rpg-close {
+  color: #ef4444;
+  border-color: color-mix(in oklab, #ef4444 45%, #ffffff);
+  background: color-mix(in oklab, #ef4444 12%, #ffffff);
+}
+
 .trial-rpg-iconbtn:hover {
   transform: translateY(-1px);
   background: color-mix(in oklab, hsl(var(--primary)) 16%, #ffffff);
   border-color: color-mix(in oklab, hsl(var(--primary)) 52%, #ffffff);
+}
+
+.trial-rpg-iconbtn.trial-rpg-close:hover {
+  background: color-mix(in oklab, #ef4444 16%, #ffffff);
+  border-color: color-mix(in oklab, #ef4444 62%, #ffffff);
 }
 
 .trial-rpg-iconbtn:active {
@@ -2747,6 +2758,16 @@ body {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.trial-rpg-iconbtn.trial-rpg-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.trial-rpg-iconbtn.trial-rpg-mute svg {
+  width: 13px;
+  height: 13px;
 }
 
 .trial-rpg-shell:focus-visible {
@@ -2973,13 +2994,23 @@ body {
   }
 
   .trial-rpg-iconbtn {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 
   .trial-rpg-iconbtn svg {
     width: 11px;
     height: 11px;
+  }
+
+  .trial-rpg-iconbtn.trial-rpg-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .trial-rpg-iconbtn.trial-rpg-mute svg {
+    width: 12px;
+    height: 12px;
   }
 
   .trial-rpg-catpane .trial-rpg-cat {

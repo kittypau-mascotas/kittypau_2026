@@ -310,7 +310,7 @@ export default function DemoPage() {
                       <div className="trial-rpg-controls">
                         <button
                           type="button"
-                          className="trial-rpg-iconbtn"
+                          className="trial-rpg-iconbtn trial-rpg-close"
                           aria-label="Cerrar dialogo"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -324,7 +324,7 @@ export default function DemoPage() {
                         </button>
                         <button
                           type="button"
-                          className="trial-rpg-iconbtn"
+                          className="trial-rpg-iconbtn trial-rpg-mute"
                           aria-label={
                             isGuideMuted ? "Activar sonido" : "Silenciar sonido"
                           }
