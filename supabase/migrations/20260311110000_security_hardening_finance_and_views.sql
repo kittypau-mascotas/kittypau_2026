@@ -9,14 +9,15 @@ begin
   -- Views: force security_invoker and lock down privileges.
   if exists (select 1 from pg_views where schemaname = 'public' and viewname = 'admin_object_stats_live') then
     execute 'alter view public.admin_object_stats_live set (security_invoker = true)';
-    execute 'revoke all on view public.admin_object_stats_live from anon, authenticated';
-    execute 'grant select on view public.admin_object_stats_live to service_role';
+    -- REVOKE/GRANT for views uses ON TABLE (views are relations).
+    execute 'revoke all on table public.admin_object_stats_live from anon, authenticated';
+    execute 'grant select on table public.admin_object_stats_live to service_role';
   end if;
 
   if exists (select 1 from pg_views where schemaname = 'public' and viewname = 'finance_admin_summary') then
     execute 'alter view public.finance_admin_summary set (security_invoker = true)';
-    execute 'revoke all on view public.finance_admin_summary from anon, authenticated';
-    execute 'grant select on view public.finance_admin_summary to service_role';
+    execute 'revoke all on table public.finance_admin_summary from anon, authenticated';
+    execute 'grant select on table public.finance_admin_summary to service_role';
   end if;
 end $$;
 
@@ -45,4 +46,3 @@ begin
     end if;
   end loop;
 end $$;
-
