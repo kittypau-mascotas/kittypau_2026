@@ -2668,8 +2668,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 4px 6px;
-  min-height: 28px;
+  padding: 2px 4px;
+  min-height: 24px;
   background: linear-gradient(
     180deg,
     color-mix(in oklab, hsl(var(--primary)) 86%, #ffffff) 0%,
@@ -2715,8 +2715,8 @@ body {
 }
 
 .trial-rpg-iconbtn {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2740,8 +2740,8 @@ body {
 }
 
 .trial-rpg-iconbtn svg {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -2951,8 +2951,8 @@ body {
   }
 
   .trial-rpg-topbar {
-    min-height: 26px;
-    padding: 3px 5px;
+    min-height: 22px;
+    padding: 2px 3px;
     border-bottom-width: 2px;
   }
 
@@ -2973,13 +2973,13 @@ body {
   }
 
   .trial-rpg-iconbtn {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
 
   .trial-rpg-iconbtn svg {
-    width: 9px;
-    height: 9px;
+    width: 11px;
+    height: 11px;
   }
 
   .trial-rpg-catpane .trial-rpg-cat {
