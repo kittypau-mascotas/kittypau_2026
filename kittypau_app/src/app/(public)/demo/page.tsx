@@ -304,48 +304,46 @@ export default function DemoPage() {
                     aria-label="Avanzar dialogo"
                   >
                     <div
-                      className="trial-rpg-topbar"
+                      className="trial-rpg-controls"
                       aria-label="Controles de dialogo"
                     >
-                      <div className="trial-rpg-controls">
-                        <button
-                          type="button"
-                          className="trial-rpg-iconbtn"
-                          aria-label="Cerrar dialogo"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            closeGuide();
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M6 6l12 12" />
-                            <path d="M18 6L6 18" />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          className="trial-rpg-iconbtn"
-                          aria-label={
-                            isGuideMuted ? "Activar sonido" : "Silenciar sonido"
-                          }
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            toggleGuideMute();
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M11 5L6 9H3v6h3l5 4V5z" />
-                            {isGuideMuted ? (
-                              <>
-                                <path d="M16 9l5 6" />
-                                <path d="M21 9l-5 6" />
-                              </>
-                            ) : (
-                              <path d="M16 9a5 5 0 0 1 0 6" />
-                            )}
-                          </svg>
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        className="trial-rpg-iconbtn trial-rpg-close"
+                        aria-label="Cerrar dialogo"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          closeGuide();
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M6 6l12 12" />
+                          <path d="M18 6L6 18" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        className="trial-rpg-iconbtn trial-rpg-mute"
+                        aria-label={
+                          isGuideMuted ? "Activar sonido" : "Silenciar sonido"
+                        }
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleGuideMute();
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M11 5L6 9H3v6h3l5 4V5z" />
+                          {isGuideMuted ? (
+                            <>
+                              <path d="M16 9l5 6" />
+                              <path d="M21 9l-5 6" />
+                            </>
+                          ) : (
+                            <path d="M16 9a5 5 0 0 1 0 6" />
+                          )}
+                        </svg>
+                      </button>
                     </div>
                     <div className="trial-rpg-body">
                       <div className="trial-rpg-textpane">
