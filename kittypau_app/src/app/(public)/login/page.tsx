@@ -6,16 +6,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Parallax } from "react-scroll-parallax";
 import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
 import { setTokens } from "@/lib/auth/token";
+import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
 import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
   const router = useRouter();
-  const isNativeParallax =
-    typeof document !== "undefined" &&
-    (document.documentElement.classList.contains("kp-native-apk") ||
-      document.documentElement.classList.contains("kp-flavor-native"));
+  const isNativeParallax = isNativeFlavorEnabled();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -991,7 +989,18 @@ export default function LoginPage() {
         <div className="login-collage" aria-hidden="true">
           <Parallax
             className="login-collage-frame login-collage-bowl"
-            speed={isNativeParallax ? -18 : -10}
+            translateY={
+              isNativeParallax
+                ? ["26px", "-34px", "easeOutQuad"]
+                : ["18px", "-24px", "easeOutQuad"]
+            }
+            rotate={
+              isNativeParallax
+                ? ["-1deg", "2deg", "easeOutQuad"]
+                : ["-1deg", "1deg", "easeOutQuad"]
+            }
+            opacity={[0.45, 0.9]}
+            shouldAlwaysCompleteAnimation
           >
             <img
               src="/illustrations/pink_food_full.png"
@@ -1001,7 +1010,18 @@ export default function LoginPage() {
           </Parallax>
           <Parallax
             className="login-collage-frame login-collage-cat-left"
-            speed={isNativeParallax ? -12 : -7}
+            translateY={
+              isNativeParallax
+                ? ["18px", "-22px", "easeOutQuad"]
+                : ["12px", "-16px", "easeOutQuad"]
+            }
+            rotate={
+              isNativeParallax
+                ? ["-3deg", "1deg", "easeOutQuad"]
+                : ["-3deg", "0deg", "easeOutQuad"]
+            }
+            opacity={[0.4, 0.85]}
+            shouldAlwaysCompleteAnimation
           >
             <img
               src="/illustrations/cat_awake_copy.svg"
@@ -1011,7 +1031,18 @@ export default function LoginPage() {
           </Parallax>
           <Parallax
             className="login-collage-frame login-collage-dog-right"
-            speed={isNativeParallax ? -9 : -5}
+            translateY={
+              isNativeParallax
+                ? ["12px", "-16px", "easeOutQuad"]
+                : ["8px", "-12px", "easeOutQuad"]
+            }
+            rotate={
+              isNativeParallax
+                ? ["2deg", "-1deg", "easeOutQuad"]
+                : ["2deg", "0deg", "easeOutQuad"]
+            }
+            opacity={[0.32, 0.75]}
+            shouldAlwaysCompleteAnimation
           >
             <img src="/illustrations/bandida.png" alt="" draggable={false} />
           </Parallax>
@@ -1019,10 +1050,18 @@ export default function LoginPage() {
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
           <div className="login-fold-box login-fold-box-plate">
-            <Parallax speed={-8}>
+            <Parallax
+              translateY={
+                isNativeParallax
+                  ? ["22px", "-28px", "easeOutQuad"]
+                  : ["14px", "-18px", "easeOutQuad"]
+              }
+              rotate={isNativeParallax ? ["-1deg", "1deg"] : ["0deg", "0deg"]}
+              shouldAlwaysCompleteAnimation
+            >
               <div className="login-hero-asset freeform-rise">
                 <button
                   type="button"

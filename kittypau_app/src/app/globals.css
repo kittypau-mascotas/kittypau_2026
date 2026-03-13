@@ -2068,6 +2068,7 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 0;
 }
 
 .login-parallax {
@@ -3400,6 +3401,8 @@ textarea::placeholder {
   background: #ffffff;
   box-shadow: 0 30px 70px -48px rgba(30, 20, 20, 0.5);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .login-collage-frame img {
