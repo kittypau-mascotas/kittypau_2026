@@ -986,71 +986,11 @@ export default function LoginPage() {
   return (
     <div className="login-bg login-ui-font">
       <div className="login-layer">
-        <div className="login-collage" aria-hidden="true">
-          <Parallax
-            className="login-collage-frame login-collage-bowl"
-            translateY={
-              isNativeParallax
-                ? ["26px", "-34px", "easeOutQuad"]
-                : ["18px", "-24px", "easeOutQuad"]
-            }
-            rotate={
-              isNativeParallax
-                ? ["-1deg", "2deg", "easeOutQuad"]
-                : ["-1deg", "1deg", "easeOutQuad"]
-            }
-            opacity={[0.45, 0.9]}
-            shouldAlwaysCompleteAnimation
-          >
-            <img
-              src="/illustrations/pink_food_full.png"
-              alt=""
-              draggable={false}
-            />
-          </Parallax>
-          <Parallax
-            className="login-collage-frame login-collage-cat-left"
-            translateY={
-              isNativeParallax
-                ? ["18px", "-22px", "easeOutQuad"]
-                : ["12px", "-16px", "easeOutQuad"]
-            }
-            rotate={
-              isNativeParallax
-                ? ["-3deg", "1deg", "easeOutQuad"]
-                : ["-3deg", "0deg", "easeOutQuad"]
-            }
-            opacity={[0.4, 0.85]}
-            shouldAlwaysCompleteAnimation
-          >
-            <img
-              src="/illustrations/cat_awake_copy.svg"
-              alt=""
-              draggable={false}
-            />
-          </Parallax>
-          <Parallax
-            className="login-collage-frame login-collage-dog-right"
-            translateY={
-              isNativeParallax
-                ? ["12px", "-16px", "easeOutQuad"]
-                : ["8px", "-12px", "easeOutQuad"]
-            }
-            rotate={
-              isNativeParallax
-                ? ["2deg", "-1deg", "easeOutQuad"]
-                : ["2deg", "0deg", "easeOutQuad"]
-            }
-            opacity={[0.32, 0.75]}
-            shouldAlwaysCompleteAnimation
-          >
-            <img src="/illustrations/bandida.png" alt="" draggable={false} />
-          </Parallax>
-        </div>
+        <div className="login-collage" />
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
           <div className="login-fold-box login-fold-box-plate">
             <Parallax
