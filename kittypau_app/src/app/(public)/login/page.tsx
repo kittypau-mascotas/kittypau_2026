@@ -1259,6 +1259,16 @@ export default function LoginPage() {
                     Crear cuenta
                   </button>
                 </div>
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    className="rounded-full border border-primary/40 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary shadow-sm transition hover:bg-white hover:text-primary active:scale-[0.99]"
+                    onClick={() => router.push("/404")}
+                    {...catWakeInteractions}
+                  >
+                    Error 404
+                  </button>
+                </div>
                 {showReset ? (
                   <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-600">
                     <p className="font-semibold text-slate-700">
