@@ -8,6 +8,11 @@ import {
   type ReactNode,
 } from "react";
 import { getValidAccessToken } from "@/lib/auth/token";
+import KittypauErrorScreen from "@/app/_components/kittypau-error-screen";
+import {
+  parseKittypauErrorType,
+  type KittypauErrorType,
+} from "@/lib/errors/kittypau-error";
 
 type Profile = {
   user_name?: string | null;
@@ -53,6 +58,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     isAdmin: false,
     ready: false,
   });
+  const [criticalErrorType, setCriticalErrorType] =
+    useState<KittypauErrorType | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,6 +80,15 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         }),
       ])
         .then(async ([profileRes, petsRes, devicesRes, accountRes]) => {
+          const criticalHeaderType = devicesRes.headers.get("x-kp-error-type");
+          if (criticalHeaderType) {
+            const parsed = parseKittypauErrorType(criticalHeaderType);
+            if (parsed !== "unknown") {
+              setCriticalErrorType(parsed);
+              return;
+            }
+          }
+
           const profilePayload = profileRes.ok
             ? await profileRes.json().catch(() => null)
             : null;
@@ -136,6 +152,47 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (criticalErrorType) return;
+
+    let isMounted = true;
+    let interval: number | null = null;
+    getValidAccessToken().then((token) => {
+      if (!token || !isMounted) return;
+
+      const check = () => {
+        void fetch("/api/devices?limit=1", {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        })
+          .then((res) => {
+            const t = res.headers.get("x-kp-error-type");
+            if (!t) return;
+            const parsed = parseKittypauErrorType(t);
+            if (parsed !== "unknown") setCriticalErrorType(parsed);
+          })
+          .catch(() => undefined);
+      };
+
+      check();
+      interval = window.setInterval(check, 45_000);
+    });
+
+    return () => {
+      isMounted = false;
+      if (interval) window.clearInterval(interval);
+    };
+  }, [criticalErrorType]);
+
+  if (criticalErrorType) {
+    return (
+      <KittypauErrorScreen
+        type={criticalErrorType}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
 
   return (
     <AppDataContext.Provider value={data}>{children}</AppDataContext.Provider>

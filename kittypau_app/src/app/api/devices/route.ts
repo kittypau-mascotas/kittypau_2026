@@ -9,11 +9,63 @@ import {
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
+import type { KittypauErrorType } from "@/lib/errors/kittypau-error";
 
 export const runtime = "edge";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
+
+async function detectCriticalSystemErrorType(): Promise<KittypauErrorType | null> {
+  // Best-effort: if this fails, do not block the app.
+  try {
+    const { data, error } = await supabaseServer
+      .from("bridge_heartbeats")
+      .select("bridge_id, last_seen, mqtt_connected, last_mqtt_at")
+      .order("last_seen", { ascending: false })
+      .limit(40);
+
+    if (error) return null;
+
+    const rows = (data ?? []) as Array<{
+      bridge_id?: string | null;
+      last_seen?: string | null;
+      mqtt_connected?: boolean | null;
+      last_mqtt_at?: string | null;
+    }>;
+
+    if (rows.length === 0) return null;
+
+    const now = Date.now();
+    const bridgeCutoffIso = new Date(now - 10 * 60_000).toISOString();
+    const mqttCutoffIso = new Date(now - 6 * 60_000).toISOString();
+
+    const online = rows.filter((row) => {
+      const lastSeen = row.last_seen
+        ? new Date(row.last_seen).toISOString()
+        : null;
+      return !!lastSeen && lastSeen >= bridgeCutoffIso;
+    });
+
+    if (online.length === 0) return "bridge_offline";
+
+    const mqttDown = online.filter((row) => {
+      if (row.mqtt_connected === false) return true;
+      const lastMqtt = row.last_mqtt_at
+        ? new Date(row.last_mqtt_at).toISOString()
+        : null;
+      if (!lastMqtt) return true;
+      return lastMqtt < mqttCutoffIso;
+    });
+
+    if (mqttDown.length === online.length) return "mqtt_broker_down";
+    if (mqttDown.length > 0) return "mqtt_unstable";
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 function triggerBackgroundHealthCheck(req: NextRequest) {
   const token = process.env.BRIDGE_HEARTBEAT_SECRET;
@@ -74,9 +126,14 @@ export async function GET(req: NextRequest) {
     "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
   };
 
+  const criticalType = await detectCriticalSystemErrorType();
+  const responseHeaders = criticalType
+    ? { ...cacheHeaders, "x-kp-error-type": criticalType }
+    : cacheHeaders;
+
   if (!paginate) {
     logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
-    return NextResponse.json(data ?? [], { headers: cacheHeaders });
+    return NextResponse.json(data ?? [], { headers: responseHeaders });
   }
 
   const nextCursor =
@@ -90,7 +147,7 @@ export async function GET(req: NextRequest) {
   });
   return NextResponse.json(
     { data: data ?? [], next_cursor: nextCursor },
-    { headers: cacheHeaders },
+    { headers: responseHeaders },
   );
 }
 

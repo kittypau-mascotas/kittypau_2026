@@ -128,7 +128,7 @@ export function inferKittypauErrorTypeFromError(
   const name = typeof maybe.name === "string" ? maybe.name : "";
   const combined = `${name} ${code} ${message}`.toLowerCase();
 
-  const prefixMatch = message.match(/kp_error:([a-z0-9_-]+)/i)?.[1];
+  const prefixMatch = message.match(/kp[_-]error[:=]([a-z0-9_-]+)/i)?.[1];
   if (prefixMatch) return parseKittypauErrorType(prefixMatch);
 
   if (combined.includes("mqtt") && combined.includes("broker"))
@@ -150,4 +150,11 @@ export function inferKittypauErrorTypeFromError(
   }
 
   return "unknown";
+}
+
+export function createKittypauError(
+  type: KittypauErrorType,
+  message?: string,
+): Error {
+  return new Error(`KP_ERROR:${type}${message ? ` ${message}` : ""}`);
 }
