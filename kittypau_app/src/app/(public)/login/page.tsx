@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Parallax } from "react-scroll-parallax";
 import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
 import { setTokens } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -990,30 +991,32 @@ export default function LoginPage() {
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
         <div className="login-hero-column max-w-xl space-y-4 text-center">
           <div className="login-fold-box login-fold-box-plate">
-            <div className="login-hero-asset freeform-rise freeform-float">
-              <button
-                type="button"
-                onClick={() => {
-                  const nextIndex =
-                    (heroBowlCycleIndex + 1) % heroBowlCycle.length;
-                  const nextState = heroBowlCycle[nextIndex];
-                  playBowlClickSound(nextState.soundGroup);
-                  setHeroBowlCycleIndex(nextIndex);
-                }}
-                className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
-                aria-label="Cambiar nivel visual del plato"
-                title="Cambiar nivel visual del plato"
-                {...catWakeInteractions}
-              >
-                <img
-                  src={currentHeroBowlState.image}
-                  alt="Plato de comida Kittypau"
-                  className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
-                  loading="eager"
-                  draggable={false}
-                />
-              </button>
-            </div>
+            <Parallax speed={-8}>
+              <div className="login-hero-asset freeform-rise">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextIndex =
+                      (heroBowlCycleIndex + 1) % heroBowlCycle.length;
+                    const nextState = heroBowlCycle[nextIndex];
+                    playBowlClickSound(nextState.soundGroup);
+                    setHeroBowlCycleIndex(nextIndex);
+                  }}
+                  className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
+                  aria-label="Cambiar nivel visual del plato"
+                  title="Cambiar nivel visual del plato"
+                  {...catWakeInteractions}
+                >
+                  <img
+                    src={currentHeroBowlState.image}
+                    alt="Plato de comida Kittypau"
+                    className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                    loading="eager"
+                    draggable={false}
+                  />
+                </button>
+              </div>
+            </Parallax>
           </div>
           <div className="login-hero-divider" aria-hidden="true" />
           <div className="login-fold-box login-fold-box-message">

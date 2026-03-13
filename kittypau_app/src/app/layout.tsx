@@ -4,6 +4,7 @@ import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
 import NativeApkMode from "./_components/native-apk-mode";
 import NativeThanksNotification from "./_components/native-thanks-notification";
+import ParallaxRoot from "./_components/parallax-root";
 import { resolveAppFlavorFromEnv } from "@/lib/runtime/app-flavor";
 
 const inter = Inter({
@@ -91,7 +92,7 @@ export default function RootLayout({
         <NativeApkMode />
         <NativeThanksNotification />
         <RouteLoadingOverlay />
-        {children}
+        <ParallaxRoot>{children}</ParallaxRoot>
       </body>
     </html>
   );
