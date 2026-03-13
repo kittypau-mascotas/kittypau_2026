@@ -1,7 +1,7 @@
 export default function Error404Screen() {
   return (
     <main
-      className="login-ui-font flex min-h-screen items-center justify-center px-4 py-16"
+      className="kp-404-page login-ui-font flex min-h-screen items-center justify-center px-4 py-10 sm:py-16"
       style={{
         backgroundColor: "hsl(var(--background))",
         backgroundImage: "url(https://i.imgur.com/76NZB7A.gif)",
@@ -11,8 +11,8 @@ export default function Error404Screen() {
         backgroundAttachment: "fixed",
       }}
     >
-      <div className="w-full max-w-md">
-        <div className="login-card-brand freeform-rise mb-4">
+      <div className="w-full max-w-[320px] sm:max-w-md">
+        <div className="login-card-brand freeform-rise mb-3 sm:mb-4">
           <div className="login-brand-core">
             <div className="brand-logo-badge" aria-hidden="true">
               <img
@@ -22,13 +22,17 @@ export default function Error404Screen() {
                 draggable={false}
               />
             </div>
-            <span className="brand-title text-3xl text-primary">Kittypau</span>
-            <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
+            <span className="brand-title text-2xl text-primary sm:text-3xl">
+              Kittypau
+            </span>
+            <p className="kp-pettech-tagline mt-1 text-sm sm:text-base">
+              PetTech AIoT
+            </p>
           </div>
         </div>
 
-        <div className="glass-panel freeform-rise w-full px-6 py-6 text-center">
-          <div className="display-title text-[4.8rem] font-semibold leading-none text-primary">
+        <div className="glass-panel freeform-rise w-full px-5 py-5 text-center sm:px-6 sm:py-6">
+          <div className="display-title text-[3.9rem] font-semibold leading-none text-primary sm:text-[4.8rem]">
             404
           </div>
           <p className="mt-3 text-sm font-semibold uppercase tracking-[0.22em] text-slate-600">

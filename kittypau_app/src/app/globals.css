@@ -4115,3 +4115,41 @@ textarea::placeholder {
     animation: none;
   }
 }
+
+/* 404: keep content smaller on mobile/native so the cat background is visible */
+.kp-404-page .brand-logo-badge {
+  width: 108px;
+  height: 108px;
+}
+
+@media (min-width: 640px) {
+  .kp-404-page .brand-logo-badge {
+    width: 132px;
+    height: 132px;
+  }
+}
+
+.kp-native-apk .kp-404-page .login-brand-core,
+.kp-flavor-native .kp-404-page .login-brand-core {
+  display: flex;
+}
+
+.kp-native-apk .kp-404-page .brand-logo-badge,
+.kp-flavor-native .kp-404-page .brand-logo-badge {
+  width: 92px;
+  height: 92px;
+  margin-bottom: 8px;
+}
+
+.kp-native-apk .kp-404-page .brand-title,
+.kp-flavor-native .kp-404-page .brand-title {
+  font-size: 2.1rem;
+  line-height: 0.98;
+}
+
+.kp-native-apk .kp-404-page .kp-pettech-tagline,
+.kp-flavor-native .kp-404-page .kp-pettech-tagline {
+  font-size: 0.98rem;
+  line-height: 1.12;
+  margin-top: 6px;
+}
