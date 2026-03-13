@@ -12,6 +12,10 @@ import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
   const router = useRouter();
+  const isNativeParallax =
+    typeof document !== "undefined" &&
+    (document.documentElement.classList.contains("kp-native-apk") ||
+      document.documentElement.classList.contains("kp-flavor-native"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -984,7 +988,34 @@ export default function LoginPage() {
   return (
     <div className="login-bg login-ui-font">
       <div className="login-layer">
-        <div className="login-collage" />
+        <div className="login-collage" aria-hidden="true">
+          <Parallax
+            className="login-collage-frame login-collage-bowl"
+            speed={isNativeParallax ? -18 : -10}
+          >
+            <img
+              src="/illustrations/pink_food_full.png"
+              alt=""
+              draggable={false}
+            />
+          </Parallax>
+          <Parallax
+            className="login-collage-frame login-collage-cat-left"
+            speed={isNativeParallax ? -12 : -7}
+          >
+            <img
+              src="/illustrations/cat_awake_copy.svg"
+              alt=""
+              draggable={false}
+            />
+          </Parallax>
+          <Parallax
+            className="login-collage-frame login-collage-dog-right"
+            speed={isNativeParallax ? -9 : -5}
+          >
+            <img src="/illustrations/bandida.png" alt="" draggable={false} />
+          </Parallax>
+        </div>
       </div>
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 

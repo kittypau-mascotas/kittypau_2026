@@ -3370,7 +3370,6 @@ textarea::placeholder {
   background: #ffffff;
   box-shadow: 0 30px 70px -48px rgba(30, 20, 20, 0.5);
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
-  animation: collageDrift 18s ease-in-out infinite;
 }
 
 .login-collage-frame img {
