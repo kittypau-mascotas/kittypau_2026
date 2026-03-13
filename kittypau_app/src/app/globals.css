@@ -2535,6 +2535,36 @@ body {
   box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 45%, rgba(15, 23, 42, 0.5));
 }
 
+/* Native APK: bottom-sheet feel + better keyboard ergonomics */
+.kp-native-apk .login-trial-overlay,
+.kp-flavor-native .login-trial-overlay {
+  justify-content: flex-end;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+.kp-native-apk .login-trial-modal,
+.kp-flavor-native .login-trial-modal {
+  width: min(96vw, 520px);
+  max-height: min(78dvh, 720px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kp-native-apk .login-trial-modal .login-trial-input,
+.kp-flavor-native .login-trial-modal .login-trial-input {
+  height: 46px;
+  font-size: 16px;
+}
+
+.kp-native-apk .login-trial-cancel,
+.kp-flavor-native .login-trial-cancel,
+.kp-native-apk .login-trial-submit,
+.kp-flavor-native .login-trial-submit {
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
 .login-trial-modal .mb-4 {
   margin-bottom: 10px;
 }

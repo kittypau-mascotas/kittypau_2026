@@ -1502,23 +1502,46 @@ export default function LoginPage() {
       ) : null}
 
       {showTrialModal ? (
-        <div className="login-trial-overlay fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8">
+        <div
+          className="login-trial-overlay fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeTrial();
+          }}
+        >
           <audio
             ref={trialDialogAudioRef}
             src="/audio/dialogo_rpg.mp3"
             preload="auto"
           />
-          <div className="login-register-modal login-trial-modal glass-panel w-full max-w-md rounded-[var(--radius)] p-4 sm:p-6">
+          <div
+            className="login-register-modal login-trial-modal glass-panel w-full max-w-md rounded-[var(--radius)] p-4 sm:p-6"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="mb-4">
-              <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
-                Modo prueba
-              </p>
-              <h2 className="login-trial-title mt-1 text-xl font-semibold">
-                Personaliza tu demo
-              </h2>
-              <p className="login-trial-copy mt-1 text-sm">
-                Te mostraremos Kittypau con tus datos para una sesión de prueba.
-              </p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
+                    Modo prueba
+                  </p>
+                  <h2 className="login-trial-title mt-1 text-xl font-semibold">
+                    Personaliza tu demo
+                  </h2>
+                  <p className="login-trial-copy mt-1 text-sm">
+                    Te mostraremos Kittypau con tus datos para una sesion de
+                    prueba.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={closeTrial}
+                  className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
+                  aria-label="Cerrar"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
 
             <div className="space-y-3">
