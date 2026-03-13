@@ -4118,14 +4118,14 @@ textarea::placeholder {
 
 /* 404: keep content smaller on mobile/native so the cat background is visible */
 .kp-404-page .brand-logo-badge {
-  width: 108px;
-  height: 108px;
+  width: 92px;
+  height: 92px;
 }
 
 @media (min-width: 640px) {
   .kp-404-page .brand-logo-badge {
-    width: 132px;
-    height: 132px;
+    width: 120px;
+    height: 120px;
   }
 }
 
@@ -4136,20 +4136,20 @@ textarea::placeholder {
 
 .kp-native-apk .kp-404-page .brand-logo-badge,
 .kp-flavor-native .kp-404-page .brand-logo-badge {
-  width: 92px;
-  height: 92px;
-  margin-bottom: 8px;
+  width: 78px;
+  height: 78px;
+  margin-bottom: 6px;
 }
 
 .kp-native-apk .kp-404-page .brand-title,
 .kp-flavor-native .kp-404-page .brand-title {
-  font-size: 2.1rem;
+  font-size: 1.85rem;
   line-height: 0.98;
 }
 
 .kp-native-apk .kp-404-page .kp-pettech-tagline,
 .kp-flavor-native .kp-404-page .kp-pettech-tagline {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   line-height: 1.12;
-  margin-top: 6px;
+  margin-top: 4px;
 }
