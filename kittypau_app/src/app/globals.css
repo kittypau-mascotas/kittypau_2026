@@ -3799,7 +3799,7 @@ textarea::placeholder {
   .kp-flavor-native .login-bg {
     min-height: 100dvh;
     height: auto;
-    overflow-y: auto;
+    overflow-y: visible;
   }
 
   .kp-native-apk .login-bg > .relative.mx-auto,
@@ -3835,7 +3835,7 @@ textarea::placeholder {
 
   .kp-native-apk .login-fold-box-plate,
   .kp-flavor-native .login-fold-box-plate {
-    min-height: 34dvh;
+    min-height: 30dvh;
     transition: min-height 320ms ease;
   }
 
@@ -3855,7 +3855,7 @@ textarea::placeholder {
   .kp-native-apk .login-fold-box-brand,
   .kp-flavor-native .login-fold-box-brand {
     display: flex;
-    min-height: 26dvh;
+    min-height: 22dvh;
     align-items: center;
     justify-content: center;
     transform: translateY(-16px);
@@ -3920,8 +3920,8 @@ textarea::placeholder {
 
   .kp-native-apk .brand-logo-badge,
   .kp-flavor-native .brand-logo-badge {
-    width: 160px;
-    height: 160px;
+    width: 136px;
+    height: 136px;
     margin-inline: auto;
     margin-bottom: 12px;
     transition: width 420ms ease, height 420ms ease, transform 420ms ease;
@@ -3929,7 +3929,7 @@ textarea::placeholder {
 
   .kp-native-apk .brand-title,
   .kp-flavor-native .brand-title {
-    font-size: clamp(3.45rem, 15.6vw, 4.2rem);
+    font-size: clamp(3.05rem, 14.2vw, 3.7rem);
     line-height: 0.94;
     text-align: center;
     margin-inline: auto;
@@ -3940,7 +3940,7 @@ textarea::placeholder {
   .kp-flavor-native .kp-pettech-tagline {
     width: 100%;
     text-align: center;
-    font-size: 1.56rem;
+    font-size: 1.22rem;
     line-height: 1.16;
     margin-top: 10px;
     margin-inline: auto;
