@@ -1,4 +1,4 @@
-# Modelo de Datos, Formulas y Logica IA (KittyPaw)
+# Modelo de Datos, Formulas y Logica IA (Kittypau)
 
 ## 1) Objetivo
 Definir un marco unico para transformar lecturas IoT en informacion util de comportamiento:

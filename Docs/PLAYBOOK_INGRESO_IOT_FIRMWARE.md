@@ -1,7 +1,7 @@
 ﻿# Playbook de Ingreso - Trabajo IoT/Firmware/Microcontroladores
 
 ## Objetivo
-Asegurar que el trabajo externo (firmware, ESP32/NodeMCU, bridge y microcontroladores) ingrese a KittyPaw sin romper el contrato de datos ni la operacion.
+Asegurar que el trabajo externo (firmware, ESP32/NodeMCU, bridge y microcontroladores) ingrese a Kittypau sin romper el contrato de datos ni la operacion.
 
 ## Alcance
 - Firmware (publicacion MQTT y comandos).

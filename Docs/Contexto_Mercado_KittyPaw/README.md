@@ -1,6 +1,6 @@
-﻿# Contexto de Mercado y Analisis - KittyPaw
+﻿# Contexto de Mercado y Analisis - Kittypau
 
-Esta carpeta consolida el contexto de mercado y el analisis estrategico que fundamenta KittyPaw.
+Esta carpeta consolida el contexto de mercado y el analisis estrategico que fundamenta Kittypau.
 
 ## Objetivo
 Centralizar en un solo lugar los argumentos de mercado, competencia, cliente, timing y riesgos para postulaciones, deck comercial y decisiones de producto.

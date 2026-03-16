@@ -8,7 +8,7 @@ Soluciones pet-tech con hardware y app para monitoreo basico de consumo.
 - Apps de registro manual sin capa IoT integrada.
 - Wearables generales no enfocados en hidratacion/alimentacion.
 
-## Posicionamiento KittyPaw
+## Posicionamiento Kittypau
 - Integracion extremo a extremo: dispositivo + telemetria + backend + app.
 - Enfoque preventivo/predictivo basado en datos historicos.
 - Potencial de evolucion hacia modelos de riesgo y alertas mas precisas.

@@ -144,9 +144,20 @@ El cliente compra el hardware (margen bruto ~45%) y opcionalmente paga suscripci
 
 ### Break-even operativo
 
-- Costos fijos mensuales (cloud + operacion): ~$150 USD/mes (shadow-price)
-- Break-even en MRR: 38 suscriptores activos
-- Break-even en unidades: ~35 ventas de hardware a $30 USD c/u
+- **Burn rate real:** $1 USD/mes (todos los servicios en plan free — confirmado)
+- **Burn rate shadow-price:** $44 USD/mes (valor real de los servicios en uso)
+- **Burn rate plan pago (100 usuarios):** $65 USD/mes (Supabase Pro + Vercel Pro + HiveMQ)
+
+| Escenario | Costo fijo/mes | Precio suscripcion | Break-even |
+|-----------|---------------|-------------------|------------|
+| Actual (plan free) | $1 USD | $5 USD | **1 suscriptor** |
+| Shadow-price | $44 USD | $5 USD | **9 suscriptores** |
+| Plan pago (sostenibilidad) | $65 USD | $5 USD | **13 suscriptores** |
+| Objetivo operacional (buffer x2) | $65 USD | $5 USD | **~30 suscriptores** |
+
+> El break-even de **13 suscriptores** cubre toda la infraestructura cloud en plan pago.
+> El objetivo de **30 suscriptores** asegura sostenibilidad con margen operacional.
+> Break-even en unidades hardware: ~35 ventas a $30 USD c/u para recuperar inversion inicial.
 
 ---
 
