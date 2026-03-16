@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tracked_env="$(git ls-files | grep -E '(^|/)\.env($|\.|_)' || true)"
+          tracked_env="$(git ls-files | grep -E '(^|/)\.env($|\.|_)' | grep -v '\.example$' || true)"
           if [ -n "$tracked_env" ]; then
             echo "Tracked env-like files detected:"
             echo "$tracked_env"

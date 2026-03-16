@@ -779,7 +779,7 @@ export async function GET(req: NextRequest) {
   })();
 
   const currentBridgeStatus = (() => {
-    const byBridge = new Map<string, any>();
+    const byBridge = new Map<string, NonNullable<typeof bridges>[number]>();
     for (const row of bridges ?? []) {
       const key = row.device_id;
       if (!key) continue;

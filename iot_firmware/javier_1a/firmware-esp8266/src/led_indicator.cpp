@@ -36,10 +36,11 @@ void blinkLED(int times, int duration) {
 }
 
 void startWifiBlink() {
-    blinkEnable = true;
-    lastBlinkMillis = millis();
-    ledState = HIGH;
-    digitalWrite(ledPin, ledState);
+    if (!blinkEnable) {  // solo reinicia el ciclo si no estaba ya corriendo
+        blinkEnable = true;
+        lastBlinkMillis = millis();
+        digitalWrite(ledPin, HIGH);
+    }
 }
 
 void stopWifiBlink() {
@@ -50,9 +51,9 @@ void stopWifiBlink() {
 void handleLedIndicator() {
     if (!blinkEnable) return;
 
-    if (millis() - lastBlinkMillis >= 250) {
-        lastBlinkMillis = millis();
-        ledState = !ledState;
-        digitalWrite(ledPin, ledState);
-    }
+    // Patrón: 3 parpadeos rápidos → 500ms pausa → repite
+    // Cada parpadeo: 100ms ON + 100ms OFF = 200ms × 3 = 600ms + 500ms pausa = 1100ms ciclo
+    unsigned long t = (millis() - lastBlinkMillis) % 1100;
+    bool on = (t < 600) && ((t % 200) < 100);
+    digitalWrite(ledPin, on ? LOW : HIGH);  // LED activo en LOW
 }

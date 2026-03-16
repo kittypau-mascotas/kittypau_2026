@@ -31,6 +31,8 @@ Cada vez que Mauro o Javo haga `git push` a su rama personal:
 | 2026-03-02 | Javo | feat/javo-mauro | e9913af | feat(login): implement 6-step food/water bowl cycle with randomized sound groups | pendiente | rama creada y sincronizada con `main` |
 | 2026-03-02 | Mauro | feat/mauro-curcuma | 928bda7 | chore(github): enforce collaboration guardrails and merge governance | pendiente | push realizado (PR 1 infra de colaboración listo) |
 | 2026-03-02 | Mauro | test/fusion-main-javo-mauro-2026-03-02 | 7768c57 | test: merge mauro branch into main test | pendiente | prueba de fusion publicada para evaluación (sin tocar `main`) |
+| 2026-03-04 | Javo | feat/javo-mauro | 915530b | feat(iot): KPCL0036 firmware calibration mode + bridge v2.6 readings sync | #14 | push realizado, PR abierto, CI parcial (Policy OK / Lint fail pre-existente) |
+| 2026-03-04 | Javo | feat/javo-mauro | 904db38 | fix(ci): exclude .example files from tracked .env policy check | #14 | push realizado, Repo Policy Checks ahora PASS |
 
 ## Comandos de verificación rápida
 ```bash

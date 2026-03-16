@@ -59,28 +59,21 @@ export default function AppNav() {
   const [adminFreshnessLabel, setAdminFreshnessLabel] = useState(
     "Actualizado recientemente",
   );
-  const [isNativeApkMode, setIsNativeApkMode] = useState<boolean>(
-    isNativeFlavorEnabled(),
-  );
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (isNativeFlavorEnabled()) {
-      setIsNativeApkMode(true);
-      return;
-    }
+  const [isNativeApkMode] = useState<boolean>(() => {
+    if (isNativeFlavorEnabled()) return true;
+    if (typeof window === "undefined") return false;
     const cap = (window as Window & { Capacitor?: unknown }).Capacitor as
       | {
           isNativePlatform?: () => boolean;
           getPlatform?: () => string;
         }
       | undefined;
-    if (!cap) return;
-    const isNative =
+    if (!cap) return false;
+    return (
       (typeof cap.isNativePlatform === "function" && cap.isNativePlatform()) ||
-      (typeof cap.getPlatform === "function" && cap.getPlatform() !== "web");
-    if (isNative) setIsNativeApkMode(true);
-  }, []);
+      (typeof cap.getPlatform === "function" && cap.getPlatform() !== "web")
+    );
+  });
 
   useEffect(() => {
     if (!pathname?.startsWith("/admin")) return;

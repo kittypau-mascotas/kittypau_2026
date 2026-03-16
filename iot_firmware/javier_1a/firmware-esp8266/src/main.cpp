@@ -120,6 +120,37 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
+#ifdef CALIBRATION_MODE
+  // --- MODO CALIBRACIÓN: solo imprime valores raw por serial ---
+  static unsigned long lastCalibPrint = 0;
+  if (now - lastCalibPrint > 1500) {
+    lastCalibPrint = now;
+    long raw = sensorsGetRawValue(10);
+    Serial.print("[CALIB] RAW=");
+    Serial.println(raw);
+  }
+  // Comandos serial: "T" = tare | número = peso en gramos (calcula y guarda factor)
+  if (Serial.available()) {
+    String cmd = Serial.readStringUntil('\n');
+    cmd.trim();
+    if (cmd == "T" || cmd == "t") {
+      sensorsTareWeight();
+      Serial.println("[CALIB] Tara aplicada.");
+    } else {
+      float gramos = cmd.toFloat();
+      if (gramos > 0.0f) {
+        long rawConPeso = sensorsGetRawValue(20);
+        float factor = (float)rawConPeso / gramos;
+        sensorsSetCalibrationFactor(factor);
+        Serial.print("[CALIB] Factor calculado y guardado: ");
+        Serial.println(factor, 4);
+        Serial.println("[CALIB] CALIBRACION_OK");
+      }
+    }
+  }
+  return; // no ejecutar el loop normal en modo calibración
+#endif
+
   // OTA
   ArduinoOTA.handle();
 

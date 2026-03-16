@@ -14,7 +14,7 @@ struct WifiCredential {
 
 #define WIFI_CRED_FILE "/wifi.json"
 #define LAST_WIFI_FILE "/last_wifi.txt"
-#define WIFI_CONNECT_TIMEOUT 5000  // 5 segundos (antes 8)
+#define WIFI_CONNECT_TIMEOUT 12000  // 12 segundos para dar tiempo al router
 #include <ArduinoJson.h>
 
 static std::vector<WifiCredential> knownNetworks;
@@ -37,6 +37,7 @@ void loadWifiCredentials() {
     addDefaultNetworkUnique("Jeivos", "jdayne212");
     addDefaultNetworkUnique("Casa 15", "mateo916");
     addDefaultNetworkUnique("Suarez_Mujica_891", "SuarezMujica891");
+    addDefaultNetworkUnique("Kittypau", "kittypau1234");
     addDefaultNetworkUnique("Mauro", "mauro1234");
     addDefaultNetworkUnique("VTR-2736410_2g", "wp8Fjtwyydhq");
 
@@ -187,8 +188,15 @@ void wifiManagerLoop() {
         if (wifiConnected) {
             wifiConnected = false;
             Serial.println("ConexiÃ³n WiFi perdida. Intentando reconectar...");
-            startWifiBlink();
         }
+        startWifiBlink();  // mantener parpadeo activo en cada reintento
+
+        // Throttle: no reintentar mas rapido que cada 30s para no saturar el router
+        static unsigned long lastReconnectAttempt = 0;
+        if (millis() - lastReconnectAttempt < 30000 && lastReconnectAttempt != 0) {
+            return;
+        }
+        lastReconnectAttempt = millis();
 
         // 1. Intentar Ãºltima red exitosa primero
         if (lastSuccessfulSSID.length() > 0) {

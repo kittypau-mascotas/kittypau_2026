@@ -149,6 +149,11 @@ void sensorsTareWeight() {
     yield();
 }
 
+long sensorsGetRawValue(int times) {
+    yield();
+    return scale.get_value(times);
+}
+
 void sensorsSetCalibrationFactor(float factor) {
     Serial.print("Calibrando báscula: Estableciendo factor de escala a ");
     Serial.println(factor);
