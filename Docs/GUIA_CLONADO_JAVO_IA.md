@@ -70,7 +70,7 @@ git ls-remote https://github.com/kittypau-mascotas/kittypau_2026.git
 
 ## Paso 3: Clonar repo en carpeta de trabajo
 ```powershell
-cd "D:\Escritorio\Proyectos\KittyPaw"
+cd "D:\Escritorio\Proyectos\Kittypau"
 git clone https://github.com/kittypau-mascotas/kittypau_2026.git
 cd kittypau_2026
 ```

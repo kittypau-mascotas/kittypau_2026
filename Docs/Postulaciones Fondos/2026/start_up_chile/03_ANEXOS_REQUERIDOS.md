@@ -24,7 +24,7 @@
 ## Referencias 2025 sugeridas para reutilizar
 - `.../03_Start_Up_Chile_Build_2025/Compromiso_Dedicacion_Mauro_Lider_Equipo.md`
 - `.../03_Start_Up_Chile_Build_2025/Compromiso_Dedicacion_Javier_Ejecutor.md`
-- `.../03_Start_Up_Chile_Build_2025/Equipo_Fundador_KittyPaw.md`
+- `.../03_Start_Up_Chile_Build_2025/Equipo_Fundador_Kittypau.md`
 - `.../03_Start_Up_Chile_Build_2025/03_Documentos_Persona_Juridica.md`
 
 ## Marco AIoT / PetTech (Alineacion 2026)

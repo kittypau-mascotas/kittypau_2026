@@ -5,13 +5,13 @@ Fuentes principales 2025:
 - `CORFO_Semilla_Inicia_2025_Draft.md`
 
 ## 1) Titulo
-KittyPaw: monitoreo inteligente y predictivo de salud para mascotas con IoT e IA.
+Kittypau: monitoreo inteligente y predictivo de salud para mascotas con IoT e IA.
 
 ## 2) Problema
 Existe una brecha en monitoreo proactivo de salud animal. Los duenos suelen detectar tarde variaciones de hidratacion y alimentacion, lo que eleva riesgos y costos.
 
 ## 3) Solucion propuesta
-KittyPaw combina dispositivo IoT y plataforma de datos para medir habitos clave, analizar desvíos y entregar alertas tempranas.
+Kittypau combina dispositivo IoT y plataforma de datos para medir habitos clave, analizar desvíos y entregar alertas tempranas.
 La propuesta evoluciona a modelos predictivos para anticipar riesgos de salud.
 
 ## 4) Innovacion y diferenciacion

@@ -1,7 +1,7 @@
 # Cronograma maestro 2026 (Start-Up Chile + Semilla Inicia)
 
 ## Hitos transversales
-1. Definir version unica del relato de KittyPaw.
+1. Definir version unica del relato de Kittypau.
 2. Preparar anexos legales y tecnicos reutilizables.
 3. Completar formularios con control de limites de caracteres.
 4. Ejecutar revision cruzada y enviar.

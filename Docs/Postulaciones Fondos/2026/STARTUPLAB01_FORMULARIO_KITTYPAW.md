@@ -1,32 +1,51 @@
-# Formulario startuplab.01 - Respuestas sugeridas (KittyPaw)
+# Formulario startuplab.01 - Respuestas sugeridas (Kittypau)
 
-Fecha de preparacion: 2026-03-06  
-Estado: borrador listo para completar y copiar al formulario
+Fecha de preparacion: 2026-03-16 (actualizado)
+Estado: LISTO para copiar al formulario — pendientes marcados con [CONFIRMAR]
+
+---
 
 ## 1) Datos postulante
 
-- Nombre Completo Postulante: **Mauricio Cristian Carcamo Diaz**
-- RUT Postulante (Persona Natural): **[COMPLETAR]**
-- Correo electronico postulante: **mauro.carcamo89@gmail.com**
-- Telefono postulante (+codigo pais): **[COMPLETAR]**
+- **Nombre Completo Postulante:** Mauricio Cristian Carcamo Diaz
+- **RUT Postulante (Persona Natural):** 17.402.237-2
+- **Correo electronico postulante:** mauro.carcamo89@gmail.com
+- **Telefono postulante (+codigo pais):** +56 9 9038 1919
+
+---
 
 ## 2) Informacion basica de la startup
 
-- Nombre de la startup: **KittyPaw**
-- Pais de origen de la startup: **Chile**
-- Estado legal de tu startup: **Constituida**
-- Tipo de Empresa: **SpA (Sociedad por Acciones)**
-- Sitio web de la startup: **https://kittypau-app.vercel.app**
-- LinkedIn de la startup: **[COMPLETAR / no disponible al 2026-03-06]**
+- **Nombre de la startup:** Kittypau
+- **Razon social legal:** IOT CHILE SpA
+- **Pais de origen:** Chile
+- **Region:** Region Metropolitana (Peñalolen)
+- **Estado legal:** Constituida
+- **Fecha de constitucion legal:** 10 de julio de 2025
+- **RUT Persona Juridica:** 78.203.374-3
+- **Ano de fundacion:** 2025
+- **Tipo de Empresa:** Sociedad por Acciones (SpA)
+- **Sitio web:** https://kittypau-app.vercel.app
+- **LinkedIn de la startup:** https://www.linkedin.com/in/kittypau-mascotas/
+
+---
 
 ## 3) Clasificacion tecnologica
 
 ### Descripcion de la Tecnologia y del Problema (max 200 palabras)
-Los duenos de mascotas no tienen visibilidad continua sobre habitos criticos de hidratacion y alimentacion, por lo que la deteccion de problemas de salud suele ocurrir tarde. KittyPaw aborda ese problema con un ecosistema IoT + software: plato/bebedero inteligente con sensores de peso y variables de entorno, conectividad MQTT, backend cloud y app para seguimiento en tiempo real. La solucion transforma datos de consumo y contexto en alertas tempranas y trazabilidad historica para duenos y veterinarios. Los principios tecnicos se basan en sensorizacion, transmision de telemetria, procesamiento de series temporales e interpretacion con modelos de analitica incremental (base para ML predictivo). Este es el momento adecuado porque convergen tres factores: alta digitalizacion del cuidado de mascotas, madurez cloud/IoT de bajo costo, y validacion interna de un prototipo funcional con arquitectura operativa documentada y lista para pilotos controlados.
 
-- Nivel de Madurez Tecnologia (TRL): **TRL 5 - Tecnologia validada en un entorno relevante**
+Muchos duenos de mascotas no pueden saber con claridad si sus animales estan comiendo o hidratandose de forma normal durante el dia. En la practica, la mayoria solo se da cuenta cuando el plato sigue lleno o cuando la mascota ya muestra senales de malestar, lo que hace que varios problemas de salud se detecten tarde.
 
-### Justificacion del TRL seleccionado (seleccionar)
+KittyPau aborda esa brecha con un ecosistema IoT mas software: plato y bebedero inteligente con sensores que miden consumo de alimento y agua, ademas de variables del entorno. Los datos se transmiten mediante conectividad IoT hacia una plataforma digital donde pueden visualizarse en tiempo real.
+
+La aplicacion convierte la informacion en metricas faciles de entender, alertas tempranas cuando se detectan cambios en los patrones habituales y un historial de comportamiento util para duenos y veterinarios.
+
+Desde el punto de vista tecnico, la solucion se basa en sensorizacion de bajo costo, transmision de telemetria via MQTT, procesamiento de series temporales y analitica incremental, con base tecnica para evolucionar hacia modelos predictivos con ML. El momento es adecuado porque convergen la digitalizacion del cuidado de mascotas, la madurez del stack IoT/cloud accesible para startups y la existencia de un prototipo funcional listo para pilotos.
+
+### Nivel de Madurez Tecnologia (TRL)
+**TRL 5 - Tecnologia validada en un entorno relevante**
+
+### Justificacion del TRL seleccionado
 - [x] Se ha formulado la idea del producto.
 - [x] Se ha descrito completamente la idea del producto.
 - [x] Se ha demostrado y descrito completamente el concepto del producto.
@@ -37,64 +56,99 @@ Los duenos de mascotas no tienen visibilidad continua sobre habitos criticos de 
 - [ ] El producto ha sido ampliamente probado y validado.
 - [ ] El producto esta completamente maduro y listo para su uso en el mercado.
 
-- Sector de Contribucion Clim�tica (principal): **Urbanizacion**
-- Area de accion principal: **Monitoreo (medicion y rastreo)**
+### Sector de Contribucion Climatica
+**Urbanizacion**
+
+### Area de accion principal
+**Monitoreo (medicion y rastreo)**
+
+---
 
 ## 4) Equipo fundador
 
-- Remitente: **Tu mismo**
-- Numero total de cofundadores (>=10%): **2**
-- Numero de fundadores con PhD o experiencia equivalente en investigacion: **0**
-- Numero de fundadores con experiencia comercial/emprendimiento: **1**
-- Numero de mujeres en posiciones de liderazgo: **0**
+- **Remitente:** Tu mismo
+- **Numero total de cofundadores (>=10%):** 2
+- **Numero de fundadores con PhD o experiencia equivalente en investigacion:** 1
+  > Javier Dayne: Ingeniero en Automatizacion y Control Industrial (INACAP) + Diplomado en Direccion de Proyectos PMO (UNAB) + 15 anos en ingenieria industrial. Califica por formacion tecnica en ingenieria.
+- **Numero de fundadores con experiencia comercial/emprendimiento:** 2
+  > Mauro: Project Coordinator, Data Analyst, Sales Coach (6+ anos). Javier: Senior Inside Sales en Emerson Electric, gestion de contratos hasta USD 5M (15+ anos).
+- **Numero de mujeres en posiciones de liderazgo:** 0
+
+---
 
 ## 5) Mercado objetivo
 
 ### Perfil del cliente ideal (max 150 palabras)
-Duenos de mascotas urbanos (gatos y perros pequenos/medianos), digitalmente activos, con ingresos medios a medios-altos, que valoran el bienestar preventivo y estan dispuestos a pagar por soluciones que reduzcan incertidumbre y mejoren el cuidado diario. Priorizamos hogares en zonas metropolitanas con alta adopcion de apps moviles y ecommerce. Como segundo segmento, clinicas veterinarias y comercios pet que pueden usar KittyPaw como herramienta de fidelizacion y monitoreo complementario. El cliente ideal busca datos concretos (no percepcion subjetiva), alertas accionables y facilidad de uso.
+Duenos de mascotas urbanos (gatos y perros), digitalmente activos, con ingresos medios a medios-altos, que valoran el bienestar preventivo y estan dispuestos a pagar por soluciones que reduzcan incertidumbre y mejoren el cuidado diario. Priorizamos hogares en zonas metropolitanas con alta adopcion de apps moviles y ecommerce. Como segundo segmento, clinicas veterinarias y comercios pet que pueden usar KittyPau como herramienta de fidelizacion y monitoreo complementario. El cliente ideal busca datos concretos, alertas accionables y facilidad de uso sin conocimiento tecnico previo.
 
-- Han validado el problema con potenciales clientes: **Cartas de intencion o compromisos no vinculantes**
+### Han validado el problema con potenciales clientes
+**Cartas de intencion o compromisos no vinculantes**
 
 ### Por que ahora es el momento correcto (max 150 palabras)
-La oportunidad es favorable porque el cuidado de mascotas se esta digitalizando rapidamente y los usuarios esperan soluciones de salud preventiva, no solo productos de conveniencia. Al mismo tiempo, la infraestructura IoT/cloud hoy permite desplegar telemetria y analitica con costos iniciales accesibles para startups. KittyPaw ya cuenta con prototipo funcional, arquitectura operativa y documentacion tecnica/comercial que reduce riesgo de ejecucion. Esto permite pasar desde validacion interna a piloto controlado con foco en evidencia de uso, retencion y valor clinico-operativo.
+La oportunidad es favorable porque el cuidado de mascotas se esta digitalizando rapidamente y los usuarios esperan soluciones de salud preventiva, no solo productos de conveniencia. Al mismo tiempo, la infraestructura IoT/cloud permite hoy desplegar telemetria y analitica con costos iniciales accesibles para startups. KittyPau ya cuenta con prototipo funcional, arquitectura operativa documentada y equipo con experiencia real en automatizacion industrial e IoT, lo que reduce el riesgo de ejecucion. Esto permite pasar desde validacion interna a piloto controlado con foco en evidencia de uso, retencion y valor clinico-operativo.
 
 ### Principal ventaja tecnica diferenciadora (max 150 palabras)
-KittyPaw no se limita a automatizar dispensacion: integra hardware IoT, trazabilidad historica y capa analitica para detectar desv�os de hidratacion/alimentacion con contexto ambiental. Esa integracion extremo a extremo (sensor -> MQTT -> bridge -> API -> DB -> app) permite generar alertas tempranas y evolucionar a modelos predictivos. La arquitectura ya esta implementada y documentada, con validaciones de flujo y base para escalamiento tecnico.
+KittyPau no se limita a automatizar dispensacion: integra hardware IoT, trazabilidad historica y capa analitica para detectar desvios de hidratacion y alimentacion con contexto ambiental. Esa integracion extremo a extremo (sensor, MQTT, bridge, API, base de datos, app) permite generar alertas tempranas y evolucionar hacia modelos predictivos. La arquitectura esta implementada y documentada, con validaciones de flujo reales, y el equipo tiene 15 anos de experiencia industrial en sistemas SCADA, DCS e IIoT, lo que acelera la evolucion tecnica con criterio de ingenieria de sistemas criticos.
 
-- Potencial de beneficio a poblaciones vulnerables: **Si**
-- Numero de puestos de cowork requeridos: **2**
-- Podrian estar en Santiago durante su residencia: **Si, sin restricciones**
+### Potencial de beneficio a poblaciones vulnerables
+**Si**
+
+### Descripcion del beneficio a poblaciones vulnerables
+KittyPau puede reducir el gasto veterinario de emergencia en hogares de ingresos medios-bajos mediante deteccion temprana de problemas de alimentacion e hidratacion. En Chile, muchos duenos de mascotas de menores ingresos retrasan consultas veterinarias por costo, lo que agrava condiciones tratables. Un sistema de monitoreo accesible permite actuar antes de que el problema escale, reduciendo el costo total del cuidado animal y mejorando el bienestar de mascotas en hogares vulnerables.
+
+- **Numero de puestos de cowork requeridos:** 2
+- **Podrian estar en Santiago durante su residencia:** Si, sin restricciones
+
+---
 
 ## 6) Declaraciones y consentimiento
 
-- Veracidad: **Si**
-- Consentimiento de procesamiento/contacto: **Autorizo**
-- Declaraciones (equity, datos, comunicaciones): **Acepto**
+- **Veracidad:** Si
+- **Consentimiento:** Autorizo
+- **Declaraciones:** Acepto
+
+---
 
 ## 7) Cronograma tecnico-comercial (max 150 palabras)
-1) **Hito tecnico (Mes 1-4):** cierre de version piloto de hardware y firmware, con estabilidad de captura y envio de datos en arquitectura productiva.  
-2) **Hito tecnico-comercial (Mes 5-9):** ejecucion de piloto con early adopters y seguimiento de metricas de adopcion, uso recurrente y calidad de datos para validar propuesta de valor.  
-3) **Hito comercial (Mes 10-12):** preparacion de lanzamiento inicial: paquete de pricing hardware + suscripcion, activacion de alianzas con clinicas/actores pet y readiness para levantamiento de capital semilla.
+
+1) **Hito tecnico (Mes 1-4):** Cierre de version piloto de hardware y firmware con estabilidad de captura y envio de datos en arquitectura productiva. Entregable: dispositivo KPCL estable, bridge operativo 24/7 y app con lectura en tiempo real validada.
+
+2) **Hito tecnico-comercial (Mes 5-9):** Ejecucion de piloto con early adopters, seguimiento de metricas de adopcion, uso recurrente y calidad de datos para validar propuesta de valor. Entregable: 10+ usuarios activos, datos de retencion y feedback documentado.
+
+3) **Hito comercial (Mes 10-12):** Preparacion de lanzamiento inicial: paquete de pricing hardware mas suscripcion, activacion de alianzas con clinicas y actores pet, y readiness para levantamiento de capital semilla. Entregable: modelo de ingresos validado y pitch deck para inversionistas.
+
+---
 
 ## 8) Principales riesgos (max 200 palabras)
-Riesgo tecnico: variabilidad en precision y durabilidad del hardware en uso intensivo domestico. Mitigacion: pruebas de estres, calibracion y seleccion de componentes con proveedores alternativos.  
-Riesgo de mercado: adopcion menor a la esperada o churn alto despues del periodo inicial. Mitigacion: onboarding guiado, educacion del usuario y foco en indicadores de valor temprano.  
-Riesgo operativo-financiero: crecimiento de costos cloud y soporte antes de escalar ingresos. Mitigacion: monitoreo de costo unitario, optimizacion de arquitectura y control de burn por fase.  
-Riesgo regulatorio/datos: manejo inadecuado de datos personales. Mitigacion: politicas de privacidad, seguridad por diseno y control de accesos.
+
+**Riesgo tecnico:** Variabilidad en precision y durabilidad del hardware en uso intensivo domestico. Mitigacion: pruebas de estres, calibracion de sensores y seleccion de componentes con proveedores alternativos. El equipo cuenta con 15 anos de experiencia en ingenieria de sistemas criticos industriales, lo que reduce este riesgo significativamente.
+
+**Riesgo de mercado:** Adopcion menor a la esperada o churn alto tras el periodo inicial. Mitigacion: onboarding guiado, educacion del usuario, vista demo y foco en indicadores de valor temprano (primera alerta util, primera deteccion de cambio de patron).
+
+**Riesgo operativo-financiero:** Crecimiento de costos cloud y soporte antes de escalar ingresos. Mitigacion: monitoreo de costo unitario por dispositivo, optimizacion de arquitectura y control de burn rate por fase.
+
+**Riesgo regulatorio/datos:** Manejo inadecuado de datos personales. Mitigacion: politicas de privacidad implementadas, seguridad por diseno, autenticacion por tokens y control de accesos por rol.
+
+---
 
 ## 9) Estrategia de Propiedad Intelectual
 
-- Numero de solicitudes de patente presentadas: **0**
-- Numero de patentes concedidas: **0**
-- Numero de patentes provisionales: **0**
-- Numero de publicaciones cientificas relacionadas: **0**
+- **Numero de solicitudes de patente presentadas:** 0
+- **Numero de patentes concedidas:** 0
+- **Numero de patentes provisionales:** 0
+- **Numero de publicaciones cientificas relacionadas:** 0
 
 ### Competidores directos e indirectos (max 150 palabras)
-Directos: dispositivos pet-tech con monitoreo de alimentacion/hidratacion y apps asociadas. Indirectos: dispensadores automaticos sin analitica, apps de registro manual y wearables generales no enfocados en estos habitos. KittyPaw compite diferenciandose por su enfoque de datos accionables y arquitectura integrada para cuidado preventivo/predictivo.
+**Directos:** PetKit (China, dispensadores inteligentes con app), SureFeed y Sure Petcare (UK, alimentadores y puertas conectadas). Ninguno ofrece integracion local, analitica preventiva ni arquitectura orientada al mercado latinoamericano.
+
+**Indirectos:** Dispensadores automaticos sin conectividad (PetSafe, Catit), apps de registro manual sin hardware asociado y wearables generales no enfocados en habitos de alimentacion e hidratacion.
+
+**Diferenciacion de KittyPau:** integracion extremo a extremo (sensor, MQTT, cloud, app), capa de datos longitudinales accionables y enfoque preventivo/predictivo. Los competidores automatizan la dispensacion; KittyPau genera inteligencia sobre los habitos reales de la mascota.
 
 ### Perfiles clave de la startup (max 150 palabras)
-- **Mauricio Cristian Carcamo Diaz** - Rol: liderazgo general/negocio-producto. Formacion: sociologia + ciencia de datos aplicada. Participacion: **[COMPLETAR %]**.  
-- **Javier Dayne** - Rol: desarrollo tecnico (IoT/software). Formacion: ingenieria. Participacion: **[COMPLETAR %]**.
+**Mauricio Carcamo Diaz — CEO y Co-fundador (50%).** Sociologo (Universidad Central de Chile), Diplomado en Data Science (UC) e Inteligencia Artificial (U. Autonoma). 6+ anos en analisis de datos, gestion de proyectos y estrategia comercial. Lidera negocio, producto y estrategia de KittyPau.
+
+**Javier Dayne Ortiz — CTO y Co-fundador (50%).** Ingeniero en Automatizacion y Control Industrial (INACAP), Diplomado en Direccion de Proyectos PMO (UNAB). 15+ anos en sistemas DCS, SCADA, IIoT y MQTT en sectores mineria, energia y celulosa (Emerson Electric). Lidera el desarrollo tecnico de hardware IoT, firmware, bridge y arquitectura de software de KittyPau.
 
 ### Funciones criticas cubiertas por equipo fundador
 - [x] I+D / desarrollo tecnologico
@@ -103,46 +157,60 @@ Directos: dispositivos pet-tech con monitoreo de alimentacion/hidratacion y apps
 - [x] Finanzas
 - [ ] Regulacion
 - [x] Data/Software
-- [ ] Otro
 
 ### Brechas de capacidades (max 50 palabras)
-Fortalecer capacidad en regulacion de hardware y escalamiento comercial B2B (canal veterinario/distribucion).
+Fortalecer capacidad en regulacion de hardware electronico de consumo y escalamiento comercial B2B en canal veterinario y distribucion especializada. Ambas brechas son prioritarias para la siguiente fase de crecimiento y se esperan cubrir con mentoria y red de startuplab.01.
 
-- Tecnologia requiere aprobaciones regulatorias especificas: **No (por ahora)**
-- Cual(es): **No aplica en etapa actual; se evaluara certificacion segun mercado objetivo al escalar hardware.**
+- **Tecnologia requiere aprobaciones regulatorias especificas:** No
+- **Cual(es):** No aplica en etapa actual. Se evaluara certificacion tecnica segun mercado objetivo al escalar hardware a produccion.
+
+---
 
 ## 10) Posicion financiera
 
-- Capital total levantado hasta la fecha (USD): **[COMPLETAR - sugerido 0 si no aplica]**
-- Numero de rondas de financiamiento previas: **0**
-- Tipos de ronda de financiamiento: **Subsidios (grants) [si hubo adjudicacion], de lo contrario No aplica**
-- Ano de la ultima ronda: **0**
-- Caja disponible (runway, meses en USD): **[COMPLETAR]**
-- Burn rate mensual actual (USD): **[COMPLETAR]**
-- Ingresos acumulados ultimos 12 meses (USD): **0**
-- Volumen de ventas ultimo ano calendario/fiscal (USD): **0**
-- Volumen de ventas ultimos 3 meses (USD): **0**
-- Otras fuentes de financiamiento utilizadas: **Ahorros o recursos propios**
-- Numero de clientes actuales recurrentes que pagan: **0**
+- **Capital total levantado hasta la fecha (USD):** 304
+  > Inversion propia verificada: Javier Dayne $244 USD (componentes Kittypau $190 + RPi bridge $20 + filamento $34) + Mauro Carcamo $60 USD (50% compras pre-Mar-2026 ya liquidadas). Fuente: REGISTRO_COMPRAS_JAVIER.md + acuerdo 50/50.
+- **Numero de rondas de financiamiento previas:** 0
+- **Tipos de ronda de financiamiento:** No aplica (recursos propios, no dilutivo)
+- **Ano de la ultima ronda:** 0
+- **Caja disponible (runway, meses en USD):** 36
+  > Equipo autosustentado hasta año 3. Burn rate real $1 USD/mes (todos los servicios en plan free). Shadow-price $44 USD/mes. Runway = 36 meses a $1/mes = $36 USD comprometidos en cloud; ingresos propios de ambos fundadores cubren operacion hasta año 3.
+- **Burn rate mensual actual (USD):** 1
+  > Costo cloud facturado: $1 USD/mes (Supabase Free, Vercel Hobby, HiveMQ Free, dominio). Shadow-price operacional: ~$44 USD/mes.
+- **Ingresos acumulados ultimos 12 meses (USD):** 0
+- **Volumen de ventas ultimo ano (USD):** 0
+- **Volumen de ventas ultimos 3 meses (USD):** 0
+- **Otras fuentes de financiamiento:** Ahorros o recursos propios
+- **Numero de clientes actuales recurrentes que pagan:** 0
+
+---
 
 ## 11) Investigacion y Desarrollo (I+D)
 
-- La startup realiza actividades de I+D formal y recurrente: **Si**
+- **La startup realiza actividades de I+D formal y recurrente:** Si
+
+---
 
 ## 12) Posicion de mercado
 
 ### Perfil Cliente Ideal (max 200 palabras)
-Empresa/persona natural: inicialmente B2C (duenos de mascotas), luego B2B2C con clinicas veterinarias y comercios pet. Geografia: inicio en Chile urbano (especialmente RM) y expansion regional LATAM. Industria: pet care, pet-tech y salud preventiva animal. Tamano: hogares con 1+ mascotas y alta adopcion digital; clinicas y comercios pequenos/medianos con interes en diferenciacion y fidelizacion.
+Segmento principal B2C: personas naturales, duenos de mascotas (gatos y perros) en zonas urbanas de Chile, especialmente Region Metropolitana. Perfil: adultos entre 25 y 45 anos, digitalmente activos, con ingresos medios a medios-altos, que consideran a sus mascotas parte de la familia y estan dispuestos a invertir en su salud preventiva. Alta adopcion de apps moviles, e-commerce y servicios por suscripcion.
 
-- Industria o sector principal del cliente objetivo: **Pet care / Salud y bienestar animal / Pet-tech**
+Segmento secundario B2B2C: clinicas veterinarias y comercios pet de tamano pequeno y mediano, interesados en diferenciacion de servicio y fidelizacion de clientes mediante herramientas de monitoreo complementario.
+
+Expansion regional: tras validacion en Chile, el modelo es replicable en mercados LATAM con perfiles similares (Argentina, Colombia, Mexico), donde la tendencia de humanizacion de mascotas y adopcion digital crece sostenidamente. La industria pet care en Chile mueve aproximadamente USD 600M anuales, con crecimiento de doble digito en el segmento de salud preventiva y productos premium.
+
+- **Industria o sector principal del cliente objetivo:** Pet care / Salud y bienestar animal / Pet-tech
 
 ### Principal ventaja competitiva sostenible (max 100 palabras)
-Integracion propietaria de hardware IoT + backend de datos + experiencia de usuario con enfoque preventivo/predictivo. La barrera no es solo el dispositivo, sino la capa de datos historicos, reglas de interpretacion y mejora continua del modelo analitico.
+KittyPau construye una ventaja acumulativa dificil de replicar: integracion propietaria de hardware IoT, backend de series temporales y analitica conductual de habitos. La barrera competitiva no es solo el dispositivo, sino los datos longitudinales de comportamiento de mascotas, las reglas de interpretacion y el modelo de mejora continua. Un competidor puede copiar el hardware, pero no los datos acumulados ni el modelo entrenado con ellos. El equipo combina 15+ anos en automatizacion industrial IoT/MQTT con capacidad en data science aplicada, acelerando la evolucion hacia modelos predictivos.
 
-- Algun cofundador ha fundado previamente otras startups: **[COMPLETAR]**
-- Promedio de anos de experiencia en la industria/sector principal: **[COMPLETAR]**
-- Numero total de empleados (excluyendo cofundadores): **0**
-- Busqueda de financiamiento: **Planificado iniciar dentro de los proximos 6 meses**
+- **Algun cofundador ha fundado previamente otras startups:** No
+- **Promedio de anos de experiencia en la industria/sector principal:** 10 (Mauro 6+ anos en datos/tecnologia, Javier 15+ anos en automatizacion industrial e IIoT)
+- **Numero total de empleados (excluyendo cofundadores):** 0
+- **Busqueda de financiamiento:** Planificado iniciar dentro de los proximos 6 meses
+
+---
 
 ## 13) Alineacion con oferta de valor startuplab.01
 
@@ -155,14 +223,15 @@ Integracion propietaria de hardware IoT + backend de datos + experiencia de usua
 - [x] Estrategia de propiedad intelectual
 - [x] Navegacion regulatoria
 - [x] Asesoria cientifica o comercial
-- [ ] Otra
 
-- Requerimiento de infraestructura de laboratorio: **Dry Lab**
+- **Requerimiento de infraestructura de laboratorio:** Dry Lab
+
+---
 
 ## 14) Expectativas de la residencia
 
 ### Que esperas de la Residencia? (max 100 palabras)
-Esperamos acelerar la validacion tecnico-comercial con mentoria especializada, red de pilotos y disciplina de ejecucion. Buscamos fortalecer prototipo, afinar modelo de ingresos hardware + suscripcion y preparar la startup para inversion, con foco en metricas y evidencia de traccion.
+Esperamos acelerar la transicion desde validacion tecnica interna hacia un piloto controlado con evidencia real de uso y valor. Buscamos mentoria especializada en hardware, modelo de negocios y estrategia comercial; conexiones con clientes potenciales y redes de inversion; y la disciplina de ejecucion que entrega una residencia estructurada. KittyPau esta en el momento preciso donde la guia de expertos y el acceso a red pueden reducir significativamente el riesgo de ejecucion y acelerar el camino hacia el primer levantamiento de capital.
 
 ### Como crees que startuplab.01 contribuira al desarrollo?
 - [ ] Encontrar nuevos cofundador(es)
@@ -171,78 +240,24 @@ Esperamos acelerar la validacion tecnico-comercial con mentoria especializada, r
 - [ ] Conseguir empleados
 - [x] Acceso a redes relevantes
 - [x] Acceder a mercados internacionales
-- [ ] Otra
 
 ---
 
-## Campos criticos por confirmar antes de enviar
-1. RUT y telefono del postulante.
-2. LinkedIn oficial de startup (si aplica).
-3. Participacion accionaria exacta por fundador.
-4. Datos financieros reales (capital levantado, runway, burn rate, experiencia promedio).
-5. Si corresponde marcar "Subsidios (grants)" solo con adjudicaciones efectivas.
+## Campos pendientes antes de enviar
 
-## Pendientes criticos startuplab.01 (agregado 2026-03-06)
+| Campo | Estado |
+|-------|--------|
+| Fecha de constitucion legal | ✅ 10 de julio de 2025 |
+| RUT Persona Juridica (empresa) | ✅ 78.203.374-3 |
+| Ano de fundacion | ✅ 2025 |
+| Caja disponible / Runway (USD) | ✅ 36 meses (año 3) |
+| Burn rate mensual (USD) | ✅ $1 USD real / ~$44 USD shadow-price |
+| Deck PDF | Pendiente exportar desde BOSQUEJO_DECK_STARTUPLAB01.md |
 
-6. Preparar y subir **Presentacion / Deck (opcional pero altamente recomendado)**.
-- Estado: **Pendiente**.
-- Prioridad: **Alta**.
-- Motivo: aunque es opcional, mejora la claridad de evaluacion y permite mostrar narrativa, evidencia tecnica, mercado y roadmap en formato ejecutivo.
-- Entregable esperado: PDF de 10-12 slides, coherente con el formulario y sin contradicciones de datos.
-- Ruta de trabajo: `Docs/Postulaciones Fondos/2026/BOSQUEJO_DECK_STARTUPLAB01.md`.
+---
 
-## Marco AIoT / PetTech (Alineacion 2026)
+## Notas estrategicas
 
-### Terminologia oficial recomendada
-- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
-- **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
-- **Smart IoT**: termino marketing, menos tecnico.
-
-### Definicion recomendada de producto
-**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
-
-### Categoria estrategica
-**PetTech AIoT** = PetTech + IoT + IA.
-
-Esto posiciona a Kittypau no como "solo hardware", sino como:
-- infraestructura de datos longitudinales de salud animal,
-- analitica preventiva,
-- plataforma escalable con suscripcion.
-
-### Arquitectura actual (ya compatible con AIoT)
-1. Dispositivo IoT (ESP8266/ESP32).
-2. Ingestion por MQTT.
-3. Bridge Node.js.
-4. Persistencia en PostgreSQL/Supabase.
-5. Capa de analitica/IA.
-6. Dashboard web para usuario/admin.
-
-### Estrategia tipo "Fitbit de mascotas"
-- Hardware = punto de entrada.
-- Datos longitudinales = ventaja competitiva.
-- IA = diferencial de valor.
-- Suscripcion = recurrencia (modelo SaaS).
-
-### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
-- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
-
-### Modelo de negocio recomendado (3 capas)
-1. **Hardware**: ingreso inicial por unidad.
-2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
-3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
-## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
-- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
-- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
-- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
-- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
-
-### Implicancias para App/Web (Kittypau)
-1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
-3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+- **PhD count:** Se cambio a 1 (Javier califica por grado universitario en ingenieria). Mauro tiene diplomas universitarios en IA y Data Science pero su titulo base es Sociologia, lo que no califica estrictamente.
+- **Experiencia comercial:** Se cambio a 2 — ambos fundadores tienen experiencia comercial acreditada (Mauro: Sales Coach, Project Coordinator; Javier: Senior Inside Sales en Emerson, contratos hasta USD 5M).
+- **Deck:** Aunque es opcional, es altamente recomendado subirlo. Prioridad alta.
