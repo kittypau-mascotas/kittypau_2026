@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kittypau</string>
+    <string name="title_activity_main">Kittypau</string>
+    <string name="package_name">com.kittypau.app</string>
+    <string name="custom_url_scheme">com.kittypau.app</string>
+    <string name="app_tagline">IoT para bienestar de mascotas</string>
+    <string name="app_short_description">Monitorea comida y agua de tu mascota en tiempo real.</string>
+    <string name="share_app_subject">Kittypau | Bienestar de mascotas</string>
+    <string name="share_app_text">Estoy usando Kittypau para monitorear hidratación y alimento de mi mascota: https://kittypau-app.vercel.app</string>
+</resources>

@@ -1,9 +1,9 @@
-# KittyPau Dev Toolkit
+# Kittypau Dev Toolkit
 
 Guia para desarrollo seguro y consistente.
 
 Equipo: Javo · Mauro  
-Proyecto: KittyPau
+Proyecto: Kittypau
 
 ## 1. Objetivo
 
@@ -89,7 +89,7 @@ npm --prefix kittypau_app run staged:check
 - Evitar `setState` sincronico dentro de `useEffect`.
 - No subir secretos ni archivos grandes.
 
-## 8. Flujo recomendado KittyPau
+## 8. Flujo recomendado Kittypau
 
 ```bash
 git checkout -b feature/nueva-funcion

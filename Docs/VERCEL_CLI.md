@@ -100,3 +100,19 @@ Invoke-RestMethod -Method Post `
 - `401/403`: permisos o token de cuenta.
 - Proyecto equivocado: relink con `npx vercel link --yes`.
 - Cambio no visible: revisar entorno (`preview` vs `production`).
+
+## 9) Flujo recomendado GitHub main + Vercel (2026-03-06)
+Desde la raiz del repo:
+```powershell
+git checkout main
+git pull origin main
+git add -A
+git commit -m "docs: update android apk and deployment status"
+git push origin main
+npx vercel --prod
+```
+Verificacion posterior:
+```powershell
+npx vercel ls
+npx vercel logs --since 15m
+```

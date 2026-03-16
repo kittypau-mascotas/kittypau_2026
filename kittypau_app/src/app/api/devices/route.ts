@@ -9,9 +9,63 @@ import {
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 import { supabaseServer } from "@/lib/supabase/server";
+import type { KittypauErrorType } from "@/lib/errors/kittypau-error";
+
+export const runtime = "edge";
 
 const ALLOWED_STATUS = new Set(["active", "inactive", "maintenance"]);
 const ALLOWED_DEVICE_TYPE = new Set(["food_bowl", "water_bowl"]);
+
+async function detectCriticalSystemErrorType(): Promise<KittypauErrorType | null> {
+  // Best-effort: if this fails, do not block the app.
+  try {
+    const { data, error } = await supabaseServer
+      .from("bridge_heartbeats")
+      .select("bridge_id, last_seen, mqtt_connected, last_mqtt_at")
+      .order("last_seen", { ascending: false })
+      .limit(40);
+
+    if (error) return null;
+
+    const rows = (data ?? []) as Array<{
+      bridge_id?: string | null;
+      last_seen?: string | null;
+      mqtt_connected?: boolean | null;
+      last_mqtt_at?: string | null;
+    }>;
+
+    if (rows.length === 0) return null;
+
+    const now = Date.now();
+    const bridgeCutoffIso = new Date(now - 10 * 60_000).toISOString();
+    const mqttCutoffIso = new Date(now - 6 * 60_000).toISOString();
+
+    const online = rows.filter((row) => {
+      const lastSeen = row.last_seen
+        ? new Date(row.last_seen).toISOString()
+        : null;
+      return !!lastSeen && lastSeen >= bridgeCutoffIso;
+    });
+
+    if (online.length === 0) return "bridge_offline";
+
+    const mqttDown = online.filter((row) => {
+      if (row.mqtt_connected === false) return true;
+      const lastMqtt = row.last_mqtt_at
+        ? new Date(row.last_mqtt_at).toISOString()
+        : null;
+      if (!lastMqtt) return true;
+      return lastMqtt < mqttCutoffIso;
+    });
+
+    if (mqttDown.length === online.length) return "mqtt_broker_down";
+    if (mqttDown.length > 0) return "mqtt_unstable";
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 function triggerBackgroundHealthCheck(req: NextRequest) {
   const token = process.env.BRIDGE_HEARTBEAT_SECRET;
@@ -27,7 +81,7 @@ function triggerBackgroundHealthCheck(req: NextRequest) {
       headers: { "x-bridge-token": token },
       cache: "no-store",
       signal: controller.signal,
-    }
+    },
   )
     .catch(() => {
       // Best-effort trigger only.
@@ -68,19 +122,33 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  const cacheHeaders = {
+    "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
+  };
+
+  const criticalType = await detectCriticalSystemErrorType();
+  const responseHeaders = criticalType
+    ? { ...cacheHeaders, "x-kp-error-type": criticalType }
+    : cacheHeaders;
+
   if (!paginate) {
     logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
-    return NextResponse.json(data ?? []);
+    return NextResponse.json(data ?? [], { headers: responseHeaders });
   }
 
   const nextCursor =
-    data && data.length > 0 ? data[data.length - 1]?.created_at ?? null : null;
+    data && data.length > 0
+      ? (data[data.length - 1]?.created_at ?? null)
+      : null;
 
   logRequestEnd(req, startedAt, 200, {
     count: data?.length ?? 0,
     next_cursor: nextCursor,
   });
-  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+  return NextResponse.json(
+    { data: data ?? [], next_cursor: nextCursor },
+    { headers: responseHeaders },
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -94,14 +162,9 @@ export async function POST(req: NextRequest) {
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:devices_post`;
   const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
   let body: {
     pet_id?: string;
@@ -139,7 +202,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "MISSING_FIELDS",
-      "device_id, device_type, and pet_id are required"
+      "device_id, device_type, and pet_id are required",
     );
   }
 
@@ -148,7 +211,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_DEVICE_CODE",
-      "device_id must match KPCL0000 format"
+      "device_id must match KPCL0000 format",
     );
   }
 
@@ -169,7 +232,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "BATTERY_OUT_OF_RANGE",
-      "battery_level must be between 0 and 100"
+      "battery_level must be between 0 and 100",
     );
   }
 
@@ -184,7 +247,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_PLATE_WEIGHT",
-      "plate_weight_grams must be between 1 and 5000"
+      "plate_weight_grams must be between 1 and 5000",
     );
   }
 
@@ -227,7 +290,7 @@ export async function POST(req: NextRequest) {
           req,
           500,
           "SUPABASE_ERROR",
-          retry.error?.message ?? "RPC failed"
+          retry.error?.message ?? "RPC failed",
         );
       }
 
@@ -253,7 +316,7 @@ export async function POST(req: NextRequest) {
           ...retry.data,
           plate_weight_grams: payload.plate_weight_grams,
         },
-        { status: 201 }
+        { status: 201 },
       );
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);
@@ -281,7 +344,6 @@ export async function POST(req: NextRequest) {
       ...data,
       plate_weight_grams: payload.plate_weight_grams,
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
-

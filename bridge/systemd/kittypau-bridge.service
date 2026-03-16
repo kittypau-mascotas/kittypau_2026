@@ -1,5 +1,5 @@
 [Unit]
-Description=Kittypau MQTT Bridge (HiveMQ -> Vercel API)
+Description=Kittypau MQTT Bridge (HiveMQ -> Supabase)
 After=network-online.target
 Wants=network-online.target
 
@@ -9,12 +9,24 @@ User=kittypau
 WorkingDirectory=/home/kittypau/kittypau-bridge
 EnvironmentFile=/home/kittypau/kittypau-bridge/.env
 ExecStart=/usr/bin/node /home/kittypau/kittypau-bridge/src/index.js
-Restart=always
-RestartSec=3
+
+# Reinicio automatico: espera 5s entre intentos.
+# Si falla mas de 5 veces en 60s, systemd lo deja caido (evita loop infinito).
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
 TimeoutStopSec=10
 KillSignal=SIGINT
+SuccessExitStatus=0 SIGINT SIGTERM
 
-# Hardening (keeps it simple; can be tightened later)
+# Logs via journald (ver con: journalctl -u kittypau-bridge -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kittypau-bridge
+
+# Hardening minimo
 NoNewPrivileges=true
 PrivateTmp=true
 

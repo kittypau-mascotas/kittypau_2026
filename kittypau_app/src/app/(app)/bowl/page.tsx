@@ -4,21 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Filler,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Legend,
-  type ChartOptions,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+import { buildSeries, ChartCard } from "@/lib/charts";
 
 type ApiDevice = {
   id: string;
@@ -28,6 +18,10 @@ type ApiDevice = {
   status: string;
   device_state: string | null;
   battery_level: number | null;
+  battery_voltage?: number | null;
+  battery_state?: string | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
   last_seen: string | null;
 };
 
@@ -39,6 +33,11 @@ type ApiReading = {
   temperature: number | null;
   humidity: number | null;
   light_percent: number | null;
+  battery_level?: number | null;
+  battery_voltage?: number | null;
+  battery_state?: string | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
 };
 
 type LoadState = {
@@ -47,21 +46,59 @@ type LoadState = {
   devices: ApiDevice[];
 };
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Filler
-);
+type ChartRangeKey = "5m" | "15m" | "1h" | "1d" | "1w";
 
 const defaultState: LoadState = {
   isLoading: true,
   error: null,
   devices: [],
 };
+
+const CHART_RANGES: {
+  key: ChartRangeKey;
+  label: string;
+  windowMs: number;
+  queryLimit: number;
+  fromLabel: string;
+}[] = [
+  {
+    key: "5m",
+    label: "5 min",
+    windowMs: 5 * 60 * 1000,
+    queryLimit: 120,
+    fromLabel: "-5m",
+  },
+  {
+    key: "15m",
+    label: "15 min",
+    windowMs: 15 * 60 * 1000,
+    queryLimit: 220,
+    fromLabel: "-15m",
+  },
+  {
+    key: "1h",
+    label: "1 hora",
+    windowMs: 60 * 60 * 1000,
+    queryLimit: 420,
+    fromLabel: "-1h",
+  },
+  {
+    key: "1d",
+    label: "1 dia",
+    windowMs: 24 * 60 * 60 * 1000,
+    queryLimit: 1500,
+    fromLabel: "-1d",
+  },
+  {
+    key: "1w",
+    label: "1 semana",
+    windowMs: 7 * 24 * 60 * 60 * 1000,
+    queryLimit: 3500,
+    fromLabel: "-1sem",
+  },
+];
+
+const READINGS_BUFFER_MAX = 4000;
 
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
@@ -83,167 +120,6 @@ const formatTimestamp = (value: string | null) => {
   });
 };
 
-const buildSeries = (
-  readings: ApiReading[],
-  key: "weight_grams" | "temperature" | "humidity" | "light_percent",
-  windowMs: number
-) => {
-  const cutoff = Date.now() - windowMs;
-  return readings
-    .map((reading) => ({
-      value: reading[key],
-      timestamp: reading.recorded_at,
-    }))
-    .filter((item): item is { value: number; timestamp: string } => {
-      if (typeof item.value !== "number") return false;
-      if (!item.timestamp) return false;
-      const ts = new Date(item.timestamp).getTime();
-      if (Number.isNaN(ts)) return false;
-      return ts >= cutoff;
-    });
-};
-
-const ChartCard = ({
-  title,
-  unit,
-  series,
-  accent,
-  className,
-}: {
-  title: string;
-  unit: string;
-  series: { value: number; timestamp: string }[];
-  accent: string;
-  className?: string;
-}) => {
-  const values = series.map((item) => item.value);
-  const latest = values[0] ?? null;
-  const ordered = series.slice(0, 30).reverse();
-  const labels = ordered.map((item) => {
-    const ts = new Date(item.timestamp);
-    if (Number.isNaN(ts.getTime())) return "";
-    return ts.toLocaleTimeString("es-CL", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-  });
-  const dataPoints = ordered.map((item) => item.value);
-
-  const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
-  const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: title,
-        data: dataPoints,
-        borderColor: accent,
-        backgroundColor: accent,
-        borderWidth: 2.8,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        tension: 0.3,
-        fill: false,
-      },
-    ],
-  };
-
-  const options: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 340,
-      easing: "easeOutQuart",
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-        backgroundColor: "rgba(15, 23, 42, 0.92)",
-        titleColor: "#f8fafc",
-        bodyColor: "#f8fafc",
-        borderColor: "rgba(148, 163, 184, 0.35)",
-        borderWidth: 1,
-        displayColors: false,
-        callbacks: {
-          label: (ctx) => `${ctx.parsed.y} ${unit}`,
-        },
-      },
-    },
-    interaction: {
-      mode: "nearest",
-      intersect: false,
-    },
-    scales: {
-      x: {
-        offset: true,
-        grid: { display: false },
-        border: {
-          display: true,
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-        },
-        ticks: {
-          maxTicksLimit: 2,
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11 },
-          autoSkip: false,
-          padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          callback: (_value, index, ticks) => {
-            if (index === 0) return "-5m";
-            if (index === ticks.length - 1) return "Ahora";
-            return "";
-          },
-        },
-      },
-      y: {
-        beginAtZero: false,
-        suggestedMin: min,
-        suggestedMax: max,
-        grid: {
-          drawOnChartArea: false,
-        },
-        border: {
-          display: true,
-          color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-        },
-        ticks: {
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11 },
-          maxTicksLimit: 3,
-          callback: (value) => `${value} ${unit}`,
-        },
-      },
-    },
-  };
-
-  return (
-    <div
-      className={`chart-card rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
-        className ?? ""
-      }`}
-    >
-      <p className="chart-card-title text-[11px] uppercase tracking-[0.2em] text-slate-500">
-        {title}
-      </p>
-      <p className="chart-card-value mt-2 text-2xl font-semibold text-slate-900">
-        {latest !== null ? `${latest} ${unit}` : "Sin datos"}
-      </p>
-      <div className="chart-card-canvas mt-4 h-56 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3">
-        {values.length > 1 ? (
-          <Line data={data} options={options} />
-        ) : (
-          <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
-        )}
-      </div>
-    </div>
-  );
-};
-
 const batteryLabel = (battery: number | null) => {
   if (battery === null || Number.isNaN(battery)) return "Sin datos";
   if (battery <= 15) return "Crítica";
@@ -252,10 +128,49 @@ const batteryLabel = (battery: number | null) => {
   return "Óptima";
 };
 
+const formatBatterySource = (source?: string | null) => {
+  if (source === "usb") return "USB";
+  if (source === "battery") return "Batería";
+  return "Sin fuente";
+};
+
+const resolveDevicePowerState = (
+  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
+): "on" | "off" | "nodata" => {
+  if (!device) return "nodata";
+  const state = (device.device_state ?? "").toLowerCase();
+  const status = (device.status ?? "").toLowerCase();
+  if (!state && !status) return "nodata";
+  if (
+    state.includes("offline") ||
+    status === "offline" ||
+    status === "inactive"
+  ) {
+    return "off";
+  }
+  if (
+    state.includes("online") ||
+    state.includes("linked") ||
+    status === "active" ||
+    status === "linked"
+  ) {
+    return "on";
+  }
+  return "nodata";
+};
+
+const deviceToTestLabel = (deviceId: string | null | undefined) => {
+  if (!deviceId) return "Test_----";
+  const match = deviceId.match(/(\d{3,4})$/);
+  if (!match) return deviceId;
+  return `Test_${match[1]}`;
+};
+
 export default function BowlPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [readings, setReadings] = useState<ApiReading[]>([]);
+  const [selectedRange, setSelectedRange] = useState<ChartRangeKey>("5m");
   const [isReadingsLoading, setIsReadingsLoading] = useState(false);
   const [readingsError, setReadingsError] = useState<string | null>(null);
 
@@ -269,10 +184,14 @@ export default function BowlPage() {
     return parseListResponse<ApiDevice>(payload);
   };
 
-  const loadReadings = async (deviceId: string, token: string) => {
+  const loadReadings = async (
+    deviceId: string,
+    token: string,
+    limit: number,
+  ) => {
     const params = new URLSearchParams();
     params.set("device_id", deviceId);
-    params.set("limit", "30");
+    params.set("limit", String(limit));
     const res = await fetch(`/api/readings?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -282,6 +201,8 @@ export default function BowlPage() {
     return parseListResponse<ApiReading>(payload);
   };
 
+  // Carga de devices: solo se ejecuta al montar el componente.
+  // Las lecturas son responsabilidad del siguiente useEffect (deps: selectedDeviceId + selectedRange).
   useEffect(() => {
     let mounted = true;
     const run = async () => {
@@ -301,25 +222,15 @@ export default function BowlPage() {
       try {
         const devices = await loadDevices(token);
         const storedDeviceId =
-          typeof window !== "undefined"
-            ? window.localStorage.getItem("kittypau_device_id")
-            : null;
+          window.localStorage.getItem("kittypau_device_id");
         const primaryDevice =
           devices.find((device) => device.id === storedDeviceId) ?? devices[0];
         const initialId = primaryDevice?.id ?? null;
-        if (initialId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_device_id", initialId);
-        }
-        setSelectedDeviceId(initialId);
         if (initialId) {
-          setIsReadingsLoading(true);
-          const readingData = await loadReadings(initialId, token);
-          if (mounted) {
-            setReadings(readingData);
-            setReadingsError(null);
-          }
+          syncSelectedDevice(initialId);
         }
         if (!mounted) return;
+        setSelectedDeviceId(initialId);
         setState({
           isLoading: false,
           error: null,
@@ -351,14 +262,23 @@ export default function BowlPage() {
       if (!token || !active) return;
       try {
         setIsReadingsLoading(true);
-        const readingData = await loadReadings(selectedDeviceId, token);
+        const selectedConfig =
+          CHART_RANGES.find((range) => range.key === selectedRange) ??
+          CHART_RANGES[0];
+        const readingData = await loadReadings(
+          selectedDeviceId,
+          token,
+          selectedConfig.queryLimit,
+        );
         if (!active) return;
         setReadings(readingData);
         setReadingsError(null);
       } catch (err) {
         if (!active) return;
         setReadingsError(
-          err instanceof Error ? err.message : "No se pudieron cargar lecturas."
+          err instanceof Error
+            ? err.message
+            : "No se pudieron cargar lecturas.",
         );
       } finally {
         if (active) setIsReadingsLoading(false);
@@ -368,7 +288,7 @@ export default function BowlPage() {
     return () => {
       active = false;
     };
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, selectedRange]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -377,7 +297,14 @@ export default function BowlPage() {
       const token = await getValidAccessToken();
       if (!token || !active) return;
       try {
-        const readingData = await loadReadings(selectedDeviceId, token);
+        const selectedConfig =
+          CHART_RANGES.find((range) => range.key === selectedRange) ??
+          CHART_RANGES[0];
+        const readingData = await loadReadings(
+          selectedDeviceId,
+          token,
+          selectedConfig.queryLimit,
+        );
         if (!active) return;
         setReadings(readingData);
       } catch {
@@ -389,7 +316,7 @@ export default function BowlPage() {
       active = false;
       clearInterval(interval);
     };
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, selectedRange]);
 
   useEffect(() => {
     if (!selectedDeviceId) return;
@@ -418,9 +345,9 @@ export default function BowlPage() {
             setReadings((prev) => {
               const exists = prev.some((item) => item.id === nextReading.id);
               if (exists) return prev;
-              return [nextReading, ...prev].slice(0, 60);
+              return [nextReading, ...prev].slice(0, READINGS_BUFFER_MAX);
             });
-          }
+          },
         )
         .subscribe();
     };
@@ -438,6 +365,36 @@ export default function BowlPage() {
   const selectedDevice = useMemo(() => {
     return state.devices.find((device) => device.id === selectedDeviceId);
   }, [selectedDeviceId, state.devices]);
+
+  const selectedDeviceIndex = useMemo(() => {
+    return state.devices.findIndex((device) => device.id === selectedDeviceId);
+  }, [selectedDeviceId, state.devices]);
+
+  const selectedDeviceTestLabel = useMemo(() => {
+    return deviceToTestLabel(selectedDevice?.device_id);
+  }, [selectedDevice?.device_id]);
+
+  const selectorPowerState = useMemo(() => {
+    return resolveDevicePowerState(selectedDevice);
+  }, [selectedDevice]);
+
+  const selectorDotClass =
+    selectorPowerState === "on"
+      ? "bg-emerald-500 border-emerald-400"
+      : selectorPowerState === "off"
+        ? "bg-rose-500 border-rose-400"
+        : "bg-white border-slate-300";
+
+  const cycleDevice = (offset: -1 | 1) => {
+    if (state.devices.length <= 1 || selectedDeviceIndex < 0) return;
+    const nextIndex =
+      (selectedDeviceIndex + offset + state.devices.length) %
+      state.devices.length;
+    const nextDeviceId = state.devices[nextIndex]?.id ?? null;
+    if (!nextDeviceId) return;
+    setSelectedDeviceId(nextDeviceId);
+    syncSelectedDevice(nextDeviceId);
+  };
 
   const connectionHint = useMemo(() => {
     if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
@@ -469,7 +426,10 @@ export default function BowlPage() {
 
   const actionNotes = useMemo(() => {
     const notes: string[] = [];
-    if (selectedDevice?.battery_level !== null && selectedDevice?.battery_level !== undefined) {
+    if (
+      selectedDevice?.battery_level !== null &&
+      selectedDevice?.battery_level !== undefined
+    ) {
       if (selectedDevice.battery_level <= 15) {
         notes.push("Carga el plato en las próximas horas.");
       } else if (selectedDevice.battery_level <= 35) {
@@ -496,35 +456,110 @@ export default function BowlPage() {
     return "Sin datos suficientes para diagnóstico completo.";
   }, [selectedDevice, statusSummary.tone]);
 
+  const selectedRangeConfig = useMemo(() => {
+    return (
+      CHART_RANGES.find((range) => range.key === selectedRange) ??
+      CHART_RANGES[0]
+    );
+  }, [selectedRange]);
+
+  const latestWeightValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.weight_grams === "number")
+        ?.weight_grams ?? null,
+    [readings],
+  );
+  const latestTempValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.temperature === "number")
+        ?.temperature ?? null,
+    [readings],
+  );
+  const latestHumidityValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.humidity === "number")?.humidity ??
+      null,
+    [readings],
+  );
+  const latestLightValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.light_percent === "number")
+        ?.light_percent ?? null,
+    [readings],
+  );
+
+  const latestBatteryReading = useMemo(
+    () =>
+      readings.find(
+        (item) =>
+          typeof item.battery_level === "number" ||
+          typeof item.battery_voltage === "number" ||
+          typeof item.battery_source === "string",
+      ) ?? null,
+    [readings],
+  );
+
+  const batteryLevelValue =
+    selectedDevice?.battery_level ??
+    latestBatteryReading?.battery_level ??
+    null;
+  const batteryVoltageValue =
+    selectedDevice?.battery_voltage ??
+    latestBatteryReading?.battery_voltage ??
+    null;
+  const batterySourceValue =
+    selectedDevice?.battery_source ??
+    latestBatteryReading?.battery_source ??
+    null;
+  const batteryEstimatedValue =
+    selectedDevice?.battery_is_estimated ??
+    latestBatteryReading?.battery_is_estimated ??
+    false;
+  const batterySummary =
+    batteryLevelValue !== null && batteryLevelValue !== undefined
+      ? `${batteryLevelValue}% · ${batteryLabel(batteryLevelValue)}`
+      : "Sin datos";
+  const batteryExtra = [
+    batteryEstimatedValue ? "estimada" : null,
+    formatBatterySource(batterySourceValue),
+    typeof batteryVoltageValue === "number"
+      ? `${batteryVoltageValue.toFixed(2)}V`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   const weightSeries = useMemo(
-    () => buildSeries(readings, "weight_grams", 5 * 60 * 1000),
-    [readings]
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.weight_grams,
+        selectedRangeConfig.windowMs,
+      ),
+    [readings, selectedRangeConfig.windowMs],
   );
   const tempSeries = useMemo(
-    () => buildSeries(readings, "temperature", 5 * 60 * 1000),
-    [readings]
+    () =>
+      buildSeries(readings, (r) => r.temperature, selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
   const humiditySeries = useMemo(
-    () => buildSeries(readings, "humidity", 5 * 60 * 1000),
-    [readings]
+    () =>
+      buildSeries(readings, (r) => r.humidity, selectedRangeConfig.windowMs),
+    [readings, selectedRangeConfig.windowMs],
   );
   const lightSeries = useMemo(
-    () => buildSeries(readings, "light_percent", 5 * 60 * 1000),
-    [readings]
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.light_percent,
+        selectedRangeConfig.windowMs,
+      ),
+    [readings, selectedRangeConfig.windowMs],
   );
 
   return (
     <main className="page-shell">
-      <div className="page-header">
-        <div>
-          <p className="eyebrow">Estado del plato</p>
-          <h1>Dispositivo</h1>
-        </div>
-        <Link href="/today" className="ghost-link">
-          Volver a hoy
-        </Link>
-      </div>
-
       {state.error && (
         <Alert
           variant="error"
@@ -543,17 +578,19 @@ export default function BowlPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">Cargando estado...</div>
+        <div className="surface-card freeform-rise px-6 py-6">
+          Cargando estado...
+        </div>
       ) : state.devices.length === 0 ? (
         <EmptyState
           title="No hay dispositivos vinculados."
           actions={
             <Link
               href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir a registro 
-            </Link> 
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a registro
+            </Link>
           }
         >
           Conecta un plato para ver batería, conexión y diagnóstico.
@@ -565,9 +602,65 @@ export default function BowlPage() {
               <h2 className="text-lg font-semibold text-slate-900">
                 Lecturas en vivo
               </h2>
-              <span className="text-xs text-slate-500">
-                {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
-              </span>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <div className="mr-1 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => cycleDevice(-1)}
+                    className="text-sm font-semibold text-slate-600 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                    disabled={state.devices.length <= 1}
+                    aria-label="Plato anterior"
+                  >
+                    ◀
+                  </button>
+                  <div className="flex min-w-[108px] items-center justify-center text-center leading-none">
+                    <span className="text-sm font-semibold text-slate-800">
+                      {selectedDeviceTestLabel}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => cycleDevice(1)}
+                    className="text-sm font-semibold text-slate-600 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                    disabled={state.devices.length <= 1}
+                    aria-label="Siguiente plato"
+                  >
+                    ▶
+                  </button>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                  <span
+                    className={`inline-block h-2.5 w-2.5 rounded-full border ${selectorDotClass}`}
+                    title={
+                      selectorPowerState === "on"
+                        ? "Prendido"
+                        : selectorPowerState === "off"
+                          ? "Apagado"
+                          : "Sin vinculación"
+                    }
+                  />
+                  {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
+                </span>
+                <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
+                  {CHART_RANGES.map((range) => {
+                    const isActive = selectedRange === range.key;
+                    return (
+                      <button
+                        key={range.key}
+                        type="button"
+                        onClick={() => setSelectedRange(range.key)}
+                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        {range.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             {readingsError ? (
               <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
@@ -578,18 +671,25 @@ export default function BowlPage() {
                   unit="g"
                   series={weightSeries}
                   accent="#EBB7AA"
+                  latestValue={latestWeightValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
                 />
                 <ChartCard
                   title="Temperatura"
                   unit="°C"
                   series={tempSeries}
                   accent="#D99686"
+                  latestValue={latestTempValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
+                  integerDisplay
                 />
                 <ChartCard
                   title="Luz entorno"
                   unit="%"
                   series={lightSeries}
                   accent="hsl(44 90% 52%)"
+                  latestValue={latestLightValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
                   className="lg:col-start-1"
                 />
                 <ChartCard
@@ -597,70 +697,13 @@ export default function BowlPage() {
                   unit="%"
                   series={humiditySeries}
                   accent="hsl(198 70% 45%)"
+                  latestValue={latestHumidityValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
+                  integerDisplay
                   className="lg:col-start-2"
                 />
               </div>
             )}
-          </section>
-
-          <section className="surface-card freeform-rise px-6 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-slate-500">Plato activo</p>
-                <p className="text-xl font-semibold text-slate-900">
-                  {selectedDevice?.device_id ?? "Sin dispositivo"}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {selectedDevice
-                    ? `${selectedDevice.device_type} · ${selectedDevice.status}`
-                    : "Conecta un dispositivo para ver el estado."}
-                </p>
-                {selectedDevice?.device_state ? (
-                  <span className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
-                    Estado técnico: {selectedDevice.device_state}
-                  </span>
-                ) : null}
-              </div>
-              {state.devices.length > 1 && (
-                <label className="flex flex-col text-xs text-slate-500">
-                  Cambiar dispositivo
-                  <select
-                    className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                    value={selectedDeviceId ?? ""}
-                    onChange={(event) => {
-                      const nextId = event.target.value || null;
-                      setSelectedDeviceId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem(
-                          "kittypau_device_id",
-                          nextId
-                        );
-                      }
-                    }}
-                  >
-                    {state.devices.map((device) => (
-                      <option key={device.id} value={device.id}>
-                        {device.device_id}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-              <Link
-                href="/pet"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
-              >
-                Ver mascota
-              </Link>
-              <Link
-                href="/settings"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700"
-              >
-                Ajustes
-              </Link>
-            </div>
           </section>
 
           <section className="surface-card freeform-rise px-6 py-5">
@@ -677,8 +720,8 @@ export default function BowlPage() {
                     statusSummary.tone === "warn"
                       ? "bg-rose-100 text-rose-700"
                       : statusSummary.tone === "ok"
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-slate-100 text-slate-600"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-slate-100 text-slate-600"
                   }`}
                 >
                   Estado general: {statusSummary.label}
@@ -689,14 +732,12 @@ export default function BowlPage() {
                   Batería
                 </p>
                 <p className="flex items-center gap-2 text-lg font-semibold text-slate-900">
-                  <BatteryStatusIcon level={selectedDevice?.battery_level} />
-                  {selectedDevice?.battery_level !== null &&
-                  selectedDevice?.battery_level !== undefined
-                    ? `${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level
-                      )}`
-                    : "Sin datos"}
+                  <BatteryStatusIcon level={batteryLevelValue} />
+                  {batterySummary}
                 </p>
+                {batteryExtra ? (
+                  <p className="mt-1 text-xs text-slate-500">{batteryExtra}</p>
+                ) : null}
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
@@ -726,8 +767,8 @@ export default function BowlPage() {
                   {connectionHint === "Conectado en tiempo real."
                     ? "Datos en vivo. Todo responde bien."
                     : connectionHint === "Conectado recientemente."
-                    ? "Último check-in dentro de la ventana esperada."
-                    : "Sin check-in reciente. Revisa energía y Wi-Fi."}
+                      ? "Último check-in dentro de la ventana esperada."
+                      : "Sin check-in reciente. Revisa energía y Wi-Fi."}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
@@ -735,12 +776,10 @@ export default function BowlPage() {
                   Energía
                 </p>
                 <p className="mt-2 text-slate-700">
-                  {selectedDevice?.battery_level !== null &&
-                  selectedDevice?.battery_level !== undefined
-                    ? `Batería ${selectedDevice.battery_level}% · ${batteryLabel(
-                        selectedDevice.battery_level
-                      )}`
-                    : "Sin datos de batería."}
+                  {batterySummary === "Sin datos"
+                    ? "Sin datos de batería."
+                    : `Batería ${batterySummary}`}
+                  {batteryExtra ? ` (${batteryExtra})` : ""}
                 </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
@@ -779,14 +818,8 @@ export default function BowlPage() {
               </button>
             </div>
           </section>
-
         </>
       )}
     </main>
   );
 }
-
-
-
-
-

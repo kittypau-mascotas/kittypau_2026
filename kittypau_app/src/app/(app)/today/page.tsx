@@ -1,27 +1,26 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  type ChartData,
-  type ChartOptions,
-  type Plugin,
-} from "chart.js";
+import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { buildSeries, ChartCard } from "@/lib/charts";
 
 type ApiPet = {
   id: string;
   name: string;
+  type?: string | null;
+  origin?: string | null;
+  size?: string | null;
+  age_range?: string | null;
+  weight_kg?: number | null;
   pet_state?: string | null;
   photo_url?: string | null;
 };
@@ -54,6 +53,7 @@ type ApiReading = {
   flow_rate: number | null;
   temperature: number | null;
   humidity: number | null;
+  light_percent: number | null;
   battery_level: number | null;
 };
 
@@ -80,6 +80,24 @@ type StatCard = {
   icon?: string;
 };
 
+type PeriodStats = {
+  consumed: number | null;
+  cycles: number;
+};
+
+type ConsumptionSummary = {
+  day: PeriodStats;
+  week: PeriodStats;
+  month: PeriodStats;
+};
+type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
+
+type SessionDetailStats = {
+  events: number;
+  avgConsumed: number | null;
+  avgDurationMinutes: number | null;
+};
+
 type LoadState = {
   isLoading: boolean;
   error: string | null;
@@ -101,8 +119,6 @@ const defaultState: LoadState = {
   readingsCursor: null,
   isLoadingMore: false,
 };
-
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
 
 function formatTimestamp(value?: string | null) {
   if (!value) return "Sin datos";
@@ -128,13 +144,17 @@ function getFreshnessLabelByTimestamp(value?: string | null) {
 }
 
 function resolveDevicePowerState(
-  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined
+  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
 ): "on" | "off" | "nodata" {
   if (!device) return "nodata";
   const state = (device.device_state ?? "").toLowerCase();
   const status = (device.status ?? "").toLowerCase();
   if (!state && !status) return "nodata";
-  if (state.includes("offline") || status === "offline" || status === "inactive") {
+  if (
+    state.includes("offline") ||
+    status === "offline" ||
+    status === "inactive"
+  ) {
     return "off";
   }
   if (
@@ -148,7 +168,9 @@ function resolveDevicePowerState(
   return "nodata";
 }
 
-function parsePetNumberSuffix(petName: string | null | undefined): number | null {
+function parsePetNumberSuffix(
+  petName: string | null | undefined,
+): number | null {
   if (!petName) return null;
   const match = petName.match(/test[_\s-]*(\d{3,4})/i);
   if (!match) return null;
@@ -161,8 +183,15 @@ function kpclLabelFromNumber(value: number): string {
 }
 
 function toNullableNumber(value: number | null | undefined): number | null {
-  if (value === null || value === undefined || !Number.isFinite(value)) return null;
+  if (value === null || value === undefined || !Number.isFinite(value))
+    return null;
   return value;
+}
+
+function toRoundedSensorValue(value: number | null | undefined): number | null {
+  const numeric = toNullableNumber(value);
+  if (numeric === null) return null;
+  return Math.round(numeric);
 }
 
 function getDayNightWindow(now = new Date()) {
@@ -180,7 +209,7 @@ function getDayNightWindow(now = new Date()) {
 
 function formatHourFromOffset(offsetHours: number) {
   const rounded = Math.round(offsetHours);
-  const hour = ((6 + rounded) % 24 + 24) % 24;
+  const hour = (((6 + rounded) % 24) + 24) % 24;
   return `${String(hour).padStart(2, "0")}:00`;
 }
 
@@ -220,13 +249,14 @@ function toDayNightPoints(
   readings: ApiReading[],
   startMs: number,
   endMs: number,
-  valueSelector: (reading: ApiReading) => number | null
+  valueSelector: (reading: ApiReading) => number | null,
 ): DayNightPoint[] {
   return readings
     .map((reading) => {
       const ts = new Date(reading.recorded_at).getTime();
       const value = valueSelector(reading);
-      if (Number.isNaN(ts) || ts < startMs || ts > endMs || value === null) return null;
+      if (Number.isNaN(ts) || ts < startMs || ts > endMs || value === null)
+        return null;
       return {
         x: (ts - startMs) / (60 * 60 * 1000),
         y: value,
@@ -302,40 +332,145 @@ function detectIntakeSessions(points: DayNightPoint[]): IntakeSession[] {
 
 function findSessionForPoint(
   sessions: IntakeSession[],
-  pointIndex: number
+  pointIndex: number,
 ): IntakeSession | null {
   return (
     sessions.find(
       (session) =>
-        pointIndex >= session.startIndex && pointIndex <= session.endIndex
+        pointIndex >= session.startIndex && pointIndex <= session.endIndex,
     ) ?? null
   );
 }
 
+function summarizeSessionsByPeriods(
+  sessions: IntakeSession[],
+  nowMs: number,
+): ConsumptionSummary {
+  const boundaries = {
+    day: nowMs - 24 * 60 * 60 * 1000,
+    week: nowMs - 7 * 24 * 60 * 60 * 1000,
+    month: nowMs - 30 * 24 * 60 * 60 * 1000,
+  };
+
+  const build = (startMs: number): PeriodStats => {
+    const filtered = sessions.filter((session) => session.endT >= startMs);
+    if (!filtered.length) return { consumed: null, cycles: 0 };
+    const consumed = filtered.reduce(
+      (acc, session) => acc + Math.max(0, session.consumed),
+      0,
+    );
+    return { consumed: Math.round(consumed), cycles: filtered.length };
+  };
+
+  return {
+    day: build(boundaries.day),
+    week: build(boundaries.week),
+    month: build(boundaries.month),
+  };
+}
+
+function summarizeSessionDetailsByPeriod(
+  sessions: IntakeSession[],
+  nowMs: number,
+  period: keyof ConsumptionSummary,
+): SessionDetailStats {
+  const startMsByPeriod = {
+    day: nowMs - 24 * 60 * 60 * 1000,
+    week: nowMs - 7 * 24 * 60 * 60 * 1000,
+    month: nowMs - 30 * 24 * 60 * 60 * 1000,
+  };
+  const filtered = sessions.filter(
+    (session) => session.endT >= startMsByPeriod[period],
+  );
+  if (!filtered.length) {
+    return {
+      events: 0,
+      avgConsumed: null,
+      avgDurationMinutes: null,
+    };
+  }
+  const totalConsumed = filtered.reduce(
+    (acc, session) => acc + Math.max(0, session.consumed),
+    0,
+  );
+  const totalDuration = filtered.reduce(
+    (acc, session) => acc + Math.max(0, session.durationMinutes),
+    0,
+  );
+  return {
+    events: filtered.length,
+    avgConsumed: Math.round(totalConsumed / filtered.length),
+    avgDurationMinutes: Math.round(totalDuration / filtered.length),
+  };
+}
+
+const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+
 export default function TodayPage() {
+  const router = useRouter();
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const [deviceLatestReadings, setDeviceLatestReadings] = useState<Record<string, ApiReading | null>>({});
-  const [devicePreviousReadings, setDevicePreviousReadings] = useState<Record<string, ApiReading | null>>({});
-  const [deviceChartReadings, setDeviceChartReadings] = useState<DeviceReadingsMap>({});
+  const [deviceLatestReadings, setDeviceLatestReadings] = useState<
+    Record<string, ApiReading | null>
+  >({});
+  const [devicePreviousReadings, setDevicePreviousReadings] = useState<
+    Record<string, ApiReading | null>
+  >({});
+  const [deviceChartReadings, setDeviceChartReadings] =
+    useState<DeviceReadingsMap>({});
+  const [deviceHistoryReadings, setDeviceHistoryReadings] =
+    useState<DeviceReadingsMap>({});
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
+  const [accountType, setAccountType] = useState<
+    "admin" | "tester" | "client" | null
+  >(null);
+  const [consumptionPeriod, setConsumptionPeriod] =
+    useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
 
   useEffect(() => {
     let mounted = true;
-    getValidAccessToken().then((value) => {
-      if (mounted) setIsAuthed(Boolean(value));
+    getValidAccessToken().then(async (value) => {
+      if (!mounted) return;
+      setIsAuthed(Boolean(value));
+      if (!value) {
+        setAccountType(null);
+        return;
+      }
+      try {
+        const res = await fetch("/api/account/type", {
+          headers: { Authorization: `Bearer ${value}` },
+        });
+        if (!mounted) return;
+        if (!res.ok) {
+          setAccountType(null);
+          return;
+        }
+        const payload = await res.json().catch(() => null);
+        const nextType =
+          payload?.account_type === "admin" ||
+          payload?.account_type === "tester"
+            ? payload.account_type
+            : "client";
+        setAccountType(nextType);
+        if (nextType === "client") {
+          router.replace("/inicio");
+        } else if (nextType === "admin") {
+          router.replace("/admin");
+        }
+      } catch {
+        if (mounted) setAccountType(null);
+      }
     });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [router]);
 
   const parseListResponse = <T,>(payload: unknown): T[] => {
     if (Array.isArray(payload)) {
@@ -366,7 +501,7 @@ export default function TodayPage() {
     deviceId: string,
     cursor?: string | null,
     limit = 50,
-    range?: { from?: string; to?: string }
+    range?: { from?: string; to?: string },
   ) => {
     const params = new URLSearchParams({
       device_id: deviceId,
@@ -434,23 +569,30 @@ export default function TodayPage() {
             ? window.localStorage.getItem("kittypau_pet_id")
             : null;
         const primaryPet =
-          pets.find((pet) => pet.id === storedPetId) ??
-          pets[0];
+          pets.find((pet) => pet.id === storedPetId) ?? pets[0];
         const storedDeviceId =
           typeof window !== "undefined"
             ? window.localStorage.getItem("kittypau_device_id")
             : null;
         const petSuffix = parsePetNumberSuffix(primaryPet?.name);
-        const expectedFoodDeviceId = petSuffix ? kpclLabelFromNumber(petSuffix) : null;
-        const devicesByPet = devices.filter((device) => device.pet_id === primaryPet?.id);
+        const expectedFoodDeviceId = petSuffix
+          ? kpclLabelFromNumber(petSuffix)
+          : null;
+        const devicesByPet = devices.filter(
+          (device) => device.pet_id === primaryPet?.id,
+        );
         const primaryDevice =
           devicesByPet.find((device) => device.id === storedDeviceId) ??
           devicesByPet.find(
-            (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId
+            (device) =>
+              (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
           ) ??
           devicesByPet[0] ??
           devices.find((device) => device.id === storedDeviceId) ??
-          devices.find((device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId) ??
+          devices.find(
+            (device) =>
+              (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+          ) ??
           devices[0];
 
         let readings: ApiReading[] = [];
@@ -458,11 +600,11 @@ export default function TodayPage() {
         const initialDeviceId = primaryDevice?.id ?? null;
         setSelectedPetId(primaryPet?.id ?? null);
         setSelectedDeviceId(initialDeviceId);
-        if (primaryPet?.id && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_pet_id", primaryPet.id);
+        if (primaryPet?.id) {
+          syncSelectedPet(primaryPet.id, primaryPet.name ?? "");
         }
-        if (initialDeviceId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_device_id", initialDeviceId);
+        if (initialDeviceId) {
+          syncSelectedDevice(initialDeviceId);
         }
         if (initialDeviceId) {
           const result = await loadReadings(initialDeviceId);
@@ -536,7 +678,7 @@ export default function TodayPage() {
             const nextReading = payload.new as ApiReading;
             setState((prev) => {
               const exists = prev.readings.some(
-                (reading) => reading.id === nextReading.id
+                (reading) => reading.id === nextReading.id,
               );
               if (exists) return prev;
               return {
@@ -546,7 +688,7 @@ export default function TodayPage() {
             });
             setLastRefreshAt(new Date().toISOString());
             setRefreshError(null);
-          }
+          },
         )
         .subscribe();
     };
@@ -587,9 +729,15 @@ export default function TodayPage() {
         }));
       }
     };
-    window.addEventListener("kittypau-device-change", onDeviceChange as EventListener);
+    window.addEventListener(
+      "kittypau-device-change",
+      onDeviceChange as EventListener,
+    );
     return () => {
-      window.removeEventListener("kittypau-device-change", onDeviceChange as EventListener);
+      window.removeEventListener(
+        "kittypau-device-change",
+        onDeviceChange as EventListener,
+      );
     };
   }, [selectedDeviceId]);
 
@@ -620,59 +768,87 @@ export default function TodayPage() {
   };
 
   const primaryPet =
-    state.pets.find((pet) => pet.id === selectedPetId) ??
-    state.pets[0];
+    state.pets.find((pet) => pet.id === selectedPetId) ?? state.pets[0];
   const selectedPetSuffix = parsePetNumberSuffix(primaryPet?.name);
-  const expectedFoodDeviceCode = selectedPetSuffix ? kpclLabelFromNumber(selectedPetSuffix) : null;
+  const expectedFoodDeviceCode = selectedPetSuffix
+    ? kpclLabelFromNumber(selectedPetSuffix)
+    : null;
   const expectedWaterDeviceCode = selectedPetSuffix
     ? kpclLabelFromNumber(selectedPetSuffix + 1)
     : null;
   const petDevices = useMemo(() => {
-    const base = state.devices.filter((device) => device.pet_id === primaryPet?.id);
+    const base = state.devices.filter(
+      (device) => device.pet_id === primaryPet?.id,
+    );
     const byFoodCode = expectedFoodDeviceCode
       ? state.devices.find(
           (device) =>
             (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode &&
-            (device.pet_id === primaryPet?.id || !device.pet_id)
+            (device.pet_id === primaryPet?.id || !device.pet_id),
         )
       : null;
     const byWaterCode = expectedWaterDeviceCode
       ? state.devices.find(
           (device) =>
-            (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode &&
-            (device.pet_id === primaryPet?.id || !device.pet_id)
+            (device.device_id ?? "").toUpperCase() ===
+              expectedWaterDeviceCode &&
+            (device.pet_id === primaryPet?.id || !device.pet_id),
         )
       : null;
     const merged = [...base];
-    if (byFoodCode && !merged.some((item) => item.id === byFoodCode.id)) merged.push(byFoodCode);
-    if (byWaterCode && !merged.some((item) => item.id === byWaterCode.id)) merged.push(byWaterCode);
+    if (byFoodCode && !merged.some((item) => item.id === byFoodCode.id))
+      merged.push(byFoodCode);
+    if (byWaterCode && !merged.some((item) => item.id === byWaterCode.id))
+      merged.push(byWaterCode);
     return merged;
-  }, [state.devices, primaryPet?.id, expectedFoodDeviceCode, expectedWaterDeviceCode]);
+  }, [
+    state.devices,
+    primaryPet?.id,
+    expectedFoodDeviceCode,
+    expectedWaterDeviceCode,
+  ]);
   const ownerLabel =
-    state.profile?.owner_name ||
-    state.profile?.user_name ||
-    "tu";
+    state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
+  const petTypeLabel =
+    primaryPet?.type === "dog"
+      ? "Perro"
+      : primaryPet?.type === "cat"
+        ? "Gato"
+        : null;
+  const petMeta = [
+    petTypeLabel,
+    primaryPet?.origin ?? null,
+    primaryPet?.size ?? null,
+    primaryPet?.age_range ?? null,
+    typeof primaryPet?.weight_kg === "number"
+      ? `${primaryPet.weight_kg} kg`
+      : null,
+  ].filter(Boolean) as string[];
   const primaryDevice =
     petDevices.find((device) => device.id === selectedDeviceId) ??
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode,
     ) ??
     petDevices[0] ??
     state.devices.find((device) => device.id === selectedDeviceId) ??
     state.devices[0];
   const bowlDevice =
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode,
     ) ??
     petDevices.find(
       (device) =>
         device.device_id?.toUpperCase().includes("KPCL") ||
-        (device.device_type ?? "").toLowerCase().includes("comedero")
-    ) ?? primaryDevice;
+        (device.device_type ?? "").toLowerCase().includes("comedero"),
+    ) ??
+    primaryDevice;
   const waterDevice =
     petDevices.find(
-      (device) => (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode
+      (device) =>
+        (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode,
     ) ??
     petDevices.find((device) => {
       const id = (device.device_id ?? "").toUpperCase();
@@ -683,26 +859,49 @@ export default function TodayPage() {
         type.includes("bebedero") ||
         type.includes("water")
       );
-    }) ?? null;
+    }) ??
+    null;
   const latestReading = state.readings[0] ?? null;
-  const bowlLatestReading = bowlDevice?.id ? (deviceLatestReadings[bowlDevice.id] ?? null) : null;
-  const bowlPreviousReading = bowlDevice?.id ? (devicePreviousReadings[bowlDevice.id] ?? null) : null;
-  const waterLatestReading = waterDevice?.id ? (deviceLatestReadings[waterDevice.id] ?? null) : null;
-  const waterPreviousReading = waterDevice?.id ? (devicePreviousReadings[waterDevice.id] ?? null) : null;
+  const bowlLatestReading = bowlDevice?.id
+    ? (deviceLatestReadings[bowlDevice.id] ?? null)
+    : null;
+  const bowlPreviousReading = bowlDevice?.id
+    ? (devicePreviousReadings[bowlDevice.id] ?? null)
+    : null;
+  const waterLatestReading = waterDevice?.id
+    ? (deviceLatestReadings[waterDevice.id] ?? null)
+    : null;
+  const waterPreviousReading = waterDevice?.id
+    ? (devicePreviousReadings[waterDevice.id] ?? null)
+    : null;
   const freshnessLabel = useMemo(
     () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
-    [latestReading?.recorded_at]
+    [latestReading?.recorded_at],
   );
+  const heroUpdatedAt = useMemo(() => {
+    const candidates = [
+      bowlLatestReading?.recorded_at ?? null,
+      waterLatestReading?.recorded_at ?? null,
+    ].filter((value): value is string => Boolean(value));
+    if (!candidates.length) return null;
+    return (
+      candidates
+        .map((value) => ({ value, ts: new Date(value).getTime() }))
+        .filter((item) => Number.isFinite(item.ts))
+        .sort((a, b) => b.ts - a.ts)[0]?.value ?? null
+    );
+  }, [bowlLatestReading?.recorded_at, waterLatestReading?.recorded_at]);
+  const heroUpdatedLabel = heroUpdatedAt
+    ? formatTimestamp(heroUpdatedAt)
+    : "Sin datos";
 
   useEffect(() => {
     // Keep the live panel aligned with the hero food device for the selected pet.
     if (!bowlDevice?.id || selectedDeviceId === bowlDevice.id) return;
     let active = true;
-    const syncSelectedDevice = async () => {
+    const syncLivePanelDevice = async () => {
       setSelectedDeviceId(bowlDevice.id);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("kittypau_device_id", bowlDevice.id);
-      }
+      syncSelectedDevice(bowlDevice.id);
       try {
         const result = await loadReadings(bowlDevice.id);
         if (!active) return;
@@ -716,7 +915,7 @@ export default function TodayPage() {
         // Keep current state if sync fetch fails; hero still reads from dedicated device map.
       }
     };
-    void syncSelectedDevice();
+    void syncLivePanelDevice();
     return () => {
       active = false;
     };
@@ -725,7 +924,7 @@ export default function TodayPage() {
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
       (value, index, arr): value is string =>
-        Boolean(value) && arr.indexOf(value) === index
+        Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
     let active = true;
@@ -734,20 +933,28 @@ export default function TodayPage() {
         targetIds.map(async (deviceId) => {
           try {
             const result = await loadReadings(deviceId, null, 2);
-            return [deviceId, result.data[0] ?? null, result.data[1] ?? null] as const;
+            return [
+              deviceId,
+              result.data[0] ?? null,
+              result.data[1] ?? null,
+            ] as const;
           } catch {
             return [deviceId, null, null] as const;
           }
-        })
+        }),
       );
       if (!active) return;
       setDeviceLatestReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(entries.map(([deviceId, latest]) => [deviceId, latest])),
+        ...Object.fromEntries(
+          entries.map(([deviceId, latest]) => [deviceId, latest]),
+        ),
       }));
       setDevicePreviousReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(entries.map(([deviceId, _latest, previous]) => [deviceId, previous])),
+        ...Object.fromEntries(
+          entries.map(([deviceId, _latest, previous]) => [deviceId, previous]),
+        ),
       }));
     };
     void loadTargets();
@@ -759,7 +966,7 @@ export default function TodayPage() {
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
       (value, index, arr): value is string =>
-        Boolean(value) && arr.indexOf(value) === index
+        Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
     let active = true;
@@ -782,7 +989,7 @@ export default function TodayPage() {
           } catch {
             return [deviceId, []] as const;
           }
-        })
+        }),
       );
       if (!active) return;
       setDeviceChartReadings((prev) => ({
@@ -790,13 +997,54 @@ export default function TodayPage() {
         ...Object.fromEntries(entries),
       }));
       const hasAnyData = entries.some(([, values]) => values.length > 0);
-      setChartLoadError(hasAnyData ? null : "Sin lecturas suficientes para construir el gráfico.");
+      setChartLoadError(
+        hasAnyData
+          ? null
+          : "Sin lecturas suficientes para construir el gráfico.",
+      );
     };
     void loadChartTargets();
     return () => {
       active = false;
     };
   }, [bowlDevice?.id, dayCycleOffsetDays, waterDevice?.id]);
+
+  useEffect(() => {
+    const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
+      (value, index, arr): value is string =>
+        Boolean(value) && arr.indexOf(value) === index,
+    );
+    if (!targetIds.length) return;
+    let active = true;
+    const loadHistoryTargets = async () => {
+      const now = new Date();
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const from = monthAgo.toISOString();
+      const to = now.toISOString();
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const result = await loadReadings(deviceId, null, 1200, {
+              from,
+              to,
+            });
+            return [deviceId, result.data] as const;
+          } catch {
+            return [deviceId, []] as const;
+          }
+        }),
+      );
+      if (!active) return;
+      setDeviceHistoryReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+    };
+    void loadHistoryTargets();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, waterDevice?.id]);
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -805,7 +1053,10 @@ export default function TodayPage() {
     if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
       return `Hidratación elevada detectada hoy en ${petLabel}.`;
     }
-    if (latestReading.weight_grams !== null && latestReading.weight_grams >= 3500) {
+    if (
+      latestReading.weight_grams !== null &&
+      latestReading.weight_grams >= 3500
+    ) {
       return `Consumo estable en el último registro de ${petLabel}.`;
     }
     if (latestReading.temperature !== null && latestReading.temperature >= 26) {
@@ -837,11 +1088,17 @@ export default function TodayPage() {
       });
     }
     if (latestReading.temperature !== null || latestReading.humidity !== null) {
+      const temperatureText =
+        latestReading.temperature !== null
+          ? String(toRoundedSensorValue(latestReading.temperature))
+          : "-";
+      const humidityText =
+        latestReading.humidity !== null
+          ? String(toRoundedSensorValue(latestReading.humidity))
+          : "-";
       items.push({
         title: "Ambiente",
-        description: `Temp ${latestReading.temperature ?? "-"}° · Humedad ${
-          latestReading.humidity ?? "-"
-        }%.`,
+        description: `Temp ${temperatureText}° · Humedad ${humidityText}%.`,
         tone: "warning",
       });
     }
@@ -851,8 +1108,16 @@ export default function TodayPage() {
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
-        { label: "Hidratación", value: "Sin datos", icon: "/illustrations/green_water_full.png" },
-        { label: "Alimento", value: "Sin datos", icon: "/illustrations/pink_food_full.png" },
+        {
+          label: "Hidratación",
+          value: "Sin datos",
+          icon: "/illustrations/green_water_full.png",
+        },
+        {
+          label: "Alimento",
+          value: "Sin datos",
+          icon: "/illustrations/pink_food_full.png",
+        },
         { label: "Ambiente", value: "Sin datos" },
       ] as StatCard[];
     }
@@ -866,11 +1131,21 @@ export default function TodayPage() {
         : "Sin peso";
     const ambient =
       latestReading.temperature !== null && latestReading.humidity !== null
-        ? `${latestReading.temperature}° · ${latestReading.humidity}%`
+        ? `${toRoundedSensorValue(latestReading.temperature)}° · ${toRoundedSensorValue(
+            latestReading.humidity,
+          )}%`
         : "Sin ambiente";
     return [
-      { label: "Hidratación", value: hydration, icon: "/illustrations/green_water_full.png" },
-      { label: "Alimento", value: food, icon: "/illustrations/pink_food_full.png" },
+      {
+        label: "Hidratación",
+        value: hydration,
+        icon: "/illustrations/green_water_full.png",
+      },
+      {
+        label: "Alimento",
+        value: food,
+        icon: "/illustrations/pink_food_full.png",
+      },
       { label: "Ambiente", value: ambient },
     ] as StatCard[];
   }, [latestReading]);
@@ -881,63 +1156,103 @@ export default function TodayPage() {
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
   };
   const bowlTempText =
-    bowlLatestReading?.temperature !== null && bowlLatestReading?.temperature !== undefined
-      ? `${bowlLatestReading.temperature}°C`
+    bowlLatestReading?.temperature !== null &&
+    bowlLatestReading?.temperature !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.temperature)}°C`
       : "N/D";
   const bowlHumidityText =
-    bowlLatestReading?.humidity !== null && bowlLatestReading?.humidity !== undefined
-      ? `${bowlLatestReading.humidity}%`
+    bowlLatestReading?.humidity !== null &&
+    bowlLatestReading?.humidity !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.humidity)}%`
+      : "N/D";
+  const bowlLightText =
+    bowlLatestReading?.light_percent !== null &&
+    bowlLatestReading?.light_percent !== undefined
+      ? `${toRoundedSensorValue(bowlLatestReading.light_percent)}%`
       : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
-  const bowlGrossWeightGrams = toNullableNumber(bowlLatestReading?.weight_grams);
+  const bowlGrossWeightGrams = toNullableNumber(
+    bowlLatestReading?.weight_grams,
+  );
   const bowlContentWeightGrams =
     bowlPlateWeightGrams !== null && bowlGrossWeightGrams !== null
       ? Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams)
       : null;
   const bowlContentWeightText =
-    bowlContentWeightGrams !== null ? `${Math.round(bowlContentWeightGrams)} g` : "N/D";
+    bowlContentWeightGrams !== null
+      ? `${Math.round(bowlContentWeightGrams)} g`
+      : "N/D";
   const bowlPlateWeightText =
-    bowlPlateWeightGrams !== null ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g` : "N/D";
+    bowlPlateWeightGrams !== null
+      ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g`
+      : "N/D";
   const bowlSensorWeightText =
-    bowlGrossWeightGrams !== null ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g` : "N/D";
+    bowlGrossWeightGrams !== null
+      ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g`
+      : "N/D";
   const waterTempText =
-    waterLatestReading?.temperature !== null && waterLatestReading?.temperature !== undefined
-      ? `${waterLatestReading.temperature}°C`
+    waterLatestReading?.temperature !== null &&
+    waterLatestReading?.temperature !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.temperature)}°C`
       : "N/D";
   const waterHumidityText =
-    waterLatestReading?.humidity !== null && waterLatestReading?.humidity !== undefined
-      ? `${waterLatestReading.humidity}%`
+    waterLatestReading?.humidity !== null &&
+    waterLatestReading?.humidity !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.humidity)}%`
       : "N/D";
-  const waterPlateWeightGrams = toNullableNumber(waterDevice?.plate_weight_grams);
-  const waterGrossWeightGrams = toNullableNumber(waterLatestReading?.weight_grams);
+  const waterLightText =
+    waterLatestReading?.light_percent !== null &&
+    waterLatestReading?.light_percent !== undefined
+      ? `${toRoundedSensorValue(waterLatestReading.light_percent)}%`
+      : "N/D";
+  const waterPlateWeightGrams = toNullableNumber(
+    waterDevice?.plate_weight_grams,
+  );
+  const waterGrossWeightGrams = toNullableNumber(
+    waterLatestReading?.weight_grams,
+  );
   const waterContentWeightGrams =
     waterPlateWeightGrams !== null && waterGrossWeightGrams !== null
       ? Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams)
       : null;
   const waterContentWeightText =
-    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} g` : "N/D";
+    waterContentWeightGrams !== null
+      ? `${Math.round(waterContentWeightGrams)} g`
+      : "N/D";
   const waterPlateWeightText =
-    waterPlateWeightGrams !== null ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g` : "N/D";
+    waterPlateWeightGrams !== null
+      ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g`
+      : "N/D";
   const waterSensorWeightText =
-    waterGrossWeightGrams !== null ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g` : "N/D";
+    waterGrossWeightGrams !== null
+      ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g`
+      : "N/D";
   const waterVolumeCm3Text =
-    waterContentWeightGrams !== null ? `${Math.round(waterContentWeightGrams)} cm3` : "N/D";
+    waterContentWeightGrams !== null
+      ? `${Math.round(waterContentWeightGrams)} cm3`
+      : "N/D";
 
-  const bowlPrevGrossWeightGrams = toNullableNumber(bowlPreviousReading?.weight_grams);
+  const bowlPrevGrossWeightGrams = toNullableNumber(
+    bowlPreviousReading?.weight_grams,
+  );
   const bowlPrevContentWeightGrams =
     bowlPlateWeightGrams !== null && bowlPrevGrossWeightGrams !== null
       ? Math.max(0, bowlPrevGrossWeightGrams - bowlPlateWeightGrams)
       : null;
   const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
   const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
+  const bowlPrevLight = toNullableNumber(bowlPreviousReading?.light_percent);
 
-  const waterPrevGrossWeightGrams = toNullableNumber(waterPreviousReading?.weight_grams);
+  const waterPrevGrossWeightGrams = toNullableNumber(
+    waterPreviousReading?.weight_grams,
+  );
   const waterPrevContentWeightGrams =
     waterPlateWeightGrams !== null && waterPrevGrossWeightGrams !== null
       ? Math.max(0, waterPrevGrossWeightGrams - waterPlateWeightGrams)
       : null;
   const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
   const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
+  const waterPrevLight = toNullableNumber(waterPreviousReading?.light_percent);
 
   const renderTrend = (current: number | null, previous: number | null) => {
     if (current === null || previous === null) return null;
@@ -974,7 +1289,7 @@ export default function TodayPage() {
   }, [dayCycleOffsetDays, dayNightWindow.startMs]);
   const selectedPetIndex = Math.max(
     0,
-    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? ""))
+    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? "")),
   );
   const switchPetByOffset = async (offset: -1 | 1) => {
     if (!state.pets.length) return;
@@ -983,29 +1298,27 @@ export default function TodayPage() {
     const pet = state.pets[nextIndex];
     const suffix = parsePetNumberSuffix(pet.name);
     const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
-    const nextPetDevices = state.devices.filter((device) => device.pet_id === pet.id);
+    const nextPetDevices = state.devices.filter(
+      (device) => device.pet_id === pet.id,
+    );
     const nextDevice =
       nextPetDevices.find(
-        (device) => (device.device_id ?? "").toUpperCase() === foodCode
+        (device) => (device.device_id ?? "").toUpperCase() === foodCode,
       ) ??
       nextPetDevices[0] ??
       state.devices.find(
         (device) =>
           (device.device_id ?? "").toUpperCase() === foodCode &&
-          (!device.pet_id || device.pet_id === pet.id)
+          (!device.pet_id || device.pet_id === pet.id),
       ) ??
       null;
 
     setSelectedPetId(pet.id);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("kittypau_pet_id", pet.id);
-    }
+    syncSelectedPet(pet.id, pet.name ?? "");
 
     if (!nextDevice) return;
     setSelectedDeviceId(nextDevice.id);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("kittypau_device_id", nextDevice.id);
-    }
+    syncSelectedDevice(nextDevice.id);
     try {
       const result = await loadReadings(nextDevice.id);
       setState((prev) => ({
@@ -1019,12 +1332,43 @@ export default function TodayPage() {
       setRefreshError(
         err instanceof Error
           ? err.message
-          : "No se pudieron cargar las lecturas."
+          : "No se pudieron cargar las lecturas.",
       );
     }
   };
-  const bowlChartReadings = bowlDevice?.id ? deviceChartReadings[bowlDevice.id] ?? [] : [];
-  const waterChartReadings = waterDevice?.id ? deviceChartReadings[waterDevice.id] ?? [] : [];
+  const bowlChartReadings = bowlDevice?.id
+    ? (deviceChartReadings[bowlDevice.id] ?? [])
+    : [];
+  const waterChartReadings = waterDevice?.id
+    ? (deviceChartReadings[waterDevice.id] ?? [])
+    : [];
+
+  const todayWeightSeries = useMemo(
+    () =>
+      buildSeries(
+        bowlChartReadings,
+        (r) => {
+          const gross = r.weight_grams;
+          const plate = bowlDevice?.plate_weight_grams;
+          if (gross === null || gross === undefined) return null;
+          if (plate === null || plate === undefined) return gross;
+          return Math.max(0, gross - plate);
+        },
+        THREE_HOURS_MS,
+      ),
+    [bowlChartReadings, bowlDevice?.plate_weight_grams],
+  );
+  const todayTempSeries = useMemo(
+    () => buildSeries(bowlChartReadings, (r) => r.temperature, THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
+  const todayHumiditySeries = useMemo(
+    () => buildSeries(bowlChartReadings, (r) => r.humidity, THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
+  const todayLatestWeight = todayWeightSeries[0]?.value ?? null;
+  const todayLatestTemp = todayTempSeries[0]?.value ?? null;
+  const todayLatestHumidity = todayHumiditySeries[0]?.value ?? null;
 
   const selectBowlSeriesValue = (reading: ApiReading) => {
     const gross = toNullableNumber(reading.weight_grams);
@@ -1050,9 +1394,14 @@ export default function TodayPage() {
         bowlChartReadings,
         dayNightWindow.startMs,
         dayNightWindow.endMs,
-        selectBowlSeriesValue
+        selectBowlSeriesValue,
       ),
-    [bowlChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, bowlDevice?.plate_weight_grams]
+    [
+      bowlChartReadings,
+      dayNightWindow.endMs,
+      dayNightWindow.startMs,
+      bowlDevice?.plate_weight_grams,
+    ],
   );
 
   const waterDayNightPoints = useMemo(
@@ -1061,19 +1410,24 @@ export default function TodayPage() {
         waterChartReadings,
         dayNightWindow.startMs,
         dayNightWindow.endMs,
-        selectWaterSeriesValue
+        selectWaterSeriesValue,
       ),
-    [waterChartReadings, dayNightWindow.endMs, dayNightWindow.startMs, waterDevice?.plate_weight_grams]
+    [
+      waterChartReadings,
+      dayNightWindow.endMs,
+      dayNightWindow.startMs,
+      waterDevice?.plate_weight_grams,
+    ],
   );
 
   const bowlIntakeSessions = useMemo(
     () => detectIntakeSessions(bowlDayNightPoints),
-    [bowlDayNightPoints]
+    [bowlDayNightPoints],
   );
 
   const waterIntakeSessions = useMemo(
     () => detectIntakeSessions(waterDayNightPoints),
-    [waterDayNightPoints]
+    [waterDayNightPoints],
   );
 
   const foodPointStyle = useMemo(() => {
@@ -1102,12 +1456,15 @@ export default function TodayPage() {
       id: "kittypau-day-night-background",
       beforeDatasetsDraw: (chart) => {
         const { ctx, chartArea } = chart;
-        if (!chartArea || !dayNightBackground || !dayNightBackground.complete) return;
+        if (!chartArea || !dayNightBackground || !dayNightBackground.complete)
+          return;
         const areaWidth = chartArea.right - chartArea.left;
         const areaHeight = chartArea.bottom - chartArea.top;
         if (areaWidth <= 0 || areaHeight <= 0) return;
-        const imageWidth = dayNightBackground.naturalWidth || dayNightBackground.width;
-        const imageHeight = dayNightBackground.naturalHeight || dayNightBackground.height;
+        const imageWidth =
+          dayNightBackground.naturalWidth || dayNightBackground.width;
+        const imageHeight =
+          dayNightBackground.naturalHeight || dayNightBackground.height;
         if (!imageWidth || !imageHeight) return;
 
         // Draw in "cover" mode to keep proportions and avoid stretched background.
@@ -1139,12 +1496,12 @@ export default function TodayPage() {
           chartArea.left,
           chartArea.top,
           areaWidth,
-          areaHeight
+          areaHeight,
         );
         ctx.restore();
       },
     }),
-    [dayNightBackground]
+    [dayNightBackground],
   );
 
   const dayNightChartData = useMemo<ChartData<"line", DayNightPoint[]>>(
@@ -1176,7 +1533,14 @@ export default function TodayPage() {
         },
       ],
     }),
-    [bowlDayNightPoints, bowlDevice?.device_id, foodPointStyle, waterDayNightPoints, waterDevice?.device_id, waterPointStyle]
+    [
+      bowlDayNightPoints,
+      bowlDevice?.device_id,
+      foodPointStyle,
+      waterDayNightPoints,
+      waterDevice?.device_id,
+      waterPointStyle,
+    ],
   );
 
   const dayNightChartOptions = useMemo<ChartOptions<"line">>(
@@ -1200,56 +1564,94 @@ export default function TodayPage() {
             boxHeight: 14,
             font: {
               size: 12,
-              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
         },
         tooltip: {
-          backgroundColor: "rgba(30,41,59,0.9)",
-          titleColor: "#fdf2f8",
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          titleColor: "#f8fafc",
           bodyColor: "#f8fafc",
-          borderColor: "rgba(244,114,182,0.35)",
+          footerColor: "#cbd5e1",
+          titleFont: {
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 12,
+            weight: 700,
+          },
+          bodyFont: {
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 11,
+            weight: 600,
+          },
+          footerFont: {
+            family:
+              "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+            size: 10,
+            weight: 500,
+          },
+          borderColor: "rgba(148, 163, 184, 0.35)",
           borderWidth: 1,
           cornerRadius: 10,
           padding: 10,
           displayColors: false,
+          usePointStyle: false,
+          boxPadding: 2,
           callbacks: {
             title: (items) => {
-              const point = items[0]?.parsed;
-              if (!point || typeof point.x !== "number") return "Sin hora";
-              const at = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
-              return at.toLocaleString("es-CL", {
-                day: "2-digit",
-                month: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              });
+              void items;
+              return "";
             },
             label: (context) => {
-              const value = typeof context.parsed.y === "number" ? Math.round(context.parsed.y) : null;
+              const point = context.parsed;
+              const value =
+                typeof context.parsed.y === "number"
+                  ? Math.round(context.parsed.y)
+                  : null;
+              const label = String(context.dataset.label ?? "Serie");
+              const seriesTitle = label.includes("Hidratación")
+                ? "Hidratación"
+                : label.includes("Alimentación")
+                  ? "Alimentación"
+                  : "Lectura";
+              const pointTime =
+                typeof point.x === "number"
+                  ? new Date(
+                      dayNightWindow.startMs + point.x * 60 * 60 * 1000,
+                    ).toLocaleString("es-CL", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })
+                  : "N/D";
+              const isHydration = label.includes("Hidratación");
+              const unit = isHydration ? "cm3 (aprox)" : "g";
+              const valueText = value === null ? "N/D" : `${value} ${unit}`;
+              return [`${seriesTitle} · ${pointTime}`, `Valor: ${valueText}`];
+            },
+            afterLabel: (context) => {
               const label = context.dataset.label ?? "Serie";
-              if (value === null) return `${label}: N/D`;
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const sessions =
-                context.datasetIndex === 0 ? bowlIntakeSessions : waterIntakeSessions;
+                context.datasetIndex === 0
+                  ? bowlIntakeSessions
+                  : waterIntakeSessions;
               const session = findSessionForPoint(sessions, context.dataIndex);
-              if (!session) {
-                return [
-                  `${label}: ${value} ${unit}`,
-                  "Proceso: sin evento detectado",
-                ];
-              }
+              if (!session) return ["Proceso: sin evento detectado"];
               return [
-                `${label}: ${value} ${unit}`,
                 `Inicio: ${formatSessionClock(session.startT)}`,
                 `Fin: ${formatSessionClock(session.endT)}`,
                 `Duración: ${formatSessionDuration(session.durationMinutes)}`,
                 `Consumo proceso: ${Math.round(session.consumed)} ${unit}`,
               ];
             },
+            footer: () => "KittyPaw · Ciclo diario",
           },
         },
       },
@@ -1277,7 +1679,8 @@ export default function TodayPage() {
             },
             font: {
               size: 12,
-              family: "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
               weight: 600,
             },
           },
@@ -1297,181 +1700,504 @@ export default function TodayPage() {
         },
       },
     }),
-    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions]
+    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
   );
 
+  const nowMs = useMemo(
+    () => Date.now(),
+    [deviceHistoryReadings, bowlDevice?.id, waterDevice?.id],
+  );
+  const monthStartMs = nowMs - 30 * 24 * 60 * 60 * 1000;
+  const bowlHistoryPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        bowlDevice?.id ? (deviceHistoryReadings[bowlDevice.id] ?? []) : [],
+        monthStartMs,
+        nowMs,
+        (reading) => {
+          const gross = toNullableNumber(reading.weight_grams);
+          if (gross === null) return null;
+          const tare = Math.max(0, bowlDevice?.plate_weight_grams ?? 0);
+          return Math.max(0, gross - tare);
+        },
+      ),
+    [
+      bowlDevice?.id,
+      bowlDevice?.plate_weight_grams,
+      deviceHistoryReadings,
+      monthStartMs,
+      nowMs,
+    ],
+  );
+  const waterHistoryPoints = useMemo(
+    () =>
+      toDayNightPoints(
+        waterDevice?.id ? (deviceHistoryReadings[waterDevice.id] ?? []) : [],
+        monthStartMs,
+        nowMs,
+        (reading) => {
+          const gross = toNullableNumber(reading.weight_grams);
+          if (gross === null) return null;
+          const tare = Math.max(0, waterDevice?.plate_weight_grams ?? 0);
+          return Math.max(0, gross - tare);
+        },
+      ),
+    [
+      waterDevice?.id,
+      waterDevice?.plate_weight_grams,
+      deviceHistoryReadings,
+      monthStartMs,
+      nowMs,
+    ],
+  );
+  const bowlHistorySessions = useMemo(
+    () => detectIntakeSessions(bowlHistoryPoints),
+    [bowlHistoryPoints],
+  );
+  const waterHistorySessions = useMemo(
+    () => detectIntakeSessions(waterHistoryPoints),
+    [waterHistoryPoints],
+  );
+  const bowlConsumptionSummary = useMemo(
+    () => summarizeSessionsByPeriods(bowlHistorySessions, nowMs),
+    [bowlHistorySessions, nowMs],
+  );
+  const waterConsumptionSummary = useMemo(
+    () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
+    [waterHistorySessions, nowMs],
+  );
+  const summaryPeriod: keyof ConsumptionSummary =
+    consumptionPeriod === "one" ? "day" : consumptionPeriod;
+  const detailPeriod: keyof ConsumptionSummary =
+    consumptionPeriod === "one" ? "month" : consumptionPeriod;
+  const bowlDetailSummary = useMemo(
+    () =>
+      summarizeSessionDetailsByPeriod(bowlHistorySessions, nowMs, detailPeriod),
+    [bowlHistorySessions, nowMs, detailPeriod],
+  );
+  const waterDetailSummary = useMemo(
+    () =>
+      summarizeSessionDetailsByPeriod(
+        waterHistorySessions,
+        nowMs,
+        detailPeriod,
+      ),
+    [waterHistorySessions, nowMs, detailPeriod],
+  );
+  const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
+    value === null ? "N/D" : `${value} ${unit}`;
+  const periodLabels: Array<{
+    key: ConsumptionViewPeriod;
+    label: string;
+    description: string;
+  }> = [
+    {
+      key: "one",
+      label: "Unidad",
+      description: "Promedio por evento individual durante los últimos 30 días.",
+    },
+    {
+      key: "day",
+      label: "Día",
+      description: "Resumen acumulado de consumo y frecuencia en 24 horas.",
+    },
+    {
+      key: "week",
+      label: "Semana",
+      description: "Vista semanal para detectar cambios de patrón de rutina.",
+    },
+    {
+      key: "month",
+      label: "Mes",
+      description: "Tendencia mensual para evaluar hábitos de largo plazo.",
+    },
+  ];
+  const activePeriodLabel =
+    periodLabels
+      .find((item) => item.key === summaryPeriod)
+      ?.label.toLowerCase() ?? "día";
+
+  if (accountType === "client" || accountType === "admin") {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen px-4 pb-10 pt-4 md:px-6 md:pt-4">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <header className="flex flex-col gap-4">
           <section
             id="today-hero"
             role="region"
-            aria-label="Hero estado de platos y mascota"
-            className="today-hero surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+            aria-label="Hero de mascota"
+            className="today-hero surface-card freeform-rise px-4 py-3 md:px-6 md:py-3"
           >
-            <div className="grid gap-4 md:grid-cols-[180px_1fr]">
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(-1)}
-                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Mascota anterior"
-                    title="Mascota anterior"
-                  >
-                    ◀
-                  </button>
-                  <p className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-900">
-                    {petLabel}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(1)}
-                    className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Siguiente mascota"
-                    title="Siguiente mascota"
-                  >
-                    ▶
-                  </button>
-                </div>
+            <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
+              <div className="today-hero-pet flex min-w-0 items-center gap-3 md:gap-4">
                 <Link
                   href="/pet"
                   className="inline-flex"
                   title="Ajustar foto"
                   aria-label="Ajustar foto"
                 >
-                  <img
+                  <Image
                     src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                     alt={`Foto de ${petLabel}`}
-                    className="h-24 w-24 rounded-full object-cover border border-slate-200"
+                    width={128}
+                    height={128}
+                    className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                   />
                 </Link>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(-1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Mascota anterior"
+                      title="Mascota anterior"
+                    >
+                      ◀
+                    </button>
+                    <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
+                      {petLabel}
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Siguiente mascota"
+                      title="Siguiente mascota"
+                    >
+                      ▶
+                    </button>
+                  </div>
+                  <p className="truncate text-xs text-slate-500 md:text-sm">
+                    {petMeta.length
+                      ? petMeta.join(" · ")
+                      : "Sin datos de registro"}
+                  </p>
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="relative min-h-[132px]">
-                    <div className="absolute right-2 top-2 flex items-center gap-1">
-                      <span
-                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                        aria-label={
-                          bowlPowerState === "on"
-                            ? "Prendido"
-                            : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                        }
-                        title={
-                          bowlPowerState === "on"
-                            ? "Prendido"
-                            : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                        }
-                      />
-                      <BatteryStatusIcon level={bowlDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
-                    </div>
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">
-                        {bowlContentWeightText} (contenido)
-                        {renderTrend(bowlContentWeightGrams, bowlPrevContentWeightGrams)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-700">
-                        {bowlPlateWeightText} (plato)
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
-                        {bowlSensorWeightText} (sensor)
-                        {renderTrend(bowlGrossWeightGrams, bowlPrevGrossWeightGrams)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
-                        {bowlTempText}
-                        {renderTrend(toNullableNumber(bowlLatestReading?.temperature), bowlPrevTemp)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-500">
-                        {bowlHumidityText}
-                        {renderTrend(toNullableNumber(bowlLatestReading?.humidity), bowlPrevHumidity)}
-                      </p>
-                    </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <img
-                        src="/illustrations/pink_food_full.png"
-                        alt="Kittypau comedero"
-                        className="mx-auto h-28 w-40 object-contain object-center"
-                      />
-                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                        {bowlDevice?.device_id ?? "KPCLXXXX"}
-                      </p>
-                      <div className="mt-2 flex w-full items-start justify-center gap-2">
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+              <aside className="today-hero-aside ml-auto flex w-full flex-col items-center gap-1 sm:w-auto">
+                <p className="today-hero-updated text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
+                  Actualizado el {heroUpdatedLabel}
+                </p>
+                <div className="today-hero-summary inline-flex items-center gap-2">
+                  <div className="today-hero-summary-cards grid grid-cols-1 gap-1.5 md:grid-cols-2">
+                    <div className="today-hero-summary-card today-hero-summary-card-food flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
+                      <div>
+                        <p className="text-xs font-semibold text-emerald-700">
                           Alimentación
-                        </span>
+                        </p>
+                        <div className="mt-1 space-y-0.5">
+                          <p className="text-[11px] text-slate-600">
+                            {consumptionPeriod === "one"
+                              ? `${bowlDetailSummary.events} eventos (30d)`
+                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                          </p>
+                          {consumptionPeriod === "one" ? (
+                            <p className="text-[11px] text-slate-600">
+                              Unit:{" "}
+                              {formatConsumedValue(
+                                bowlDetailSummary.avgConsumed,
+                                "g",
+                              )}{" "}
+                              ·{" "}
+                              {bowlDetailSummary.avgDurationMinutes === null
+                                ? "N/D"
+                                : formatSessionDuration(
+                                    bowlDetailSummary.avgDurationMinutes,
+                                  )}
+                            </p>
+                          ) : (
+                            <p className="text-[11px] text-slate-600">
+                              Consumo:{" "}
+                              {formatConsumedValue(
+                                bowlConsumptionSummary[summaryPeriod].consumed,
+                                "g",
+                              )}{" "}
+                              /{activePeriodLabel}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </article>
-
-                <article className="rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_8px_20px_-16px_rgba(15,23,42,0.45)]">
-                  <div className="relative min-h-[132px]">
-                    <div className="absolute right-2 top-2 flex items-center gap-1">
-                      <span
-                        className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                        aria-label={
-                          waterPowerState === "on"
-                            ? "Prendido"
-                            : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                        }
-                        title={
-                          waterPowerState === "on"
-                            ? "Prendido"
-                            : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                        }
+                      <Image
+                        src="/illustrations/icono_comida.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={36}
+                        height={36}
+                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
                       />
-                      <BatteryStatusIcon level={waterDevice?.battery_level ?? null} className="h-5 w-5 text-slate-700" />
                     </div>
-                    <div className="absolute left-0 top-1/2 flex w-[96px] -translate-y-1/2 flex-col items-start gap-1">
-                      <p className="text-[10px] font-semibold text-slate-700">
-                        {waterVolumeCm3Text} (aprox)
-                        {renderTrend(waterContentWeightGrams, waterPrevContentWeightGrams)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-700">
-                        {waterPlateWeightText} (plato)
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
-                        {waterSensorWeightText} (sensor)
-                        {renderTrend(waterGrossWeightGrams, waterPrevGrossWeightGrams)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-600">
-                        {waterTempText}
-                        {renderTrend(toNullableNumber(waterLatestReading?.temperature), waterPrevTemp)}
-                      </p>
-                      <p className="text-[10px] font-semibold text-slate-500">
-                        {waterHumidityText}
-                        {renderTrend(toNullableNumber(waterLatestReading?.humidity), waterPrevHumidity)}
-                      </p>
-                    </div>
-                    <div className="mx-auto flex w-full max-w-[220px] flex-col items-center justify-center">
-                      <img
-                        src="/illustrations/green_water_full.png"
-                        alt="Kittypau bebedero"
-                        className="mx-auto h-28 w-40 object-contain object-center"
-                      />
-                      <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                        {waterDevice?.device_id ?? "KPBWXXXX"}
-                      </p>
-                      <div className="mt-2 flex w-full items-start justify-center gap-2">
-                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                    <div className="today-hero-summary-card today-hero-summary-card-water flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
+                      <div>
+                        <p className="text-xs font-semibold text-sky-700">
                           Hidratación
-                        </span>
+                        </p>
+                        <div className="mt-1 space-y-0.5">
+                          <p className="text-[11px] text-slate-600">
+                            {consumptionPeriod === "one"
+                              ? `${waterDetailSummary.events} eventos (30d)`
+                              : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                          </p>
+                          {consumptionPeriod === "one" ? (
+                            <p className="text-[11px] text-slate-600">
+                              Unit:{" "}
+                              {formatConsumedValue(
+                                waterDetailSummary.avgConsumed,
+                                "ml",
+                              )}{" "}
+                              ·{" "}
+                              {waterDetailSummary.avgDurationMinutes === null
+                                ? "N/D"
+                                : formatSessionDuration(
+                                    waterDetailSummary.avgDurationMinutes,
+                                  )}
+                            </p>
+                          ) : (
+                            <p className="text-[11px] text-slate-600">
+                              Consumo:{" "}
+                              {formatConsumedValue(
+                                waterConsumptionSummary[summaryPeriod].consumed,
+                                "ml",
+                              )}{" "}
+                              /{activePeriodLabel}
+                            </p>
+                          )}
+                        </div>
                       </div>
+                      <Image
+                        src="/illustrations/icono_agua.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={36}
+                        height={36}
+                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
+                      />
                     </div>
                   </div>
-                </article>
-              </div>
+                  <div className="today-hero-period my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
+                    {periodLabels.map(({ key, label, description }) => {
+                      const isActive = key === consumptionPeriod;
+                      return (
+                        <div key={`period-${key}`} className="group relative w-full">
+                          <button
+                            type="button"
+                            onClick={() => setConsumptionPeriod(key)}
+                            className={`w-full rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-[1.05] tracking-tight transition ${
+                              isActive
+                                ? "bg-emerald-400 text-slate-900"
+                                : "text-slate-900 hover:bg-slate-100"
+                            }`}
+                            aria-pressed={isActive}
+                            aria-label={`${label}: ${description}`}
+                          >
+                            {label}
+                          </button>
+                          <span className="pointer-events-none absolute right-full top-1/2 z-20 mr-2 hidden w-44 -translate-y-1/2 rounded-[10px] border border-rose-200/70 bg-rose-50/95 px-2.5 py-2 text-[10px] font-semibold leading-relaxed text-slate-700 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.55)] group-hover:block group-focus-within:block">
+                            {description}
+                            <span
+                              aria-hidden="true"
+                              className="absolute left-full top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-t border-rose-200/70 bg-rose-50/95"
+                            />
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section
+            id="today-bowls"
+            role="region"
+            aria-label="Estado de platos"
+            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                <div className="relative min-h-[180px]">
+                  <div className="absolute right-2 top-2 flex items-center gap-1">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                      aria-label={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                      title={
+                        bowlPowerState === "on"
+                          ? "Prendido"
+                          : bowlPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                    />
+                    <BatteryStatusIcon
+                      level={bowlDevice?.battery_level ?? null}
+                      className="h-6 w-6 text-slate-700"
+                    />
+                  </div>
+                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {bowlContentWeightText} (contenido)
+                      {renderTrend(
+                        bowlContentWeightGrams,
+                        bowlPrevContentWeightGrams,
+                      )}
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {bowlPlateWeightText} (plato)
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-600">
+                      {bowlSensorWeightText} (sensor)
+                      {renderTrend(
+                        bowlGrossWeightGrams,
+                        bowlPrevGrossWeightGrams,
+                      )}
+                    </p>
+                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                        Ambiente
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Temp: {bowlTempText}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.temperature),
+                          bowlPrevTemp,
+                        )}
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Hum: {bowlHumidityText}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.humidity),
+                          bowlPrevHumidity,
+                        )}
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Luz: {bowlLightText}
+                        {renderTrend(
+                          toNullableNumber(bowlLatestReading?.light_percent),
+                          bowlPrevLight,
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                        Alimentación
+                      </span>
+                    </div>
+                    <Image
+                      src="/illustrations/pink_food_full.png"
+                      alt="Kittypau comedero"
+                      width={208}
+                      height={150}
+                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
+                    />
+                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                      {bowlDevice?.device_id ?? "KPCLXXXX"}
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                <div className="relative min-h-[180px]">
+                  <div className="absolute right-2 top-2 flex items-center gap-1">
+                    <span
+                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                      aria-label={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                      title={
+                        waterPowerState === "on"
+                          ? "Prendido"
+                          : waterPowerState === "off"
+                            ? "Apagado"
+                            : "Sin data"
+                      }
+                    />
+                    <BatteryStatusIcon
+                      level={waterDevice?.battery_level ?? null}
+                      className="h-6 w-6 text-slate-700"
+                    />
+                  </div>
+                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {waterVolumeCm3Text} (aprox)
+                      {renderTrend(
+                        waterContentWeightGrams,
+                        waterPrevContentWeightGrams,
+                      )}
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-700">
+                      {waterPlateWeightText} (plato)
+                    </p>
+                    <p className="text-[14px] font-semibold text-slate-600">
+                      {waterSensorWeightText} (sensor)
+                      {renderTrend(
+                        waterGrossWeightGrams,
+                        waterPrevGrossWeightGrams,
+                      )}
+                    </p>
+                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                        Ambiente
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Temp: {waterTempText}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.temperature),
+                          waterPrevTemp,
+                        )}
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Hum: {waterHumidityText}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.humidity),
+                          waterPrevHumidity,
+                        )}
+                      </p>
+                      <p className="text-[12px] font-semibold text-slate-600">
+                        Luz: {waterLightText}
+                        {renderTrend(
+                          toNullableNumber(waterLatestReading?.light_percent),
+                          waterPrevLight,
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
+                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
+                      <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-700">
+                        Hidratación
+                      </span>
+                    </div>
+                    <Image
+                      src="/illustrations/green_water_full.png"
+                      alt="Kittypau bebedero"
+                      width={208}
+                      height={150}
+                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
+                    />
+                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
+                      {waterDevice?.device_id ?? "KPBWXXXX"}
+                    </p>
+                  </div>
+                </div>
+              </article>
             </div>
           </section>
 
@@ -1498,7 +2224,9 @@ export default function TodayPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))}
+                  onClick={() =>
+                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
+                  }
                   disabled={dayCycleOffsetDays === 0}
                   className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Ciclo siguiente"
@@ -1523,6 +2251,38 @@ export default function TodayPage() {
           </section>
         </header>
 
+        <section className="surface-card freeform-rise grid gap-4 px-6 py-5 md:grid-cols-3">
+          <ChartCard
+            title="Comida"
+            unit="g"
+            series={todayWeightSeries}
+            accent="#EBB7AA"
+            latestValue={todayLatestWeight}
+            rangeStartLabel="-3h"
+            canvasClassName="h-28 sm:h-40"
+          />
+          <ChartCard
+            title="Temperatura"
+            unit="°C"
+            series={todayTempSeries}
+            accent="#D99686"
+            latestValue={todayLatestTemp}
+            rangeStartLabel="-3h"
+            canvasClassName="h-28 sm:h-40"
+            integerDisplay
+          />
+          <ChartCard
+            title="Humedad"
+            unit="%"
+            series={todayHumiditySeries}
+            accent="hsl(198, 70%, 45%)"
+            latestValue={todayLatestHumidity}
+            rangeStartLabel="-3h"
+            canvasClassName="h-28 sm:h-40"
+            integerDisplay
+          />
+        </section>
+
         <section className="surface-card freeform-rise px-6 py-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -1537,34 +2297,6 @@ export default function TodayPage() {
                 {lastRefreshAt ? formatTimestamp(lastRefreshAt) : "Sin datos"}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={async () => {
-                if (!selectedDeviceId) return;
-                setIsRefreshing(true);
-                try {
-                  const result = await loadReadings(selectedDeviceId);
-                  setState((prev) => ({
-                    ...prev,
-                    readings: result.data,
-                    readingsCursor: result.nextCursor,
-                  }));
-                  setLastRefreshAt(new Date().toISOString());
-                  setRefreshError(null);
-                } catch (err) {
-                  setRefreshError(
-                    err instanceof Error
-                      ? err.message
-                      : "No se pudieron cargar las lecturas."
-                  );
-                } finally {
-                  setIsRefreshing(false);
-                }
-              }}
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-            >
-              {isRefreshing ? "Actualizando..." : "Actualizar lecturas"}
-            </button>
           </div>
 
           <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -1575,10 +2307,12 @@ export default function TodayPage() {
               >
                 {stat.icon ? (
                   <div className="absolute inset-y-3 right-4 flex w-16 items-center justify-center md:w-20">
-                    <img
+                    <Image
                       src={stat.icon}
                       alt=""
-                      aria-hidden="true"
+                      aria-hidden={true}
+                      width={80}
+                      height={80}
                       className="max-h-full max-w-full object-contain opacity-95"
                     />
                   </div>
@@ -1586,31 +2320,13 @@ export default function TodayPage() {
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                   {stat.label}
                 </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">{stat.value}</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">
+                  {stat.value}
+                </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-600">
-            <Link
-              href="/story"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Abrir diario
-            </Link>
-            <Link
-              href="/pet"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Ver mascota
-            </Link>
-            <Link
-              href="/bowl"
-              className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
-            >
-              Estado del plato
-            </Link>
-          </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">
               Frescura: {freshnessLabel}
@@ -1648,20 +2364,18 @@ export default function TodayPage() {
           </section>
         ) : null}
 
-        {!state.isLoading &&
-        !state.error &&
-        (!primaryPet || !primaryDevice) ? (
+        {!state.isLoading && !state.error && (!primaryPet || !primaryDevice) ? (
           <section className="surface-card freeform-rise px-6 py-5 text-sm text-slate-600">
             <p className="mb-3">
-              Aún no tienes todo el registro completo. Completa perfil,
-              mascota y dispositivo para ver el feed. 
-            </p> 
-            <Link 
-              href="/registro" 
-              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir al registro 
-            </Link> 
+              Aún no tienes todo el registro completo. Completa perfil, mascota
+              y dispositivo para ver el feed.
+            </p>
+            <Link
+              href="/registro"
+              className="inline-flex h-9 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+            >
+              Ir al registro
+            </Link>
           </section>
         ) : null}
 
@@ -1705,10 +2419,12 @@ export default function TodayPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {card.icon ? (
-                        <img
+                        <Image
                           src={card.icon}
                           alt=""
-                          aria-hidden="true"
+                          aria-hidden={true}
+                          width={36}
+                          height={36}
                           className="h-9 w-9 rounded-[14px] border border-slate-200 bg-white object-contain p-1"
                         />
                       ) : null}
@@ -1722,8 +2438,8 @@ export default function TodayPage() {
                       {card.tone === "ok"
                         ? "Estable"
                         : card.tone === "warning"
-                        ? "Atención"
-                        : "Info"}
+                          ? "Atención"
+                          : "Info"}
                     </span>
                   </div>
                   <p className="text-sm text-slate-600">{card.description}</p>
@@ -1751,7 +2467,6 @@ export default function TodayPage() {
             </div>
           ) : null}
         </section>
-
       </div>
       {showGuide ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
@@ -1789,16 +2504,16 @@ export default function TodayPage() {
               </button>
               <Link
                 href="/registro"
-                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700" 
-                onClick={() => { 
-                  if (typeof window !== "undefined") { 
-                    window.localStorage.setItem("kittypau_guide_seen", "1"); 
-                  } 
-                  setShowGuide(false); 
-                }} 
-              > 
-                Completar registro 
-              </Link> 
+                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem("kittypau_guide_seen", "1");
+                  }
+                  setShowGuide(false);
+                }}
+              >
+                Completar registro
+              </Link>
             </div>
           </div>
         </div>
@@ -1806,7 +2521,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-
-
-

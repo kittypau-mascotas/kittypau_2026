@@ -1,9 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap");
 @import "tailwindcss";
 
 :root {
   /* Brand */
   --primary: 12 62% 79%;
-  --primary-strong: 11 43% 63%;
+  --primary-strong: 12 62% 79%;
+  --brand-rose-solid: 11 43% 63%;
   --primary-foreground: 0 0% 100%;
 
   /* Surface */
@@ -24,6 +26,18 @@
   --danger: 350 55% 44%;
 
   --radius: 18px;
+
+  /* pelaje Nebelung */
+  --fur-dark: #3F474F;
+  --fur-shadow: #363E45;
+  --fur-light: #465058;
+  --fur-main: #5A646E;
+  --fur-highlight: #8C97A3;
+
+  /* ojos */
+  --eye-gold: #C9A227;
+  --eye-highlight: #E1C542;
+  --pupil: #000000;
 }
 
 @theme inline {
@@ -43,12 +57,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
   font-feature-settings: "ss01" 1, "ss02" 1;
   text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 .brand-title {
@@ -72,6 +95,15 @@ body {
   font-family: var(--font-ui), system-ui, sans-serif;
 }
 
+.kp-pettech-tagline {
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-align: center;
+}
+
 .surface-card {
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
@@ -93,6 +125,27 @@ body {
 .bg-primary:hover,
 .bg-primary:active {
   background-color: hsl(var(--primary-strong));
+}
+
+.kp-brand-soft-action {
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 58%, transparent);
+  background: color-mix(in oklab, hsl(var(--primary)) 20%, #ffffff);
+  color: hsl(var(--primary-strong));
+}
+
+.kp-brand-soft-action:hover {
+  background: color-mix(in oklab, hsl(var(--primary)) 28%, #ffffff);
+}
+
+.kp-nav-action {
+  color: #334155;
+  border: 1px solid transparent;
+}
+
+.kp-nav-action:hover {
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 44%, transparent);
+  color: hsl(var(--primary-strong));
 }
 
 .page-shell {
@@ -391,11 +444,16 @@ body {
 }
 
 .app-shell {
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
     linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
+}
+
+.app-content {
+  min-height: 100dvh;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
 }
 
 .app-nav {
@@ -406,6 +464,7 @@ body {
   background: color-mix(in oklab, white 92%, transparent);
   border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
   box-shadow: 0 10px 34px -28px rgba(15, 23, 42, 0.5);
+  padding-top: env(safe-area-inset-top);
 }
 
 .app-nav-inner {
@@ -415,7 +474,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 12px 24px;
+  padding: 12px max(24px, env(safe-area-inset-right))
+    12px max(24px, env(safe-area-inset-left));
 }
 
 .app-nav-brand {
@@ -426,9 +486,15 @@ body {
   color: hsl(var(--foreground));
 }
 
+.app-nav-brand-stack {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
 .app-nav-logo-wrap {
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -439,17 +505,23 @@ body {
 }
 
 .app-nav-logo {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
   transform: scale(1.08);
   transform-origin: center;
 }
 
 .app-nav-brand-title {
-  font-size: 1.9rem;
+  font-size: 2.05rem;
   line-height: 1;
   color: hsl(var(--primary-strong));
+}
+
+.app-nav-brand-subtitle {
+  margin-top: 4px;
+  color: #64748b;
+  opacity: 1;
 }
 
 .app-nav-dot {
@@ -551,7 +623,7 @@ body {
   height: 38px;
   border-radius: 999px;
   object-fit: cover;
-  border: 1px solid color-mix(in oklab, hsl(var(--border)) 60%, transparent);
+  border: none;
 }
 
 .app-nav-user-meta {
@@ -600,6 +672,10 @@ body {
   box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.45);
 }
 
+.app-nav-contact {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .app-nav-inner {
     display: grid;
@@ -609,7 +685,8 @@ body {
       "links links";
     align-items: center;
     gap: 10px 12px;
-    padding: 10px 12px;
+    padding: 10px max(12px, env(safe-area-inset-right))
+      10px max(12px, env(safe-area-inset-left));
   }
 
   .app-nav-brand {
@@ -624,6 +701,10 @@ body {
 
   .app-nav-brand-title {
     font-size: 1.35rem;
+  }
+
+  .app-nav-brand-subtitle {
+    margin-top: 2px;
   }
 
   .app-nav-logo-wrap {
@@ -645,9 +726,11 @@ body {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     padding-bottom: 2px;
+    padding-inline: 2px;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
 
@@ -669,6 +752,7 @@ body {
   .app-nav-link {
     white-space: nowrap;
     padding: 6px 10px;
+    scroll-snap-align: start;
   }
 
   .app-nav-user {
@@ -682,17 +766,205 @@ body {
   }
 
   .app-nav-user-name {
-    max-width: 96px;
+    max-width: 110px;
   }
 
   .app-nav-user-sub {
-    max-width: 96px;
+    max-width: 110px;
     font-size: 10px;
   }
 
   .app-nav-menu {
-    right: 0;
-    width: 210px;
+    right: max(0px, env(safe-area-inset-right));
+    width: min(210px, calc(100vw - 16px));
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-nav.app-nav-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: clamp(220px, 18vw, 280px);
+    border-bottom: none;
+    border-right: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+    box-shadow: 14px 0 36px -32px rgba(15, 23, 42, 0.5);
+    background: color-mix(in oklab, white 94%, transparent);
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-inner {
+    max-width: none;
+    height: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-brand {
+    order: 1;
+    gap: 6px;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-brand-stack {
+    align-items: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-brand-title {
+    font-size: clamp(1.7rem, 1.45vw, 2.05rem);
+    text-align: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-links {
+    order: 4;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 6px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-link {
+    display: block;
+    border-radius: 12px;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-user-top {
+    order: 3;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-links-extra {
+    order: 5;
+    margin-top: 10px;
+    display: grid;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-social-top {
+    order: 2;
+    display: flex;
+    justify-content: center;
+    padding-left: 0;
+    padding-bottom: 10px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid
+      color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-social-top .social-links {
+    gap: 8px;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-social-top .social-link {
+    border: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+    background: color-mix(in oklab, #ffffff 85%, transparent);
+    color: hsl(var(--primary-strong));
+    box-shadow: 0 10px 22px -20px rgba(15, 23, 42, 0.45);
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-social-top .social-link:hover {
+    background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
+    color: hsl(var(--primary-strong));
+    transform: translateY(-1px);
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-user {
+    width: 100%;
+    border-radius: 0;
+    padding: 2px 0 0;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-user-name {
+    max-width: 150px;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-user-sub {
+    max-width: 170px;
+    font-size: 12px;
+    text-align: left;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-user-meta {
+    align-items: flex-start;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-contact {
+    order: 6;
+    display: flex;
+    margin-top: 8px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+    padding-top: 10px;
+    padding-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #64748b;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-contact .social-links {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-contact a {
+    color: #475569;
+  }
+
+  .app-nav.app-nav-sidebar .app-nav-links-extra .app-nav-link,
+  .app-nav.app-nav-sidebar .app-nav-links-extra button,
+  .app-nav.app-nav-sidebar .app-nav-links-extra a {
+    text-align: left;
+  }
+
+  .app-nav.app-nav-sidebar + .app-content {
+    margin-left: clamp(220px, 18vw, 280px);
+    width: calc(100% - clamp(220px, 18vw, 280px));
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 20px 14px 40px;
+    gap: 16px;
   }
 }
 
@@ -714,6 +986,1082 @@ body {
     linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.login-ui-font :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  label,
+  input,
+  button,
+  textarea,
+  select,
+  a,
+  li,
+  div
+) {
+  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+}
+
+.login-ui-font .brand-title {
+  font-family: var(--font-brand), system-ui, sans-serif;
+}
+
+.login-ui-font .login-hero-title {
+  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+}
+
+.login-ui-font .login-card-brand .brand-title {
+  font-size: clamp(34px, 3.9vw, 48px);
+  line-height: 1;
+  margin-top: -14px;
+}
+
+.login-ui-font .kp-pettech-tagline {
+  font-size: clamp(14px, 1.45vw, 18px);
+  line-height: 1.08;
+  letter-spacing: 0.06em;
+  margin-top: -8px;
+}
+
+.login-ui-font .login-hero-title-pettech {
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.login-bg.login-ui-font .login-hero-title.login-hero-title-web {
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  line-height: 1.1;
+}
+
+.login-hero-static {
+  margin: 0 0 8px;
+  /* Keep smaller than the moving lines below */
+  font-size: clamp(1.02rem, 1.7vw, 1.3rem);
+  line-height: 1.14;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+.login-hero-slider {
+  width: min(100%, 680px);
+  margin-inline: auto;
+  /* Slightly taller to accommodate larger moving lines without clipping */
+  --hero-line-h: clamp(3.05rem, 5.6vw, 3.85rem);
+}
+
+.login-hero-slider-viewport {
+  height: var(--hero-line-h);
+  overflow: hidden;
+}
+
+.login-hero-slider-track {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  animation: login-hero-scroll 10s normal infinite running;
+}
+
+.login-hero-slider-track p {
+  margin: 0;
+  height: var(--hero-line-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-slider), var(--font-ui), sans-serif;
+  font-size: clamp(1.7rem, 3.25vw, 2.2rem);
+  line-height: 1.05;
+  font-weight: 950;
+  color: color-mix(in oklab, hsl(var(--foreground)) 82%, hsl(var(--muted-foreground)));
+}
+
+@keyframes login-hero-scroll {
+  0%,
+  15% {
+    margin-top: 0;
+  }
+
+  25%,
+  40% {
+    margin-top: calc(-1 * var(--hero-line-h));
+  }
+
+  50%,
+  65% {
+    margin-top: calc(-2 * var(--hero-line-h));
+  }
+
+  75%,
+  90% {
+    margin-top: calc(-3 * var(--hero-line-h));
+  }
+
+  100% {
+    margin-top: 0;
+  }
+}
+
+/* Refuerzo del patrón original: scroller + inner */
+.login-hero-slider .scroller {
+  height: var(--hero-line-h);
+  line-height: var(--hero-line-h);
+  overflow: hidden;
+}
+
+.login-hero-slider .inner {
+  animation: login-hero-scroll 10s normal infinite running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-hero-slider-track {
+    animation: none;
+    margin-top: 0;
+  }
+}
+
+.login-bg button:not(:disabled),
+.login-bg [role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+.login-bg button:disabled,
+.login-bg [role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.login-bg .login-submit-button,
+.login-bg .login-forgot-button,
+.login-bg .login-create-button {
+  cursor: pointer !important;
+}
+
+.kp-trial-cat {
+  padding: 0;
+  display: inline-flex;
+  align-items: flex-start;
+  position: relative;
+  /* Respiracion: duracion/easing configurable por instancia */
+  --kp-cat-breath: 3.9s;
+  --kp-cat-breath-ease: cubic-bezier(0.33, 0, 0.17, 1);
+}
+
+.kp-trial-cat .cat {
+  position: relative;
+  padding-top: 10px;
+  overflow: visible;
+}
+
+.kp-trial-button {
+  min-width: 128px;
+  min-height: 30px;
+  padding: 5px 11px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--border)));
+  background: #ffffff;
+  color: #7a6a65;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px -7px rgba(15, 23, 42, 0.35);
+  transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.kp-trial-button:hover {
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 42%, hsl(var(--border)));
+  color: hsl(var(--primary-strong));
+}
+
+.kp-trial-button:active {
+  transform: scale(0.98);
+}
+
+.kp-trial-cat .sleep-symbol {
+  position: absolute;
+  right: 34px;
+  top: -76px;
+  width: 56px;
+  height: 48px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 120;
+}
+
+.kp-trial-cat .sleep-symbol .z {
+  position: absolute;
+  left: 18px;
+  top: 28px;
+  display: block;
+  animation: kp-trial-sleep 4s ease-in-out infinite;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45));
+}
+
+.kp-trial-cat .sleep-symbol .z2 {
+  animation-delay: 1.25s;
+  left: 28px;
+  top: 24px;
+  font-size: 11px;
+}
+
+.kp-trial-cat .sleep-symbol .z3 {
+  animation-delay: 2.5s;
+  left: 10px;
+  top: 20px;
+  font-size: 11px;
+}
+
+.kp-trial-cat .thecat {
+  position: absolute;
+  width: 78px;
+  height: auto;
+  right: -6px;
+  top: -48px;
+  z-index: 80;
+  pointer-events: none;
+  overflow: visible;
+  line-height: 0;
+}
+
+.kp-trial-cat #path5 {
+  fill: var(--fur-dark) !important;
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  will-change: transform;
+  animation: kp-cat-breath-belly var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: -0.08s;
+}
+
+.kp-trial-cat .thecat svg {
+  transform-origin: center bottom;
+  will-change: transform;
+  animation: kp-cat-breath-body var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+}
+
+.kp-trial-cat #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  will-change: transform;
+  animation: kp-cat-breath-head var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: -0.04s;
+}
+
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  will-change: transform;
+  animation: kp-cat-breath-tail var(--kp-cat-breath) var(--kp-cat-breath-ease)
+    infinite;
+  animation-delay: 0.16s;
+}
+
+/* Frame-mode: cuando la pose viene por frames (JS) desactivar animaciones CSS. */
+.kp-trial-cat.is-frame .thecat svg,
+.kp-trial-cat.is-frame .thecat svg * {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-frame #cat-group {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.kp-trial-cat.is-frame #paw-front-left,
+.kp-trial-cat.is-frame #paw-front-right {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+}
+
+.kp-trial-cat.is-frame #paw-back,
+.kp-trial-cat.is-frame #paw-back-2 {
+  transform-box: fill-box;
+  transform-origin: 50% 35%;
+}
+
+.kp-trial-cat.is-frame #ear-left,
+.kp-trial-cat.is-frame #ear-right {
+  transform-box: fill-box;
+  transform-origin: 55% 80%;
+}
+
+.login-panel-cat {
+  position: relative;
+  z-index: 70;
+  pointer-events: auto;
+}
+
+.login-trial-inline {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  min-height: 26px;
+}
+
+.login-login-stack {
+  position: relative;
+}
+
+.login-login-head {
+  min-height: 28px;
+  padding-right: 178px;
+}
+
+.login-login-intro p {
+  margin-top: -2px;
+  line-height: 1.2;
+}
+
+.login-login-stack .login-panel-cat {
+  position: absolute;
+  right: -8px;
+  top: -7px;
+}
+
+.login-login-stack .login-panel-cat.login-panel-cat-hidden {
+  opacity: 0 !important;
+  transform: translateY(8px) scale(0.98) !important;
+  visibility: hidden;
+  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 260ms;
+  pointer-events: none;
+}
+
+.login-login-stack .login-panel-cat:not(.login-panel-cat-hidden) {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  visibility: visible;
+  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 0s;
+}
+
+.login-form-compact {
+  margin-top: -2px;
+}
+
+.kp-trial-cat .thecat svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible !important;
+  filter:
+    drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58))
+    drop-shadow(0 10px 16px rgba(15, 23, 42, 0.18));
+}
+
+/* Gato completo gris oscuro */
+.kp-trial-cat .thecat svg > g > path {
+  fill: var(--fur-dark) !important;
+  fill-opacity: 1 !important;
+}
+
+/* Profundidad por pieza (IDs agregados en el SVG inline) */
+.kp-trial-cat #paw-front-right,
+.kp-trial-cat #paw-front-left,
+.kp-trial-cat #paw-back,
+.kp-trial-cat #paw-back-2 {
+  fill: var(--fur-shadow) !important;
+}
+
+.kp-trial-cat #paw-back-2 {
+  /* Pata lejana: mas sutil para que no se vea duplicado raro. */
+  opacity: var(--kp-cat-paw-back-2-opacity, 0.58);
+  transition: opacity 140ms ease-out;
+}
+
+.kp-trial-cat #head,
+.kp-trial-cat #ear-left,
+.kp-trial-cat #ear-right {
+  fill: var(--fur-light) !important;
+}
+
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
+  fill: var(--fur-dark) !important;
+}
+
+/* Bigotes negros */
+.kp-trial-cat .thecat svg > g > g:nth-of-type(1) path,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(2) path {
+  stroke: #000000 !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Ojos cerrados integrados al pelaje */
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) ellipse,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) path,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) ellipse,
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) path {
+  fill: var(--fur-dark) !important;
+  fill-opacity: 1 !important;
+}
+
+/* Refuerzo por ID para evitar cualquier ojo negro residual */
+.kp-trial-cat #lefteyelid ellipse,
+.kp-trial-cat #righteyelid ellipse,
+.kp-trial-cat #lefteyelid path,
+.kp-trial-cat #righteyelid path {
+  fill: var(--fur-dark) !important;
+}
+
+.kp-trial-cat .thecat svg > g > g:nth-of-type(3) path[style*="stroke:#ffffff"],
+.kp-trial-cat .thecat svg > g > g:nth-of-type(4) path[style*="stroke:#ffffff"] {
+  stroke: #000000 !important;
+}
+
+.kp-trial-cat #lefteyelid path[style*="stroke:#ffffff"],
+.kp-trial-cat #righteyelid path[style*="stroke:#ffffff"] {
+  stroke: #000000 !important;
+}
+
+/* Ojos abiertos dorados: sin blanco, pupila negra y brillo blanco */
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  fill: #C9A227 !important;
+}
+
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(5) {
+  fill: #000000 !important;
+}
+
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(3),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(6) {
+  fill: #ffffff !important;
+}
+
+/* Si hay ojos superiores visibles, tambien dorados (evitar blanco) */
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(1),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(4) {
+  fill: #C9A227 !important;
+}
+
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(2),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(5) {
+  fill: var(--fur-dark) !important;
+}
+
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(3),
+.kp-trial-cat .thecat svg > g > ellipse:nth-of-type(6) {
+  fill: #ffffff !important;
+}
+
+/* Movimiento de pupila y brillo con mouse cuando esta despierto */
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(3),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(5),
+.kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(6) {
+  translate: var(--cat-eye-x, 0px) var(--cat-eye-y, 0px);
+  transition: translate 120ms ease-out;
+}
+
+.kp-trial-cat #tail {
+  visibility: visible;
+}
+
+.kp-trial-cat #longtail {
+  visibility: hidden;
+  transform: translateY(-4px);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kp-trial-cat .thecat #eyesdown {
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+  pointer-events: none;
+}
+
+/* Ojos base del SVG: siempre ocultos (evita ojo negro fantasma) */
+.kp-trial-cat .thecat svg > g > ellipse {
+  opacity: 0 !important;
+}
+
+.kp-trial-cat #lefteyelid,
+.kp-trial-cat #righteyelid {
+  opacity: 1;
+  transition: opacity 170ms ease-out;
+}
+
+.kp-trial-cat #ear-left,
+.kp-trial-cat #ear-right,
+.kp-trial-cat #paw-front-left,
+.kp-trial-cat #head,
+.kp-trial-cat #tail,
+.kp-trial-cat #longtail {
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 170ms ease-out;
+}
+
+.kp-trial-cat.is-awake #lefteyelid,
+.kp-trial-cat.is-awake .sleep-symbol {
+  visibility: hidden;
+}
+
+.kp-trial-cat.is-awake #lefteyelid {
+  opacity: 0;
+  transition-delay: 0ms;
+}
+
+.kp-trial-cat.is-awake #righteyelid {
+  opacity: 0;
+  transition-delay: 220ms;
+}
+
+.kp-trial-cat.is-awake #eyesdown {
+  opacity: 1;
+  transition-delay: 170ms;
+}
+
+/* Se mantiene oculto en todos los estados */
+
+@keyframes kp-trial-sleep {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-3px, -14px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-26px) scale(1.25);
+  }
+}
+
+@keyframes kp-cat-breath-body {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  10% {
+    transform: translate3d(0, -0.6px, 0) scale(1.002);
+  }
+  40% {
+    transform: translate3d(0, -2.6px, 0) scale(1.012);
+  }
+  48% {
+    transform: translate3d(0, -2.75px, 0) scale(1.013);
+  }
+  72% {
+    transform: translate3d(0, -1.05px, 0) scale(1.005);
+  }
+  88% {
+    transform: translate3d(0, -0.25px, 0) scale(1.001);
+  }
+}
+
+@keyframes kp-cat-breath-belly {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scaleY(1) scaleX(1);
+  }
+  12% {
+    transform: translate3d(0, -0.7px, 0) scaleY(1.02) scaleX(1.008);
+  }
+  40% {
+    transform: translate3d(0, -1.55px, 0) scaleY(1.11) scaleX(1.04);
+  }
+  48% {
+    transform: translate3d(0, -1.7px, 0) scaleY(1.125) scaleX(1.045);
+  }
+  72% {
+    transform: translate3d(0, -0.85px, 0) scaleY(1.045) scaleX(1.018);
+  }
+  88% {
+    transform: translate3d(0, -0.25px, 0) scaleY(1.012) scaleX(1.005);
+  }
+}
+
+@keyframes kp-cat-breath-head {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  12% {
+    transform: translate3d(0, -0.25px, 0) rotate(-0.05deg);
+  }
+  40% {
+    transform: translate3d(0, -1.05px, 0) rotate(-0.32deg);
+  }
+  48% {
+    transform: translate3d(0, -1.15px, 0) rotate(-0.38deg);
+  }
+  72% {
+    transform: translate3d(0, -0.48px, 0) rotate(-0.14deg);
+  }
+  88% {
+    transform: translate3d(0, -0.12px, 0) rotate(-0.04deg);
+  }
+}
+
+@keyframes kp-cat-breath-tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  12% {
+    transform: rotate(0.45deg);
+  }
+  40% {
+    transform: rotate(2.25deg);
+  }
+  48% {
+    transform: rotate(2.75deg);
+  }
+  72% {
+    transform: rotate(1.05deg);
+  }
+  88% {
+    transform: rotate(0.25deg);
+  }
+}
+
+/* =========================
+   Poses especiales (prueba)
+   ========================= */
+
+/* Pose: Enojado */
+.kp-trial-cat.is-angry #path5,
+.kp-trial-cat.is-angry #head,
+.kp-trial-cat.is-angry #tail,
+.kp-trial-cat.is-angry #longtail {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-angry .thecat svg {
+  animation: kp-cat-angry-shiver 120ms linear infinite !important;
+  transform-origin: center bottom;
+  filter: contrast(1.18) saturate(1.08);
+}
+
+.kp-trial-cat.is-angry.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-angry.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  fill: #ff2a2a !important;
+}
+
+.kp-trial-cat.is-angry #ear-left,
+.kp-trial-cat.is-angry #ear-right {
+  transform-box: fill-box;
+  transform-origin: 50% 85%;
+  animation: none !important;
+}
+
+.kp-trial-cat.is-angry #ear-left {
+  transform: rotate(-32deg) translateY(2px);
+}
+
+.kp-trial-cat.is-angry #ear-right {
+  transform: rotate(32deg) translateY(2px);
+}
+
+@keyframes kp-cat-angry-shiver {
+  0% {
+    transform: translate3d(0.65px, 0, 0) rotate(0.15deg) scaleY(1.065);
+  }
+  18% {
+    transform: translate3d(-0.4px, -0.1px, 0) rotate(-0.08deg) scaleY(1.065);
+  }
+  36% {
+    transform: translate3d(0.3px, 0.05px, 0) rotate(0.12deg) scaleY(1.065);
+  }
+  54% {
+    transform: translate3d(-0.7px, -0.05px, 0) rotate(-0.18deg) scaleY(1.065);
+  }
+  72% {
+    transform: translate3d(0.45px, 0.1px, 0) rotate(0.09deg) scaleY(1.065);
+  }
+  100% {
+    transform: translate3d(0.65px, 0, 0) rotate(0.15deg) scaleY(1.065);
+  }
+}
+
+/* Pose: Aseo */
+.kp-trial-cat.is-cleaning #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  animation: kp-cat-clean-head calc(980ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.2, 0.9, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-cleaning #paw-front-left {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
+  animation: kp-cat-clean-paw calc(980ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.2, 0.9, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-cleaning #lefteyelid,
+.kp-trial-cat.is-cleaning #righteyelid {
+  visibility: visible !important;
+  opacity: 0.6 !important;
+  animation: kp-cat-clean-squint calc(980ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite;
+}
+
+.kp-trial-cat.is-cleaning #eyesdown {
+  opacity: 0 !important;
+}
+
+@keyframes kp-cat-clean-head {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  22% {
+    transform: translate3d(0.4px, 3.2px, 0) rotate(-14deg);
+  }
+  44% {
+    transform: translate3d(0.2px, 4px, 0) rotate(-16deg);
+  }
+  70% {
+    transform: translate3d(0.15px, 1.2px, 0) rotate(-9deg);
+  }
+}
+
+@keyframes kp-cat-clean-paw {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-10deg);
+  }
+  18% {
+    transform: translate3d(0.6px, -6.8px, 0) rotate(-42deg);
+  }
+  40% {
+    transform: translate3d(0.9px, -8.5px, 0) rotate(-50deg);
+  }
+  58% {
+    transform: translate3d(0.5px, -7.5px, 0) rotate(-44deg);
+  }
+  78% {
+    transform: translate3d(0.25px, -4.0px, 0) rotate(-28deg);
+  }
+}
+
+@keyframes kp-cat-clean-squint {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  55% {
+    opacity: 0.46;
+  }
+}
+
+/* Pose: Acecho/Salto */
+.kp-trial-cat.is-pouncing #path5,
+.kp-trial-cat.is-pouncing #head {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-pouncing .thecat svg {
+  transform-origin: center bottom;
+  animation: kp-cat-pounce-tension calc(320ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite alternate !important;
+}
+
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(5) {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(1.7);
+}
+
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
+.kp-trial-cat.is-pouncing.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
+  opacity: 0.22;
+}
+
+.kp-trial-cat.is-pouncing #tail,
+.kp-trial-cat.is-pouncing #longtail {
+  animation: kp-cat-tail-wiggle calc(150ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite alternate !important;
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+}
+
+@keyframes kp-cat-pounce-tension {
+  from {
+    transform: translate3d(0, 3.2px, 0) scaleY(0.81) scaleX(1.01);
+  }
+  to {
+    transform: translate3d(0.15px, 2.6px, 0) scaleY(0.84) scaleX(1.005);
+  }
+}
+
+@keyframes kp-cat-tail-wiggle {
+  from {
+    transform: rotate(-11deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+
+/* Pose: Parado/Escuchando */
+.kp-trial-cat.is-standing #path5,
+.kp-trial-cat.is-standing #head,
+.kp-trial-cat.is-standing #tail,
+.kp-trial-cat.is-standing #longtail {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-standing .thecat svg {
+  animation: kp-cat-stand-rise 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+  transform-origin: center bottom;
+}
+
+.kp-trial-cat.is-standing #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  animation: kp-cat-stand-head 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+}
+
+.kp-trial-cat.is-standing #paw-front-left,
+.kp-trial-cat.is-standing #paw-front-right,
+.kp-trial-cat.is-standing #paw-back {
+  transform-box: fill-box;
+  transform-origin: 50% 30%;
+  animation: kp-cat-stand-paws 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+}
+
+.kp-trial-cat.is-standing #tail,
+.kp-trial-cat.is-standing #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  animation: kp-cat-stand-tail 1.6s ease-in-out infinite !important;
+}
+
+.kp-trial-cat.is-standing #ear-left,
+.kp-trial-cat.is-standing #ear-right {
+  transform-box: fill-box;
+  transform-origin: 55% 80%;
+  animation: kp-cat-ear-twitch 1.75s ease-in-out infinite !important;
+}
+
+.kp-trial-cat.is-standing #ear-right {
+  animation-delay: -0.62s;
+}
+
+@keyframes kp-cat-stand-rise {
+  from {
+    transform: translate3d(-0.8px, -1px, 0) rotate(-3.5deg) scaleY(1.02);
+  }
+  to {
+    transform: translate3d(-2.2px, -6.0px, 0) rotate(-7.5deg) scaleY(1.045);
+  }
+}
+
+@keyframes kp-cat-stand-head {
+  from {
+    transform: translate3d(0, -0.2px, 0) rotate(1.0deg);
+  }
+  to {
+    transform: translate3d(0.2px, -1.35px, 0) rotate(6.0deg);
+  }
+}
+
+@keyframes kp-cat-stand-paws {
+  from {
+    transform: translate3d(0, -0.2px, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(-0.35px, -1.35px, 0) rotate(1.6deg);
+  }
+}
+
+@keyframes kp-cat-stand-tail {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(4.5deg);
+  }
+  55% {
+    transform: rotate(1.5deg);
+  }
+  78% {
+    transform: rotate(3.3deg);
+  }
+}
+
+@keyframes kp-cat-ear-twitch {
+  0%,
+  62%,
+  100% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(-6deg);
+  }
+  74% {
+    transform: rotate(4deg);
+  }
+  78% {
+    transform: rotate(-3.5deg);
+  }
+  82% {
+    transform: rotate(2.5deg);
+  }
+  86% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Pose: Caminando */
+.kp-trial-cat.is-walking #path5,
+.kp-trial-cat.is-walking #head {
+  animation: none !important;
+}
+
+.kp-trial-cat.is-walking .thecat svg {
+  transform-origin: center bottom;
+  animation: kp-cat-walk-body calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-front-left {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+  animation: kp-cat-walk-front-a calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-front-right {
+  transform-box: fill-box;
+  transform-origin: 50% 25%;
+  animation: kp-cat-walk-front-b calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #paw-back,
+.kp-trial-cat.is-walking #paw-back-2 {
+  transform-box: fill-box;
+  transform-origin: 50% 35%;
+  animation: kp-cat-walk-back calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  animation-delay: calc(-410ms * var(--kp-cat-pose-mult, 1));
+}
+
+.kp-trial-cat.is-walking #paw-back-2 {
+  /* Desfase contrario para que las patas traseras alternen */
+  animation-delay: calc(-820ms * var(--kp-cat-pose-mult, 1));
+  opacity: 0.9;
+}
+
+.kp-trial-cat.is-walking #head {
+  transform-box: fill-box;
+  transform-origin: 52% 55%;
+  animation: kp-cat-walk-head calc(820ms * var(--kp-cat-pose-mult, 1))
+    cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.kp-trial-cat.is-walking #tail,
+.kp-trial-cat.is-walking #longtail {
+  transform-box: fill-box;
+  transform-origin: 12% 50%;
+  animation: kp-cat-walk-tail calc(520ms * var(--kp-cat-pose-mult, 1)) ease-in-out
+    infinite alternate !important;
+}
+
+@keyframes kp-cat-walk-body {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  25% {
+    transform: translate3d(0.6px, -1.1px, 0) rotate(-2.2deg);
+  }
+  50% {
+    transform: translate3d(0, 0.4px, 0) rotate(-1deg);
+  }
+  75% {
+    transform: translate3d(-0.6px, -1.15px, 0) rotate(-2.25deg);
+  }
+}
+
+@keyframes kp-cat-walk-front-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate3d(0.7px, -2.9px, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate3d(0.35px, 0.9px, 0) rotate(3deg);
+  }
+}
+
+@keyframes kp-cat-walk-front-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0.9px, 0) rotate(3deg);
+  }
+  20% {
+    transform: translate3d(-0.1px, 0.2px, 0) rotate(0deg);
+  }
+  70% {
+    transform: translate3d(-0.65px, -2.75px, 0) rotate(-8deg);
+  }
+}
+
+@keyframes kp-cat-walk-back {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  35% {
+    transform: translate3d(-0.4px, -2.25px, 0) rotate(-6deg);
+  }
+  70% {
+    transform: translate3d(0.25px, 0.8px, 0) rotate(2deg);
+  }
+}
+
+@keyframes kp-cat-walk-head {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0.2px, -0.55px, 0) rotate(0.35deg);
+  }
+  50% {
+    transform: translate3d(0, 0.15px, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(-0.2px, -0.55px, 0) rotate(-0.35deg);
+  }
+}
+
+@keyframes kp-cat-walk-tail {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
 }
 
 .login-layer {
@@ -823,9 +2171,14 @@ body {
 }
 
 .social-link svg {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   fill: currentColor;
+}
+
+.social-link-md svg {
+  width: 74%;
+  height: 74%;
 }
 
 .social-link-sm {
@@ -852,8 +2205,29 @@ body {
   justify-content: center;
 }
 
+.login-hero-social {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.login-hero-social-web .social-link-md {
+  width: 44px;
+  height: 44px;
+}
+
 .login-brand-block {
   align-self: center;
+}
+
+.login-fold-box-brand {
+  display: none;
+}
+
+.login-brand-core {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .login-brand-block .brand-hero-logo {
@@ -875,10 +2249,18 @@ body {
   justify-content: center;
 }
 
+.login-hero-divider {
+  width: min(420px, 78%);
+  margin: 0 auto 12px;
+  border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+  transform: translateY(-2px);
+}
+
 .login-hero-asset-img {
   width: min(448px, 100%);
   height: auto;
   display: block;
+  transform: translateY(24px);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -886,7 +2268,7 @@ body {
 
 @media (min-width: 1024px) {
   .login-hero-column {
-    transform: translateY(-8%);
+    transform: translateY(-12%);
   }
 
   .login-auth-column {
@@ -900,6 +2282,14 @@ body {
   .login-hero-asset-img {
     width: min(390px, 100%);
   }
+
+  .login-auth-social {
+    display: none;
+  }
+
+  .login-hero-copy {
+    margin-top: -6px;
+  }
 }
 
 @media (max-width: 1023px) {
@@ -912,10 +2302,14 @@ body {
   .login-auth-column {
     transform: none;
   }
+
+  .login-hero-social-web {
+    display: none;
+  }
 }
 
 
-.login-card-brand {
+.login-card-brand:not(.login-fold-box-brand) {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -928,6 +2322,18 @@ body {
   transform: translateY(0);
 }
 
+.login-auth-column > .login-card-brand {
+  position: relative;
+  margin-bottom: -8px;
+}
+
+@media (min-width: 1024px) {
+  /* Web only: raise brand block (logo + title + tagline) without affecting native APK flavor */
+  .login-bg:not(.kp-native-apk):not(.kp-flavor-native) .login-auth-column > .login-card-brand {
+    top: -54px;
+  }
+}
+
 .login-card-logo {
   width: 112px;
   height: auto;
@@ -935,8 +2341,8 @@ body {
 }
 
 .brand-logo-badge {
-  width: 112px;
-  height: 112px;
+  width: 132px;
+  height: 132px;
   border-radius: 9999px;
   background: #ffffff;
   display: grid;
@@ -947,8 +2353,8 @@ body {
 }
 
 .brand-logo-img {
-  width: 78%;
-  height: 78%;
+  width: 88%;
+  height: 88%;
   object-fit: contain;
   border-radius: 9999px;
 }
@@ -957,34 +2363,24 @@ body {
   position: relative;
 }
 
-.login-bandida-action {
-  position: absolute;
-  right: 28px;
-  bottom: -122px;
-  z-index: 5;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+.login-panel-wrap .glass-panel {
+  display: flex;
+  justify-content: center;
 }
 
 .login-login-stack {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 14px;
+  width: min(100%, 560px);
 }
 
 .login-login-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
-.login-bandida-action:focus-visible {
-  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 70%, transparent);
-  outline-offset: 6px;
-  border-radius: 999px;
-}
 
 .login-stepper {
   display: grid;
@@ -1120,6 +2516,680 @@ body {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
+.login-trial-overlay {
+  background: color-mix(in oklab, hsl(var(--primary)) 20%, rgba(15, 23, 42, 0.66));
+  backdrop-filter: blur(6px);
+}
+
+.login-trial-modal {
+  width: min(94vw, 420px);
+  max-height: min(66dvh, 560px);
+  overflow: hidden;
+  padding: 16px !important;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 12%, #ffffff) 0%,
+    #ffffff 78%
+  );
+  box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 45%, rgba(15, 23, 42, 0.5));
+}
+
+/* Native APK: bottom-sheet feel + better keyboard ergonomics */
+.kp-native-apk .login-trial-overlay,
+.kp-flavor-native .login-trial-overlay {
+  justify-content: flex-end;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom));
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+.kp-native-apk .login-trial-modal,
+.kp-flavor-native .login-trial-modal {
+  width: min(96vw, 520px);
+  max-height: min(78dvh, 720px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kp-native-apk .login-trial-modal .login-trial-input,
+.kp-flavor-native .login-trial-modal .login-trial-input {
+  height: 46px;
+  font-size: 16px;
+}
+
+.kp-native-apk .login-trial-cancel,
+.kp-flavor-native .login-trial-cancel,
+.kp-native-apk .login-trial-submit,
+.kp-flavor-native .login-trial-submit {
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.login-trial-modal .mb-4 {
+  margin-bottom: 10px;
+}
+
+.login-trial-modal .space-y-3 {
+  display: grid;
+  gap: 8px;
+}
+
+.login-trial-modal .space-y-1 {
+  display: grid;
+  gap: 4px;
+}
+
+.login-trial-modal .login-trial-label {
+  line-height: 1.2;
+}
+
+.login-trial-modal .login-trial-input {
+  height: 38px;
+  padding-inline: 12px;
+}
+
+.login-trial-modal .mt-3 {
+  margin-top: 8px;
+}
+
+.login-trial-modal .mt-5 {
+  margin-top: 10px;
+}
+
+.login-trial-modal .flex.items-center.justify-end.gap-2 {
+  gap: 8px;
+}
+
+.login-trial-eyebrow {
+  color: color-mix(in oklab, hsl(var(--primary)) 70%, #64748b);
+}
+
+.login-trial-title {
+  color: #0f172a;
+}
+
+.login-trial-copy {
+  color: #475569;
+}
+
+.login-trial-label {
+  color: #64748b;
+}
+
+.login-trial-input {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 6%, #ffffff);
+  color: #0f172a;
+}
+
+.login-trial-input:focus {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 62%, hsl(var(--border)));
+  box-shadow: 0 0 0 2px color-mix(in oklab, hsl(var(--primary)) 35%, transparent);
+}
+
+.login-trial-error {
+  border-color: color-mix(in oklab, hsl(var(--danger)) 28%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--danger)) 10%, #ffffff);
+  color: hsl(var(--danger));
+}
+
+.login-trial-cancel {
+  border-color: color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff);
+  color: hsl(var(--primary-strong));
+}
+
+.login-trial-cancel:hover {
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
+}
+
+.login-trial-submit {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.login-trial-submit:hover {
+  background: hsl(var(--primary-strong));
+}
+
+.trial-rpg-modal {
+  animation: trial-rpg-pop 220ms ease-out;
+}
+
+/* Native APK: keep RPG dialog above the bottom navbar */
+.kp-native-apk .trial-rpg-modal,
+.kp-flavor-native .trial-rpg-modal {
+  margin-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
+.trial-rpg-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  min-height: 140px;
+  border: 3px solid color-mix(in oklab, hsl(var(--primary)) 58%, #ffffff);
+  border-radius: 0;
+  /* Subtle pixel-cut corners */
+  --trial-rpg-px: 8px;
+  --trial-rpg-pad: 8px;
+  --trial-rpg-controls: 18px;
+  clip-path: polygon(
+    0 var(--trial-rpg-px),
+    var(--trial-rpg-px) 0,
+    calc(100% - var(--trial-rpg-px)) 0,
+    100% var(--trial-rpg-px),
+    100% calc(100% - var(--trial-rpg-px)),
+    calc(100% - var(--trial-rpg-px)) 100%,
+    var(--trial-rpg-px) 100%,
+    0 calc(100% - var(--trial-rpg-px))
+  );
+  padding: 0;
+  overflow: hidden;
+  /* Kittypau pink frame (matches brand). */
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 78%, #ffffff) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 56%, #ffffff) 100%
+  );
+  /* Very light pixel texture */
+  background-image:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, hsl(var(--primary)) 78%, #ffffff) 0%,
+      color-mix(in oklab, hsl(var(--primary)) 56%, #ffffff) 100%
+    ),
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: auto, 6px 6px, 6px 6px;
+  background-position: 0 0, 0 0, 0 0;
+  box-shadow: 0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55));
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+/* NOTE: The photo background should live inside the cat panel (right side),
+   not behind the entire dialog, so the text stays clean and readable. */
+
+.trial-rpg-shell:hover {
+  transform: translateY(-1px) scale(1.015);
+}
+
+.trial-rpg-shell:active {
+  transform: translateY(0) scale(1.01);
+}
+
+.trial-rpg-topbar {
+  display: none;
+}
+
+.trial-rpg-controls {
+  position: absolute;
+  right: var(--trial-rpg-pad);
+  top: var(--trial-rpg-pad);
+  display: inline-flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.trial-rpg-body {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: var(--trial-rpg-pad);
+  /* Top "bar" area: same padding as other sides, plus room for the controls */
+  padding-top: calc(var(--trial-rpg-pad) * 2 + var(--trial-rpg-controls));
+  position: relative;
+  z-index: 1;
+}
+
+.trial-rpg-textpane {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: 0;
+  clip-path: polygon(
+    0 6px,
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px)
+  );
+  border: 2px solid color-mix(in oklab, hsl(var(--primary)) 18%, rgba(15, 23, 42, 0.35));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0.78) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  padding: 8px 10px;
+}
+
+.trial-rpg-catpane {
+  flex: 0 0 128px;
+  border-radius: 0;
+  clip-path: polygon(
+    0 6px,
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px)
+  );
+  border: 2px solid color-mix(in oklab, hsl(var(--primary)) 18%, rgba(15, 23, 42, 0.35));
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  padding: 6px 6px;
+}
+
+.trial-rpg-catpane > * {
+  position: relative;
+  z-index: 1;
+}
+
+.trial-rpg-iconbtn {
+  width: var(--trial-rpg-controls);
+  height: var(--trial-rpg-controls);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 40%, #ffffff);
+  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  color: color-mix(in oklab, hsl(var(--foreground)) 78%, #000000);
+  box-shadow: 0 10px 18px -16px rgba(15, 23, 42, 0.6);
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+  cursor: pointer;
+}
+
+.trial-rpg-iconbtn.trial-rpg-close {
+  color: #ef4444;
+  border-color: color-mix(in oklab, #ef4444 45%, #ffffff);
+  background: color-mix(in oklab, #ef4444 12%, #ffffff);
+}
+
+.trial-rpg-iconbtn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, hsl(var(--primary)) 16%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 52%, #ffffff);
+}
+
+.trial-rpg-iconbtn.trial-rpg-close:hover {
+  background: color-mix(in oklab, #ef4444 16%, #ffffff);
+  border-color: color-mix(in oklab, #ef4444 62%, #ffffff);
+}
+
+.trial-rpg-iconbtn:active {
+  transform: translateY(0);
+}
+
+.trial-rpg-iconbtn svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trial-rpg-iconbtn.trial-rpg-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.trial-rpg-iconbtn.trial-rpg-mute svg {
+  width: 13px;
+  height: 13px;
+}
+
+.trial-rpg-shell:focus-visible {
+  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 56%, transparent);
+  outline-offset: 2px;
+}
+
+.trial-rpg-catpane .trial-rpg-cat {
+  transform: translateY(10px);
+}
+
+.trial-rpg-copy {
+  min-height: 72px;
+  display: flex;
+  flex: 1 1 auto;
+  max-width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  padding-left: 0;
+  align-self: center;
+  margin-top: 2px;
+}
+
+.trial-rpg-line {
+  margin: 0;
+  min-height: 36px;
+  width: 100%;
+  max-width: 100%;
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.trial-rpg-caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-left: 4px;
+  vertical-align: -0.1em;
+  color: transparent;
+  background-color: color-mix(in oklab, hsl(var(--primary-strong)) 75%, #334155);
+  animation: trial-rpg-caret-blink 850ms steps(1) infinite;
+}
+
+.trial-rpg-instagram {
+  align-self: center;
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  min-height: 24px;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trial-rpg-actions {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.trial-rpg-choices {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.trial-rpg-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 22%, rgba(15, 23, 42, 0.28));
+  background: rgba(255, 255, 255, 0.75);
+  color: rgba(15, 23, 42, 0.88);
+  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
+  cursor: pointer;
+}
+
+.trial-rpg-choice:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 36%, rgba(15, 23, 42, 0.28));
+}
+
+.trial-rpg-choice:active {
+  transform: translateY(0);
+}
+
+.trial-rpg-choice-key {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.trial-rpg-instagram.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trial-rpg-instagram.is-visible {
+  opacity: 1;
+}
+
+.trial-rpg-cat {
+  width: 96px;
+  height: 86px;
+  align-self: center;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.trial-rpg-cat::after {
+  content: none;
+}
+
+.trial-rpg-cat.kp-trial-cat {
+  padding: 0;
+}
+
+.trial-rpg-cat.kp-trial-cat .cat {
+  padding-top: 0;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol {
+  right: 26px;
+  top: -18px;
+  width: 52px;
+  height: 40px;
+  font-size: 10px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z {
+  left: 16px;
+  top: 22px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z2 {
+  left: 26px;
+  top: 18px;
+}
+
+.trial-rpg-cat.kp-trial-cat .sleep-symbol .z3 {
+  left: 8px;
+  top: 14px;
+}
+
+.trial-rpg-cat.kp-trial-cat .thecat {
+  position: relative;
+  width: 92px;
+  right: 0;
+  top: 2px;
+  filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.16));
+}
+
+@keyframes trial-rpg-caret-blink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+  49%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes trial-rpg-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .login-trial-modal {
+    width: min(94vw, 372px);
+    max-height: min(64dvh, 500px);
+    padding: 12px !important;
+  }
+
+  .login-trial-modal .mb-4 {
+    margin-bottom: 10px;
+  }
+
+  .login-trial-modal .mt-1 {
+    margin-top: 4px;
+  }
+
+  .login-trial-modal .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0;
+  }
+
+  .login-trial-modal .space-y-3 {
+    gap: 6px;
+  }
+
+  .login-trial-modal .space-y-1 {
+    gap: 4px;
+  }
+
+  .login-trial-modal .h-11 {
+    height: 2rem;
+  }
+
+  .login-trial-modal .text-sm {
+    font-size: 0.79rem;
+    line-height: 1.28;
+  }
+
+  .login-trial-modal .text-xs {
+    font-size: 0.68rem;
+  }
+
+  .login-trial-modal .mt-5 {
+    margin-top: 8px;
+  }
+
+  .trial-rpg-shell {
+    min-height: 128px;
+    border-width: 2px;
+    border-radius: 0;
+    --trial-rpg-px: 6px;
+    --trial-rpg-pad: 7px;
+    --trial-rpg-controls: 16px;
+  }
+
+  .trial-rpg-topbar {
+    display: none;
+  }
+
+  .trial-rpg-controls {
+    right: var(--trial-rpg-pad);
+    top: var(--trial-rpg-pad);
+    gap: 7px;
+  }
+
+  .trial-rpg-body {
+    gap: 8px;
+    padding: var(--trial-rpg-pad);
+    padding-top: calc(var(--trial-rpg-pad) * 2 + var(--trial-rpg-controls));
+  }
+
+  .trial-rpg-textpane,
+  .trial-rpg-catpane {
+    border-width: 1px;
+    border-radius: 9px;
+  }
+
+  .trial-rpg-catpane {
+    flex-basis: 110px;
+    padding: 5px 5px;
+  }
+
+  .trial-rpg-iconbtn {
+    width: var(--trial-rpg-controls);
+    height: var(--trial-rpg-controls);
+  }
+
+  .trial-rpg-iconbtn svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .trial-rpg-iconbtn.trial-rpg-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .trial-rpg-iconbtn.trial-rpg-mute svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .trial-rpg-catpane .trial-rpg-cat {
+    transform: translateY(7px);
+  }
+
+  .trial-rpg-line {
+    min-height: 32px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .trial-rpg-instagram {
+    min-height: 22px;
+    padding: 4px 8px;
+    font-size: 9px;
+  }
+
+  .trial-rpg-cat {
+    width: 84px;
+    height: 76px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .thecat {
+    width: 84px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
+    right: 24px;
+    top: -12px;
+    font-size: 9px;
+  }
+
+  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
+    right: 26px;
+    top: -12px;
+    font-size: 10px;
+  }
+}
+
 .login-stepper2 {
   position: relative;
   display: grid;
@@ -1242,9 +3312,9 @@ body {
     width: min(340px, 100%);
   }
 
-  .login-hero-title {
-    font-size: clamp(2.2rem, 3.2vw, 3rem);
-    line-height: 1.04;
+  .login-hero-title.login-hero-title-web {
+    font-size: clamp(1.25rem, 1.9vw, 1.8rem);
+    line-height: 1.12;
   }
 
   .login-hero-copy {
@@ -1264,20 +3334,11 @@ body {
     width: clamp(96px, 9vw, 130px);
   }
 
-  .login-bandida-action {
-    right: 24px;
-    bottom: -110px;
-  }
 }
 
 @media (max-width: 420px) {
   .login-bandida {
     width: 134px;
-  }
-
-  .login-bandida-action {
-    right: 4px;
-    bottom: -118px;
   }
 }
 
@@ -1508,6 +3569,500 @@ textarea::placeholder {
   pointer-events: auto;
 }
 
+/* APK-specific distribution (Capacitor native app + native flavor deploy) */
+.kp-native-apk .app-shell,
+.kp-flavor-native .app-shell {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.9), transparent 40%),
+    linear-gradient(180deg, #f7e4e0 0%, #fffaf8 75%, #ffffff 100%);
+}
+
+.kp-native-apk .app-content,
+.kp-flavor-native .app-content {
+  padding-top: 8px;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode,
+.kp-flavor-native .app-nav.app-nav-main-mode {
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  border-bottom: none;
+  border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 74%, transparent);
+  box-shadow: 0 -12px 28px -24px rgba(15, 23, 42, 0.45);
+  background: color-mix(in oklab, white 96%, transparent);
+  padding-top: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-inner,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-inner {
+  max-width: none;
+  display: block;
+  padding: 8px max(10px, env(safe-area-inset-right)) 8px
+    max(10px, env(safe-area-inset-left));
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-user-top,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-contact,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-links-extra,
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-profile-menu,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-user-top,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-social-top,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-contact,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links-extra,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-profile-menu {
+  display: none;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-links,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  overflow: visible;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-link,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-link {
+  text-align: center;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 9px 4px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-link.is-active,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-link.is-active {
+  box-shadow: none;
+  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
+}
+
+.kp-native-apk .app-nav.app-nav-admin-mode,
+.kp-flavor-native .app-nav.app-nav-admin-mode {
+  position: sticky;
+  top: 0;
+  bottom: auto;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
+  border-top: none;
+  border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+}
+
+@media (max-width: 430px) {
+  .kp-native-apk #today-hero,
+  .kp-flavor-native #today-hero {
+    padding: 12px 10px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-top,
+  .kp-flavor-native #today-hero .today-hero-top {
+    gap: 10px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-pet img,
+  .kp-flavor-native #today-hero .today-hero-pet img {
+    width: 96px;
+    height: 96px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-pet h2,
+  .kp-flavor-native #today-hero .today-hero-pet h2 {
+    font-size: 1.08rem;
+    line-height: 1.1;
+  }
+
+  .kp-native-apk #today-hero .today-hero-pet p,
+  .kp-flavor-native #today-hero .today-hero-pet p {
+    font-size: 0.78rem;
+    line-height: 1.15rem;
+  }
+
+  .kp-native-apk #today-hero .today-hero-aside,
+  .kp-flavor-native #today-hero .today-hero-aside {
+    gap: 4px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-updated,
+  .kp-flavor-native #today-hero .today-hero-updated {
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary,
+  .kp-flavor-native #today-hero .today-hero-summary {
+    width: 100%;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary-cards,
+  .kp-flavor-native #today-hero .today-hero-summary-cards {
+    flex: 1;
+    gap: 6px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary-card,
+  .kp-flavor-native #today-hero .today-hero-summary-card {
+    min-width: 0;
+    min-height: 62px;
+    border-radius: 12px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary-card p,
+  .kp-flavor-native #today-hero .today-hero-summary-card p {
+    font-size: 11px;
+    line-height: 1.05rem;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary-card p.text-xs,
+  .kp-flavor-native #today-hero .today-hero-summary-card p.text-xs {
+    font-size: 10px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-summary-icon,
+  .kp-flavor-native #today-hero .today-hero-summary-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-period,
+  .kp-flavor-native #today-hero .today-hero-period {
+    flex: 0 0 86px;
+    padding: 2px;
+  }
+
+  .kp-native-apk #today-hero .today-hero-period button,
+  .kp-flavor-native #today-hero .today-hero-period button {
+    font-size: 8px;
+    line-height: 1;
+    padding: 7px 4px;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-card,
+  .kp-flavor-native #today-bowls .today-bowl-card {
+    padding: 12px;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-card .relative,
+  .kp-flavor-native #today-bowls .today-bowl-card .relative {
+    min-height: 165px;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-metrics,
+  .kp-flavor-native #today-bowls .today-bowl-metrics {
+    width: 142px;
+    gap: 5px;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-metrics > p,
+  .kp-flavor-native #today-bowls .today-bowl-metrics > p {
+    font-size: 12px !important;
+    line-height: 1.12;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-ambient,
+  .kp-flavor-native #today-bowls .today-bowl-ambient {
+    gap: 2px;
+    margin-top: 0;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-ambient p:first-child,
+  .kp-flavor-native #today-bowls .today-bowl-ambient p:first-child {
+    font-size: 9px !important;
+    letter-spacing: 0.08em;
+  }
+
+  .kp-native-apk #today-bowls .today-bowl-ambient p:not(:first-child),
+  .kp-flavor-native #today-bowls .today-bowl-ambient p:not(:first-child) {
+    font-size: 10px !important;
+    line-height: 1.05rem;
+  }
+}
+
+/* APK login layout tuning for phone viewports */
+@media (max-width: 768px) {
+  .kp-native-apk .login-bg,
+  .kp-flavor-native .login-bg {
+    min-height: 100dvh;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .kp-native-apk .login-bg > .relative.mx-auto,
+  .kp-flavor-native .login-bg > .relative.mx-auto {
+    min-height: auto;
+    justify-content: flex-start;
+    gap: 6px;
+    padding-top: calc(4px + env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .kp-native-apk .login-hero-column,
+  .kp-flavor-native .login-hero-column {
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    min-height: 78dvh;
+    align-items: center;
+    text-align: center;
+    transition: min-height 320ms ease, gap 320ms ease;
+  }
+
+  .kp-native-apk .login-fold-box,
+  .kp-flavor-native .login-fold-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .kp-native-apk .login-fold-box-plate,
+  .kp-flavor-native .login-fold-box-plate {
+    min-height: 30dvh;
+    transition: min-height 320ms ease;
+  }
+
+  .kp-native-apk .login-hero-divider,
+  .kp-flavor-native .login-hero-divider {
+    display: none;
+  }
+
+  .kp-native-apk .login-fold-box-message,
+  .kp-flavor-native .login-fold-box-message {
+    min-height: 22dvh;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    transition: min-height 320ms ease, padding 320ms ease;
+  }
+
+  .kp-native-apk .login-fold-box-brand,
+  .kp-flavor-native .login-fold-box-brand {
+    display: flex;
+    min-height: 22dvh;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-16px);
+    transition: min-height 420ms ease, transform 420ms ease;
+  }
+
+  .kp-native-apk .login-brand-core,
+  .kp-flavor-native .login-brand-core {
+    display: none;
+  }
+
+  .kp-native-apk .login-hero-asset,
+  .kp-flavor-native .login-hero-asset {
+    margin-top: 0;
+  }
+
+  .kp-native-apk .login-hero-asset-img,
+  .kp-flavor-native .login-hero-asset-img {
+    width: min(246px, 69vw);
+  }
+
+  .kp-native-apk .login-hero-title,
+  .kp-flavor-native .login-hero-title {
+    display: block;
+    margin: 0 auto;
+    max-width: 92%;
+    text-align: center;
+  }
+
+  .kp-native-apk .login-hero-title,
+  .kp-flavor-native .login-hero-title {
+    font-size: clamp(2rem, 9.2vw, 2.35rem);
+    line-height: 1.02;
+    margin-bottom: 0;
+  }
+
+  .kp-native-apk .login-hero-copy,
+  .kp-flavor-native .login-hero-copy {
+    display: none;
+  }
+
+  .kp-native-apk .login-auth-column,
+  .kp-flavor-native .login-auth-column {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 2px;
+    margin-inline: auto;
+    align-items: center;
+  }
+
+  .kp-native-apk .login-card-brand,
+  .kp-flavor-native .login-card-brand {
+    width: 100%;
+    max-width: 100%;
+    gap: 2px;
+    margin-bottom: 0;
+    align-items: center;
+    text-align: center;
+    transform: translateY(-12px);
+    transition: transform 420ms ease;
+  }
+
+  .kp-native-apk .brand-logo-badge,
+  .kp-flavor-native .brand-logo-badge {
+    width: 136px;
+    height: 136px;
+    margin-inline: auto;
+    margin-bottom: 12px;
+    transition: width 420ms ease, height 420ms ease, transform 420ms ease;
+  }
+
+  .kp-native-apk .brand-title,
+  .kp-flavor-native .brand-title {
+    font-size: clamp(3.05rem, 14.2vw, 3.7rem);
+    line-height: 0.94;
+    text-align: center;
+    margin-inline: auto;
+    transition: font-size 420ms ease, line-height 420ms ease;
+  }
+
+  .kp-native-apk .kp-pettech-tagline,
+  .kp-flavor-native .kp-pettech-tagline {
+    width: 100%;
+    text-align: center;
+    font-size: 1.22rem;
+    line-height: 1.16;
+    margin-top: 10px;
+    margin-inline: auto;
+    transition: font-size 420ms ease, line-height 420ms ease;
+  }
+
+  .kp-native-apk .login-login-stack .login-panel-cat,
+  .kp-flavor-native .login-login-stack .login-panel-cat {
+    right: -6px;
+    top: 4px;
+  }
+
+  .kp-native-apk .login-card-brand .social-links,
+  .kp-flavor-native .login-card-brand .social-links {
+    margin-top: 2px;
+  }
+
+  .kp-native-apk .login-deferred-social,
+  .kp-flavor-native .login-deferred-social,
+  .kp-native-apk .login-deferred-panel,
+  .kp-flavor-native .login-deferred-panel {
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition: opacity 420ms ease, transform 420ms ease;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-deferred-social,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-social,
+  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-hero-column,
+  .kp-flavor-native.kp-login-scrolled .login-hero-column {
+    min-height: 50dvh;
+    gap: 0;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-plate,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-plate {
+    min-height: 25dvh;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-message,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-message {
+    min-height: 0;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-fold-box-brand,
+  .kp-flavor-native.kp-login-scrolled .login-fold-box-brand {
+    min-height: 10dvh;
+    transform: translateY(-20px);
+  }
+
+  .kp-native-apk.kp-login-scrolled .brand-logo-badge,
+  .kp-flavor-native.kp-login-scrolled .brand-logo-badge {
+    width: 108px;
+    height: 108px;
+    margin-bottom: 12px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .brand-title,
+  .kp-flavor-native.kp-login-scrolled .brand-title {
+    font-size: clamp(2.35rem, 10.6vw, 2.85rem);
+    line-height: 0.95;
+    margin-top: 2px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .kp-pettech-tagline,
+  .kp-flavor-native.kp-login-scrolled .kp-pettech-tagline {
+    font-size: 1.06rem;
+    line-height: 1.05;
+    margin-top: 6px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-card-brand,
+  .kp-flavor-native.kp-login-scrolled .login-card-brand {
+    transform: translateY(-20px);
+    margin-bottom: 10px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-deferred-social,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-social {
+    display: none;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
+  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
+    margin-top: 6px;
+  }
+
+  .kp-native-apk.kp-login-scrolled .login-hero-title,
+  .kp-flavor-native.kp-login-scrolled .login-hero-title {
+    display: none;
+  }
+
+  .kp-native-apk .login-panel-wrap .glass-panel,
+  .kp-flavor-native .login-panel-wrap .glass-panel {
+    padding: 20px 18px;
+    border-radius: calc(var(--radius) + 4px);
+  }
+
+  .kp-native-apk .login-login-stack,
+  .kp-flavor-native .login-login-stack {
+    gap: 16px;
+  }
+
+  .kp-native-apk .login-login-form,
+  .kp-flavor-native .login-login-form {
+    gap: 10px;
+  }
+}
+
 .route-loading-indicator {
   width: 36px;
   height: 36px;
@@ -1589,4 +4144,42 @@ textarea::placeholder {
   .route-loading-badge {
     animation: none;
   }
+}
+
+/* 404: keep content smaller on mobile/native so the cat background is visible */
+.kp-404-page .brand-logo-badge {
+  width: 92px;
+  height: 92px;
+}
+
+@media (min-width: 640px) {
+  .kp-404-page .brand-logo-badge {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.kp-native-apk .kp-404-page .login-brand-core,
+.kp-flavor-native .kp-404-page .login-brand-core {
+  display: flex;
+}
+
+.kp-native-apk .kp-404-page .brand-logo-badge,
+.kp-flavor-native .kp-404-page .brand-logo-badge {
+  width: 78px;
+  height: 78px;
+  margin-bottom: 6px;
+}
+
+.kp-native-apk .kp-404-page .brand-title,
+.kp-flavor-native .kp-404-page .brand-title {
+  font-size: 1.85rem;
+  line-height: 0.98;
+}
+
+.kp-native-apk .kp-404-page .kp-pettech-tagline,
+.kp-flavor-native .kp-404-page .kp-pettech-tagline {
+  font-size: 0.9rem;
+  line-height: 1.12;
+  margin-top: 4px;
 }

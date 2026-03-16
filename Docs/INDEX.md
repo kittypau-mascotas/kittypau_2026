@@ -1,20 +1,25 @@
-# Indice de Documentacion (Kittypau)
+﻿# Indice de Documentacion (Kittypau)
 
-> Para navegar por área temática, ver los documentos maestros:
-> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) — Planes y roadmap
-> - [SQL_MAESTRO.md](SQL_MAESTRO.md) — Base de datos (orden de ejecución)
-> - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) — Flujo de trabajo y colaboración
+> Para navegar por Ã¡rea temÃ¡tica, ver los documentos maestros:
+> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) â€” Planes y roadmap
+> - [SQL_MAESTRO.md](SQL_MAESTRO.md) â€” Base de datos (orden de ejecuciÃ³n)
+> - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) â€” Flujo de trabajo y colaboraciÃ³n
 
 ---
 
-## Canon Económico y Financiero
+## Canon EconÃ³mico y Financiero
 - [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md) (modelo oficial de costos)
 - [KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md](KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md) (BOM y costos por perfil KPCL)
 - [ADMIN_FINANZAS_CONTAINER_SPEC.md](ADMIN_FINANZAS_CONTAINER_SPEC.md) (contrato del bloque financiero en Admin)
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) (modelos de negocio y KPIs)
 
 ## Plan y Estado
-- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) ← **índice de planes**
+- [contexto.md](contexto.md) (contexto canonico de expansion y decisiones vigentes)
+- [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
+- [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md)
+- [PLAN_PENDIENTES_APP_WEB_KITTYPAU.md](PLAN_PENDIENTES_APP_WEB_KITTYPAU.md)
+- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) â€” Planes y roadmap
+- [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md)
 - [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md)
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md)
@@ -25,7 +30,7 @@
 - [CIBERSEGURIDAD.md](CIBERSEGURIDAD.md)
 
 ## Arquitectura
-- [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md) ← fuente única de arquitectura
+- [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md) â† fuente Ãºnica de arquitectura
 
 ## Dominio y Reglas
 - [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
@@ -38,9 +43,10 @@
 - [MODELO_DATOS_IA_FORMULAS_KITTYPAU.md](MODELO_DATOS_IA_FORMULAS_KITTYPAU.md)
 
 ## Base de Datos
-- [SQL_MAESTRO.md](SQL_MAESTRO.md) ← **índice SQL (orden de ejecución)**
+- [SQL_MAESTRO.md](SQL_MAESTRO.md) â† **Ã­ndice SQL (orden de ejecuciÃ³n)**
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql)
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
+- [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
 - [GUIA_SQL_SUPABASE.md](GUIA_SQL_SUPABASE.md)
 - [GUIA_MIGRACION_SQL.md](GUIA_MIGRACION_SQL.md)
 - [CLEANUP_SQL.sql](CLEANUP_SQL.sql)
@@ -59,11 +65,11 @@
 - [FLUJO_REGISTRO_DISPOSITIVO.md](FLUJO_REGISTRO_DISPOSITIVO.md)
 - [POPUP_REGISTRO_SPEC.md](POPUP_REGISTRO_SPEC.md)
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
-- [estilos y diseños.md](estilos%20y%20diseños.md)
+- [estilos y diseÃ±os.md](estilos%20y%20diseÃ±os.md)
 - [CATALOGO_GRAFICOS.md](CATALOGO_GRAFICOS.md)
 - [VISTAS_APP.md](VISTAS_APP.md)
 
-## Admin / Operación
+## Admin / OperaciÃ³n
 - [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
 - [ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md](ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md)
 - [ADMIN_TEST_SUITE.md](ADMIN_TEST_SUITE.md)
@@ -75,9 +81,11 @@
 - [CHECKLIST_DEPLOY.md](CHECKLIST_DEPLOY.md)
 - [PIPELINE_CICD.md](PIPELINE_CICD.md)
 - [VERCEL_UPSTASH_CHECKLIST.md](VERCEL_UPSTASH_CHECKLIST.md)
+- [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
+- [CHECKLIST_UX_UI_APK.md](CHECKLIST_UX_UI_APK.md)
 
 ## CLI y Herramientas
-- [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) ← **índice GitHub/colaboración**
+- [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) â† **Ã­ndice GitHub/colaboraciÃ³n**
 - [GITHUB_FLUJO_OFICIAL.md](GITHUB_FLUJO_OFICIAL.md)
 - [GITHUB_GOBERNANZA_COLABORACION.md](GITHUB_GOBERNANZA_COLABORACION.md)
 - [GIT_CLI.md](GIT_CLI.md)
@@ -102,10 +110,11 @@
 ## Scripts (referencia)
 - [TEST_DB_API.ps1](TEST_DB_API.ps1)
 - [TEST_DB_API_NEGATIVE.ps1](TEST_DB_API_NEGATIVE.ps1)
+- [TEST_READINGS_CONTRACT.ps1](TEST_READINGS_CONTRACT.ps1)
 - [TEST_ONBOARDING_BACKEND.ps1](TEST_ONBOARDING_BACKEND.ps1)
 - [TEST_AUTH_FLOW.ps1](TEST_AUTH_FLOW.ps1)
 
-## Onboarding y Colaboración
+## Onboarding y ColaboraciÃ³n
 - [ONBOARDING_JAVIER.md](ONBOARDING_JAVIER.md)
 - [GUIA_CLONADO_JAVO_IA.md](GUIA_CLONADO_JAVO_IA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)
@@ -117,3 +126,28 @@
 ## Env Examples
 - [.env.bridge.example](.env.bridge.example)
 - [.env.test.example](.env.test.example)
+
+## Actualizacion reciente
+- [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md) (toolkit de desarrollo: scripts, lint-staged y pre-commit)
+
+## Actualizado (2026-03-09)
+- Documentacion canonica sincronizada con estado real de `main`.
+- Ajustes UX APK nativa (login y `/today` mobile) documentados.
+- Produccion vigente:
+  - `https://kittypau-app.vercel.app`
+  - deploy validado: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
+
+## Actualizado (2026-03-09, cierre APK/login)
+- `main` actualizado con ajuste APK-only de marca en login:
+  - bloque de marca centrado,
+  - logo + `Kittypau` + `PetTech AIoT` agrandados,
+  - sin regresion intencional de estructura web.
+- Commit aplicado en `main`: `daff54f`.
+- Deploy productivo confirmado:
+  - `https://kittypau-app.vercel.app`
+  - deploy: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
+
+
+
+
+

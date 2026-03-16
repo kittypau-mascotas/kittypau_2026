@@ -1,6 +1,8 @@
 type SocialLinksProps = {
   className?: string;
   size?: "sm" | "md";
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
 };
 
 const LINKS = [
@@ -33,7 +35,12 @@ const LINKS = [
   },
 ];
 
-export default function SocialLinks({ className, size = "md" }: SocialLinksProps) {
+export default function SocialLinks({
+  className,
+  size = "md",
+  onInteractionStart,
+  onInteractionEnd,
+}: SocialLinksProps) {
   const sizeClass = size === "sm" ? "social-link-sm" : "social-link-md";
   return (
     <div className={`social-links ${className ?? ""}`.trim()}>
@@ -45,6 +52,10 @@ export default function SocialLinks({ className, size = "md" }: SocialLinksProps
           rel="noreferrer"
           aria-label={link.label}
           className={`social-link ${sizeClass}`}
+          onMouseEnter={onInteractionStart}
+          onMouseLeave={onInteractionEnd}
+          onFocus={onInteractionStart}
+          onBlur={onInteractionEnd}
         >
           {link.icon}
         </a>

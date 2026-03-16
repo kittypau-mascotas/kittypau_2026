@@ -25,3 +25,11 @@
 ## Integración de ramas
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md) — Estrategia de 3 PRs para fusión limpia
 - [REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md](REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md) — Log de prueba de fusión conjunta
+
+## Actualizacion 2026-03-05
+- Nuevo documento operativo: [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md)
+- Estado colaboracion Mauro/Javo:
+  - PR #14 (feat/javo-mauro) con checks en verde y listo para merge.
+  - Rama `feat/mauro-curcuma` sincronizada con `main` para continuidad de trabajo.
+- Recomendacion post-merge:
+  - Ambos PCs deben ejecutar `git checkout main && git pull origin main`.

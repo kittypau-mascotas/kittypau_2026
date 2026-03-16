@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   apiError,
   getUserClient,
@@ -6,16 +7,15 @@ import {
   startRequestTimer,
 } from "../_utils";
 
-export async function GET(req: NextRequest) {
-  const startedAt = startRequestTimer(req);
-  const auth = await getUserClient(req);
-  if ("error" in auth) {
-    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
-  }
-
-  const { supabase, user } = auth;
+export async function handleReadingsGet(
+  req: NextRequest,
+  startedAt: number,
+  auth: { supabase: SupabaseClient; userId: string },
+) {
+  const { supabase, userId } = auth;
   const { searchParams } = new URL(req.url);
-  const deviceId = searchParams.get("device_id");
+  const deviceId =
+    searchParams.get("device_id") ?? searchParams.get("device_uuid");
   const limitParam = searchParams.get("limit");
   const cursor = searchParams.get("cursor");
   const from = searchParams.get("from");
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         req,
         400,
         "INVALID_LIMIT",
-        "limit must be between 1 and 1200"
+        "limit must be between 1 and 1200",
       );
     }
   }
@@ -41,7 +41,12 @@ export async function GET(req: NextRequest) {
   if (from) {
     const parsedFrom = new Date(from);
     if (Number.isNaN(parsedFrom.getTime())) {
-      return apiError(req, 400, "INVALID_FROM", "from must be a valid ISO date");
+      return apiError(
+        req,
+        400,
+        "INVALID_FROM",
+        "from must be a valid ISO date",
+      );
     }
   }
 
@@ -56,7 +61,12 @@ export async function GET(req: NextRequest) {
     const fromMs = new Date(from).getTime();
     const toMs = new Date(to).getTime();
     if (fromMs > toMs) {
-      return apiError(req, 400, "INVALID_RANGE", "from must be before or equal to to");
+      return apiError(
+        req,
+        400,
+        "INVALID_RANGE",
+        "from must be before or equal to to",
+      );
     }
   }
 
@@ -70,44 +80,88 @@ export async function GET(req: NextRequest) {
     return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
   }
 
-  if (device.owner_id !== user.id) {
+  if (device.owner_id !== userId) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
   }
 
-  let query = supabase
-    .from("readings")
-    .select("*")
-    .eq("device_id", deviceId)
-    .order("recorded_at", { ascending: false })
-    .limit(Number.isFinite(limit) ? limit : 50);
+  const applyFilters = <
+    T extends {
+      lt: (column: string, value: string) => T;
+      gte: (column: string, value: string) => T;
+      lte: (column: string, value: string) => T;
+    },
+  >(
+    q: T,
+  ): T => {
+    let next = q;
+    if (cursor) {
+      next = next.lt("recorded_at", cursor) as T;
+    }
+    if (from) {
+      next = next.gte("recorded_at", from) as T;
+    }
+    if (to) {
+      next = next.lte("recorded_at", to) as T;
+    }
+    return next;
+  };
 
-  if (cursor) {
-    query = query.lt("recorded_at", cursor);
-  }
-  if (from) {
-    query = query.gte("recorded_at", from);
-  }
-  if (to) {
-    query = query.lte("recorded_at", to);
-  }
+  const baseSelect =
+    "id,device_id,recorded_at,weight_grams,water_ml,flow_rate,temperature,humidity,light_percent,battery_level";
+  const extendedSelect = `${baseSelect},battery_voltage,battery_state,battery_source,battery_is_estimated`;
+  const queryLimit = Number.isFinite(limit) ? limit : 50;
 
-  const { data, error } = await query;
+  const runReadingsQuery = async (selectClause: string) =>
+    applyFilters(
+      supabase
+        .from("readings")
+        .select(selectClause)
+        .eq("device_id", deviceId)
+        .order("recorded_at", { ascending: false })
+        .limit(queryLimit),
+    );
+
+  let { data, error } = await runReadingsQuery(extendedSelect);
+
+  if (
+    error &&
+    /(column|schema cache).*(battery_voltage|battery_state|battery_source|battery_is_estimated)/i.test(
+      error.message,
+    )
+  ) {
+    ({ data, error } = await runReadingsQuery(baseSelect));
+  }
 
   if (error) {
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
+  const readingsRows = (data ?? []) as Array<{ recorded_at?: string | null }>;
+
   if (!paginate) {
-    logRequestEnd(req, startedAt, 200, { count: data?.length ?? 0 });
+    logRequestEnd(req, startedAt, 200, { count: readingsRows.length });
     return NextResponse.json(data ?? []);
   }
 
   const nextCursor =
-    data && data.length > 0 ? data[data.length - 1]?.recorded_at ?? null : null;
+    readingsRows.length > 0
+      ? (readingsRows[readingsRows.length - 1]?.recorded_at ?? null)
+      : null;
 
   logRequestEnd(req, startedAt, 200, {
-    count: data?.length ?? 0,
+    count: readingsRows.length,
     next_cursor: nextCursor,
   });
   return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+}
+
+export async function GET(req: NextRequest) {
+  const startedAt = startRequestTimer(req);
+  const auth = await getUserClient(req);
+  if ("error" in auth) {
+    return apiError(req, 401, "AUTH_INVALID", auth.error ?? "Unauthorized");
+  }
+
+  const { supabase, user } = auth;
+  return handleReadingsGet(req, startedAt, { supabase, userId: user.id });
 }

@@ -1,0 +1,219 @@
+"use client";
+
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  type ChartOptions,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+  Filler,
+);
+
+/**
+ * Filtra y mapea lecturas a la serie que ChartCard consume.
+ * Compatible con ApiReading de /bowl (recorded_at: string | null)
+ * y /today (recorded_at: string).
+ */
+export function buildSeries<T extends { recorded_at?: string | null }>(
+  readings: T[],
+  getValue: (reading: T) => number | null | undefined,
+  windowMs: number,
+): { value: number; timestamp: string }[] {
+  const cutoff = Date.now() - windowMs;
+  return readings
+    .map((reading) => ({
+      value: getValue(reading),
+      timestamp: reading.recorded_at ?? null,
+    }))
+    .filter((item): item is { value: number; timestamp: string } => {
+      if (typeof item.value !== "number" || !Number.isFinite(item.value))
+        return false;
+      if (!item.timestamp) return false;
+      const ts = new Date(item.timestamp).getTime();
+      if (Number.isNaN(ts)) return false;
+      return ts >= cutoff;
+    });
+}
+
+/**
+ * Tarjeta de gráfico de línea en vivo — estilo S1 Clean Minimal.
+ * Usada en /bowl (rangeStartLabel variable, canvasClassName="h-32 sm:h-56")
+ * y en /today (rangeStartLabel="-3h", canvasClassName="h-28 sm:h-40").
+ */
+export const ChartCard = ({
+  title,
+  unit,
+  series,
+  accent,
+  latestValue,
+  rangeStartLabel,
+  integerDisplay = false,
+  canvasClassName = "h-32 sm:h-56",
+  className,
+}: {
+  title: string;
+  unit: string;
+  series: { value: number; timestamp: string }[];
+  accent: string;
+  latestValue: number | null;
+  rangeStartLabel: string;
+  integerDisplay?: boolean;
+  canvasClassName?: string;
+  className?: string;
+}) => {
+  const values = series.map((item) => item.value);
+  const ordered = series.slice(0, 30).reverse();
+  const labels = ordered.map((item) => {
+    const ts = new Date(item.timestamp);
+    if (Number.isNaN(ts.getTime())) return "";
+    return ts.toLocaleTimeString("es-CL", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  });
+  const dataPoints = ordered.map((item) => item.value);
+
+  const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
+  const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: title,
+        data: dataPoints,
+        borderColor: accent,
+        backgroundColor: accent,
+        borderWidth: 2.8,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.3,
+        fill: false,
+      },
+    ],
+  };
+
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      duration: 340,
+      easing: "easeOutQuart",
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        backgroundColor: "rgba(15, 23, 42, 0.92)",
+        titleColor: "#f8fafc",
+        bodyColor: "#f8fafc",
+        borderColor: "rgba(148, 163, 184, 0.35)",
+        borderWidth: 1,
+        displayColors: false,
+        callbacks: {
+          label: (ctx) => {
+            const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+            const value =
+              integerDisplay && raw !== null ? Math.round(raw) : raw;
+            return `${value ?? "-"} ${unit}`;
+          },
+        },
+      },
+    },
+    interaction: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        offset: true,
+        grid: { display: false },
+        border: {
+          display: true,
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+        },
+        ticks: {
+          maxTicksLimit: 2,
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+          autoSkip: false,
+          padding: 8,
+          maxRotation: 0,
+          minRotation: 0,
+          callback: (_value, index, ticks) => {
+            if (index === 0) return rangeStartLabel;
+            if (index === ticks.length - 1) return "Ahora";
+            return "";
+          },
+        },
+      },
+      y: {
+        beginAtZero: false,
+        suggestedMin: min,
+        suggestedMax: max,
+        grid: { drawOnChartArea: false },
+        border: {
+          display: true,
+          color:
+            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+        },
+        ticks: {
+          color: "hsl(var(--muted-foreground))",
+          font: { size: 11 },
+          maxTicksLimit: 3,
+          callback: (value) => {
+            const numeric = Number(value);
+            const rendered =
+              integerDisplay && Number.isFinite(numeric)
+                ? Math.round(numeric)
+                : value;
+            return `${rendered} ${unit}`;
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <div
+      className={`chart-card rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-5 py-5 ${
+        className ?? ""
+      }`}
+    >
+      <p className="chart-card-title text-[11px] uppercase tracking-[0.2em] text-slate-500">
+        {title}
+      </p>
+      <p className="chart-card-value mt-2 text-2xl font-semibold text-slate-900">
+        {latestValue !== null
+          ? `${integerDisplay ? Math.round(latestValue) : latestValue} ${unit}`
+          : "Sin datos"}
+      </p>
+      <div
+        className={`chart-card-canvas mt-4 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3 ${canvasClassName}`}
+      >
+        {values.length > 1 ? (
+          <Line data={data} options={options} />
+        ) : (
+          <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
+        )}
+      </div>
+    </div>
+  );
+};

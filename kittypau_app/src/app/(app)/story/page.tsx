@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -68,6 +69,14 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   return [];
 };
 
+const toRoundedSensorValue = (
+  value: number | null | undefined,
+): number | null => {
+  if (value === null || value === undefined || !Number.isFinite(value))
+    return null;
+  return Math.round(value);
+};
+
 const buildStory = (reading: ApiReading, petName: string) => {
   const facts: string[] = [];
   if (reading.flow_rate !== null) {
@@ -77,7 +86,11 @@ const buildStory = (reading: ApiReading, petName: string) => {
     facts.push(`Peso ${reading.weight_grams} g`);
   }
   if (reading.temperature !== null && reading.humidity !== null) {
-    facts.push(`Temp ${reading.temperature}° · Hum ${reading.humidity}%`);
+    facts.push(
+      `Temp ${toRoundedSensorValue(reading.temperature)}° · Hum ${toRoundedSensorValue(
+        reading.humidity,
+      )}%`,
+    );
   }
 
   let title = "Actividad registrada";
@@ -147,13 +160,10 @@ export default function StoryPage() {
   };
 
   const loadReadings = async (token: string, deviceId: string) => {
-    const res = await fetch(
-      `/api/readings?device_id=${deviceId}&limit=50`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`/api/readings?device_id=${deviceId}&limit=50`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
     const payload = await res.json();
     return parseListResponse<ApiReading>(payload);
@@ -190,8 +200,14 @@ export default function StoryPage() {
           devices.find((device) => device.pet_id === primaryPet?.id) ??
           devices[0];
         const initialDeviceId = primaryDevice?.id ?? null;
-        if (initialDeviceId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_device_id", initialDeviceId);
+        if (initialDeviceId) {
+          syncSelectedDevice(initialDeviceId);
+        }
+        if (primaryDevice?.pet_id) {
+          const linkedPet = pets.find((pet) => pet.id === primaryDevice.pet_id);
+          if (linkedPet) {
+            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+          }
         }
         setSelectedDeviceId(initialDeviceId);
 
@@ -252,7 +268,7 @@ export default function StoryPage() {
             const nextReading = payload.new as ApiReading;
             setState((prev) => {
               const exists = prev.readings.some(
-                (reading) => reading.id === nextReading.id
+                (reading) => reading.id === nextReading.id,
               );
               if (exists) return prev;
               return {
@@ -260,7 +276,7 @@ export default function StoryPage() {
                 readings: [nextReading, ...prev.readings].slice(0, 120),
               };
             });
-          }
+          },
         )
         .subscribe();
     };
@@ -276,10 +292,10 @@ export default function StoryPage() {
   }, [selectedDeviceId]);
 
   const selectedDevice = state.devices.find(
-    (device) => device.id === selectedDeviceId
+    (device) => device.id === selectedDeviceId,
   );
   const selectedPet = state.pets.find(
-    (pet) => pet.id === selectedDevice?.pet_id
+    (pet) => pet.id === selectedDevice?.pet_id,
   );
   const petLabel = selectedPet?.name ?? "tu mascota";
 
@@ -305,8 +321,12 @@ export default function StoryPage() {
 
   const summaryCounts = useMemo(() => {
     const total = filteredTimeline.length;
-    const warn = filteredTimeline.filter((item) => item.story.tone === "warn").length;
-    const good = filteredTimeline.filter((item) => item.story.tone === "good").length;
+    const warn = filteredTimeline.filter(
+      (item) => item.story.tone === "warn",
+    ).length;
+    const good = filteredTimeline.filter(
+      (item) => item.story.tone === "good",
+    ).length;
     return { total, warn, good };
   }, [filteredTimeline]);
 
@@ -354,14 +374,14 @@ export default function StoryPage() {
           actions={
             <Link
               href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir a registro 
-            </Link> 
-          } 
-        > 
-          Completa el registro para conectar un plato y comenzar tu diario. 
-        </EmptyState> 
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a registro
+            </Link>
+          }
+        >
+          Completa el registro para conectar un plato y comenzar tu diario.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-4">
@@ -398,11 +418,19 @@ export default function StoryPage() {
                     onChange={async (event) => {
                       const nextId = event.target.value || null;
                       setSelectedDeviceId(nextId);
-                      if (nextId && typeof window !== "undefined") {
-                        window.localStorage.setItem(
-                          "kittypau_device_id",
-                          nextId
+                      if (nextId) {
+                        syncSelectedDevice(nextId);
+                        const nextDevice = state.devices.find(
+                          (device) => device.id === nextId,
                         );
+                        if (nextDevice?.pet_id) {
+                          const linkedPet = state.pets.find(
+                            (pet) => pet.id === nextDevice.pet_id,
+                          );
+                          if (linkedPet) {
+                            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+                          }
+                        }
                       }
                       if (!nextId) return;
                       const token = await getValidAccessToken();
@@ -493,11 +521,11 @@ export default function StoryPage() {
                       <span
                         className={`story-tag story-tag-${item.story.tone}`}
                       >
-                      {item.story.tone === "good"
-                        ? "Estable"
-                        : item.story.tone === "warn"
-                        ? "Atención"
-                        : "Info"}
+                        {item.story.tone === "good"
+                          ? "Estable"
+                          : item.story.tone === "warn"
+                            ? "Atención"
+                            : "Info"}
                       </span>
                     </div>
                     <p>{item.story.detail}</p>
@@ -507,7 +535,8 @@ export default function StoryPage() {
                       </p>
                     ) : item.story.tone === "good" ? (
                       <p className="story-hint">
-                        Buen ritmo. Mantén la rutina de {selectedPet?.name ?? "tu mascota"}.
+                        Buen ritmo. Mantén la rutina de{" "}
+                        {selectedPet?.name ?? "tu mascota"}.
                       </p>
                     ) : (
                       <p className="story-hint">
@@ -529,7 +558,3 @@ export default function StoryPage() {
     </main>
   );
 }
-
-
-
-

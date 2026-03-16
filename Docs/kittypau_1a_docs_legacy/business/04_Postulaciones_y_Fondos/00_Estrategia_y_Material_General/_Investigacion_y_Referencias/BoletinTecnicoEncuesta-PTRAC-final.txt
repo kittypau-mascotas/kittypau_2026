@@ -1,0 +1,1005 @@
+                          
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de  Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+1 
+ 
+Boletín Técnico 
+ 
+Resultados de la Primera Encuesta Nacional a 
+los tenedores de mascotas o animales de 
+compañía en Chile, año 2021. 
+ 
+ 
+ 
+ 
+ 
+Dr. Fernando Mardones 
+Investigador Principal 
+Académico, Escuela Medicina Veterinaria UC 
+femardones@uc.cl 
+ 
+Carolina Guerrero 
+Coordinadora Nacional 
+PTRAC – SUBDERE 
+carolina.guerrero@subdere.gov.cl 
+ 
+ 
+ 
+ 
+ 
+ 
+Santiago de Chile, 30 de noviembre de 2021
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+2 
+Introducción 
+ 
+El aumento de animales de compañía, 
+especialmente perros y gatos, a nivel 
+mundial es una tendencia que se observa 
+en las últimas décadas (GFK, 2020; PFMA, 
+2014; AVMA, 2012; CVMA, 2011). Por una 
+parte, se atribuyen beneficios sociales y 
+emocionales a la tenencia de an imales de 
+compañía en distinto niveles etarios (Cleary 
+et al., 2020; Hartwig and Signal, 2020), 
+grupos étnicos -culturales (Senior et al., 
+2006) y durante la pandemia de COVID -19 
+(Hunjan and Reddy, 2020). Por el contrario, 
+el aumento en la población canina y felina 
+puede también tener consecuencias 
+desfavorables. 
+ 
+La Subsecretaría de Desarrollo Regional y 
+Administrativo del Ministerio del Interior y 
+Seguridad Pública (SUBDERE), a través del 
+Programa de Tenencia Responsable de 
+Animales de Compañía (PTRAC), es  un 
+actor fundamental para la implementación 
+de la Ley N° 21.020 sobre tenencia 
+responsable de mascotas y animales de 
+compañía, y por ello, se requiere 
+información actualizada para orientar las 
+políticas públicas relacionadas. 
+ 
+En Chile a la fecha no se ha  podido evaluar 
+a cabalidad la efectividad de los planes y 
+programas de esterilización canina a nivel 
+comunal en todo el territorio, ya sea a 
+través de indicadores de población animal, 
+sanidad animal y tenencia. Por lo tanto, se 
+requiere trabajar en herram ientas que 
+permitan conocer la real magnitud y carga 
+del problema, el tamaño y la dinámica de 
+dichas poblaciones; con la finalidad de 
+planificar políticas de salud pública, y de 
+tenencia responsable a nivel nacional. 
+ 
+Este boletín técnico ejecutivo present a un 
+compendio de los resultados de la Primera 
+Encuesta Nacional 2021 a los tenedores 
+responsables de mascotas o animales de 
+compañía realizada entre el 19 de agosto y 
+29 de septiembre del presente año.  Sus 
+resultados han permitido identificar 
+aspectos claves en la tenencia responsable 
+de mascotas a lo largo del país y 
+constituyen un primer acercamiento para el 
+desarrollo de un estudio más complejo 
+sobre población canina y felina y tenencia 
+responsable de animales a nivel nacional. 
+ 
+Antecedentes, Relevancia y 
+justificación 
+ 
+La SUBDERE a través del programa 
+PTRAC ha sido el principal órgano estatal a 
+cargo de la implementación de la Ley N° 
+21.020 desde su promulgación en agosto 
+de 2017. 
+ 
+El PTRAC también gestiona la plataforma 
+del Registro Nacional de Mascotas o 
+Animales de Compañía, y a escala 
+comunal, dispone de información sobre 
+actividades tenencia responsable que las 
+municipalidades informan cuando postulan 
+a distintos proyectos. Actualizar información 
+sobre la tenencia responsable de caninos y 
+felinos es determinante para mejorar y 
+generar nuevas políticas públicas 
+relacionadas y para evaluar diferentes 
+estrategias e intervenciones públicas tales 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+3 
+como el control demográfico de la población 
+animal, la reducción del abandono y el 
+fomento de la con cientización sobre la 
+importancia de las prácticas de tenencia 
+responsable de mascotas, entre otras. Por 
+lo anterior, el presente estudio buscó, por 
+primera vez, caracterizar los tenedores de 
+mascotas en Chile, la población canina y 
+felina del país y la id entificación de 
+prioridades y métodos de control para un 
+ordenamiento territorial a nivel comunal y 
+regional. 
+ 
+A continuación, a través del proyecto 
+“Estimación de la población canina y felina 
+del país y diagnóstico de la tenencia 
+responsable” del Programa  de Tenencia 
+Responsable de Animales de Compañía de 
+la SUBDERE, adjudicado mediante 
+licitación   (ID 761 -30-B221) por la por la 
+Escuela de Medicina Veterinaria de la 
+Pontificia Universidad Católica (UC), se 
+elabora un resumen ejecutivo de los 
+principales resultados obtenidos del análisis 
+de los datos de la Primera Encuesta 
+Nacional 2021 a los tenedores de mascotas 
+o animales de compañía. 
+ 
+Resultados 
+ 
+Entre los días 19 de agosto y 29 septiembre 
+del presente año se realizó la Primera 
+Encuesta Nacional a los tenedores de 
+mascotas o animales de compañía con 
+relación a la tenencia responsable de 
+mascotas en todas las regiones del país. El 
+formulario fue enviado a todas las personas 
+que a la fecha tenían una o más mascotas 
+inscritas en el Registro Nacional de 
+Mascotas o Animales de Compañía. La 
+encuesta también se difundió a través de 
+las principales redes sociales de 
+SUBDERE, medios de comunicación 
+escritos y de televisión abierta, con el fin de 
+también incluir a los tenedores que no 
+tenían registradas a sus mascotas. La 
+descripción de los resultados en este 
+documento va acompañada de un Anexo 
+con las gráficas y tablas asociadas. 
+ 
+Tasa de Respuesta 
+ 
+Hasta el 19 de agosto del 2021, el sistema 
+de registro de mascotas contenía 1.715.089 
+mascotas registradas. Considerando que el 
+número de encuestas válidas respondidas 
+totales fue 147.906, la tasa aproximada de 
+respuesta, asumiendo la vía directa por 
+email de tened ores registrados, fue un 
+8,62%. De estos, el 90.2% respondió la 
+encuesta durante la primera semana desde 
+el lanzamiento de la iniciativa (Figura 1). 
+ 
+ 
+Figura 1. Tasa de Respuesta de la Primera Encuesta Nacional de Tenencia 
+Responsable 2021. 
+ 
+Las regiones con mayores tasas de 
+respuesta fueron la Región Metropolitana 
+(50.4%), Valparaíso (9.6%), y del Bío -Bío 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+4 
+(6.7%), siendo las de menor tasa de 
+respuesta las regiones de Atacama 
+(1.35%), Arica y Parinacota (0.86%), y 
+Aysén (0.81%) (Figura 2). 
+  
+ 
+Figura 2. Tasa de Respuesta de la Primera Encuesta Nacional de Tenencia 
+Responsable 2021 según regiones. 
+ 
+A nivel comunal, Santiago (4.3%), Las 
+Condes (4.13%), Ñuñoa (3.9%), Maipú 
+(3.8%), Puente Alto (3.3%) y La Florida 
+(2.8%) reportaron las mayores tasas de 
+respuesta, mientras que las comunas de 
+Negrete, Puqueldón, Laguna Blanca y 
+Quirihue tuvieron tasas de r espuesta 
+menores al 1%. Al ajustar por densidad 
+poblacional, las comunas de Ñuñoa, Cabo 
+de Hornos, Providencia, San Miguel y Las 
+Condes tuvieron las mayores tasas 
+ajustadas, mientras que las comunas de 
+Alto Bío Bío, Lonquimay, Sierra Gorda, 
+Lumaco y Puerto  Saavedra tuvieron los 
+menores índices. 
+ 
+A continuación, se resumen los principales 
+resultados de cada uno de los seis grandes 
+tópicos de la encuesta; información que 
+contribuye en la definición del  perfil del 
+tenedor de mascotas en Chile. 
+ 
+ 
+ 
+1. Datos Generales de  los 
+Encuestados(as) 
+ 
+El perfil predominante entre los 
+encuestados/as fue del género femenino 
+(78.2%), adulto (entre 30 y 50 años, 
+65.9%), tenedor de la especie canina 
+(75.6%) (Figuras 3 y 4).  
+ 
+ 
+Figura 3. Tasa de Respuesta de la Primera Encuesta Nacional de Tenencia 
+Responsable 2021 según géneros. 
+ 
+ 
+Figura 4. Categorización etaria y de género de las Tasas de Respuestas  de la 
+Primera Encuesta Nacional de Tenencia Responsable 2021. 
+ 
+Un 5% de los encuestado s reportan una 
+nacionalidad diferente a la chilena. 
+ 
+La encuesta evidenció una correlación entre 
+las comunas con mayor número de 
+habitantes y aquellas que tienen un mayor 
+número de mascotas con microchip 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+5 
+registradas y una mayor tasa de respuesta 
+de esta encuesta (Figura 5). 
+ 
+ 
+Figura 5. Matriz de Correlación entre numero de habitantes  de la comuna , 
+numero de mascotas con microchip y tasa de respuestas de la Primera Encuesta 
+Nacional de Tenencia Responsable 2021. 
+ 
+2. Preguntas Generales de la 
+Mascotas 
+ 
+De un total de 147.906 animales de 
+compañía reportados a nivel nacional, 
+111.791 son perros (75.6%) y 36.115 gatos  
+(24.4%) (Figura 6). 
+ 
+ 
+Figura 6. Tasa de Respuesta de la Primera Encuesta Nacional de Tenencia 
+Responsable 2021 según especie de la mascota. 
+En general, el numero total de mascotas 
+reportado (es decir perros y/o gatos)  fue 
+principalmente 1 por tenedor (Figura 7). 
+ 
+ 
+Figura 7. Número t otal de perros y gatos reportados  en la Primera Encuesta 
+Nacional de Tenencia Responsable 2021. 
+ 
+La mediana del número de perros por 
+persona fue de 1 (promedio= 2 perros), 
+mientras que la mediana para aquellos que 
+reportaron felinos fue de 2 (promedio= 2.2 
+gatos). En general, considerando 
+tenedores/as de perros y gatos que 
+participaron en la encuesta,  la mediana de 
+número de perros y gatos fue de 1 y 0, 
+respectivamente. Esta menor frecuencia de 
+gatos se debe a que la mayor proporción de 
+encuestados lo hace para caninos. 
+ 
+Según el modo de obtención de las 
+mascotas, en perros la mayoría es regalado 
+(28.7%), seguido por comprados (22.9%),  
+adoptados (22.8%) y recogidos (21.3%). En  
+gatos, un 39.5% es recogido y un 33.7% es 
+adoptado, mientras que un 19.1% es 
+regalado (Figura 8).  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+6 
+ 
+Figura 8. Método de obtención de la mascota reportada en la Primera Encuesta 
+Nacional de Tenencia Responsable 2021. 
+ 
+La mayor cantidad de perros reside en 
+casas (77.5%), seguido de departamentos 
+(21%), similar tendencia presenta los gatos, 
+con un 70% y 28.8%, respectivamente  
+(Figura 9).  
+ 
+ 
+Figura 9.  Tipo de vivienda donde habita la mascota reportada en la Primera 
+Encuesta Nacional de Tenencia Responsable 2021. 
+ 
+En cuanto al principal lugar donde las 
+mascotas pasan más tiempo, los perros 
+están en un 75.2% al interior de la vivienda, 
+mientras que los gatos en un 97 %, según  
+las respuestas de sus responsables  (Figura 
+10). Al seleccionar aquellos perros que 
+duermen al interior de las viviendas, un 
+52% reporta    dormir con la mascota, 
+mientras que un 45.4% duerme sola. En el 
+caso de los gatos, un 69% duerme con el 
+tenedor/a y un 26% sola. 
+ 
+ 
+Figura 10. Lugar donde el dueño reporta que su mascota pasa la mayor parte 
+del tiempo. 
+ 
+El 90% de los perros identificados en esta 
+encuesta están inscritos en el Registro 
+Nacional de Mascotas y poseen microchip  
+(Figuras 11 y 12). En gatos, este porcentaje 
+corresponde a un 74.5%. 
+ 
+ 
+Figura 11. Proporción de m ascotas poseyendo microchip  reportadas en la 
+Primera Encuesta Nacional de Tenencia Responsable 2021. 
+ 
+ 
+Figura 1 2. Proporción de m ascotas registradas en el Registro Nacional de 
+Mascotas. 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+7 
+Un 58.7% de los tenedores/as declara que 
+los perros son llevados de vacaciones, a 
+diferencia de un 26% de los gatos, donde 
+un mayor porcentaje es dejado en la 
+vivienda (74%) (Figura 13). 
+ 
+ 
+Figura 1 3. Proporción de tenedores que lleva su mascota cuando sale de 
+vacaciones.   
+ 
+3. Preguntas Relacionadas a 
+la Salud de la Mascota 
+ 
+Según la encuesta, un 98.7% de las 
+mascotas son llevadas al médico veterinario 
+(Figura 14). Sin embargo, solo el 61.2% de 
+los perros reporta estar esterilizado a 
+diferencia de los gatos donde el 92.8% está 
+esterilizado o castrado  (Figuras 15 y 16) . A 
+su vez, la mayoría de los perros (82.5%) y 
+gatos (87.1%) reportados no se ha 
+reproducido o tenido crías. 
+ 
+ 
+Figura 14. Proporción de tenedores que lleva su mascota al veterinario.   
+ 
+ 
+Figura 15. Proporción de tenedores que ha esterilizado su perro.  
+ 
+ 
+Figura 16. Proporción de tenedores que ha esterilizado su gato. 
+ 
+Un 79% y un 68% de los perros y gatos, 
+respectivamente, reportan que sus 
+mascotas han sido vacunadas en forma 
+preventiva en los últimos seis meses. Un 
+83% de los perros reportan que no han 
+tenido enfermedades, mientras que un 86% 
+de los gatos reportan la misma condición. 
+ 
+Finalmente, un 87% de los perros y un 83% 
+de los gatos han indicado que han sido 
+desparasitados durante los últimos seis 
+meses (Figura 17). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+8 
+ 
+Figura 17. Proporción de tenedores que ha desparasitado su mascota dentro de 
+los últimos 6 meses.  
+ 
+4. Alimentación e Higiene 
+  
+Según la encuesta, el alimento de perros y 
+gatos es principalmente comprado en 
+tiendas (63.7%) y en segundo lugar en 
+supermercados (21.4%). Un 9.5% lo hace 
+en clínicas veterinarias y un 3.8% a granel. 
+Estas tendencias son similares entre 
+especies (Figura 18). 
+ 
+ 
+Figura 18. Lugar donde los tenedores habitualmente compran el alimento de su 
+mascota. 
+En ambas especies, sobre un 95% de las 
+mascotas consumen alimento tipo pellet o 
+extruido. 
+ 
+Respecto a la higiene, sobre el 87,7% de 
+los tenedores/as reportaron llevar a los 
+perros a la  peluquería o haber realizado 
+baño dentro del último año (Figura 19). En 
+gatos, un 70% de ellos no son bañados ni 
+llevados    a la peluquería. 
+ 
+ 
+Figura 1 9. Proporción de tenedores que bañaron o llevaron su mascota a la 
+peluquería dentro del último año.  
+ 
+5. Recreación y Conducta 
+ 
+Un 85% de los responsables de perros y un 
+18% de los que tienen gatos reportan 
+realizar paseos con sus mascotas. En el 
+caso de los perros, un 36.1% reportan una 
+frecuencia de una vez al día, mientras que 
+un 29.2% lo hacen una vez a la semana. En 
+el caso de  los gatos, un 8.3% lo hace una 
+vez al día y un 5.9% lo realiza una vez a la 
+semana. 
+  
+Un 9% de los responsables de perros 
+reportan que su mascota se ha extraviado, 
+mientras que esta frecuencia es algo mayor 
+en gatos (12%). La mayoría de los dueños 
+encuestados reportaron que sus perros y/o 
+gatos no han sufrido accidentes el último 
+año (87% en ambas especies). 
+ 
+Un 88% de perros y un 98% de los gatos 
+reportados en esta encuesta, declaran no 
+haber solicitado algún servicio de 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+9 
+adiestrador o especialista en cond ucta 
+animal (Figura 20). 
+ 
+ 
+Figura 20. Proporción de tenedores que han contratado algún servicio de 
+adiestrador o especialista en conducta para su mascota. 
+ 
+6. Apreciación del dueño con 
+relación a su mascota 
+ 
+Aproximadamente la totalidad de los 
+tenedores/as de perros (99.7%) y gatos 
+(99.7%) encuestados declaró que la 
+mascota contribuye a su felicidad y que es 
+parte de su familia (99.7% en ambas 
+especies) (Figura 21). 
+ 
+ 
+Figura 21. Proporción de tenedores que reportaron que la mascota contribuye a  
+su felicidad. 
+ 
+Finalmente, en este ítem, la mayoría de los 
+dueños dueñas de perros y gatos se 
+considera responsable con su mascota  
+(Figura 22) . La máxima autoevaluación en 
+una escala de 1 a 5, siendo 1 la más baja y 
+5, la máxima evaluación, los tutores de  
+perros se autoevaluaron en un 69.2% con el 
+valor de 5, un 28% con un 4, un 2.4% con 
+un 3, y un  0.3% y un 0.04% con valores de 
+2 y 1, respectivamente. En el caso de los 
+dueños/as de felinos, esta escala tuvo los 
+porcentajes de 67.2%, 29.6%, 2.8%, 0.4% y 
+0.03%, de 5 a 1, respectivamente. 
+ 
+ 
+Figura 22. Proporción de tenedores que reportaron que se consideran un dueño 
+responsable con su mascota. 
+ 
+7. Construcción de un 
+indicador de tenencia 
+responsable e identificación de 
+variables 
+ 
+A partir de un modelo mixto de regresión 
+del tipo logístico de tres efectos (fijos y dos 
+aleatorios para comunas y regiones), se 
+identificaron aquellas variables que estarían 
+asociadas con una mayor o menor tenencia 
+responsable. Para la construcción del 
+indicador de tenencia responsable se 
+consideraron 11 respuestas que han sido 
+hipotéticamente relacionadas con la 
+tenencia responsable de mascotas a nivel 
+individual, para posteriormente crear una 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+10 
+categorización de tenencia responsable 
+según un puntaje basado en:  
+ 
+1. Implantación de microchip 
+2. Registro en Registro Nacional de 
+Mascotas 
+3. Frecuencia de visita a los 
+veterinarios 
+4. Vacunación preventiva 
+5. Esterilización 
+6. Desparasitación 
+7. Ocurrencia de accidentes 
+8. Frecuencia de paseos 
+9. Contratación de servicios de 
+adiestramiento 
+10. Reporte de a gresiones por parte de 
+la mascota 
+11. Reporte de perdida o extravío de la 
+mascota. 
+ 
+La mayoría de los tenedores/as de 
+mascotas demostró un score de 9/11 
+variables relacionadas a tenencia 
+responsable (Figura 23).  
+ 
+ 
+Figura 23. Distribución de los scores de Tenencia Responsable identificados 
+según especie. 
+Para identificar aquellos tutores con 
+menores score se optó por un punto de 
+corte de 8/11, correspondiente al primer 
+percentil (25%). Así, el modelo logístico 
+clasificó como 0 y 1 a aquellos tutores bajo 
+y sobre dicho score, respectivamente. 
+ 
+Los efectos fijos evaluados correspondieron 
+a las siguientes variables: 
+ 
+ Momento de respuesta de encuesta 
+(1era semana versus posterior). 
+ Género (masculino, femenino, otro). 
+ Nacionalidad (chilena versus 
+extranjera). 
+ Edad (jóvenes, adultos y adultos 
+mayores). 
+ Número de gatos que conviven con 
+la mascota. 
+ Número de perros que conviven con 
+la mascota. 
+ Número total de mascotas. 
+ Obtención de la mascota. 
+ Tipo de vivienda. 
+ Duerme interior/exterior. 
+ 
+Dichas variables (n = 10) fueron evaluadas 
+en un modelo de efectos mixtos que se 
+ajustó por la heterogeneidad dada por las 
+comunas y regiones (efectos aleatorios). 
+ 
+La medida de asociación en este modelo 
+corresponde al Odds Ratio  (OR), donde 
+matemáticamente un OR corresponde a un 
+cociente entre dos odds, siendo un odds 
+una forma alternativa de expresar la 
+posibilidad de ocurrencia de un evento de 
+interés o de presencia de una exposición. 
+En este caso, cuando el OR es 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+11 
+significativamente superior a 1 (p < 0.05), 
+quiere decir que la variable promueve la 
+tenencia responsable. Cuando el OR es 
+significativamente inferior a 1 (p < 0.05), 
+quiere decir que la variable se asocia 
+negativamente a la tenencia responsable. 
+Cada OR a su vez se expres a con un 
+intervalo de confianza de un 95%. 
+  
+Finalmente se evaluaron dos modelos, uno 
+para cada especie que se detallan a 
+continuación. 
+ 
+Modelo canino (Tabla 1): Un individuo que 
+respondió la encuesta en forma temprana, 
+es decir, una semana posterior al 
+lanzamiento de la encuesta tiene un mayor 
+OR con la tenencia responsable ( OR = 
+13.8), comparado con una respuesta tardía. 
+En términos sencillos, la probabilidad del 
+encuestado de presentar un mayor score de 
+tenencia responsable fue 13 veces mayor 
+que entre l os tenedores que contestaron la 
+encuesta después de la primera semana 
+del lanzamiento (19-25 de agosto). 
+ 
+En el modelo canino se puede observar que 
+vivir en departamento tiene alta 
+probabilidad de tenencia responsable (OR = 
+16.9), al igual que dormir en in terior (OR = 
+16.3). 
+ 
+Respecto al modo de obtención, mascotas 
+compradas y recogidas se asociaron con 
+mayores probabilidades de que se asocien 
+a una mayor tenencia responsable que 
+aquellas mascotas que fueron obtenidas ya  
+sea de forma regalada y/o nacidas en  el 
+domicilio. 
+Tutores adultos (30 -50 años) o adultos 
+mayores (> 50 años) se asocian con 
+mayores niveles de tenencia responsable 
+que individuos jóvenes (<30 años). 
+ 
+Variables como "convive con más 
+mascotas", "convive con gato" estimaron 
+OR menores a 1 ( OR = 0.97 y OR = 0.85 
+respectivamente), lo que  indica la 
+probabilidad de que el encuestado 
+presentara un menor score de tenencia 
+responsable. 
+ 
+El score del género femenino de dueños de 
+perros es estadísticamente superior para la 
+tenencia responsable en comparación con 
+los del género masculino (OR = 0.96). 
+ 
+Ser dueño de mascota perro o gato y la 
+nacionalidad chilena, se asociaron a 
+menores probabilidades de tenencia 
+responsable comparado con solo tener una 
+mascota y ser extranjero(a). 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+12 
+Tabla 1. Modelo de regresión logístico de tres efectos  
+canino (AIC nulo = 143503 / AIC = 140249). 
+ 
+ 
+Modelo Felino  (Tabla 2) : la respuesta 
+temprana a la encuesta tiene una alta 
+probabilidad de tenencia responsable (OR = 
+16.9) comparado con una respuesta tardía, 
+lo que se interpreta como la probabilidad 
+del encuestado de presentar un mayor 
+score de tenencia responsable es 16 veces 
+más probable entre tenedores que 
+contestaron la encuesta en la primera 
+semana de lanzamiento. 
+ 
+Al igual que el modelo canino, gatos que 
+viven en departamento tienen alta 
+probabilidad de tenencia responsable (OR = 
+12.4), igualmente dormir en interior ( OR = 
+21.3) comparados con otras viviendas. 
+ 
+En relación con el  modo de obtención, la 
+compra ( OR = 13.2) tiene mayor 
+probabilidad de ser asociada a tenencia 
+responsable comparada con otros modos 
+de obtención, tendencia diferente 
+comparada con caninos. Es decir, gatos 
+comprados tendrían 21 veces la 
+probabilidad de tener cuidados de tenencia 
+responsable comparado con otros tipos de 
+obtención. 
+ 
+Al igual que en el modelo perro, las 
+variables como convive con más mascotas, 
+OR menor a 1, lo que indica probabilidad de 
+que el encuestado presentara un menor 
+score de tenencia responsable. 
+  
+La variable nacional idad, sería asociada a 
+que los dueños de gatos chilenos serían 
+menos probables a una tenencia 
+responsable comparado con dueños 
+extranjeros ( OR = 0.7), es decir, chilenos 
+dueños de gatos tienen un 30% menos 
+veces la probabilidad de tener scores de 
+tenencia responsable comparado con 
+dueños extranjeros de gatos. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+13 
+ 
+Tabla 2. Modelo de regresión logístico de tres efectos  
+felino (AIC nulo = 47580 / AIC = 46922). 
+ 
+ 
+Discusión y Conclusiones 
+ 
+En esta primera encuesta nacional se 
+obtuvieron altas tasas de respuestas, las 
+cuales variaron entre comunas y regiones 
+del país. 
+ 
+La encuesta permite una caracterización de 
+los patrones de la tenencia responsable en 
+perros y gatos, y sus resultados contribuyen 
+a la definición inicial del concepto de 
+tenencia responsable en Chile. 
+ 
+Los modelos de regresión propuestos 
+permiten definir perfiles de tenedor/a, tanto 
+para aquellos con altos y como los con 
+bajos niveles de tenencia responsable. 
+ 
+De esta forma, en el caso de la especie 
+canina, un tenedor/a con los má s altos 
+niveles de tenencia correspondería a una 
+mujer mayor a 30 años, extranjera, que vive 
+en un departamento sin ninguna otra 
+mascota y cuyo perro fue obtenido 
+mediante adopción. 
+ 
+En el caso de los felinos, un tenedor/a con 
+los más altos niveles de tene ncia 
+correspondería una persona extranjera que 
+vive en un departamento sin ninguna otra 
+mascota y cuyo gato fue obtenido mediante 
+la compra. 
+ 
+Como todo estudio y encuesta, existen 
+potenciales fuentes de sesgo. Por ejemplo, 
+es posible que haya un sesgo en l as 
+respuestas de las encuestas, ya que se 
+podría atribuir a que los dueños de 
+mascotas podrían estar más conscientes de 
+la tenencia responsable.  
+ 
+Encuestas futuras podrían abordar algunos 
+puntos que quedaron inconclusos, como 
+por ejemplo identificar a cui dados de quien 
+se queda la mascota cuando no se le lleva 
+de vacaciones, o reformular preguntas que, 
+durante la aplicación de la encuesta, 
+observamos que podrían tener diferentes 
+interpretaciones por parte del informante. 
+ 
+Además, podría haber una inclinación en 
+las respuestas relacionadas con zonas 
+urbanas mas que rurales. Esto podría 
+afectar la toma de decisiones en cuanto a 
+tenencia responsable en comunas de alta 
+población rural. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Salgado-Caxito, M., Córdoba, F., Sánchez, C., Figueroa, L., Guerrero, C. , Hernández, C., Aguirre, C.,  
+Mardones, F., 2021. “Primera Encuesta Nacional 2021 a los tenedores de mascotas o animales de compañía”. 
+Escuela de Medicina Veterinaria – UC. Subsecretaría de Desarrollo Regional y Administrativo (SUBDERE) del 
+Ministerio del Interior y Seguridad Pública. 
+  
+14 
+De acuerdo con la tasa de respuesta según 
+comuna, podría asociarse que las comunas 
+con menos respuesta tienen menores 
+índices de desarrollo comunal y más altos 
+índices de pobreza. 
+ 
+Este estudio es una primera aproximación 
+al estatus nacional respecto de la tenencia 
+de mascotas, principalmente perros y gatos. 
+ 
+Se sugiere complementar y triangular los 
+datos obtenidos de esta encuesta con datos 
+de etapas posteriores del proyecto 
+“Estimación de la población canina y felina 
+del país y diagnóstico de la tenencia 
+responsable” para tener un resultado más 
+representativo y preciso en cuanto a la 
+tenencia responsable en Chile. 
+  
+Agradecimientos 
+ 
+El presente trabajo recibió colaboración en 
+la difusión de la encuesta por parte de 
+municipalidades, profesionales de otros 
+Ministerios y académicos/as de la UC y 
+otras casas de estudio. 
+ 
+Referencias 
+ 
+AVMA, 2012. Pet Ownership & 
+Demographics Sourcebook Pet Ownership 
+& Demographics Sourcebook. American 
+Veterinary Medical Association, 
+Schaumberg, IL. 
+ 
+Cleary, M., Visentin, D., Thapa, D.K., West, 
+S., Raeburn, T., Kornhaber , R., 2020. The 
+Homeless and Their Animal Companions: 
+An Integrative Review. Adm Policy Ment 
+Health 47, 47–59. 
+ 
+CVMA, 2011. Canada’s Pet Wellness 
+Report: A Snapshot of Canada’s Pet Health 
+and Wellness from the Canadian Veterinary 
+Medical Association (CVMA), in Partnership 
+with Hill’s Science Diet. Canadian 
+Veterinary Medical Association. 
+ 
+GFK, 2020. Man’s best friend: global pet 
+ownership and feeding trends . 
+Disponible en 
+https://www.gfk.com/insights/mans-best-
+friend-global-pet-ownership-and-feeding-
+trends#:~:text=On%20average%2C%20one
+%20third%20(33,no%20pets%20in%20their
+%20household (Fecha de acceso 8.5.20). 
+ 
+Hartwig, E., Signal, T., 2020. Attachment to 
+companion animals and loneliness in 
+Australian adolescents. Australian Journal 
+of Psychology 72, 337–346.  
+ 
+Hunjan, U.G., Reddy, J., 2020. Why 
+Companion Animals Are Beneficial D uring 
+COVID-19 Pandemic. Journal of Patient 
+Experience 7, 430–432. 
+ 
+PFMA, 2014. Pet Population. 
+ 
+Senior, K., Chenhall, R., McRae -Williams, 
+E., Daniels, D., Rogers, K., 2006. Dogs and 
+people in Aboriginal communities: Exploring 
+the relationship within the c ontext of the 
+social determinants of health. 
+Environmental Health 6, 3 
+ 
+ 

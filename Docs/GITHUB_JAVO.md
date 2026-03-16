@@ -84,3 +84,26 @@ Actualizar en cada jornada y en cada PR relevante.
   - Simulación de fusión conjunta: OK
 - Riesgos/Pendientes:
   - Cuando Javo agregue nuevos commits IoT/firmware, repetir prueba de fusión antes de merge a `main`.
+
+## 2026-03-05
+- Rama: feat/javo-mauro
+- Objetivo: Cerrar bloqueos de CI del PR #14 y mantener trazabilidad.
+- Cambios realizados:
+  - Correcciones de lint/build para cumplir PR Quality.
+  - Ajuste de CI build para variables de entorno en compilacion.
+- Archivos principales:
+  - kittypau_app/src/app/(app)/_components/app-nav.tsx
+  - kittypau_app/src/app/(public)/login/page.tsx
+  - kittypau_app/src/app/_components/route-loading-overlay.tsx
+  - kittypau_app/src/app/api/admin/overview/route.ts
+  - kittypau_app/src/lib/supabase/server.ts
+  - kittypau_app/src/lib/supabase/user-server.ts
+- PR/Commit:
+  - PR: #14
+  - Commits: `738c07d`, `e41f98e`
+- Pruebas ejecutadas:
+  - PR Quality: App Lint + Build (OK)
+  - Repo Policy Checks (OK)
+  - Vercel preview (OK)
+- Riesgos/Pendientes:
+  - Mergear PR #14 a main y sincronizar ambos PCs.

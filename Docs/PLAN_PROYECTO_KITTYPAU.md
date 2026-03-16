@@ -1,12 +1,12 @@
-Ôªø# Plan de Proyecto: Kittypau IoT (MVP $0)
+# Plan de Proyecto: Kittypau IoT (MVP $0)
 
 ## Objetivo MVP
-Un usuario se registra, agrega una mascota, registra un dispositivo (plato inteligente de comida o de agua) y ve datos en vivo desde la app web (y base lista para m√≥vil).
+Un usuario se registra, agrega una mascota, registra un dispositivo (plato inteligente de comida o de agua) y ve datos en vivo desde la app web (y base lista para mÛvil).
 
 ## Estado actual del repo (2026-02-06)
 - Next.js creado en `kittypau_app/` con TypeScript y App Router.
 - Archivos anteriores movidos a `kittypau_app/legacy/`.
-- `Docs/` se mantiene en la ra√≠z para documentaci√≥n.
+- `Docs/` se mantiene en la raÌz para documentaciÛn.
 - Endpoint webhook y cliente Supabase ya existen.
 - Prueba local del webhook exitosa.
 
@@ -93,7 +93,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 - `devices`: `owner_id = auth.uid()`
 - `readings`: se validan via join a devices/pets del usuario.
 
-## API endpoints m√≠nimos (Next.js)
+## API endpoints mÌnimos (Next.js)
 1. **POST `/api/mqtt/webhook`**
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
@@ -108,7 +108,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
    - Registra dispositivo (device_id, tipo, pet_id obligatorio).
 
 4. **GET `/api/readings?device_uuid=...`**
-   - Devuelve lecturas recientes para gr√°ficos.
+   - Devuelve lecturas recientes para gr·ficos.
 
 ## Vistas del MVP
 1. **Login/Registro**
@@ -118,16 +118,16 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 5. **Dashboard**: graficos + estado en vivo (Realtime)
 
 ## UX clave (registro)
-- Registro en pop-up (web y m√≥vil).
+- Registro en pop-up (web y mÛvil).
 - Barra de progreso con 3 hitos: Usuario -> Mascota -> Dispositivo.
 - Progreso persistente si se cierra.
 
 ## Streaming en tiempo real
 - Supabase Realtime sobre `readings`.
-- Frontend se suscribe por `device_uuid` y actualiza gr√°ficos.
+- Frontend se suscribe por `device_uuid` y actualiza gr·ficos.
 - Alternativa: polling cada X segundos (fallback si Realtime falla).
 
-## Paso a paso (implementaci√≥n)
+## Paso a paso (implementaciÛn)
 1. Crear proyecto Supabase y configurar Auth + DB.
 2. Crear esquema SQL y RLS.
 3. Inicializar Next.js (App Router).
@@ -140,7 +140,7 @@ Un usuario se registra, agrega una mascota, registra un dispositivo (plato intel
 
 ## Nota sobre el deploy
 En este proyecto el deploy en **Vercel incluye frontend + API + backend ligero** (routes `/api/*`).
-No existe un backend separado: la base de datos est√° en Supabase.
+No existe un backend separado: la base de datos est· en Supabase.
 
 ## Variables de entorno (ejemplo)
 ```
@@ -152,7 +152,7 @@ NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
-## Criterio de √©xito del MVP
+## Criterio de Èxito del MVP
 - Usuario crea cuenta
 - Registra mascota
 - Registra dispositivo
@@ -160,7 +160,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 
 ---
 
-## Pr√≥ximos pasos inmediatos
+## PrÛximos pasos inmediatos
 - Implementar login y registro en UI.
 - Implementar CRUD de mascotas y dispositivos.
 - Habilitar Realtime en dashboard.
@@ -169,20 +169,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ## Documento maestro de dominio
 - Ver `Docs/DOC_MAESTRO_DOMINIO.md` antes de codificar.
 
-## Notas de implementaci√≥n
+## Notas de implementaciÛn
 - Ver `Docs/NOTAS_IMPLEMENTACION.md` antes de comenzar UI y API.
 
 ## Contratos por vista
 - Ver `Docs/CONTRATOS_POR_VISTA.md`.
 
-## Estilos y dise√±o
-- Ver `Docs/estilos y dise√±os.md`.
+## Estilos y diseÒo
+- Ver `Docs/estilos y diseÒos.md`.
 
 ## Enums y reglas
 - Ver `Docs/ENUMS_OFICIALES.md`.
 - Ver `Docs/REGLAS_INTERPRETACION_IOT.md`.
 
-## Migraci√≥n SQL
+## MigraciÛn SQL
 - Ver `Docs/GUIA_MIGRACION_SQL.md`.
 
 ## Bridge en Raspberry
@@ -192,3 +192,59 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 - Ver `Docs/PRUEBAS_E2E.md` para validar el flujo completo.
 
 
+
+## Marco AIoT / PetTech (Alineacion 2026)
+
+### Terminologia oficial recomendada
+- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
+- **Intelligent IoT**: variante de comunicacion comercial.
+- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Smart IoT**: termino marketing, menos tecnico.
+
+### Definicion recomendada de producto
+**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+
+### Categoria estrategica
+**PetTech AIoT** = PetTech + IoT + IA.
+
+Esto posiciona a Kittypau no como "solo hardware", sino como:
+- infraestructura de datos longitudinales de salud animal,
+- analitica preventiva,
+- plataforma escalable con suscripcion.
+
+### Arquitectura actual (ya compatible con AIoT)
+1. Dispositivo IoT (ESP8266/ESP32).
+2. Ingestion por MQTT.
+3. Bridge Node.js.
+4. Persistencia en PostgreSQL/Supabase.
+5. Capa de analitica/IA.
+6. Dashboard web para usuario/admin.
+
+### Estrategia tipo "Fitbit de mascotas"
+- Hardware = punto de entrada.
+- Datos longitudinales = ventaja competitiva.
+- IA = diferencial de valor.
+- Suscripcion = recurrencia (modelo SaaS).
+
+### Casos de uso preventivos (objetivo)
+- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
+- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+
+### Modelo de negocio recomendado (3 capas)
+1. **Hardware**: ingreso inicial por unidad.
+2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
+3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
+## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
+- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
+- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
+- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
+
+### Implicancias para App/Web (Kittypau)
+1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
+2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
+4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.

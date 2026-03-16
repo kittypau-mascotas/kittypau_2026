@@ -6,6 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "android:add": "npx cap add android",
+    "android:assets": "npx @capacitor/assets generate --android",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:build:debug": "cd android && .\\gradlew assembleDebug",
     "lint": "eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -16,18 +21,24 @@
     "fix:all": "npm run lint:fix && npm run clean:imports && npm run format",
     "dev:check": "npm run fix:all && npm run type-check",
     "ci:check": "npm run dev:check && npm run build-check",
-    "staged:check": "lint-staged"
+    "staged:check": "lint-staged --no-stash"
   },
   "dependencies": {
+    "@capacitor/local-notifications": "^8.0.2",
     "@supabase/supabase-js": "^2.93.3",
     "chart.js": "^4.5.1",
     "lucide-react": "^0.542.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-chartjs-2": "^5.3.1",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-scroll-parallax": "^3.5.0"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.6.0",
+    "@capacitor/core": "^8.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

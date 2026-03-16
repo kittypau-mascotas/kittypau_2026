@@ -1,0 +1,10 @@
+| Fondo | Fecha Cierre | Descripción | Enlace |
+| --- | --- | --- | --- |
+| CORFO - Crea y Valida | 13 mayo 2025 | Apoya validación técnica y comercial de innovaciones. Monto máximo: $180.000.000. | https://www.corfo.cl/sites/cpp/convocatorias_programas_innovacion |
+| CORFO - Absorción Tecnológica | 1 agosto 2025 | Financia incorporación de tecnología en empresas. Monto máximo: $300.000.000. | https://www.corfo.cl/sites/cpp/convocatorias_programas_innovacion |
+| CORFO - Innova Alta Tecnología | 1 agosto 2025 | Apoya desarrollo de soluciones de alta tecnología. Monto máximo: $1.000.000.000. | https://www.corfo.cl/sites/cpp/convocatorias_programas_innovacion |
+| ANID - FONDEQUIP | 29 abril 2025 | Financia equipamiento científico y tecnológico mediano. Monto mínimo: $50.000.000. | https://investigacion.uc.cl/concursos/xix-concurso-de-equipamiento-cientifico-y-tecnologico-mediano-2025/ |
+| Ministerio de las Culturas - Infraestructura Cultural | 23 mayo 2025 | Financia infraestructura cultural pública y privada. Monto total: $3.886.712.000. | https://www.cultura.gob.cl/convocatorias/ministerio-de-las-culturas-abre-convocatoria-del-fondo-de-infraestructura-cultural-publica-y-privada-2025/ |
+| SEGEGOB - Fondo de Fortalecimiento | 2 mayo 2025 | Apoya organizaciones de interés público. Monto máximo: $10.000.000. | https://fondodefortalecimiento.gob.cl/fondos-segegob-se-abren-las-postulaciones-al-fondo-de-fortalecimiento-de-organizaciones-de-interes-publico-2025/ |
+| CDPR Antofagasta - Inversión Productiva | 30 abril 2025 | Financia proyectos productivos sostenibles en Antofagasta. Monto máximo: $20.000.000. | https://www.fomentoantofagasta.cl/programas-financiamiento/primer-concurso-regional-antofagasta-2025-linea-de-apoyo-desarrolla-inversion-inversion-productiva-para-proyectos-de-sostenibilidad-en-las-comunas-de-la-provincia-de-antofagasta-y/ |
+| INACAP - Fondos Concursables Estudiantiles | 27 agosto 2025 | Fondo dirigido a estudiantes INACAP para iniciativas innovadoras. | https://portal.inacap.cl/w/fondos-concursables-2025 |

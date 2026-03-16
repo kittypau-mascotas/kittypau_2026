@@ -47,8 +47,26 @@ Agregar en **Settings -> Environment Variables**:
 ## 7) Rollback (si falla el deploy)
 - [ ] En Vercel -> Deployments -> Promote el deploy anterior.
 
+## 8) APK Android (Capacitor)
+- [ ] Ejecutar build web en `kittypau_app`: `npm run build`.
+- [ ] Sincronizar Capacitor: `npx cap sync android`.
+- [ ] Generar assets Android desde `public/logo_carga.jpg`: `npm run android:assets`.
+- [ ] Compilar APK en `kittypau_app/android`:
+  - [ ] `.\gradlew.bat assembleDebug`
+  - [ ] `.\gradlew.bat assembleRelease`
+- [ ] Verificar artefactos:
+  - [ ] `android/app/build/outputs/apk/debug/app-debug.apk`
+  - [ ] `android/app/build/outputs/apk/release/app-release-unsigned.apk`
+- [ ] Validar device real o emulador Android antes de distribuir.
+
 ## Estado local (hasta 2026-02-03)
 - [x] Endpoint `/api/mqtt/webhook` creado.
 - [x] Script local `scripts/test-webhook.ps1` funciona.
 - [x] Prueba local con `success: true`.
+
+## Estado operativo actualizado (2026-03-09)
+- [x] Cambios recientes publicados en `main` y desplegados en Vercel.
+- [x] Produccion activa: `https://kittypau-app.vercel.app`.
+- [x] Ultimo deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`.
+- [x] Ajustes UX APK nativa aplicados (login + `/today` mobile).
 

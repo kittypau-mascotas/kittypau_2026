@@ -25,8 +25,23 @@ type WebhookPayload = {
   humidity?: number;
   batteryLevel?: number;
   battery_level?: number;
+  batteryVoltage?: number;
+  battery_voltage?: number;
+  powerSource?: string;
+  power_source?: string;
+  isCharging?: boolean;
+  is_charging?: boolean;
   timestamp?: string;
 };
+
+type BatteryState =
+  | "optimal"
+  | "medium"
+  | "low"
+  | "critical"
+  | "charging"
+  | "external_power"
+  | "unknown";
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
@@ -40,6 +55,53 @@ function parseNumber(value: unknown): number | null {
     return Number.isFinite(parsed) ? parsed : null;
   }
   return null;
+}
+
+function parseBoolean(value: unknown): boolean | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1 ? true : value === 0 ? false : null;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["1", "true", "yes", "on"].includes(normalized)) return true;
+    if (["0", "false", "no", "off"].includes(normalized)) return false;
+  }
+  return null;
+}
+
+function normalizeBatterySource(value: unknown): "battery" | "usb" | "unknown" {
+  if (typeof value !== "string") return "unknown";
+  const source = value.trim().toLowerCase();
+  if (!source) return "unknown";
+  if (
+    source.includes("usb") ||
+    source.includes("ac") ||
+    source.includes("external") ||
+    source.includes("plug")
+  ) {
+    return "usb";
+  }
+  if (source.includes("bat")) return "battery";
+  return "unknown";
+}
+
+function toBatteryState(level: number | null, source: "battery" | "usb" | "unknown", charging: boolean): BatteryState {
+  if (charging) return "charging";
+  if (source === "usb" && level === null) return "external_power";
+  if (level === null) return "unknown";
+  if (level <= 15) return "critical";
+  if (level <= 35) return "low";
+  if (level <= 70) return "medium";
+  return "optimal";
+}
+
+function estimateBatteryLevelFromVoltage(voltage: number | null): number | null {
+  if (voltage === null) return null;
+  const emptyV = 3.3;
+  const fullV = 4.2;
+  const normalized = ((voltage - emptyV) / (fullV - emptyV)) * 100;
+  const clamped = Math.max(0, Math.min(100, normalized));
+  return Math.round(clamped);
 }
 
 function validateRange(
@@ -114,11 +176,27 @@ export async function POST(req: NextRequest) {
   const temperature = parseNumber(payload.temperature);
   const humidity = parseNumber(payload.humidity);
   const batteryLevel = parseNumber(payload.batteryLevel ?? payload.battery_level);
+  const batteryVoltage = parseNumber(
+    payload.batteryVoltage ?? payload.battery_voltage,
+  );
+  const charging = parseBoolean(payload.isCharging ?? payload.is_charging) ?? false;
+  const batterySource = normalizeBatterySource(
+    payload.powerSource ?? payload.power_source,
+  );
+  const effectiveBatteryLevel =
+    batteryLevel ?? estimateBatteryLevelFromVoltage(batteryVoltage);
+  const batteryIsEstimated = batteryLevel === null && effectiveBatteryLevel !== null;
+  const batteryState = toBatteryState(
+    effectiveBatteryLevel,
+    batterySource,
+    charging,
+  );
 
   const rangeError =
     validateRange(temperature, "temperature", -10, 60) ??
     validateRange(humidity, "humidity", 0, 100) ??
-    validateRange(batteryLevel, "battery_level", 0, 100) ??
+    validateRange(effectiveBatteryLevel, "battery_level", 0, 100) ??
+    validateRange(batteryVoltage, "battery_voltage", 0, 6) ??
     validateRange(weightGrams, "weight_grams", 0, 20000) ??
     validateRange(waterMl, "water_ml", 0, 5000) ??
     validateRange(flowRate, "flow_rate", 0, 1000);
@@ -196,7 +274,11 @@ export async function POST(req: NextRequest) {
           flow_rate: flowRate,
           temperature,
           humidity,
-          battery_level: batteryLevel,
+          battery_level: effectiveBatteryLevel,
+          battery_voltage: batteryVoltage,
+          battery_state: batteryState,
+          battery_source: batterySource,
+          battery_is_estimated: batteryIsEstimated,
           recorded_at: recordedAt,
           ingested_at: ingestedAt,
           clock_invalid: clockInvalid,
@@ -231,6 +313,11 @@ export async function POST(req: NextRequest) {
       weight_grams: weightGrams,
       water_ml: waterMl,
       flow_rate: flowRate,
+      battery_level: effectiveBatteryLevel,
+      battery_voltage: batteryVoltage,
+      battery_state: batteryState,
+      battery_source: batterySource,
+      battery_is_estimated: batteryIsEstimated,
     },
   });
 
@@ -238,7 +325,12 @@ export async function POST(req: NextRequest) {
     .from("devices")
     .update({
       last_seen: recordedAt,
-      battery_level: batteryLevel,
+      battery_level: effectiveBatteryLevel,
+      battery_voltage: batteryVoltage,
+      battery_state: batteryState,
+      battery_source: batterySource,
+      battery_is_estimated: batteryIsEstimated,
+      battery_updated_at: ingestedAt,
       status: "active",
     })
     .eq("id", device.id);
@@ -250,6 +342,11 @@ export async function POST(req: NextRequest) {
     clock_invalid: clockInvalid,
     delta_ms: deltaMs,
     device_time_ms: deviceTimeMs,
+    battery_level: effectiveBatteryLevel,
+    battery_voltage: batteryVoltage,
+    battery_state: batteryState,
+    battery_source: batterySource,
+    battery_is_estimated: batteryIsEstimated,
   });
 
   logRequestEnd(req, startedAt, 200, {

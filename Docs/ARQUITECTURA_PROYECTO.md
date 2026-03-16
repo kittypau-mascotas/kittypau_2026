@@ -1,8 +1,8 @@
-ï»¿# Arquitectura del Proyecto Kittypau (MVP $0)
+# Arquitectura del Proyecto Kittypau (MVP $0)
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesiÃ³n.
+1. Se registra e inicia sesión.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
@@ -14,8 +14,8 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El cÃ³digo fuente vive en el repo (`/bridge`).
-   - El runtime real estÃ¡ fuera del repo (Raspberry).
+   - El código fuente vive en el repo (`/bridge`).
+   - El runtime real está fuera del repo (Raspberry).
 
 ---
 
@@ -34,16 +34,16 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ## Regla de conexion (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvÃ­a a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetrÃ­a)
+## Flujo de datos (telemetría)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvÃ­a a Vercel.
+2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
@@ -85,10 +85,27 @@ ESP32 -> HiveMQ Cloud
 /kittypau_app
   /src
     /app
+      /(app)
+        /layout.tsx          ? wrappea con AppDataProvider
+        /_components
+          /app-nav.tsx       ? consume useAppData(), sin fetches propios
+        /today /bowl /pet /story /settings
+      /api
+        /profiles /pets /devices /account /readings
+                             ? runtime="edge" + Cache-Control en GETs
     /lib
+      /auth                  ? token.ts, auth-fetch.ts
+      /charts
+        /index.tsx           ? ChartJS.register + buildSeries<T> + ChartCard (shared)
+      /context
+        /app-context.tsx     ? AppDataProvider + useAppData()
+      /supabase              ? browser.ts, server.ts
+      /ui
     /components
   /scripts
   /public
+    /illustrations           ? pink_food_full.png, green_water_full.png, etc.
+    /audio                   ? sonido_marca.mp3, comer_*.mp3
 ```
 
 ---
@@ -105,6 +122,25 @@ ESP32 -> HiveMQ Cloud
 3. **HiveMQ Webhook**:
    - Pros: sencillo, compatible con serverless.
    - Contras: depende de endpoint publico y token seguro.
+
+4. **Edge Runtime en APIs clave** (`runtime = "edge"`):
+   - Cold start ~0ms vs ~250ms Node.js en Vercel Hobby.
+   - Compatible con `@supabase/supabase-js` (fetch nativo). No usar APIs Node.js exclusivas.
+   - Aplicado a: profiles, pets, devices, account/type.
+
+5. **AppDataContext** (`src/lib/context/app-context.tsx`):
+   - Fetcha profiles/pets/devices/account **una vez** al montar `(app)/layout`.
+   - `app-nav` y otras vistas consumen `useAppData()` sin hacer sus propias peticiones.
+   - Cache-Control en los endpoints deduplica fetches durante navegacion del mismo TTL.
+
+6. **Libreria de graficos compartida** (`src/lib/charts/index.tsx`):
+   - `ChartJS.register(...)` ejecutado una vez; evita registros duplicados entre paginas.
+   - `buildSeries<T>` acepta callback para transformaciones flexibles (e.g. peso neto).
+   - `ChartCard` parametrizable: accent, unit, canvasClassName, integerDisplay.
+
+7. **next/image**:
+   - Todas las imagenes usan `<Image>` de `next/image` (lazy, WebP/AVIF, CLS zero).
+   - Imagenes remotas Supabase habilitadas via `remotePatterns` en `next.config.ts`.
 
 ---
 
@@ -126,7 +162,7 @@ ESP32 -> HiveMQ Cloud
 ```
 **Notas**
 - La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
-- El `device_id` es el cÃ³digo humano (KPCLxxxx) y se busca en `devices`.
+- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -231,3 +267,59 @@ El deploy incluye:
 
 
 
+
+## Marco AIoT / PetTech (Alineacion 2026)
+
+### Terminologia oficial recomendada
+- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
+- **Intelligent IoT**: variante de comunicacion comercial.
+- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Smart IoT**: termino marketing, menos tecnico.
+
+### Definicion recomendada de producto
+**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
+
+### Categoria estrategica
+**PetTech AIoT** = PetTech + IoT + IA.
+
+Esto posiciona a Kittypau no como "solo hardware", sino como:
+- infraestructura de datos longitudinales de salud animal,
+- analitica preventiva,
+- plataforma escalable con suscripcion.
+
+### Arquitectura actual (ya compatible con AIoT)
+1. Dispositivo IoT (ESP8266/ESP32).
+2. Ingestion por MQTT.
+3. Bridge Node.js.
+4. Persistencia en PostgreSQL/Supabase.
+5. Capa de analitica/IA.
+6. Dashboard web para usuario/admin.
+
+### Estrategia tipo "Fitbit de mascotas"
+- Hardware = punto de entrada.
+- Datos longitudinales = ventaja competitiva.
+- IA = diferencial de valor.
+- Suscripcion = recurrencia (modelo SaaS).
+
+### Casos de uso preventivos (objetivo)
+- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
+- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+
+### Modelo de negocio recomendado (3 capas)
+1. **Hardware**: ingreso inicial por unidad.
+2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
+3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
+## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
+- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
+- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
+- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
+
+### Implicancias para App/Web (Kittypau)
+1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
+2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
+4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.

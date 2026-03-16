@@ -9,6 +9,8 @@ import {
 import { logAudit } from "../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 
+export const runtime = "edge";
+
 const ALLOWED_USER_STEPS = new Set([
   "not_started",
   "user_profile",
@@ -44,7 +46,12 @@ export async function GET(req: NextRequest) {
   }
 
   logRequestEnd(req, startedAt, 200);
-  return NextResponse.json(data ?? null, { status: 200 });
+  return NextResponse.json(data ?? null, {
+    status: 200,
+    headers: {
+      "Cache-Control": "private, max-age=60, stale-while-revalidate=300",
+    },
+  });
 }
 
 export async function PUT(req: NextRequest) {
@@ -58,14 +65,9 @@ export async function PUT(req: NextRequest) {
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:profiles_put`;
   const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
   let body: Record<string, unknown>;
 
@@ -84,7 +86,7 @@ export async function PUT(req: NextRequest) {
       req,
       400,
       "INVALID_USER_STEP",
-      "Invalid user_onboarding_step"
+      "Invalid user_onboarding_step",
     );
   }
 
@@ -133,7 +135,12 @@ export async function PUT(req: NextRequest) {
     updatePayload.user_name !== null &&
     typeof updatePayload.user_name !== "string"
   ) {
-    return apiError(req, 400, "INVALID_USER_NAME", "user_name must be a string");
+    return apiError(
+      req,
+      400,
+      "INVALID_USER_NAME",
+      "user_name must be a string",
+    );
   }
 
   if (
@@ -153,7 +160,7 @@ export async function PUT(req: NextRequest) {
       req,
       400,
       "INVALID_CARE_RATING",
-      "care_rating must be a number"
+      "care_rating must be a number",
     );
   }
 
@@ -165,7 +172,7 @@ export async function PUT(req: NextRequest) {
       req,
       400,
       "CARE_RATING_OUT_OF_RANGE",
-      "care_rating must be between 1 and 10"
+      "care_rating must be between 1 and 10",
     );
   }
 

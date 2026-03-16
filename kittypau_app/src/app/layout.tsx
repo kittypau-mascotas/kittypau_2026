@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Fraunces, Inter, Titan_One } from "next/font/google";
+import { Geist_Mono, Fraunces, Inter, Lato, Titan_One } from "next/font/google";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
+import NativeApkMode from "./_components/native-apk-mode";
+import NativeThanksNotification from "./_components/native-thanks-notification";
+import ParallaxRoot from "./_components/parallax-root";
+import { resolveAppFlavorFromEnv } from "@/lib/runtime/app-flavor";
 
 const inter = Inter({
   variable: "--font-ui",
@@ -24,20 +28,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const lato = Lato({
+  variable: "--font-slider",
+  weight: ["400", "700", "900"],
+  subsets: ["latin"],
+});
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#f6dbd6",
+};
+
 export const metadata: Metadata = {
   title: "Kittypau",
+  applicationName: "Kittypau",
   description: "Kittypau - IoT para bienestar de mascotas",
   metadataBase: new URL("https://kittypau-app.vercel.app"),
+  manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/logo.jpg",
-    apple: "/logo.jpg",
+    icon: "/logo_carga.jpg",
+    apple: "/logo_carga.jpg",
   },
   openGraph: {
-    title: "Kittypau",
-    description: "Kittypau - IoT para bienestar de mascotas",
+    title: "Kittypau | Bienestar Inteligente para Mascotas",
+    description:
+      "Controla comida, hidratación y actividad en tiempo real con Kittypau.",
     images: [
       {
-        url: "/logo.jpg",
+        url: "/logo_carga.jpg",
         width: 1200,
         height: 630,
         alt: "Kittypau",
@@ -46,9 +66,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kittypau",
-    description: "Kittypau - IoT para bienestar de mascotas",
-    images: ["/logo.jpg"],
+    title: "Kittypau | Bienestar Inteligente para Mascotas",
+    description:
+      "Controla comida, hidratación y actividad en tiempo real con Kittypau.",
+    images: ["/logo_carga.jpg"],
   },
 };
 
@@ -57,13 +78,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const appFlavor = resolveAppFlavorFromEnv();
+
   return (
-    <html lang="en">
+    <html
+      lang="es"
+      data-app-flavor={appFlavor}
+      className={appFlavor === "native" ? "kp-flavor-native" : "kp-flavor-web"}
+    >
       <body
-        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} ${lato.variable} antialiased app-flavor-${appFlavor}`}
       >
+        <NativeApkMode />
+        <NativeThanksNotification />
         <RouteLoadingOverlay />
-        {children}
+        <ParallaxRoot>{children}</ParallaxRoot>
       </body>
     </html>
   );

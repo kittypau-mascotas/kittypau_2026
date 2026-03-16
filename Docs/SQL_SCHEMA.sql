@@ -87,7 +87,7 @@ create table if not exists public.devices (
 -- Readings (streaming)
 create table if not exists public.readings (
   id uuid primary key default gen_random_uuid(),
-  device_uuid UUID not null references public.devices(id) on delete cascade,
+  device_id uuid not null references public.devices(id) on delete cascade,
   -- pet_id es un snapshot opcional (no fuente de verdad)
   pet_id uuid references public.pets(id) on delete set null,
   weight_grams int,
@@ -244,14 +244,14 @@ create index if not exists idx_devices_owner_id_created_at on public.devices(own
 create unique index if not exists idx_devices_active_per_pet
   on public.devices(pet_id)
   where status = 'active';
-create index if not exists idx_readings_device_id on public.readings(device_uuid);
-create index if not exists idx_readings_device_recorded_at on public.readings(device_uuid, recorded_at desc);
+create index if not exists idx_readings_device_id on public.readings(device_id);
+create index if not exists idx_readings_device_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
 create unique index if not exists idx_readings_device_recorded_at_unique
-  on public.readings(device_uuid, recorded_at);
-create index if not exists idx_readings_device_id_recorded_at on public.readings(device_uuid, recorded_at desc);
+  on public.readings(device_id, recorded_at);
+create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_readings_device_recorded_cover
-  on public.readings(device_uuid, recorded_at desc)
+  on public.readings(device_id, recorded_at desc)
   include (weight_grams, water_ml, flow_rate, temperature, humidity, battery_level);
 create index if not exists idx_pet_breeds_pet_id on public.pet_breeds(pet_id);
 create index if not exists idx_devices_pet_id on public.devices(pet_id);
@@ -266,7 +266,7 @@ create index if not exists idx_bridge_telemetry_status_time on public.bridge_tel
 drop view if exists latest_readings;
 create view latest_readings as
 select
-  d.id as device_uuid,
+  d.id as device_id,
   d.device_id,
   r.weight_grams,
   r.temperature,
@@ -276,7 +276,7 @@ from public.devices d
 left join lateral (
   select *
   from public.readings r
-  where r.device_uuid = d.id
+  where r.device_id = d.id
   order by r.recorded_at desc
   limit 1
 ) r on true;
@@ -304,7 +304,7 @@ select
   lr.recorded_at as last_reading_at
 from public.devices d
 left join public.pets p on p.id = d.pet_id
-left join latest_readings lr on lr.device_uuid = d.id;
+left join latest_readings lr on lr.device_id = d.id;
 
 -- RLS
 alter table public.profiles enable row level security;
@@ -383,7 +383,7 @@ create policy "readings_select_own"
   using (
     exists (
       select 1 from public.devices d
-      where d.id = readings.device_uuid and d.owner_id = auth.uid()
+      where d.id = readings.device_id and d.owner_id = auth.uid()
     )
   );
 
@@ -436,7 +436,7 @@ begin
         when device_state = 'factory' then 'linked'
         else device_state
       end
-  where id = new.device_uuid
+  where id = new.device_id
     and (
       last_seen is null
       or new.recorded_at > last_seen + interval '1 minute'

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -73,6 +74,14 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   return [];
 };
 
+const toRoundedSensorValue = (
+  value: number | null | undefined,
+): number | null => {
+  if (value === null || value === undefined || !Number.isFinite(value))
+    return null;
+  return Math.round(value);
+};
+
 export default function PetPage() {
   const [state, setState] = useState<LoadState>(defaultState);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -91,7 +100,11 @@ export default function PetPage() {
     return parseListResponse<ApiPet>(payload);
   };
 
-  const savePet = async (token: string, petId: string, payload: Partial<ApiPet>) => {
+  const savePet = async (
+    token: string,
+    petId: string,
+    payload: Partial<ApiPet>,
+  ) => {
     const res = await fetch(`/api/pets/${petId}`, {
       method: "PATCH",
       headers: {
@@ -115,13 +128,10 @@ export default function PetPage() {
   };
 
   const loadReadings = async (token: string, deviceId: string) => {
-    const res = await fetch(
-      `/api/readings?device_id=${deviceId}&limit=80`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`/api/readings?device_id=${deviceId}&limit=80`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
     const payload = await res.json();
     return parseListResponse<ApiReading>(payload);
@@ -152,15 +162,21 @@ export default function PetPage() {
           typeof window !== "undefined"
             ? window.localStorage.getItem("kittypau_pet_id")
             : null;
-        const primaryPet = pets.find((pet) => pet.id === storedPetId) ?? pets[0];
+        const primaryPet =
+          pets.find((pet) => pet.id === storedPetId) ?? pets[0];
         const initialPetId = primaryPet?.id ?? null;
-        if (initialPetId && typeof window !== "undefined") {
-          window.localStorage.setItem("kittypau_pet_id", initialPetId);
+        if (initialPetId) {
+          syncSelectedPet(initialPetId, primaryPet?.name ?? "");
         }
         setSelectedPetId(initialPetId);
         setEditPayload(primaryPet ?? {});
 
         const primaryDevice =
+          devices.find(
+            (device) =>
+              device.pet_id === initialPetId &&
+              (device.device_type ?? "").toLowerCase().includes("food"),
+          ) ??
           devices.find((device) => device.pet_id === initialPetId) ??
           devices[0];
         const readings =
@@ -168,23 +184,21 @@ export default function PetPage() {
             ? await loadReadings(token, primaryDevice.id)
             : [];
 
-      if (!mounted) return;
-      setState({
-        isLoading: false,
-        error: null,
-        pets,
-        devices,
-        readings,
-      });
+        if (!mounted) return;
+        setState({
+          isLoading: false,
+          error: null,
+          pets,
+          devices,
+          readings,
+        });
       } catch (err) {
         if (!mounted) return;
         setState((prev) => ({
           ...prev,
           isLoading: false,
           error:
-            err instanceof Error
-              ? err.message
-              : "No se pudo cargar el perfil.",
+            err instanceof Error ? err.message : "No se pudo cargar el perfil.",
         }));
       }
     };
@@ -223,7 +237,7 @@ export default function PetPage() {
           const nextReading = payload.new as ApiReading;
           setState((prev) => {
             const exists = prev.readings.some(
-              (reading) => reading.id === nextReading.id
+              (reading) => reading.id === nextReading.id,
             );
             if (exists) return prev;
             return {
@@ -231,7 +245,7 @@ export default function PetPage() {
               readings: [nextReading, ...prev.readings].slice(0, 120),
             };
           });
-        }
+        },
       )
       .subscribe();
 
@@ -243,8 +257,16 @@ export default function PetPage() {
 
   const selectedPet = state.pets.find((pet) => pet.id === selectedPetId);
   const petDevices = state.devices.filter(
-    (device) => device.pet_id === selectedPetId
+    (device) => device.pet_id === selectedPetId,
   );
+  const petFoodDevice =
+    petDevices.find((device) =>
+      (device.device_type ?? "").toLowerCase().includes("food"),
+    ) ?? petDevices[0] ?? null;
+  const petWaterDevice =
+    petDevices.find((device) =>
+      (device.device_type ?? "").toLowerCase().includes("water"),
+    ) ?? (petDevices.length > 1 ? petDevices[1] : null);
   const latestReading = state.readings[0] ?? null;
 
   const insights = useMemo(() => {
@@ -275,7 +297,9 @@ export default function PetPage() {
         : "Sin peso registrado.";
     const ambient =
       latestReading.temperature !== null && latestReading.humidity !== null
-        ? `Temp ${latestReading.temperature}° · Humedad ${latestReading.humidity}%.`
+        ? `Temp ${toRoundedSensorValue(latestReading.temperature)}° · Humedad ${toRoundedSensorValue(
+            latestReading.humidity,
+          )}%.`
         : "Sin mediciones ambientales.";
 
     return [
@@ -328,21 +352,23 @@ export default function PetPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">Cargando perfil...</div>
+        <div className="surface-card freeform-rise px-6 py-6">
+          Cargando perfil...
+        </div>
       ) : state.pets.length === 0 ? (
         <EmptyState
           title="Aún no tienes mascotas registradas."
           actions={
             <Link
               href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir a registro 
-            </Link> 
-          } 
-        > 
-          Completa el registro para crear la ficha de tu mascota. 
-        </EmptyState> 
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a registro
+            </Link>
+          }
+        >
+          Completa el registro para crear la ficha de tu mascota.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">
@@ -352,17 +378,19 @@ export default function PetPage() {
                 <p className="text-xl font-semibold text-slate-900">
                   {selectedPet?.name ?? "Sin mascota"}
                 </p>
-          <p className="text-xs text-slate-500">
-            {selectedPet?.type ?? "sin tipo"} ·{" "}
-            {selectedPet?.origin ?? "sin origen"}
-          </p>
-          <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
-            <span>{profileStatus}</span>
-            {selectedPet?.pet_state ? (
-              <span className="text-slate-400">· {selectedPet.pet_state}</span>
-            ) : null}
-          </div>
-        </div>
+                <p className="text-xs text-slate-500">
+                  {selectedPet?.type ?? "sin tipo"} ·{" "}
+                  {selectedPet?.origin ?? "sin origen"}
+                </p>
+                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+                  <span>{profileStatus}</span>
+                  {selectedPet?.pet_state ? (
+                    <span className="text-slate-400">
+                      · {selectedPet.pet_state}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-3">
                 {state.pets.length > 1 && (
                   <label className="flex flex-col text-xs text-slate-500">
@@ -373,20 +401,26 @@ export default function PetPage() {
                       onChange={async (event) => {
                         const nextId = event.target.value || null;
                         setSelectedPetId(nextId);
-                        if (nextId && typeof window !== "undefined") {
-                          window.localStorage.setItem(
-                            "kittypau_pet_id",
-                            nextId
-                          );
-                        }
                         const nextPet = state.pets.find(
-                          (pet) => pet.id === nextId
+                          (pet) => pet.id === nextId,
                         );
+                        if (nextId) {
+                          syncSelectedPet(nextId, nextPet?.name ?? "");
+                        }
                         setEditPayload(nextPet ?? {});
-                      const token = await getValidAccessToken();
+                        const token = await getValidAccessToken();
                         if (!token || !nextId) return;
                         const device =
-                          state.devices.find((item) => item.pet_id === nextId) ??
+                          state.devices.find(
+                            (item) =>
+                              item.pet_id === nextId &&
+                              (item.device_type ?? "")
+                                .toLowerCase()
+                                .includes("food"),
+                          ) ??
+                          state.devices.find(
+                            (item) => item.pet_id === nextId,
+                          ) ??
                           null;
                         if (!device) {
                           setState((prev) => ({ ...prev, readings: [] }));
@@ -516,12 +550,12 @@ export default function PetPage() {
                       const updated = await savePet(
                         token,
                         selectedPet.id,
-                        editPayload
+                        editPayload,
                       );
                       setState((prev) => ({
                         ...prev,
                         pets: prev.pets.map((pet) =>
-                          pet.id === updated.id ? updated : pet
+                          pet.id === updated.id ? updated : pet,
                         ),
                       }));
                       setEditMessage("Perfil actualizado.");
@@ -530,7 +564,7 @@ export default function PetPage() {
                       setEditMessage(
                         err instanceof Error
                           ? err.message
-                          : "No se pudo guardar."
+                          : "No se pudo guardar.",
                       );
                     } finally {
                       setIsSaving(false);
@@ -606,20 +640,29 @@ export default function PetPage() {
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm text-slate-500">Dispositivo asociado</p>
+                <p className="text-sm text-slate-500">Platos asociados</p>
                 <p className="text-lg font-semibold text-slate-900">
-                  {petDevices[0]?.device_id ?? "Sin dispositivo"}
+                  {petFoodDevice?.device_id ?? "Sin comedero"}
+                  {" · "}
+                  {petWaterDevice?.device_id ?? "Sin bebedero"}
                 </p>
                 <p className="text-xs text-slate-500">
-                  {petDevices[0]
-                    ? `${petDevices[0].device_type} · ${petDevices[0].status}`
-                    : "Conecta un dispositivo para completar el perfil."}
+                  {petFoodDevice || petWaterDevice
+                    ? `Comedero: ${petFoodDevice?.status ?? "sin estado"} · Bebedero: ${petWaterDevice?.status ?? "sin estado"}`
+                    : "Conecta los platos para completar el perfil."}
                 </p>
-                {petDevices[0]?.device_state ? (
-                  <span className="mt-2 inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    {petDevices[0].device_state}
-                  </span>
-                ) : null}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {petFoodDevice?.device_state ? (
+                    <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      Comedero: {petFoodDevice.device_state}
+                    </span>
+                  ) : null}
+                  {petWaterDevice?.device_state ? (
+                    <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                      Bebedero: {petWaterDevice.device_state}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>
@@ -640,7 +683,7 @@ export default function PetPage() {
                 >
                   Ver historia
                 </Link>
-                {!petDevices[0] ? (
+                {!petFoodDevice && !petWaterDevice ? (
                   <Link
                     href="/registro"
                     className="rounded-[var(--radius)] bg-primary px-3 py-2 text-[11px] font-semibold text-primary-foreground"
@@ -675,7 +718,3 @@ export default function PetPage() {
     </main>
   );
 }
-
-
-
-

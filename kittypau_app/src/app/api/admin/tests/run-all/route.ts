@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient } from "@/app/api/_utils";
+import {
+  apiError,
+  getUserClient,
+  isAdminFallbackEmail,
+} from "@/app/api/_utils";
+import { handleReadingsGet } from "@/app/api/readings/route";
 
 type AdminTestResult = {
   id: string;
@@ -22,14 +27,16 @@ async function ensureAdmin(req: NextRequest) {
     .eq("active", true)
     .maybeSingle();
   if (error) return { error: error.message, status: 500 as const };
-  if (!role) return { error: "Admin role required", status: 403 as const };
+  if (!role && !isAdminFallbackEmail(user.email ?? null)) {
+    return { error: "Admin role required", status: 403 as const };
+  }
   return { userId: user.id };
 }
 
 async function runTest(
   id: string,
   name: string,
-  testFn: () => Promise<string>
+  testFn: () => Promise<string>,
 ): Promise<AdminTestResult> {
   const started = Date.now();
   try {
@@ -59,33 +66,41 @@ export async function POST(req: NextRequest) {
       req,
       admin.status ?? 401,
       "AUTH_INVALID",
-      admin.error ?? "Unauthorized"
+      admin.error ?? "Unauthorized",
     );
   }
 
   const results: AdminTestResult[] = [];
 
   results.push(
-    await runTest("admin_dashboard_live", "Vista admin_dashboard_live", async () => {
-      const { error } = await supabaseServer
-        .from("admin_dashboard_live")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-      if (error) throw new Error(error.message);
-      return "Vista operativa";
-    })
+    await runTest(
+      "admin_dashboard_live",
+      "Vista admin_dashboard_live",
+      async () => {
+        const { error } = await supabaseServer
+          .from("admin_dashboard_live")
+          .select("*")
+          .limit(1)
+          .maybeSingle();
+        if (error) throw new Error(error.message);
+        return "Vista operativa";
+      },
+    ),
   );
 
   results.push(
-    await runTest("bridge_status_live", "Vista bridge_status_live", async () => {
-      const { data, error } = await supabaseServer
-        .from("bridge_status_live")
-        .select("device_id, bridge_status, last_seen")
-        .limit(5);
-      if (error) throw new Error(error.message);
-      return `${data?.length ?? 0} bridge(s) consultados`;
-    })
+    await runTest(
+      "bridge_status_live",
+      "Vista bridge_status_live",
+      async () => {
+        const { data, error } = await supabaseServer
+          .from("bridge_status_live")
+          .select("device_id, bridge_status, last_seen")
+          .limit(5);
+        if (error) throw new Error(error.message);
+        return `${data?.length ?? 0} bridge(s) consultados`;
+      },
+    ),
   );
 
   results.push(
@@ -97,7 +112,7 @@ export async function POST(req: NextRequest) {
         .is("retired_at", null);
       if (error) throw new Error(error.message);
       return `${data?.length ?? 0} KPCL activos detectados`;
-    })
+    }),
   );
 
   results.push(
@@ -110,7 +125,7 @@ export async function POST(req: NextRequest) {
       if (error) throw new Error(error.message);
       if (!data) throw new Error("Sin datos en finance_admin_summary");
       return "Resumen financiero disponible";
-    })
+    }),
   );
 
   results.push(
@@ -126,7 +141,7 @@ export async function POST(req: NextRequest) {
         .limit(1);
       if (cErr) throw new Error(cErr.message);
       return `${profiles?.length ?? 0} perfil(es), ${comps?.length ?? 0}+ componente(s)`;
-    })
+    }),
   );
 
   results.push(
@@ -138,12 +153,115 @@ export async function POST(req: NextRequest) {
       if (!error) {
         return `${data?.length ?? 0} objetos por vista`;
       }
-      const { data: fallback, error: fallbackErr } = await supabaseServer.rpc(
-        "admin_object_stats"
-      );
+      const { data: fallback, error: fallbackErr } =
+        await supabaseServer.rpc("admin_object_stats");
       if (fallbackErr) throw new Error(fallbackErr.message);
       return `${(fallback as Array<unknown> | null)?.length ?? 0} objetos por RPC fallback`;
-    })
+    }),
+  );
+
+  results.push(
+    await runTest(
+      "api_readings_contract",
+      "Contrato /api/readings",
+      async () => {
+        const { data: devices, error: devErr } = await supabaseServer
+          .from("devices")
+          .select("id, owner_id")
+          .not("owner_id", "is", null)
+          .is("retired_at", null)
+          .limit(1);
+        if (devErr) throw new Error(devErr.message);
+        const device = devices?.[0] as
+          | { id?: string; owner_id?: string }
+          | undefined;
+        if (!device?.id || !device.owner_id) {
+          throw new Error(
+            "No hay device con owner_id para probar /api/readings",
+          );
+        }
+
+        const baseUrl = new URL("http://local.test/api/readings");
+        baseUrl.searchParams.set("device_id", device.id);
+
+        const resArray = await handleReadingsGet(
+          new NextRequest(baseUrl),
+          Date.now(),
+          { supabase: supabaseServer, userId: device.owner_id },
+        );
+        if (!resArray.ok) {
+          const err = (await resArray.json()) as Record<string, unknown>;
+          throw new Error(
+            `Esperaba 200, obtuve ${resArray.status}: ${String(
+              err.code ?? err.error ?? "error",
+            )}`,
+          );
+        }
+        const arr = (await resArray.json()) as unknown;
+        if (!Array.isArray(arr))
+          throw new Error("Respuesta no paginada no es array");
+
+        const pagedUrl = new URL(baseUrl);
+        pagedUrl.searchParams.set("limit", "2");
+        const resPaged = await handleReadingsGet(
+          new NextRequest(pagedUrl),
+          Date.now(),
+          { supabase: supabaseServer, userId: device.owner_id },
+        );
+        if (!resPaged.ok)
+          throw new Error(`Paginado esperaba 200, obtuve ${resPaged.status}`);
+        const paged = (await resPaged.json()) as Record<string, unknown>;
+        if (!Array.isArray(paged.data)) throw new Error("Paginado sin data[]");
+        if (!("next_cursor" in paged))
+          throw new Error("Paginado sin next_cursor");
+
+        const firstRow = (paged.data as Array<Record<string, unknown>>)[0];
+        if (firstRow) {
+          for (const key of [
+            "id",
+            "device_id",
+            "recorded_at",
+            "battery_level",
+          ]) {
+            if (!(key in firstRow))
+              throw new Error(`Falta campo ${key} en lectura`);
+          }
+        }
+
+        const badLimitUrl = new URL(baseUrl);
+        badLimitUrl.searchParams.set("limit", "0");
+        const resBadLimit = await handleReadingsGet(
+          new NextRequest(badLimitUrl),
+          Date.now(),
+          { supabase: supabaseServer, userId: device.owner_id },
+        );
+        if (resBadLimit.status !== 400) {
+          throw new Error(
+            `INVALID_LIMIT esperaba 400, obtuve ${resBadLimit.status}`,
+          );
+        }
+        const badLimit = (await resBadLimit.json()) as Record<string, unknown>;
+        if (badLimit.code !== "INVALID_LIMIT") {
+          throw new Error(
+            `Esperaba code INVALID_LIMIT, obtuve ${String(badLimit.code)}`,
+          );
+        }
+
+        const otherUserId = crypto.randomUUID();
+        const resForbidden = await handleReadingsGet(
+          new NextRequest(baseUrl),
+          Date.now(),
+          { supabase: supabaseServer, userId: otherUserId },
+        );
+        if (resForbidden.status !== 403) {
+          throw new Error(
+            `FORBIDDEN esperaba 403, obtuve ${resForbidden.status}`,
+          );
+        }
+
+        return `OK (device_id=${device.id}, paged=${(paged.data as Array<unknown>).length})`;
+      },
+    ),
   );
 
   const failed = results.filter((r) => r.status === "fail");
@@ -181,7 +299,7 @@ export async function GET(req: NextRequest) {
       req,
       admin.status ?? 401,
       "AUTH_INVALID",
-      admin.error ?? "Unauthorized"
+      admin.error ?? "Unauthorized",
     );
   }
 

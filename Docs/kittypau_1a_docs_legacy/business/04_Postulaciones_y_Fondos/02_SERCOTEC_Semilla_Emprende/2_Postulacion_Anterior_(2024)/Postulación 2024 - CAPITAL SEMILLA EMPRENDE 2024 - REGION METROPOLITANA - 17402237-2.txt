@@ -1,0 +1,476 @@
+Página	1	de	11
+Postulación	para:
+CAPITAL	SEMILLA	EMPRENDE	2024	-	REGION
+METROPOLITANA
+Fecha	envío	postulación:	
+17/05/2024	02:37
+Fecha	de	cierre:	
+17/05/2024	12:00
+Postulante:	
+Mauricio	Cristian	Cárcamo	Díaz
+RUN:	
+17402237-2
+Tipo	RUT:	
+Persona	Natural
+Ámbito	1:	Datos	generales
+1.1	¿Tiene	usted	presente	que	las	respuestas	que	indique	a	continuación	podrán	ser
+eventualmente	corroboradas	por	Sercotec	en	futuras	etapas	de	la	convocatoria?
+Sí.
+1.2	Nombre	del	proyecto.
+Kitty-Paw
+1.3	Descripción	del	proyecto.
+Kitty-Paw	es	la	combinación	de	un	dispositivo	IoT	(Internet	de	las	Cosas)	y	una	aplicación	móvil	para
+mejorar	el	bienestar	y	potenciar	la	tenencia	responsable	de	mascotas.	Este	dispositivo	se	compone	de
+2	platos	inteligentes	que	tienen	integrados	distintos	sensores	para	medir	el	consumo	de	agua	y
+alimento	de	tu	mascota,	como	también	el	entorno	en	el	cual	habita	por	medio	de	sensores	de
+temperatura,	humedad	y	luz.	Estos	sensores	envían	los	datos	a	la	aplicación,	donde	son	vinculados
+con	la	información	del	perfil	de	la	mascota	y	de	esta	forma	entregar	un	servicio	personalizado	de
+monitoreo	y	análisis	de	los	datos	por	medio	de	machine	learning,	lo	que	permite	identificar	ciclos	de
+consumo	de	alimento,	diversas	variaciones	y	posibles	predicciones	en	el	bienestar	de	la	mascota.	El
+modelo	de	negocio	se	compone	de	la	venta	del	dispositivo	y	la	suscripción	de	los	usuarios	a	la
+aplicación	para	acceder	a	un	análisis	avanzado,	diversas	notificaciones	y	reportes	customizables	en	la
+versión	pagada,	dando	paso	a	una	forma	innovadora	de	cuidado	y	tenencia	responsable	de	nuestras
+mascotas.	
+Los	principales	segmentos	de	clientes	objetivo	son:	personas	dueñas	de	mascotas,
+personas	nativas	tecnológicas	(millennials)	y	empresas	de	servicios	y	productos	para	mascotas.
+1.4	Seleccione	su	rubro.
+Servicios	informáticos.
+1.5	Autorizo	publicar	mi	video	en	redes	sociales	de	Sercotec.
+Página	2	de	11
+Autorizo.
+Ámbito	2:	Perfil	de	la	emprendedor	o	emprendedora
+2.1	¿Cómo	demuestra	su	liderazgo	con	su	equipo	y/o	con	las	personas	que	le	apoyan?
+Escoja	una	alternativa.
+Escucha	a	los	y	las	integrantes	del	equipo	y	les	hace	sentir	que	su	contribución	es	valiosa.
+2.2	En	una	red	de	apoyo,	¿qué	elemento	es	para	usted	el	más	importante?	Escoja	una
+alternativa.
+Encontrar	apoyo	financiero.
+2.3	¿Qué	opinión	tiene	sobre	colaborar	y	vincularse	con	otros	emprendimientos?	Escoja
+una	alternativa.
+Cree	que	es	importante	para	que	los	negocios	puedan	aprender	de	otros	y	desarrollarse	más
+fácilmente.
+2.4	Cuando	enfrenta	cambios	en	su	negocio,	¿cómo	se	adapta?	Escoja	una	alternativa.
+Le	gusta	probar	cosas	nuevas	y	se	adapta	fácilmente	a	los	cambios.
+2.5	¿Qué	haría	si	se	instala	en	su	territorio	una	empresa	que	ofrece	su	mismo	producto	o
+servicio?	Escoja	una	alternativa.
+Mantenerse	fiel	a	la	estrategia	de	negocio	y	confiar	en	que	los	clientes	leales	seguirán	comprando	sus
+productos	o	servicios.
+2.6	Según	su	opinión,	¿cuál	cree	que	es	el	principal	beneficio	de	testear	o	probar	un
+producto	y/o	idea	antes	de	lanzarlo?	Escoja	una	alternativa.
+Saber	si	genera	un	interés	real	en	sus	potenciales	clientes.
+2.7	Al	lanzar	un	nuevo	producto	o	servicio	de	su	emprendimiento,	usted	(escoja	una
+alternativa):
+Haría	antes	una	encuesta	presencial	o	por	redes	sociales	a	potenciales	clientes.
+2.8	Sin	contar	su	actual	emprendimiento,	¿cuántas	veces	ha	emprendido	anteriormente?
+(Considere	tanto	éxitos	como	cierres	de	negocios).	Escoja	una	alternativa.
+1	a	3	veces.
+2.9	Suponga	por	un	minuto	que	su	emprendimiento	fracasa,	que	no	es	capaz	de	sacarlo
+adelante	y	debe	cerrar.	Usted	(escoja	una	alternativa):
+Lo	volvería	a	intentar	con	el	mismo	emprendimiento,	incorporando	los	aprendizajes	y	realizando	los
+cambios	necesarios.
+2.10	A	la	hora	de	perseguir	sus	metas,	¿con	cuál	de	las	siguientes	frases	se	identifica	más?
+Escoja	una	alternativa.
+"Me	considero	una	persona	perseverante	que	se	adapta	bien	a	los	cambios".
+2.11	¿Qué	hace	cuando	enfrenta	una	situación	personal	compleja?	Escoja	una	alternativa.
+Busca	con	quien	conversar	y	encontrar	una	solución.
+Página	3	de	11
+2.12	¿Qué	piensa	sobre	los	fracasos	del	pasado?	Elija	la	oración	que	mejor	le	represente.
+Sigo	adelante,	sin	pasar	mucho	tiempo	pensando	en	lo	que	podría	haber	sucedido,	tomando	los
+aprendizajes.
+2.13	Ante	una	crisis	en	su	negocio,	¿qué	es	lo	primero	que	hace?	Escoja	una	alternativa.
+Analiza	las	diversas	causas	de	la	crisis	y	toma	decisiones	al	respecto.
+2.14	¿Cuál	de	las	siguientes	afirmaciones	expresa	mejor	lo	que	usted	piensa	sobre	el
+riesgo?	Escoja	una	alternativa.
+El	riesgo	puede	ser	inquietante,	pero	también	es	emocionante.	Tomo	un	nivel	de	riesgo	con	el	que	me
+siento	cómodo	o	cómoda.
+2.15	Suponga	por	un	minuto	que	no	es	seleccionado	o	seleccionada	en	el	fondo
+concursable	al	que	está	postulando.	Usted	(escoja	una	alternativa):
+Sale	a	buscar	otras	alternativas	de	financiamiento.
+2.16	Un	amigo	le	comenta	que	salió	una	noticia	en	la	que	se	recomienda	comprar	doláres.
+Usted	(escoja	una	alternativa):
+Verifica	la	fuente	de	la	información	para	saber	si	es	real.
+2.17	En	los	últimos	12	meses,	¿ha	participado	en	capacitaciones	formales	para
+emprendedores/as?	Por	ejemplo:	cursos	en	colegio,	instituto	técnico	o	universidad,	talleres
+en	la	municipalidad,	talleres	de	Sercotec,	etc.	Escoja	una	alternativa.
+Sí	-	entre	41	y	60	horas.
+2.18	En	los	últimos	12	meses,	¿se	ha	capacitado	de	manera	"informal"	en	el	ámbito	de	los
+negocios?	Por	ejemplo,	a	través	de	Youtube,	libros,	redes	sociales,	etc.	Escoja	una
+alternativa.
+Sí	-	entre	21	y	40	horas.
+Ámbito	3:	Perfil	del	emprendimiento
+3.1	¿Qué	hace	para	llevar	o	manejar	la	contabilidad	de	su	negocio?	Escoja	una	alternativa,
+Puede	crear	estados	financieros	de	su	negocio,	tales	como	estados	de	resultado,	balances,	estados	de
+flujo	y	otros.
+3.2	¿Quién	lleva	o	se	hace	cargo	de	la	contabilidad	de	su	negocio?	Escoja	una	alternativa.
+Usted	lleva	la	contabilidad	de	su	negocio	y	recibe	asesoría	de	una	persona	conocida.
+3.3	Seleccione	la	etapa	de	formalización	en	que	está	su	negocio:
+Sólo	cuenta	con	una	idea	de	negocio	que	espera	concretar	en	el	futuro.
+3.4	¿Cómo	perciben	sus	clientes	la	marca	de	su	negocio?	Escoja	una	alternativa,
+Su	marca	aún	es	desconocida	para	la	mayoría	de	los	clientes.
+3.5	¿Cómo	realiza	sus	ventas	directas?	(Venta	directa	es	la	que	hace	directamente	a	sus
+clientes,	sin	intermediarios).	Escoja	una	alternativa.
+Página	4	de	11
+Aún	no	tiene	ventas.
+3.6	¿Cuál	es	su	principal	canal	de	venta	en	línea	u	online?	(Un	canal	de	venta	es	el	medio	o
+plataforma	por	el	cual	un	negocio	ofrece	sus	productos	y/o	servicios	a	sus	clientes).	Escoja
+una	alternativa.
+Aún	no	realiza	ventas,	ya	que	su	emprendimiento	se	encuentra	en	fase	de	idea.
+3.7	La	competencia	de	su	negocio	(escoja	una	alternativa):
+No	entrega	la	misma	calidad	de	producto	y/o	servicio	que	mi	negocio.
+3.8	A	grandes	rasgos,	¿en	qué	consiste	su	emprendimiento?	Escoja	una	alternativa.
+Vende	productos	y	servicios.
+3.9	¿Cuál	cree	que	es	el	motivo	por	el	cual	la	gente	le	compra	a	usted	por	sobre	su
+competencia?	Escoja	una	alternativa.
+La	calidad	de	sus	productos	y/o	servicios.
+3.10	¿Su	emprendimiento	se	ubica	en	el	sector	urbano	o	rural?	Escoja	una	alternativa,
+Sector	urbano.
+3.11	En	promedio,	¿cuánto	tiempo	dedica	a	su	negocio	semanalmente?	Escoja	una
+alternativa.
+Entre	11	y	20	horas.
+3.12	Usted	destina	la	mayor	parte	de	su	tiempo	a	(escoja	una	alternativa):
+Su	emprendimiento	o	negocio.
+3.13	Escoja	la	etapa	en	que	se	encuentra	su	emprendimiento.
+Tiene	la	idea	clara,	ya	cuenta	con	su	modelo	de	negocios	y	aún	no	tiene	ventas.
+3.14	¿De	dónde	proviene	la	mayor	parte	de	sus	ingresos	personales?	Escoja	una
+alternativa,
+Otro	(inversiones,	arriendos,	pensiones,	etc.).
+3.15	¿Cuál	fue	la	motivación	principal	por	la	cual	inició	su	actual	negocio	o	actividad	por
+cuenta	propia?	Escoja	una	alternativa.
+Deseaba	iniciar	su	propio	negocio	o	actividad	independiente.
+3.16	¿Hay	en	su	negocio	alguna	persona	que	se	identifique	o	pertenezca	a	un	pueblo
+originario	o	comunidad	indígena	de	Chile?	Escoja	una	alternativa.
+No.
+3.17	¿Tiene	su	emprendimiento	iniciativas	sustentables,	tales	como	comercio	justo,
+economía	circular	(reciclaje,	compostaje,	reutilización,	valorización	o	arriendo),
+proveedores	sustentables,	eficiencia	energética	o	hídrica?	Escoja	una	alternativa.
+Sí.
+3.18	¿Usted	apoya	a	alguna	de	las	siguientes	comunidades?	Escoja	una	alternativa.
+Página	5	de	11
+No	lo	hace.
+3.19	¿Qué	hace	con	los	residuos	que	genera	su	proyecto	o	negocio?	Escoja	una	alternativa.
+Los	lleva	a	un	punto	limpio	o	recicla.
+Ámbito	4:	Canvas
+4.1	¿Quiénes	son	los	principales	clientes?	¿A	qué	tipo	de	clientes	apunta	nuestro	negocio?
+La	construcción	de	nuestro	negocio	y	la	selección	de	clientes	se	fundamentan	en	cuatro	fenómenos
+importantes	a	nivel	nacional,	los	cuales	también	ayudan	a	comprender	la	proyección	de	nuestra
+propuesta.	En	primer	lugar,	la	baja	sostenida	en	la	tasa	de	natalidad	durante	la	última	década,	según
+datos	del	INE.	En	segundo	lugar,	el	incremento	en	la	adopción	de	mascotas,	según	el	Registro	Nacional
+de	Mascotas.	En	tercer	lugar,	el	aumento	en	el	número	de	tiendas	de	mascotas	desde	2019,	con	un
+crecimiento	del	sector	que	alcanza	el	225%,	según	informa	el	Diario	Financiero.	Y	por	último,	la
+creciente	adopción	de	soluciones	digitales	innovadoras	basadas	en	el	Internet	de	las	Cosas	(IoT)	tanto
+en	empresas	como	en	personas,	según	el	Diario	Financiero.	
+Segmento	de	Personas	Dueñas	de
+Mascotas:	Personas	naturales	de	18	a	80	años,	sin	distinción	de	género,	económicamente	solventes	y
+responsables	de	sus	mascotas,	ya	sean	perros	o	gatos.	Se	enfocan	principalmente	en	la	Región
+Metropolitana	de	Chile,	aunque	también	consideramos	a	clientes	provenientes	de	otras	regiones	del
+país.	Según	el	Boletín	Técnico	de	Estimación	de	Población	Canina	y	Felina	del	2022,	el	89%	de	los
+encuestados	indica	que	la	compañía	es	la	principal	razón	para	tener	mascotas,	y	un	92%	las	percibe
+como	miembros	adicionales	de	su	familia.	Además,	un	estudio	de	GFK	revela	que	el	64%	de	los
+hogares	en	Chile	posee	mascotas	y	el	70%	de	ellos	se	ubica	en	la	Región	Metropolitana.	
+Segmento	de
+Personas	Nativas	Tecnológicas:	Personas	naturales,	sin	distinción	de	género,	nacidas	entre	1981	y
+1997,	clasificadas	como	Millennials,	quienes	se	caracterizan	por	su	adaptación	tecnológica	en	el	uso
+de	aplicaciones	móviles	y	productos	de	Internet	de	las	Cosas	(IoT)	relacionados	con	el	bienestar	y	la
+tenencia	responsable	de	mascotas.	Según	el	estudio	"Hábitos	de	consumo	de	los	dueños	de	mascotas
+en	Chile"	de	GFK	en	2023,	el	64%	de	los	Millennials	tiene	mascota.	Este	segmento	aborda	el	bienestar
+de	las	mascotas	desde	una	perspectiva	tecnológica	e	innovadora.	
+Segmento	Empresas	de	Servicios	y
+Productos	para	Mascotas:	Nuestros	clientes	también	incluyen	empresas	del	rubro	de	servicios	y
+productos	para	mascotas,	tales	como	clínicas	veterinarias,	pet	shops,	criaderos,	hoteles	para
+mascotas,	empresas	de	alimentos	y	accesorios	para	mascotas,	entre	otras.	Estas	empresas	buscan
+soluciones	tecnológicas	innovadoras	que	les	permitan	optimizar	sus	operaciones,	mejorar	la
+experiencia	de	sus	clientes	(dueños	de	mascotas),	y	mantenerse	a	la	vanguardia	en	un	mercado	cada
+vez	más	competitivo	y	exigente.
+4.2	¿Por	qué	los	clientes	deberían	preferirme	por	sobre	los	demás?	
+¿Por	qué	los	clientes
+deberían	preferir	mi	producto/servicio	por	sobre	los	demás?
+Propuesta	de	valor	para	personas	dueñas	de	mascotas:	Nos	enfocamos	en	proporcionar	una	solución
+innovadora	y	tecnológicamente	avanzada	para	el	cuidado	y	bienestar	de	las	mascotas,	transformando
+el	concepto	de	tenencia	responsable	en	un	monitoreo	digital	de	fácil	uso.	A	diferencia	de	otros
+productos	en	el	mercado,	que	mayormente	consisten	en	dispensadores	de	comida	automatizados,
+nuestro	dispositivo	(plato	inteligente)	no	solo	ofrece	una	manera	conveniente	y	precisa	de	supervisar
+el	consumo	de	agua	y	alimento	de	las	mascotas,	sino	que	también	se	adapta	a	las	necesidades
+específicas	de	cada	animal	mediante	perfiles	personalizados	basados	en	edad,	raza,	y	condiciones	de
+salud,	entre	otros	aspectos.	Con	Kitty-Paw,	los	clientes	pueden	tener	la	certeza	de	que	están
+brindando	el	más	alto	nivel	de	cuidado	y	monitoreo	del	bienestar	de	sus	mascotas,	gracias	a	la
+simplicidad	e	intuición	de	la	aplicación	y	su	integración	con	el	dispositivo.	
+Propuesta	de	valor	para
+personas	nativas	tecnológicas:	Para	los	Millennials	y	aquellos	naturalmente	inclinados	hacia	la
+tecnología,	nuestra	oferta	representa	la	fusión	perfecta	entre	la	pasión	por	la	innovación	y	el	amor	por
+las	mascotas,	ofreciendo	una	solución	completa	y	contemporánea	para	el	cuidado	de	sus	animales
+domésticos.	A	diferencia	de	los	productos	que	simplemente	automatizan	la	entrega	de	comida	a	las
+Página	6	de	11
+mascotas,	nuestro	dispositivo	(plato	inteligente)	y	la	aplicación	móvil	proporcionan	una	experiencia
+totalmente	nueva	y	moderna	para	monitorear	y	gestionar	el	consumo	de	agua	y	alimento	de	los
+animales,	haciendo	uso	de	técnicas	de	aprendizaje	automático	para	el	análisis	de	datos.	Con	sensores
+de	peso,	temperatura	y	perfiles	personalizados	de	las	mascotas,	los	clientes	pueden	acceder	a	datos
+precisos	en	tiempo	real	e	históricos	sobre	el	comportamiento	alimenticio	de	sus	animales,	todo	desde
+sus	dispositivos	móviles.	Además,	Kitty-Paw	les	permite	crear	perfiles	detallados	para	cada	mascota	y
+recibir	recomendaciones	personalizadas	para	mejorar	su	salud	y	bienestar.	
+Propuesta	de	valor	para	las
+empresas	de	servicios	y	productos	para	mascotas:	Nos	enfocamos	en	ofrecer	un	producto	innovador	y
+atractivo,	con	especial	atención	en	la	optimización	de	los	costos	de	producción.	Nuestro	objetivo	es
+simplificar	el	proceso	de	distribución	y	adquisición	al	por	mayor	del	dispositivo	(plato	inteligente),
+facilitando	así	su	venta	por	parte	de	empresas	del	sector,	como	clínicas	veterinarias	y	tiendas
+especializadas	en	mascotas.	Esto	garantiza	una	operación	fluida	y	eficiente,	permitiendo	que	las
+empresas	accedan	fácilmente	al	producto	y	lo	pongan	a	disposición	de	sus	clientes	de	manera	rápida.
+Reconocemos	que	el	verdadero	valor	agregado	reside	en	los	servicios	y	membresías	ofrecidos	a	través
+de	nuestra	aplicación,	lo	que	representa	una	oportunidad	importante	para	generar	ingresos
+adicionales	y	fomentar	la	fidelidad	de	los	clientes.
+4.3	¿A	través	de	qué	medios	realizo	las	ventas	a	mis	clientes?	¿Cuáles	son	los	medios,	para
+dar	a	conocer	mi	producto/servicio,	que	prefieren	mi/s	tipo/s	de	clientes?	¿Cuáles	son	los
+medios	con	los	que	obtendría	mayor	venta	en	mi	modelo	de	negocio?
+Nuestro	modelo	de	negocio	se	basa	en	dos	productos:	la	venta	del	dispositivo	y	la	suscripción	a	la
+aplicación	para	acceder	a	un	servicio	de	análisis	y	alertas	más	avanzado.	
+Habrá	también	un	servicio
+básico	gratuito	de	monitoreo,	accesible	para	todos.	Tanto	para	el	segmento	de	Personas	Dueñas	de
+Mascotas	como	para	Personas	Nativas	Tecnológicas,	la	venta	del	dispositivo,	en	caso	de	ser	presencial,
+podrá	realizarse	a	través	de	pet	shops,	clínicas	veterinarias	y	otros	establecimientos	especializados	en
+productos	para	mascotas,	donde	los	clientes	puedan	ver	y	probar	el	producto	antes	de	adquirirlo.	Por
+otro	lado,	la	compra	del	dispositivo	también	podrá	hacerse	vía	online,	a	través	de	nuestra	plataforma
+web	propia	de	Kitty-Paw	o	mediante	comunicación	por	Instagram,	en	este	último	caso	se	añadirá	el
+costo	de	envío	del	producto.	
+Para	estos	segmentos,	la	venta	del	servicio	de	análisis	y	alertas	de	Kitty-
+Paw	se	llevará	a	cabo	mediante	la	suscripción	a	una	membresía	de	la	aplicación,	la	cual	se	basará	en
+un	análisis	personalizado	vinculando	la	información	del	perfil	de	la	mascota	con	los	datos	obtenidos
+por	el	dispositivo.	Por	ejemplo,	cambios	significativos	en	los	ciclos	de	consumo	de	alimento	o	alertas
+relacionadas	con	visitas	al	veterinario	(vacunas,	antiparasitarios,	etc.).	
+Las	principales	formas	de	dar	a
+conocer	Kitty-Paw	para	estos	dos	tipos	de	clientes	serán	principalmente	digitales,	a	través	de	redes
+sociales,	reels,	publicaciones	en	Instagram,	shorts,	videos	y	compra	de	espacios	publicitarios	en
+canales	de	streaming	como	YouTube	y	Twitch.	
+Nuestra	principal	fuente	de	ingresos	será	mediante	las
+suscripciones	a	la	aplicación	y	también	a	través	de	acuerdos	de	publicidad	y	colaboraciones	con
+marcas	relacionadas	con	mascotas	y	estilo	de	vida	para	incentivar	el	uso	de	la	aplicación.	Esto	podría
+incluir	patrocinios	de	contenido	en	nuestra	aplicación	móvil,	colaboraciones	con	influencers	en	redes
+sociales	y	espacios	publicitarios	en	nuestro	sitio	web.	
+Segmento	Empresas	de	Servicios	y	Productos
+para	Mascotas:	Para	este	segmento,	la	venta	será	únicamente	del	dispositivo,	y	se	realizará	a	través
+de	canales	de	comunicación	como	correo	electrónico,	llamadas	y	ventas	presenciales,	lo	que	permitirá
+concretar	diversos	acuerdos	de	compra	con	las	empresas	interesadas.	En	este	segmento,	la	forma	de
+dar	a	conocer	el	producto	será	mediante	la	comunicación	con	las	áreas	de	ventas	de	estas	empresas,
+coordinación	de	reuniones	para	la	presentación	del	producto	y	la	negociación	de	acuerdos	económicos
+para	su	distribución	y	venta.	También	consideramos	que	la	publicidad	en	redes	sociales	puede
+potenciar	la	comunicación	de	estas	empresas	e	interés	con	Kitty-Paw.
+4.4	¿Qué	relación	tiene	o	espera	tener	con	cada	tipo	de	cliente	descrito?	¿Alguno	de	los
+medios	por	los	cuales	busca	relacionarse	con	el	cliente,	tiene	algún	costo	asociado?
+Para	los	segmentos	de	clientes	Dueños	de	Mascotas	y	Nativos	Digitales,	buscamos	establecer	una
+relación	ágil	y	digital,	aprovechando	al	máximo	las	herramientas	y	plataformas	tecnológicas
+disponibles,	donde	la	interacción	sea	principalmente	automatizada.	Queremos	ser	percibidos	como
+una	marca	innovadora	y	moderna,	que	comprende	y	se	adapta	a	las	preferencias	y	hábitos
+Página	7	de	11
+tecnológicos	de	estos	dos	segmentos.	Los	medios	por	los	cuales	buscamos	relacionarnos	con	este
+cliente	pueden	incluir	comunicación	a	través	de	redes	sociales,	mensajes	instantáneos,	correos
+electrónicos	automatizados	y	notificaciones	push	en	la	aplicación	móvil.	Estos	medios	pueden
+conllevar	costos	asociados,	como	el	mantenimiento	de	perfiles	en	redes	sociales,	el	envío	de	correos
+electrónicos	masivos	y	el	desarrollo	de	estrategias	de	marketing	digital.	Otro	tipo	de	costo	asociado	a
+la	relación	con	el	cliente	y	su	fidelización	está	vinculado	con	asesorías	UX/UI	para	mejorar	la
+experiencia	del	cliente	en	el	uso	de	la	aplicación	Kitty-Paw.	
+Segmento	Empresas	de	Servicios	y
+Productos	para	Mascotas:	Con	este	segmento	de	clientes,	buscamos	establecer	una	relación
+profesional	y	colaborativa,	enfocada	en	el	beneficio	mutuo	y	el	crecimiento	conjunto.	Deseamos	ser
+percibidos	como	un	socio	estratégico	que	ofrece	soluciones	innovadoras	y	efectivas	para	ayudarles	a
+alcanzar	sus	objetivos	comerciales	mediante	la	venta	del	dispositivo	Kitty-Paw.	Los	medios	por	los
+cuales	buscamos	relacionarnos	con	este	cliente	pueden	incluir	reuniones	comerciales	presenciales,
+comunicación	a	través	de	correo	electrónico	y	llamadas	telefónicas.	Estos	medios	pueden	tener	costos
+asociados,	como	los	gastos	de	viaje	y	hospedaje	para	asistir	a	eventos,	el	desarrollo	de	material
+promocional	y	la	contratación	de	personal	para	la	atención	al	cliente	y	la	gestión	de	relaciones
+comerciales.
+4.5	¿Por	cuál	tipo	de	producto/servicio	estarían	dispuestos	a	pagar	más	nuestros	clientes?
+¿Por	cuál	tipo	de	producto/servicio	pagan	actualmente	los	clientes?	¿Qué	tipo	de	medio	de
+pago	prefieren	utilizar	mis	clientes?
+Para	el	Segmento	Dueños	de	Mascotas	y	Nativos	Digitales,	la	utilización	de	la	aplicación	está
+condicionada	a	la	compra	del	dispositivo.	Una	vez	adquirido	el	dispositivo,	tendrán	dos	opciones	de
+suscripción:	una	gratuita	y	otra	de	pago.	La	opción	de	pago	incluirá	un	análisis	personalizado	de	la
+mascota	y	acceso	a	datos	históricos,	lo	que	permitirá	el	procesamiento	y	análisis	del	consumo	de
+agua,	alimento,	temperatura	del	entorno	y	su	correlación	con	el	perfil	de	la	mascota.	Esta	será	la
+opción	por	la	cual	estarán	más	dispuestos	a	pagar	una	parte	del	segmento	de	dueños	de	mascotas	y,
+en	su	gran	mayoría,	los	nativos	digitales.	
+Los	clientes	podrán	inicialmente	descargar	la	aplicación	de
+forma	gratuita	y	conectarla	a	un	dispositivo	Kitty-Paw.	Si	el	cliente	quisiera	tener	dos	o	más
+dispositivos	por	aplicación,	deberá	considerar	un	costo	adicional	que	estará	incluido	en	la	versión	de
+pago	con	acceso	a	análisis	de	datos	de	la	mascota.	Nuestra	aplicación	estará	vinculada	con	entidades
+bancarias	para	generar	pagos	seguros	que	den	confianza	a	nuestros	clientes	y	faciliten	la	llegada	de
+nuevos	ingresos,	evitando	la	pérdida	de	potenciales	clientes	debido	a	un	funcionamiento	engorroso	en
+el	proceso	de	suscripción	a	la	aplicación	y	pago	online	del	dispositivo.	Por	otro	lado,	la	compra
+presencial	del	dispositivo	se	adaptará	a	las	características	de	pago	de	la	empresa	encargada	de	su
+venta	y	distribución.	
+Hoy	en	día,	lo	más	cercano	o	similar	a	Kitty-Paw	son	los	dispensadores	de
+alimentos,	y	los	clientes	pagan	por	un	producto	que	únicamente	automatiza	la	entrega	de	alimento	a
+las	mascotas.	La	vinculación	con	las	aplicaciones	tiene	relación	con	la	definición	de	un	horario	para
+dispensar	el	alimento,	reproducción	de	sonidos	y	grabaciones	de	los	dueños	para	las	mascotas.	
+Para	el
+Segmento	Empresas	de	Servicios	y	Productos	para	Mascotas,	estas	tendrán	acceso	a	la	compra	del
+dispositivo	para	la	venta	y	distribución,	y	según	las	características	de	los	acuerdos	con	las	empresas
+será	lo	que	estén	dispuestas	a	gastar.	La	venta	del	dispositivo	a	las	empresas	tendrá	dos	modelos:	la
+venta	al	por	mayor	del	dispositivo	y	la	colocación	del	dispositivo	en	tiendas	con	una	ganancia	de	un
+porcentaje	por	venta.	Tanto	la	definición	del	valor	como	los	porcentajes	de	ganancia	estarán	sujetos	a
+los	acuerdos	con	las	empresas.
+4.6	¿Qué	elementos	se	debe	adquirir	para	generar	mi	producto/servicio	y	entregue	a	los
+diferentes	tipos	de	clientes?
+Segmento	Personas	Dueñas	de	Mascotas:	Para	satisfacer	las	necesidades	de	este	segmento,
+requerimos	recursos	físicos	como	placas	electrónicas	de	desarrollo	como	la	ESP8266,	sensores	de
+presión,	temperatura,	humedad	y	luz,	de	calidad	para	el	funcionamiento	del	dispositivo	Kitty-Paw	y	un
+espacio	adecuado	para	la	producción,	como	un	taller.	En	cuanto	a	los	recursos	humanos,	precisamos
+personal	capacitado	en	configuración	e	implementación	de	protocolos	de	comunicación	MQTT	para
+integración	en	la	App,	diseño	y	fabricación,	así	como	veterinarios	para	garantizar	la	seguridad	del
+producto.	Y	en	términos	financieros,	necesitamos	invertir	en	investigación,	marketing	dirigido	a
+Página	8	de	11
+dueños	de	mascotas	y	alianzas	con	negocios	relacionados.	
+Segmento	Personas	Nativas	Tecnológicas:
+Este	segmento	tiene	una	alta	exigencia	en	la	experiencia	con	la	aplicación;	debemos	ser	atentos	a	las
+necesidades	y	demanda	de	recursos	físicos	necesarios	para	sostener	el	funcionamiento,	como	equipos
+de	última	generación	para	el	desarrollo	de	la	aplicación	móvil	y	servidores	para	gestionar	los	datos	de
+Kitty-Paw.	En	cuanto	a	los	recursos	humanos,	requerimos	desarrolladores	de	software	especializados	y
+diseñadores	de	experiencia	de	usuario.	Financieramente,	necesitamos	invertir	en	tecnología,
+marketing	digital	y	desarrollo	continuo	de	la	aplicación.	
+Segmento	Empresas	de	Servicios	y	Productos
+para	Mascotas:	Para	atender	a	estas	empresas	se	requiere	de	un	fuerte	plan	de	marketing	y	una
+infraestructura	logística	eficiente	para	cumplir	con	la	demanda.	En	términos	de	recursos	humanos,
+requerimos	personal	de	producción,	ventas	y	logística.	Y	para	acceder	a	los	recursos	financieros,
+debemos	invertir	en	equipos	de	producción,	establecer	relaciones	comerciales	sólidas	y	de
+conocimiento	con	otras	marcas.
+4.7	¿Qué	acciones	se	deben	realizar	para	que	mi	producto/servicio	se	entregue	a	los
+diferentes	tipos	de	clientes?
+Para	los	segmentos	de	Personas	Dueñas	de	Mascotas	y	Personas	Nativas	Tecnológicas,	las	acciones
+clave	en	la	producción	y	diseño	incluyen	el	desarrollo	del	dispositivo	inteligente,	desde	la	selección	de
+los	componentes	hasta	la	comunicación	de	los	sensores	y	el	almacenamiento	de	información	en
+servicios	en	la	nube	para	su	posterior	implementación	en	la	aplicación.	También	se	contempla	la
+creación	del	prototipo	y	pruebas	para	garantizar	su	óptimo	funcionamiento.	Posteriormente,	se
+procede	a	la	fabricación	en	serie	del	dispositivo	para	satisfacer	la	demanda	del	mercado,	junto	con	el
+diseño	y	desarrollo	de	la	aplicación	móvil,	asegurando	su	compatibilidad	con	diversos	sistemas
+operativos	y	dispositivos.	Se	integran	funcionalidades	clave	como	el	monitoreo	del	consumo	de	agua	y
+alimento,	análisis	de	datos	y	notificaciones,	todo	ello	sometido	a	pruebas	exhaustivas	para	garantizar
+su	eficacia	y	facilidad	de	uso.	En	este	punto,	se	requerirá	la	contratación	de	personal	experto	para
+asesorar	en	el	diseño	del	prototipo	óptimo	y	el	funcionamiento	de	la	aplicación.	
+En	cuanto	a	las	horas
+de	trabajo	estimadas	para	un	año,	se	calcula	que	este	desarrollo	puede	requerir	5	horas	semanales,
+20	horas	mensuales	o	240	horas	anuales,	considerando	el	avance	que	se	ha	logrado	en	el	prototipo.
+Para	la	venta	y	publicidad,	será	necesario	registrar	en	diversas	redes	sociales	y	diseñar	una	propuesta
+de	marketing	innovadora,	enfocada	especialmente	en	los	clientes	más	nativos	digitales,	dado	que
+nuestras	mayores	ganancias	están	relacionadas	con	los	medios	digitales.	
+En	cuanto	al	segmento	de
+Empresas	de	Servicios	y	Productos	para	Mascotas,	es	necesario	aumentar	la	producción	y	establecer
+una	red	logística	eficiente	para	la	distribución	a	gran	escala.	Además,	se	debe	negociar	acuerdos
+comerciales	sólidos	y	contratos	de	distribución	con	estas	empresas.	Desarrollar	estrategias	de
+marketing	empresarial,	como	participación	en	ferias	comerciales	y	presentaciones	comerciales,	será
+crucial.	Por	último,	ofrecer	un	servicio	postventa	especializado	para	las	empresas	garantizará
+relaciones	comerciales	duraderas	y	sólidas.
+4.8	¿Cuáles	son	los	costos	(fijos	y	variables)	para	el	funcionamiento	de	los	elementos	y
+acciones	clave	definidos?
+El	total	de	Costos	fijos	mensuales	estimados	de	Kitty-Paw	en	un	mes	es	$191.666.	Este	monto	se
+obtiene	sumando	los	valores	mensuales	correspondientes	a	"Habilitación	de	infraestructura"	($30.000)
+y	"Capital	de	trabajo	(2	personas)"	($161.667).	Habilitación	de	infraestructura:	•	Todos	los	meses	(mes
+1	a	mes	12)	con	un	monto	de	$30.000	cada	mes.	Capital	de	trabajo	(2	personas):	•	Todos	los	meses
+(mes	1	a	mes	12)	con	un	monto	de	$161.667	cada	mes.	
+El	total	de	Costos	variables	estimados	de
+Kitty-Paw	varía	dependiendo	del	mes	en	cuestión,	como	esta	es	una	proyección	a	1	año	podemos
+plantear	lo	siguiente:	Se	presenta	el	desglose	de	los	costos	variables	mensuales	según	la	tabla	de
+gastos	que	se	encuentra	en	el	Canvas.	Asistencia	técnica	y	asesoría	en	gestión:	•	Meses	1,	6	y	9
+($90.000	cada	mes)	Capacitación:	•	Mes	1	($100.000)	Gastos	de	formalización:	•	Mes	1	($30.000)
+Acciones	de	marketing:	•	Meses	6	al	12	($16.667	cada	mes)	Activos:	•	Meses	1	al	4	($175.000	cada
+mes)	
+De	igual	manera	el	promedio	de	gastos	variables	mensuales	en	un	año	es	de	$100.000.	Cabe
+mencionar	que	estos	costos	variables	son	estimados	y	pueden	variar	en	la	práctica	dependiendo	de
+los	requerimientos	específicos	del	proyecto	Kitty-Paw	cada	mes.
+Página	9	de	11
+4.9	¿Cuáles	son	las	alianzas	realizadas	o	a	realizar	para	mejorar	la	satisfacción	de	mis
+clientes?
+Para	mejorar	la	satisfacción	de	los	clientes	de	Kitty-Paw,	algunas	alianzas	estratégicas	que	podrían	ser
+beneficiosas	son	con	veterinarios	y	clínicas	veterinarias	y	así	establecer	alianzas	para	integrar	sus
+conocimientos	y	recomendaciones	directamente	en	la	app.	Esto	añadiría	un	componente	profesional
+de	salud	para	las	mascotas	y	haría	que	los	dueños	confíen	más	en	el	servicio.	Alianzas	con	tiendas	de
+mascotas	reconocidas	podrían	permitir	descuentos,	suscripciones	de	alimentos,	accesorios
+recomendados	según	el	perfil	de	la	mascota,	etc.	Esto	ampliaría	el	ecosistema	de	servicios.	Colaborar
+con	ONG's	podría	permitir	campañas	conjuntas	de	concientización	y	tenencia	responsable	de
+mascotas,	además	de	fomentar	las	adopciones	responsables.	Alianzas	de	co-marketing	con	marcas
+reconocidas	podría	dar	más	visibilidad	al	producto	y	confianza	a	los	usuarios.	En	resumen,	buscar
+alianzas	con	actores	clave	de	la	industria	de	mascotas	agregaría	valor,	credibilidad	y	oportunidades
+extras	que	mejorarían	la	propuesta	de	Kitty-Paw	y	la	satisfacción	del	cliente	usando	el	dispositivo	y	la
+app.
+4.10	¿Qué	acciones	puedo	implementar	en	mi	negocio,	desde	el	punto	de	vista	de	la
+eficiencia	energética,	energías	renovables	y	economía	circular?	de	manera	de	hacer	mi
+producto	o	servicio	más	sustentable.	¿Tenía	ya	incorporada	alguna	de	esta	acciones	en	el
+proceso	de	mi	producto	o	servicio?
+En	Kitty-Paw,	podemos	implementar	acciones	digitales	que	contribuyan	a	la	eficiencia	energética.	Esto
+incluye	ajustarnos	a	las	Digital	Green	Skills,	desde	la	construcción	de	una	página	web	alojada	en	sitios
+que	utilicen	energías	renovables,	hasta	la	selección	de	proveedores	de	servicios	en	la	nube	que
+cumplan	con	estándares	de	eficiencia	y	sustentabilidad	energética.	Además,	es	importante	contar	con
+habilidades	en	diseño	web	responsivo	para	garantizar	que	la	página	sea	accesible	y	funcione
+correctamente	en	una	variedad	de	dispositivos	y	tamaños	de	pantalla.	Este	enfoque	no	solo	mejora	la
+experiencia	del	usuario,	sino	que	también	puede	reducir	el	consumo	de	energía	al	evitar	el	uso
+excesivo	de	recursos	en	dispositivos	móviles.	
+Por	otro	lado,	medir	el	consumo	de	agua	de	nuestras
+mascotas	con	Kitty-Paw	puede	ser	sumamente	beneficioso.	Al	tener	una	idea	clara	de	cuánta	agua
+necesitan	las	mascotas,	los	propietarios	pueden	evitar	el	desperdicio	de	agua	al	proporcionar	solo	la
+cantidad	necesaria.	Además,	al	monitorear	de	manera	precisa	la	cantidad	de	agua	que	consumen	las
+mascotas,	los	propietarios	pueden	desarrollar	una	mayor	conciencia	sobre	el	uso	de	este	recurso.	Esto
+puede	llevar	a	una	mayor	responsabilidad	en	cuanto	a	no	desperdiciar	agua	y	utilizarla	de	manera
+más	eficiente.
+Página	10	de	11
+Ámbito	5:	Estructura	de	Costos
+5.1	¿Cuáles	serán	los	principales	costos	que	su	negocio	deberá	enfrentar	durante	el	primer
+año	de	funcionamiento?
+Categoría
+Ítem
+Aporte	Solicitado	a
+Sercotec
+Acciones	de	Gestión
+Empresarial
+Asistencia	técnica	y	asesoría	en
+gestión
+$	270.000
+Capacitación
+$	100.000
+Gastos	de	formalización
+$	30.000
+Acciones	de	marketing
+$	100.000
+Subtotal	Acciones	de	Gestión	Empresarial
+$	500.000
+Inversiones
+Activos
+$	700.000
+Habilitación	de	infraestructura
+$	360.000
+Capital	de	trabajo
+$	1.940.000
+Subtotal	Inversiones
+$	3.000.000
+Consolidado
+Acciones	de	Gestión	Empresarial
+$	500.000
+Inversiones
+$	3.000.000
+Total	solicitado	a	Sercotec
+$	3.500.000
+Aporte	empresarial	mínimo	obligatorio
+$	105.000
+Monto	Total
+$	3.605.000
+IVA
+$	684.950
+Aporte	total	empresarial	(Aporte	empresarial	+	IVA)
+$	789.950
+Total	proyecto
+$	4.289.950
+5.2	Describa	las	inversiones	y	acciones	de	gestión	empresarial	identificadas	anteriormente
+Asistencia	técnica	y	asesoría	en	gestión:	Asesoría	networking	y	conectividad	de	la	placa	electrónica,
+continuidad	operacional	y	stream	de	datos.	Asesoria	en	servicio	Cloud	y	comunicación	con	apps.
+Capacitación:	Realización	de	curso	internet	de	las	cosas	(IoT)	y	curso	de	formación	de	StartApp	
+Gastos
+de	formalización:	Gastos	necesarios	para	formalizar	la	empresa	mediante	la	plataforma	empresa	en	un
+día	
+Acciones	de	marketing:	Community	manager	que	este	a	cargo	de	1	publicación	mensual	en	RRSS
+por	6	meses	para	mostrar	el	avance	del	dispositivo	y	su	puesta	en	marcha.
+Página	11	de	11
+5.3	Indique	total	de	Costos	fijos	estimados	(en	cifras)	de	su	emprendimiento	en	un	mes.
+191666
+5.4	Indique	total	de	Costos	variables	estimados	(en	cifras)	de	su	emprendimiento	en	un
+mes
+100000
+5.5	Indique	total	de	Ingresos	estimados	(en	cifras)	de	su	emprendimiento	en	un	mes.
+0
+Ámbito	6:	Video	Pitch
+6.1	Describa	su	idea	de	negocio	a	través	de	un	video.
+Nombre	de	archivo	subido:	Kitty	Paw_FINAL.mp4

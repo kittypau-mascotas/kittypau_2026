@@ -82,3 +82,26 @@ Actualizar en cada jornada y en cada PR relevante.
   - Retorno a ramas personales: OK
 - Riesgos/Pendientes:
   - Repetir prueba cuando Javo tenga cambios nuevos sobre `feat/javo-mauro`.
+
+## 2026-03-05
+- Rama: feat/mauro-curcuma
+- Objetivo: Sincronizar rama de trabajo de Mauro con main y dejar trazabilidad operativa.
+- Cambios realizados:
+  - Merge de origin/main en feat/mauro-curcuma (incluye UI today/nav y toolkit dev).
+  - Soporte operativo para destrabar PR #14 de Javo (seguimiento de checks y CI).
+  - Registro documental consolidado en avance maestro y bitacoras.
+- Archivos principales:
+  - Docs/AVANCE_PUSHES_GITHUB.md
+  - Docs/GITHUB_MAURO.md
+  - Docs/GITHUB_MAESTRO.md
+  - Docs/INDEX.md
+  - Docs/KITTYPAU_DEV_TOOLKIT.md
+- PR/Commit:
+  - Merge en rama Mauro: `92e0d95`
+  - Main con toolkit: `a3a51fa`
+- Pruebas ejecutadas:
+  - PR #14: checks en verde (App Lint + Build, Repo Policy, Vercel).
+  - Validacion local en kittypau_app: lint sin errores bloqueantes y build OK.
+- Riesgos/Pendientes:
+  - Hacer merge final del PR #14 a main.
+  - Ejecutar pull de main en ambos PCs tras el merge.
