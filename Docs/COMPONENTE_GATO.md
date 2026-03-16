@@ -9,14 +9,14 @@ Este documento describe el gato estilo cartoon usado en el login (y su variante 
 ## Archivos fuente (canon)
 
 1. Login (gato del panel + gato del cuadro de dialogo de Demo App)
-- [page.tsx](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx)
+- [page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx)
 
 2. Demo (cuadro RPG dentro de `/demo` con "gato despierto" cargado desde SVG externo)
-- [page.tsx](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx)
-- [cat_awake_copy.svg](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg)
+- [page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx)
+- [cat_awake_copy.svg](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg)
 
 3. CSS global (incluye el skin Nebelung + ojos + sombras + respiracion + cuadro RPG)
-- [globals.css](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/globals.css)
+- [globals.css](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/globals.css)
 
 ## Resumen mental del sistema (1 pagina)
 
@@ -191,7 +191,7 @@ svg?.getBBox();        // bounding box del contenido
 
 ## Paleta/variables (CSS)
 
-En [globals.css](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/globals.css) se definen variables en `:root`:
+En [globals.css](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/globals.css) se definen variables en `:root`:
 
 ```css
 :root {
@@ -269,7 +269,7 @@ En demo (`/demo`) el gato del dialogo:
 
 ### A) SVG inline de login (`trialCatSvg`)
 
-En [login/page.tsx](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx) existe un string `trialCatSvg` que ya incluye IDs "semanticos" agregados a mano.
+En [login/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx) existe un string `trialCatSvg` que ya incluye IDs "semanticos" agregados a mano.
 
 Partes principales (IDs):
 - Cabeza/cuerpo superior: `#head`
@@ -296,7 +296,7 @@ Bigotes (originales):
 
 ### B) SVG externo de demo (`cat_awake_copy.svg`)
 
-En [cat_awake_copy.svg](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg) los IDs historicos son `path1`, `path2`, etc.
+En [cat_awake_copy.svg](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg) los IDs historicos son `path1`, `path2`, etc.
 
 Implicancia:
 - Los estilos que dependen de IDs semanticos (`#head`, `#paw-front-right`, etc.) NO aplican a este archivo.
@@ -434,7 +434,7 @@ Si se quiere "respira solo dormido", se puede condicionar con `.kp-trial-cat:not
 Nota: no hay "Java". La logica es TypeScript dentro de componentes React.
 
 ### 1) Estados del gato (login)
-En [login/page.tsx](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx):
+En [login/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx):
 - `isTrialCatAwake`: controla el gato del panel de login
 - `catEyeOffset`: `{x,y}` para pupila/brillo
 - `trialCatRef`: ref al wrapper para bounding box
@@ -469,7 +469,7 @@ Estados equivalentes:
 El tracking es el mismo patron: `pointermove` + clamp + setState.
 
 ### 4) Gato del cuadro RPG en `/demo`
-En [demo/page.tsx](D:/Escritorio/Proyectos/KittyPaw/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx):
+En [demo/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx):
 - `isGuideCatAwake`: el gato se mantiene despierto siguiendo el mouse, pero "duerme 1s" aleatoriamente
 - Timers:
   - cada ~`5200..8800ms` se duerme (`setIsGuideCatAwake(false)`)

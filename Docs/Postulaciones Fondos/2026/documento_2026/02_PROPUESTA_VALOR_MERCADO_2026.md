@@ -14,7 +14,7 @@ Panorama tipico:
 - Productos que automatizan pero no interpretan.
 - Apps con registro manual sin capa IoT integrada.
 
-Posicion KittyPaw:
+Posicion Kittypau:
 - Ecosistema hardware + software + datos.
 - Capacidad de evolucion a modelos de prediccion.
 

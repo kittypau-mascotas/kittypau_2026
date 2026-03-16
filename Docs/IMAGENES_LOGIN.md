@@ -68,13 +68,13 @@ Estas imagenes funcionan muy bien para:
 - Pitch deck / presentacion a inversionistas
 - Instagram / redes
 - Mockups de e-commerce
-- Branding de KittyPaw / Equitipau
+- Branding de Kittypau / Equitipau
 
 ---
 
 ## Imagenes disponibles (Login Parallax)
 Directorio local:
-`D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\imagenes`
+`D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\imagenes`
 
 Archivos:
 - `gato_1.png`

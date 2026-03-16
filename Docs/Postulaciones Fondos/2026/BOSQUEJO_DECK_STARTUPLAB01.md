@@ -1,10 +1,10 @@
-# Bosquejo Deck - Postulacion startuplab.01 (KittyPaw)
+# Bosquejo Deck - Postulacion startuplab.01 (Kittypau)
 
 Objetivo: preparar un deck corto, consistente con formulario y evidencia del repo.
 Formato recomendado: 10-12 slides (PDF).
 
 ## Slide 1 - Portada
-- KittyPaw
+- Kittypau
 - One-liner: Monitoreo predictivo IoT para bienestar de mascotas.
 - Nombre del equipo y contacto.
 
@@ -70,7 +70,7 @@ Formato recomendado: 10-12 slides (PDF).
 2. Limpiar placeholders: RUT, telefono, cap table, finanzas reales.
 3. Incluir solo claims con respaldo documental.
 4. Revisar ortografia y diseno visual legible.
-5. Nombre final sugerido: `Deck_KittyPaw_startuplab01_2026.pdf`.
+5. Nombre final sugerido: `Deck_Kittypau_startuplab01_2026.pdf`.
 
 ## Marco AIoT / PetTech (Alineacion 2026)
 

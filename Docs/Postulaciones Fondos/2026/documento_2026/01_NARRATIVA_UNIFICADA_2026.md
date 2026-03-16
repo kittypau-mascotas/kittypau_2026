@@ -3,8 +3,8 @@
 ## Problema
 Los duenos de mascotas carecen de visibilidad continua sobre habitos criticos (agua y alimento), lo que retrasa deteccion de problemas y fuerza cuidado reactivo.
 
-## Solucion KittyPaw
-KittyPaw integra hardware IoT, backend y aplicacion para monitorear consumo y contexto, detectar desvíos y habilitar decisiones tempranas de cuidado.
+## Solucion Kittypau
+Kittypau integra hardware IoT, backend y aplicacion para monitorear consumo y contexto, detectar desvíos y habilitar decisiones tempranas de cuidado.
 
 ## Por que ahora
 1. Mayor digitalizacion del usuario final.
@@ -15,7 +15,7 @@ KittyPaw integra hardware IoT, backend y aplicacion para monitorear consumo y co
 No se limita a automatizar dispensacion. Prioriza capa de datos y analitica para evolucionar a cuidado preventivo/predictivo.
 
 ## Mensaje corto transversal
-KittyPaw transforma habitos diarios de mascota en decisiones de cuidado basadas en datos.
+Kittypau transforma habitos diarios de mascota en decisiones de cuidado basadas en datos.
 
 ## Adaptacion por fondo
 - Start-Up Chile: ejecutar rapido, escalar y demostrar traccion.

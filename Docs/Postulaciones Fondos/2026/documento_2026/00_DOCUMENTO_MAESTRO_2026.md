@@ -1,10 +1,10 @@
-# Documento Maestro 2026 - KittyPaw
+# Documento Maestro 2026 - Kittypau
 
 Fecha de corte: 2026-03-05
 Alcance: postulacion dual 2026 a Start-Up Chile y Corfo Semilla Inicia.
 
 ## 1. Resumen ejecutivo
-KittyPaw es una plataforma IoT de monitoreo de hidratacion y alimentacion para mascotas, con arquitectura cloud y analitica incremental.
+Kittypau es una plataforma IoT de monitoreo de hidratacion y alimentacion para mascotas, con arquitectura cloud y analitica incremental.
 El proyecto combina hardware KPCL + backend + aplicacion web para pasar de cuidado reactivo a cuidado preventivo basado en datos.
 
 La estrategia 2026 mantiene una narrativa unica y se adapta por fondo:

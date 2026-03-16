@@ -1,4 +1,4 @@
-# Postulaciones 2026 - KittyPaw
+# Postulaciones 2026 - Kittypau
 
 Esta carpeta contiene borradores 2026 basados en documentos reales de 2025.
 No son plantillas vacias: incluyen texto reutilizable, estructura de respuesta y fuentes de referencia.

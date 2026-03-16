@@ -11,7 +11,7 @@ Los duenos de mascotas carecen de visibilidad continua sobre hidratacion y alime
 ## Por que ahora
 1. Demanda por herramientas preventivas (no solo conveniencia).
 2. Costos de infraestructura y analitica mas accesibles.
-3. KittyPaw ya tiene base tecnica operativa para pasar a validacion comercial.
+3. Kittypau ya tiene base tecnica operativa para pasar a validacion comercial.
 
-## Tesis de mercado de KittyPaw
+## Tesis de mercado de Kittypau
 El valor no esta solo en un dispositivo, sino en transformar habitos diarios en datos accionables para decisiones de cuidado temprano.

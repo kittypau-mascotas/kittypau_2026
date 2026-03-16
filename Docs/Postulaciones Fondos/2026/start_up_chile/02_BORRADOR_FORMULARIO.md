@@ -9,14 +9,14 @@ Fuente principal 2025:
 Monitoreo predictivo IoT para bienestar de mascotas.
 
 ## 2) Public description
-KittyPaw monitorea alimentacion e hidratacion de mascotas con IoT e IA para detectar desviaciones tempranas y apoyar decisiones preventivas de cuidado.
+Kittypau monitorea alimentacion e hidratacion de mascotas con IoT e IA para detectar desviaciones tempranas y apoyar decisiones preventivas de cuidado.
 
 ## 3) Problema
 Los duenos de mascotas no tienen visibilidad continua de habitos criticos (agua/alimento) y suelen detectar problemas de salud tarde.
 Esto genera cuidado reactivo, mayores costos veterinarios y menor calidad de vida en mascotas.
 
 ## 4) Solucion
-KittyPaw integra hardware IoT (plato/bebedero inteligente), backend de datos y app para monitoreo continuo.
+Kittypau integra hardware IoT (plato/bebedero inteligente), backend de datos y app para monitoreo continuo.
 El sistema detecta cambios en patrones, notifica en tiempo real y construye historial objetivo para duenos y veterinarios.
 A mediano plazo, incorpora modelos predictivos de riesgo.
 
