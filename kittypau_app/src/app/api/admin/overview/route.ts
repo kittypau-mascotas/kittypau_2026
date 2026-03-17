@@ -91,6 +91,13 @@ type FinanceProviderRow = {
   updated_at: string;
 };
 
+type FxReference = {
+  clp_per_usd: number;
+  jpy_per_usd: number;
+  clp_source: "env" | "fallback";
+  jpy_source: "env" | "fallback";
+};
+
 type VercelUsageSummary = {
   provider: "vercel";
   team_id: string | null;
@@ -884,9 +891,19 @@ export async function GET(req: NextRequest) {
 
     const hasPlatePrice = Number.isFinite(platePriceUsd) && platePriceUsd > 0;
     const marginPerUnitUsd = hasPlatePrice ? platePriceUsd - unitCost : null;
+    const marginPct =
+      hasPlatePrice && marginPerUnitUsd !== null && platePriceUsd > 0
+        ? Number(((marginPerUnitUsd / platePriceUsd) * 100).toFixed(2))
+        : null;
     const breakEvenUnits =
       marginPerUnitUsd && marginPerUnitUsd > 0 && fixedMonthly > 0
         ? Number((fixedMonthly / marginPerUnitUsd).toFixed(2))
+        : null;
+
+    const unitsProduced = Number(financeBreakdown?.units_produced ?? financeSummary?.units_produced ?? 0);
+    const breakEvenMonths =
+      breakEvenUnits !== null && unitsProduced > 0
+        ? Number((breakEvenUnits / unitsProduced).toFixed(2))
         : null;
 
     const ltvUsd =
@@ -906,8 +923,10 @@ export async function GET(req: NextRequest) {
       churn_monthly:
         Number.isFinite(churnMonthly) && churnMonthly > 0 ? churnMonthly : null,
       margin_per_unit_usd: marginPerUnitUsd,
+      margin_pct: marginPct,
       fixed_monthly_usd: Number(fixedMonthly.toFixed(2)),
       break_even_units: breakEvenUnits,
+      break_even_months: breakEvenMonths,
       ltv_usd: ltvUsd,
       ltv_cac_ratio: ltvCacRatio,
       source:
@@ -978,6 +997,25 @@ export async function GET(req: NextRequest) {
     registration_pending: registrationSummary.pending_total,
   });
 
+  const fxReference: FxReference = (() => {
+    const clpPerUsdEnv = Number(process.env.ADMIN_FX_CLP_PER_USD ?? 0);
+    const jpyPerUsdEnv = Number(process.env.ADMIN_FX_JPY_PER_USD ?? 0);
+
+    const clpPerUsd =
+      Number.isFinite(clpPerUsdEnv) && clpPerUsdEnv > 0 ? clpPerUsdEnv : 950;
+    const jpyPerUsd =
+      Number.isFinite(jpyPerUsdEnv) && jpyPerUsdEnv > 0 ? jpyPerUsdEnv : 150;
+
+    return {
+      clp_per_usd: clpPerUsd,
+      jpy_per_usd: jpyPerUsd,
+      clp_source:
+        Number.isFinite(clpPerUsdEnv) && clpPerUsdEnv > 0 ? "env" : "fallback",
+      jpy_source:
+        Number.isFinite(jpyPerUsdEnv) && jpyPerUsdEnv > 0 ? "env" : "fallback",
+    };
+  })();
+
   const payload = {
     admin_role: resolvedAdminRole,
     summary: summary ?? null,
@@ -992,6 +1030,7 @@ export async function GET(req: NextRequest) {
     registration_summary: registrationSummary,
     supabase_storage: supabaseStorage,
     vercel_usage: vercelUsage,
+    fx_reference: fxReference,
     finance_summary: financeSummary,
     finance_breakdown: financeBreakdown,
     finance_break_even: financeBreakEven,

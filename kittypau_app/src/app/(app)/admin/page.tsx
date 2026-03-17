@@ -139,6 +139,13 @@ type VercelUsageSummary = {
   source: string;
 };
 
+type FxReference = {
+  clp_per_usd: number;
+  jpy_per_usd: number;
+  clp_source: "env" | "fallback";
+  jpy_source: "env" | "fallback";
+};
+
 type FinanceSummary = {
   generated_at: string;
   bom_unit_cost_usd: number;
@@ -169,8 +176,10 @@ type FinanceBreakEven = {
   cac_usd: number | null;
   churn_monthly: number | null;
   margin_per_unit_usd: number | null;
+  margin_pct?: number | null;
   fixed_monthly_usd: number;
   break_even_units: number | null;
+  break_even_months?: number | null;
   ltv_usd: number | null;
   ltv_cac_ratio: number | null;
   source: "env_config" | "partial_config";
@@ -289,6 +298,14 @@ function formatClp(value: number) {
   }).format(value);
 }
 
+function formatJpy(value: number) {
+  return new Intl.NumberFormat("ja-JP", {
+    style: "currency",
+    currency: "JPY",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 function SectionStatusCard({
   title,
   data,
@@ -329,7 +346,8 @@ function SectionStatusCard({
   );
 }
 
-const FX_CLP_PER_USD = 950;
+const DEFAULT_FX_CLP_PER_USD = 950;
+const DEFAULT_FX_JPY_PER_USD = 150;
 
 const PLA_FILAMENT_PURCHASE = {
   supplier: "VOXEL SYSTEMICS SpA",
@@ -453,6 +471,7 @@ export default function AdminPage() {
     useState<RegistrationSummary | null>(null);
   const [supabaseStorage, setSupabaseStorage] = useState<SupabaseStorageSummary | null>(null);
   const [vercelUsage, setVercelUsage] = useState<VercelUsageSummary | null>(null);
+  const [fxReference, setFxReference] = useState<FxReference | null>(null);
   const [financeSummary, setFinanceSummary] = useState<FinanceSummary | null>(null);
   const [financeBreakdown, setFinanceBreakdown] = useState<FinanceBreakdown | null>(null);
   const [financeBreakEven, setFinanceBreakEven] = useState<FinanceBreakEven | null>(null);
@@ -483,6 +502,8 @@ export default function AdminPage() {
   const [testHistory, setTestHistory] = useState<AdminTestHistoryItem[]>([]);
   const [testRunnerMessage, setTestRunnerMessage] = useState<string | null>(null);
   const infraExpanded = true;
+  const fxClpPerUsd = fxReference?.clp_per_usd ?? DEFAULT_FX_CLP_PER_USD;
+  const fxJpyPerUsd = fxReference?.jpy_per_usd ?? DEFAULT_FX_JPY_PER_USD;
 
   useEffect(() => {
     let mounted = true;
@@ -571,6 +592,7 @@ export default function AdminPage() {
           (payload.supabase_storage ?? null) as SupabaseStorageSummary | null
         );
         setVercelUsage((payload.vercel_usage ?? null) as VercelUsageSummary | null);
+        setFxReference((payload.fx_reference ?? null) as FxReference | null);
         setFinanceSummary((payload.finance_summary ?? null) as FinanceSummary | null);
         setFinanceBreakdown((payload.finance_breakdown ?? null) as FinanceBreakdown | null);
         setFinanceBreakEven((payload.finance_break_even ?? null) as FinanceBreakEven | null);
@@ -862,7 +884,7 @@ export default function AdminPage() {
     const buildUnitUsd = componentsTotal;
     const monthlyRuntimeUsd =
       selectedKpclCatalog.maintenance_monthly_usd + selectedKpclCatalog.power_monthly_usd;
-    const buildUnitClp = buildUnitUsd * FX_CLP_PER_USD;
+    const buildUnitClp = buildUnitUsd * fxClpPerUsd;
     return {
       has3dPrint,
       effectiveComponents,
@@ -871,7 +893,7 @@ export default function AdminPage() {
       buildUnitClp,
       monthlyRuntimeUsd,
     };
-  }, [selectedKpclCatalog, selectedKpcl]);
+  }, [selectedKpclCatalog, selectedKpcl, fxClpPerUsd]);
 
   const selectedKpclRuntimeSim = useMemo(() => {
     const mbByDevice = new Map(
@@ -995,13 +1017,13 @@ export default function AdminPage() {
         model: d.device_model ?? d.device_type ?? "N/D",
         has3dPrint,
         unitUsd,
-        unitClp: unitUsd * FX_CLP_PER_USD,
+        unitClp: unitUsd * fxClpPerUsd,
         mb28d: runtime.mb,
         monthlyUsd,
-        monthlyClp: monthlyUsd * FX_CLP_PER_USD,
+        monthlyClp: monthlyUsd * fxClpPerUsd,
       };
     });
-  }, [kpclDevices, kpclRuntimeByDevice, kpclCatalog]);
+  }, [kpclDevices, kpclRuntimeByDevice, kpclCatalog, fxClpPerUsd]);
 
   const executiveKpis = useMemo(() => {
     if (!summary) return [];
@@ -1123,6 +1145,17 @@ export default function AdminPage() {
       : 0;
     const opex = financeBreakdown?.total_cost_usd ?? financeSummary?.total_cost_usd ?? 0;
     const warranty = financeBreakdown?.warranty_cost_total_usd ?? 0;
+    const unitsProduced = financeBreakdown?.units_produced ?? financeSummary?.units_produced ?? 0;
+    const unitCost = financeBreakdown?.unit_cost_usd ?? financeSummary?.unit_cost_usd ?? 0;
+    const bomUnit = financeSummary?.bom_unit_cost_usd ?? 0;
+    const manufacturingPerUnit =
+      unitsProduced > 0
+        ? (financeBreakdown?.manufacturing_cost_total_usd ?? 0) / unitsProduced
+        : 0;
+    const overheadUnit =
+      unitsProduced > 0
+        ? Number((unitCost - bomUnit - manufacturingPerUnit).toFixed(2))
+        : null;
     const alerts = (avgMb > 10 ? 1 : 0) + (opex > 50 ? 1 : 0) + (warranty > 0 ? 1 : 0);
     const status: SectionStatus["status"] =
       opex > 50 ? "critical" : avgMb > 10 || warranty > 0 ? "warning" : "ok";
@@ -1143,9 +1176,16 @@ export default function AdminPage() {
         { label: "MB prom/KPCL", value: `${avgMb.toFixed(2)}MB` },
         { label: "Garantías", value: `USD ${warranty.toFixed(2)}` },
         { label: "BOM unitario", value: `USD ${(financeSummary?.bom_unit_cost_usd ?? 0).toFixed(2)}` },
+        {
+          label: "Overhead unitario",
+          value:
+            overheadUnit !== null && Number.isFinite(overheadUnit)
+              ? `USD ${overheadUnit.toFixed(2)} · ${formatClp(overheadUnit * fxClpPerUsd)}`
+              : "N/D",
+        },
       ],
     };
-  }, [kpclFinancialRows, financeBreakdown, financeSummary]);
+  }, [kpclFinancialRows, financeBreakdown, financeSummary, fxClpPerUsd]);
 
   const testsSectionStatus = useMemo<SectionStatus>(() => {
     const failed = lastTestRun?.failed_count ?? 0;
@@ -1629,6 +1669,9 @@ export default function AdminPage() {
               <h2 className="display-title text-xl font-semibold text-slate-900">
                 Resumen de Finanzas
               </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                FX: 1 USD ≈ {formatClp(fxClpPerUsd)} · {formatJpy(fxJpyPerUsd)}
+              </p>
               <SectionStatusCard title="Finanzas Operativas" data={financeSectionStatus} />
               <div className="mt-4 grid gap-3 md:grid-cols-4">
                 <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
@@ -1653,6 +1696,10 @@ export default function AdminPage() {
                   <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Costo unitario (snapshot)</p>
                   <p className="mt-2 text-xl font-semibold text-slate-900">
                     USD {(financeSummary?.unit_cost_usd ?? 0).toFixed(2)}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {formatClp((financeSummary?.unit_cost_usd ?? 0) * fxClpPerUsd)} ·{" "}
+                    {formatJpy((financeSummary?.unit_cost_usd ?? 0) * fxJpyPerUsd)}
                   </p>
                 </div>
               </div>
@@ -1700,6 +1747,18 @@ export default function AdminPage() {
                   Suscripción:{" "}
                   {financeBreakEven?.subscription_price_usd
                     ? `USD ${financeBreakEven.subscription_price_usd.toFixed(2)}`
+                    : "N/D"}.
+                </p>
+                <p className="mt-1">
+                  Break-even (meses):{" "}
+                  {financeBreakEven?.break_even_months !== null &&
+                  financeBreakEven?.break_even_months !== undefined
+                    ? financeBreakEven.break_even_months.toFixed(2)
+                    : "N/D"}{" "}
+                  · Margen (%):{" "}
+                  {financeBreakEven?.margin_pct !== null &&
+                  financeBreakEven?.margin_pct !== undefined
+                    ? `${financeBreakEven.margin_pct.toFixed(2)}%`
                     : "N/D"}.
                 </p>
                 <p className="mt-1 text-slate-500">
@@ -1841,7 +1900,7 @@ export default function AdminPage() {
                             <td className="px-2 py-2">{c.qty}</td>
                             <td className="px-2 py-2">{c.unit_cost_usd.toFixed(2)}</td>
                             <td className="px-2 py-2">{(c.qty * c.unit_cost_usd).toFixed(2)}</td>
-                            <td className="px-2 py-2">{formatClp(c.qty * c.unit_cost_usd * FX_CLP_PER_USD)}</td>
+                            <td className="px-2 py-2">{formatClp(c.qty * c.unit_cost_usd * fxClpPerUsd)}</td>
                           </tr>
                         ))}
                         <tr className="bg-slate-50">
@@ -1859,7 +1918,7 @@ export default function AdminPage() {
                           <td className="px-2 py-2 text-slate-500" colSpan={5}>
                             Impresión: {selectedKpclCatalog.print_grams}g · {selectedKpclCatalog.print_hours}h · USD{" "}
                             {selectedKpclCatalog.print_unit_cost_usd.toFixed(2)} por unidad ·{" "}
-                            {formatClp(selectedKpclCatalog.print_unit_cost_usd * FX_CLP_PER_USD)}.
+                            {formatClp(selectedKpclCatalog.print_unit_cost_usd * fxClpPerUsd)}.
                           </td>
                         </tr>
                         <tr>
@@ -1881,7 +1940,7 @@ export default function AdminPage() {
                             {" · "}
                             Operación mensual total simulada: USD{" "}
                             {selectedKpclRuntimeSim.monthlyOpsUsd.toFixed(2)} / mes ({formatClp(
-                              selectedKpclRuntimeSim.monthlyOpsUsd * FX_CLP_PER_USD
+                              selectedKpclRuntimeSim.monthlyOpsUsd * fxClpPerUsd
                             )}).
                           </td>
                         </tr>
