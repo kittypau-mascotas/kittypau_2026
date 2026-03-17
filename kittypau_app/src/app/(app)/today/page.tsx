@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
-import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
@@ -433,6 +433,39 @@ export default function TodayPage() {
     useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
 
+  // device_id en formato KPCL (texto) para suscripción MQTT
+  const mqttDeviceId = useMemo(
+    () =>
+      state.devices.find((d) => d.id === selectedDeviceId)?.device_id ?? null,
+    [state.devices, selectedDeviceId],
+  );
+
+  // Live readings directo desde HiveMQ WebSocket
+  const { reading: liveReading } = useMqttLive(mqttDeviceId);
+
+  useEffect(() => {
+    if (!liveReading || !selectedDeviceId) return;
+    const asReading: ApiReading = {
+      id:           `live-${liveReading.receivedAt}`,
+      device_id:    selectedDeviceId,
+      recorded_at:  liveReading.receivedAt,
+      weight_grams: liveReading.weight,
+      water_ml:     null,
+      flow_rate:    null,
+      temperature:  liveReading.temperature,
+      humidity:     liveReading.humidity,
+      light_percent: liveReading.lightPercent,
+      battery_level: liveReading.batteryLevel,
+    };
+    setState((prev) => {
+      const exists = prev.readings.some((r) => r.id === asReading.id);
+      if (exists) return prev;
+      return { ...prev, readings: [asReading, ...prev.readings].slice(0, 120) };
+    });
+    setLastRefreshAt(liveReading.receivedAt);
+    setRefreshError(null);
+  }, [liveReading, selectedDeviceId]);
+
   useEffect(() => {
     let mounted = true;
     getValidAccessToken().then(async (value) => {
@@ -651,57 +684,7 @@ export default function TodayPage() {
     }
   }, [isAuthed]);
 
-  useEffect(() => {
-    if (!selectedDeviceId) return;
-    const supabase = getSupabaseBrowser();
-    if (!supabase) return;
-
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    let active = true;
-
-    const connect = async () => {
-      const accessToken = await getValidAccessToken();
-      if (!active || !accessToken) return;
-      supabase.realtime.setAuth(accessToken);
-
-      channel = supabase
-        .channel(`readings:${selectedDeviceId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "readings",
-            filter: `device_id=eq.${selectedDeviceId}`,
-          },
-          (payload) => {
-            const nextReading = payload.new as ApiReading;
-            setState((prev) => {
-              const exists = prev.readings.some(
-                (reading) => reading.id === nextReading.id,
-              );
-              if (exists) return prev;
-              return {
-                ...prev,
-                readings: [nextReading, ...prev.readings].slice(0, 120),
-              };
-            });
-            setLastRefreshAt(new Date().toISOString());
-            setRefreshError(null);
-          },
-        )
-        .subscribe();
-    };
-
-    void connect();
-
-    return () => {
-      active = false;
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, [selectedDeviceId]);
+  // Live readings manejados por useMqttLive + useEffect arriba
 
   useEffect(() => {
     if (typeof window === "undefined") return;

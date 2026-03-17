@@ -1,19 +1,125 @@
+# ============================================================
+# KittyPau — .gitignore
+# ============================================================
+
+# ── Variables de entorno y secretos ─────────────────────────
 .env
 .env.*
+.env*.local
 !.env.example
-kittypau_app/.env.local
+!.env.example.*
+
+# App
+kittypau_app/.env
 kittypau_app/.env.*
+kittypau_app/.env*.local
 !kittypau_app/.env.example
+
+# Bridge (Pi Zero)
+bridge/.env
+bridge/.env.*
+!bridge/.env.example
+
+# ── Credenciales y certificados ──────────────────────────────
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*_rsa
+*_rsa.pub
+*_ed25519
+*_ed25519.pub
+credentials.json
+credentials*.json
+secrets.json
+secrets*.json
+service-account*.json
+*service_role*
+*anon_key*
+
+# ── HiveMQ — archivos de configuración locales ───────────────
+hivemq*.json
+hivemq*.config
+*hivemq*credentials*
+mqtt-credentials*
+mqtt.config*
+
+# ── Supabase keys — patrones de tokens reales ────────────────
+# Anon/publishable keys  (sb_publishable_...)
+sb_publishable_*
+# Service role JWTs     (eyJhbGci... con role:service_role)
+# Se capturan en archivos de keys explícitos
+*supabase*key*
+*supabase*secret*
+keys.json
+keys*.json
+*.keys
+# Archivo de keys del proyecto si alguien lo crea manualmente
+supabase-analytics/keys*
+supabase/keys*
+
+# ── Firmware IoT — archivos sensibles ───────────────────────
+iot_firmware/**/data/wifi.json
+iot_firmware/**/credentials*
+iot_firmware/**/secrets*
+iot_firmware/**/*.pem
+iot_firmware/**/*.key
+
+# ── Supabase CLI — archivos locales ─────────────────────────
+supabase/.branches/
+supabase/.temp/
+supabase-analytics/.branches/
+supabase-analytics/.temp/
+supabase-analytics/supabase/
+
+# ── Node.js ──────────────────────────────────────────────────
 node_modules/
 kittypau_app/node_modules/
+bridge/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+.pnp
+.pnp.*
+
+# ── Next.js ──────────────────────────────────────────────────
 .next/
 kittypau_app/.next/
-bridge/.env
+kittypau_app/out/
+kittypau_app/build/
+*.tsbuildinfo
+next-env.d.ts
 
-Docs/.env.test.local
+# ── Android / Capacitor ──────────────────────────────────────
+kittypau_app/android/.gradle/
+kittypau_app/android/local.properties
+kittypau_app/android/app/build/
+kittypau_app/android/build/
+
+# ── Vercel ───────────────────────────────────────────────────
 .vercel
-.env*.local
+
+# ── OS / Editor ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# ── Carpetas de trabajo local ────────────────────────────────
 Test Graficos/
 kittypau_2026/
 kittypau_iot_firmware/
-iot_firmware/**/data/wifi.json
+
+# ── Docs sensibles ───────────────────────────────────────────
+Docs/.env.test.local
+Docs/**/*.env*

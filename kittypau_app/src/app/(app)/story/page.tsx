@@ -1,9 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
-import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
@@ -22,16 +21,21 @@ type ApiDevice = {
   device_state: string | null;
 };
 
-type ApiReading = {
+// Sesión procesada por el analytics processor
+type ApiSession = {
   id: string;
   device_id: string;
-  recorded_at: string;
-  weight_grams: number | null;
+  session_type: "food" | "water";
+  session_start: string;
+  session_end: string;
+  duration_sec: number | null;
+  grams_consumed: number | null;
   water_ml: number | null;
-  flow_rate: number | null;
-  temperature: number | null;
-  humidity: number | null;
-  battery_level: number | null;
+  classification: "normal" | "low" | "high" | "skipped";
+  anomaly_score: number | null;
+  baseline_grams: number | null;
+  avg_temperature: number | null;
+  avg_humidity: number | null;
 };
 
 type LoadState = {
@@ -39,7 +43,9 @@ type LoadState = {
   error: string | null;
   pets: ApiPet[];
   devices: ApiDevice[];
-  readings: ApiReading[];
+  sessions: ApiSession[];
+  isPremium: boolean;
+  historyDays: number;
 };
 
 const defaultState: LoadState = {
@@ -47,7 +53,9 @@ const defaultState: LoadState = {
   error: null,
   pets: [],
   devices: [],
-  readings: [],
+  sessions: [],
+  isPremium: false,
+  historyDays: 7,
 };
 
 const formatTimestamp = (value: string) => {
@@ -69,62 +77,51 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   return [];
 };
 
-const toRoundedSensorValue = (
-  value: number | null | undefined,
-): number | null => {
-  if (value === null || value === undefined || !Number.isFinite(value))
-    return null;
-  return Math.round(value);
-};
+// Convierte la clasificación del procesador en una historia legible
+const buildStory = (session: ApiSession, petName: string) => {
+  const isFood  = session.session_type === "food";
+  const amount  = isFood ? session.grams_consumed : session.water_ml;
+  const unit    = isFood ? "g" : "ml";
+  const durMin  = session.duration_sec ? Math.round(session.duration_sec / 60) : null;
 
-const buildStory = (reading: ApiReading, petName: string) => {
   const facts: string[] = [];
-  if (reading.flow_rate !== null) {
-    facts.push(`Flujo ${Math.round(reading.flow_rate)} ml/h`);
-  }
-  if (reading.weight_grams !== null) {
-    facts.push(`Peso ${reading.weight_grams} g`);
-  }
-  if (reading.temperature !== null && reading.humidity !== null) {
-    facts.push(
-      `Temp ${toRoundedSensorValue(reading.temperature)}° · Hum ${toRoundedSensorValue(
-        reading.humidity,
-      )}%`,
-    );
-  }
+  if (amount != null)               facts.push(`${Math.round(amount)} ${unit}`);
+  if (durMin != null && durMin > 0) facts.push(`${durMin} min`);
+  if (session.avg_temperature != null)
+    facts.push(`${Math.round(session.avg_temperature)}°C`);
+  if (session.anomaly_score != null)
+    facts.push(`Z: ${session.anomaly_score.toFixed(1)}`);
 
-  let title = "Actividad registrada";
-  let detail = "Sin métricas detalladas.";
-  let tone: "good" | "warn" | "info" = "info";
+  let title: string;
+  let detail: string;
+  let tone: "good" | "warn" | "info";
 
-  if (reading.flow_rate !== null) {
-    if (reading.flow_rate >= 140) {
-      title = "Hidratación intensa";
-      detail = `${petName} bebió más rápido de lo habitual.`;
+  switch (session.classification) {
+    case "high":
+      title  = isFood ? "Consumo elevado" : "Hidratación intensa";
+      detail = isFood
+        ? `${petName} comió más de lo habitual.`
+        : `${petName} bebió más rápido de lo habitual.`;
       tone = "warn";
-    } else if (reading.flow_rate >= 80) {
-      title = "Hidratación normal";
-      detail = `Buen ritmo de agua para ${petName}.`;
+      break;
+    case "low":
+      title  = isFood ? "Consumo bajo" : "Poca hidratación";
+      detail = isFood
+        ? `${petName} comió menos de lo habitual.`
+        : `${petName} bebió menos de lo habitual.`;
+      tone = "warn";
+      break;
+    case "skipped":
+      title  = isFood ? "Sin comer" : "Sin beber";
+      detail = `No se detectó actividad de ${petName} en esta ventana.`;
+      tone = "warn";
+      break;
+    default:
+      title  = isFood ? "Consumo normal" : "Hidratación normal";
+      detail = isFood
+        ? `Buen ritmo de alimentación para ${petName}.`
+        : `Buen ritmo de agua para ${petName}.`;
       tone = "good";
-    } else {
-      title = "Hidratación suave";
-      detail = `Ritmo tranquilo de agua para ${petName}.`;
-      tone = "info";
-    }
-  } else if (reading.weight_grams !== null) {
-    if (reading.weight_grams >= 3500) {
-      title = "Consumo estable";
-      detail = `${petName} mantuvo su ingesta estable.`;
-      tone = "good";
-    } else {
-      title = "Consumo liviano";
-      detail = `${petName} comió un poco menos en esta lectura.`;
-      tone = "info";
-    }
-  } else if (reading.temperature !== null && reading.temperature >= 26) {
-    title = "Ambiente cálido";
-    detail = `Revisa el agua para ${petName} si el calor continúa.`;
-    tone = "warn";
   }
 
   const icon = tone === "good" ? "✓" : tone === "warn" ? "!" : "•";
@@ -137,9 +134,10 @@ const buildStory = (reading: ApiReading, petName: string) => {
 };
 
 export default function StoryPage() {
-  const [state, setState] = useState<LoadState>(defaultState);
+  const [state, setState]               = useState<LoadState>(defaultState);
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
-  const [dayOffset, setDayOffset] = useState(0);
+  const [dayOffset, setDayOffset]       = useState(0);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`/api/pets`, {
@@ -159,14 +157,22 @@ export default function StoryPage() {
     return (await res.json()) as ApiDevice[];
   };
 
-  const loadReadings = async (token: string, deviceId: string) => {
-    const res = await fetch(`/api/readings?device_id=${deviceId}&limit=50`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("No se pudieron cargar las lecturas.");
-    const payload = await res.json();
-    return parseListResponse<ApiReading>(payload);
+  const loadSessions = async (token: string, petId: string, daysBack = 7) => {
+    const from = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString();
+    const res = await fetch(
+      `/api/analytics/sessions?pet_id=${petId}&from=${from}&limit=120`,
+      { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
+    );
+    if (!res.ok) throw new Error("No se pudieron cargar las sesiones.");
+    const payload = await res.json() as {
+      data: ApiSession[];
+      meta: { is_premium: boolean; history_days: number };
+    };
+    return {
+      sessions: parseListResponse<ApiSession>(payload),
+      isPremium: payload.meta?.is_premium ?? false,
+      historyDays: payload.meta?.history_days ?? 7,
+    };
   };
 
   useEffect(() => {
@@ -190,121 +196,62 @@ export default function StoryPage() {
           loadPets(token),
           loadDevices(token),
         ]);
+
         const storedDeviceId =
           typeof window !== "undefined"
             ? window.localStorage.getItem("kittypau_device_id")
             : null;
         const primaryPet = pets[0];
         const primaryDevice =
-          devices.find((device) => device.id === storedDeviceId) ??
-          devices.find((device) => device.pet_id === primaryPet?.id) ??
+          devices.find((d) => d.id === storedDeviceId) ??
+          devices.find((d) => d.pet_id === primaryPet?.id) ??
           devices[0];
-        const initialDeviceId = primaryDevice?.id ?? null;
-        if (initialDeviceId) {
-          syncSelectedDevice(initialDeviceId);
-        }
-        if (primaryDevice?.pet_id) {
-          const linkedPet = pets.find((pet) => pet.id === primaryDevice.pet_id);
-          if (linkedPet) {
-            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
-          }
-        }
-        setSelectedDeviceId(initialDeviceId);
 
-        const readings = initialDeviceId
-          ? await loadReadings(token, initialDeviceId)
-          : [];
+        const initialDeviceId = primaryDevice?.id ?? null;
+        const initialPetId    = primaryDevice?.pet_id ?? primaryPet?.id ?? null;
+
+        if (initialDeviceId) syncSelectedDevice(initialDeviceId);
+        if (initialPetId) {
+          const linkedPet = pets.find((p) => p.id === initialPetId);
+          if (linkedPet) syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+        }
+
+        setSelectedDeviceId(initialDeviceId);
+        setSelectedPetId(initialPetId);
+
+        const { sessions, isPremium, historyDays } = initialPetId
+          ? await loadSessions(token, initialPetId)
+          : { sessions: [], isPremium: false, historyDays: 7 };
 
         if (!mounted) return;
-        setState({
-          isLoading: false,
-          error: null,
-          pets,
-          devices,
-          readings,
-        });
+        setState({ isLoading: false, error: null, pets, devices, sessions, isPremium, historyDays });
       } catch (err) {
         if (!mounted) return;
         setState((prev) => ({
           ...prev,
           isLoading: false,
-          error:
-            err instanceof Error
-              ? err.message
-              : "No se pudo cargar la historia.",
+          error: err instanceof Error ? err.message : "No se pudo cargar la historia.",
         }));
       }
     };
     run();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
-  useEffect(() => {
-    if (!selectedDeviceId) return;
-    const supabase = getSupabaseBrowser();
-    if (!supabase) return;
+  const selectedDevice = state.devices.find((d) => d.id === selectedDeviceId);
+  const selectedPet    = state.pets.find((p) => p.id === selectedPetId);
+  const petLabel       = selectedPet?.name ?? "tu mascota";
 
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    let active = true;
-
-    const connect = async () => {
-      const accessToken = await getValidAccessToken();
-      if (!active || !accessToken) return;
-      supabase.realtime.setAuth(accessToken);
-
-      channel = supabase
-        .channel(`readings:${selectedDeviceId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "readings",
-            filter: `device_id=eq.${selectedDeviceId}`,
-          },
-          (payload) => {
-            const nextReading = payload.new as ApiReading;
-            setState((prev) => {
-              const exists = prev.readings.some(
-                (reading) => reading.id === nextReading.id,
-              );
-              if (exists) return prev;
-              return {
-                ...prev,
-                readings: [nextReading, ...prev.readings].slice(0, 120),
-              };
-            });
-          },
-        )
-        .subscribe();
-    };
-
-    void connect();
-
-    return () => {
-      active = false;
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, [selectedDeviceId]);
-
-  const selectedDevice = state.devices.find(
-    (device) => device.id === selectedDeviceId,
-  );
-  const selectedPet = state.pets.find(
-    (pet) => pet.id === selectedDevice?.pet_id,
-  );
-  const petLabel = selectedPet?.name ?? "tu mascota";
+  // Días disponibles según plan
+  const maxDayOffset = state.isPremium ? 364 : 6;
+  const dayOptions = Array.from({ length: maxDayOffset + 1 }, (_, i) => i);
 
   const timeline = useMemo(() => {
-    return state.readings.slice(0, 24).map((reading) => ({
-      ...reading,
-      story: buildStory(reading, petLabel),
+    return state.sessions.map((s) => ({
+      ...s,
+      story: buildStory(s, petLabel),
     }));
-  }, [state.readings, petLabel]);
+  }, [state.sessions, petLabel]);
 
   const filteredTimeline = useMemo(() => {
     if (dayOffset === 0) return timeline;
@@ -314,21 +261,40 @@ export default function StoryPage() {
     const end = new Date(start);
     end.setDate(start.getDate() + 1);
     return timeline.filter((item) => {
-      const ts = new Date(item.recorded_at).getTime();
+      const ts = new Date(item.session_start).getTime();
       return ts >= start.getTime() && ts < end.getTime();
     });
   }, [dayOffset, timeline]);
 
   const summaryCounts = useMemo(() => {
     const total = filteredTimeline.length;
-    const warn = filteredTimeline.filter(
-      (item) => item.story.tone === "warn",
-    ).length;
-    const good = filteredTimeline.filter(
-      (item) => item.story.tone === "good",
-    ).length;
+    const warn  = filteredTimeline.filter((i) => i.story.tone === "warn").length;
+    const good  = filteredTimeline.filter((i) => i.story.tone === "good").length;
     return { total, warn, good };
   }, [filteredTimeline]);
+
+  const handlePetChange = async (petId: string) => {
+    setSelectedPetId(petId);
+    const linkedDevice = state.devices.find((d) => d.pet_id === petId);
+    if (linkedDevice) {
+      setSelectedDeviceId(linkedDevice.id);
+      syncSelectedDevice(linkedDevice.id);
+    }
+    const linkedPet = state.pets.find((p) => p.id === petId);
+    if (linkedPet) syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+
+    const token = await getValidAccessToken();
+    if (!token) return;
+    try {
+      const { sessions, isPremium, historyDays } = await loadSessions(token, petId);
+      setState((prev) => ({ ...prev, sessions, isPremium, historyDays }));
+    } catch (err) {
+      setState((prev) => ({
+        ...prev,
+        error: err instanceof Error ? err.message : "No se pudo cargar la historia.",
+      }));
+    }
+  };
 
   return (
     <main className="page-shell">
@@ -357,6 +323,16 @@ export default function StoryPage() {
         >
           {state.error}
         </Alert>
+      )}
+
+      {!state.isPremium && (
+        <div className="rounded-[var(--radius)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
+          <span className="font-semibold">Plan Free</span> — historial de los últimos 7 días.{" "}
+          <Link href="/settings" className="underline">
+            Actualiza a Premium
+          </Link>{" "}
+          para acceder hasta 1 año de historia.
+        </div>
       )}
 
       {state.isLoading ? (
@@ -397,61 +373,33 @@ export default function StoryPage() {
                     : "Sin dispositivo"}
                 </p>
               </div>
+
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>Ver:</span>
                 <select
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
                   value={dayOffset}
-                  onChange={(event) => setDayOffset(Number(event.target.value))}
+                  onChange={(e) => setDayOffset(Number(e.target.value))}
                 >
-                  <option value={0}>Hoy</option>
-                  <option value={1}>Ayer</option>
-                  <option value={2}>Hace 2 días</option>
+                  {dayOptions.map((d) => (
+                    <option key={d} value={d}>
+                      {d === 0 ? "Hoy" : d === 1 ? "Ayer" : `Hace ${d} días`}
+                    </option>
+                  ))}
                 </select>
               </div>
-              {state.devices.length > 1 && (
+
+              {state.pets.length > 1 && (
                 <label className="flex flex-col text-xs text-slate-500">
-                  Cambiar dispositivo
+                  Cambiar mascota
                   <select
                     className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
-                    value={selectedDeviceId ?? ""}
-                    onChange={async (event) => {
-                      const nextId = event.target.value || null;
-                      setSelectedDeviceId(nextId);
-                      if (nextId) {
-                        syncSelectedDevice(nextId);
-                        const nextDevice = state.devices.find(
-                          (device) => device.id === nextId,
-                        );
-                        if (nextDevice?.pet_id) {
-                          const linkedPet = state.pets.find(
-                            (pet) => pet.id === nextDevice.pet_id,
-                          );
-                          if (linkedPet) {
-                            syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
-                          }
-                        }
-                      }
-                      if (!nextId) return;
-                      const token = await getValidAccessToken();
-                      if (!token) return;
-                      try {
-                        const readings = await loadReadings(token, nextId);
-                        setState((prev) => ({ ...prev, readings }));
-                      } catch (err) {
-                        setState((prev) => ({
-                          ...prev,
-                          error:
-                            err instanceof Error
-                              ? err.message
-                              : "No se pudo cargar la historia.",
-                        }));
-                      }
-                    }}
+                    value={selectedPetId ?? ""}
+                    onChange={(e) => { void handlePetChange(e.target.value); }}
                   >
-                    {state.devices.map((device) => (
-                      <option key={device.id} value={device.id}>
-                        {device.device_id}
+                    {state.pets.map((pet) => (
+                      <option key={pet.id} value={pet.id}>
+                        {pet.name}
                       </option>
                     ))}
                   </select>
@@ -463,49 +411,32 @@ export default function StoryPage() {
           <section className="surface-card freeform-rise px-6 py-4">
             <div className="grid gap-3 md:grid-cols-3">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Eventos
-                </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
-                  {summaryCounts.total}
-                </p>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Sesiones</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{summaryCounts.total}</p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-700">
-                  Atención
-                </p>
-                <p className="mt-2 text-lg font-semibold text-amber-900">
-                  {summaryCounts.warn}
-                </p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-700">Atención</p>
+                <p className="mt-2 text-lg font-semibold text-amber-900">{summaryCounts.warn}</p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-sm text-emerald-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">
-                  Estables
-                </p>
-                <p className="mt-2 text-lg font-semibold text-emerald-900">
-                  {summaryCounts.good}
-                </p>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">Normales</p>
+                <p className="mt-2 text-lg font-semibold text-emerald-900">{summaryCounts.good}</p>
               </div>
             </div>
             <p className="mt-3 text-xs text-slate-500">
-              Resumen del día para {selectedPet?.name ?? "tu mascota"}.
+              Sesiones detectadas para {selectedPet?.name ?? "tu mascota"} · {state.historyDays}d de historial disponible.
             </p>
           </section>
 
           <section className="story-list">
             {filteredTimeline.length === 0 ? (
-              <EmptyState title="Aún no hay historia para mostrar.">
-                Cuando lleguen lecturas del plato, verás la historia aquí.
+              <EmptyState title="Aún no hay sesiones para mostrar.">
+                Cuando el plato detecte actividad, verás la historia aquí.
               </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (
-                <article
-                  key={item.id}
-                  className={`story-card tone-${item.story.tone}`}
-                >
-                  <div className="story-time">
-                    {formatTimestamp(item.recorded_at)}
-                  </div>
+                <article key={item.id} className={`story-card tone-${item.story.tone}`}>
+                  <div className="story-time">{formatTimestamp(item.session_start)}</div>
                   <div className="story-line">
                     <div className={`story-dot tone-${item.story.tone}`} />
                     {index < filteredTimeline.length - 1 ? (
@@ -518,14 +449,14 @@ export default function StoryPage() {
                         <span className="story-icon">{item.story.icon}</span>{" "}
                         {item.story.title}
                       </h3>
-                      <span
-                        className={`story-tag story-tag-${item.story.tone}`}
-                      >
-                        {item.story.tone === "good"
+                      <span className={`story-tag story-tag-${item.story.tone}`}>
+                        {item.classification === "normal"
                           ? "Estable"
-                          : item.story.tone === "warn"
-                            ? "Atención"
-                            : "Info"}
+                          : item.classification === "high"
+                            ? "Elevado"
+                            : item.classification === "skipped"
+                              ? "Sin actividad"
+                              : "Bajo"}
                       </span>
                     </div>
                     <p>{item.story.detail}</p>
@@ -533,20 +464,20 @@ export default function StoryPage() {
                       <p className="story-hint">
                         Sugerencia: revisa el agua y el estado del plato.
                       </p>
-                    ) : item.story.tone === "good" ? (
-                      <p className="story-hint">
-                        Buen ritmo. Mantén la rutina de{" "}
-                        {selectedPet?.name ?? "tu mascota"}.
-                      </p>
                     ) : (
                       <p className="story-hint">
-                        Si quieres más detalle, abre el resumen de hoy.
+                        Buen ritmo. Mantén la rutina de {selectedPet?.name ?? "tu mascota"}.
                       </p>
                     )}
                     <div className="story-meta">
                       <span>{selectedDevice?.device_id ?? "Plato"}</span>
                       <span>·</span>
                       <span>{selectedPet?.name ?? "Mascota"}</span>
+                      {item.session_type === "food" ? (
+                        <span>· Comida</span>
+                      ) : (
+                        <span>· Agua</span>
+                      )}
                     </div>
                   </div>
                 </article>

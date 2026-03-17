@@ -1,7 +1,9 @@
 /**
- * Kittypau Bridge v2.6 - MQTT to Supabase (Schema Unificado)
+ * Kittypau Bridge v3.0 - MQTT to Supabase + Analytics Processor
  * Escucha mensajes MQTT de los dispositivos y los almacena en Supabase
  *
+ * v3.0: Integra processor.js — detección de sesiones + analytics DB (doble escritura)
+ * v2.6: Schema unificado
  * v2.4: Upsert bridge_heartbeats y bridge_status_live con cada STATUS de KPBR0001
  * v2.3: Publica status de la RPi (KPBR0001) cada 60s via MQTT
  * v2.2: Registra cambios de IP en ip_history (JSONB) de devices
@@ -14,6 +16,7 @@ const mqtt = require('mqtt');
 const { createClient } = require('@supabase/supabase-js');
 const os = require('os');
 const { execSync } = require('child_process');
+const processor = require('./processor');
 
 // ============ CONFIGURACIÓN ============
 const BRIDGE_DEVICE_ID = 'KPBR0001';
@@ -45,6 +48,9 @@ if (!process.env.SUPABASE_URL || !supabaseKey) {
 
 const supabase = createClient(process.env.SUPABASE_URL, supabaseKey);
 
+// Inicializar analytics processor (best-effort: si no hay credenciales, no bloquea)
+processor.init();
+
 // Set de device_ids ya registrados (evita queries repetidos)
 const knownDevices = new Set();
 
@@ -62,7 +68,7 @@ const mqttOptions = {
 };
 
 console.log('=================================');
-console.log('   Kittypau Bridge v2.4');
+console.log('   Kittypau Bridge v3.0');
 console.log('=================================');
 console.log(`MQTT Broker: ${process.env.MQTT_BROKER}`);
 console.log(`Supabase: ${process.env.SUPABASE_URL}`);
@@ -197,8 +203,23 @@ async function handleSensorData(deviceId, data) {
     console.log(`[SUPABASE] ✓ Sensor data guardado para ${deviceId}`);
   }
 
-  // Escribir también en tabla readings (UUID-based, leída por la app)
+  // Escribir en tabla readings (UUID-based, leída por la app — se mantiene durante transición)
   await writeToReadings(deviceId, data);
+
+  // Enviar al analytics processor (best-effort, no bloquea el flujo principal)
+  try {
+    const { data: deviceMeta } = await supabase
+      .from('devices')
+      .select('id, pet_id, owner_id, device_type, plate_weight_grams')
+      .eq('device_id', deviceId)
+      .maybeSingle();
+
+    processor.processReading(deviceId, data, deviceMeta).catch((err) => {
+      console.error(`[PROCESSOR] Error async: ${err.message}`);
+    });
+  } catch (err) {
+    console.error(`[PROCESSOR] Error iniciando procesamiento: ${err.message}`);
+  }
 }
 
 async function writeToReadings(deviceId, data) {
