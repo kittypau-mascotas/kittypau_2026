@@ -38,7 +38,7 @@ async function detectCriticalSystemErrorType(): Promise<KittypauErrorType | null
 
     const now = Date.now();
     const bridgeCutoffIso = new Date(now - 10 * 60_000).toISOString();
-    const mqttCutoffIso = new Date(now - 6 * 60_000).toISOString();
+    const mqttCutoffIso = new Date(now - 15 * 60_000).toISOString();
 
     const online = rows.filter((row) => {
       const lastSeen = row.last_seen

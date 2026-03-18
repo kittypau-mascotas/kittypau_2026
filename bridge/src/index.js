@@ -120,6 +120,11 @@ mqttClient.on('message', async (topic, message) => {
 
     if (type === 'SENSORS') {
       await handleSensorData(deviceId, data);
+      // Actualizar last_mqtt_at con cada lectura para evitar falsos mqtt_unstable
+      supabase.from('bridge_heartbeats')
+        .update({ last_mqtt_at: new Date().toISOString() })
+        .eq('bridge_id', BRIDGE_DEVICE_ID)
+        .then(({ error }) => { if (error) console.error('[BRIDGE] Error updating last_mqtt_at:', error.message); });
     } else if (type === 'STATUS') {
       await handleStatusData(deviceId, data);
       if (deviceId === BRIDGE_DEVICE_ID) {
