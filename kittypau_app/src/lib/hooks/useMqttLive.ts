@@ -42,10 +42,10 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
   useEffect(() => {
     if (!deviceId) return;
 
-    const broker = process.env.NEXT_PUBLIC_MQTT_BROKER;
-    const port = process.env.NEXT_PUBLIC_MQTT_PORT_WS ?? "8884";
-    const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY;
-    const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY;
+    const broker = process.env.NEXT_PUBLIC_MQTT_BROKER?.trim();
+    const port = (process.env.NEXT_PUBLIC_MQTT_PORT_WS ?? "8884").trim();
+    const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY?.trim();
+    const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY?.trim();
 
     if (!broker || !username || !password) {
       setError("MQTT read-only credentials not configured.");
