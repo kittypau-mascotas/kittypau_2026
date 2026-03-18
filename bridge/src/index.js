@@ -442,6 +442,38 @@ mqttClient.on('connect', () => {
 });
 setInterval(publishRpiStatus, BRIDGE_STATUS_INTERVAL_MS);
 
+// ============ COLA DE COMANDOS ============
+// Polling cada 5s — lee device_commands pendientes y los publica vía MQTT
+async function pollDeviceCommands() {
+  try {
+    const { data, error } = await supabase
+      .from('device_commands')
+      .select('id, device_id, command')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .limit(20);
+
+    if (error || !data || data.length === 0) return;
+
+    for (const row of data) {
+      const topic = `${row.device_id}/cmd`;
+      const payload = JSON.stringify(row.command);
+      mqttClient.publish(topic, payload, { qos: 1 }, (err) => {
+        if (err) {
+          console.error(`[CMD] Error publicando ${topic}:`, err.message);
+          supabase.from('device_commands').update({ status: 'failed' }).eq('id', row.id).then(() => {});
+        } else {
+          console.log(`[CMD] Publicado ${topic}: ${payload}`);
+          supabase.from('device_commands').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', row.id).then(() => {});
+        }
+      });
+    }
+  } catch (err) {
+    console.error('[CMD] Error polling device_commands:', err.message);
+  }
+}
+setInterval(pollDeviceCommands, 5000);
+
 // ============ GRACEFUL SHUTDOWN ============
 process.on('SIGINT', () => {
   console.log('\n[BRIDGE] Cerrando conexiones...');

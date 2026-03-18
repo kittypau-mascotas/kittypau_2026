@@ -2267,12 +2267,12 @@ export default function TodayPage() {
           {/* Pills de valores actuales */}
           <div className="mb-4 flex flex-wrap gap-3">
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#EBB7AA" }} />
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(350 65% 62%)" }} />
               <span className="text-xs uppercase tracking-widest text-slate-400">Comida</span>
               <span className="font-semibold text-slate-800">{todayLatestWeight !== null ? `${todayLatestWeight} g` : "N/D"}</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#D99686" }} />
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(25 80% 52%)" }} />
               <span className="text-xs uppercase tracking-widest text-slate-400">Temp</span>
               <span className="font-semibold text-slate-800">{todayLatestTemp !== null ? `${Math.round(todayLatestTemp)} °C` : "N/D"}</span>
             </div>
@@ -2299,8 +2299,8 @@ export default function TodayPage() {
                     {
                       label: "Comida (g)",
                       data: todayWeightSeries.slice(0, 288).reverse().map((p) => p.value),
-                      borderColor: "#EBB7AA",
-                      backgroundColor: "#EBB7AA",
+                      borderColor: "hsl(350 65% 62%)",
+                      backgroundColor: "hsl(350 65% 62%)",
                       borderWidth: 2.5,
                       pointRadius: 0,
                       tension: 0.3,
@@ -2309,8 +2309,8 @@ export default function TodayPage() {
                     {
                       label: "Temp (°C)",
                       data: todayTempSeries.slice(0, 288).reverse().map((p) => p.value),
-                      borderColor: "#D99686",
-                      backgroundColor: "#D99686",
+                      borderColor: "hsl(25 80% 52%)",
+                      backgroundColor: "hsl(25 80% 52%)",
                       borderWidth: 2,
                       pointRadius: 0,
                       tension: 0.3,
@@ -2374,14 +2374,14 @@ export default function TodayPage() {
                       position: "left",
                       grid: { drawOnChartArea: false },
                       border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "#EBB7AA", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}g` },
+                      ticks: { color: "hsl(350 65% 62%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}g` },
                     },
                     yEnv: {
                       type: "linear",
                       position: "right",
                       grid: { drawOnChartArea: false },
                       border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "#D99686", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}` },
+                      ticks: { color: "hsl(25 80% 52%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}` },
                     },
                   },
                 }}
