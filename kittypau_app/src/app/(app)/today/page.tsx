@@ -1349,9 +1349,14 @@ export default function TodayPage() {
     () => buildSeries(bowlChartReadings, (r) => r.humidity, THREE_HOURS_MS),
     [bowlChartReadings],
   );
+  const todayLightSeries = useMemo(
+    () => buildSeries(bowlChartReadings, (r) => r.light_percent, THREE_HOURS_MS),
+    [bowlChartReadings],
+  );
   const todayLatestWeight = todayWeightSeries[0]?.value ?? null;
   const todayLatestTemp = todayTempSeries[0]?.value ?? null;
   const todayLatestHumidity = todayHumiditySeries[0]?.value ?? null;
+  const todayLatestLight = todayLightSeries[0]?.value ?? null;
 
   const selectBowlSeriesValue = (reading: ApiReading) => {
     const gross = toNullableNumber(reading.weight_grams);
@@ -2239,36 +2244,133 @@ export default function TodayPage() {
           </section>
         </header>
 
-        <section className="surface-card freeform-rise grid gap-4 px-6 py-5 md:grid-cols-3">
-          <ChartCard
-            title="Comida"
-            unit="g"
-            series={todayWeightSeries}
-            accent="#EBB7AA"
-            latestValue={todayLatestWeight}
-            rangeStartLabel="-3h"
-            canvasClassName="h-28 sm:h-40"
-          />
-          <ChartCard
-            title="Temperatura"
-            unit="°C"
-            series={todayTempSeries}
-            accent="#D99686"
-            latestValue={todayLatestTemp}
-            rangeStartLabel="-3h"
-            canvasClassName="h-28 sm:h-40"
-            integerDisplay
-          />
-          <ChartCard
-            title="Humedad"
-            unit="%"
-            series={todayHumiditySeries}
-            accent="hsl(198, 70%, 45%)"
-            latestValue={todayLatestHumidity}
-            rangeStartLabel="-3h"
-            canvasClassName="h-28 sm:h-40"
-            integerDisplay
-          />
+        <section className="surface-card freeform-rise px-6 py-5">
+          {/* Pills de valores actuales */}
+          <div className="mb-4 flex flex-wrap gap-3">
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#EBB7AA" }} />
+              <span className="text-xs uppercase tracking-widest text-slate-400">Comida</span>
+              <span className="font-semibold text-slate-800">{todayLatestWeight !== null ? `${todayLatestWeight} g` : "N/D"}</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#D99686" }} />
+              <span className="text-xs uppercase tracking-widest text-slate-400">Temp</span>
+              <span className="font-semibold text-slate-800">{todayLatestTemp !== null ? `${Math.round(todayLatestTemp)} °C` : "N/D"}</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(198,70%,45%)" }} />
+              <span className="text-xs uppercase tracking-widest text-slate-400">Humedad</span>
+              <span className="font-semibold text-slate-800">{todayLatestHumidity !== null ? `${Math.round(todayLatestHumidity)} %` : "N/D"}</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(44,90%,52%)" }} />
+              <span className="text-xs uppercase tracking-widest text-slate-400">Luz</span>
+              <span className="font-semibold text-slate-800">{todayLatestLight !== null ? `${Math.round(todayLatestLight)} %` : "N/D"}</span>
+            </div>
+          </div>
+          {/* Gráfico combinado ancho */}
+          <div className="h-40 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3 sm:h-52">
+            {(todayWeightSeries.length > 1 || todayTempSeries.length > 1 || todayHumiditySeries.length > 1 || todayLightSeries.length > 1) ? (
+              <Line
+                data={{
+                  labels: todayWeightSeries.slice(0, 30).reverse().map((p) =>
+                    new Date(p.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })
+                  ),
+                  datasets: [
+                    {
+                      label: "Comida (g)",
+                      data: todayWeightSeries.slice(0, 30).reverse().map((p) => p.value),
+                      borderColor: "#EBB7AA",
+                      backgroundColor: "#EBB7AA",
+                      borderWidth: 2.5,
+                      pointRadius: 0,
+                      tension: 0.3,
+                      yAxisID: "yWeight",
+                    },
+                    {
+                      label: "Temp (°C)",
+                      data: todayTempSeries.slice(0, 30).reverse().map((p) => p.value),
+                      borderColor: "#D99686",
+                      backgroundColor: "#D99686",
+                      borderWidth: 2,
+                      pointRadius: 0,
+                      tension: 0.3,
+                      yAxisID: "yEnv",
+                    },
+                    {
+                      label: "Humedad (%)",
+                      data: todayHumiditySeries.slice(0, 30).reverse().map((p) => p.value),
+                      borderColor: "hsl(198,70%,45%)",
+                      backgroundColor: "hsl(198,70%,45%)",
+                      borderWidth: 2,
+                      pointRadius: 0,
+                      tension: 0.3,
+                      yAxisID: "yEnv",
+                    },
+                    {
+                      label: "Luz (%)",
+                      data: todayLightSeries.slice(0, 30).reverse().map((p) => p.value),
+                      borderColor: "hsl(44,90%,52%)",
+                      backgroundColor: "hsl(44,90%,52%)",
+                      borderWidth: 2,
+                      pointRadius: 0,
+                      tension: 0.3,
+                      yAxisID: "yEnv",
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  animation: { duration: 340, easing: "easeOutQuart" },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      mode: "index",
+                      intersect: false,
+                      backgroundColor: "rgba(15,23,42,0.92)",
+                      titleColor: "#f8fafc",
+                      bodyColor: "#f8fafc",
+                      borderColor: "rgba(148,163,184,0.35)",
+                      borderWidth: 1,
+                      displayColors: true,
+                    },
+                  },
+                  interaction: { mode: "nearest", intersect: false },
+                  scales: {
+                    x: {
+                      grid: { display: false },
+                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
+                      ticks: {
+                        maxTicksLimit: 2,
+                        color: "hsl(var(--muted-foreground))",
+                        font: { size: 11 },
+                        autoSkip: false,
+                        maxRotation: 0,
+                        callback: (_v, i, ticks) => i === 0 ? "-3h" : i === ticks.length - 1 ? "Ahora" : "",
+                      },
+                    },
+                    yWeight: {
+                      type: "linear",
+                      position: "left",
+                      grid: { drawOnChartArea: false },
+                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
+                      ticks: { color: "#EBB7AA", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}g` },
+                    },
+                    yEnv: {
+                      type: "linear",
+                      position: "right",
+                      grid: { drawOnChartArea: false },
+                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
+                      ticks: { color: "#D99686", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}` },
+                    },
+                  },
+                }}
+              />
+            ) : (
+              <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
+            )}
+          </div>
         </section>
 
         <section className="surface-card freeform-rise px-6 py-5">
