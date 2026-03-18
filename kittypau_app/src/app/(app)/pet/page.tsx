@@ -17,6 +17,10 @@ type ApiPet = {
   weight_kg?: number | null;
   activity_level?: string | null;
   pet_state?: string | null;
+  food_normal_min_g?: number | null;
+  food_normal_max_g?: number | null;
+  water_normal_min_ml?: number | null;
+  water_normal_max_ml?: number | null;
 };
 
 type ApiDevice = {
@@ -537,6 +541,102 @@ export default function PetPage() {
                   />
                 </label>
               </div>
+
+              <div className="mt-5 border-t border-slate-100 pt-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Límites de consumo normal
+                </p>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Define el rango que consideras normal. Las sesiones fuera del rango aparecerán como bajo o elevado en la Historia.
+                </p>
+                <div className="mt-3 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">
+                      Comida (g)
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 text-xs text-slate-500">
+                        Mínimo
+                        <input
+                          type="number"
+                          min="0"
+                          max="10000"
+                          placeholder="ej. 90"
+                          className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={editPayload.food_normal_min_g ?? ""}
+                          onChange={(event) =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              food_normal_min_g: event.target.value ? Number(event.target.value) : null,
+                            }))
+                          }
+                        />
+                      </label>
+                      <span className="mt-5 text-slate-300">—</span>
+                      <label className="flex-1 text-xs text-slate-500">
+                        Máximo
+                        <input
+                          type="number"
+                          min="0"
+                          max="10000"
+                          placeholder="ej. 150"
+                          className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={editPayload.food_normal_max_g ?? ""}
+                          onChange={(event) =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              food_normal_max_g: event.target.value ? Number(event.target.value) : null,
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-500">
+                      Agua (ml)
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 text-xs text-slate-500">
+                        Mínimo
+                        <input
+                          type="number"
+                          min="0"
+                          max="10000"
+                          placeholder="ej. 50"
+                          className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={editPayload.water_normal_min_ml ?? ""}
+                          onChange={(event) =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              water_normal_min_ml: event.target.value ? Number(event.target.value) : null,
+                            }))
+                          }
+                        />
+                      </label>
+                      <span className="mt-5 text-slate-300">—</span>
+                      <label className="flex-1 text-xs text-slate-500">
+                        Máximo
+                        <input
+                          type="number"
+                          min="0"
+                          max="10000"
+                          placeholder="ej. 200"
+                          className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={editPayload.water_normal_max_ml ?? ""}
+                          onChange={(event) =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              water_normal_max_ml: event.target.value ? Number(event.target.value) : null,
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <button
                   type="button"

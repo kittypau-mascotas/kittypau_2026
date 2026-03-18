@@ -105,6 +105,15 @@ export async function PATCH(
     }
   }
 
+  for (const key of ["food_normal_min_g", "food_normal_max_g", "water_normal_min_ml", "water_normal_max_ml"] as const) {
+    if (body[key] !== undefined && body[key] !== null && typeof body[key] !== "number") {
+      return apiError(req, 400, "INVALID_LIMIT", `${key} must be a number or null`);
+    }
+    if (typeof body[key] === "number" && ((body[key] as number) < 0 || (body[key] as number) > 10000)) {
+      return apiError(req, 400, "LIMIT_OUT_OF_RANGE", `${key} must be between 0 and 10000`);
+    }
+  }
+
   const { data: pet, error: petError } = await supabase
     .from("pets")
     .select("id, user_id")
@@ -138,6 +147,10 @@ export async function PATCH(
     "photo_url",
     "pet_state",
     "pet_onboarding_step",
+    "food_normal_min_g",
+    "food_normal_max_g",
+    "water_normal_min_ml",
+    "water_normal_max_ml",
   ];
 
   for (const key of allowedFields) {

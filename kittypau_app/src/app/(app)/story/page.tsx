@@ -10,6 +10,10 @@ import EmptyState from "@/app/_components/empty-state";
 type ApiPet = {
   id: string;
   name: string;
+  food_normal_min_g?: number | null;
+  food_normal_max_g?: number | null;
+  water_normal_min_ml?: number | null;
+  water_normal_max_ml?: number | null;
 };
 
 type ApiDevice = {
@@ -77,8 +81,25 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   return [];
 };
 
+// Reclasifica según límites personalizados del dueño, si están configurados.
+function applyCustomLimits(
+  session: ApiSession,
+  pet: ApiPet,
+): "normal" | "low" | "high" | "skipped" {
+  const isFood = session.session_type === "food";
+  const amount = isFood ? session.grams_consumed : session.water_ml;
+  if (amount === null) return session.classification;
+  const min = isFood ? pet.food_normal_min_g : pet.water_normal_min_ml;
+  const max = isFood ? pet.food_normal_max_g : pet.water_normal_max_ml;
+  if (min == null && max == null) return session.classification;
+  if (min != null && amount < min) return "low";
+  if (max != null && amount > max) return "high";
+  return "normal";
+}
+
 // Convierte la clasificación del procesador en una historia legible
-const buildStory = (session: ApiSession, petName: string) => {
+const buildStory = (session: ApiSession, petName: string, pet: ApiPet) => {
+  const classification = applyCustomLimits(session, pet);
   const isFood  = session.session_type === "food";
   const amount  = isFood ? session.grams_consumed : session.water_ml;
   const unit    = isFood ? "g" : "ml";
@@ -96,7 +117,7 @@ const buildStory = (session: ApiSession, petName: string) => {
   let detail: string;
   let tone: "good" | "warn" | "info";
 
-  switch (session.classification) {
+  switch (classification) {
     case "high":
       title  = isFood ? "Consumo elevado" : "Hidratación intensa";
       detail = isFood
@@ -130,6 +151,7 @@ const buildStory = (session: ApiSession, petName: string) => {
     detail: facts.length > 0 ? `${detail} · ${facts.join(" · ")}` : detail,
     tone,
     icon,
+    classification,
   };
 };
 
@@ -247,11 +269,12 @@ export default function StoryPage() {
   const dayOptions = Array.from({ length: maxDayOffset + 1 }, (_, i) => i);
 
   const timeline = useMemo(() => {
+    const pet = selectedPet ?? { id: "", name: petLabel };
     return state.sessions.map((s) => ({
       ...s,
-      story: buildStory(s, petLabel),
+      story: buildStory(s, petLabel, pet),
     }));
-  }, [state.sessions, petLabel]);
+  }, [state.sessions, petLabel, selectedPet]);
 
   const filteredTimeline = useMemo(() => {
     if (dayOffset === 0) return timeline;
@@ -466,11 +489,11 @@ export default function StoryPage() {
                         {item.story.title}
                       </h3>
                       <span className={`story-tag story-tag-${item.story.tone}`}>
-                        {item.classification === "normal"
+                        {item.story.classification === "normal"
                           ? "Estable"
-                          : item.classification === "high"
+                          : item.story.classification === "high"
                             ? "Elevado"
-                            : item.classification === "skipped"
+                            : item.story.classification === "skipped"
                               ? "Sin actividad"
                               : "Bajo"}
                       </span>
