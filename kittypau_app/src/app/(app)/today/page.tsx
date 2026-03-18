@@ -1800,6 +1800,11 @@ export default function TodayPage() {
       .find((item) => item.key === summaryPeriod)
       ?.label.toLowerCase() ?? "día";
 
+  // Mientras no se resuelve el account type no renderizar nada (evita flicker)
+  if (accountType === null) {
+    return null;
+  }
+
   if (accountType === "client" || accountType === "admin") {
     return null;
   }
