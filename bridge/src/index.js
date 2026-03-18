@@ -267,6 +267,9 @@ async function writeToReadings(deviceId, data) {
         weight_grams: data.weight != null ? Math.round(data.weight) : null,
         temperature: data.temp ?? null,
         humidity: data.hum ?? null,
+        light_lux: data.light?.lux ?? null,
+        light_percent: data.light?.['%'] ?? null,
+        light_condition: data.light?.condition ?? null,
         recorded_at: recordedAt,
         ingested_at: new Date().toISOString(),
         clock_invalid: clockInvalid
