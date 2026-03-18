@@ -647,10 +647,12 @@ export default function PetPage() {
                     if (!token) return;
                     setIsSaving(true);
                     try {
+                      // Excluir campos inmutables antes de enviar
+                      const { type: _type, id: _id, pet_state: _ps, ...sendPayload } = editPayload;
                       const updated = await savePet(
                         token,
                         selectedPet.id,
-                        editPayload,
+                        sendPayload,
                       );
                       setState((prev) => ({
                         ...prev,
