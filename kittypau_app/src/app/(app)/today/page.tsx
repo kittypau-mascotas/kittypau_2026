@@ -1177,8 +1177,8 @@ export default function TodayPage() {
     bowlLatestReading?.weight_grams,
   );
   const bowlContentWeightGrams =
-    bowlPlateWeightGrams !== null && bowlGrossWeightGrams !== null
-      ? Math.max(0, bowlGrossWeightGrams - bowlPlateWeightGrams)
+    bowlGrossWeightGrams !== null
+      ? Math.max(0, bowlPlateWeightGrams !== null ? bowlGrossWeightGrams - bowlPlateWeightGrams : bowlGrossWeightGrams)
       : null;
   const bowlContentWeightText =
     bowlContentWeightGrams !== null
@@ -1214,8 +1214,8 @@ export default function TodayPage() {
     waterLatestReading?.weight_grams,
   );
   const waterContentWeightGrams =
-    waterPlateWeightGrams !== null && waterGrossWeightGrams !== null
-      ? Math.max(0, waterGrossWeightGrams - waterPlateWeightGrams)
+    waterGrossWeightGrams !== null
+      ? Math.max(0, waterPlateWeightGrams !== null ? waterGrossWeightGrams - waterPlateWeightGrams : waterGrossWeightGrams)
       : null;
   const waterContentWeightText =
     waterContentWeightGrams !== null
@@ -1238,8 +1238,8 @@ export default function TodayPage() {
     bowlPreviousReading?.weight_grams,
   );
   const bowlPrevContentWeightGrams =
-    bowlPlateWeightGrams !== null && bowlPrevGrossWeightGrams !== null
-      ? Math.max(0, bowlPrevGrossWeightGrams - bowlPlateWeightGrams)
+    bowlPrevGrossWeightGrams !== null
+      ? Math.max(0, bowlPlateWeightGrams !== null ? bowlPrevGrossWeightGrams - bowlPlateWeightGrams : bowlPrevGrossWeightGrams)
       : null;
   const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
   const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
@@ -1249,8 +1249,8 @@ export default function TodayPage() {
     waterPreviousReading?.weight_grams,
   );
   const waterPrevContentWeightGrams =
-    waterPlateWeightGrams !== null && waterPrevGrossWeightGrams !== null
-      ? Math.max(0, waterPrevGrossWeightGrams - waterPlateWeightGrams)
+    waterPrevGrossWeightGrams !== null
+      ? Math.max(0, waterPlateWeightGrams !== null ? waterPrevGrossWeightGrams - waterPlateWeightGrams : waterPrevGrossWeightGrams)
       : null;
   const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
   const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
