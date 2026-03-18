@@ -59,6 +59,7 @@ const CHART_RANGES: {
   label: string;
   windowMs: number;
   queryLimit: number;
+  maxPoints: number;
   fromLabel: string;
 }[] = [
   {
