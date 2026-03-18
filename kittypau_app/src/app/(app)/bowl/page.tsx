@@ -179,6 +179,8 @@ export default function BowlPage() {
   const [selectedRange, setSelectedRange] = useState<ChartRangeKey>("5m");
   const [isReadingsLoading, setIsReadingsLoading] = useState(false);
   const [readingsError, setReadingsError] = useState<string | null>(null);
+  const [isTaring, setIsTaring] = useState(false);
+  const [tareStatus, setTareStatus] = useState<"ok" | "error" | null>(null);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`/api/devices`, {
@@ -409,6 +411,26 @@ export default function BowlPage() {
     syncSelectedDevice(nextDeviceId);
   };
 
+  const handleTare = async () => {
+    if (!selectedDevice?.id || isTaring) return;
+    setIsTaring(true);
+    setTareStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch(`/api/devices/${selectedDevice.id}/tare`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTareStatus(res.ok ? "ok" : "error");
+    } catch {
+      setTareStatus("error");
+    } finally {
+      setIsTaring(false);
+      setTimeout(() => setTareStatus(null), 3000);
+    }
+  };
+
   const connectionHint = useMemo(() => {
     if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
     const last = new Date(selectedDevice.last_seen).getTime();
@@ -612,9 +634,29 @@ export default function BowlPage() {
         <>
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Lecturas en vivo
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Lecturas en vivo
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => void handleTare()}
+                  disabled={isTaring || !selectedDevice}
+                  title="Tarar báscula (poner a cero)"
+                  className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {isTaring ? (
+                    <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
+                  ) : tareStatus === "ok" ? (
+                    <span className="text-emerald-600">✓</span>
+                  ) : tareStatus === "error" ? (
+                    <span className="text-red-500">✗</span>
+                  ) : (
+                    <span>⊖</span>
+                  )}
+                  Tarar
+                </button>
+              </div>
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <div className="mr-1 flex items-center gap-2">
                   <button
