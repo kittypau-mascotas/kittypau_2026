@@ -634,29 +634,9 @@ export default function BowlPage() {
         <>
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Lecturas en vivo
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => void handleTare()}
-                  disabled={isTaring || !selectedDevice}
-                  title="Tarar báscula (poner a cero)"
-                  className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {isTaring ? (
-                    <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
-                  ) : tareStatus === "ok" ? (
-                    <span className="text-emerald-600">✓</span>
-                  ) : tareStatus === "error" ? (
-                    <span className="text-red-500">✗</span>
-                  ) : (
-                    <span>⊖</span>
-                  )}
-                  Tarar
-                </button>
-              </div>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Lecturas en vivo
+              </h2>
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <div className="mr-1 flex items-center gap-2">
                   <button
@@ -721,20 +701,40 @@ export default function BowlPage() {
               <p className="mt-3 text-sm text-rose-600">{readingsError}</p>
             ) : (
               <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                <ChartCard
-                  title="Peso"
-                  unit="g"
-                  series={weightSeries}
-                  accent="#EBB7AA"
-                  latestValue={latestWeightValue}
-                  rangeStartLabel={selectedRangeConfig.fromLabel}
-                  maxPoints={selectedRangeConfig.maxPoints}
-                />
+                <div className="relative">
+                  <ChartCard
+                    title="Peso"
+                    unit="g"
+                    series={weightSeries}
+                    accent="hsl(350 65% 62%)"
+                    latestValue={latestWeightValue}
+                    rangeStartLabel={selectedRangeConfig.fromLabel}
+                    maxPoints={selectedRangeConfig.maxPoints}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleTare()}
+                    disabled={isTaring || !selectedDevice}
+                    title="Tarar báscula (poner a cero)"
+                    className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {isTaring ? (
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
+                    ) : tareStatus === "ok" ? (
+                      <span className="text-emerald-600">✓</span>
+                    ) : tareStatus === "error" ? (
+                      <span className="text-red-500">✗</span>
+                    ) : (
+                      <span>⊖</span>
+                    )}
+                    Tarar
+                  </button>
+                </div>
                 <ChartCard
                   title="Temperatura"
                   unit="°C"
                   series={tempSeries}
-                  accent="#D99686"
+                  accent="hsl(25 80% 52%)"
                   latestValue={latestTempValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
                   maxPoints={selectedRangeConfig.maxPoints}

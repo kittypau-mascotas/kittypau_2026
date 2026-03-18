@@ -91,6 +91,7 @@ function publishMqtt(
       clean: true,
       connectTimeout: 5000,
       reconnectPeriod: 0,
+      rejectUnauthorized: false,
     });
 
     const timeout = setTimeout(() => {
