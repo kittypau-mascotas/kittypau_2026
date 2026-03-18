@@ -28,12 +28,12 @@ export async function handleReadingsGet(
   }
 
   if (limitParam) {
-    if (!Number.isFinite(limit) || limit < 1 || limit > 1200) {
+    if (!Number.isFinite(limit) || limit < 1 || limit > 5000) {
       return apiError(
         req,
         400,
         "INVALID_LIMIT",
-        "limit must be between 1 and 1200",
+        "limit must be between 1 and 5000",
       );
     }
   }

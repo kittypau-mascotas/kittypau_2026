@@ -55,7 +55,7 @@ const defaultState: LoadState = {
   devices: [],
   sessions: [],
   isPremium: false,
-  historyDays: 7,
+  historyDays: 3,
 };
 
 const formatTimestamp = (value: string) => {
@@ -327,7 +327,7 @@ export default function StoryPage() {
 
       {!state.isPremium && (
         <div className="rounded-[var(--radius)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
-          <span className="font-semibold">Plan Free</span> — historial de los últimos 7 días.{" "}
+          <span className="font-semibold">Plan Free</span> — historial de los últimos {state.historyDays} días.{" "}
           <Link href="/settings" className="underline">
             Actualiza a Premium
           </Link>{" "}
@@ -423,8 +423,24 @@ export default function StoryPage() {
                 <p className="mt-2 text-lg font-semibold text-emerald-900">{summaryCounts.good}</p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 flex items-center gap-2 text-xs text-slate-500">
               Sesiones detectadas para {selectedPet?.name ?? "tu mascota"} · {state.historyDays}d de historial disponible.
+              {state.isPremium && (
+                <span
+                  title="Plan Premium"
+                  className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full"
+                  style={{ background: "linear-gradient(135deg, #f5c842 0%, #e0900a 100%)", boxShadow: "0 1px 4px rgba(224,144,10,0.45)" }}
+                >
+                  <svg viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg" className="h-[13px] w-[13px]">
+                    {/* Huella — 4 dedos + almohadilla central */}
+                    <ellipse cx="10" cy="13.2" rx="3.2" ry="2.2" />
+                    <ellipse cx="6"  cy="10.2" rx="1.5" ry="2"   transform="rotate(-20 6 10.2)"  />
+                    <ellipse cx="14" cy="10.2" rx="1.5" ry="2"   transform="rotate(20 14 10.2)"  />
+                    <ellipse cx="8"  cy="7.5"  rx="1.3" ry="1.8" transform="rotate(-10 8 7.5)"   />
+                    <ellipse cx="12" cy="7.5"  rx="1.3" ry="1.8" transform="rotate(10 12 7.5)"   />
+                  </svg>
+                </span>
+              )}
             </p>
           </section>
 

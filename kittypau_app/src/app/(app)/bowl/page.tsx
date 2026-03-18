@@ -66,6 +66,7 @@ const CHART_RANGES: {
     label: "5 min",
     windowMs: 5 * 60 * 1000,
     queryLimit: 120,
+    maxPoints: 30,
     fromLabel: "-5m",
   },
   {
@@ -73,6 +74,7 @@ const CHART_RANGES: {
     label: "15 min",
     windowMs: 15 * 60 * 1000,
     queryLimit: 220,
+    maxPoints: 60,
     fromLabel: "-15m",
   },
   {
@@ -80,20 +82,23 @@ const CHART_RANGES: {
     label: "1 hora",
     windowMs: 60 * 60 * 1000,
     queryLimit: 420,
+    maxPoints: 120,
     fromLabel: "-1h",
   },
   {
     key: "1d",
     label: "1 dia",
     windowMs: 24 * 60 * 60 * 1000,
-    queryLimit: 1500,
+    queryLimit: 3000,
+    maxPoints: 288,
     fromLabel: "-1d",
   },
   {
     key: "1w",
     label: "1 semana",
     windowMs: 7 * 24 * 60 * 60 * 1000,
-    queryLimit: 3500,
+    queryLimit: 5000,
+    maxPoints: 400,
     fromLabel: "-1sem",
   },
 ];
@@ -188,10 +193,15 @@ export default function BowlPage() {
     deviceId: string,
     token: string,
     limit: number,
+    windowMs?: number,
   ) => {
     const params = new URLSearchParams();
     params.set("device_id", deviceId);
     params.set("limit", String(limit));
+    if (windowMs) {
+      const from = new Date(Date.now() - windowMs).toISOString();
+      params.set("from", from);
+    }
     const res = await fetch(`/api/readings?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -269,6 +279,7 @@ export default function BowlPage() {
           selectedDeviceId,
           token,
           selectedConfig.queryLimit,
+          selectedConfig.windowMs,
         );
         if (!active) return;
         setReadings(readingData);
@@ -304,6 +315,7 @@ export default function BowlPage() {
           selectedDeviceId,
           token,
           selectedConfig.queryLimit,
+          selectedConfig.windowMs,
         );
         if (!active) return;
         setReadings(readingData);
@@ -673,6 +685,7 @@ export default function BowlPage() {
                   accent="#EBB7AA"
                   latestValue={latestWeightValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
+                  maxPoints={selectedRangeConfig.maxPoints}
                 />
                 <ChartCard
                   title="Temperatura"
@@ -681,6 +694,7 @@ export default function BowlPage() {
                   accent="#D99686"
                   latestValue={latestTempValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
+                  maxPoints={selectedRangeConfig.maxPoints}
                   integerDisplay
                 />
                 <ChartCard
@@ -690,6 +704,7 @@ export default function BowlPage() {
                   accent="hsl(44 90% 52%)"
                   latestValue={latestLightValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
+                  maxPoints={selectedRangeConfig.maxPoints}
                   className="lg:col-start-1"
                 />
                 <ChartCard
@@ -699,6 +714,7 @@ export default function BowlPage() {
                   accent="hsl(198 70% 45%)"
                   latestValue={latestHumidityValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
+                  maxPoints={selectedRangeConfig.maxPoints}
                   integerDisplay
                   className="lg:col-start-2"
                 />

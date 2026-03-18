@@ -62,6 +62,7 @@ export const ChartCard = ({
   latestValue,
   rangeStartLabel,
   integerDisplay = false,
+  maxPoints = 30,
   canvasClassName = "h-32 sm:h-56",
   className,
 }: {
@@ -72,11 +73,12 @@ export const ChartCard = ({
   latestValue: number | null;
   rangeStartLabel: string;
   integerDisplay?: boolean;
+  maxPoints?: number;
   canvasClassName?: string;
   className?: string;
 }) => {
   const values = series.map((item) => item.value);
-  const ordered = series.slice(0, 30).reverse();
+  const ordered = series.slice(0, maxPoints).reverse();
   const labels = ordered.map((item) => {
     const ts = new Date(item.timestamp);
     if (Number.isNaN(ts.getTime())) return "";

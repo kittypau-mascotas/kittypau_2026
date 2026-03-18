@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAnalytics } from "@/lib/supabase/analytics";
+import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, getUserClient, startRequestTimer, logRequestEnd } from "../../_utils";
 
 // GET /api/analytics/daily?pet_id=X&days=30
 // Devuelve resúmenes diarios para gráficos de tendencia semanal/mensual
 
-const FREE_HISTORY_DAYS    = 7;
+const FREE_HISTORY_DAYS    = 3;
 const PREMIUM_HISTORY_DAYS = 365;
 
 export async function GET(req: NextRequest) {
@@ -26,8 +27,14 @@ export async function GET(req: NextRequest) {
     return apiError(req, 400, "MISSING_PET_ID", "pet_id is required");
   }
 
-  // TODO: reemplazar con lookup real de plan del usuario
-  const isPremium = false;
+  // Determinar ventana de historial permitida según plan del usuario
+  const supabase = supabaseServer;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+  const isPremium = profile?.plan === "premium";
   const maxDays   = isPremium ? PREMIUM_HISTORY_DAYS : FREE_HISTORY_DAYS;
   const effectiveDays = Math.min(days, maxDays);
   const cutoff = new Date(Date.now() - effectiveDays * 24 * 60 * 60 * 1000)

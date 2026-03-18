@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAnalytics } from "@/lib/supabase/analytics";
+import { supabaseServer } from "@/lib/supabase/server";
 import { apiError, getUserClient, startRequestTimer, logRequestEnd } from "../../_utils";
 
 // GET /api/analytics/sessions?pet_id=X&from=ISO&to=ISO&limit=50&cursor=ISO
-// Clientes free: máximo 7 días de historial
+// Clientes free: máximo 3 días de historial
 // Clientes premium: hasta 1 año
 
-const FREE_HISTORY_DAYS    = 7;
+const FREE_HISTORY_DAYS    = 3;
 const PREMIUM_HISTORY_DAYS = 365;
 
 export async function GET(req: NextRequest) {
@@ -30,9 +31,14 @@ export async function GET(req: NextRequest) {
     return apiError(req, 400, "MISSING_PET_ID", "pet_id is required");
   }
 
-  // Determinar ventana de historial permitida según plan
-  // TODO: reemplazar con lookup real de plan del usuario
-  const isPremium = false; // ← conectar a tabla de suscripciones cuando exista
+  // Determinar ventana de historial permitida según plan del usuario
+  const supabase = supabaseServer;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+  const isPremium = profile?.plan === "premium";
   const maxDays   = isPremium ? PREMIUM_HISTORY_DAYS : FREE_HISTORY_DAYS;
   const cutoff    = new Date(Date.now() - maxDays * 24 * 60 * 60 * 1000).toISOString();
 
