@@ -405,6 +405,7 @@ function summarizeSessionDetailsByPeriod(
 }
 
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
 export default function TodayPage() {
   const router = useRouter();
@@ -421,6 +422,7 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
     useState<DeviceReadingsMap>({});
+  const [bowlLongReadings, setBowlLongReadings] = useState<ApiReading[]>([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -947,6 +949,23 @@ export default function TodayPage() {
   }, [bowlDevice?.id, waterDevice?.id]);
 
   useEffect(() => {
+    if (!bowlDevice?.id) return;
+    let active = true;
+    const load3Days = async () => {
+      const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+      try {
+        const result = await loadReadings(bowlDevice.id, null, 5000, { from });
+        if (!active) return;
+        setBowlLongReadings(result.data);
+      } catch {
+        // keep empty — chart shows "sin lecturas"
+      }
+    };
+    void load3Days();
+    return () => { active = false; };
+  }, [bowlDevice?.id]);
+
+  useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
       (value, index, arr): value is string =>
         Boolean(value) && arr.indexOf(value) === index,
@@ -1329,7 +1348,7 @@ export default function TodayPage() {
   const todayWeightSeries = useMemo(
     () =>
       buildSeries(
-        bowlChartReadings,
+        bowlLongReadings,
         (r) => {
           const gross = r.weight_grams;
           const plate = bowlDevice?.plate_weight_grams;
@@ -1337,21 +1356,21 @@ export default function TodayPage() {
           if (plate === null || plate === undefined) return gross;
           return Math.max(0, gross - plate);
         },
-        THREE_HOURS_MS,
+        THREE_DAYS_MS,
       ),
-    [bowlChartReadings, bowlDevice?.plate_weight_grams],
+    [bowlLongReadings, bowlDevice?.plate_weight_grams],
   );
   const todayTempSeries = useMemo(
-    () => buildSeries(bowlChartReadings, (r) => r.temperature, THREE_HOURS_MS),
-    [bowlChartReadings],
+    () => buildSeries(bowlLongReadings, (r) => r.temperature, THREE_DAYS_MS),
+    [bowlLongReadings],
   );
   const todayHumiditySeries = useMemo(
-    () => buildSeries(bowlChartReadings, (r) => r.humidity, THREE_HOURS_MS),
-    [bowlChartReadings],
+    () => buildSeries(bowlLongReadings, (r) => r.humidity, THREE_DAYS_MS),
+    [bowlLongReadings],
   );
   const todayLightSeries = useMemo(
-    () => buildSeries(bowlChartReadings, (r) => r.light_percent, THREE_HOURS_MS),
-    [bowlChartReadings],
+    () => buildSeries(bowlLongReadings, (r) => r.light_percent, THREE_DAYS_MS),
+    [bowlLongReadings],
   );
   const todayLatestWeight = todayWeightSeries[0]?.value ?? null;
   const todayLatestTemp = todayTempSeries[0]?.value ?? null;
@@ -2273,13 +2292,13 @@ export default function TodayPage() {
             {(todayWeightSeries.length > 1 || todayTempSeries.length > 1 || todayHumiditySeries.length > 1 || todayLightSeries.length > 1) ? (
               <Line
                 data={{
-                  labels: todayWeightSeries.slice(0, 30).reverse().map((p) =>
+                  labels: todayWeightSeries.slice(0, 288).reverse().map((p) =>
                     new Date(p.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })
                   ),
                   datasets: [
                     {
                       label: "Comida (g)",
-                      data: todayWeightSeries.slice(0, 30).reverse().map((p) => p.value),
+                      data: todayWeightSeries.slice(0, 288).reverse().map((p) => p.value),
                       borderColor: "#EBB7AA",
                       backgroundColor: "#EBB7AA",
                       borderWidth: 2.5,
@@ -2289,7 +2308,7 @@ export default function TodayPage() {
                     },
                     {
                       label: "Temp (°C)",
-                      data: todayTempSeries.slice(0, 30).reverse().map((p) => p.value),
+                      data: todayTempSeries.slice(0, 288).reverse().map((p) => p.value),
                       borderColor: "#D99686",
                       backgroundColor: "#D99686",
                       borderWidth: 2,
@@ -2299,7 +2318,7 @@ export default function TodayPage() {
                     },
                     {
                       label: "Humedad (%)",
-                      data: todayHumiditySeries.slice(0, 30).reverse().map((p) => p.value),
+                      data: todayHumiditySeries.slice(0, 288).reverse().map((p) => p.value),
                       borderColor: "hsl(198,70%,45%)",
                       backgroundColor: "hsl(198,70%,45%)",
                       borderWidth: 2,
@@ -2309,7 +2328,7 @@ export default function TodayPage() {
                     },
                     {
                       label: "Luz (%)",
-                      data: todayLightSeries.slice(0, 30).reverse().map((p) => p.value),
+                      data: todayLightSeries.slice(0, 288).reverse().map((p) => p.value),
                       borderColor: "hsl(44,90%,52%)",
                       backgroundColor: "hsl(44,90%,52%)",
                       borderWidth: 2,
@@ -2347,7 +2366,7 @@ export default function TodayPage() {
                         font: { size: 11 },
                         autoSkip: false,
                         maxRotation: 0,
-                        callback: (_v, i, ticks) => i === 0 ? "-3h" : i === ticks.length - 1 ? "Ahora" : "",
+                        callback: (_v, i, ticks) => i === 0 ? "-3d" : i === ticks.length - 1 ? "Ahora" : "",
                       },
                     },
                     yWeight: {
