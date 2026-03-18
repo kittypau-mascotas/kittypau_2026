@@ -297,6 +297,14 @@ export default function AppNav() {
     : selectedDeviceId
       ? devices.find((d) => d.id === selectedDeviceId)?.device_id ?? ""
       : "";
+  const selectedDevice = isDemoMode
+    ? null
+    : devices.find((d) => d.id === selectedDeviceId) ?? null;
+  const isDeviceOnline = useMemo(() => {
+    if (!selectedDevice?.last_seen) return false;
+    const lastSeen = new Date(selectedDevice.last_seen).getTime();
+    return Number.isFinite(lastSeen) && Date.now() - lastSeen < 15 * 60 * 1000;
+  }, [selectedDevice]);
   const userSummary = (
     <div className="app-nav-user app-nav-user-static">
       <Image
@@ -317,9 +325,23 @@ export default function AppNav() {
                 : " - Tester"
               : ""}
         </span>
-        <span className="app-nav-user-sub">
-          {demoPetName ?? navPetName ?? petName ?? "Sin mascota"}
-          {resolvedDeviceLabel ? ` - ${resolvedDeviceLabel}` : ""}
+        <span className="app-nav-user-sub flex items-center gap-1.5">
+          <span>
+            {demoPetName ?? navPetName ?? petName ?? "Sin mascota"}
+            {resolvedDeviceLabel ? ` - ${resolvedDeviceLabel}` : ""}
+          </span>
+          {resolvedDeviceLabel ? (
+            <span
+              title={isDeviceOnline ? "Dispositivo en línea" : "Dispositivo sin conexión"}
+              className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                isDeviceOnline ? "bg-emerald-500" : "bg-slate-300"
+              }`}
+            >
+              <svg viewBox="0 0 10 10" fill="white" className="h-2.5 w-2.5">
+                <path d="M2 5.5l2 2 4-4" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            </span>
+          ) : null}
         </span>
       </span>
     </div>

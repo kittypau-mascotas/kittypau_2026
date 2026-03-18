@@ -710,6 +710,7 @@ export default function BowlPage() {
                     latestValue={latestWeightValue}
                     rangeStartLabel={selectedRangeConfig.fromLabel}
                     maxPoints={selectedRangeConfig.maxPoints}
+                    integerDisplay
                   />
                   <button
                     type="button"
@@ -748,6 +749,7 @@ export default function BowlPage() {
                   latestValue={latestLightValue}
                   rangeStartLabel={selectedRangeConfig.fromLabel}
                   maxPoints={selectedRangeConfig.maxPoints}
+                  integerDisplay
                   className="lg:col-start-1"
                 />
                 <ChartCard

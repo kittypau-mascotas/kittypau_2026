@@ -2269,7 +2269,7 @@ export default function TodayPage() {
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(350 65% 62%)" }} />
               <span className="text-xs uppercase tracking-widest text-slate-400">Comida</span>
-              <span className="font-semibold text-slate-800">{todayLatestWeight !== null ? `${todayLatestWeight} g` : "N/D"}</span>
+              <span className="font-semibold text-slate-800">{todayLatestWeight !== null ? `${Math.round(todayLatestWeight)} g` : "N/D"}</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(25 80% 52%)" }} />
@@ -2353,6 +2353,12 @@ export default function TodayPage() {
                       borderColor: "rgba(148,163,184,0.35)",
                       borderWidth: 1,
                       displayColors: true,
+                      callbacks: {
+                        label: (ctx) => {
+                          const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
+                          return raw !== null ? `${ctx.dataset.label}: ${Math.round(raw)}` : (ctx.dataset.label ?? "");
+                        },
+                      },
                     },
                   },
                   interaction: { mode: "nearest", intersect: false },
@@ -2374,14 +2380,14 @@ export default function TodayPage() {
                       position: "left",
                       grid: { drawOnChartArea: false },
                       border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "hsl(350 65% 62%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}g` },
+                      ticks: { color: "hsl(350 65% 62%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${Math.round(Number(v))}g` },
                     },
                     yEnv: {
                       type: "linear",
                       position: "right",
                       grid: { drawOnChartArea: false },
                       border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "hsl(25 80% 52%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${v}` },
+                      ticks: { color: "hsl(25 80% 52%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${Math.round(Number(v))}` },
                     },
                   },
                 }}

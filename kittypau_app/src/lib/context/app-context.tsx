@@ -25,6 +25,7 @@ type Device = {
   id: string;
   device_id: string;
   pet_id?: string | null;
+  last_seen?: string | null;
 };
 
 type AppData = {
