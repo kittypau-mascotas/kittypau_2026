@@ -1,6 +1,7 @@
 ﻿// wifi_manager.cpp
 // GestiÃ³n de WiFi y credenciales usando LittleFS
 #include "wifi_manager.h"
+#include "captive_portal.h"
 #include "config.h"
 #include "led_indicator.h" // Incluir led_indicator para usar las funciones del LED
 #include <LittleFS.h>
@@ -176,10 +177,11 @@ void wifiManagerInit() {
     }
     WiFi.scanDelete();
 
-    // 4. Si aÃºn no conectado, mensaje final
+    // 4. Si aÃºn no conectado → arrancar portal cautivo
     if (!wifiConnected) {
         Serial.println("No se pudo conectar a ninguna red WiFi visible.");
         stopWifiBlink();
+        startCaptivePortal(DEVICE_ID);  // no retorna, hace restart al guardar o timeout
     }
 }
 
@@ -187,52 +189,17 @@ void wifiManagerLoop() {
     if (WiFi.status() != WL_CONNECTED) {
         if (wifiConnected) {
             wifiConnected = false;
-            Serial.println("ConexiÃ³n WiFi perdida. Intentando reconectar...");
-        }
-        startWifiBlink();  // mantener parpadeo activo en cada reintento
-
-        // Throttle: no reintentar mas rapido que cada 30s para no saturar el router
-        static unsigned long lastReconnectAttempt = 0;
-        if (millis() - lastReconnectAttempt < 30000 && lastReconnectAttempt != 0) {
-            return;
-        }
-        lastReconnectAttempt = millis();
-
-        // 1. Intentar Ãºltima red exitosa primero
-        if (lastSuccessfulSSID.length() > 0) {
-            WifiCredential* lastCred = findCredentialBySSID(lastSuccessfulSSID);
-            if (lastCred && tryConnectToNetwork(lastCred->ssid, lastCred->pass)) {
-                return;
-            }
-        }
-
-        // 2. Escanear y reconectar a redes visibles conocidas
-        int numNetworks = WiFi.scanNetworks(false, false);
-        for (int i = 0; i < numNetworks && !wifiConnected; i++) {
-            String scannedSSID = WiFi.SSID(i);
-            if (scannedSSID == lastSuccessfulSSID) continue;
-
-            WifiCredential* cred = findCredentialBySSID(scannedSSID);
-            if (cred && tryConnectToNetwork(cred->ssid, cred->pass)) {
-                WiFi.scanDelete();
-                return;
-            }
-        }
-        WiFi.scanDelete();
-
-        if (!wifiConnected) {
-            Serial.println("No se pudo reconectar a ninguna red.");
+            Serial.println("[WiFi] ConexiÃ³n perdida. Reiniciando en 10s...");
+            delay(10000);
+            ESP.restart();  // wifiManagerInit() maneja reconexiÃ³n y portal
         }
     } else {
         if (!wifiConnected) {
-            // ConexiÃ³n establecida (posiblemente tardÃ­a)
             wifiConnected = true;
             lastSuccessfulSSID = WiFi.SSID();
             saveLastSuccessfulSSID(lastSuccessfulSSID);
-            Serial.print("WiFi conectado a: ");
+            Serial.print("[WiFi] Conectado: ");
             Serial.println(WiFi.SSID());
-            Serial.print("IP: ");
-            Serial.println(WiFi.localIP());
             stopWifiBlink();
         }
     }

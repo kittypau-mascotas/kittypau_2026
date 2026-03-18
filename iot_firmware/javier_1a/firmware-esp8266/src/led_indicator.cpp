@@ -6,6 +6,7 @@ const int ledPin = PIN_LED_STATUS;
 
 // Variables para el parpadeo de LED no bloqueante
 static bool blinkEnable = false;
+static bool portalBlink = false;
 static unsigned long lastBlinkMillis = 0;
 static bool ledState = HIGH; // HIGH = LED apagado
 
@@ -36,24 +37,42 @@ void blinkLED(int times, int duration) {
 }
 
 void startWifiBlink() {
-    if (!blinkEnable) {  // solo reinicia el ciclo si no estaba ya corriendo
+    if (!blinkEnable) {
         blinkEnable = true;
+        portalBlink = false;
         lastBlinkMillis = millis();
         digitalWrite(ledPin, HIGH);
     }
 }
 
+// Patrón portal: -.. -.. -..  (largo·corto·corto)
+void startPortalBlink() {
+    blinkEnable = true;
+    portalBlink = true;
+    lastBlinkMillis = millis();
+    digitalWrite(ledPin, HIGH);
+}
+
 void stopWifiBlink() {
     blinkEnable = false;
+    portalBlink = false;
     digitalWrite(ledPin, HIGH);
 }
 
 void handleLedIndicator() {
     if (!blinkEnable) return;
 
-    // Patrón: 3 parpadeos rápidos → 500ms pausa → repite
-    // Cada parpadeo: 100ms ON + 100ms OFF = 200ms × 3 = 600ms + 500ms pausa = 1100ms ciclo
-    unsigned long t = (millis() - lastBlinkMillis) % 1100;
-    bool on = (t < 600) && ((t % 200) < 100);
-    digitalWrite(ledPin, on ? LOW : HIGH);  // LED activo en LOW
+    if (portalBlink) {
+        // Ciclo 1400ms: -300ms ON, 150ms OFF, .100ms ON, 100ms OFF, .100ms ON, 650ms OFF
+        unsigned long t = (millis() - lastBlinkMillis) % 1400;
+        bool on = (t < 300)                          // largo  (-)
+               || (t >= 450 && t < 550)              // corto  (.)
+               || (t >= 650 && t < 750);             // corto  (.)
+        digitalWrite(ledPin, on ? LOW : HIGH);
+    } else {
+        // Patrón WiFi: 3 parpadeos rápidos → 500ms pausa → repite
+        unsigned long t = (millis() - lastBlinkMillis) % 1100;
+        bool on = (t < 600) && ((t % 200) < 100);
+        digitalWrite(ledPin, on ? LOW : HIGH);
+    }
 }
