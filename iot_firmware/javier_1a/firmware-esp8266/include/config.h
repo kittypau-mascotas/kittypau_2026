@@ -53,5 +53,6 @@
 
 // Archivo de calibraciÃ³n
 #define CALIBRATION_FILE "/calibration.json"
+#define TARE_FILE        "/tare.json"
 
 

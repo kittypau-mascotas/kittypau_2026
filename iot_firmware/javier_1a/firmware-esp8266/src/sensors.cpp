@@ -43,8 +43,18 @@ void sensorsInit() {
 
     if (scale.is_ready()) {
         Serial.println(" listo!");
-        scale.tare();
-        Serial.println("Báscula tarada.");
+        long savedOffset = loadTareOffset();
+        if (savedOffset != 0) {
+            // Restaurar offset guardado — evita re-tarar tras corte de energía
+            scale.set_offset(savedOffset);
+            Serial.print("Offset de tara restaurado desde LittleFS: ");
+            Serial.println(savedOffset);
+        } else {
+            // Primera vez o sin offset guardado — tarar y guardar
+            scale.tare();
+            saveTareOffset(scale.get_offset());
+            Serial.println("Báscula tarada (primer arranque) y offset guardado.");
+        }
     } else {
         Serial.println(" NO detectado! Continuando sin tara.");
     }
@@ -142,7 +152,8 @@ void sensorsTareWeight() {
     yield();
     if (scale.is_ready()) {
         scale.tare();
-        Serial.println("Báscula tarada.");
+        saveTareOffset(scale.get_offset());
+        Serial.println("Báscula tarada y offset guardado en LittleFS.");
     } else {
         Serial.println("Error: HX711 no está listo.");
     }
@@ -152,6 +163,35 @@ void sensorsTareWeight() {
 long sensorsGetRawValue(int times) {
     yield();
     return scale.get_value(times);
+}
+
+long loadTareOffset() {
+    long offset = 0;
+    if (!LittleFS.exists(TARE_FILE)) return 0;
+    File file = LittleFS.open(TARE_FILE, "r");
+    if (!file) return 0;
+    DynamicJsonDocument doc(64);
+    if (!deserializeJson(doc, file) && doc.containsKey("offset")) {
+        offset = doc["offset"].as<long>();
+        Serial.print("Offset de tara cargado: ");
+        Serial.println(offset);
+    }
+    file.close();
+    return offset;
+}
+
+void saveTareOffset(long offset) {
+    File file = LittleFS.open(TARE_FILE, "w");
+    if (!file) {
+        Serial.println("Error: no se pudo guardar offset de tara.");
+        return;
+    }
+    DynamicJsonDocument doc(64);
+    doc["offset"] = offset;
+    serializeJson(doc, file);
+    file.close();
+    Serial.print("Offset de tara guardado: ");
+    Serial.println(offset);
 }
 
 void sensorsSetCalibrationFactor(float factor) {
