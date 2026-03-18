@@ -117,7 +117,10 @@ export default function PetPage() {
       },
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error("No se pudo actualizar la mascota.");
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => null);
+      throw new Error(errBody?.message ?? errBody?.error ?? `Error ${res.status}`);
+    }
     return (await res.json()) as ApiPet;
   };
 
