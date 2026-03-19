@@ -1446,6 +1446,24 @@ export default function TodayPage() {
   const todayLatestHumidity = todayHumiditySeries[0]?.value ?? null;
   const todayLatestLight = todayLightSeries[0]?.value ?? null;
 
+  // Serie ordenada ascendente para el gráfico 3D — referenciada en tooltip callbacks
+  const orderedToday3d = useMemo(
+    () => todayWeightSeries.slice(0, 288).reverse(),
+    [todayWeightSeries],
+  );
+
+  const formatToday3dTooltipTitle = (idx: number): string => {
+    const ts = orderedToday3d[idx]?.timestamp;
+    if (!ts) return "";
+    const d = new Date(ts);
+    const hh = d.getHours().toString().padStart(2, "0");
+    const mi = d.getMinutes().toString().padStart(2, "0");
+    const dd = d.getDate().toString().padStart(2, "0");
+    const mo = (d.getMonth() + 1).toString().padStart(2, "0");
+    const aa = d.getFullYear().toString().slice(2);
+    return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
+  };
+
   const selectBowlSeriesValue = (reading: ApiReading) => {
     const gross = toNullableNumber(reading.weight_grams);
     const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
@@ -1678,11 +1696,17 @@ export default function TodayPage() {
           boxPadding: 2,
           callbacks: {
             title: (items) => {
-              void items;
-              return "";
+              const point = items[0]?.parsed;
+              if (!point || typeof point.x !== "number") return "";
+              const d = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
+              const hh = d.getHours().toString().padStart(2, "0");
+              const mi = d.getMinutes().toString().padStart(2, "0");
+              const dd = d.getDate().toString().padStart(2, "0");
+              const mo = (d.getMonth() + 1).toString().padStart(2, "0");
+              const aa = d.getFullYear().toString().slice(2);
+              return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
             },
             label: (context) => {
-              const point = context.parsed;
               const value =
                 typeof context.parsed.y === "number"
                   ? Math.round(context.parsed.y)
@@ -1693,22 +1717,10 @@ export default function TodayPage() {
                 : label.includes("Alimentación")
                   ? "Alimentación"
                   : "Lectura";
-              const pointTime =
-                typeof point.x === "number"
-                  ? new Date(
-                      dayNightWindow.startMs + point.x * 60 * 60 * 1000,
-                    ).toLocaleString("es-CL", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })
-                  : "N/D";
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const valueText = value === null ? "N/D" : `${value} ${unit}`;
-              return [`${seriesTitle} · ${pointTime}`, `Valor: ${valueText}`];
+              return [`${seriesTitle}: ${valueText}`];
             },
             afterLabel: (context) => {
               const label = context.dataset.label ?? "Serie";
@@ -2381,13 +2393,13 @@ export default function TodayPage() {
             {(todayWeightSeries.length > 1 || todayTempSeries.length > 1 || todayHumiditySeries.length > 1 || todayLightSeries.length > 1) ? (
               <Line
                 data={{
-                  labels: todayWeightSeries.slice(0, 288).reverse().map((p) =>
-                    new Date(p.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })
+                  labels: orderedToday3d.map((p) =>
+                    new Date(p.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false })
                   ),
                   datasets: [
                     {
                       label: "Comida (g)",
-                      data: todayWeightSeries.slice(0, 288).reverse().map((p) => p.value),
+                      data: orderedToday3d.map((p) => p.value),
                       borderColor: "hsl(350 65% 62%)",
                       backgroundColor: "hsl(350 65% 62%)",
                       borderWidth: 2.5,
@@ -2443,6 +2455,10 @@ export default function TodayPage() {
                       borderWidth: 1,
                       displayColors: true,
                       callbacks: {
+                        title: (items) => {
+                          const idx = items[0]?.dataIndex;
+                          return idx !== undefined ? formatToday3dTooltipTitle(idx) : "";
+                        },
                         label: (ctx) => {
                           const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
                           return raw !== null ? `${ctx.dataset.label}: ${Math.round(raw)}` : (ctx.dataset.label ?? "");
