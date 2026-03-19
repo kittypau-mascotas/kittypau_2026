@@ -1317,7 +1317,7 @@ export default function RegistroFlow({
                 error={
                   showDeviceHints &&
                   (!deviceForm.device_id.trim() ||
-                    !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim()))
+                    !/^KPCL\d{4}$/.test(deviceForm.device_id.trim()))
                     ? "Ingresa un código válido KPCL0000."
                     : null
                 }
@@ -1325,7 +1325,7 @@ export default function RegistroFlow({
                 <input
                   className={inputClass(
                     !deviceForm.device_id.trim() ||
-                      !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim()),
+                      !/^KPCL\d{4}$/.test(deviceForm.device_id.trim()),
                   )}
                   placeholder="Código KPCL0000"
                   value={deviceForm.device_id}
