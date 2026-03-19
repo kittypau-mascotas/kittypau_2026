@@ -193,6 +193,8 @@ export default function BowlPage() {
   const [wifiPass, setWifiPass] = useState("");
   const [isAddingWifi, setIsAddingWifi] = useState(false);
   const [wifiAddStatus, setWifiAddStatus] = useState<"ok" | "error" | null>(null);
+  const [knownWifiSsids, setKnownWifiSsids] = useState<string[]>([]);
+  const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`/api/devices`, {
@@ -464,6 +466,14 @@ export default function BowlPage() {
         setConfigPets(list as ApiPet[]);
       }
     } catch { /* mostrar modal igual */ }
+    // Cargar lista de SSIDs conocidos guardados localmente
+    try {
+      const stored = localStorage.getItem(`kp_wifi_${selectedDevice.device_id}`);
+      setKnownWifiSsids(stored ? (JSON.parse(stored) as string[]) : []);
+    } catch { setKnownWifiSsids([]); }
+    setWifiSsid("");
+    setWifiPass("");
+    setWifiAddStatus(null);
     setShowConfig(true);
   };
 
@@ -517,6 +527,12 @@ export default function BowlPage() {
       });
       if (!res.ok) throw new Error("Error");
       setWifiAddStatus("ok");
+      const newSsid = wifiSsid.trim();
+      setKnownWifiSsids((prev) => {
+        const updated = prev.includes(newSsid) ? prev : [...prev, newSsid];
+        try { localStorage.setItem(`kp_wifi_${selectedDevice.device_id}`, JSON.stringify(updated)); } catch { /* ignore */ }
+        return updated;
+      });
       setWifiSsid("");
       setWifiPass("");
       setTimeout(() => setWifiAddStatus(null), 3000);
@@ -526,6 +542,30 @@ export default function BowlPage() {
     } finally {
       setIsAddingWifi(false);
     }
+  };
+
+  const handleRemoveWifi = async (ssid: string) => {
+    if (!selectedDevice?.id || removingWifiSsid) return;
+    setRemovingWifiSsid(ssid);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch(`/api/devices/${selectedDevice.id}/wifi`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ssid }),
+      });
+      if (!res.ok) throw new Error("Error");
+      setKnownWifiSsids((prev) => {
+        const updated = prev.filter((s) => s !== ssid);
+        try { localStorage.setItem(`kp_wifi_${selectedDevice.device_id}`, JSON.stringify(updated)); } catch { /* ignore */ }
+        return updated;
+      });
+    } catch { /* silencioso — el usuario puede reintentar */ }
+    finally { setRemovingWifiSsid(null); }
   };
 
   const connectionHint = useMemo(() => {
@@ -1104,11 +1144,42 @@ export default function BowlPage() {
             {/* ── Sección 3: WiFi ── */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
               <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                Agregar red WiFi
+                Redes WiFi
               </p>
+
+              {/* Lista de redes conocidas */}
+              {knownWifiSsids.length > 0 && (
+                <div className="mb-3">
+                  <p className="mb-1.5 text-xs font-medium text-slate-600">Redes guardadas</p>
+                  <ul className="space-y-1.5">
+                    {knownWifiSsids.map((ssid) => (
+                      <li
+                        key={ssid}
+                        className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2"
+                      >
+                        <span className="truncate text-sm text-slate-700">{ssid}</span>
+                        <button
+                          type="button"
+                          onClick={() => void handleRemoveWifi(ssid)}
+                          disabled={removingWifiSsid === ssid}
+                          className="ml-2 shrink-0 rounded px-2 py-0.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-40"
+                        >
+                          {removingWifiSsid === ssid ? (
+                            <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-red-300 border-t-red-500" />
+                          ) : (
+                            "Eliminar"
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Formulario para añadir nueva red */}
               <div className="mb-2">
                 <label className="mb-1 block text-xs font-medium text-slate-600">
-                  Nombre de red (SSID)
+                  Nueva red (SSID)
                 </label>
                 <input
                   type="text"
@@ -1146,7 +1217,7 @@ export default function BowlPage() {
                 ) : wifiAddStatus === "error" ? (
                   "✗ Error al enviar"
                 ) : (
-                  "Enviar al dispositivo"
+                  "Agregar red"
                 )}
               </button>
               <p className="mt-2 text-[11px] text-slate-400">
