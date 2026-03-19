@@ -12,7 +12,7 @@
 #define PIN_LDR        A0           // Ãšnico pin ADC en ESP8266
 
 // Dispositivo
-#define DEVICE_ID      "KPCL0038"
+#define DEVICE_ID      "KPCL0051"
 #define DEVICE_TYPE    "comedero"              // Funcion: "comedero", "bebedero"
 #define DEVICE_MODEL   "NodeMCU v3 CP2102"     // Modelo de placa electronica
 

@@ -254,7 +254,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabaseServer.rpc("link_device_to_pet", {
     p_owner_id: user.id,
     p_pet_id: payload.pet_id,
-    p_device_id: payload.device_id,
+    p_device_code: payload.device_id,
     p_device_type: payload.device_type,
     p_status: payload.status,
     p_battery_level: payload.battery_level,
@@ -279,7 +279,7 @@ export async function POST(req: NextRequest) {
       const retry = await supabaseServer.rpc("link_device_to_pet", {
         p_owner_id: user.id,
         p_pet_id: payload.pet_id,
-        p_device_id: payload.device_id,
+        p_device_code: payload.device_id,
         p_device_type: payload.device_type,
         p_status: payload.status,
         p_battery_level: payload.battery_level,
@@ -299,7 +299,7 @@ export async function POST(req: NextRequest) {
         actor_id: user.id,
         entity_type: "device",
         entity_id: retry.data.id,
-        payload: { device_id: retry.data.device_id, pet_id: retry.data.pet_id },
+        payload: { device_code: retry.data.device_code, pet_id: retry.data.pet_id },
       });
 
       if (payload.plate_weight_grams !== null) {
@@ -327,7 +327,7 @@ export async function POST(req: NextRequest) {
     actor_id: user.id,
     entity_type: "device",
     entity_id: data.id,
-    payload: { device_id: data.device_id, pet_id: data.pet_id },
+    payload: { device_code: data.device_code, pet_id: data.pet_id },
   });
 
   if (payload.plate_weight_grams !== null) {
