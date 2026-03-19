@@ -32,9 +32,10 @@ export function buildSeries<T extends { recorded_at?: string | null }>(
   readings: T[],
   getValue: (reading: T) => number | null | undefined,
   windowMs: number,
+  bucketMs?: number,
 ): { value: number; timestamp: string }[] {
   const cutoff = Date.now() - windowMs;
-  return readings
+  const filtered = readings
     .map((reading) => ({
       value: getValue(reading),
       timestamp: reading.recorded_at ?? null,
@@ -47,6 +48,23 @@ export function buildSeries<T extends { recorded_at?: string | null }>(
       if (Number.isNaN(ts)) return false;
       return ts >= cutoff;
     });
+
+  if (!bucketMs || bucketMs <= 0) return filtered;
+
+  // Agrupar en buckets y promediar
+  const buckets = new Map<number, number[]>();
+  for (const item of filtered) {
+    const ts = new Date(item.timestamp).getTime();
+    const bucketTs = Math.floor(ts / bucketMs) * bucketMs;
+    if (!buckets.has(bucketTs)) buckets.set(bucketTs, []);
+    buckets.get(bucketTs)!.push(item.value);
+  }
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => b - a) // más reciente primero (igual que el API)
+    .map(([ts, values]) => ({
+      value: values.reduce((s, v) => s + v, 0) / values.length,
+      timestamp: new Date(ts).toISOString(),
+    }));
 }
 
 /**

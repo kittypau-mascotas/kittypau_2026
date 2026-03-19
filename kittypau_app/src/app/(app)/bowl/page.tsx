@@ -61,6 +61,8 @@ const CHART_RANGES: {
   label: string;
   windowMs: number;
   queryLimit: number;
+  maxPages: number;    // cuántas páginas de 5000 rows pedir (paginación)
+  bucketMs: number;    // 0 = sin bucket; >0 = promedio por intervalo
   maxPoints: number;
   fromLabel: string;
 }[] = [
@@ -69,6 +71,8 @@ const CHART_RANGES: {
     label: "5 min",
     windowMs: 5 * 60 * 1000,
     queryLimit: 120,
+    maxPages: 1,
+    bucketMs: 0,
     maxPoints: 30,
     fromLabel: "-5m",
   },
@@ -77,6 +81,8 @@ const CHART_RANGES: {
     label: "15 min",
     windowMs: 15 * 60 * 1000,
     queryLimit: 220,
+    maxPages: 1,
+    bucketMs: 0,
     maxPoints: 60,
     fromLabel: "-15m",
   },
@@ -85,23 +91,31 @@ const CHART_RANGES: {
     label: "1 hora",
     windowMs: 60 * 60 * 1000,
     queryLimit: 420,
+    maxPages: 1,
+    bucketMs: 0,
     maxPoints: 120,
     fromLabel: "-1h",
   },
   {
+    // 24h: bucket de 5 min → 288 puntos exactos
     key: "1d",
     label: "1 dia",
     windowMs: 24 * 60 * 60 * 1000,
-    queryLimit: 3000,
-    maxPoints: 288,
+    queryLimit: 5000,
+    maxPages: 1,
+    bucketMs: 5 * 60 * 1000,
+    maxPoints: 300,
     fromLabel: "-1d",
   },
   {
+    // 7d: hasta 4 páginas × 5000 → bucket 30 min → 336 puntos
     key: "1w",
     label: "1 semana",
     windowMs: 7 * 24 * 60 * 60 * 1000,
     queryLimit: 5000,
-    maxPoints: 400,
+    maxPages: 4,
+    bucketMs: 30 * 60 * 1000,
+    maxPoints: 340,
     fromLabel: "-1sem",
   },
 ];
@@ -228,6 +242,34 @@ export default function BowlPage() {
     return parseListResponse<ApiReading>(payload);
   };
 
+  // Versión paginada: concatena páginas hasta cubrir la ventana completa
+  const loadReadingsAll = async (
+    deviceId: string,
+    token: string,
+    windowMs: number,
+    pageSize: number,
+    maxPages: number,
+  ): Promise<ApiReading[]> => {
+    const from = new Date(Date.now() - windowMs).toISOString();
+    const all: ApiReading[] = [];
+    let cursor: string | null = null;
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams({ device_id: deviceId, limit: String(pageSize), from });
+      if (cursor) params.set("cursor", cursor);
+      const res = await fetch(`/api/readings?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (!res.ok) break;
+      const payload = (await res.json()) as { data?: ApiReading[]; next_cursor?: string | null };
+      const page_data = payload.data ?? [];
+      all.push(...page_data);
+      cursor = payload.next_cursor ?? null;
+      if (!cursor || page_data.length < pageSize) break;
+    }
+    return all;
+  };
+
   // Carga de devices: solo se ejecuta al montar el componente.
   // Las lecturas son responsabilidad del siguiente useEffect (deps: selectedDeviceId + selectedRange).
   useEffect(() => {
@@ -292,11 +334,12 @@ export default function BowlPage() {
         const selectedConfig =
           CHART_RANGES.find((range) => range.key === selectedRange) ??
           CHART_RANGES[0];
-        const readingData = await loadReadings(
+        const readingData = await loadReadingsAll(
           selectedDeviceId,
           token,
-          selectedConfig.queryLimit,
           selectedConfig.windowMs,
+          selectedConfig.queryLimit,
+          selectedConfig.maxPages,
         );
         if (!active) return;
         setReadings(readingData);
@@ -328,11 +371,12 @@ export default function BowlPage() {
         const selectedConfig =
           CHART_RANGES.find((range) => range.key === selectedRange) ??
           CHART_RANGES[0];
-        const readingData = await loadReadings(
+        const readingData = await loadReadingsAll(
           selectedDeviceId,
           token,
-          selectedConfig.queryLimit,
           selectedConfig.windowMs,
+          selectedConfig.queryLimit,
+          selectedConfig.maxPages,
         );
         if (!active) return;
         setReadings(readingData);
@@ -707,18 +751,19 @@ export default function BowlPage() {
         readings,
         (r) => r.weight_grams,
         selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
       ),
-    [readings, selectedRangeConfig.windowMs],
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
   const tempSeries = useMemo(
     () =>
-      buildSeries(readings, (r) => r.temperature, selectedRangeConfig.windowMs),
-    [readings, selectedRangeConfig.windowMs],
+      buildSeries(readings, (r) => r.temperature, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs),
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
   const humiditySeries = useMemo(
     () =>
-      buildSeries(readings, (r) => r.humidity, selectedRangeConfig.windowMs),
-    [readings, selectedRangeConfig.windowMs],
+      buildSeries(readings, (r) => r.humidity, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs),
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
   const lightSeries = useMemo(
     () =>
@@ -726,8 +771,9 @@ export default function BowlPage() {
         readings,
         (r) => r.light_percent,
         selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
       ),
-    [readings, selectedRangeConfig.windowMs],
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
 
   return (
