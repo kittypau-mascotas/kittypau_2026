@@ -10,7 +10,7 @@
 #include <ArduinoOTA.h>
 
 // Intervalos de publicación (en milisegundos)
-#define SENSOR_PUBLISH_INTERVAL 10000  // Datos cada 10 segundos
+#define SENSOR_PUBLISH_INTERVAL 30000  // Datos cada 30 segundos
 #define STATUS_PUBLISH_INTERVAL 15000  // Estado cada 15 segundos
 
 // Timers

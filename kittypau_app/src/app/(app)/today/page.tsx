@@ -1024,7 +1024,7 @@ export default function TodayPage() {
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
-            const result = await loadReadings(deviceId, null, 500, {
+            const result = await loadReadings(deviceId, null, 5000, {
               from: cycleFrom,
               to: cycleTo,
             });
