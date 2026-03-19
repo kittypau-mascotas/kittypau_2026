@@ -28,11 +28,13 @@ Debe respetarse sin excepcion:
   - `water_ml`: 0..5000
   - `flow_rate`: 0..1000
 - Idempotencia: no duplicar `readings` para mismo `device_id + recorded_at`.
+- Criterio analítico (recomendado): en ingestión server-side aplicar `log10(x + 1)` a variables skewed y persistir raw + transformado (Fourier/FFT queda fuera del Gate 1, corre en worker).
 
 Referencia:
 - `Docs/TOPICOS_MQTT.md`
 - `Docs/RASPBERRY_BRIDGE.md`
 - `kittypau_app/src/app/api/mqtt/webhook/route.ts`
+- `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ## Entregables minimos por PR (Gate 2)
 Cada PR IoT/Firmware debe incluir:

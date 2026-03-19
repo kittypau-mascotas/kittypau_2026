@@ -56,9 +56,12 @@ src/app/
 1. `POST /api/mqtt/webhook`
    - Recibe datos desde HiveMQ.
    - Valida `x-webhook-token`.
+   - Feature engineering en ingestión (recomendado): aplicar `log10(x + 1)` a variables skewed y guardar raw + transformado.
    - Inserta lectura y actualiza `devices`.
    - Busca el dispositivo por `device_id`.
    - Idempotente por `device_id + recorded_at` (si llega duplicado, responde `idempotent: true`).
+   - Fourier/FFT no va aquí: se ejecuta en un worker/servicio analítico sobre series temporales.
+   - Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 2. `GET/PUT /api/profiles`
    - Lee/actualiza perfil del usuario.
@@ -121,6 +124,14 @@ src/app/
    - Query params:
      - `stale_min` (bridge)
      - `device_stale_min` (KPCL)
+
+13. `GET /api/account/type`
+   - Retorna el tipo de cuenta (rol) y el plan comercial del usuario.
+   - Requiere `Authorization: Bearer <access_token>`.
+   - Respuesta (resumen):
+     - `account_type`: `admin` | `tester` | `client`
+     - `account_plan`: `plan_a` | `plan_b` | `plan_c`
+   - Fuente de verdad del plan: `public.profiles.account_plan` (ver `Docs/PLANES_Y_ACCESOS.md`).
 
 Payload propuesto:
 ```json

@@ -42,6 +42,17 @@ Reglas:
 - Ordenar por `t_i` ascendente para calculos de delta.
 - Mantener control de duplicados (`device_id`, `recorded_at`).
 
+### 3.2 Transformación `log10(x + 1)` (feature engineering)
+Para variables altamente skewed (consumo, intervalos, deltas), usar:
+- `x_log = log10(x + 1)`
+
+Regla:
+- Aplicar en ingestión server-side después de validar (ej. Zod) y antes de persistir, guardando raw + transformado.
+
+Fourier/FFT no va en ingestión: se aplica en capa analítica/ML sobre series temporales por mascota.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
 ## 3.1 Vinculo explicito con SQL (variables y campos)
 Matriz minima de mapeo:
 

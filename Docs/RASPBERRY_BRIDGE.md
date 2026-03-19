@@ -183,6 +183,15 @@ Notas:
 - `flow_rate`: 0 a 1000
 - `device_id`: formato `KPCL0000`
 
+---
+
+## Transformaciones analíticas (log10 + Fourier) - criterio operativo
+- `log10(x + 1)` es un paso de **ingestión**: se aplica server-side **después de validar** (ej. Zod) y **antes de persistir** en DB, para reducir skew/outliers sin eliminar eventos.
+- Guardar **raw + transformado** (ej. `weight_grams` + `weight_grams_log`, `water_ml` + `water_ml_log`) para mantener trazabilidad y estabilidad analítica.
+- Fourier/FFT **no** se ejecuta en el Bridge: va en un worker/servicio analítico (batch) sobre series temporales por mascota.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
 **Errores esperados**
 - `401 Unauthorized`: token invalido o faltante.
 - `400 Bad Request`: payload invalido (campos faltantes o fuera de rango).

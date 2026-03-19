@@ -2,7 +2,7 @@
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesión.
+1. Se registra e inicia sesiÃ³n.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
@@ -14,8 +14,8 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El código fuente vive en el repo (`/bridge`).
-   - El runtime real está fuera del repo (Raspberry).
+   - El cÃ³digo fuente vive en el repo (`/bridge`).
+   - El runtime real estÃ¡ fuera del repo (Raspberry).
 
 ---
 
@@ -34,18 +34,25 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ## Regla de conexion (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvÃ­a a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetría)
+## Flujo de datos (telemetrÃ­a)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
+2. Raspberry Bridge escucha MQTT y reenvÃ­a a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
+
+### Transformaciones analÃ­ticas (recomendado)
+- En ingestiÃ³n server-side (despuÃ©s de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
+- Guardar ambos: raw + transformado (ej. `weight_grams` y `weight_grams_log`).
+- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analÃ­tico (batch o microservicio).
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ## Registro de dispositivo (paso esencial)
 - El usuario escanea el QR en la parte inferior del plato.
@@ -162,7 +169,7 @@ ESP32 -> HiveMQ Cloud
 ```
 **Notas**
 - La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
-- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
+- El `device_id` es el cÃ³digo humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json

@@ -4,6 +4,12 @@
 Flujo operativo definido:
 Dispositivo -> MQTT -> Bridge -> API -> Supabase -> App.
 
+## Transformaciones analíticas (log10 + Fourier) - base técnica de IA
+- Ingestión: aplicar `log10(x + 1)` post-validación y pre-persistencia para variables skewed (raw + log).
+- Analítica/ML: Fourier/FFT en worker/batch sobre series temporales por mascota para rutinas/cambios de patrón y scoring de anomalías.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
 ## Estado tecnico util para postulacion
 1. API y contratos principales documentados.
 2. SQL y reglas de integridad versionadas.

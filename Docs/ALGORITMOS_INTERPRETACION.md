@@ -52,3 +52,9 @@ Convertir lecturas crudas en mensajes interpretativos consistentes, evitando con
 - Reglas por raza y edad.
 - Detección de anomalías con z-score / IQR.
 - Perfiles multi-mascota con comparación cruzada.
+
+## Transformaciones analíticas (log10 + Fourier) - recomendado
+- `log10(x + 1)` en ingestión (raw + log) para variables skewed/outliers.
+- Fourier/FFT en worker/servicio analítico (batch) para rutinas y cambios de patrón.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`

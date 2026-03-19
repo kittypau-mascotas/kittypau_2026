@@ -37,7 +37,7 @@ Los duenos de mascotas no tienen visibilidad continua sobre habitos criticos de 
 - [ ] El producto ha sido ampliamente probado y validado.
 - [ ] El producto esta completamente maduro y listo para su uso en el mercado.
 
-- Sector de Contribucion Clim�tica (principal): **Urbanizacion**
+- Sector de Contribucion Climática (principal): **Urbanizacion**
 - Area de accion principal: **Monitoreo (medicion y rastreo)**
 
 ## 4) Equipo fundador
@@ -59,7 +59,7 @@ Duenos de mascotas urbanos (gatos y perros pequenos/medianos), digitalmente acti
 La oportunidad es favorable porque el cuidado de mascotas se esta digitalizando rapidamente y los usuarios esperan soluciones de salud preventiva, no solo productos de conveniencia. Al mismo tiempo, la infraestructura IoT/cloud hoy permite desplegar telemetria y analitica con costos iniciales accesibles para startups. KittyPaw ya cuenta con prototipo funcional, arquitectura operativa y documentacion tecnica/comercial que reduce riesgo de ejecucion. Esto permite pasar desde validacion interna a piloto controlado con foco en evidencia de uso, retencion y valor clinico-operativo.
 
 ### Principal ventaja tecnica diferenciadora (max 150 palabras)
-KittyPaw no se limita a automatizar dispensacion: integra hardware IoT, trazabilidad historica y capa analitica para detectar desv�os de hidratacion/alimentacion con contexto ambiental. Esa integracion extremo a extremo (sensor -> MQTT -> bridge -> API -> DB -> app) permite generar alertas tempranas y evolucionar a modelos predictivos. La arquitectura ya esta implementada y documentada, con validaciones de flujo y base para escalamiento tecnico.
+KittyPaw no se limita a automatizar dispensacion: integra hardware IoT, trazabilidad historica y capa analitica para detectar desvíos de hidratacion/alimentacion con contexto ambiental. Esa integracion extremo a extremo (sensor -> MQTT -> bridge -> API -> DB -> app) permite generar alertas tempranas y evolucionar a modelos predictivos. Como base de analítica robusta, aplicamos `log10(x + 1)` en ingestión (raw + log) y planificamos Fourier/FFT en un servicio analítico para rutinas/cambios de patrón. (ver `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`)
 
 - Potencial de beneficio a poblaciones vulnerables: **Si**
 - Numero de puestos de cowork requeridos: **2**
