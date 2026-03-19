@@ -92,6 +92,17 @@ type ConsumptionSummary = {
 };
 type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
 
+type PetAnalyticsSession = {
+  id: string;
+  device_id: string;
+  session_type: string;
+  session_start: string;
+  session_end: string;
+  duration_sec: number | null;
+  grams_consumed: number | null;
+  water_ml: number | null;
+};
+
 type SessionDetailStats = {
   events: number;
   avgConsumed: number | null;
@@ -404,6 +415,35 @@ function summarizeSessionDetailsByPeriod(
   };
 }
 
+function summarizeAnalyticsSessionsByPeriods(
+  sessions: PetAnalyticsSession[],
+  valueKey: "grams_consumed" | "water_ml",
+  nowMs: number,
+): ConsumptionSummary {
+  const boundaries = {
+    day:   nowMs - 24 * 60 * 60 * 1000,
+    week:  nowMs - 7 * 24 * 60 * 60 * 1000,
+    month: nowMs - 30 * 24 * 60 * 60 * 1000,
+  };
+  const build = (startMs: number): PeriodStats => {
+    const filtered = sessions.filter((s) => {
+      const endT = new Date(s.session_end).getTime();
+      return !Number.isNaN(endT) && endT >= startMs;
+    });
+    if (!filtered.length) return { consumed: null, cycles: 0 };
+    const consumed = filtered.reduce((acc, s) => {
+      const v = s[valueKey];
+      return acc + Math.max(0, typeof v === "number" ? v : 0);
+    }, 0);
+    return { consumed: Math.round(consumed), cycles: filtered.length };
+  };
+  return {
+    day:   build(boundaries.day),
+    week:  build(boundaries.week),
+    month: build(boundaries.month),
+  };
+}
+
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -423,6 +463,7 @@ export default function TodayPage() {
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
     useState<DeviceReadingsMap>({});
   const [bowlLongReadings, setBowlLongReadings] = useState<ApiReading[]>([]);
+  const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<PetAnalyticsSession[]>([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -1047,6 +1088,27 @@ export default function TodayPage() {
       active = false;
     };
   }, [bowlDevice?.id, waterDevice?.id]);
+
+  useEffect(() => {
+    const petId = primaryPet?.id;
+    if (!petId) return;
+    let active = true;
+    const loadAnalyticsSessions = async () => {
+      const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const params = new URLSearchParams({ pet_id: petId, from, limit: "200" });
+      try {
+        const res = await authFetch(`/api/analytics/sessions?${params.toString()}`);
+        if (!res.ok) return;
+        const payload = (await res.json()) as { data?: unknown[] };
+        if (!active) return;
+        setAnalyticsHistorySessions((payload.data ?? []) as PetAnalyticsSession[]);
+      } catch {
+        // keep empty — fallback to raw readings summary
+      }
+    };
+    void loadAnalyticsSessions();
+    return () => { active = false; };
+  }, [primaryPet?.id]);
 
   const summaryText = useMemo(() => {
     if (!latestReading) {
@@ -1773,6 +1835,26 @@ export default function TodayPage() {
     () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
     [waterHistorySessions, nowMs],
   );
+
+  // Resumen basado en sesiones analíticas (analytics DB) — cubre semanas/meses
+  const bowlAnalyticsSummary = useMemo(() => {
+    if (!bowlDevice?.id) return null;
+    const deviceSessions = analyticsHistorySessions.filter(
+      (s) => s.device_id === bowlDevice.id,
+    );
+    if (!deviceSessions.length) return null;
+    return summarizeAnalyticsSessionsByPeriods(deviceSessions, "grams_consumed", nowMs);
+  }, [analyticsHistorySessions, bowlDevice?.id, nowMs]);
+
+  const waterAnalyticsSummary = useMemo(() => {
+    if (!waterDevice?.id) return null;
+    const deviceSessions = analyticsHistorySessions.filter(
+      (s) => s.device_id === waterDevice.id,
+    );
+    if (!deviceSessions.length) return null;
+    return summarizeAnalyticsSessionsByPeriods(deviceSessions, "water_ml", nowMs);
+  }, [analyticsHistorySessions, waterDevice?.id, nowMs]);
+
   const summaryPeriod: keyof ConsumptionSummary =
     consumptionPeriod === "one" ? "day" : consumptionPeriod;
   const detailPeriod: keyof ConsumptionSummary =
@@ -1906,7 +1988,7 @@ export default function TodayPage() {
                           <p className="text-[11px] text-slate-600">
                             {consumptionPeriod === "one"
                               ? `${bowlDetailSummary.events} eventos (30d)`
-                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                              : `${(bowlAnalyticsSummary ?? bowlConsumptionSummary)[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                           </p>
                           {consumptionPeriod === "one" ? (
                             <p className="text-[11px] text-slate-600">
@@ -1926,7 +2008,7 @@ export default function TodayPage() {
                             <p className="text-[11px] text-slate-600">
                               Consumo:{" "}
                               {formatConsumedValue(
-                                bowlConsumptionSummary[summaryPeriod].consumed,
+                                (bowlAnalyticsSummary ?? bowlConsumptionSummary)[summaryPeriod].consumed,
                                 "g",
                               )}{" "}
                               /{activePeriodLabel}
@@ -1952,7 +2034,7 @@ export default function TodayPage() {
                           <p className="text-[11px] text-slate-600">
                             {consumptionPeriod === "one"
                               ? `${waterDetailSummary.events} eventos (30d)`
-                              : `${waterConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                              : `${(waterAnalyticsSummary ?? waterConsumptionSummary)[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                           </p>
                           {consumptionPeriod === "one" ? (
                             <p className="text-[11px] text-slate-600">
@@ -1972,7 +2054,7 @@ export default function TodayPage() {
                             <p className="text-[11px] text-slate-600">
                               Consumo:{" "}
                               {formatConsumedValue(
-                                waterConsumptionSummary[summaryPeriod].consumed,
+                                (waterAnalyticsSummary ?? waterConsumptionSummary)[summaryPeriod].consumed,
                                 "ml",
                               )}{" "}
                               /{activePeriodLabel}
