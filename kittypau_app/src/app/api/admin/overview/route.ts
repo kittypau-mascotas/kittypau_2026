@@ -7,7 +7,11 @@ import {
   logRequestEnd,
   startRequestTimer,
 } from "../../_utils";
-import { getAdminOverviewCacheVersion, getCacheJson, setCacheJson } from "../../_cache";
+import {
+  getAdminOverviewCacheVersion,
+  getCacheJson,
+  setCacheJson,
+} from "../../_cache";
 import {
   DEFAULT_KPCL_COST_CATALOG,
   type KpclCatalog,
@@ -91,6 +95,13 @@ type FinanceProviderRow = {
   updated_at: string;
 };
 
+type FxReference = {
+  clp_per_usd: number;
+  jpy_per_usd: number;
+  clp_source: "env" | "fallback";
+  jpy_source: "env" | "fallback";
+};
+
 type VercelUsageSummary = {
   provider: "vercel";
   team_id: string | null;
@@ -144,7 +155,7 @@ async function fetchVercelUsageSummary(): Promise<VercelUsageSummary | null> {
   if (!teamId && teamSlug) {
     const teamRes = await fetch(
       `https://api.vercel.com/v2/teams/${encodeURIComponent(teamSlug)}`,
-      { headers, cache: "no-store" }
+      { headers, cache: "no-store" },
     );
     if (teamRes.ok) {
       const teamJson = (await teamRes.json()) as Record<string, unknown>;
@@ -165,7 +176,9 @@ async function fetchVercelUsageSummary(): Promise<VercelUsageSummary | null> {
     const depRes = await fetch(depUrl, { headers, cache: "no-store" });
     if (depRes.ok) {
       const depJson = (await depRes.json()) as Record<string, unknown>;
-      const pagination = depJson?.pagination as Record<string, unknown> | undefined;
+      const pagination = depJson?.pagination as
+        | Record<string, unknown>
+        | undefined;
       const count = pagination?.count;
       if (typeof count === "number" && Number.isFinite(count)) {
         deployments30d = count;
@@ -196,17 +209,23 @@ async function fetchVercelUsageSummary(): Promise<VercelUsageSummary | null> {
       (usageJson?.totals as Record<string, unknown> | undefined)?.usedPercent,
       (usageJson?.totals as Record<string, unknown> | undefined)?.used_percent,
     ];
-    const pct = pctCandidates.find((v) => typeof v === "number") as number | undefined;
+    const pct = pctCandidates.find((v) => typeof v === "number") as
+      | number
+      | undefined;
     if (typeof pct === "number" && Number.isFinite(pct)) {
       usedPercent = Number(Math.max(0, Math.min(100, pct)).toFixed(2));
     }
 
     periodStart =
       toIsoOrNull(usageJson?.from) ??
-      toIsoOrNull((usageJson?.period as Record<string, unknown> | undefined)?.from);
+      toIsoOrNull(
+        (usageJson?.period as Record<string, unknown> | undefined)?.from,
+      );
     periodEnd =
       toIsoOrNull(usageJson?.to) ??
-      toIsoOrNull((usageJson?.period as Record<string, unknown> | undefined)?.to);
+      toIsoOrNull(
+        (usageJson?.period as Record<string, unknown> | undefined)?.to,
+      );
     source = "api.v1.usage";
   }
 
@@ -243,35 +262,38 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
   const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
-  const resolvedAdminRole = adminRole?.role ?? (fallbackAdmin ? "owner_admin" : null);
+  const resolvedAdminRole =
+    adminRole?.role ?? (fallbackAdmin ? "owner_admin" : null);
   if (!resolvedAdminRole) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
 
   const auditLimit = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("audit_limit") ?? 30), 1),
-    100
+    100,
   );
   const auditTypeParam = req.nextUrl.searchParams.get("audit_type");
   const auditType =
-    auditTypeParam && auditTypeParam.trim().length ? auditTypeParam.trim() : null;
+    auditTypeParam && auditTypeParam.trim().length
+      ? auditTypeParam.trim()
+      : null;
   const auditWindowMin = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("audit_window_min") ?? 0), 0),
-    24 * 60
+    24 * 60,
   );
   const auditDedupWindowSec = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("audit_dedup_sec") ?? 30), 0),
-    300
+    300,
   );
   const offlineLimit = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("offline_limit") ?? 20), 1),
-    100
+    100,
   );
   const noCache = req.nextUrl.searchParams.get("no_cache") === "1";
   const ttlRaw = Number(process.env.ADMIN_OVERVIEW_CACHE_TTL_SEC);
   const cacheTtlSec = Math.min(
     Math.max(Number.isFinite(ttlRaw) ? ttlRaw : 45, 0),
-    300
+    300,
   );
   const cacheVersion = await getAdminOverviewCacheVersion();
   const cacheKey = [
@@ -317,7 +339,7 @@ export async function GET(req: NextRequest) {
       const { data, error } = await supabaseServer
         .from("readings")
         .select(
-          "id, device_id, pet_id, weight_grams, water_ml, temperature, humidity, battery_level, recorded_at, flow_rate, ingested_at, clock_invalid, light_lux, light_percent, light_condition, device_timestamp"
+          "id, device_id, pet_id, weight_grams, water_ml, temperature, humidity, battery_level, recorded_at, flow_rate, ingested_at, clock_invalid, light_lux, light_percent, light_condition, device_timestamp",
         )
         .in("device_id", deviceIds)
         .order("recorded_at", { ascending: true })
@@ -352,117 +374,132 @@ export async function GET(req: NextRequest) {
     { data: kpclCatalogProfiles, error: kpclCatalogProfilesError },
     { data: kpclCatalogComponents, error: kpclCatalogComponentsError },
   ] = await Promise.all([
-      supabaseServer.from("admin_dashboard_live").select("*").limit(1).maybeSingle(),
-      (() => {
-        let query = supabaseServer
-          .from("audit_events")
-          .select("id, event_type, actor_id, entity_type, entity_id, payload, created_at")
-          .order("created_at", { ascending: false })
-          .limit(auditLimit);
-        if (auditSince) query = query.gte("created_at", auditSince);
-        if (auditType) query = query.eq("event_type", auditType);
-        return query;
-      })(),
-      supabaseServer
-        .from("bridge_status_live")
-        .select(
-          "device_id, bridge_status, wifi_ip, hostname, last_seen, kpcl_total_devices, kpcl_online_devices, kpcl_offline_devices"
-        )
-        .order("last_seen", { ascending: false }),
-      supabaseServer
-        .from("devices")
-        .select(
-          "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health"
-        )
-        .ilike("device_id", "KPCL%")
-        .is("retired_at", null)
-        .or(`device_state.eq.offline,last_seen.is.null,last_seen.lt.${staleCutoff}`)
-        .order("last_seen", { ascending: true, nullsFirst: true })
-        .limit(offlineLimit),
-      supabaseServer
+    supabaseServer
+      .from("admin_dashboard_live")
+      .select("*")
+      .limit(1)
+      .maybeSingle(),
+    (() => {
+      let query = supabaseServer
         .from("audit_events")
-        .select("event_type, created_at")
-        .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .in("event_type", [
-          "bridge_offline_detected",
-          "device_offline_detected",
-          "general_device_outage_detected",
-          "general_device_outage_recovered",
-        ]),
-      supabaseServer
-        .from("profiles")
-        .select("id, user_name, city, user_onboarding_step, created_at"),
-      supabaseServer
-        .from("pets")
-        .select("user_id"),
-      supabaseServer
-        .from("devices")
-        .select("owner_id")
-        .not("owner_id", "is", null),
-      supabaseServer
-        .from("devices")
         .select(
-          "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health"
+          "id, event_type, actor_id, entity_type, entity_id, payload, created_at",
         )
-        .ilike("device_id", "KPCL%")
-        .is("retired_at", null)
-        .order("device_id", { ascending: true }),
-      supabaseServer
-        .from("readings")
-        .select(
-          "id, device_id, pet_id, weight_grams, water_ml, temperature, humidity, battery_level, recorded_at, flow_rate, ingested_at, clock_invalid, light_lux, light_percent, light_condition, device_timestamp"
-        )
-        .gte("recorded_at", new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString())
-        .order("recorded_at", { ascending: true }),
-      supabaseServer
-        .from("audit_events")
-        .select("event_type, payload, created_at")
-        .in("event_type", ["device_offline_detected", "device_online_detected"])
-        .gte("created_at", new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString())
-        .order("created_at", { ascending: true }),
-      supabaseServer.schema("storage").from("objects").select("id, metadata"),
-      supabaseServer
-        .from("admin_object_stats_live")
-        .select(
-          "schema_name, object_name, object_type, description, row_estimate, size_bytes, size_pretty, last_updated_at"
-        ),
-      supabaseServer
-        .from("finance_admin_summary")
-        .select(
-          "generated_at, bom_unit_cost_usd, cloud_monthly_cost_usd, providers_json, snapshot_month, units_produced, total_cost_usd, unit_cost_usd"
-        )
-        .limit(1)
-        .maybeSingle(),
-      supabaseServer
-        .from("finance_provider_plans")
-        .select(
-          "provider, plan_name, is_free_plan, is_active, monthly_cost_usd, limit_label, usage_label, updated_at"
-        )
-        .eq("is_active", true)
-        .order("provider", { ascending: true }),
-      supabaseServer
-        .from("finance_monthly_snapshots")
-        .select(
-          "snapshot_month, units_produced, bom_cost_total_usd, manufacturing_cost_total_usd, cloud_cost_total_usd, logistics_cost_total_usd, support_cost_total_usd, warranty_cost_total_usd, total_cost_usd, unit_cost_usd, updated_at"
-        )
-        .order("snapshot_month", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabaseServer
-        .from("finance_kpcl_profiles")
-        .select(
-          "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd"
-        )
-        .eq("active", true)
-        .order("profile_key", { ascending: true }),
-      supabaseServer
-        .from("finance_kpcl_profile_components")
-        .select(
-          "profile_key, component_code, component_name, qty, unit_cost_usd, notes, sort_order"
-        )
-        .order("profile_key", { ascending: true })
-        .order("sort_order", { ascending: true }),
-    ]);
+        .order("created_at", { ascending: false })
+        .limit(auditLimit);
+      if (auditSince) query = query.gte("created_at", auditSince);
+      if (auditType) query = query.eq("event_type", auditType);
+      return query;
+    })(),
+    supabaseServer
+      .from("bridge_status_live")
+      .select(
+        "device_id, bridge_status, wifi_ip, hostname, last_seen, kpcl_total_devices, kpcl_online_devices, kpcl_offline_devices",
+      )
+      .order("last_seen", { ascending: false }),
+    supabaseServer
+      .from("devices")
+      .select(
+        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health",
+      )
+      .ilike("device_id", "KPCL%")
+      .is("retired_at", null)
+      .or(
+        `device_state.eq.offline,last_seen.is.null,last_seen.lt.${staleCutoff}`,
+      )
+      .order("last_seen", { ascending: true, nullsFirst: true })
+      .limit(offlineLimit),
+    supabaseServer
+      .from("audit_events")
+      .select("event_type, created_at")
+      .gte(
+        "created_at",
+        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      )
+      .in("event_type", [
+        "bridge_offline_detected",
+        "device_offline_detected",
+        "general_device_outage_detected",
+        "general_device_outage_recovered",
+      ]),
+    supabaseServer
+      .from("profiles")
+      .select("id, user_name, city, user_onboarding_step, created_at"),
+    supabaseServer.from("pets").select("user_id"),
+    supabaseServer
+      .from("devices")
+      .select("owner_id")
+      .not("owner_id", "is", null),
+    supabaseServer
+      .from("devices")
+      .select(
+        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health",
+      )
+      .ilike("device_id", "KPCL%")
+      .is("retired_at", null)
+      .order("device_id", { ascending: true }),
+    supabaseServer
+      .from("readings")
+      .select(
+        "id, device_id, pet_id, weight_grams, water_ml, temperature, humidity, battery_level, recorded_at, flow_rate, ingested_at, clock_invalid, light_lux, light_percent, light_condition, device_timestamp",
+      )
+      .gte(
+        "recorded_at",
+        new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+      )
+      .order("recorded_at", { ascending: true }),
+    supabaseServer
+      .from("audit_events")
+      .select("event_type, payload, created_at")
+      .in("event_type", ["device_offline_detected", "device_online_detected"])
+      .gte(
+        "created_at",
+        new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+      )
+      .order("created_at", { ascending: true }),
+    supabaseServer.schema("storage").from("objects").select("id, metadata"),
+    supabaseServer
+      .from("admin_object_stats_live")
+      .select(
+        "schema_name, object_name, object_type, description, row_estimate, size_bytes, size_pretty, last_updated_at",
+      ),
+    supabaseServer
+      .from("finance_admin_summary")
+      .select(
+        "generated_at, bom_unit_cost_usd, cloud_monthly_cost_usd, providers_json, snapshot_month, units_produced, total_cost_usd, unit_cost_usd",
+      )
+      .limit(1)
+      .maybeSingle(),
+    supabaseServer
+      .from("finance_provider_plans")
+      .select(
+        "provider, plan_name, is_free_plan, is_active, monthly_cost_usd, limit_label, usage_label, updated_at",
+      )
+      .eq("is_active", true)
+      .order("provider", { ascending: true }),
+    supabaseServer
+      .from("finance_monthly_snapshots")
+      .select(
+        "snapshot_month, units_produced, bom_cost_total_usd, manufacturing_cost_total_usd, cloud_cost_total_usd, logistics_cost_total_usd, support_cost_total_usd, warranty_cost_total_usd, total_cost_usd, unit_cost_usd, updated_at",
+      )
+      .order("snapshot_month", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabaseServer
+      .from("finance_kpcl_profiles")
+      .select(
+        "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd",
+      )
+      .eq("active", true)
+      .order("profile_key", { ascending: true }),
+    supabaseServer
+      .from("finance_kpcl_profile_components")
+      .select(
+        "profile_key, component_code, component_name, qty, unit_cost_usd, notes, sort_order",
+      )
+      .order("profile_key", { ascending: true })
+      .order("sort_order", { ascending: true }),
+  ]);
 
   if (summaryError) {
     return apiError(req, 500, "SUPABASE_ERROR", summaryError.message);
@@ -558,7 +595,9 @@ export async function GET(req: NextRequest) {
     incidentCounters.general_device_outage_recovered;
 
   const ownersWithPet = new Set((petOwners ?? []).map((row) => row.user_id));
-  const ownersWithDevice = new Set((deviceOwners ?? []).map((row) => row.owner_id));
+  const ownersWithDevice = new Set(
+    (deviceOwners ?? []).map((row) => row.owner_id),
+  );
   const nowMs = Date.now();
   const registrationRows = (profiles ?? []).map((row) => {
     const hasPet = ownersWithPet.has(row.id);
@@ -601,7 +640,7 @@ export async function GET(req: NextRequest) {
     }
 
     pending.sort(
-      (a, b) => Date.parse(b.created_at ?? "") - Date.parse(a.created_at ?? "")
+      (a, b) => Date.parse(b.created_at ?? "") - Date.parse(a.created_at ?? ""),
     );
 
     return {
@@ -628,7 +667,10 @@ export async function GET(req: NextRequest) {
         continue;
       }
       const last = lastByKey.get(key);
-      if (last !== undefined && Math.abs(last - ts) < auditDedupWindowSec * 1000) {
+      if (
+        last !== undefined &&
+        Math.abs(last - ts) < auditDedupWindowSec * 1000
+      ) {
         continue;
       }
       lastByKey.set(key, ts);
@@ -650,7 +692,7 @@ export async function GET(req: NextRequest) {
   });
 
   const lifetimeReadingsResult = await readAllReadingsForDevices(
-    (kpclDevices ?? []).map((d) => d.id)
+    (kpclDevices ?? []).map((d) => d.id),
   );
   if (lifetimeReadingsResult.error) {
     return apiError(req, 500, "SUPABASE_ERROR", lifetimeReadingsResult.error);
@@ -660,7 +702,7 @@ export async function GET(req: NextRequest) {
   const kpclTotalsOrigin = (() => {
     const hourMs = 60 * 60 * 1000;
     const codeById = new Map<string, string>(
-      (kpclDevices ?? []).map((d) => [d.id, d.device_id])
+      (kpclDevices ?? []).map((d) => [d.id, d.device_id]),
     );
     const hoursByCode = new Map<string, Set<number>>();
     const bytesByCode = new Map<string, number>();
@@ -696,10 +738,14 @@ export async function GET(req: NextRequest) {
     const windowStart = nowHour - (totalHours - 1) * hourMs;
     const windowEnd = nowHour + hourMs;
 
-    const codeById = new Map<string, string>((kpclDevices ?? []).map((d) => [d.id, d.device_id]));
-    const idByCode = new Map<string, string>((kpclDevices ?? []).map((d) => [d.device_id, d.id]));
+    const codeById = new Map<string, string>(
+      (kpclDevices ?? []).map((d) => [d.id, d.device_id]),
+    );
+    const idByCode = new Map<string, string>(
+      (kpclDevices ?? []).map((d) => [d.device_id, d.id]),
+    );
     const currentOnlineByCode = new Map<string, boolean>(
-      kpclStatus.map((d) => [d.device_id, d.is_online])
+      kpclStatus.map((d) => [d.device_id, d.is_online]),
     );
 
     const readingHoursByCode = new Map<string, Set<number>>();
@@ -712,7 +758,8 @@ export async function GET(req: NextRequest) {
       const code = codeById.get(row.device_id);
       if (!code) continue;
       const hourKey = Math.floor(ts / hourMs) * hourMs;
-      if (!readingHoursByCode.has(code)) readingHoursByCode.set(code, new Set<number>());
+      if (!readingHoursByCode.has(code))
+        readingHoursByCode.set(code, new Set<number>());
       readingHoursByCode.get(code)!.add(hourKey);
       if (!readingBytesByCodeHour.has(code)) {
         readingBytesByCodeHour.set(code, new Map<number, number>());
@@ -722,12 +769,16 @@ export async function GET(req: NextRequest) {
       byHour.set(hourKey, (byHour.get(hourKey) ?? 0) + rowBytes);
     }
 
-    const transitionsByCode = new Map<string, Array<{ ts: number; toOnline: boolean }>>();
+    const transitionsByCode = new Map<
+      string,
+      Array<{ ts: number; toOnline: boolean }>
+    >();
     for (const evt of deviceStateEvents ?? []) {
       const createdTs = Date.parse(evt.created_at);
       if (!Number.isFinite(createdTs)) continue;
       const payload = evt.payload as Record<string, unknown> | null;
-      const code = typeof payload?.device_id === "string" ? payload.device_id : null;
+      const code =
+        typeof payload?.device_id === "string" ? payload.device_id : null;
       if (!code || !idByCode.has(code)) continue;
       if (!transitionsByCode.has(code)) transitionsByCode.set(code, []);
       transitionsByCode.get(code)!.push({
@@ -738,11 +789,17 @@ export async function GET(req: NextRequest) {
 
     return (kpclDevices ?? []).map((device) => {
       const code = device.device_id;
-      const transitions = (transitionsByCode.get(code) ?? []).sort((a, b) => a.ts - b.ts);
+      const transitions = (transitionsByCode.get(code) ?? []).sort(
+        (a, b) => a.ts - b.ts,
+      );
       let state: boolean | null = null;
       let hasSignalInWindow = false;
 
-      const points: Array<{ ts: number; online: boolean | null; payload_bytes: number }> = [];
+      const points: Array<{
+        ts: number;
+        online: boolean | null;
+        payload_bytes: number;
+      }> = [];
       let cursor = 0;
       for (let i = 0; i < totalHours; i += 1) {
         const t = windowStart + i * hourMs;
@@ -786,26 +843,34 @@ export async function GET(req: NextRequest) {
       const prev = byBridge.get(key);
       const rowTs = Date.parse(row.last_seen ?? "");
       const prevTs = Date.parse(prev?.last_seen ?? "");
-      if (!prev || (!Number.isNaN(rowTs) && (Number.isNaN(prevTs) || rowTs > prevTs))) {
+      if (
+        !prev ||
+        (!Number.isNaN(rowTs) && (Number.isNaN(prevTs) || rowTs > prevTs))
+      ) {
         byBridge.set(key, row);
       }
     }
     return Array.from(byBridge.values());
   })();
 
-  const adminTableStats = (effectiveObjectStats as AdminObjectStat[]).sort((a, b) => {
-    const sizeA = Number(a.size_bytes ?? 0);
-    const sizeB = Number(b.size_bytes ?? 0);
-    return sizeB - sizeA;
-  });
+  const adminTableStats = (effectiveObjectStats as AdminObjectStat[]).sort(
+    (a, b) => {
+      const sizeA = Number(a.size_bytes ?? 0);
+      const sizeB = Number(b.size_bytes ?? 0);
+      return sizeB - sizeA;
+    },
+  );
 
   const supabaseStorage = (() => {
     const planMb = Number(
       process.env.SUPABASE_TOTAL_PLAN_MB ??
         process.env.SUPABASE_STORAGE_PLAN_MB ??
-        1024
+        1024,
     );
-    const planBytes = Number.isFinite(planMb) && planMb > 0 ? planMb * 1024 * 1024 : 1024 * 1024 * 1024;
+    const planBytes =
+      Number.isFinite(planMb) && planMb > 0
+        ? planMb * 1024 * 1024
+        : 1024 * 1024 * 1024;
     const storageBytes = safeStorageObjects.reduce((acc, row) => {
       const meta = row.metadata as Record<string, unknown> | null;
       const sizeRaw = meta?.size;
@@ -813,8 +878,8 @@ export async function GET(req: NextRequest) {
         typeof sizeRaw === "number"
           ? sizeRaw
           : typeof sizeRaw === "string"
-          ? Number(sizeRaw)
-          : 0;
+            ? Number(sizeRaw)
+            : 0;
       return acc + (Number.isFinite(size) ? size : 0);
     }, 0);
     const dbBytes = adminTableStats
@@ -822,7 +887,8 @@ export async function GET(req: NextRequest) {
       .reduce((acc, row) => acc + Math.max(0, Number(row.size_bytes ?? 0)), 0);
     const usedBytes = storageBytes + dbBytes;
     const usedMb = usedBytes / (1024 * 1024);
-    const usedPercent = planBytes > 0 ? Math.min(100, (usedBytes / planBytes) * 100) : 0;
+    const usedPercent =
+      planBytes > 0 ? Math.min(100, (usedBytes / planBytes) * 100) : 0;
     return {
       plan_mb: Number((planBytes / (1024 * 1024)).toFixed(2)),
       used_mb: Number(usedMb.toFixed(2)),
@@ -849,7 +915,7 @@ export async function GET(req: NextRequest) {
 
   const financePlans = financeProvidersError
     ? []
-    : (financeProviders as FinanceProviderRow[] | null) ?? [];
+    : ((financeProviders as FinanceProviderRow[] | null) ?? []);
 
   const financeBreakdown = (() => {
     if (financeMonthlySnapshotError || !financeMonthlySnapshotRow) return null;
@@ -858,7 +924,9 @@ export async function GET(req: NextRequest) {
       snapshot_month: row.snapshot_month,
       units_produced: Number(row.units_produced ?? 0),
       bom_cost_total_usd: Number(row.bom_cost_total_usd ?? 0),
-      manufacturing_cost_total_usd: Number(row.manufacturing_cost_total_usd ?? 0),
+      manufacturing_cost_total_usd: Number(
+        row.manufacturing_cost_total_usd ?? 0,
+      ),
       cloud_cost_total_usd: Number(row.cloud_cost_total_usd ?? 0),
       logistics_cost_total_usd: Number(row.logistics_cost_total_usd ?? 0),
       support_cost_total_usd: Number(row.support_cost_total_usd ?? 0),
@@ -870,7 +938,8 @@ export async function GET(req: NextRequest) {
   })();
 
   const financeBreakEven = (() => {
-    const unitCost = financeBreakdown?.unit_cost_usd ?? financeSummary?.unit_cost_usd ?? 0;
+    const unitCost =
+      financeBreakdown?.unit_cost_usd ?? financeSummary?.unit_cost_usd ?? 0;
     const fixedMonthly =
       (financeBreakdown?.cloud_cost_total_usd ?? 0) +
       (financeBreakdown?.logistics_cost_total_usd ?? 0) +
@@ -878,15 +947,29 @@ export async function GET(req: NextRequest) {
       (financeBreakdown?.warranty_cost_total_usd ?? 0);
 
     const platePriceUsd = Number(process.env.ADMIN_KIT_PRICE_USD ?? 0);
-    const subscriptionPriceUsd = Number(process.env.ADMIN_SUBSCRIPTION_PRICE_USD ?? 0);
+    const subscriptionPriceUsd = Number(
+      process.env.ADMIN_SUBSCRIPTION_PRICE_USD ?? 0,
+    );
     const cacUsd = Number(process.env.ADMIN_CAC_USD ?? 0);
     const churnMonthly = Number(process.env.ADMIN_CHURN_MONTHLY ?? 0);
 
     const hasPlatePrice = Number.isFinite(platePriceUsd) && platePriceUsd > 0;
     const marginPerUnitUsd = hasPlatePrice ? platePriceUsd - unitCost : null;
+    const marginPct =
+      hasPlatePrice && marginPerUnitUsd !== null && platePriceUsd > 0
+        ? Number(((marginPerUnitUsd / platePriceUsd) * 100).toFixed(2))
+        : null;
     const breakEvenUnits =
       marginPerUnitUsd && marginPerUnitUsd > 0 && fixedMonthly > 0
         ? Number((fixedMonthly / marginPerUnitUsd).toFixed(2))
+        : null;
+
+    const unitsProduced = Number(
+      financeBreakdown?.units_produced ?? financeSummary?.units_produced ?? 0,
+    );
+    const breakEvenMonths =
+      breakEvenUnits !== null && unitsProduced > 0
+        ? Number((breakEvenUnits / unitsProduced).toFixed(2))
         : null;
 
     const ltvUsd =
@@ -906,12 +989,17 @@ export async function GET(req: NextRequest) {
       churn_monthly:
         Number.isFinite(churnMonthly) && churnMonthly > 0 ? churnMonthly : null,
       margin_per_unit_usd: marginPerUnitUsd,
+      margin_pct: marginPct,
       fixed_monthly_usd: Number(fixedMonthly.toFixed(2)),
       break_even_units: breakEvenUnits,
+      break_even_months: breakEvenMonths,
       ltv_usd: ltvUsd,
       ltv_cac_ratio: ltvCacRatio,
       source:
-        hasPlatePrice && subscriptionPriceUsd > 0 && cacUsd > 0 && churnMonthly > 0
+        hasPlatePrice &&
+        subscriptionPriceUsd > 0 &&
+        cacUsd > 0 &&
+        churnMonthly > 0
           ? "env_config"
           : "partial_config",
     };
@@ -921,8 +1009,10 @@ export async function GET(req: NextRequest) {
     if (kpclCatalogProfilesError || kpclCatalogComponentsError) {
       return DEFAULT_KPCL_COST_CATALOG;
     }
-    const profiles = (kpclCatalogProfiles as KpclCatalogProfileRow[] | null) ?? [];
-    const components = (kpclCatalogComponents as KpclCatalogComponentRow[] | null) ?? [];
+    const profiles =
+      (kpclCatalogProfiles as KpclCatalogProfileRow[] | null) ?? [];
+    const components =
+      (kpclCatalogComponents as KpclCatalogComponentRow[] | null) ?? [];
     if (!profiles.length) return DEFAULT_KPCL_COST_CATALOG;
 
     const componentsByProfile = new Map<string, KpclCatalog["components"]>();
@@ -978,6 +1068,25 @@ export async function GET(req: NextRequest) {
     registration_pending: registrationSummary.pending_total,
   });
 
+  const fxReference: FxReference = (() => {
+    const clpPerUsdEnv = Number(process.env.ADMIN_FX_CLP_PER_USD ?? 0);
+    const jpyPerUsdEnv = Number(process.env.ADMIN_FX_JPY_PER_USD ?? 0);
+
+    const clpPerUsd =
+      Number.isFinite(clpPerUsdEnv) && clpPerUsdEnv > 0 ? clpPerUsdEnv : 950;
+    const jpyPerUsd =
+      Number.isFinite(jpyPerUsdEnv) && jpyPerUsdEnv > 0 ? jpyPerUsdEnv : 150;
+
+    return {
+      clp_per_usd: clpPerUsd,
+      jpy_per_usd: jpyPerUsd,
+      clp_source:
+        Number.isFinite(clpPerUsdEnv) && clpPerUsdEnv > 0 ? "env" : "fallback",
+      jpy_source:
+        Number.isFinite(jpyPerUsdEnv) && jpyPerUsdEnv > 0 ? "env" : "fallback",
+    };
+  })();
+
   const payload = {
     admin_role: resolvedAdminRole,
     summary: summary ?? null,
@@ -992,6 +1101,7 @@ export async function GET(req: NextRequest) {
     registration_summary: registrationSummary,
     supabase_storage: supabaseStorage,
     vercel_usage: vercelUsage,
+    fx_reference: fxReference,
     finance_summary: financeSummary,
     finance_breakdown: financeBreakdown,
     finance_break_even: financeBreakEven,

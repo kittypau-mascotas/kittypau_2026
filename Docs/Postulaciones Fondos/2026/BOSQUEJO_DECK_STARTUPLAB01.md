@@ -4,7 +4,7 @@ Objetivo: preparar un deck corto, consistente con formulario y evidencia del rep
 Formato recomendado: 10-12 slides (PDF).
 
 ## Slide 1 - Portada
-- Kittypau
+- KittyPaw (producto: Kittypau)
 - One-liner: Monitoreo predictivo IoT para bienestar de mascotas.
 - Nombre del equipo y contacto.
 
@@ -19,9 +19,10 @@ Formato recomendado: 10-12 slides (PDF).
 - Alertas tempranas + historial objetivo.
 
 ## Slide 4 - Tecnologia y TRL
-- Estado actual: TRL 5.
-- Validacion interna de prototipo funcional.
+- Estado actual: TRL 6 (prototipo funcional con datos en vivo + deploy).
+- Validacion tecnica E2E documentada (IoT -> MQTT -> bridge -> API -> DB -> realtime).
 - Base para evolucion predictiva con analitica/ML.
+- Diferenciación analítica (feature engineering + patrones): `log10(x + 1)` en ingestión (raw + log) + Fourier/FFT en servicio analítico para rutinas/cambios de comportamiento. (ver `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`)
 
 ## Slide 5 - Mercado objetivo
 - ICP B2C: duenos urbanos digitalizados.
@@ -39,29 +40,33 @@ Formato recomendado: 10-12 slides (PDF).
 - Diferenciador: capa de datos accionables y enfoque preventivo/predictivo.
 
 ## Slide 8 - Validacion y traccion
-- Prototipo operativo documentado.
-- Interes de pilotos tempranos (cartas/compromisos).
-- Evidencia de arquitectura y estado tecnico en docs del repo.
+- **E2E operativo y validado**: IoT -> HiveMQ -> Bridge (Raspberry) -> `/api/mqtt/webhook` (Vercel) -> Supabase (DB + Realtime). (`Docs/PRUEBAS_E2E.md`, `Docs/ARQUITECTURA_PROYECTO.md`)
+- **Produccion activa**: app + API desplegadas en Vercel (`https://kittypau-app.vercel.app`). (ver `Docs/ESTADO_AVANCE.md`)
+- **Ingestion real**: webhook guarda lecturas y actualiza estado del dispositivo (`last_seen`, `battery_level`) via trigger. (ver `Docs/SQL_SCHEMA.sql` + `Docs/ESTADO_AVANCE.md`)
+- **Evidencia tecnica trazable en repo**: contratos API, bridge 24/7, topicos MQTT, esquema SQL + RLS, suite de pruebas y validacion de admin. (`Docs/FRONT_BACK_APIS.md`, `Docs/RASPBERRY_BRIDGE.md`, `Docs/TOPICOS_MQTT.md`, `Docs/AUTOMATIZACION_TESTS.md`, `Docs/VALIDACION_ADMIN_DASHBOARD.md`)
+- **Senal cuantitativa de datos**: BD con `387.000+` lecturas registradas (verificado `2026-03-05`). (`Docs/PMO/DOSSIER_CORFO_SEMILLA_INICIA.md`)
+- **Piloto planificado (traccion temprana)**: 10 usuarios piloto (onboarding + seguimiento + metricas) planificados para `abr-jun 2026`. (`Docs/PMO/03_SCHEDULE.md`, `Docs/PMO/09_COMMUNICATIONS.md`)
 
 ## Slide 9 - Impacto climatico (alineacion postulacion)
-- Mitigacion: reduccion de desperdicio de agua/alimento.
-- Monitoreo: medicion trazable de uso de recursos.
-- Adaptacion y resiliencia: alertas ante condiciones ambientales de riesgo.
+- **Mitigacion (desperdicio)**: medicion continua de consumo para optimizar porciones/recargas y detectar cambios anomalos (reduccion de desperdicio de alimento/agua por sobre-servicio o recarga innecesaria). (campos `weight_grams`, `water_ml`, `flow_rate` en `Docs/SQL_SCHEMA.sql` + logica en `Docs/MODELO_DATOS_IA_FORMULAS_KITTYPAU.md`)
+- **Monitoreo trazable**: lecturas con timestamp (`recorded_at`, `ingested_at`) y trazabilidad por dispositivo (`device_id` KPCL) para auditoria y metricas por hogar/mascota. (`Docs/SQL_SCHEMA.sql`)
+- **Adaptacion/resiliencia (riesgo ambiental + continuidad)**: contexto ambiental (`temperature`, `humidity`, `light_*`) y capa operativa (deteccion bridge/dispositivo offline + `audit_events`) para alertas y continuidad de monitoreo. (`Docs/TOPICOS_MQTT.md`, `Docs/ESTADO_AVANCE.md`, `Docs/SQL_SCHEMA.sql`)
 
 ## Slide 10 - Roadmap 12 meses
-- Hito tecnico (mes 1-4): estabilizacion piloto.
-- Hito tecnico-comercial (mes 5-9): ejecucion de pilotos y metricas.
-- Hito comercial (mes 10-12): lanzamiento inicial y readiness inversion.
+- **Mes 1-3 (estabilizacion MVP/piloto)**: bridge 24/7 (systemd + watchdog), hardening de ingestion, calidad de datos y observabilidad (admin overview + health-check). (`Docs/RASPBERRY_BRIDGE.md`, `Docs/VALIDACION_ADMIN_DASHBOARD.md`)
+- **Mes 4-6 (piloto medible)**: piloto de 10 usuarios + metricas (retencion, NPS, conversion free->paid) + iteracion por feedback. (`Docs/PMO/03_SCHEDULE.md`, `Docs/PMO/09_COMMUNICATIONS.md`)
+- **Mes 7-9 (escala de pilotos)**: ampliar piloto a 30-50, reducir COGS y preparar canal B2B2C (clinicas/tiendas). (`Docs/PMO/03_SCHEDULE.md`, `Docs/KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md`)
+- **Mes 10-12 (lanzamiento inicial)**: packaging comercial (hardware + suscripcion), readiness inversion/postulacion fondos mayores y operacion con SLAs basicos. (`Docs/KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md`, `Docs/PMO/01_PROJECT_CHARTER.md`)
 
 ## Slide 11 - Equipo
-- Mauricio Carcamo: liderazgo negocio/producto.
-- Javier Dayne: desarrollo tecnico IoT/software.
-- Brechas: regulacion hardware y escalamiento comercial B2B.
+- Mauricio Carcamo: liderazgo negocio/producto, UX y estrategia comercial.
+- Javier Suarez: desarrollo tecnico IoT/hardware + backend/software (MQTT, bridge, API, DB).
+- Brechas: certificaciones/regulacion y manufactura (escala), data science/analitica aplicada, y escalamiento comercial B2B/B2B2C (veterinarias/retail).
 
 ## Slide 12 - Lo que buscamos en startuplab.01
-- Validacion tecnica y prototipos.
-- Conexion con clientes e inversionistas.
-- Soporte para estrategia comercial y escalamiento.
+- **Go-to-market medible**: diseno/ejecucion de piloto (KPIs, pricing, onboarding, retencion) y preparacion de canal (vet/retail).
+- **Soporte hardware para escala**: industrializacion, QA, certificaciones/regulacion y estrategia de manufactura.
+- **Conexiones**: pilotos con duenos y partners (clinicas/tiendas) + red de inversionistas para siguiente ronda.
 
 ---
 

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clearTokens, getValidAccessToken, setTokens } from "@/lib/auth/token";
@@ -44,6 +44,47 @@ function TooltipIcon({ text }: TooltipIconProps) {
   );
 }
 
+function RequiredAsterisk() {
+  return (
+    <span className="ml-1 align-top text-rose-600" aria-hidden="true">
+      *
+    </span>
+  );
+}
+
+type FieldCardProps = {
+  label: string;
+  tooltip?: string;
+  required?: boolean;
+  help?: string;
+  error?: string | null;
+  children: ReactNode;
+};
+
+function FieldCard({
+  label,
+  tooltip,
+  required = false,
+  help,
+  error,
+  children,
+}: FieldCardProps) {
+  return (
+    <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200/70 bg-white/80 px-4 py-3">
+      <div className="flex items-start justify-between gap-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+          {label}
+          {required ? <RequiredAsterisk /> : null}
+        </span>
+        {tooltip ? <TooltipIcon text={tooltip} /> : null}
+      </div>
+      <div className="mt-2">{children}</div>
+      {error ? <p className="mt-2 text-[11px] text-rose-600">{error}</p> : null}
+      {help ? <p className="mt-2 text-[11px] text-slate-500">{help}</p> : null}
+    </div>
+  );
+}
+
 const defaultStatus: RegistroStatus = {
   userStep: null,
   hasPet: false,
@@ -84,7 +125,7 @@ export default function RegistroFlow({
   const [showPetHints, setShowPetHints] = useState(false);
   const [showDeviceHints, setShowDeviceHints] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
-    AVATAR_OPTIONS[0]?.url ?? null
+    AVATAR_OPTIONS[0]?.url ?? null,
   );
   const [petPhotoFile, setPetPhotoFile] = useState<File | null>(null);
   const [petPhotoPreview, setPetPhotoPreview] = useState<string | null>(null);
@@ -175,7 +216,8 @@ export default function RegistroFlow({
     } else if (!/^KPCL\d{4}$/.test(deviceForm.device_id.trim())) {
       issues.push("Código debe ser KPCL0000.");
     }
-    if (!deviceForm.device_type.trim()) issues.push("Tipo de dispositivo requerido.");
+    if (!deviceForm.device_type.trim())
+      issues.push("Tipo de dispositivo requerido.");
     const tare = Number(deviceForm.plate_weight_grams);
     if (!deviceForm.plate_weight_grams.trim()) {
       issues.push("Peso del plato requerido.");
@@ -206,11 +248,13 @@ export default function RegistroFlow({
   const displayStep = forcedStep ?? currentStep;
   const sessionExpired = useMemo(() => {
     if (!error) return false;
-    return /sesi[oó]n expir[oó]/i.test(error) || /iniciar sesi[oó]n/i.test(error);
+    return (
+      /sesi[oó]n expir[oó]/i.test(error) || /iniciar sesi[oó]n/i.test(error)
+    );
   }, [error]);
 
   const sectionClass = isModal
-    ? "rounded-[var(--radius)] border border-slate-200/70 bg-white px-5 py-4 shadow-none"
+    ? "kp-scroll h-[min(62dvh,560px)] overflow-y-auto overscroll-contain rounded-[var(--radius)] border border-slate-200/70 bg-white px-5 py-4 shadow-none"
     : "{sectionClass}";
 
   const errorCardClass = isModal
@@ -232,7 +276,7 @@ export default function RegistroFlow({
   const preparePhoto = (
     file: File | null,
     setFile: (value: File | null) => void,
-    setPreview: (value: string | null) => void
+    setPreview: (value: string | null) => void,
   ) => {
     setPhotoError(null);
     if (!file) {
@@ -309,11 +353,11 @@ export default function RegistroFlow({
     const maxOffsetY = Math.max(0, (drawHeight - size) / 2);
     const offsetX = Math.min(
       maxOffsetX,
-      Math.max(-maxOffsetX, (cropX / 100) * maxOffsetX)
+      Math.max(-maxOffsetX, (cropX / 100) * maxOffsetX),
     );
     const offsetY = Math.min(
       maxOffsetY,
-      Math.max(-maxOffsetY, (cropY / 100) * maxOffsetY)
+      Math.max(-maxOffsetY, (cropY / 100) * maxOffsetY),
     );
     const dx = (size - drawWidth) / 2 + offsetX;
     const dy = (size - drawHeight) / 2 + offsetY;
@@ -322,7 +366,7 @@ export default function RegistroFlow({
     ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
 
     const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.92)
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.92),
     );
     if (!blob) return;
     const file = new File([blob], activeFile.name, { type: "image/jpeg" });
@@ -365,12 +409,10 @@ export default function RegistroFlow({
       ]);
 
       if (
-        (
-          statusRes.status === 401 ||
+        (statusRes.status === 401 ||
           petsRes.status === 401 ||
           profileRes.status === 401 ||
-          accountRes.status === 401
-        ) &&
+          accountRes.status === 401) &&
         allowRetry
       ) {
         const supabase = getSupabaseBrowser();
@@ -407,16 +449,14 @@ export default function RegistroFlow({
       const accountPayload = accountRes.ok
         ? await accountRes.json().catch(() => null)
         : null;
-      const profileData = (profileDataRaw?.profile ?? profileDataRaw) as
-        | {
-            user_name?: string | null;
-            city?: string | null;
-            country?: string | null;
-            notification_channel?: string | null;
-            photo_url?: string | null;
-            email?: string | null;
-          }
-        | null;
+      const profileData = (profileDataRaw?.profile ?? profileDataRaw) as {
+        user_name?: string | null;
+        city?: string | null;
+        country?: string | null;
+        notification_channel?: string | null;
+        photo_url?: string | null;
+        email?: string | null;
+      } | null;
 
       setStatus(statusData);
       setPets(petsData ?? []);
@@ -426,7 +466,7 @@ export default function RegistroFlow({
         accountPayload?.account_type === "admin" ||
           accountPayload?.account_type === "tester"
           ? "/today"
-          : "/inicio"
+          : "/inicio",
       );
       setDeviceForm((prev) => ({
         ...prev,
@@ -435,7 +475,7 @@ export default function RegistroFlow({
       setError(null);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "No se pudo cargar el registro."
+        err instanceof Error ? err.message : "No se pudo cargar el registro.",
       );
     } finally {
       setIsLoading(false);
@@ -498,7 +538,7 @@ export default function RegistroFlow({
           });
           setToken(session.access_token);
         }
-      }
+      },
     );
 
     return () => {
@@ -542,7 +582,7 @@ export default function RegistroFlow({
       showSavedToastAndRedirect(false);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "No se pudo guardar el perfil."
+        err instanceof Error ? err.message : "No se pudo guardar el perfil.",
       );
     } finally {
       setIsSavingProfile(false);
@@ -589,7 +629,7 @@ export default function RegistroFlow({
       showSavedToastAndRedirect(false);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "No se pudo crear la mascota."
+        err instanceof Error ? err.message : "No se pudo crear la mascota.",
       );
     } finally {
       setIsSavingPet(false);
@@ -623,7 +663,9 @@ export default function RegistroFlow({
 
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
-        throw new Error(payload?.error ?? "No se pudo registrar el dispositivo.");
+        throw new Error(
+          payload?.error ?? "No se pudo registrar el dispositivo.",
+        );
       }
 
       await fetch("/api/profiles", {
@@ -642,7 +684,7 @@ export default function RegistroFlow({
       setError(
         err instanceof Error
           ? err.message
-          : "No se pudo registrar el dispositivo."
+          : "No se pudo registrar el dispositivo.",
       );
     } finally {
       setIsSavingDevice(false);
@@ -701,9 +743,7 @@ export default function RegistroFlow({
               <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl">
                 Registro Kittypau
               </h1>
-              <p className="kp-pettech-tagline mt-1">
-                PetTech AIoT
-              </p>
+              <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-500">
               <Link
@@ -716,11 +756,7 @@ export default function RegistroFlow({
           </header>
         ) : null}
 
-        {error ? (
-          <div className={errorCardClass}>
-            {error}
-          </div>
-        ) : null}
+        {error ? <div className={errorCardClass}>{error}</div> : null}
         {sessionExpired ? (
           <section className={sessionCardClass}>
             <p className="font-semibold">Tu sesión necesita revalidación.</p>
@@ -785,11 +821,8 @@ export default function RegistroFlow({
               <div className="mt-3 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Elige tu avatar
+                    Elige tu avatar <span className="text-rose-600">*</span>
                   </p>
-                  <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-600">
-                    Obligatorio
-                  </span>
                 </div>
                 <div className="mt-3 grid grid-cols-4 gap-3">
                   {AVATAR_OPTIONS.map((avatar) => {
@@ -799,7 +832,7 @@ export default function RegistroFlow({
                         key={avatar.id}
                         type="button"
                         onClick={() => setSelectedAvatar(avatar.url)}
-                        className={`h-14 w-14 overflow-hidden rounded-full border ${
+                        className={`h-[72px] w-[72px] overflow-hidden rounded-full border ${
                           isActive
                             ? "border-rose-300 ring-2 ring-rose-200"
                             : "border-slate-200"
@@ -822,7 +855,7 @@ export default function RegistroFlow({
                   <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400">
                     Seleccionado
                   </span>
-                  <div className="h-8 w-8 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                  <div className="h-11 w-11 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
                     {selectedAvatar ? (
                       <img
                         src={selectedAvatar}
@@ -834,119 +867,127 @@ export default function RegistroFlow({
                 </div>
               </div>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Nombre
-                </label>
-                <TooltipIcon text="Nombre visible en la app." />
-              </div>
-              <input
-                className={inputClass(!profileForm.user_name.trim())}
-                placeholder="Nombre"
-                value={profileForm.user_name}
-                onChange={(event) =>
-                  setProfileForm((prev) => ({
-                    ...prev,
-                    user_name: event.target.value,
-                  }))
-                }
-              />
-              {showProfileHints && !profileForm.user_name.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Escribe tu nombre para continuar.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Nombre visible en la app.
-              </p>
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Ciudad
-                </label>
-                <TooltipIcon text="Úsalo para personalizar alertas." />
-              </div>
-              <input
-                className={inputClass(!profileForm.city.trim())}
-                placeholder="Ciudad"
-                value={profileForm.city}
-                onChange={(event) =>
-                  setProfileForm((prev) => ({
-                    ...prev,
-                    city: event.target.value,
-                  }))
-                }
-              />
-              {showProfileHints && !profileForm.city.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Indica tu ciudad para personalizar alertas.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Úsalo para personalizar alertas.
-              </p>
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  País
-                </label>
-                <TooltipIcon text="Define tu región principal." />
-              </div>
-              <input
-                className={inputClass(!profileForm.country.trim())}
-                placeholder="País"
-                value={profileForm.country}
-                onChange={(event) =>
-                  setProfileForm((prev) => ({
-                    ...prev,
-                    country: event.target.value,
-                  }))
-                }
-              />
-              {showProfileHints && !profileForm.country.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Define tu país para completar el perfil.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Define tu región principal.
-              </p>
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Canal
-                </label>
-                <TooltipIcon text="Elige cómo recibir alertas." />
-              </div>
-              <select
-                className={inputClass(false)}
-                value={profileForm.notification_channel}
-                onChange={(event) =>
-                  setProfileForm((prev) => ({
-                    ...prev,
-                    notification_channel: event.target.value,
-                  }))
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <FieldCard
+                label="Nombre"
+                tooltip="Nombre visible en la app."
+                required
+                help="Nombre visible en la app."
+                error={
+                  showProfileHints && !profileForm.user_name.trim()
+                    ? "Escribe tu nombre para continuar."
+                    : null
                 }
               >
-                <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
-                <option value="sms">SMS</option>
-              </select>
-            </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="flex items-center gap-2 text-sm text-slate-600">
                 <input
-                  type="checkbox"
-                  checked={profileForm.is_owner}
+                  className={inputClass(!profileForm.user_name.trim())}
+                  placeholder="Nombre"
+                  value={profileForm.user_name}
                   onChange={(event) =>
                     setProfileForm((prev) => ({
                       ...prev,
-                      is_owner: event.target.checked,
+                      user_name: event.target.value,
                     }))
                   }
                 />
-                Soy el dueño del plato
-              </label>
+              </FieldCard>
+
+              <FieldCard
+                label="Ciudad"
+                tooltip="Úsalo para personalizar alertas."
+                required
+                help="Úsalo para personalizar alertas."
+                error={
+                  showProfileHints && !profileForm.city.trim()
+                    ? "Indica tu ciudad para personalizar alertas."
+                    : null
+                }
+              >
+                <input
+                  className={inputClass(!profileForm.city.trim())}
+                  placeholder="Ciudad"
+                  value={profileForm.city}
+                  onChange={(event) =>
+                    setProfileForm((prev) => ({
+                      ...prev,
+                      city: event.target.value,
+                    }))
+                  }
+                />
+              </FieldCard>
+
+              <FieldCard
+                label="País"
+                tooltip="Define tu región principal."
+                required
+                help="Define tu región principal."
+                error={
+                  showProfileHints && !profileForm.country.trim()
+                    ? "Define tu país para completar el perfil."
+                    : null
+                }
+              >
+                <input
+                  className={inputClass(!profileForm.country.trim())}
+                  placeholder="País"
+                  value={profileForm.country}
+                  onChange={(event) =>
+                    setProfileForm((prev) => ({
+                      ...prev,
+                      country: event.target.value,
+                    }))
+                  }
+                />
+              </FieldCard>
+
+              <FieldCard label="Canal" tooltip="Elige cómo recibir alertas.">
+                <select
+                  className={inputClass(false)}
+                  value={profileForm.notification_channel}
+                  onChange={(event) =>
+                    setProfileForm((prev) => ({
+                      ...prev,
+                      notification_channel: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="sms">SMS</option>
+                </select>
+              </FieldCard>
+            </div>
+
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200/70 bg-white/80 px-4 py-3">
+                <label className="flex items-center gap-2 text-sm text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={profileForm.is_owner}
+                    onChange={(event) =>
+                      setProfileForm((prev) => ({
+                        ...prev,
+                        is_owner: event.target.checked,
+                      }))
+                    }
+                  />
+                  Soy el dueño del plato
+                </label>
+                <p className="mt-2 text-[11px] text-slate-500">
+                  Si no eres el dueño, agrega el nombre del responsable.
+                </p>
+              </div>
+
               {!profileForm.is_owner ? (
-                <div className="space-y-2">
+                <FieldCard
+                  label="Nombre del dueño"
+                  required
+                  error={
+                    showProfileHints && !profileForm.owner_name.trim()
+                      ? "Indica el nombre del dueño."
+                      : null
+                  }
+                >
                   <input
                     className={inputClass(!profileForm.owner_name.trim())}
                     placeholder="Nombre del dueño"
@@ -958,15 +999,20 @@ export default function RegistroFlow({
                       }))
                     }
                   />
-                  {showProfileHints && !profileForm.owner_name.trim() ? (
-                    <p className="text-[11px] text-rose-600">
-                      Indica el nombre del dueño.
-                    </p>
-                  ) : null}
-                </div>
+                </FieldCard>
               ) : null}
+
               {profileForm.notification_channel === "whatsapp" ? (
-                <div className="space-y-2">
+                <FieldCard
+                  label="Número WhatsApp"
+                  required
+                  help="Incluye prefijo de país si aplica."
+                  error={
+                    showProfileHints && !profileForm.phone_number.trim()
+                      ? "Agrega un número de contacto."
+                      : null
+                  }
+                >
                   <input
                     className={inputClass(!profileForm.phone_number.trim())}
                     placeholder="Número WhatsApp"
@@ -978,17 +1024,7 @@ export default function RegistroFlow({
                       }))
                     }
                   />
-                  {showProfileHints && !profileForm.phone_number.trim() ? (
-                    <p className="text-[11px] text-rose-600">
-                      Agrega un número de contacto.
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-              {profileForm.notification_channel === "whatsapp" ? (
-                <p className="text-[11px] text-slate-500">
-                  Incluye prefijo de país si aplica.
-                </p>
+                </FieldCard>
               ) : null}
             </div>
             <button
@@ -1059,7 +1095,9 @@ export default function RegistroFlow({
                   )}
                 </div>
                 <div className="space-y-2 text-xs text-slate-500">
-                  <p className="font-semibold text-slate-700">Foto de mascota</p>
+                  <p className="font-semibold text-slate-700">
+                    Foto de mascota
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     <label className="cursor-pointer rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">
                       Subir archivo
@@ -1071,7 +1109,7 @@ export default function RegistroFlow({
                           preparePhoto(
                             event.target.files?.[0] ?? null,
                             setPetPhotoFile,
-                            setPetPhotoPreview
+                            setPetPhotoPreview,
                           )
                         }
                       />
@@ -1087,7 +1125,7 @@ export default function RegistroFlow({
                           preparePhoto(
                             event.target.files?.[0] ?? null,
                             setPetPhotoFile,
-                            setPetPhotoPreview
+                            setPetPhotoPreview,
                           )
                         }
                       />
@@ -1123,67 +1161,75 @@ export default function RegistroFlow({
                 <p className="mt-3 text-xs text-rose-600">{photoError}</p>
               ) : null}
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Nombre
-                </label>
-                <TooltipIcon text="Nombre que verás en el feed." />
-              </div>
-              <input
-                className={inputClass(!petForm.name.trim())}
-                placeholder="Nombre"
-                value={petForm.name}
-                onChange={(event) =>
-                  setPetForm((prev) => ({ ...prev, name: event.target.value }))
-                }
-              />
-              {showPetHints && !petForm.name.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Escribe el nombre de tu mascota.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Nombre que verás en el feed.
-              </p>
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Tipo
-                </label>
-                <TooltipIcon text="Gato o perro." />
-              </div>
-              <select
-                className={inputClass(!petForm.type.trim())}
-                value={petForm.type}
-                onChange={(event) =>
-                  setPetForm((prev) => ({ ...prev, type: event.target.value }))
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <FieldCard
+                label="Nombre"
+                tooltip="Nombre que verás en el feed."
+                required
+                help="Nombre que verás en el feed."
+                error={
+                  showPetHints && !petForm.name.trim()
+                    ? "Escribe el nombre de tu mascota."
+                    : null
                 }
               >
-                <option value="cat">Gato</option>
-                <option value="dog">Perro</option>
-              </select>
-              {showPetHints && !petForm.type.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Selecciona el tipo de mascota.
-                </p>
-              ) : null}
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Origen
-                </label>
-                <TooltipIcon text="Ayuda a personalizar los insights." />
-              </div>
-              <input
-                className={inputClass(false)}
-                placeholder="Origen (rescatado, casa, etc.)"
-                value={petForm.origin}
-                onChange={(event) =>
-                  setPetForm((prev) => ({ ...prev, origin: event.target.value }))
+                <input
+                  className={inputClass(!petForm.name.trim())}
+                  placeholder="Nombre"
+                  value={petForm.name}
+                  onChange={(event) =>
+                    setPetForm((prev) => ({
+                      ...prev,
+                      name: event.target.value,
+                    }))
+                  }
+                />
+              </FieldCard>
+
+              <FieldCard
+                label="Tipo"
+                tooltip="Gato o perro."
+                required
+                error={
+                  showPetHints && !petForm.type.trim()
+                    ? "Selecciona el tipo de mascota."
+                    : null
                 }
-              />
-              <p className="text-[11px] text-slate-500">
-                Ayuda a personalizar los insights.
-              </p>
+              >
+                <select
+                  className={inputClass(!petForm.type.trim())}
+                  value={petForm.type}
+                  onChange={(event) =>
+                    setPetForm((prev) => ({
+                      ...prev,
+                      type: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="cat">Gato</option>
+                  <option value="dog">Perro</option>
+                </select>
+              </FieldCard>
+
+              <div className="sm:col-span-2">
+                <FieldCard
+                  label="Origen"
+                  tooltip="Ayuda a personalizar los insights."
+                  help="Ayuda a personalizar los insights."
+                >
+                  <input
+                    className={inputClass(false)}
+                    placeholder="Origen (rescatado, casa, etc.)"
+                    value={petForm.origin}
+                    onChange={(event) =>
+                      setPetForm((prev) => ({
+                        ...prev,
+                        origin: event.target.value,
+                      }))
+                    }
+                  />
+                </FieldCard>
+              </div>
             </div>
             <button
               type="button"
@@ -1233,159 +1279,164 @@ export default function RegistroFlow({
             <p className="mt-3 text-xs text-slate-500">
               Usa el código KPCL0000 impreso en el plato.
             </p>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Mascota
-                </label>
-                <TooltipIcon text="Selecciona la mascota a vincular." />
-              </div>
-              <select
-                className={inputClass(!deviceForm.pet_id)}
-                value={deviceForm.pet_id}
-                onChange={(event) =>
-                  setDeviceForm((prev) => ({
-                    ...prev,
-                    pet_id: event.target.value,
-                  }))
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <FieldCard
+                label="Mascota"
+                tooltip="Selecciona la mascota a vincular."
+                required
+                error={
+                  showDeviceHints && !deviceForm.pet_id
+                    ? "Selecciona la mascota a vincular."
+                    : null
                 }
               >
-                <option value="">Selecciona mascota</option>
-                {pets.map((pet) => (
-                  <option key={pet.id} value={pet.id}>
-                    {pet.name} ({pet.type})
-                  </option>
-                ))}
-              </select>
-              {showDeviceHints && !deviceForm.pet_id ? (
-                <p className="text-[11px] text-rose-600">
-                  Selecciona la mascota a vincular.
-                </p>
-              ) : null}
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Código
-                </label>
-                <TooltipIcon text="Formato esperado: KPCL0000." />
-              </div>
-              <input
-                className={inputClass(
-                  !deviceForm.device_id.trim() ||
-                    !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim())
-                )}
-                placeholder="Código KPCL0000"
-                value={deviceForm.device_id}
-                onChange={(event) =>
-                  setDeviceForm((prev) => ({
-                    ...prev,
-                    device_id: event.target.value.toUpperCase(),
-                  }))
-                }
-              />
-              {showDeviceHints &&
-              (!deviceForm.device_id.trim() ||
-                !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim())) ? (
-                <p className="text-[11px] text-rose-600">
-                  Ingresa un código válido KPCL0000.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Formato esperado: KPCL0000.
-              </p>
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Tipo de dispositivo
-                </label>
-                <TooltipIcon text="Food bowl o water bowl." />
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() =>
+                <select
+                  className={inputClass(!deviceForm.pet_id)}
+                  value={deviceForm.pet_id}
+                  onChange={(event) =>
                     setDeviceForm((prev) => ({
                       ...prev,
-                      device_type: "food_bowl",
+                      pet_id: event.target.value,
                     }))
                   }
-                  className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
-                    deviceForm.device_type === "food_bowl"
-                      ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
                 >
-                  <img
-                    src="/illustrations/pink_food_full.png"
-                    alt="Plato de comida"
-                    className="mx-auto h-20 w-auto object-contain"
-                  />
-                  <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
-                    Comida
-                  </p>
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
+                  <option value="">Selecciona mascota</option>
+                  {pets.map((pet) => (
+                    <option key={pet.id} value={pet.id}>
+                      {pet.name} ({pet.type})
+                    </option>
+                  ))}
+                </select>
+              </FieldCard>
+
+              <FieldCard
+                label="Código"
+                tooltip="Formato esperado: KPCL0000."
+                required
+                help="Formato esperado: KPCL0000."
+                error={
+                  showDeviceHints &&
+                  (!deviceForm.device_id.trim() ||
+                    !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim()))
+                    ? "Ingresa un código válido KPCL0000."
+                    : null
+                }
+              >
+                <input
+                  className={inputClass(
+                    !deviceForm.device_id.trim() ||
+                      !/^KPCL\\d{4}$/.test(deviceForm.device_id.trim()),
+                  )}
+                  placeholder="Código KPCL0000"
+                  value={deviceForm.device_id}
+                  onChange={(event) =>
                     setDeviceForm((prev) => ({
                       ...prev,
-                      device_type: "water_bowl",
+                      device_id: event.target.value.toUpperCase(),
                     }))
                   }
-                  className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
-                    deviceForm.device_type === "water_bowl"
-                      ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
+                />
+              </FieldCard>
+
+              <div className="sm:col-span-2">
+                <FieldCard
+                  label="Tipo de dispositivo"
+                  tooltip="Food bowl o water bowl."
+                  required
+                  error={
+                    showDeviceHints && !deviceForm.device_type.trim()
+                      ? "Selecciona el tipo de dispositivo."
+                      : null
+                  }
                 >
-                  <img
-                    src="/illustrations/green_water_full.png"
-                    alt="Plato de agua"
-                    className="mx-auto h-20 w-auto object-contain"
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDeviceForm((prev) => ({
+                          ...prev,
+                          device_type: "food_bowl",
+                        }))
+                      }
+                      className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
+                        deviceForm.device_type === "food_bowl"
+                          ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
+                    >
+                      <img
+                        src="/illustrations/pink_food_full.png"
+                        alt="Plato de comida"
+                        className="mx-auto h-20 w-auto object-contain"
+                      />
+                      <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
+                        Comida
+                      </p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDeviceForm((prev) => ({
+                          ...prev,
+                          device_type: "water_bowl",
+                        }))
+                      }
+                      className={`rounded-[var(--radius)] border px-3 py-3 text-left transition ${
+                        deviceForm.device_type === "water_bowl"
+                          ? "border-emerald-400 bg-emerald-50 ring-2 ring-emerald-100"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                      }`}
+                    >
+                      <img
+                        src="/illustrations/green_water_full.png"
+                        alt="Plato de agua"
+                        className="mx-auto h-20 w-auto object-contain"
+                      />
+                      <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
+                        Agua
+                      </p>
+                    </button>
+                  </div>
+                </FieldCard>
+              </div>
+
+              <div className="sm:col-span-2">
+                <FieldCard
+                  label="Peso del plato (g)"
+                  tooltip="Peso del plato auxiliar vacío que va sobre Kittypau. Esto permite calcular contenido exacto."
+                  required
+                  help="Kittypau mide el peso total. Con esta tara se calcula el contenido del plato."
+                  error={
+                    showDeviceHints &&
+                    (!deviceForm.plate_weight_grams.trim() ||
+                      !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
+                      Number(deviceForm.plate_weight_grams) <= 0)
+                      ? "Ingresa el peso del plato vacío en gramos."
+                      : null
+                  }
+                >
+                  <input
+                    type="number"
+                    min={1}
+                    max={5000}
+                    className={inputClass(
+                      !deviceForm.plate_weight_grams.trim() ||
+                        !Number.isFinite(
+                          Number(deviceForm.plate_weight_grams),
+                        ) ||
+                        Number(deviceForm.plate_weight_grams) <= 0,
+                    )}
+                    placeholder="Ej: 320"
+                    value={deviceForm.plate_weight_grams}
+                    onChange={(event) =>
+                      setDeviceForm((prev) => ({
+                        ...prev,
+                        plate_weight_grams: event.target.value,
+                      }))
+                    }
                   />
-                  <p className="mt-2 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-700">
-                    Agua
-                  </p>
-                </button>
+                </FieldCard>
               </div>
-              {showDeviceHints && !deviceForm.device_type.trim() ? (
-                <p className="text-[11px] text-rose-600">
-                  Selecciona el tipo de dispositivo.
-                </p>
-              ) : null}
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Peso del plato (g)
-                </label>
-                <TooltipIcon text="Peso del plato auxiliar vacío que va sobre Kittypau. Esto permite calcular contenido exacto." />
-              </div>
-              <input
-                type="number"
-                min={1}
-                max={5000}
-                className={inputClass(
-                  !deviceForm.plate_weight_grams.trim() ||
-                    !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
-                    Number(deviceForm.plate_weight_grams) <= 0
-                )}
-                placeholder="Ej: 320"
-                value={deviceForm.plate_weight_grams}
-                onChange={(event) =>
-                  setDeviceForm((prev) => ({
-                    ...prev,
-                    plate_weight_grams: event.target.value,
-                  }))
-                }
-              />
-              {showDeviceHints &&
-              (!deviceForm.plate_weight_grams.trim() ||
-                !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
-                Number(deviceForm.plate_weight_grams) <= 0) ? (
-                <p className="text-[11px] text-rose-600">
-                  Ingresa el peso del plato vacío en gramos.
-                </p>
-              ) : null}
-              <p className="text-[11px] text-slate-500">
-                Kittypau mide el peso total. Con esta tara se calcula el contenido del plato.
-              </p>
             </div>
             <button
               type="button"
@@ -1415,10 +1466,10 @@ export default function RegistroFlow({
 
         {displayStep === 4 && (
           <section className={sectionClass}>
-            <h2 className="text-lg font-semibold text-slate-900">Bienvenido a Kittypau</h2>
-            <p className="kp-pettech-tagline mt-1">
-              PetTech AIoT
-            </p>
+            <h2 className="text-lg font-semibold text-slate-900">
+              Bienvenido a Kittypau
+            </h2>
+            <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
             <p className="text-sm text-slate-500">
               Registro completado. Este es el resumen de tu configuración.
             </p>
@@ -1436,11 +1487,9 @@ export default function RegistroFlow({
                 Dispositivos: {status.deviceCount}
               </div>
             </div>
-            {(profileForm.user_name || petForm.name || deviceForm.device_id) ? (
+            {profileForm.user_name || petForm.name || deviceForm.device_id ? (
               <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-3 text-xs text-slate-600">
-                <p className="font-semibold text-slate-700">
-                  Resumen rápido
-                </p>
+                <p className="font-semibold text-slate-700">Resumen rápido</p>
                 <div className="mt-2 grid gap-1">
                   {profileSummary?.photo_url || selectedAvatar ? (
                     <div className="mb-1 flex items-center gap-2">
@@ -1452,10 +1501,16 @@ export default function RegistroFlow({
                       <span>Foto de perfil</span>
                     </div>
                   ) : null}
-                  {(pets.find((pet) => pet.id === deviceForm.pet_id)?.photo_url ?? petPhotoPreview) ? (
+                  {(pets.find((pet) => pet.id === deviceForm.pet_id)
+                    ?.photo_url ?? petPhotoPreview) ? (
                     <div className="mb-1 flex items-center gap-2">
                       <img
-                        src={(pets.find((pet) => pet.id === deviceForm.pet_id)?.photo_url ?? petPhotoPreview) ?? ""}
+                        src={
+                          pets.find((pet) => pet.id === deviceForm.pet_id)
+                            ?.photo_url ??
+                          petPhotoPreview ??
+                          ""
+                        }
                         alt="Foto de mascota"
                         className="h-8 w-8 rounded-full border border-slate-200 object-cover"
                       />
@@ -1465,14 +1520,15 @@ export default function RegistroFlow({
                   {profileForm.user_name ? (
                     <span>Usuario: {profileForm.user_name}</span>
                   ) : null}
-                  {petForm.name ? (
-                    <span>Mascota: {petForm.name}</span>
-                  ) : null}
+                  {petForm.name ? <span>Mascota: {petForm.name}</span> : null}
                   {deviceForm.device_id ? (
                     <span>Dispositivo: {deviceForm.device_id}</span>
                   ) : null}
                   <span>
-                    Tipo: {deviceForm.device_type === "water_bowl" ? "Agua" : "Comida"}
+                    Tipo:{" "}
+                    {deviceForm.device_type === "water_bowl"
+                      ? "Agua"
+                      : "Comida"}
                   </span>
                 </div>
               </div>
@@ -1488,7 +1544,8 @@ export default function RegistroFlow({
 
         {displayStep === 4 ? (
           <div className="text-xs text-slate-500">
-            Estado: {status.petCount} mascotas · {status.deviceCount} dispositivos.
+            Estado: {status.petCount} mascotas · {status.deviceCount}{" "}
+            dispositivos.
           </div>
         ) : null}
       </div>
@@ -1525,12 +1582,16 @@ export default function RegistroFlow({
                     max="2.5"
                     step="0.05"
                     value={cropScale}
-                    onChange={(event) => setCropScale(Number(event.target.value))}
+                    onChange={(event) =>
+                      setCropScale(Number(event.target.value))
+                    }
                     className="w-full"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Horizontal</label>
+                  <label className="font-semibold text-slate-700">
+                    Horizontal
+                  </label>
                   <input
                     type="range"
                     min="-100"
@@ -1542,7 +1603,9 @@ export default function RegistroFlow({
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Vertical</label>
+                  <label className="font-semibold text-slate-700">
+                    Vertical
+                  </label>
                   <input
                     type="range"
                     min="-100"
@@ -1577,7 +1640,3 @@ export default function RegistroFlow({
     </div>
   );
 }
-
-
-
-

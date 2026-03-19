@@ -57,3 +57,9 @@ Si falta `device_id` en el payload, el Bridge debe inyectarlo.
 ## Nota
 Estas reglas no cambian el backend. Solo transforman la capa de presentacion.
 
+## Transformaciones analíticas (log10 + Fourier) - contexto
+- Para reducir skew/outliers sin perder trazabilidad, aplicar `log10(x + 1)` en ingestión server-side y persistir raw + transformado.
+- Fourier/FFT se ejecuta en capa analítica/ML (worker/batch), no en el bridge/webhook.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+

@@ -56,13 +56,8 @@ Desde el punto de vista tecnico, la solucion se basa en sensorizacion de bajo co
 - [ ] El producto ha sido ampliamente probado y validado.
 - [ ] El producto esta completamente maduro y listo para su uso en el mercado.
 
-### Sector de Contribucion Climatica
-**Urbanizacion**
-
-### Area de accion principal
-**Monitoreo (medicion y rastreo)**
-
----
+- Sector de Contribución Climática (principal): **Urbanización**
+- Área de acción principal: **Monitoreo (medición y rastreo)**
 
 ## 4) Equipo fundador
 
@@ -88,7 +83,7 @@ Duenos de mascotas urbanos (gatos y perros), digitalmente activos, con ingresos 
 La oportunidad es favorable porque el cuidado de mascotas se esta digitalizando rapidamente y los usuarios esperan soluciones de salud preventiva, no solo productos de conveniencia. Al mismo tiempo, la infraestructura IoT/cloud permite hoy desplegar telemetria y analitica con costos iniciales accesibles para startups. KittyPau ya cuenta con prototipo funcional, arquitectura operativa documentada y equipo con experiencia real en automatizacion industrial e IoT, lo que reduce el riesgo de ejecucion. Esto permite pasar desde validacion interna a piloto controlado con foco en evidencia de uso, retencion y valor clinico-operativo.
 
 ### Principal ventaja tecnica diferenciadora (max 150 palabras)
-KittyPau no se limita a automatizar dispensacion: integra hardware IoT, trazabilidad historica y capa analitica para detectar desvios de hidratacion y alimentacion con contexto ambiental. Esa integracion extremo a extremo (sensor, MQTT, bridge, API, base de datos, app) permite generar alertas tempranas y evolucionar hacia modelos predictivos. La arquitectura esta implementada y documentada, con validaciones de flujo reales, y el equipo tiene 15 anos de experiencia industrial en sistemas SCADA, DCS e IIoT, lo que acelera la evolucion tecnica con criterio de ingenieria de sistemas criticos.
+KittyPau no se limita a automatizar dispensación: integra hardware IoT, trazabilidad histórica y capa analítica para detectar desvíos de hidratación/alimentación con contexto ambiental. Esa integración extremo a extremo (sensor -> MQTT -> bridge -> API -> DB -> app) permite alertas tempranas y evolución hacia modelos predictivos. Como base de analítica robusta, aplicamos `log10(x + 1)` en ingestión (raw + log) y planificamos Fourier/FFT en un servicio analítico para rutinas y cambios de patrón. El equipo aporta +15 años en automatización/IIoT (SCADA/DCS), acelerando ejecución con criterio industrial. (ver `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`)
 
 ### Potencial de beneficio a poblaciones vulnerables
 **Si**
