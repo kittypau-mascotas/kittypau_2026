@@ -61,8 +61,9 @@ const CHART_RANGES: {
   label: string;
   windowMs: number;
   queryLimit: number;
-  maxPages: number;    // cuántas páginas de 5000 rows pedir (paginación)
-  bucketMs: number;    // 0 = sin bucket; >0 = promedio por intervalo
+  maxPages: number;
+  bucketMs: number;    // 0 = raw; >0 = promedio por intervalo (server-side para 1d/1w)
+  bucketS: number;     // bucket_s para /api/readings/bucketed (0 = no usar endpoint bucketed)
   maxPoints: number;
   fromLabel: string;
 }[] = [
@@ -73,6 +74,7 @@ const CHART_RANGES: {
     queryLimit: 120,
     maxPages: 1,
     bucketMs: 0,
+    bucketS: 0,
     maxPoints: 30,
     fromLabel: "-5m",
   },
@@ -83,6 +85,7 @@ const CHART_RANGES: {
     queryLimit: 220,
     maxPages: 1,
     bucketMs: 0,
+    bucketS: 0,
     maxPoints: 60,
     fromLabel: "-15m",
   },
@@ -93,28 +96,31 @@ const CHART_RANGES: {
     queryLimit: 420,
     maxPages: 1,
     bucketMs: 0,
+    bucketS: 0,
     maxPoints: 120,
     fromLabel: "-1h",
   },
   {
-    // 24h: bucket de 5 min → 288 puntos exactos
+    // 24h: bucket server-side de 5 min → 288 puntos exactos
     key: "1d",
     label: "1 dia",
     windowMs: 24 * 60 * 60 * 1000,
     queryLimit: 5000,
     maxPages: 1,
     bucketMs: 5 * 60 * 1000,
+    bucketS: 300,
     maxPoints: 300,
     fromLabel: "-1d",
   },
   {
-    // 7d: hasta 4 páginas × 5000 → bucket 30 min → 336 puntos
+    // 7d: bucket server-side de 30 min → 336 puntos exactos
     key: "1w",
     label: "1 semana",
     windowMs: 7 * 24 * 60 * 60 * 1000,
     queryLimit: 5000,
     maxPages: 4,
     bucketMs: 30 * 60 * 1000,
+    bucketS: 1800,
     maxPoints: 340,
     fromLabel: "-1sem",
   },
@@ -270,6 +276,24 @@ export default function BowlPage() {
     return all;
   };
 
+  // Endpoint aggregado server-side para rangos largos (1d, 1w)
+  const loadReadingsBucketed = async (
+    deviceId: string,
+    token: string,
+    windowMs: number,
+    bucketS: number,
+  ): Promise<ApiReading[]> => {
+    const from = new Date(Date.now() - windowMs).toISOString();
+    const params = new URLSearchParams({ device_id: deviceId, from, bucket_s: String(bucketS) });
+    const res = await fetch(`/api/readings/bucketed?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("No se pudieron cargar lecturas.");
+    const payload = (await res.json()) as { data?: ApiReading[] };
+    return payload.data ?? [];
+  };
+
   // Carga de devices: solo se ejecuta al montar el componente.
   // Las lecturas son responsabilidad del siguiente useEffect (deps: selectedDeviceId + selectedRange).
   useEffect(() => {
@@ -334,13 +358,9 @@ export default function BowlPage() {
         const selectedConfig =
           CHART_RANGES.find((range) => range.key === selectedRange) ??
           CHART_RANGES[0];
-        const readingData = await loadReadingsAll(
-          selectedDeviceId,
-          token,
-          selectedConfig.windowMs,
-          selectedConfig.queryLimit,
-          selectedConfig.maxPages,
-        );
+        const readingData = selectedConfig.bucketS > 0
+          ? await loadReadingsBucketed(selectedDeviceId, token, selectedConfig.windowMs, selectedConfig.bucketS)
+          : await loadReadingsAll(selectedDeviceId, token, selectedConfig.windowMs, selectedConfig.queryLimit, selectedConfig.maxPages);
         if (!active) return;
         setReadings(readingData);
         setReadingsError(null);
@@ -371,6 +391,8 @@ export default function BowlPage() {
         const selectedConfig =
           CHART_RANGES.find((range) => range.key === selectedRange) ??
           CHART_RANGES[0];
+        // Para rangos largos el polling no aplica (son datos históricos estáticos)
+        if (selectedConfig.bucketS > 0) return;
         const readingData = await loadReadingsAll(
           selectedDeviceId,
           token,
