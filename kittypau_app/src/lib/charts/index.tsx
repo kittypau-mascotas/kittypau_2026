@@ -97,14 +97,22 @@ export const ChartCard = ({
 }) => {
   const values = series.map((item) => item.value);
   const ordered = series.slice(0, maxPoints).reverse();
+
+  const formatTooltipTime = (timestamp: string): string => {
+    const ts = new Date(timestamp);
+    if (Number.isNaN(ts.getTime())) return "";
+    const hh = ts.getHours().toString().padStart(2, "0");
+    const mi = ts.getMinutes().toString().padStart(2, "0");
+    const dd = ts.getDate().toString().padStart(2, "0");
+    const mo = (ts.getMonth() + 1).toString().padStart(2, "0");
+    const aa = ts.getFullYear().toString().slice(2);
+    return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
+  };
+
   const labels = ordered.map((item) => {
     const ts = new Date(item.timestamp);
     if (Number.isNaN(ts.getTime())) return "";
-    return ts.toLocaleTimeString("es-CL", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    return ts.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false });
   });
   const dataPoints = ordered.map((item) => item.value);
 
@@ -147,6 +155,11 @@ export const ChartCard = ({
         borderWidth: 1,
         displayColors: false,
         callbacks: {
+          title: (items) => {
+            const idx = items[0]?.dataIndex;
+            const ts = idx !== undefined ? (ordered[idx]?.timestamp ?? "") : "";
+            return ts ? formatTooltipTime(ts) : "";
+          },
           label: (ctx) => {
             const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
             const value =
