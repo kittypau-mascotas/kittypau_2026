@@ -30,6 +30,7 @@ type ApiProfile = {
   owner_name?: string | null;
   is_owner?: boolean | null;
   photo_url?: string | null;
+  plan?: "free" | "premium" | null;
 };
 
 type ApiDevice = {
@@ -995,9 +996,15 @@ export default function TodayPage() {
     const load3Days = async () => {
       const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
       try {
-        const result = await loadReadings(bowlDevice.id, null, 5000, { from });
+        // Usar endpoint bucketed (bucket 15 min → 288 pts para 3 días)
+        // para evitar el límite de 5000 rows crudas
+        const params = new URLSearchParams({ device_id: bowlDevice.id, from, bucket_s: "900" });
+        const res = await authFetch(`/api/readings/bucketed?${params.toString()}`);
         if (!active) return;
-        setBowlLongReadings(result.data);
+        if (res.ok) {
+          const payload = (await res.json()) as { data?: ApiReading[] };
+          setBowlLongReadings(payload.data ?? []);
+        }
       } catch {
         // keep empty — chart shows "sin lecturas"
       }

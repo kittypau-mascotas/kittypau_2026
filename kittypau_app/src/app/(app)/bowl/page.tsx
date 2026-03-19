@@ -48,7 +48,7 @@ type LoadState = {
   devices: ApiDevice[];
 };
 
-type ChartRangeKey = "5m" | "15m" | "1h" | "1d" | "1w";
+type ChartRangeKey = "5m" | "15m" | "1h" | "1d" | "3d" | "1w";
 
 const defaultState: LoadState = {
   isLoading: true,
@@ -113,7 +113,19 @@ const CHART_RANGES: {
     fromLabel: "-1d",
   },
   {
-    // 7d: bucket server-side de 30 min → 336 puntos exactos
+    // 3d (free max): bucket 15 min → 288 pts para 3 días
+    key: "3d",
+    label: "3 dias",
+    windowMs: 3 * 24 * 60 * 60 * 1000,
+    queryLimit: 5000,
+    maxPages: 1,
+    bucketMs: 15 * 60 * 1000,
+    bucketS: 900,
+    maxPoints: 300,
+    fromLabel: "-3d",
+  },
+  {
+    // 7d: bucket server-side de 30 min → 336 puntos exactos (premium)
     key: "1w",
     label: "1 semana",
     windowMs: 7 * 24 * 60 * 60 * 1000,
@@ -203,6 +215,7 @@ export default function BowlPage() {
   const [readingsError, setReadingsError] = useState<string | null>(null);
   const [isTaring, setIsTaring] = useState(false);
   const [tareStatus, setTareStatus] = useState<"ok" | "error" | null>(null);
+  const [userPlan, setUserPlan] = useState<"free" | "premium">("free");
   const [showConfig, setShowConfig] = useState(false);
   const [configPets, setConfigPets] = useState<ApiPet[]>([]);
   const [configPetId, setConfigPetId] = useState("");
@@ -313,7 +326,16 @@ export default function BowlPage() {
       }
 
       try {
-        const devices = await loadDevices(token);
+        const [devices, profileRes] = await Promise.all([
+          loadDevices(token),
+          fetch("/api/profiles", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        if (mounted && profileRes.ok) {
+          const pRaw = await profileRes.json();
+          const pData = Array.isArray(pRaw) ? pRaw[0] : pRaw;
+          const plan = (pData as { plan?: string })?.plan;
+          if (plan === "premium") setUserPlan("premium");
+        }
         const storedDeviceId =
           window.localStorage.getItem("kittypau_device_id");
         const primaryDevice =
@@ -694,12 +716,20 @@ export default function BowlPage() {
     return "Sin datos suficientes para diagnóstico completo.";
   }, [selectedDevice, statusSummary.tone]);
 
+  // Rangos disponibles según plan: free → hasta 3d; premium → hasta 1w
+  const visibleRanges = useMemo(
+    () => CHART_RANGES.filter((r) => userPlan === "premium" ? r.key !== "3d" : r.key !== "1w"),
+    [userPlan],
+  );
+
   const selectedRangeConfig = useMemo(() => {
+    // Si el rango seleccionado no está disponible para el plan, usar el último disponible
     return (
-      CHART_RANGES.find((range) => range.key === selectedRange) ??
+      visibleRanges.find((r) => r.key === selectedRange) ??
+      visibleRanges[visibleRanges.length - 1] ??
       CHART_RANGES[0]
     );
-  }, [selectedRange]);
+  }, [selectedRange, visibleRanges]);
 
   const latestWeightValue = useMemo(
     () =>
@@ -894,8 +924,8 @@ export default function BowlPage() {
                   {isReadingsLoading ? "Actualizando..." : "En tiempo real"}
                 </span>
                 <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
-                  {CHART_RANGES.map((range) => {
-                    const isActive = selectedRange === range.key;
+                  {visibleRanges.map((range) => {
+                    const isActive = selectedRangeConfig.key === range.key;
                     return (
                       <button
                         key={range.key}
