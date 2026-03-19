@@ -189,6 +189,10 @@ export default function BowlPage() {
   const [configDeviceType, setConfigDeviceType] = useState<"food_bowl" | "water_bowl">("food_bowl");
   const [isSavingConfig, setIsSavingConfig] = useState(false);
   const [configSaveStatus, setConfigSaveStatus] = useState<"ok" | "error" | null>(null);
+  const [wifiSsid, setWifiSsid] = useState("");
+  const [wifiPass, setWifiPass] = useState("");
+  const [isAddingWifi, setIsAddingWifi] = useState(false);
+  const [wifiAddStatus, setWifiAddStatus] = useState<"ok" | "error" | null>(null);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`/api/devices`, {
@@ -493,6 +497,34 @@ export default function BowlPage() {
       setTimeout(() => setConfigSaveStatus(null), 2500);
     } finally {
       setIsSavingConfig(false);
+    }
+  };
+
+  const handleAddWifi = async () => {
+    if (!selectedDevice?.id || isAddingWifi || !wifiSsid.trim()) return;
+    setIsAddingWifi(true);
+    setWifiAddStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch(`/api/devices/${selectedDevice.id}/wifi`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ssid: wifiSsid.trim(), pass: wifiPass }),
+      });
+      if (!res.ok) throw new Error("Error");
+      setWifiAddStatus("ok");
+      setWifiSsid("");
+      setWifiPass("");
+      setTimeout(() => setWifiAddStatus(null), 3000);
+    } catch {
+      setWifiAddStatus("error");
+      setTimeout(() => setWifiAddStatus(null), 3000);
+    } finally {
+      setIsAddingWifi(false);
     }
   };
 
@@ -1071,17 +1103,54 @@ export default function BowlPage() {
 
             {/* ── Sección 3: WiFi ── */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                Conectividad WiFi
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Agregar red WiFi
               </p>
-              <p className="mb-1 text-xs text-slate-600">
-                Portal:{" "}
-                <span className="font-mono font-semibold text-slate-800">
-                  AIoTChile-{selectedDevice?.device_id ?? "----"}
-                </span>
-              </p>
-              <p className="text-xs text-slate-500">
-                Para cambiar la red WiFi, conéctate al portal desde tu teléfono e ingresa las nuevas credenciales. El dispositivo debe estar sin conexión o recién reiniciado.
+              <div className="mb-2">
+                <label className="mb-1 block text-xs font-medium text-slate-600">
+                  Nombre de red (SSID)
+                </label>
+                <input
+                  type="text"
+                  value={wifiSsid}
+                  onChange={(e) => setWifiSsid(e.target.value)}
+                  placeholder="Mi red WiFi"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-300 focus:border-violet-400 focus:outline-none"
+                />
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-xs font-medium text-slate-600">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  value={wifiPass}
+                  onChange={(e) => setWifiPass(e.target.value)}
+                  placeholder="Contraseña"
+                  autoComplete="off"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-300 focus:border-violet-400 focus:outline-none"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => void handleAddWifi()}
+                disabled={isAddingWifi || !wifiSsid.trim()}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
+              >
+                {isAddingWifi ? (
+                  <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : wifiAddStatus === "ok" ? (
+                  "✓ Red enviada al dispositivo"
+                ) : wifiAddStatus === "error" ? (
+                  "✗ Error al enviar"
+                ) : (
+                  "Enviar al dispositivo"
+                )}
+              </button>
+              <p className="mt-2 text-[11px] text-slate-400">
+                El dispositivo guardará esta red y la usará en próximas conexiones.
               </p>
             </div>
           </div>
