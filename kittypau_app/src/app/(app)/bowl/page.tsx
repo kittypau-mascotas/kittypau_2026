@@ -40,6 +40,8 @@ type ApiReading = {
   battery_is_estimated?: boolean | null;
 };
 
+type ApiPet = { id: string; name: string };
+
 type LoadState = {
   isLoading: boolean;
   error: string | null;
@@ -181,6 +183,12 @@ export default function BowlPage() {
   const [readingsError, setReadingsError] = useState<string | null>(null);
   const [isTaring, setIsTaring] = useState(false);
   const [tareStatus, setTareStatus] = useState<"ok" | "error" | null>(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [configPets, setConfigPets] = useState<ApiPet[]>([]);
+  const [configPetId, setConfigPetId] = useState("");
+  const [configDeviceType, setConfigDeviceType] = useState<"food_bowl" | "water_bowl">("food_bowl");
+  const [isSavingConfig, setIsSavingConfig] = useState(false);
+  const [configSaveStatus, setConfigSaveStatus] = useState<"ok" | "error" | null>(null);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`/api/devices`, {
@@ -431,6 +439,63 @@ export default function BowlPage() {
     }
   };
 
+  const handleOpenConfig = async () => {
+    if (!selectedDevice) return;
+    setConfigPetId(selectedDevice.pet_id ?? "");
+    setConfigDeviceType(
+      selectedDevice.device_type === "water_bowl" ? "water_bowl" : "food_bowl",
+    );
+    setConfigSaveStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) return;
+      const res = await fetch("/api/pets?limit=50", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const payload = await res.json();
+        const list = Array.isArray(payload)
+          ? payload
+          : (payload.data ?? []);
+        setConfigPets(list as ApiPet[]);
+      }
+    } catch { /* mostrar modal igual */ }
+    setShowConfig(true);
+  };
+
+  const handleSaveConfig = async () => {
+    if (!selectedDevice?.id || isSavingConfig) return;
+    setIsSavingConfig(true);
+    setConfigSaveStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const body: Record<string, string> = { device_type: configDeviceType };
+      if (configPetId) body.pet_id = configPetId;
+      const res = await fetch(`/api/devices/${selectedDevice.id}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("Error al guardar");
+      const updated = (await res.json()) as ApiDevice;
+      setState((prev) => ({
+        ...prev,
+        devices: prev.devices.map((d) => (d.id === updated.id ? updated : d)),
+      }));
+      setConfigSaveStatus("ok");
+      setTimeout(() => setConfigSaveStatus(null), 2500);
+    } catch {
+      setConfigSaveStatus("error");
+      setTimeout(() => setConfigSaveStatus(null), 2500);
+    } finally {
+      setIsSavingConfig(false);
+    }
+  };
+
   const connectionHint = useMemo(() => {
     if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
     const last = new Date(selectedDevice.last_seen).getTime();
@@ -663,6 +728,18 @@ export default function BowlPage() {
                     ▶
                   </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => void handleOpenConfig()}
+                  disabled={!selectedDevice}
+                  title="Configurar dispositivo"
+                  aria-label="Configurar dispositivo"
+                  className="flex items-center justify-center rounded-full border border-slate-200 bg-white p-1.5 text-slate-500 transition hover:border-slate-300 hover:text-slate-800 disabled:opacity-40"
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clipRule="evenodd" />
+                  </svg>
+                </button>
                 <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
                   <span
                     className={`inline-block h-2.5 w-2.5 rounded-full border ${selectorDotClass}`}
@@ -880,6 +957,135 @@ export default function BowlPage() {
             </div>
           </section>
         </>
+      )}
+      {/* ── Modal de configuración ── */}
+      {showConfig && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+          onClick={() => setShowConfig(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl sm:rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-slate-400">Configuración</p>
+                <p className="text-base font-semibold text-slate-900">
+                  {selectedDevice?.device_id ?? "Dispositivo"}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowConfig(false)}
+                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* ── Sección 1: Báscula ── */}
+            <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Báscula
+              </p>
+              <button
+                type="button"
+                onClick={() => void handleTare()}
+                disabled={isTaring}
+                className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                <span>Tarar báscula</span>
+                <span>
+                  {isTaring ? (
+                    <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
+                  ) : tareStatus === "ok" ? (
+                    <span className="text-emerald-600">✓</span>
+                  ) : tareStatus === "error" ? (
+                    <span className="text-red-500">✗</span>
+                  ) : (
+                    <span className="text-slate-400">⊖</span>
+                  )}
+                </span>
+              </button>
+            </div>
+
+            {/* ── Sección 2: Asignación ── */}
+            <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Asignación
+              </p>
+              <div className="mb-2">
+                <label className="mb-1 block text-xs font-medium text-slate-600">
+                  Mascota
+                </label>
+                <select
+                  value={configPetId}
+                  onChange={(e) => setConfigPetId(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
+                >
+                  <option value="">— Sin asignar —</option>
+                  {configPets.map((pet) => (
+                    <option key={pet.id} value={pet.id}>
+                      {pet.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3">
+                <label className="mb-1 block text-xs font-medium text-slate-600">
+                  Tipo de plato
+                </label>
+                <select
+                  value={configDeviceType}
+                  onChange={(e) =>
+                    setConfigDeviceType(
+                      e.target.value as "food_bowl" | "water_bowl",
+                    )
+                  }
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
+                >
+                  <option value="food_bowl">Comedero</option>
+                  <option value="water_bowl">Bebedero</option>
+                </select>
+              </div>
+              <button
+                type="button"
+                onClick={() => void handleSaveConfig()}
+                disabled={isSavingConfig}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+              >
+                {isSavingConfig ? (
+                  <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : configSaveStatus === "ok" ? (
+                  "✓ Guardado"
+                ) : configSaveStatus === "error" ? (
+                  "✗ Error al guardar"
+                ) : (
+                  "Guardar"
+                )}
+              </button>
+            </div>
+
+            {/* ── Sección 3: WiFi ── */}
+            <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Conectividad WiFi
+              </p>
+              <p className="mb-1 text-xs text-slate-600">
+                Portal:{" "}
+                <span className="font-mono font-semibold text-slate-800">
+                  AIoTChile-{selectedDevice?.device_id ?? "----"}
+                </span>
+              </p>
+              <p className="text-xs text-slate-500">
+                Para cambiar la red WiFi, conéctate al portal desde tu teléfono e ingresa las nuevas credenciales. El dispositivo debe estar sin conexión o recién reiniciado.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );
