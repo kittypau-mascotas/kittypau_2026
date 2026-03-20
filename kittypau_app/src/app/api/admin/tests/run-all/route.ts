@@ -6,6 +6,11 @@ import {
   isAdminFallbackEmail,
 } from "@/app/api/_utils";
 import { handleReadingsGet } from "@/app/api/readings/route";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../../_permissions";
 
 type AdminTestResult = {
   id: string;
@@ -27,10 +32,17 @@ async function ensureAdmin(req: NextRequest) {
     .eq("active", true)
     .maybeSingle();
   if (error) return { error: error.message, status: 500 as const };
-  if (!role && !isAdminFallbackEmail(user.email ?? null)) {
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const resolvedAdminRole: AdminRole | null =
+    normalizeAdminRole(role?.role) ?? (fallbackAdmin ? "owner_admin" : null);
+  if (!resolvedAdminRole) {
     return { error: "Admin role required", status: 403 as const };
   }
-  return { userId: user.id };
+  return {
+    userId: user.id,
+    role: resolvedAdminRole,
+    permissions: getAdminPermissions(resolvedAdminRole),
+  };
 }
 
 async function runTest(
@@ -68,6 +80,9 @@ export async function POST(req: NextRequest) {
       "AUTH_INVALID",
       admin.error ?? "Unauthorized",
     );
+  }
+  if (!admin.permissions.can_run_test_suite) {
+    return apiError(req, 403, "FORBIDDEN", "Test suite not allowed");
   }
 
   const results: AdminTestResult[] = [];
@@ -117,6 +132,9 @@ export async function POST(req: NextRequest) {
 
   results.push(
     await runTest("finance_summary", "Resumen financiero", async () => {
+      if (!admin.permissions.can_view_finance) {
+        return "Skipped (no finance permission)";
+      }
       const { data, error } = await supabaseServer
         .from("finance_admin_summary")
         .select("generated_at, bom_unit_cost_usd, cloud_monthly_cost_usd")
@@ -130,6 +148,9 @@ export async function POST(req: NextRequest) {
 
   results.push(
     await runTest("kpcl_catalog", "Catálogo KPCL financiero", async () => {
+      if (!admin.permissions.can_view_finance) {
+        return "Skipped (no finance permission)";
+      }
       const { data: profiles, error: pErr } = await supabaseServer
         .from("finance_kpcl_profiles")
         .select("profile_key")

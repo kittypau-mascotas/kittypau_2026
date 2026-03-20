@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { apiError, getUserClient, isAdminFallbackEmail } from "@/app/api/_utils";
+import {
+  apiError,
+  getUserClient,
+  isAdminFallbackEmail,
+} from "@/app/api/_utils";
 import {
   DEFAULT_KPCL_COST_CATALOG,
   type KpclCatalog,
 } from "@/lib/finance/kpcl-catalog";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../../_permissions";
 
 type KpclCatalogProfileRow = {
   profile_key: string;
@@ -42,25 +51,37 @@ export async function GET(req: NextRequest) {
   if (roleError) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
-  if (!adminRole && !isAdminFallbackEmail(user.email ?? null)) {
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const resolvedAdminRole: AdminRole | null =
+    normalizeAdminRole(adminRole?.role) ??
+    (fallbackAdmin ? "owner_admin" : null);
+  if (!resolvedAdminRole) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
+  const permissions = getAdminPermissions(resolvedAdminRole);
+  if (!permissions.can_view_finance) {
+    return apiError(req, 403, "FORBIDDEN", "Finance access required");
+  }
 
-  const [{ data: profiles, error: profilesError }, { data: components, error: componentsError }] =
-    await Promise.all([
-      supabaseServer
-        .from("finance_kpcl_profiles")
-        .select(
-          "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd"
-        )
-        .eq("active", true)
-        .order("profile_key", { ascending: true }),
-      supabaseServer
-        .from("finance_kpcl_profile_components")
-        .select("profile_key, component_code, component_name, qty, unit_cost_usd, notes")
-        .order("profile_key", { ascending: true })
-        .order("sort_order", { ascending: true }),
-    ]);
+  const [
+    { data: profiles, error: profilesError },
+    { data: components, error: componentsError },
+  ] = await Promise.all([
+    supabaseServer
+      .from("finance_kpcl_profiles")
+      .select(
+        "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd",
+      )
+      .eq("active", true)
+      .order("profile_key", { ascending: true }),
+    supabaseServer
+      .from("finance_kpcl_profile_components")
+      .select(
+        "profile_key, component_code, component_name, qty, unit_cost_usd, notes",
+      )
+      .order("profile_key", { ascending: true })
+      .order("sort_order", { ascending: true }),
+  ]);
 
   if (profilesError) {
     return apiError(req, 500, "SUPABASE_ERROR", profilesError.message);

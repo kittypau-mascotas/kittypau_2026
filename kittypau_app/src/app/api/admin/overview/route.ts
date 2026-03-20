@@ -16,6 +16,11 @@ import {
   DEFAULT_KPCL_COST_CATALOG,
   type KpclCatalog,
 } from "@/lib/finance/kpcl-catalog";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../_permissions";
 
 type RegistrationStage =
   | "profile_pending"
@@ -262,16 +267,20 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
   const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
-  const resolvedAdminRole =
-    adminRole?.role ?? (fallbackAdmin ? "owner_admin" : null);
+  const resolvedAdminRole: AdminRole | null =
+    normalizeAdminRole(adminRole?.role) ??
+    (fallbackAdmin ? "owner_admin" : null);
   if (!resolvedAdminRole) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
   }
+  const permissions = getAdminPermissions(resolvedAdminRole);
 
   const auditLimit = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("audit_limit") ?? 30), 1),
     100,
   );
+  const scopeParam = req.nextUrl.searchParams.get("scope");
+  const scope = scopeParam && scopeParam.trim() === "lite" ? "lite" : "full";
   const auditTypeParam = req.nextUrl.searchParams.get("audit_type");
   const auditType =
     auditTypeParam && auditTypeParam.trim().length
@@ -299,6 +308,8 @@ export async function GET(req: NextRequest) {
   const cacheKey = [
     "admin:overview",
     `v:${cacheVersion}`,
+    `s:${scope}`,
+    `r:${resolvedAdminRole}`,
     `w:${auditWindowMin}`,
     `t:${auditType ?? "all"}`,
     `d:${auditDedupWindowSec}`,
@@ -328,6 +339,122 @@ export async function GET(req: NextRequest) {
     auditWindowMin > 0
       ? new Date(Date.now() - auditWindowMin * 60_000).toISOString()
       : null;
+
+  const emptyResult = <T>(data: T) =>
+    Promise.resolve({ data, error: null } as { data: T; error: null });
+
+  if (scope === "lite") {
+    const [
+      { data: summary, error: summaryError },
+      { data: auditEvents, error: auditError },
+      { data: incidentWindowEvents, error: incidentError },
+    ] = await Promise.all([
+      supabaseServer
+        .from("admin_dashboard_live")
+        .select("*")
+        .limit(1)
+        .maybeSingle(),
+      (() => {
+        let query = supabaseServer
+          .from("audit_events")
+          .select(
+            "id, event_type, actor_id, entity_type, entity_id, payload, created_at",
+          )
+          .order("created_at", { ascending: false })
+          .limit(auditLimit);
+        if (auditSince) query = query.gte("created_at", auditSince);
+        if (auditType) query = query.eq("event_type", auditType);
+        return query;
+      })(),
+      supabaseServer
+        .from("audit_events")
+        .select("event_type, created_at")
+        .gte(
+          "created_at",
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+        )
+        .in("event_type", [
+          "bridge_offline_detected",
+          "device_offline_detected",
+          "general_device_outage_detected",
+          "general_device_outage_recovered",
+        ]),
+    ]);
+
+    if (summaryError) {
+      return apiError(req, 500, "SUPABASE_ERROR", summaryError.message);
+    }
+    if (auditError) {
+      return apiError(req, 500, "SUPABASE_ERROR", auditError.message);
+    }
+    if (incidentError) {
+      return apiError(req, 500, "SUPABASE_ERROR", incidentError.message);
+    }
+
+    const incidentCounters = {
+      bridge_offline_detected: 0,
+      device_offline_detected: 0,
+      general_device_outage_detected: 0,
+      general_device_outage_recovered: 0,
+    };
+    for (const row of incidentWindowEvents ?? []) {
+      const key = row.event_type as keyof typeof incidentCounters;
+      if (key in incidentCounters) incidentCounters[key] += 1;
+    }
+
+    const activeGeneralOutage =
+      incidentCounters.general_device_outage_detected >
+      incidentCounters.general_device_outage_recovered;
+
+    const dedupedAuditEvents = (() => {
+      if (!auditDedupWindowSec) return auditEvents ?? [];
+      const out: typeof auditEvents = [];
+      const lastByKey = new Map<string, number>();
+      for (const row of auditEvents ?? []) {
+        const key = `${row.event_type}:${row.entity_type ?? ""}:${row.entity_id ?? ""}`;
+        const ts = Date.parse(row.created_at);
+        if (!Number.isFinite(ts)) {
+          out.push(row);
+          continue;
+        }
+        const last = lastByKey.get(key);
+        if (
+          last !== undefined &&
+          Math.abs(last - ts) < auditDedupWindowSec * 1000
+        ) {
+          continue;
+        }
+        lastByKey.set(key, ts);
+        out.push(row);
+      }
+      return out;
+    })();
+
+    const payload = {
+      admin_role: resolvedAdminRole,
+      permissions,
+      summary: summary ?? null,
+      audit_events: dedupedAuditEvents ?? [],
+      incident_counters: incidentCounters,
+      active_general_outage: activeGeneralOutage,
+      stale_cutoff: staleCutoff,
+    };
+
+    if (!noCache && cacheTtlSec > 0) {
+      await setCacheJson(cacheKey, payload, cacheTtlSec);
+    }
+
+    logRequestEnd(req, startedAt, 200, {
+      admin_role: resolvedAdminRole,
+      scope,
+      audit_count: dedupedAuditEvents?.length ?? 0,
+    });
+
+    return NextResponse.json(payload, {
+      status: 200,
+      headers: { "x-admin-cache": noCache ? "BYPASS" : "MISS" },
+    });
+  }
 
   const readAllReadingsForDevices = async (deviceIds: string[]) => {
     const out: Array<Record<string, unknown>> = [];
@@ -463,42 +590,52 @@ export async function GET(req: NextRequest) {
       .select(
         "schema_name, object_name, object_type, description, row_estimate, size_bytes, size_pretty, last_updated_at",
       ),
-    supabaseServer
-      .from("finance_admin_summary")
-      .select(
-        "generated_at, bom_unit_cost_usd, cloud_monthly_cost_usd, providers_json, snapshot_month, units_produced, total_cost_usd, unit_cost_usd",
-      )
-      .limit(1)
-      .maybeSingle(),
-    supabaseServer
-      .from("finance_provider_plans")
-      .select(
-        "provider, plan_name, is_free_plan, is_active, monthly_cost_usd, limit_label, usage_label, updated_at",
-      )
-      .eq("is_active", true)
-      .order("provider", { ascending: true }),
-    supabaseServer
-      .from("finance_monthly_snapshots")
-      .select(
-        "snapshot_month, units_produced, bom_cost_total_usd, manufacturing_cost_total_usd, cloud_cost_total_usd, logistics_cost_total_usd, support_cost_total_usd, warranty_cost_total_usd, total_cost_usd, unit_cost_usd, updated_at",
-      )
-      .order("snapshot_month", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabaseServer
-      .from("finance_kpcl_profiles")
-      .select(
-        "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd",
-      )
-      .eq("active", true)
-      .order("profile_key", { ascending: true }),
-    supabaseServer
-      .from("finance_kpcl_profile_components")
-      .select(
-        "profile_key, component_code, component_name, qty, unit_cost_usd, notes, sort_order",
-      )
-      .order("profile_key", { ascending: true })
-      .order("sort_order", { ascending: true }),
+    permissions.can_view_finance
+      ? supabaseServer
+          .from("finance_admin_summary")
+          .select(
+            "generated_at, bom_unit_cost_usd, cloud_monthly_cost_usd, providers_json, snapshot_month, units_produced, total_cost_usd, unit_cost_usd",
+          )
+          .limit(1)
+          .maybeSingle()
+      : emptyResult(null),
+    permissions.can_view_finance
+      ? supabaseServer
+          .from("finance_provider_plans")
+          .select(
+            "provider, plan_name, is_free_plan, is_active, monthly_cost_usd, limit_label, usage_label, updated_at",
+          )
+          .eq("is_active", true)
+          .order("provider", { ascending: true })
+      : emptyResult([]),
+    permissions.can_view_finance
+      ? supabaseServer
+          .from("finance_monthly_snapshots")
+          .select(
+            "snapshot_month, units_produced, bom_cost_total_usd, manufacturing_cost_total_usd, cloud_cost_total_usd, logistics_cost_total_usd, support_cost_total_usd, warranty_cost_total_usd, total_cost_usd, unit_cost_usd, updated_at",
+          )
+          .order("snapshot_month", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      : emptyResult(null),
+    permissions.can_view_finance
+      ? supabaseServer
+          .from("finance_kpcl_profiles")
+          .select(
+            "profile_key, label, print_grams, print_hours, print_unit_cost_usd, maintenance_monthly_usd, power_monthly_usd",
+          )
+          .eq("active", true)
+          .order("profile_key", { ascending: true })
+      : emptyResult([]),
+    permissions.can_view_finance
+      ? supabaseServer
+          .from("finance_kpcl_profile_components")
+          .select(
+            "profile_key, component_code, component_name, qty, unit_cost_usd, notes, sort_order",
+          )
+          .order("profile_key", { ascending: true })
+          .order("sort_order", { ascending: true })
+      : emptyResult([]),
   ]);
 
   if (summaryError) {
@@ -550,22 +687,22 @@ export async function GET(req: NextRequest) {
       effectiveObjectStats = (objectStatsFallback ?? []) as AdminObjectStat[];
     }
   }
-  if (financeSummaryError) {
+  if (permissions.can_view_finance && financeSummaryError) {
     console.warn("[admin_overview] finance_summary_unavailable", {
       message: financeSummaryError.message,
     });
   }
-  if (financeProvidersError) {
+  if (permissions.can_view_finance && financeProvidersError) {
     console.warn("[admin_overview] finance_providers_unavailable", {
       message: financeProvidersError.message,
     });
   }
-  if (kpclCatalogProfilesError) {
+  if (permissions.can_view_finance && kpclCatalogProfilesError) {
     console.warn("[admin_overview] kpcl_catalog_profiles_unavailable", {
       message: kpclCatalogProfilesError.message,
     });
   }
-  if (kpclCatalogComponentsError) {
+  if (permissions.can_view_finance && kpclCatalogComponentsError) {
     console.warn("[admin_overview] kpcl_catalog_components_unavailable", {
       message: kpclCatalogComponentsError.message,
     });
@@ -900,6 +1037,7 @@ export async function GET(req: NextRequest) {
   })();
 
   const financeSummary = (() => {
+    if (!permissions.can_view_finance) return null;
     if (financeSummaryError || !financeSummaryRow) return null;
     const row = financeSummaryRow as FinanceSummaryRow;
     return {
@@ -913,11 +1051,13 @@ export async function GET(req: NextRequest) {
     };
   })();
 
-  const financePlans = financeProvidersError
-    ? []
-    : ((financeProviders as FinanceProviderRow[] | null) ?? []);
+  const financePlans =
+    !permissions.can_view_finance || financeProvidersError
+      ? []
+      : ((financeProviders as FinanceProviderRow[] | null) ?? []);
 
   const financeBreakdown = (() => {
+    if (!permissions.can_view_finance) return null;
     if (financeMonthlySnapshotError || !financeMonthlySnapshotRow) return null;
     const row = financeMonthlySnapshotRow as FinanceMonthlySnapshotRow;
     return {
@@ -938,6 +1078,7 @@ export async function GET(req: NextRequest) {
   })();
 
   const financeBreakEven = (() => {
+    if (!permissions.can_view_finance) return null;
     const unitCost =
       financeBreakdown?.unit_cost_usd ?? financeSummary?.unit_cost_usd ?? 0;
     const fixedMonthly =
@@ -1006,6 +1147,7 @@ export async function GET(req: NextRequest) {
   })();
 
   const kpclCatalog = (() => {
+    if (!permissions.can_view_finance) return null;
     if (kpclCatalogProfilesError || kpclCatalogComponentsError) {
       return DEFAULT_KPCL_COST_CATALOG;
     }
@@ -1089,6 +1231,7 @@ export async function GET(req: NextRequest) {
 
   const payload = {
     admin_role: resolvedAdminRole,
+    permissions,
     summary: summary ?? null,
     audit_events: dedupedAuditEvents ?? [],
     bridges: currentBridgeStatus,

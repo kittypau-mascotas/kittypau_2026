@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { clearTokens } from "@/lib/auth/token";
 import { useAppData } from "@/lib/context/app-context";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 
@@ -40,6 +40,7 @@ export default function AppNav() {
   const [demoPetName, setDemoPetName] = useState<string | null>(null);
   const [demoDeviceId, setDemoDeviceId] = useState<string | null>(null);
   const [navPetName, setNavPetName] = useState<string | null>(null);
+  const [nowMs, setNowMs] = useState<number>(0);
   const [userSelectedDeviceId, setUserSelectedDeviceId] = useState<
     string | null
   >(null);
@@ -54,11 +55,6 @@ export default function AppNav() {
   }, [userSelectedDeviceId, devices]);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [adminRole, setAdminRole] = useState<string>("owner_admin");
-  const [adminGeneratedAt, setAdminGeneratedAt] = useState<string | null>(null);
-  const [adminFreshnessLabel, setAdminFreshnessLabel] = useState(
-    "Actualizado recientemente",
-  );
   const [isNativeApkMode] = useState<boolean>(() => {
     if (isNativeFlavorEnabled()) return true;
     if (typeof window === "undefined") return false;
@@ -74,55 +70,6 @@ export default function AppNav() {
       (typeof cap.getPlatform === "function" && cap.getPlatform() !== "web")
     );
   });
-
-  useEffect(() => {
-    if (!pathname?.startsWith("/admin")) return;
-    let active = true;
-
-    const formatFreshness = (isoValue: string | null) => {
-      if (!isoValue) return "Actualizado recientemente";
-      const ms = Date.now() - Date.parse(isoValue);
-      if (!Number.isFinite(ms) || ms < 0) return "Actualizado recientemente";
-      const sec = Math.floor(ms / 1000);
-      if (sec < 60) return `Actualizado hace ${sec}s`;
-      const min = Math.floor(sec / 60);
-      return `Actualizado hace ${min}m`;
-    };
-
-    const syncAdmin = async () => {
-      const token = await getValidAccessToken();
-      if (!token || !active) return;
-
-      const roleRes = await fetch("/api/admin/access", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (roleRes.ok && active) {
-        const rolePayload = await roleRes.json().catch(() => null);
-        setAdminRole(rolePayload?.role ?? "owner_admin");
-      }
-
-      const overviewRes = await fetch("/api/admin/overview?audit_limit=1", {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      });
-      if (overviewRes.ok && active) {
-        const overviewPayload = await overviewRes.json().catch(() => null);
-        const generatedAt = overviewPayload?.summary?.generated_at ?? null;
-        setAdminGeneratedAt(generatedAt);
-        setAdminFreshnessLabel(formatFreshness(generatedAt));
-      }
-    };
-
-    syncAdmin().catch(() => undefined);
-    const interval = window.setInterval(() => {
-      setAdminFreshnessLabel(formatFreshness(adminGeneratedAt));
-    }, 15000);
-
-    return () => {
-      active = false;
-      window.clearInterval(interval);
-    };
-  }, [pathname, adminGeneratedAt]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -169,6 +116,16 @@ export default function AppNav() {
   }, [pathname]);
 
   useEffect(() => {
+    const tick = () => setNowMs(Date.now());
+    const seed = window.setTimeout(tick, 0);
+    const interval = window.setInterval(tick, 30_000);
+    return () => {
+      window.clearTimeout(seed);
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
     const syncFromStorage = () => {
       if (typeof window === "undefined") return;
       const storedPetName = window.localStorage.getItem("kittypau_pet_name");
@@ -192,13 +149,17 @@ export default function AppNav() {
 
     const onDeviceChange = (event: Event) => {
       const custom = event as CustomEvent<{ deviceId?: string }>;
-      if (custom.detail?.deviceId) setUserSelectedDeviceId(custom.detail.deviceId);
+      if (custom.detail?.deviceId)
+        setUserSelectedDeviceId(custom.detail.deviceId);
       else syncFromStorage();
     };
 
     syncFromStorage();
     window.addEventListener("storage", syncFromStorage);
-    window.addEventListener("kittypau-pet-change", onPetChange as EventListener);
+    window.addEventListener(
+      "kittypau-pet-change",
+      onPetChange as EventListener,
+    );
     window.addEventListener(
       "kittypau-device-change",
       onDeviceChange as EventListener,
@@ -215,66 +176,6 @@ export default function AppNav() {
       );
     };
   }, [isDemoMode]);
-
-  if (pathname?.startsWith("/registro")) {
-    return null;
-  }
-
-  if (pathname?.startsWith("/admin")) {
-    const isAdminHome = pathname === "/admin";
-    const isJavoSection = pathname?.startsWith("/admin/javo");
-
-    return (
-      <nav className="app-nav app-nav-top app-nav-admin-mode">
-        <div className="app-nav-inner app-nav-inner-admin">
-          <div className="app-nav-brand">
-            <span className="brand-title">MODO ADMIN</span>
-          </div>
-          <div className="app-nav-admin-actions">
-            <Link
-              href="/admin"
-              className={`app-nav-admin-pill app-nav-admin-link ${
-                isAdminHome
-                  ? "border-slate-300 bg-slate-100 text-slate-900"
-                  : ""
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/admin/javo"
-              className={`app-nav-admin-pill app-nav-admin-link ${
-                isJavoSection
-                  ? "border-slate-300 bg-slate-100 text-slate-900"
-                  : ""
-              }`}
-            >
-              Javo
-            </Link>
-            <span className="app-nav-admin-pill">Rol: {adminRole}</span>
-            <span className="app-nav-admin-pill">{adminFreshnessLabel}</span>
-            <span className="app-nav-admin-pill">Auto refresh: 5 min</span>
-            <Link
-              href="/inicio"
-              className="app-nav-admin-pill app-nav-admin-link"
-            >
-              Vista cliente
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                clearTokens();
-                window.location.href = "/login";
-              }}
-              className="kp-brand-soft-action rounded-full px-3 py-2 text-xs font-semibold"
-            >
-              Cerrar sesión
-            </button>
-          </div>
-        </div>
-      </nav>
-    );
-  }
 
   const effectiveAccountType = isDemoMode ? "tester" : accountType;
   const isSpecial =
@@ -295,16 +196,21 @@ export default function AppNav() {
   const resolvedDeviceLabel = isDemoMode
     ? demoDeviceId || "KPCL-DEMO"
     : selectedDeviceId
-      ? devices.find((d) => d.id === selectedDeviceId)?.device_id ?? ""
+      ? (devices.find((d) => d.id === selectedDeviceId)?.device_id ?? "")
       : "";
   const selectedDevice = isDemoMode
     ? null
-    : devices.find((d) => d.id === selectedDeviceId) ?? null;
-  const isDeviceOnline = useMemo(() => {
+    : (devices.find((d) => d.id === selectedDeviceId) ?? null);
+  const isDeviceOnline = (() => {
     if (!selectedDevice?.last_seen) return false;
-    const lastSeen = new Date(selectedDevice.last_seen).getTime();
-    return Number.isFinite(lastSeen) && Date.now() - lastSeen < 15 * 60 * 1000;
-  }, [selectedDevice]);
+    const lastSeen = Date.parse(selectedDevice.last_seen);
+    if (!Number.isFinite(lastSeen) || !nowMs) return false;
+    return nowMs - lastSeen < 15 * 60 * 1000;
+  })();
+
+  if (pathname?.startsWith("/registro") || pathname?.startsWith("/admin")) {
+    return null;
+  }
   const userSummary = (
     <div className="app-nav-user app-nav-user-static">
       <Image
@@ -316,7 +222,10 @@ export default function AppNav() {
       />
       <span className="app-nav-user-meta">
         <span className="app-nav-user-name">
-          {demoOwnerName || profile?.owner_name || profile?.user_name || "Kittypau"}
+          {demoOwnerName ||
+            profile?.owner_name ||
+            profile?.user_name ||
+            "Kittypau"}
           {effectiveAccountType === "admin"
             ? " - Admin"
             : effectiveAccountType === "tester"
@@ -332,13 +241,24 @@ export default function AppNav() {
           </span>
           {resolvedDeviceLabel ? (
             <span
-              title={isDeviceOnline ? "Dispositivo en línea" : "Dispositivo sin conexión"}
+              title={
+                isDeviceOnline
+                  ? "Dispositivo en línea"
+                  : "Dispositivo sin conexión"
+              }
               className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
                 isDeviceOnline ? "bg-emerald-500" : "bg-slate-300"
               }`}
             >
               <svg viewBox="0 0 10 10" fill="white" className="h-2.5 w-2.5">
-                <path d="M2 5.5l2 2 4-4" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <path
+                  d="M2 5.5l2 2 4-4"
+                  stroke="white"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
               </svg>
             </span>
           ) : null}
@@ -442,7 +362,9 @@ export default function AppNav() {
             <SocialLinks size="sm" />
           </div>
         ) : null}
-        {useSidebarNav ? <div className="app-nav-user-top">{userSummary}</div> : null}
+        {useSidebarNav ? (
+          <div className="app-nav-user-top">{userSummary}</div>
+        ) : null}
         <div className="app-nav-links">
           {navItems.map((item) => {
             const isActive = isDemoMode
@@ -484,9 +406,7 @@ export default function AppNav() {
         ) : null}
         <div className="app-nav-contact">
           <span className="text-center">Kittypau · IoT Chile S.A</span>
-          <span className="kp-pettech-tagline">
-            PetTech AIoT
-          </span>
+          <span className="kp-pettech-tagline">PetTech AIoT</span>
           <a href="mailto:kittypau.mascotas@gmail.com">
             kittypau.mascotas@gmail.com
           </a>
@@ -495,5 +415,3 @@ export default function AppNav() {
     </nav>
   );
 }
-
-

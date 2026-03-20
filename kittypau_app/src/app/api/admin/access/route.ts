@@ -7,6 +7,11 @@ import {
   logRequestEnd,
   startRequestTimer,
 } from "../../_utils";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../_permissions";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
@@ -29,15 +34,18 @@ export async function GET(req: NextRequest) {
   }
 
   const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
-  const isAdmin = Boolean(data) || fallbackAdmin;
-  const resolvedRole = data?.role ?? (fallbackAdmin ? "owner_admin" : null);
+  const resolvedRole: AdminRole | null =
+    normalizeAdminRole(data?.role) ?? (fallbackAdmin ? "owner_admin" : null);
+  const isAdmin = Boolean(resolvedRole);
+  const permissions = resolvedRole ? getAdminPermissions(resolvedRole) : null;
   logRequestEnd(req, startedAt, 200, { is_admin: isAdmin, role: resolvedRole });
   return NextResponse.json(
     {
       ok: true,
       is_admin: isAdmin,
       role: resolvedRole,
+      permissions,
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

@@ -7,6 +7,11 @@ import {
   logRequestEnd,
   startRequestTimer,
 } from "../../_utils";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../_permissions";
 import { logAudit } from "../../_audit";
 import { bumpAdminOverviewCacheVersion } from "../../_cache";
 
@@ -30,22 +35,35 @@ export async function POST(req: NextRequest) {
   if (roleError) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
-  if (!adminRole && !isAdminFallbackEmail(user.email ?? null)) {
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const resolvedAdminRole: AdminRole | null =
+    normalizeAdminRole(adminRole?.role) ??
+    (fallbackAdmin ? "owner_admin" : null);
+  if (!resolvedAdminRole) {
     return apiError(req, 403, "FORBIDDEN", "Admin role required");
+  }
+  const permissions = getAdminPermissions(resolvedAdminRole);
+  if (!permissions.can_run_health_check) {
+    return apiError(req, 403, "FORBIDDEN", "Health-check not allowed");
   }
 
   const token = process.env.BRIDGE_HEARTBEAT_SECRET;
   if (!token) {
-    return apiError(req, 500, "MISCONFIGURED", "Missing BRIDGE_HEARTBEAT_SECRET");
+    return apiError(
+      req,
+      500,
+      "MISCONFIGURED",
+      "Missing BRIDGE_HEARTBEAT_SECRET",
+    );
   }
 
   const staleMin = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("stale_min") ?? 10), 1),
-    60
+    60,
   );
   const deviceStaleMin = Math.min(
     Math.max(Number(req.nextUrl.searchParams.get("device_stale_min") ?? 10), 1),
-    1440
+    1440,
   );
 
   const res = await fetch(
@@ -54,7 +72,7 @@ export async function POST(req: NextRequest) {
       method: "GET",
       headers: { "x-bridge-token": token },
       cache: "no-store",
-    }
+    },
   );
 
   const bodyText = await res.text();
@@ -87,6 +105,6 @@ export async function POST(req: NextRequest) {
       status: res.status,
       result: payload,
     },
-    { status: res.ok ? 200 : 502 }
+    { status: res.ok ? 200 : 502 },
   );
 }

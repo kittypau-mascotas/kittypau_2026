@@ -7,6 +7,11 @@ import {
   logRequestEnd,
   startRequestTimer,
 } from "@/app/api/_utils";
+import {
+  getAdminPermissions,
+  normalizeAdminRole,
+  type AdminRole,
+} from "../_permissions";
 
 export async function GET(req: NextRequest) {
   const startedAt = startRequestTimer(req);
@@ -29,9 +34,17 @@ export async function GET(req: NextRequest) {
     return apiError(req, 500, "SUPABASE_ERROR", roleError.message);
   }
 
-  if (!role && !isAdminFallbackEmail(user.email ?? null)) {
+  const fallbackAdmin = isAdminFallbackEmail(user.email ?? null);
+  const resolvedAdminRole: AdminRole | null =
+    normalizeAdminRole(role?.role) ?? (fallbackAdmin ? "owner_admin" : null);
+  if (!resolvedAdminRole) {
     logRequestEnd(req, startedAt, 403);
     return apiError(req, 403, "FORBIDDEN", "Admin access required");
+  }
+  const permissions = getAdminPermissions(resolvedAdminRole);
+  if (!permissions.can_view_finance) {
+    logRequestEnd(req, startedAt, 403);
+    return apiError(req, 403, "FORBIDDEN", "Finance access required");
   }
 
   const url = new URL(req.url);
