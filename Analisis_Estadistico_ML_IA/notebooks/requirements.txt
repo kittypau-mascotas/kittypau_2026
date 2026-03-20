@@ -1,0 +1,10 @@
+supabase
+python-dotenv
+pandas
+numpy
+matplotlib
+seaborn
+scipy
+scikit-learn
+plotly
+

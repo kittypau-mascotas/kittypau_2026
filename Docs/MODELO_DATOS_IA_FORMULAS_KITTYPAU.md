@@ -14,21 +14,26 @@ Este documento es la base para:
 - Features para Machine Learning.
 - Reglas de interpretacion en la app.
 
+Ver también (arquitectura canon): `Docs/KittyPau_Arquitectura_Datos_v3.md`
+
 ## 2) Variables base (fuente)
 Tabla principal: `readings`.
 
 Campos clave:
 - `recorded_at` (timestamp de lectura)
-- `device_id`
+- `device_id` (UUID FK a `public.devices.id` — no confundir con el código KPCL)
 - `pet_id`
 - `weight_grams` (peso bruto medido)
 - `water_ml` (si existe, volumen directo)
 - `temperature`
 - `humidity`
 - `battery_level`
+- `ingested_at` (timestamp servidor al persistir)
+- `clock_invalid` (calidad de reloj)
 
 Campos de dispositivo:
 - `plate_weight_grams` (tara del plato superior)
+- `device_id` (en `public.devices.device_id`: código humano KPCL para QR/UI)
 
 ## 3) Normalizacion y limpieza
 Para cada lectura `i`:
@@ -41,6 +46,7 @@ Reglas:
 - Eliminar o marcar lecturas con `w_gross_i` fuera de rango fisico.
 - Ordenar por `t_i` ascendente para calculos de delta.
 - Mantener control de duplicados (`device_id`, `recorded_at`).
+- Canon temporal para series/ventanas: `effective_ts = CASE WHEN clock_invalid THEN ingested_at ELSE recorded_at END`.
 
 ### 3.2 Transformación `log10(x + 1)` (feature engineering)
 Para variables altamente skewed (consumo, intervalos, deltas), usar:

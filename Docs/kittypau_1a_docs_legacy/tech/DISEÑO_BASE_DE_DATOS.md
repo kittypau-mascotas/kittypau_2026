@@ -1,5 +1,7 @@
 # Diseño de la Base de Datos v2.2
 
+> Estado: **LEGACY**. Propuesta histórica (Drizzle/monorepo anterior). Para schema vigente ver `Docs/SQL_SCHEMA.sql` y para arquitectura de datos ver `Docs/KittyPau_Arquitectura_Datos_v3.md`.
+
 **Autor:** Gemini (con feedback de Mauro)
 **Fecha:** 2025-10-09
 

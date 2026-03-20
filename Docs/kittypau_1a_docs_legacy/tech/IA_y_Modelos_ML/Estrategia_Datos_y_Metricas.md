@@ -1,5 +1,8 @@
 # Estrategia de Datos, Métricas y Modelos de IA
 
+> Estado: **LEGACY**. Complemento conceptual; no necesariamente refleja el pipeline/tabla actual.
+> Referencias vigentes: `Docs/KittyPau_Arquitectura_Datos_v3.md` (datos/ML) y `Docs/ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md` (KPIs admin).
+
 Este documento centraliza la estrategia para la recolección, análisis y utilización de datos en el proyecto KittyPaw. Incluye métricas de negocio (externas), métricas de producto (internas) y la planificación para los modelos de Machine Learning.
 
 ---

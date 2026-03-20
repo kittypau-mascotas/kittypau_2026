@@ -1,13 +1,13 @@
 ﻿# Indice de Documentacion (Kittypau)
 
-> Para navegar por Ã¡rea temÃ¡tica, ver los documentos maestros:
-> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) â€” Planes y roadmap
-> - [SQL_MAESTRO.md](SQL_MAESTRO.md) â€” Base de datos (orden de ejecuciÃ³n)
-> - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) â€” Flujo de trabajo y colaboraciÃ³n
+> Para navegar por área temática, ver los documentos maestros:
+> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) — Planes y roadmap
+> - [SQL_MAESTRO.md](SQL_MAESTRO.md) — Base de datos (orden de ejecución)
+> - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) — Flujo de trabajo y colaboración
 
 ---
 
-## Canon EconÃ³mico y Financiero
+## Canon Económico y Financiero
 - [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md) (modelo oficial de costos)
 - [KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md](KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md) (BOM y costos por perfil KPCL)
 - [ADMIN_FINANZAS_CONTAINER_SPEC.md](ADMIN_FINANZAS_CONTAINER_SPEC.md) (contrato del bloque financiero en Admin)
@@ -18,7 +18,7 @@
 - [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
 - [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md)
 - [PLAN_PENDIENTES_APP_WEB_KITTYPAU.md](PLAN_PENDIENTES_APP_WEB_KITTYPAU.md)
-- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) â€” Planes y roadmap
+- [PLAN_MAESTRO.md](PLAN_MAESTRO.md) — Planes y roadmap
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md)
 - [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md)
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
@@ -30,7 +30,11 @@
 - [CIBERSEGURIDAD.md](CIBERSEGURIDAD.md)
 
 ## Arquitectura
-- [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md) â† fuente Ãºnica de arquitectura
+- [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md) ← fuente única de arquitectura
+- [KittyPau_Arquitectura_Datos_v3.md](KittyPau_Arquitectura_Datos_v3.md) — arquitectura canon de datos/analítica/ML
+- [CAPAS_DATOS_ANALITICA_ML_IA.md](CAPAS_DATOS_ANALITICA_ML_IA.md) — inventario rápido de variables por capa
+- [TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md](TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md) — guía de transformaciones (`log10` + FFT)
+- [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/INDEX.md) — carpeta de análisis estadístico, ML e IA
 
 ## Dominio y Reglas
 - [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
@@ -43,7 +47,7 @@
 - [MODELO_DATOS_IA_FORMULAS_KITTYPAU.md](MODELO_DATOS_IA_FORMULAS_KITTYPAU.md)
 
 ## Base de Datos
-- [SQL_MAESTRO.md](SQL_MAESTRO.md) â† **Ã­ndice SQL (orden de ejecuciÃ³n)**
+- [SQL_MAESTRO.md](SQL_MAESTRO.md) ← **índice SQL (orden de ejecución)**
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql)
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
 - [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
@@ -65,11 +69,11 @@
 - [FLUJO_REGISTRO_DISPOSITIVO.md](FLUJO_REGISTRO_DISPOSITIVO.md)
 - [POPUP_REGISTRO_SPEC.md](POPUP_REGISTRO_SPEC.md)
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
-- [estilos y diseÃ±os.md](estilos%20y%20diseÃ±os.md)
+- [estilos y diseños.md](estilos%20y%20diseños.md)
 - [CATALOGO_GRAFICOS.md](CATALOGO_GRAFICOS.md)
 - [VISTAS_APP.md](VISTAS_APP.md)
 
-## Admin / OperaciÃ³n
+## Admin / Operación
 - [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
 - [ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md](ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md)
 - [ADMIN_TEST_SUITE.md](ADMIN_TEST_SUITE.md)
@@ -85,7 +89,7 @@
 - [CHECKLIST_UX_UI_APK.md](CHECKLIST_UX_UI_APK.md)
 
 ## CLI y Herramientas
-- [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) â† **Ã­ndice GitHub/colaboraciÃ³n**
+- [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) ← **índice GitHub/colaboración**
 - [GITHUB_FLUJO_OFICIAL.md](GITHUB_FLUJO_OFICIAL.md)
 - [GITHUB_GOBERNANZA_COLABORACION.md](GITHUB_GOBERNANZA_COLABORACION.md)
 - [GIT_CLI.md](GIT_CLI.md)
@@ -114,7 +118,7 @@
 - [TEST_ONBOARDING_BACKEND.ps1](TEST_ONBOARDING_BACKEND.ps1)
 - [TEST_AUTH_FLOW.ps1](TEST_AUTH_FLOW.ps1)
 
-## Onboarding y ColaboraciÃ³n
+## Onboarding y Colaboración
 - [ONBOARDING_JAVIER.md](ONBOARDING_JAVIER.md)
 - [GUIA_CLONADO_JAVO_IA.md](GUIA_CLONADO_JAVO_IA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)

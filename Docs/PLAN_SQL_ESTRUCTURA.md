@@ -274,7 +274,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 
 ### `readings`
 - `id` uuid PK
-- `device_uuid` uuid FK -> devices.id
+- `device_id` uuid FK -> devices.id
 - `pet_id` uuid FK -> pets.id (nullable, snapshot)
 - `weight_grams` int
 - `water_ml` int
@@ -282,7 +282,13 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `humidity` numeric
 - `flow_rate` numeric
 - `battery_level` int
-- `recorded_at` timestamp (default now())
+- `recorded_at` timestamptz (default now())
+- `ingested_at` timestamptz (default now())
+- `clock_invalid` boolean (default false)
+
+Reglas recomendadas:
+- Idempotencia por llave `(device_id, recorded_at)` (único / upsert).
+- Eje temporal canon para series: `effective_ts = CASE WHEN clock_invalid THEN ingested_at ELSE recorded_at END`.
 
 ---
 

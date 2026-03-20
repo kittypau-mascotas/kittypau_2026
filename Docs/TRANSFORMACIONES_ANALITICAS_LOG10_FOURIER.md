@@ -13,6 +13,8 @@ En el **proceso de ingestión server-side** que finalmente escribe en DB (**webh
 
 En el MVP actual, donde el Bridge solo reenvía, este paso debe ejecutarse en el webhook `/api/mqtt/webhook` (o en el componente server-only que inserta en `readings`).
 
+Implementación en este repo (referencia): `kittypau_app/src/app/api/mqtt/webhook/route.ts`
+
 ### Variables candidatas (críticas)
 - Consumo de alimento (gramos por evento / deltas de `weight_grams`)
 - Consumo de agua (ml)
@@ -50,15 +52,25 @@ Transformación recomendada:
 | alto | 100 | 2.00 |
 | extremo | 500 | 2.70 |
 
-### Regla de persistencia (guardar ambos)
-Guardar **raw** y **transformado**:
-- `value_raw`
-- `value_log`
+### Persistencia: 2 opciones válidas (según costo/uso)
 
-En tablas con columnas específicas, usar el patrón:
-- `weight_grams` (raw) + `weight_grams_log`
-- `water_ml` (raw) + `water_ml_log`
-- `dt_seconds` (raw) + `dt_seconds_log`
+**Opción A — No persistir `*_log` (estado actual recomendado para MVP):**
+- Mantener `public.readings` solo con valores raw (ver `Docs/SQL_SCHEMA.sql`).
+- Calcular `log10(x+1)` en vistas/queries (o materialized views si hay costo de CPU).
+
+Ejemplo (vista de features mínima):
+```sql
+create or replace view public.readings_features as
+select
+  r.*,
+  log(10, greatest(0, r.weight_grams)::numeric + 1) as weight_grams_log,
+  log(10, greatest(0, r.water_ml)::numeric + 1) as water_ml_log
+from public.readings r;
+```
+
+**Opción B — Persistir `*_log` (cuando haya caso de uso claro):**
+- Agregar columnas por migración documentada (y actualizar Capa 1 para escribir raw + log).
+- Usar convención `*_log` y garantizar backfill para histórico.
 
 ---
 

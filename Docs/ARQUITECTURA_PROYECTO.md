@@ -17,6 +17,11 @@ Tener un MVP funcional donde el usuario:
    - El código fuente vive en el repo (`/bridge`).
    - El runtime real está fuera del repo (Raspberry).
 
+Documentación canónica relacionada:
+- Arquitectura de datos/analítica/ML: `Docs/KittyPau_Arquitectura_Datos_v3.md`
+- Inventario rápido de variables por capa: `Docs/CAPAS_DATOS_ANALITICA_ML_IA.md`
+- Transformaciones analíticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
 ---
 
 ## Registro en pop-up (UX global)
@@ -49,7 +54,7 @@ Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ### Transformaciones analíticas (recomendado)
 - En ingestión server-side (después de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
-- Guardar ambos: raw + transformado (ej. `weight_grams` y `weight_grams_log`).
+- Persistencia `raw + transformado`: es **recomendación**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
 - Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analítico (batch o microservicio).
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`

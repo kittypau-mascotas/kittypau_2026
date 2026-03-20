@@ -1,0 +1,39 @@
+# Supabase CLI config â€” KittyPau Analytics DB
+# Proyecto separado del main (kittypau-analytics)
+#
+# Setup:
+#   1. cd supabase-analytics
+#   2. supabase link --project-ref <TU_PROJECT_REF_ANALYTICS>
+#   3. supabase db push
+#
+# El project-ref lo encuentras en:
+#   Supabase Dashboard â†’ Settings â†’ General â†’ Reference ID
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = false
+
+[storage]
+enabled = false
+
+[auth]
+enabled = false
+
+[edge_runtime]
+enabled = false
+

@@ -25,7 +25,7 @@ Fecha: 2026-02-19
 - `Eventos offline 24h`.
 - `Registros completos % = completed / total_profiles * 100`.
 - `Supabase usado % = used_mb / plan_mb * 100`.
-- `Frescura dashboard = now - summary.generated_at`.
+- `Frescura dashboard = now - effective_ts`: si no hay `summary.generated_at`, usar la última lectura por dispositivo (ver `Docs/KittyPau_Arquitectura_Datos_v3.md`, SLOs/observabilidad).
 
 ## Reglas de UI
 - No duplicar KPI en más de un bloque.
