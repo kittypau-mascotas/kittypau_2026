@@ -69,16 +69,6 @@ export default function AdminHeader() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!meta.hasToken) {
-      router.replace("/login");
-      return;
-    }
-    if (meta.hasToken && !meta.isAdmin) {
-      router.replace("/today");
-    }
-  }, [meta.hasToken, meta.isAdmin, router]);
-
   const updatedLabel = useMemo(() => {
     if (!meta.generatedAt) return new Date().toLocaleString();
     const ts = Date.parse(meta.generatedAt);
@@ -99,6 +89,15 @@ export default function AdminHeader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
+        {!meta.hasToken ? (
+          <button
+            type="button"
+            onClick={() => router.replace("/login")}
+            className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 hover:bg-white/10"
+          >
+            Iniciar sesión
+          </button>
+        ) : null}
         <Link
           href="/test"
           className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-100 hover:bg-white/10"
