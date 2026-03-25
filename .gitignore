@@ -123,3 +123,7 @@ kittypau_iot_firmware/
 # ── Docs sensibles ───────────────────────────────────────────
 Docs/.env.test.local
 Docs/**/*.env*
+Docs/Samsung Tizen Experiment/
+Docs/Android TV Docs/
+tools/
+samsung_tizen_experiment/
