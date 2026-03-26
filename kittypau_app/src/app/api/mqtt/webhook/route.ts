@@ -10,6 +10,8 @@ import {
 import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 
+const DUPLICATE_EXCEPTION_DEVICE_CODE = "KPCL0034";
+
 type WebhookPayload = {
   deviceId?: string;
   device_id?: string;
@@ -60,7 +62,8 @@ function parseNumber(value: unknown): number | null {
 function parseBoolean(value: unknown): boolean | null {
   if (value === undefined || value === null) return null;
   if (typeof value === "boolean") return value;
-  if (typeof value === "number") return value === 1 ? true : value === 0 ? false : null;
+  if (typeof value === "number")
+    return value === 1 ? true : value === 0 ? false : null;
   if (typeof value === "string") {
     const normalized = value.trim().toLowerCase();
     if (["1", "true", "yes", "on"].includes(normalized)) return true;
@@ -85,7 +88,11 @@ function normalizeBatterySource(value: unknown): "battery" | "usb" | "unknown" {
   return "unknown";
 }
 
-function toBatteryState(level: number | null, source: "battery" | "usb" | "unknown", charging: boolean): BatteryState {
+function toBatteryState(
+  level: number | null,
+  source: "battery" | "usb" | "unknown",
+  charging: boolean,
+): BatteryState {
   if (charging) return "charging";
   if (source === "usb" && level === null) return "external_power";
   if (level === null) return "unknown";
@@ -95,7 +102,9 @@ function toBatteryState(level: number | null, source: "battery" | "usb" | "unkno
   return "optimal";
 }
 
-function estimateBatteryLevelFromVoltage(voltage: number | null): number | null {
+function estimateBatteryLevelFromVoltage(
+  voltage: number | null,
+): number | null {
   if (voltage === null) return null;
   const emptyV = 3.3;
   const fullV = 4.2;
@@ -108,7 +117,7 @@ function validateRange(
   value: unknown,
   name: string,
   min: number,
-  max: number
+  max: number,
 ): string | null {
   if (value === undefined || value === null) return null;
   if (!isFiniteNumber(value)) return `${name} must be a number`;
@@ -136,14 +145,9 @@ export async function POST(req: NextRequest) {
   const rateKey = `${getRateKeyFromRequest(req)}:webhook`;
   const rate = await checkRateLimit(rateKey, 60, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
 
   let payload: WebhookPayload;
@@ -166,7 +170,7 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "INVALID_DEVICE_CODE",
-      "device_id must match KPCL0000 format"
+      "device_id must match KPCL0000 format",
     );
   }
 
@@ -175,17 +179,21 @@ export async function POST(req: NextRequest) {
   const flowRate = parseNumber(payload.flowRate ?? payload.flow_rate);
   const temperature = parseNumber(payload.temperature);
   const humidity = parseNumber(payload.humidity);
-  const batteryLevel = parseNumber(payload.batteryLevel ?? payload.battery_level);
+  const batteryLevel = parseNumber(
+    payload.batteryLevel ?? payload.battery_level,
+  );
   const batteryVoltage = parseNumber(
     payload.batteryVoltage ?? payload.battery_voltage,
   );
-  const charging = parseBoolean(payload.isCharging ?? payload.is_charging) ?? false;
+  const charging =
+    parseBoolean(payload.isCharging ?? payload.is_charging) ?? false;
   const batterySource = normalizeBatterySource(
     payload.powerSource ?? payload.power_source,
   );
   const effectiveBatteryLevel =
     batteryLevel ?? estimateBatteryLevelFromVoltage(batteryVoltage);
-  const batteryIsEstimated = batteryLevel === null && effectiveBatteryLevel !== null;
+  const batteryIsEstimated =
+    batteryLevel === null && effectiveBatteryLevel !== null;
   const batteryState = toBatteryState(
     effectiveBatteryLevel,
     batterySource,
@@ -225,10 +233,12 @@ export async function POST(req: NextRequest) {
       req,
       400,
       "DEVICE_MISMATCH",
-      "device_uuid does not match device_id"
+      "device_uuid does not match device_id",
     );
   }
 
+  const allowDuplicateReadings =
+    device.device_id === DUPLICATE_EXCEPTION_DEVICE_CODE;
   const serverTimeMs = Date.now();
   const ingestedAt = new Date(serverTimeMs).toISOString();
   let recordedAt = ingestedAt;
@@ -253,38 +263,44 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const { data: existing } = await supabaseServer
-    .from("readings")
-    .select("id")
-    .eq("device_id", device.id)
-    .eq("recorded_at", recordedAt)
-    .limit(1);
+  let isDuplicate = false;
 
-  const isDuplicate = Array.isArray(existing) && existing.length > 0;
+  if (!allowDuplicateReadings) {
+    const { data: existing } = await supabaseServer
+      .from("readings")
+      .select("id")
+      .eq("device_id", device.id)
+      .eq("recorded_at", recordedAt)
+      .limit(1);
+
+    isDuplicate = Array.isArray(existing) && existing.length > 0;
+  }
 
   if (!isDuplicate) {
-    const { error: insertError } = await supabaseServer
-      .from("readings")
-      .upsert(
-        {
-          device_id: device.id,
-          pet_id: device.pet_id ?? null,
-          weight_grams: weightGrams,
-          water_ml: waterMl,
-          flow_rate: flowRate,
-          temperature,
-          humidity,
-          battery_level: effectiveBatteryLevel,
-          battery_voltage: batteryVoltage,
-          battery_state: batteryState,
-          battery_source: batterySource,
-          battery_is_estimated: batteryIsEstimated,
-          recorded_at: recordedAt,
-          ingested_at: ingestedAt,
-          clock_invalid: clockInvalid,
-        },
-        { onConflict: "device_id,recorded_at", ignoreDuplicates: true }
-      );
+    const readingPayload = {
+      device_id: device.id,
+      pet_id: device.pet_id ?? null,
+      weight_grams: weightGrams,
+      water_ml: waterMl,
+      flow_rate: flowRate,
+      temperature,
+      humidity,
+      battery_level: effectiveBatteryLevel,
+      battery_voltage: batteryVoltage,
+      battery_state: batteryState,
+      battery_source: batterySource,
+      battery_is_estimated: batteryIsEstimated,
+      recorded_at: recordedAt,
+      ingested_at: ingestedAt,
+      clock_invalid: clockInvalid,
+    };
+
+    const { error: insertError } = allowDuplicateReadings
+      ? await supabaseServer.from("readings").insert(readingPayload)
+      : await supabaseServer.from("readings").upsert(readingPayload, {
+          onConflict: "device_id,recorded_at",
+          ignoreDuplicates: true,
+        });
 
     if (insertError) {
       return apiError(
@@ -292,12 +308,20 @@ export async function POST(req: NextRequest) {
         500,
         "INSERT_FAILED",
         "Insert failed",
-        insertError.message
+        insertError.message,
       );
     }
   } else {
     logInfo(req, "reading_duplicate", {
       device_id: device.id,
+      recorded_at: recordedAt,
+    });
+  }
+
+  if (allowDuplicateReadings) {
+    logInfo(req, "reading_duplicate_rule_bypassed", {
+      device_id: device.id,
+      device_code: device.device_id,
       recorded_at: recordedAt,
     });
   }
@@ -356,4 +380,3 @@ export async function POST(req: NextRequest) {
   });
   return NextResponse.json({ success: true, idempotent: isDuplicate });
 }
-

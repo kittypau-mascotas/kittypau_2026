@@ -31,6 +31,21 @@ export function clearTokens() {
   window.localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
+async function getSupabaseSessionToken(): Promise<string | null> {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session?.access_token) return null;
+
+  setTokens({
+    accessToken: data.session.access_token,
+    refreshToken: data.session.refresh_token,
+  });
+
+  return data.session.access_token;
+}
+
 function decodeJwtExp(accessToken: string): number | null {
   const parts = accessToken.split(".");
   if (parts.length !== 3) return null;
@@ -39,7 +54,10 @@ function decodeJwtExp(accessToken: string): number | null {
 
   const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
   // Pad base64 to valid length
-  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+  const padded = base64.padEnd(
+    base64.length + ((4 - (base64.length % 4)) % 4),
+    "=",
+  );
 
   try {
     const json = atob(padded);
@@ -78,12 +96,29 @@ export async function getValidAccessToken(): Promise<string | null> {
   const accessToken = getAccessToken();
   if (accessToken && isTokenFreshEnough(accessToken)) return accessToken;
   const refreshToken = getRefreshToken();
-  if (!refreshToken) return null;
-  return await refreshWithSupabase(refreshToken);
+  if (refreshToken) {
+    const refreshed = await refreshWithSupabase(refreshToken);
+    if (refreshed) return refreshed;
+  }
+  return await getSupabaseSessionToken();
 }
 
 export async function forceRefreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken();
-  if (!refreshToken) return null;
-  return await refreshWithSupabase(refreshToken);
+  if (refreshToken) {
+    const refreshed = await refreshWithSupabase(refreshToken);
+    if (refreshed) return refreshed;
+  }
+  return await getSupabaseSessionToken();
+}
+
+export async function signOutSession() {
+  const supabase = getSupabaseBrowser();
+  try {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+  } finally {
+    clearTokens();
+  }
 }

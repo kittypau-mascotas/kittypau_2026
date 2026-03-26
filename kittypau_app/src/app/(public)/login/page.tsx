@@ -27,6 +27,7 @@ export default function LoginPage() {
   const [registerStep, setRegisterStep] = useState<"account" | "registro">(
     "account",
   );
+  const [freshRegisterIntent, setFreshRegisterIntent] = useState(false);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerShowPassword, setRegisterShowPassword] = useState(false);
@@ -470,6 +471,7 @@ export default function LoginPage() {
         // Resume the registration popup after email confirmation. We'll advance to step 2+
         // as soon as Supabase session becomes available (code/token_hash exchange or auth state change).
         setShowRegister(true);
+        setFreshRegisterIntent(false);
       } else if (verified) {
         setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
       }
@@ -496,7 +498,7 @@ export default function LoginPage() {
       setConfirmedEmail(session.user?.email ?? null);
 
       // If we're inside the registration popup, jump to step 2+.
-      if (showRegister && registerStep === "account") {
+      if (showRegister && registerStep === "account" && !freshRegisterIntent) {
         setRegisterStep("registro");
         setManualRegistroStep(null);
         setRegisterConfirmed(true);
@@ -510,13 +512,14 @@ export default function LoginPage() {
     return () => {
       sub.subscription.unsubscribe();
     };
-  }, [registerStep, showRegister]);
+  }, [freshRegisterIntent, registerStep, showRegister]);
 
   useEffect(() => {
     // If the user already has a valid session (e.g., confirmed email in another tab),
     // jump directly to registration steps inside the same popup.
     if (!showRegister) return;
     if (registerStep !== "account") return;
+    if (freshRegisterIntent) return;
 
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
@@ -547,7 +550,7 @@ export default function LoginPage() {
     return () => {
       cancelled = true;
     };
-  }, [registerStep, showRegister]);
+  }, [freshRegisterIntent, registerStep, showRegister]);
 
   useEffect(() => {
     // Support Supabase PKCE confirmations: /login?code=...&register=1
@@ -573,6 +576,7 @@ export default function LoginPage() {
         });
 
         setShowRegister(true);
+        setFreshRegisterIntent(false);
         setRegisterStep("registro");
         setManualRegistroStep(null);
         setRegisterConfirmed(true);
@@ -633,6 +637,7 @@ export default function LoginPage() {
         setConfirmedEmail(data.session.user?.email ?? null);
 
         setShowRegister(true);
+        setFreshRegisterIntent(false);
         setRegisterStep("registro");
         setRegisterConfirmed(true);
         setRegisterConfirmedMessage(
@@ -789,6 +794,7 @@ export default function LoginPage() {
       refreshToken: data.session.refresh_token,
     });
     setConfirmedEmail(data.session.user?.email ?? null);
+    setFreshRegisterIntent(false);
     setRegisterStep("registro");
     setManualRegistroStep(null);
     setIsRegistering(false);
@@ -855,8 +861,12 @@ export default function LoginPage() {
   const canReset = Boolean(resetEmail || email);
 
   const openRegister = () => {
+    setFreshRegisterIntent(true);
     setShowRegister(true);
     setRegisterStep("account");
+    setRegisterEmail("");
+    setRegisterPassword("");
+    setRegisterShowPassword(false);
     setRegisterError(null);
     setRegisterConfirmed(false);
     setRegisterConfirmedMessage(null);
@@ -875,6 +885,7 @@ export default function LoginPage() {
     setShowRegister(false);
     setRegisterStep("account");
     setManualRegistroStep(null);
+    setFreshRegisterIntent(false);
     setRegisterError(null);
   };
 

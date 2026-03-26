@@ -86,6 +86,9 @@
 - [PIPELINE_CICD.md](PIPELINE_CICD.md)
 - [VERCEL_UPSTASH_CHECKLIST.md](VERCEL_UPSTASH_CHECKLIST.md)
 - [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
+- [Android TV Plan](Android%20TV%20Docs/andorid_tv_prueba.md)
+- [Samsung Tizen Experiment](Samsung%20Tizen%20Experiment/README.md)
+- [Tizen Studio Setup](Samsung%20Tizen%20Experiment/TIZEN_STUDIO_SETUP.md)
 - [CHECKLIST_UX_UI_APK.md](CHECKLIST_UX_UI_APK.md)
 
 ## CLI y Herramientas

@@ -4,10 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
-import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
+import {
+  syncSelectedDevice,
+  syncSelectedPet,
+} from "@/lib/runtime/selection-sync";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
@@ -422,8 +425,8 @@ function summarizeAnalyticsSessionsByPeriods(
   nowMs: number,
 ): ConsumptionSummary {
   const boundaries = {
-    day:   nowMs - 24 * 60 * 60 * 1000,
-    week:  nowMs - 7 * 24 * 60 * 60 * 1000,
+    day: nowMs - 24 * 60 * 60 * 1000,
+    week: nowMs - 7 * 24 * 60 * 60 * 1000,
     month: nowMs - 30 * 24 * 60 * 60 * 1000,
   };
   const build = (startMs: number): PeriodStats => {
@@ -439,8 +442,8 @@ function summarizeAnalyticsSessionsByPeriods(
     return { consumed: Math.round(consumed), cycles: filtered.length };
   };
   return {
-    day:   build(boundaries.day),
-    week:  build(boundaries.week),
+    day: build(boundaries.day),
+    week: build(boundaries.week),
     month: build(boundaries.month),
   };
 }
@@ -464,7 +467,9 @@ export default function TodayPage() {
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
     useState<DeviceReadingsMap>({});
   const [bowlLongReadings, setBowlLongReadings] = useState<ApiReading[]>([]);
-  const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<PetAnalyticsSession[]>([]);
+  const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
+    PetAnalyticsSession[]
+  >([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -490,14 +495,14 @@ export default function TodayPage() {
   useEffect(() => {
     if (!liveReading || !selectedDeviceId) return;
     const asReading: ApiReading = {
-      id:           `live-${liveReading.receivedAt}`,
-      device_id:    selectedDeviceId,
-      recorded_at:  liveReading.receivedAt,
+      id: `live-${liveReading.receivedAt}`,
+      device_id: selectedDeviceId,
+      recorded_at: liveReading.receivedAt,
       weight_grams: liveReading.weight,
-      water_ml:     null,
-      flow_rate:    null,
-      temperature:  liveReading.temperature,
-      humidity:     liveReading.humidity,
+      water_ml: null,
+      flow_rate: null,
+      temperature: liveReading.temperature,
+      humidity: liveReading.humidity,
       light_percent: liveReading.lightPercent,
       battery_level: liveReading.batteryLevel,
     };
@@ -998,8 +1003,14 @@ export default function TodayPage() {
       try {
         // Usar endpoint bucketed (bucket 15 min → 288 pts para 3 días)
         // para evitar el límite de 5000 rows crudas
-        const params = new URLSearchParams({ device_id: bowlDevice.id, from, bucket_s: "900" });
-        const res = await authFetch(`/api/readings/bucketed?${params.toString()}`);
+        const params = new URLSearchParams({
+          device_id: bowlDevice.id,
+          from,
+          bucket_s: "900",
+        });
+        const res = await authFetch(
+          `/api/readings/bucketed?${params.toString()}`,
+        );
         if (!active) return;
         if (res.ok) {
           const payload = (await res.json()) as { data?: ApiReading[] };
@@ -1010,7 +1021,9 @@ export default function TodayPage() {
       }
     };
     void load3Days();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [bowlDevice?.id]);
 
   useEffect(() => {
@@ -1101,20 +1114,28 @@ export default function TodayPage() {
     if (!petId) return;
     let active = true;
     const loadAnalyticsSessions = async () => {
-      const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const from = new Date(
+        Date.now() - 30 * 24 * 60 * 60 * 1000,
+      ).toISOString();
       const params = new URLSearchParams({ pet_id: petId, from, limit: "200" });
       try {
-        const res = await authFetch(`/api/analytics/sessions?${params.toString()}`);
+        const res = await authFetch(
+          `/api/analytics/sessions?${params.toString()}`,
+        );
         if (!res.ok) return;
         const payload = (await res.json()) as { data?: unknown[] };
         if (!active) return;
-        setAnalyticsHistorySessions((payload.data ?? []) as PetAnalyticsSession[]);
+        setAnalyticsHistorySessions(
+          (payload.data ?? []) as PetAnalyticsSession[],
+        );
       } catch {
         // keep empty — fallback to raw readings summary
       }
     };
     void loadAnalyticsSessions();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [primaryPet?.id]);
 
   const summaryText = useMemo(() => {
@@ -1247,7 +1268,12 @@ export default function TodayPage() {
   );
   const bowlContentWeightGrams =
     bowlGrossWeightGrams !== null
-      ? Math.max(0, bowlPlateWeightGrams !== null ? bowlGrossWeightGrams - bowlPlateWeightGrams : bowlGrossWeightGrams)
+      ? Math.max(
+          0,
+          bowlPlateWeightGrams !== null
+            ? bowlGrossWeightGrams - bowlPlateWeightGrams
+            : bowlGrossWeightGrams,
+        )
       : null;
   const bowlContentWeightText =
     bowlContentWeightGrams !== null
@@ -1284,7 +1310,12 @@ export default function TodayPage() {
   );
   const waterContentWeightGrams =
     waterGrossWeightGrams !== null
-      ? Math.max(0, waterPlateWeightGrams !== null ? waterGrossWeightGrams - waterPlateWeightGrams : waterGrossWeightGrams)
+      ? Math.max(
+          0,
+          waterPlateWeightGrams !== null
+            ? waterGrossWeightGrams - waterPlateWeightGrams
+            : waterGrossWeightGrams,
+        )
       : null;
   const waterContentWeightText =
     waterContentWeightGrams !== null
@@ -1308,7 +1339,12 @@ export default function TodayPage() {
   );
   const bowlPrevContentWeightGrams =
     bowlPrevGrossWeightGrams !== null
-      ? Math.max(0, bowlPlateWeightGrams !== null ? bowlPrevGrossWeightGrams - bowlPlateWeightGrams : bowlPrevGrossWeightGrams)
+      ? Math.max(
+          0,
+          bowlPlateWeightGrams !== null
+            ? bowlPrevGrossWeightGrams - bowlPlateWeightGrams
+            : bowlPrevGrossWeightGrams,
+        )
       : null;
   const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
   const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
@@ -1319,7 +1355,12 @@ export default function TodayPage() {
   );
   const waterPrevContentWeightGrams =
     waterPrevGrossWeightGrams !== null
-      ? Math.max(0, waterPlateWeightGrams !== null ? waterPrevGrossWeightGrams - waterPlateWeightGrams : waterPrevGrossWeightGrams)
+      ? Math.max(
+          0,
+          waterPlateWeightGrams !== null
+            ? waterPrevGrossWeightGrams - waterPlateWeightGrams
+            : waterPrevGrossWeightGrams,
+        )
       : null;
   const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
   const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
@@ -1698,7 +1739,9 @@ export default function TodayPage() {
             title: (items) => {
               const point = items[0]?.parsed;
               if (!point || typeof point.x !== "number") return "";
-              const d = new Date(dayNightWindow.startMs + point.x * 60 * 60 * 1000);
+              const d = new Date(
+                dayNightWindow.startMs + point.x * 60 * 60 * 1000,
+              );
               const hh = d.getHours().toString().padStart(2, "0");
               const mi = d.getMinutes().toString().padStart(2, "0");
               const dd = d.getDate().toString().padStart(2, "0");
@@ -1862,7 +1905,11 @@ export default function TodayPage() {
       (s) => s.device_id === bowlDevice.id,
     );
     if (!deviceSessions.length) return null;
-    return summarizeAnalyticsSessionsByPeriods(deviceSessions, "grams_consumed", nowMs);
+    return summarizeAnalyticsSessionsByPeriods(
+      deviceSessions,
+      "grams_consumed",
+      nowMs,
+    );
   }, [analyticsHistorySessions, bowlDevice?.id, nowMs]);
 
   const waterAnalyticsSummary = useMemo(() => {
@@ -1871,7 +1918,11 @@ export default function TodayPage() {
       (s) => s.device_id === waterDevice.id,
     );
     if (!deviceSessions.length) return null;
-    return summarizeAnalyticsSessionsByPeriods(deviceSessions, "water_ml", nowMs);
+    return summarizeAnalyticsSessionsByPeriods(
+      deviceSessions,
+      "water_ml",
+      nowMs,
+    );
   }, [analyticsHistorySessions, waterDevice?.id, nowMs]);
 
   const summaryPeriod: keyof ConsumptionSummary =
@@ -1902,7 +1953,8 @@ export default function TodayPage() {
     {
       key: "one",
       label: "Unidad",
-      description: "Promedio por evento individual durante los últimos 30 días.",
+      description:
+        "Promedio por evento individual durante los últimos 30 días.",
     },
     {
       key: "day",
@@ -2027,7 +2079,9 @@ export default function TodayPage() {
                             <p className="text-[11px] text-slate-600">
                               Consumo:{" "}
                               {formatConsumedValue(
-                                (bowlAnalyticsSummary ?? bowlConsumptionSummary)[summaryPeriod].consumed,
+                                (bowlAnalyticsSummary ??
+                                  bowlConsumptionSummary)[summaryPeriod]
+                                  .consumed,
                                 "g",
                               )}{" "}
                               /{activePeriodLabel}
@@ -2073,7 +2127,9 @@ export default function TodayPage() {
                             <p className="text-[11px] text-slate-600">
                               Consumo:{" "}
                               {formatConsumedValue(
-                                (waterAnalyticsSummary ?? waterConsumptionSummary)[summaryPeriod].consumed,
+                                (waterAnalyticsSummary ??
+                                  waterConsumptionSummary)[summaryPeriod]
+                                  .consumed,
                                 "ml",
                               )}{" "}
                               /{activePeriodLabel}
@@ -2095,7 +2151,10 @@ export default function TodayPage() {
                     {periodLabels.map(({ key, label, description }) => {
                       const isActive = key === consumptionPeriod;
                       return (
-                        <div key={`period-${key}`} className="group relative w-full">
+                        <div
+                          key={`period-${key}`}
+                          className="group relative w-full"
+                        >
                           <button
                             type="button"
                             onClick={() => setConsumptionPeriod(key)}
@@ -2368,33 +2427,76 @@ export default function TodayPage() {
           {/* Pills de valores actuales */}
           <div className="mb-4 flex flex-wrap gap-3">
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(350 65% 62%)" }} />
-              <span className="text-xs uppercase tracking-widest text-slate-400">Comida</span>
-              <span className="font-semibold text-slate-800">{todayLatestWeight !== null ? `${Math.round(todayLatestWeight)} g` : "N/D"}</span>
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "hsl(350 65% 62%)" }}
+              />
+              <span className="text-xs uppercase tracking-widest text-slate-400">
+                Comida
+              </span>
+              <span className="font-semibold text-slate-800">
+                {todayLatestWeight !== null
+                  ? `${Math.round(todayLatestWeight)} g`
+                  : "N/D"}
+              </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(25 80% 52%)" }} />
-              <span className="text-xs uppercase tracking-widest text-slate-400">Temp</span>
-              <span className="font-semibold text-slate-800">{todayLatestTemp !== null ? `${Math.round(todayLatestTemp)} °C` : "N/D"}</span>
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "hsl(25 80% 52%)" }}
+              />
+              <span className="text-xs uppercase tracking-widest text-slate-400">
+                Temp
+              </span>
+              <span className="font-semibold text-slate-800">
+                {todayLatestTemp !== null
+                  ? `${Math.round(todayLatestTemp)} °C`
+                  : "N/D"}
+              </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(198,70%,45%)" }} />
-              <span className="text-xs uppercase tracking-widest text-slate-400">Humedad</span>
-              <span className="font-semibold text-slate-800">{todayLatestHumidity !== null ? `${Math.round(todayLatestHumidity)} %` : "N/D"}</span>
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "hsl(198,70%,45%)" }}
+              />
+              <span className="text-xs uppercase tracking-widest text-slate-400">
+                Humedad
+              </span>
+              <span className="font-semibold text-slate-800">
+                {todayLatestHumidity !== null
+                  ? `${Math.round(todayLatestHumidity)} %`
+                  : "N/D"}
+              </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(44,90%,52%)" }} />
-              <span className="text-xs uppercase tracking-widest text-slate-400">Luz</span>
-              <span className="font-semibold text-slate-800">{todayLatestLight !== null ? `${Math.round(todayLatestLight)} %` : "N/D"}</span>
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: "hsl(44,90%,52%)" }}
+              />
+              <span className="text-xs uppercase tracking-widest text-slate-400">
+                Luz
+              </span>
+              <span className="font-semibold text-slate-800">
+                {todayLatestLight !== null
+                  ? `${Math.round(todayLatestLight)} %`
+                  : "N/D"}
+              </span>
             </div>
           </div>
           {/* Gráfico combinado ancho */}
           <div className="h-40 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3 sm:h-52">
-            {(todayWeightSeries.length > 1 || todayTempSeries.length > 1 || todayHumiditySeries.length > 1 || todayLightSeries.length > 1) ? (
+            {todayWeightSeries.length > 1 ||
+            todayTempSeries.length > 1 ||
+            todayHumiditySeries.length > 1 ||
+            todayLightSeries.length > 1 ? (
               <Line
                 data={{
                   labels: orderedToday3d.map((p) =>
-                    new Date(p.timestamp).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false })
+                    new Date(p.timestamp).toLocaleTimeString("es-CL", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    }),
                   ),
                   datasets: [
                     {
@@ -2409,7 +2511,10 @@ export default function TodayPage() {
                     },
                     {
                       label: "Temp (°C)",
-                      data: todayTempSeries.slice(0, 288).reverse().map((p) => p.value),
+                      data: todayTempSeries
+                        .slice(0, 288)
+                        .reverse()
+                        .map((p) => p.value),
                       borderColor: "hsl(25 80% 52%)",
                       backgroundColor: "hsl(25 80% 52%)",
                       borderWidth: 2,
@@ -2419,7 +2524,10 @@ export default function TodayPage() {
                     },
                     {
                       label: "Humedad (%)",
-                      data: todayHumiditySeries.slice(0, 288).reverse().map((p) => p.value),
+                      data: todayHumiditySeries
+                        .slice(0, 288)
+                        .reverse()
+                        .map((p) => p.value),
                       borderColor: "hsl(198,70%,45%)",
                       backgroundColor: "hsl(198,70%,45%)",
                       borderWidth: 2,
@@ -2429,7 +2537,10 @@ export default function TodayPage() {
                     },
                     {
                       label: "Luz (%)",
-                      data: todayLightSeries.slice(0, 288).reverse().map((p) => p.value),
+                      data: todayLightSeries
+                        .slice(0, 288)
+                        .reverse()
+                        .map((p) => p.value),
                       borderColor: "hsl(44,90%,52%)",
                       backgroundColor: "hsl(44,90%,52%)",
                       borderWidth: 2,
@@ -2457,11 +2568,18 @@ export default function TodayPage() {
                       callbacks: {
                         title: (items) => {
                           const idx = items[0]?.dataIndex;
-                          return idx !== undefined ? formatToday3dTooltipTitle(idx) : "";
+                          return idx !== undefined
+                            ? formatToday3dTooltipTitle(idx)
+                            : "";
                         },
                         label: (ctx) => {
-                          const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
-                          return raw !== null ? `${ctx.dataset.label}: ${Math.round(raw)}` : (ctx.dataset.label ?? "");
+                          const raw =
+                            typeof ctx.parsed.y === "number"
+                              ? ctx.parsed.y
+                              : null;
+                          return raw !== null
+                            ? `${ctx.dataset.label}: ${Math.round(raw)}`
+                            : (ctx.dataset.label ?? "");
                         },
                       },
                     },
@@ -2470,35 +2588,64 @@ export default function TodayPage() {
                   scales: {
                     x: {
                       grid: { display: false },
-                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
+                      border: {
+                        display: true,
+                        color:
+                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+                      },
                       ticks: {
                         maxTicksLimit: 2,
                         color: "hsl(var(--muted-foreground))",
                         font: { size: 11 },
                         autoSkip: false,
                         maxRotation: 0,
-                        callback: (_v, i, ticks) => i === 0 ? "-3d" : i === ticks.length - 1 ? "Ahora" : "",
+                        callback: (_v, i, ticks) =>
+                          i === 0
+                            ? "-3d"
+                            : i === ticks.length - 1
+                              ? "Ahora"
+                              : "",
                       },
                     },
                     yWeight: {
                       type: "linear",
                       position: "left",
                       grid: { drawOnChartArea: false },
-                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "hsl(350 65% 62%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${Math.round(Number(v))}g` },
+                      border: {
+                        display: true,
+                        color:
+                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+                      },
+                      ticks: {
+                        color: "hsl(350 65% 62%)",
+                        font: { size: 10 },
+                        maxTicksLimit: 3,
+                        callback: (v) => `${Math.round(Number(v))}g`,
+                      },
                     },
                     yEnv: {
                       type: "linear",
                       position: "right",
                       grid: { drawOnChartArea: false },
-                      border: { display: true, color: "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)" },
-                      ticks: { color: "hsl(25 80% 52%)", font: { size: 10 }, maxTicksLimit: 3, callback: (v) => `${Math.round(Number(v))}` },
+                      border: {
+                        display: true,
+                        color:
+                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+                      },
+                      ticks: {
+                        color: "hsl(25 80% 52%)",
+                        font: { size: 10 },
+                        maxTicksLimit: 3,
+                        callback: (v) => `${Math.round(Number(v))}`,
+                      },
                     },
                   },
                 }}
               />
             ) : (
-              <p className="text-xs text-slate-500">Aún sin lecturas recientes.</p>
+              <p className="text-xs text-slate-500">
+                Aún sin lecturas recientes.
+              </p>
             )}
           </div>
         </section>
@@ -2573,8 +2720,9 @@ export default function TodayPage() {
               <button
                 type="button"
                 onClick={() => {
-                  clearTokens();
-                  window.location.href = "/login";
+                  void signOutSession().finally(() => {
+                    window.location.href = "/login";
+                  });
                 }}
                 className="text-xs font-semibold text-slate-700"
               >

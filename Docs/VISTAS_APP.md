@@ -75,37 +75,17 @@ por "eventos / interpretaciones / historia".
 
 ---
 
-## Vistas de onboarding
-### /onboarding (single view)
-- Flujo basico en una sola pagina con 3 pasos.
-- Perfil -> Mascota -> Dispositivo.
+## Flujo de registro
+### /login?register=1
+- El flujo vive dentro del modal de registro en `/login`.
+- Paso 1: crear cuenta.
+- Paso 2: completar perfil de usuario.
+- Paso 3: crear mascota.
+- Paso 4: registrar dispositivo.
 **Datos / API**
 - `PUT /api/profiles`
 - `POST /api/pets`
 - `POST /api/devices`
-
-### /onboarding/user
-- Registro usuario (visual)
-- Guarda `auth_provider`, `user_name`, `is_owner`, etc.
-**Datos / API**
-- `profiles` (update)
-- Guarda `user_onboarding_step`
-
-### /onboarding/pet
-- Registro mascota (visual)
-- Guarda datos completos de mascota
-**Datos / API**
-- `POST /api/pets`
-- `pet_breeds` (insert)
-- Guarda `pet_onboarding_step`
-
-### /onboarding/device
-- Registro dispositivo (QR obligatorio)
-- Asocia mascota + device_id
-**Datos / API**
-- `POST /api/devices`
-- Validar `device_id` unico
-- Actualiza `pet_state` a `device_linked`
 
 ---
 
@@ -287,29 +267,29 @@ Los numeros existen, pero como evidencia secundaria.
 - Error: credenciales invalidas.
 
 ### 2) Registro (public)
-**Objetivo**: activar cuenta y disparar onboarding.
+**Objetivo**: activar cuenta y disparar el modal de registro.
 **Layout**
-- Pop-up con pasos: Usuario ? Mascota ? Dispositivo.
+- Pop-up con pasos: Cuenta → Usuario → Mascota → Dispositivo.
 - Progreso visible.
 **Datos / API**
 - Supabase Auth (signUp).
 - `profiles` (create/update).
 
-### 3) Onboarding Usuario
+### 3) Usuario
 **Objetivo**: completar perfil basico.
 **Campos**: nombre, ciudad, pais, canal notificacion.
 **Datos / API**
 - `PUT /api/profiles`.
 - `user_onboarding_step`.
 
-### 4) Onboarding Mascota
+### 4) Mascota
 **Objetivo**: alta de mascota.
 **Campos**: nombre, tipo, edad, peso, entorno.
 **Datos / API**
 - `POST /api/pets`.
 - `pet_onboarding_step`.
 
-### 5) Onboarding Dispositivo
+### 5) Dispositivo
 **Objetivo**: vincular `device_id` con mascota.
 **Layout**
 - Input de codigo + QR opcional.

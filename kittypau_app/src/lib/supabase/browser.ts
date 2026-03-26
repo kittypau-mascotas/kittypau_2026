@@ -12,6 +12,12 @@ export function getSupabaseBrowser() {
     return null;
   }
 
-  cachedClient = createClient(supabaseUrl, supabaseAnonKey);
+  cachedClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
   return cachedClient;
 }

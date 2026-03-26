@@ -9,7 +9,7 @@ registro → confirmación → onboarding (usuario/mascota/dispositivo) → dash
 - Supabase Auth configurado con redirect URLs:
   - `/login`
   - `/reset`
-  - `/onboarding`
+  - `/login?register=1`
 - Bucket `kittypau-photos` creado y policies aplicadas.
 
 ## Flujo manual (checklist)
@@ -19,7 +19,7 @@ registro → confirmación → onboarding (usuario/mascota/dispositivo) → dash
    - Ver mensaje “Revisa tu correo”.
 2. **Confirmación**
    - Abrir correo y confirmar.
-   - Debe redirigir a `/onboarding`.
+   - Debe redirigir a `/login?register=1&verified=1`.
 3. **Onboarding**
    - Paso 1 (Usuario): completar perfil + subir foto → Guardado → continúa.
    - Paso 2 (Mascota): completar datos + foto → Guardado → continúa.
@@ -40,4 +40,3 @@ registro → confirmación → onboarding (usuario/mascota/dispositivo) → dash
 - Password: `Test1234!`
 - Mascota: `Bandida`, tipo `cat`
 - Device: `KPCL0001`, tipo `food_bowl`
-

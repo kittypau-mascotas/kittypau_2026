@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import {
+  clearTokens,
+  getValidAccessToken,
+  signOutSession,
+} from "@/lib/auth/token";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -168,8 +172,9 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => {
-                  clearTokens();
-                  window.location.href = "/login";
+                  void signOutSession().finally(() => {
+                    window.location.href = "/login";
+                  });
                 }}
                 className="mt-1 block w-full rounded-[calc(var(--radius)-6px)] border border-rose-200 bg-rose-50 px-3 py-2 text-left text-xs font-semibold text-rose-700"
               >
@@ -198,21 +203,24 @@ export default function SettingsPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">Cargando ajustes...</div>
+        <div className="surface-card freeform-rise px-6 py-6">
+          Cargando ajustes...
+        </div>
       ) : !state.profile ? (
         <EmptyState
           title="No se encontró tu perfil."
           actions={
             <Link
               href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground" 
-            > 
-              Ir a registro 
-            </Link> 
-          } 
-        > 
-          Completa el registro para crear tu perfil antes de ajustar preferencias. 
-        </EmptyState> 
+              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Ir a registro
+            </Link>
+          }
+        >
+          Completa el registro para crear tu perfil antes de ajustar
+          preferencias.
+        </EmptyState>
       ) : (
         <>
           <section className="surface-card freeform-rise px-6 py-5">
@@ -244,7 +252,8 @@ export default function SettingsPage() {
               <span>{completenessLabel}</span>
               {missingFields.length ? (
                 <span className="text-slate-400">
-                  · {missingFields.length} pendiente{missingFields.length > 1 ? "s" : ""}
+                  · {missingFields.length} pendiente
+                  {missingFields.length > 1 ? "s" : ""}
                 </span>
               ) : null}
             </div>
@@ -348,7 +357,8 @@ export default function SettingsPage() {
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-slate-500">
-                {saveMessage ?? "Guarda tus cambios para mantener todo actualizado."}
+                {saveMessage ??
+                  "Guarda tus cambios para mantener todo actualizado."}
               </div>
               <button
                 type="button"
@@ -373,7 +383,7 @@ export default function SettingsPage() {
                     setSaveMessage(
                       err instanceof Error
                         ? err.message
-                        : "No se pudieron guardar los cambios."
+                        : "No se pudieron guardar los cambios.",
                     );
                   } finally {
                     setSaving(false);
@@ -384,12 +394,8 @@ export default function SettingsPage() {
               </button>
             </div>
           </section>
-
         </>
       )}
     </main>
   );
 }
-
-
-

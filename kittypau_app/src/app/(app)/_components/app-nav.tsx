@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
-import { clearTokens } from "@/lib/auth/token";
+import { signOutSession } from "@/lib/auth/token";
 import { useAppData } from "@/lib/context/app-context";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 
@@ -325,8 +325,9 @@ export default function AppNav() {
         type="button"
         onClick={() => {
           setMenuOpen(false);
-          clearTokens();
-          window.location.href = "/login";
+          void signOutSession().finally(() => {
+            window.location.href = "/login";
+          });
         }}
         className="kp-brand-soft-action mt-1 block w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs font-semibold"
       >

@@ -247,8 +247,11 @@ create unique index if not exists idx_devices_active_per_pet
 create index if not exists idx_readings_device_id on public.readings(device_id);
 create index if not exists idx_readings_device_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_readings_recorded_at on public.readings(recorded_at desc);
+drop index if exists idx_readings_device_recorded_at_unique;
+-- Exception: KPCL0034 may write duplicate readings for the same timestamp.
 create unique index if not exists idx_readings_device_recorded_at_unique
-  on public.readings(device_id, recorded_at);
+  on public.readings(device_id, recorded_at)
+  where device_id <> '9510a455-b0e9-4932-8be1-03976d31228a';
 create index if not exists idx_readings_device_id_recorded_at on public.readings(device_id, recorded_at desc);
 create index if not exists idx_readings_device_recorded_cover
   on public.readings(device_id, recorded_at desc)

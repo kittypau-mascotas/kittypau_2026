@@ -11,9 +11,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
-    "idle"
-  );
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [error, setError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
   const isEmailValid = email.includes("@");
@@ -24,12 +24,12 @@ export default function RegisterPage() {
     () =>
       process.env.NEXT_PUBLIC_SITE_URL ??
       (typeof window !== "undefined" ? window.location.origin : ""),
-    []
+    [],
   );
 
   useEffect(() => {
     if (searchParams.get("verified") === "1") {
-      router.replace("/login?verified=1");
+      router.replace("/login?register=1&verified=1");
     }
   }, [router, searchParams]);
 
@@ -93,7 +93,7 @@ export default function RegisterPage() {
     const { error: resendError } = await supabase.auth.resend({
       type: "signup",
       email,
-      options: { emailRedirectTo: `${siteUrl}/login?verified=1` },
+      options: { emailRedirectTo: `${siteUrl}/login?register=1&verified=1` },
     });
     if (resendError) {
       setError(resendError.message);
@@ -117,9 +117,7 @@ export default function RegisterPage() {
             </div>
             <h1 className="display-title text-3xl text-slate-900">Kittypau</h1>
           </div>
-          <p className="kp-pettech-tagline mt-1">
-            PetTech AIoT
-          </p>
+          <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
         </div>
         <p className="mt-2 text-sm text-slate-600">
           Crea tu cuenta y conecta tu plato en menos de 2 minutos.
@@ -182,7 +180,8 @@ export default function RegisterPage() {
             role="status"
             aria-live="polite"
           >
-            Revisa tu correo para confirmar la cuenta. Luego vuelve a iniciar sesión.
+            Revisa tu correo para confirmar la cuenta. Luego vuelve a iniciar
+            sesión.
           </div>
         )}
         {error && (
@@ -232,4 +231,3 @@ export default function RegisterPage() {
     </main>
   );
 }
-

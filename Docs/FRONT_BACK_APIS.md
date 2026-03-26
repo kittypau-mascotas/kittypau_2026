@@ -59,7 +59,7 @@ src/app/
    - Feature engineering en ingestión (recomendado): aplicar `log10(x + 1)` a variables skewed y guardar raw + transformado.
    - Inserta lectura y actualiza `devices`.
    - Busca el dispositivo por `device_id`.
-   - Idempotente por `device_id + recorded_at` (si llega duplicado, responde `idempotent: true`).
+   - Idempotente por `device_id + recorded_at` salvo `KPCL0034` (si llega duplicado, responde `idempotent: true`).
    - Fourier/FFT no va aquí: se ejecuta en un worker/servicio analítico sobre series temporales.
    - Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
@@ -200,7 +200,7 @@ Notas:
 - Los campos numéricos pueden llegar como string y se normalizan.
 - Si no llega `battery_level` y llega `battery_voltage`, el backend estima `%` (3.3V..4.2V).
 - Nuevos campos persistidos en `readings/devices`: `battery_voltage`, `battery_state`, `battery_source`, `battery_is_estimated`.
-- La inserción de readings es idempotente por `device_uuid + recorded_at`.
+- La inserción de readings es idempotente por `device_uuid + recorded_at` salvo `KPCL0034`.
 - Se guardan dos tiempos: `recorded_at` (dispositivo) y `ingested_at` (servidor).
 - Si `recorded_at` difiere más de ±10 min del servidor, se reemplaza por `ingested_at` y se marca `clock_invalid = true`.
 
