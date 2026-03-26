@@ -1,9 +1,30 @@
 Docs/
+Docs/kittypau_1a_docs_legacy/
 kittypau_iot_firmware/
 Test Graficos/
 kittypau_1a/
 kittypau_1a-main/
 kittypau_iot_firmware-main/
+tools/
+samsung_tizen_experiment/
+
+# App build artifacts and local dependencies
+node_modules/
+**/node_modules/
+.next/
+**/.next/
 kittypau_app/android/
+kittypau_app/android/.gradle/
+kittypau_app/android/app/build/
 kittypau_app/.gradle/
+kittypau_app/.next/
 kittypau_app/node_modules/
+kittypau_app/capacitor_www/
+kittypau_app/legacy/
+
+# Binary exports that should never be uploaded
+*.apk
+*.aab
+*.exe
+*.zip
+*.wgt
