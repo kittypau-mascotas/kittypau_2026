@@ -1,4 +1,4 @@
-# Indice de Documentacion (Kittypau)
+﻿# Indice de Documentacion (Kittypau)
 
 > Fuentes maestras:
 > - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md) - mapa canonico de activos, legacy, tablas y flujos
@@ -57,7 +57,7 @@
 
 ## UI / UX
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
-- [estilos y diseños.md](estilos%20y%20diseños.md)
+- [estilos y diseÃ±os.md](estilos%20y%20diseÃ±os.md)
 - [CATALOGO_GRAFICOS.md](CATALOGO_GRAFICOS.md)
 - [VISTAS_APP.md](VISTAS_APP.md)
 - [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
@@ -71,8 +71,8 @@
 - [CIERRE_FINAL_ADMIN_CHECKLIST.md](CIERRE_FINAL_ADMIN_CHECKLIST.md)
 
 ## Archivos / legacy
-- [KittyPau_Arquitectura_Datos_v3.md](KittyPau_Arquitectura_Datos_v3.md)
-- [CAPAS_DATOS_ANALITICA_ML_IA.md](CAPAS_DATOS_ANALITICA_ML_IA.md)
+- [archive/analitica/KittyPau_Arquitectura_Datos_v3.md](archive/analitica/KittyPau_Arquitectura_Datos_v3.md)
+- [archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md](archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md)
 - [TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md](TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md)
 - [notebooks/](../notebooks/)
 - [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/INDEX.md)
@@ -80,4 +80,8 @@
 - [Postulaciones Fondos/2026/](Postulaciones%20Fondos/2026/)
 - [Samsung Tizen Experiment](Samsung%20Tizen%20Experiment/README.md)
 - [Android TV Plan](Android%20TV%20Docs/andorid_tv_prueba.md)
+
+
+
+
 

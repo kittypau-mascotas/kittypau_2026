@@ -1,6 +1,6 @@
 ﻿# KittyPau - Capas de Datos, Analitica/ML e IA (inventario historico de variables)
 
-> Estado: documento legado. La fuente canonica actual es [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md).
+> Estado: documento legado. La fuente canonica actual es [FUENTE_DE_VERDAD.md](../../FUENTE_DE_VERDAD.md).
 > Este archivo se conserva como referencia historica de variables y capas, no como contrato principal.
 
 Este documento ordena **3 capas** (Datos â†’ AnalÃ­tica/ML â†’ IA/Producto) usando las **variables que aparecen en el proyecto** (schema SQL, endpoints y documentaciÃ³n).
@@ -319,6 +319,7 @@ Variables operativas que habilitan alertas de continuidad:
 ### `supabase-analytics: public.pet_sessions` / `supabase-analytics: public.pet_daily_summary` (archivo historico, no activo)
 - Sesiones: `session_type`, `session_start`, `session_end`, `duration_sec`, `grams_consumed`, `water_ml`, `classification`, `anomaly_score`, `baseline_grams`, `avg_temperature`, `avg_humidity`
 - Diario: `summary_date`, `total_food_grams`, `food_sessions`, `total_water_ml`, `water_sessions`, `anomaly_count`, `skipped_meals`, `first_session_at`, `last_session_at`, `avg_temperature`, `avg_humidity`
+
 
 
 

@@ -1,8 +1,8 @@
-# Arquitectura del Proyecto Kittypau (MVP $0)
+﻿# Arquitectura del Proyecto Kittypau (MVP $0)
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesión.
+1. Se registra e inicia sesiÃ³n.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
@@ -14,13 +14,13 @@ Tener un MVP funcional donde el usuario:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El código fuente vive en el repo (`/bridge`).
-   - El runtime real está fuera del repo (Raspberry).
+   - El cÃ³digo fuente vive en el repo (`/bridge`).
+   - El runtime real estÃ¡ fuera del repo (Raspberry).
 
-Documentación canónica relacionada:
-- Arquitectura de datos/analítica/ML: `Docs/KittyPau_Arquitectura_Datos_v3.md`
-- Inventario rápido de variables por capa: `Docs/CAPAS_DATOS_ANALITICA_ML_IA.md`
-- Transformaciones analíticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+DocumentaciÃ³n canÃ³nica relacionada:
+- Arquitectura de datos/analÃ­tica/ML: `archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
+- Inventario rÃ¡pido de variables por capa: `archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md`
+- Transformaciones analÃ­ticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ---
 
@@ -39,23 +39,23 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ## Regla de conexion (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvÃ­a a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetría)
+## Flujo de datos (telemetrÃ­a)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
+2. Raspberry Bridge escucha MQTT y reenvÃ­a a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
-### Transformaciones analíticas (recomendado)
-- En ingestión server-side (después de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
-- Persistencia `raw + transformado`: es **recomendación**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
-- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analítico (batch o microservicio).
+### Transformaciones analÃ­ticas (recomendado)
+- En ingestiÃ³n server-side (despuÃ©s de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
+- Persistencia `raw + transformado`: es **recomendaciÃ³n**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
+- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analÃ­tico (batch o microservicio).
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
@@ -174,7 +174,7 @@ ESP32 -> HiveMQ Cloud
 ```
 **Notas**
 - La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
-- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
+- El `device_id` es el cÃ³digo humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -335,3 +335,6 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
 4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+
+
+

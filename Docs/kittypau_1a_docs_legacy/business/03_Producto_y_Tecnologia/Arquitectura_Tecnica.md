@@ -1,43 +1,43 @@
-# Arquitectura General del Ecosistema KittyPaw
+﻿# Arquitectura General del Ecosistema KittyPaw
 
 > Estado: **LEGACY**. Este documento puede no reflejar el estado actual del repo (Next.js en `kittypau_app`, Supabase, HiveMQ Cloud y Raspberry Bridge).
-> Ver arquitectura vigente: `Docs/ARQUITECTURA_PROYECTO.md` y arquitectura de datos/ML: `Docs/KittyPau_Arquitectura_Datos_v3.md`.
+> Ver arquitectura vigente: `Docs/ARQUITECTURA_PROYECTO.md` y arquitectura de datos/ML: `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`.
 
-Este documento describe la arquitectura de alto nivel del proyecto KittyPaw, explicando cómo sus diferentes componentes se interrelacionan para formar un ecosistema completo.
+Este documento describe la arquitectura de alto nivel del proyecto KittyPaw, explicando cÃ³mo sus diferentes componentes se interrelacionan para formar un ecosistema completo.
 
-El proyecto está diseñado de forma modular y se encuentra organizado en un monorepo con las siguientes aplicaciones principales en la carpeta `apps/`:
+El proyecto estÃ¡ diseÃ±ado de forma modular y se encuentra organizado en un monorepo con las siguientes aplicaciones principales en la carpeta `apps/`:
 
 ---
 
 ## 1. Los Componentes Principales
 
 ### a. `app_principal` y `iot_firmware` (El Producto Principal)
-- **Propósito:** `app_principal` es la aplicación central que se entrega a los usuarios finales, mientras que `iot_firmware` es el código que se ejecuta en el dispositivo físico.
+- **PropÃ³sito:** `app_principal` es la aplicaciÃ³n central que se entrega a los usuarios finales, mientras que `iot_firmware` es el cÃ³digo que se ejecuta en el dispositivo fÃ­sico.
 - **Contenido:**
-  - `app_principal`: Contiene la aplicación web (React), el servidor backend (Node.js/Express) y la lógica de negocio.
-  - `iot_firmware`: Contiene el firmware para el dispositivo físico (ESP32) que recopila los datos de los sensores.
-- **Función:** Gestiona el registro de usuarios, la recepción de datos de los dispositivos vía MQTT, el almacenamiento en la base de datos y la visualización de datos en tiempo real en el dashboard del cliente.
+  - `app_principal`: Contiene la aplicaciÃ³n web (React), el servidor backend (Node.js/Express) y la lÃ³gica de negocio.
+  - `iot_firmware`: Contiene el firmware para el dispositivo fÃ­sico (ESP32) que recopila los datos de los sensores.
+- **FunciÃ³n:** Gestiona el registro de usuarios, la recepciÃ³n de datos de los dispositivos vÃ­a MQTT, el almacenamiento en la base de datos y la visualizaciÃ³n de datos en tiempo real en el dashboard del cliente.
 
 ### b. `docs/business` (El Centro de Negocios)
-- **Propósito:** Centralizar toda la documentación estratégica y de planificación del proyecto.
-- **Contenido:** Documentos de modelo de negocio, estrategias de marketing, análisis financieros, planes de producto, documentos legales y de postulaciones a fondos.
-- **Función:** Sirve como la única fuente de verdad para la visión y gestión del negocio, separada del código técnico.
+- **PropÃ³sito:** Centralizar toda la documentaciÃ³n estratÃ©gica y de planificaciÃ³n del proyecto.
+- **Contenido:** Documentos de modelo de negocio, estrategias de marketing, anÃ¡lisis financieros, planes de producto, documentos legales y de postulaciones a fondos.
+- **FunciÃ³n:** Sirve como la Ãºnica fuente de verdad para la visiÃ³n y gestiÃ³n del negocio, separada del cÃ³digo tÃ©cnico.
 
 ### c. `dashboard_datos` (El Dashboard de Admin/BI)
-- **Propósito:** Ser la herramienta interna para el análisis de datos y la inteligencia de negocio (Business Intelligence).
-- **Contenido:** Una aplicación de Streamlit (Python) que se conecta directamente a la base de datos.
-- **Función:** Permite a los administradores del negocio visualizar métricas agregadas, analizar tendencias de uso, monitorear la salud del sistema y, en el futuro, entrenar y probar modelos de Machine Learning con los datos recopilados.
+- **PropÃ³sito:** Ser la herramienta interna para el anÃ¡lisis de datos y la inteligencia de negocio (Business Intelligence).
+- **Contenido:** Una aplicaciÃ³n de Streamlit (Python) que se conecta directamente a la base de datos.
+- **FunciÃ³n:** Permite a los administradores del negocio visualizar mÃ©tricas agregadas, analizar tendencias de uso, monitorear la salud del sistema y, en el futuro, entrenar y probar modelos de Machine Learning con los datos recopilados.
 
 ### d. `app_camara` (El Proyecto de I+D)
-- **Propósito:** Investigar y desarrollar funcionalidades experimentales de visión por computador.
-- **Contenido:** Una aplicación web independiente con TensorFlow.js.
-- **Función:** Se utiliza para probar modelos de reconocimiento de imágenes (perros, gatos, etc.) usando una cámara. **Importante:** Este proyecto es autónomo y no forma parte del producto principal, pero se conecta a la API de `app_principal` para obtener datos si es necesario, actuando como un campo de pruebas para futuras características.
+- **PropÃ³sito:** Investigar y desarrollar funcionalidades experimentales de visiÃ³n por computador.
+- **Contenido:** Una aplicaciÃ³n web independiente con TensorFlow.js.
+- **FunciÃ³n:** Se utiliza para probar modelos de reconocimiento de imÃ¡genes (perros, gatos, etc.) usando una cÃ¡mara. **Importante:** Este proyecto es autÃ³nomo y no forma parte del producto principal, pero se conecta a la API de `app_principal` para obtener datos si es necesario, actuando como un campo de pruebas para futuras caracterÃ­sticas.
 
 ---
 
-## 2. Flujo de Datos e Interconexión
+## 2. Flujo de Datos e InterconexiÃ³n
 
-El siguiente diagrama de texto ilustra cómo fluye la información entre los componentes:
+El siguiente diagrama de texto ilustra cÃ³mo fluye la informaciÃ³n entre los componentes:
 
 ```
                                +--------------------------+
@@ -55,7 +55,7 @@ El siguiente diagrama de texto ilustra cómo fluye la información entre los com
                                               |                            
 +------------------------+                      | (Acceso a BBDD)            
 |       app_camara       |<--------------------+                            
-| (Proyecto I+D Cámara)  |                      |                            
+| (Proyecto I+D CÃ¡mara)  |                      |                            
 +------------------------+                      v                            
                                +--------------------------+                
                                |   Base de Datos (PostgreSQL) |
@@ -69,19 +69,20 @@ El siguiente diagrama de texto ilustra cómo fluye la información entre los com
                                +--------------------------+                
 ```
 
-## 3. Resumen del Stack Tecnológico
+## 3. Resumen del Stack TecnolÃ³gico
 
 - **Producto Principal (`app_principal` y `iot_firmware`):**
   - **Backend (`app_principal`):** Node.js, Express.js, Drizzle ORM
   - **Frontend (`app_principal`):** React, TypeScript, Vite, TailwindCSS
-  - **Comunicación:** WebSockets, MQTT
+  - **ComunicaciÃ³n:** WebSockets, MQTT
   - **Base de Datos:** PostgreSQL
   - **Dispositivo IoT (`iot_firmware`):** C++ (Arduino Framework), ESP32
 
 - **Dashboard de Datos (`dashboard_datos`):**
   - **Framework:** Streamlit (Python)
-  - **Librerías:** Pandas, Matplotlib, SQLAlchemy
+  - **LibrerÃ­as:** Pandas, Matplotlib, SQLAlchemy
 
-- **Proyecto de Cámara (`app_camara`):**
+- **Proyecto de CÃ¡mara (`app_camara`):**
   - **Framework:** HTML, CSS, JavaScript
-  - **Librerías:** TensorFlow.js
+  - **LibrerÃ­as:** TensorFlow.js
+
