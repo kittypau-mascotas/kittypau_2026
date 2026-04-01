@@ -48,6 +48,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
    - `device_power_sessions`
    - `device_battery_cycles`
 6. Aceptar `battery_state` y `battery_source` explicitos del firmware, además de las variantes legacy, para no depender siempre de la inferencia por nivel o voltaje.
+7. Mostrar en admin la cobertura de telemetria de bateria reciente para cada KPCL, de modo que el back exponga cuando realmente llega energia util al sistema.
 
 ### P1 - Firmware
 

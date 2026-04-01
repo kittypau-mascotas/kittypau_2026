@@ -529,7 +529,7 @@ export async function GET(req: NextRequest) {
     supabaseServer
       .from("devices")
       .select(
-        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health",
+        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, battery_updated_at, owner_id, wifi_status, wifi_ip, sensor_health",
       )
       .ilike("device_id", "KPCL%")
       .is("retired_at", null)
@@ -563,7 +563,7 @@ export async function GET(req: NextRequest) {
     supabaseServer
       .from("devices")
       .select(
-        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, owner_id, wifi_status, wifi_ip, sensor_health",
+        "id, device_id, device_type, device_model, device_state, status, last_seen, battery_level, battery_updated_at, owner_id, wifi_status, wifi_ip, sensor_health",
       )
       .ilike("device_id", "KPCL%")
       .is("retired_at", null)
@@ -831,6 +831,34 @@ export async function GET(req: NextRequest) {
       is_online: isOnline,
     };
   });
+
+  const batteryTelemetrySummary = (() => {
+    const recentCutoff = Date.now() - 24 * 60 * 60 * 1000;
+    let totalDevices = 0;
+    let recentDevices = 0;
+    let missingDevices = 0;
+    for (const device of kpclStatus) {
+      totalDevices += 1;
+      const updatedAt = device.battery_updated_at
+        ? Date.parse(device.battery_updated_at)
+        : NaN;
+      if (!Number.isFinite(updatedAt)) {
+        missingDevices += 1;
+        continue;
+      }
+      if (updatedAt >= recentCutoff) {
+        recentDevices += 1;
+      }
+    }
+    const coveragePercent =
+      totalDevices > 0 ? Math.round((recentDevices / totalDevices) * 100) : 0;
+    return {
+      total_devices: totalDevices,
+      recent_devices: recentDevices,
+      missing_devices: missingDevices,
+      coverage_percent: coveragePercent,
+    };
+  })();
 
   const lifetimeReadingsResult = await readAllReadingsForDevices(
     (kpclDevices ?? []).map((d) => d.id),
@@ -1244,6 +1272,7 @@ export async function GET(req: NextRequest) {
     kpcl_device_hourly_status: kpclDeviceHourlyStatus,
     kpcl_totals_origin: kpclTotalsOrigin,
     incident_counters: incidentCounters,
+    battery_telemetry_summary: batteryTelemetrySummary,
     active_general_outage: activeGeneralOutage,
     registration_summary: registrationSummary,
     supabase_storage: supabaseStorage,

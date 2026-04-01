@@ -71,11 +71,19 @@ type KpclDevice = {
   status: string | null;
   last_seen: string | null;
   battery_level: number | null;
+  battery_updated_at: string | null;
   owner_id: string | null;
   wifi_status: string | null;
   wifi_ip: string | null;
   sensor_health: string | null;
   is_online: boolean;
+};
+
+type BatteryTelemetrySummary = {
+  total_devices: number;
+  recent_devices: number;
+  missing_devices: number;
+  coverage_percent: number;
 };
 
 type KpclHourPoint = {
@@ -515,6 +523,8 @@ export default function AdminPage() {
   );
   const [incidentCounters, setIncidentCounters] =
     useState<IncidentCounters | null>(null);
+  const [batteryTelemetrySummary, setBatteryTelemetrySummary] =
+    useState<BatteryTelemetrySummary | null>(null);
   const [registrationSummary, setRegistrationSummary] =
     useState<RegistrationSummary | null>(null);
   const [supabaseStorage, setSupabaseStorage] =
@@ -668,6 +678,10 @@ export default function AdminPage() {
         );
         setIncidentCounters(
           (payload.incident_counters ?? null) as IncidentCounters | null,
+        );
+        setBatteryTelemetrySummary(
+          (payload.battery_telemetry_summary ??
+            null) as BatteryTelemetrySummary | null,
         );
         setRegistrationSummary(
           (payload.registration_summary ?? null) as RegistrationSummary | null,
@@ -3746,6 +3760,18 @@ export default function AdminPage() {
                       </p>
                       <p className="mt-2 text-2xl font-semibold text-slate-900">
                         {incidentCounters?.general_device_outage_recovered ?? 0}
+                      </p>
+                    </div>
+                    <div className="rounded-[var(--radius)] border border-sky-200 bg-sky-50/70 px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-sky-500">
+                        Batería reciente
+                      </p>
+                      <p className="mt-2 text-2xl font-semibold text-slate-900">
+                        {batteryTelemetrySummary?.recent_devices ?? 0}
+                      </p>
+                      <p className="mt-1 text-xs text-sky-700">
+                        de {batteryTelemetrySummary?.total_devices ?? 0} KPCL
+                        con actualización en 24h
                       </p>
                     </div>
                   </div>
