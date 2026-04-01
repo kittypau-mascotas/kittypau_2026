@@ -200,6 +200,20 @@ Conclusion:
 - para ciclos reales de bateria, hace falta que el bridge o la ingesta empiece a reportar `battery_state`, `battery_source` o `battery_voltage`
 - para ON/OFF por actividad, ya se puede reconstruir desde `readings`
 
+### Registro manual actual
+El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no perder el contexto del analisis:
+- momento registrado: `2026-04-01 04:36:28Z` (`2026-04-01 01:36:28` hora local `-03`)
+- estado: `battery_only`
+- tabla actualizada:
+  - `public.device_power_sessions`
+  - `public.device_battery_cycles`
+- observacion:
+  - se desconecto el cargador
+  - el dispositivo quedo funcionando sin enchufe
+  - no hay telemetria real de bateria aun, por lo que este registro es manual y sirve como marcador inicial para el analisis posterior
+
+La fila de `device_battery_cycles` quedo abierta como `battery_only` para cerrarla cuando se vuelva a conectar el cargador o cuando exista telemetria de energia suficiente para medir el tramo completo.
+
 ---
 
 ## Flujo recomendado de ingesta

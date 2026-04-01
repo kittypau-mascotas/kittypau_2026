@@ -70,6 +70,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
   - `device_operation_records`
   - `device_power_sessions`
   - `device_battery_cycles`
+- `KPCL0034` ya quedo marcado manualmente como `battery_only` al desconectarse el cargador el `2026-04-01 04:36:28Z`.
 - Continuar endureciendo la base sin introducir fallback oculto en produccion.
 
 ### Firmware
