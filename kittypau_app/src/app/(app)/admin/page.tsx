@@ -94,6 +94,7 @@ type KpclCatalogPayload = Record<string, KpclCatalog>;
 type IncidentCounters = {
   bridge_offline_detected: number;
   device_offline_detected: number;
+  device_reading_gap_detected: number;
   general_device_outage_detected: number;
   general_device_outage_recovered: number;
 };
@@ -3696,6 +3697,14 @@ export default function AdminPage() {
                       </p>
                       <p className="mt-2 text-2xl font-semibold text-slate-900">
                         {incidentCounters?.device_offline_detected ?? 0}
+                      </p>
+                    </div>
+                    <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                        Gaps de lectura
+                      </p>
+                      <p className="mt-2 text-2xl font-semibold text-slate-900">
+                        {incidentCounters?.device_reading_gap_detected ?? 0}
                       </p>
                     </div>
                     <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">

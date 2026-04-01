@@ -37,7 +37,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 1. Mantener el bridge con health-check y recuperacion minima.
 2. Definir pruebas de contrato para lecturas con y sin `battery_*`.
 3. Alinear el contrato de energia para distinguir claramente `charging`, `external_power` y `battery_only`.
-4. Registrar alertas de gaps, lecturas anomales y saltos extremos.
+4. Registrar alertas de gaps, lecturas anomales y saltos extremos. Ya existe auditoria de gaps de lectura en el webhook y el admin los cuenta.
 5. Consolidar el uso de:
    - `device_operation_records`
    - `device_power_sessions`

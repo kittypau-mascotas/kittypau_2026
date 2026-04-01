@@ -376,6 +376,7 @@ export async function GET(req: NextRequest) {
         .in("event_type", [
           "bridge_offline_detected",
           "device_offline_detected",
+          "device_reading_gap_detected",
           "general_device_outage_detected",
           "general_device_outage_recovered",
         ]),
@@ -394,6 +395,7 @@ export async function GET(req: NextRequest) {
     const incidentCounters = {
       bridge_offline_detected: 0,
       device_offline_detected: 0,
+      device_reading_gap_detected: 0,
       general_device_outage_detected: 0,
       general_device_outage_recovered: 0,
     };
@@ -546,6 +548,7 @@ export async function GET(req: NextRequest) {
       .in("event_type", [
         "bridge_offline_detected",
         "device_offline_detected",
+        "device_reading_gap_detected",
         "general_device_outage_detected",
         "general_device_outage_recovered",
       ]),
@@ -719,6 +722,7 @@ export async function GET(req: NextRequest) {
   const incidentCounters = {
     bridge_offline_detected: 0,
     device_offline_detected: 0,
+    device_reading_gap_detected: 0,
     general_device_outage_detected: 0,
     general_device_outage_recovered: 0,
   };

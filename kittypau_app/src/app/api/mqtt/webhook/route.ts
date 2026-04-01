@@ -14,6 +14,10 @@ import {
   resolveBatteryState,
   type BatteryState,
 } from "@/lib/battery/contract";
+import {
+  computeReadingGapMinutes,
+  getReadingGapAlertThresholdMinutes,
+} from "@/lib/observability/reading-gaps";
 
 const DUPLICATE_EXCEPTION_DEVICE_CODE = "KPCL0034";
 
@@ -205,6 +209,13 @@ export async function POST(req: NextRequest) {
 
   const allowDuplicateReadings =
     device.device_id === DUPLICATE_EXCEPTION_DEVICE_CODE;
+  const { data: previousReading } = await supabaseServer
+    .from("readings")
+    .select("recorded_at")
+    .eq("device_id", device.id)
+    .order("recorded_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
   const serverTimeMs = Date.now();
   const ingestedAt = new Date(serverTimeMs).toISOString();
   let recordedAt = ingestedAt;
@@ -310,6 +321,31 @@ export async function POST(req: NextRequest) {
       battery_is_estimated: batteryIsEstimated,
     },
   });
+
+  const gapMinutes = computeReadingGapMinutes(
+    previousReading?.recorded_at ?? null,
+    recordedAt,
+  );
+  if (
+    gapMinutes !== null &&
+    gapMinutes >= getReadingGapAlertThresholdMinutes()
+  ) {
+    await logAudit({
+      event_type: "device_reading_gap_detected",
+      actor_id: null,
+      entity_type: "device",
+      entity_id: device.id,
+      payload: {
+        device_id: device.device_id,
+        previous_recorded_at: previousReading?.recorded_at ?? null,
+        current_recorded_at: recordedAt,
+        gap_minutes: Number(gapMinutes.toFixed(2)),
+        threshold_minutes: getReadingGapAlertThresholdMinutes(),
+        source: "webhook",
+        message: `Gap de ${gapMinutes.toFixed(1)} minutos antes de ${device.device_id}.`,
+      },
+    });
+  }
 
   await supabaseServer
     .from("devices")
