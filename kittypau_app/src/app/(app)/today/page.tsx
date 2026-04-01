@@ -2792,6 +2792,67 @@ export default function TodayPage() {
             ))}
           </div>
 
+          <section className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Acciones rápidas
+                </p>
+                <p className="mt-1 text-sm font-semibold text-slate-900">
+                  Si faltan datos o ves gaps, entra directo a la vista
+                  operativa.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                <Link
+                  href="/story"
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+                >
+                  Abrir diario
+                </Link>
+                <Link
+                  href="/admin"
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+                >
+                  Ver admin
+                </Link>
+                <Link
+                  href="/registro"
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+                >
+                  Completar registro
+                </Link>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-3 lg:grid-cols-3">
+              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-900">Lecturas en vivo</p>
+                <p className="mt-1">
+                  Revisa si hoy hay actividad reciente, frescura y eventos
+                  duplicados.
+                </p>
+              </article>
+              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-900">
+                  Gaps e incidentes
+                </p>
+                <p className="mt-1">
+                  El admin separa bridge offline, device offline y gaps de
+                  lectura.
+                </p>
+              </article>
+              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
+                <p className="font-semibold text-slate-900">
+                  Historia y perfil
+                </p>
+                <p className="mt-1">
+                  Story y perfil ayudan cuando el resumen todavía no explica
+                  todo.
+                </p>
+              </article>
+            </div>
+          </section>
+
           {!hasAnalyticsHistory ? (
             <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-800">
               <p className="font-semibold">
