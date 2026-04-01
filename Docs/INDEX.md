@@ -45,6 +45,7 @@
 ## Plan y estado
 - [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md) - estado vivo y resumido del proyecto
 - [TAREAS_PENDIENTES_ACTUALES.md](TAREAS_PENDIENTES_ACTUALES.md) - backlog operativo vivo por area
+- [FONDOS_RASTREADOS_ACTUALES.md](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de fondos y postulaciones
 - [contexto.md](contexto.md)
 - [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)

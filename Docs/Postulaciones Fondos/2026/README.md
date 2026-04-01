@@ -5,6 +5,7 @@ La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](document
 
 ## Estado actual (2026-04-01)
 - Estado vivo resumido del proyecto: [`../../ESTADO_PROYECTO_ACTUAL.md`](../../ESTADO_PROYECTO_ACTUAL.md)
+- Radar vivo de fondos: [`../../FONDOS_RASTREADOS_ACTUALES.md`](../../FONDOS_RASTREADOS_ACTUALES.md)
 - Start-Up Chile sigue como paquete vivo de trabajo.
 - Corfo Semilla Inicia O'Higgins ya vencio el 2026-03-16; este paquete queda para replanificacion o nueva region.
 

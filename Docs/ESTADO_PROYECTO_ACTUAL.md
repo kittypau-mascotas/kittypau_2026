@@ -95,6 +95,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 ### Empresa / Finanzas / Postulaciones
 - Tratar CORFO Semilla Inicia como replanificacion, no como convocatoria viva.
 - Mantener Start-Up Chile como paquete vivo de trabajo.
+- Mantener `FONDOS_RASTREADOS_ACTUALES.md` como radar oficial de fondos abiertos, vigentes y de vigilancia.
 - Completar o cerrar los checklists que sigan abiertos en `documento_2026` y `Staruplab01_2026`.
 - Continuar documentando costos, BOM, financiamiento y trazabilidad de componentes.
 - Mantener el relato empresarial alineado con la realidad tecnica actual: funcionamiento, datos, traccion y capacidad de ejecucion.

@@ -96,6 +96,8 @@ Fecha de corte: 2026-04-01
 ### P0
 - [ ] Tratar CORFO Semilla Inicia como replanificacion, no como convocatoria viva.
 - [ ] Mantener Start-Up Chile como paquete vivo de trabajo.
+- [ ] Mantener actualizado `FONDOS_RASTREADOS_ACTUALES.md` con fuentes oficiales y fechas reales de apertura/cierre.
+- [ ] Definir cada semana si el foco de postulacion va a Ignite, Growth, una convocatoria CORFO vigente o un backup Sercotec.
 - [ ] Completar los checklists abiertos del paquete 2026 que sigan vigentes.
 
 ### P1

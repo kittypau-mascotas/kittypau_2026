@@ -7,11 +7,13 @@ Esta carpeta es la entrada principal a toda la documentacion del proyecto.
 2. [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado del proyecto.
 3. [`FUENTE_DE_VERDAD.md`](FUENTE_DE_VERDAD.md) - reglas canonicas de activos, legacy, tablas y flujos.
 4. [`PLAN_MAESTRO.md`](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia.
-5. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para la base de datos.
+5. [`FONDOS_RASTREADOS_ACTUALES.md`](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de postulaciones y fondos.
+6. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para la base de datos.
 
 ## Capas de lectura
 - Producto y arquitectura: `PLAN_MAESTRO.md`, `ARQUITECTURA_PROYECTO.md`, `DOC_MAESTRO_DOMINIO.md`
 - Operacion y calidad: `ESTADO_PROYECTO_ACTUAL.md`, `ESTADO_AVANCE.md` (historico), `PRUEBAS_E2E.md`, `GUIA_DECISION.md`
+- Empresa y postulaciones: `FONDOS_RASTREADOS_ACTUALES.md`, `TAREAS_PENDIENTES_ACTUALES.md`, `Postulaciones Fondos/2026/README.md`
 - Backlog operativo vivo: `TAREAS_PENDIENTES_ACTUALES.md`
 - Base de datos y bridge: `SQL_MAESTRO.md`, `SQL_SCHEMA.sql`, `RASPBERRY_BRIDGE.md`
 - Postulaciones 2026: `Postulaciones Fondos/2026/README.md`
