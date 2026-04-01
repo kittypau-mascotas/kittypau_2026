@@ -51,3 +51,49 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 - Para estrategia y plan maestro: leer `PLAN_MAESTRO.md`.
 - Para cronograma de trabajo: leer `PMO/03_SCHEDULE.md`.
 - Para postulaciones 2026: leer `Postulaciones Fondos/2026/README.md`.
+
+## 6. Que debemos seguir ahora, por area
+
+### Front
+- Cerrar la coherencia de `/today` entre hero, navbar, selector de mascota y tarjetas.
+- Eliminar los ultimos fallbacks visuales que esconden el estado real de comida, agua y ambiente.
+- Mantener el contrato de UI para `readings` estable, sin asumir columnas de bateria que no existen.
+- Consolidar estados vacios, loading y errores para que el usuario entienda siempre si hay datos o no.
+
+### Back
+- Mantener estable `/api/readings`, `/api/devices` y `/api/mqtt/webhook` sin romper compatibilidad.
+- Cerrar observabilidad minima: health-check, timeouts, errores y recuperacion del bridge.
+- Homologar el flujo de sesiones operativas:
+  - `device_operation_records`
+  - `device_power_sessions`
+  - `device_battery_cycles`
+- Continuar endureciendo la base sin introducir fallback oculto en produccion.
+
+### Firmware
+- Mantener el contrato de payloads de KPCL estable.
+- Si el hardware lo permite, comenzar a emitir telemetria real de energia:
+  - `battery_level`
+  - `battery_voltage`
+  - `battery_state`
+  - `battery_source`
+- Asegurar timestamps y frecuencia consistentes para no romper la inferencia de actividad.
+- Prioridad de firmware hoy: confiabilidad de lectura antes que nuevas variables.
+
+### App web / mobile / APK
+- Mantener una sola experiencia coherente entre web, mobile y APK.
+- Priorizar:
+  - login
+  - today
+  - story
+  - pet
+  - bowl
+  - settings
+- Cerrar la brecha entre UI bonita y datos reales, especialmente en `/today`.
+- Para mobile/APK, validar release y QA minimo antes de agregar mas UI.
+
+### Empresa / Finanzas / Postulaciones
+- Tratar CORFO Semilla Inicia como replanificacion, no como convocatoria viva.
+- Mantener Start-Up Chile como paquete vivo de trabajo.
+- Completar o cerrar los checklists que sigan abiertos en `documento_2026` y `Staruplab01_2026`.
+- Continuar documentando costos, BOM, financiamiento y trazabilidad de componentes.
+- Mantener el relato empresarial alineado con la realidad tecnica actual: funcionamiento, datos, traccion y capacidad de ejecucion.
