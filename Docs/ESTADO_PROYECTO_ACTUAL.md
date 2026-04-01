@@ -72,6 +72,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
   - `device_battery_cycles`
 - `KPCL0034` ya quedo marcado manualmente como `battery_only` al desconectarse el cargador el `2026-04-01 04:36:28Z`.
 - `KPCL0036` quedo registrado manualmente como `battery_only` totalmente cargado desde `2026-04-01 09:00` hora local, con muestreo esperado cada `10s`.
+- `KPCL0034` sigue activo en bateria y no se cierra el ciclo todavia; se espera reconexion para medir la duracion completa.
 - Continuar endureciendo la base sin introducir fallback oculto en produccion.
 
 ### Firmware

@@ -211,6 +211,10 @@ El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no 
   - se desconecto el cargador
   - el dispositivo quedo funcionando sin enchufe
   - no hay telemetria real de bateria aun, por lo que este registro es manual y sirve como marcador inicial para el analisis posterior
+- estado actualizado a `2026-04-01 13:18:55Z`:
+  - la bateria sigue activa
+  - no se cierra el ciclo todavia
+  - se espera reconexion para cerrar el tramo y medir la duracion completa
 
 La fila de `device_battery_cycles` quedo abierta como `battery_only` para cerrarla cuando se vuelva a conectar el cargador o cuando exista telemetria de energia suficiente para medir el tramo completo.
 
