@@ -1,5 +1,7 @@
 # Auditoria de Coherencia del Ecosistema Kittypau
 
+> Documento de auditoria historica. Para el estado vivo resumido del proyecto leer [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+
 ## Objetivo
 Evaluar la coherencia interna del proyecto entre sus dimensiones criticas para asegurar alineacion entre vision, producto, tecnologia y operacion.
 
