@@ -49,6 +49,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 - Para estado real corto: leer este documento.
 - Para mapa canonico: leer `FUENTE_DE_VERDAD.md`.
 - Para estrategia y plan maestro: leer `PLAN_MAESTRO.md`.
+- Para backlog operativo vivo: leer `TAREAS_PENDIENTES_ACTUALES.md`.
 - Para cronograma de trabajo: leer `PMO/03_SCHEDULE.md`.
 - Para postulaciones 2026: leer `Postulaciones Fondos/2026/README.md`.
 

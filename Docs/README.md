@@ -12,6 +12,7 @@ Esta carpeta es la entrada principal a toda la documentacion del proyecto.
 ## Capas de lectura
 - Producto y arquitectura: `PLAN_MAESTRO.md`, `ARQUITECTURA_PROYECTO.md`, `DOC_MAESTRO_DOMINIO.md`
 - Operacion y calidad: `ESTADO_PROYECTO_ACTUAL.md`, `ESTADO_AVANCE.md` (historico), `PRUEBAS_E2E.md`, `GUIA_DECISION.md`
+- Backlog operativo vivo: `TAREAS_PENDIENTES_ACTUALES.md`
 - Base de datos y bridge: `SQL_MAESTRO.md`, `SQL_SCHEMA.sql`, `RASPBERRY_BRIDGE.md`
 - Postulaciones 2026: `Postulaciones Fondos/2026/README.md`
 - Legacy y archivo: `archive/`, `kittypau_1a_docs_legacy/`
