@@ -57,6 +57,51 @@ const knownDevices = new Set();
 // Cache de ultima IP conocida por dispositivo (para detectar cambios)
 const lastKnownIp = new Map();
 
+function normalizeBatteryTelemetry(data) {
+  const battery = data?.battery && typeof data.battery === 'object' ? data.battery : {};
+  const pick = (...values) => {
+    for (const value of values) {
+      if (value !== undefined && value !== null && value !== '') return value;
+    }
+    return null;
+  };
+  const pickNumber = (...values) => {
+    const value = pick(...values);
+    if (value === null) return null;
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  };
+  const pickBoolean = (...values) => {
+    const value = pick(...values);
+    if (value === null) return null;
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') return value !== 0;
+    const normalized = String(value).trim().toLowerCase();
+    if (['true', '1', 'yes', 'y', 'on'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'n', 'off'].includes(normalized)) return false;
+    return null;
+  };
+
+  return {
+    battery_level: pickNumber(data?.battery_level, data?.batteryLevel, battery.level),
+    battery_voltage: pickNumber(data?.battery_voltage, data?.batteryVoltage, battery.voltage),
+    battery_state: pick(data?.battery_state, data?.batteryState, battery.state),
+    battery_source: pick(data?.battery_source, data?.batterySource, battery.source),
+    battery_is_estimated: pickBoolean(
+      data?.battery_is_estimated,
+      data?.batteryIsEstimated,
+      battery.is_estimated,
+      battery.isEstimated
+    ),
+    battery_updated_at: pick(
+      data?.battery_updated_at,
+      data?.batteryUpdatedAt,
+      battery.updated_at,
+      battery.updatedAt
+    )
+  };
+}
+
 // ============ MQTT ============
 const mqttOptions = {
   host: process.env.MQTT_BROKER,
@@ -189,6 +234,7 @@ async function ensureDeviceExists(deviceId) {
 // ============ HANDLERS ============
 
 async function handleSensorData(deviceId, data) {
+  const battery = normalizeBatteryTelemetry(data);
   const { error } = await supabase
     .from('sensor_readings')
     .insert({
@@ -199,7 +245,13 @@ async function handleSensorData(deviceId, data) {
       light_lux: data.light?.lux ?? null,
       light_percent: data.light?.['%'] ?? null,
       light_condition: data.light?.condition ?? null,
-      device_timestamp: data.timestamp ?? null
+      device_timestamp: data.timestamp ?? null,
+      battery_level: battery.battery_level,
+      battery_voltage: battery.battery_voltage,
+      battery_state: battery.battery_state,
+      battery_source: battery.battery_source,
+      battery_is_estimated: battery.battery_is_estimated ?? false,
+      battery_updated_at: battery.battery_updated_at
     });
 
   if (error) {
@@ -228,6 +280,12 @@ async function handleSensorData(deviceId, data) {
 }
 
 async function writeToReadings(deviceId, data) {
+  const battery = normalizeBatteryTelemetry(data);
+  const hasBatteryTelemetry =
+    battery.battery_level !== null ||
+    battery.battery_voltage !== null ||
+    battery.battery_state !== null ||
+    battery.battery_source !== null;
   const { data: device, error: lookupError } = await supabase
     .from('devices')
     .select('id, pet_id')
@@ -270,6 +328,12 @@ async function writeToReadings(deviceId, data) {
         light_lux: data.light?.lux ?? null,
         light_percent: data.light?.['%'] ?? null,
         light_condition: data.light?.condition ?? null,
+        battery_level: battery.battery_level,
+        battery_voltage: battery.battery_voltage,
+        battery_state: battery.battery_state,
+        battery_source: battery.battery_source,
+        battery_is_estimated: battery.battery_is_estimated ?? false,
+        battery_updated_at: battery.battery_updated_at ?? (hasBatteryTelemetry ? new Date().toISOString() : null),
         recorded_at: recordedAt,
         ingested_at: new Date().toISOString(),
         clock_invalid: clockInvalid
@@ -285,6 +349,7 @@ async function writeToReadings(deviceId, data) {
 }
 
 async function handleStatusData(deviceId, data) {
+  const battery = normalizeBatteryTelemetry(data);
   const newIp = data.wifi_ip ?? null;
   const cachedIp = lastKnownIp.get(deviceId);
 
@@ -311,6 +376,12 @@ async function handleStatusData(deviceId, data) {
   if (data.sensor_health !== undefined) updateFields.sensor_health = data.sensor_health;
   if (data.device_type) updateFields.device_type = data.device_type; // guardar valor raw del firmware
   if (data.device_model) updateFields.device_model = data.device_model;
+  if (battery.battery_level !== null) updateFields.battery_level = battery.battery_level;
+  if (battery.battery_voltage !== null) updateFields.battery_voltage = battery.battery_voltage;
+  if (battery.battery_state !== null) updateFields.battery_state = battery.battery_state;
+  if (battery.battery_source !== null) updateFields.battery_source = battery.battery_source;
+  if (battery.battery_is_estimated !== null) updateFields.battery_is_estimated = battery.battery_is_estimated;
+  if (battery.battery_updated_at !== null) updateFields.battery_updated_at = battery.battery_updated_at;
 
   const { error } = await supabase
     .from('devices')

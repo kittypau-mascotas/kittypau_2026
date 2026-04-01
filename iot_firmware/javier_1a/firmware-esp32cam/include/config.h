@@ -87,3 +87,11 @@
 // Web server ports
 #define CAMERA_HTTP_PORT 80
 #define CAMERA_STREAM_PORT 81
+
+// Telemetria de bateria (opcional)
+// Cuando el hardware reporte energia, estos campos se pueden emitir y guardar en Supabase.
+#define BATTERY_LEVEL_DEFAULT        -1
+#define BATTERY_VOLTAGE_DEFAULT      -1.0f
+#define BATTERY_STATE_DEFAULT        ""
+#define BATTERY_SOURCE_DEFAULT       ""
+#define BATTERY_IS_ESTIMATED_DEFAULT  false

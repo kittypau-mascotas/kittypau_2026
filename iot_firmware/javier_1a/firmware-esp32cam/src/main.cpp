@@ -4,6 +4,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <cstring>
 #include <WiFi.h>
 #include <ArduinoOTA.h>
 #include "config.h"
@@ -33,6 +34,22 @@ static bool hasPublishedOnce = false;
 static bool deviceOnline = false;
 static unsigned long lastOnlineTime = 0;
 #define OFFLINE_GRACE_PERIOD 15000  // 15s de gracia antes de declarar Offline
+
+static void appendBatteryTelemetry(JsonDocument& doc) {
+    if (strlen(BATTERY_STATE_DEFAULT) > 0) {
+        doc["battery_state"] = BATTERY_STATE_DEFAULT;
+    }
+    if (strlen(BATTERY_SOURCE_DEFAULT) > 0) {
+        doc["battery_source"] = BATTERY_SOURCE_DEFAULT;
+    }
+    if (BATTERY_LEVEL_DEFAULT >= 0) {
+        doc["battery_level"] = BATTERY_LEVEL_DEFAULT;
+    }
+    if (BATTERY_VOLTAGE_DEFAULT > 0.0f) {
+        doc["battery_voltage"] = BATTERY_VOLTAGE_DEFAULT;
+    }
+    doc["battery_is_estimated"] = BATTERY_IS_ESTIMATED_DEFAULT;
+}
 
 // Actualizar estado Online/Offline con debounce
 void updateDeviceOnlineState() {
@@ -66,6 +83,7 @@ void publishDeviceStatus() {
     doc["device_type"] = DEVICE_TYPE;
     doc["device_model"] = DEVICE_MODEL;
     doc["camera_status"] = cameraOk ? "OK" : "ERROR";
+    appendBatteryTelemetry(doc);
 
     // Agregar URL de streaming si esta disponible
     if (cameraOk && wifiOk) {

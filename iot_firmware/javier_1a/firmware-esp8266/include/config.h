@@ -55,4 +55,13 @@
 #define CALIBRATION_FILE "/calibration.json"
 #define TARE_FILE        "/tare.json"
 
+// Telemetria de bateria (opcional)
+// El bridge ya esta preparado para guardar estos campos cuando existan.
+// Si el hardware no los mide, pueden quedar vacios o por defecto.
+#define BATTERY_LEVEL_DEFAULT        -1
+#define BATTERY_VOLTAGE_DEFAULT      -1.0f
+#define BATTERY_STATE_DEFAULT        ""
+#define BATTERY_SOURCE_DEFAULT       ""
+#define BATTERY_IS_ESTIMATED_DEFAULT  false
+
 
