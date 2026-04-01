@@ -94,7 +94,7 @@ function toBatteryState(
   charging: boolean,
 ): BatteryState {
   if (charging) return "charging";
-  if (source === "usb" && level === null) return "external_power";
+  if (source === "usb") return "external_power";
   if (level === null) return "unknown";
   if (level <= 15) return "critical";
   if (level <= 35) return "low";

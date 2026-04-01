@@ -443,9 +443,9 @@ export default function StoryPage() {
         </EmptyState>
       ) : (
         <>
-          <section className="surface-card freeform-rise px-6 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
+          <section className="surface-card freeform-rise px-4 py-4 sm:px-6">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_auto_auto] lg:items-end">
+              <div className="min-w-0">
                 <p className="text-sm text-slate-500">Mascota</p>
                 <p className="text-lg font-semibold text-slate-900">
                   {selectedPet?.name ?? "Sin mascota"}
@@ -457,10 +457,10 @@ export default function StoryPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <div className="flex w-full flex-wrap items-center gap-3 text-xs text-slate-500 sm:w-auto">
                 <span>Ver:</span>
                 <select
-                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700"
+                  className="w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 sm:w-auto sm:min-w-[180px]"
                   value={dayOffset}
                   onChange={(e) => setDayOffset(Number(e.target.value))}
                 >
@@ -473,10 +473,10 @@ export default function StoryPage() {
               </div>
 
               {state.pets.length > 1 && (
-                <label className="flex flex-col text-xs text-slate-500">
+                <label className="flex w-full flex-col text-xs text-slate-500 sm:w-auto">
                   Cambiar mascota
                   <select
-                    className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+                    className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 sm:min-w-[220px]"
                     value={selectedPetId ?? ""}
                     onChange={(e) => {
                       void handlePetChange(e.target.value);
