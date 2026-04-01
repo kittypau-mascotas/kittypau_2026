@@ -17,7 +17,7 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - DB/Auth/Realtime: Supabase.
 - MQTT: HiveMQ Cloud.
 - Bridge 24/7: Raspberry Pi Zero 2 W.
-- Fuente canónica de estructura: [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md).
+- Fuente canonica de estructura: [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md).
 
 ## 3) Modelo de datos
 - Base relacional oficial: [SQL_SCHEMA.md](SQL_SCHEMA.md) y [SQL_MAESTRO.md](SQL_MAESTRO.md).
@@ -45,9 +45,9 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - Registro historico de ejecucion: [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md).
 
 ## 6) Estrategia de negocio
-- Analisis economico: [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md).
-- Modelo estrategico y metricas: [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md).
-- Documento maestro de dominio: [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md).
+- Documento maestro de dominio, estrategia y economia: [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md).
+- Analisis economico historico: [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md).
+- Modelo estrategico historico: [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md).
 
 ## 7) Documentacion relacionada, pero especializada
 - Finanzas admin: [ADMIN_FINANZAS_CONTAINER_SPEC.md](ADMIN_FINANZAS_CONTAINER_SPEC.md).
