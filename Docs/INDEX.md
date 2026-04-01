@@ -2,7 +2,7 @@
 
 > Fuentes maestras:
 > - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md) - mapa canonico de activos, legacy, tablas y flujos
-> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) - planes y roadmap
+> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia
 > - [SQL_MAESTRO.md](SQL_MAESTRO.md) - base de datos (orden de ejecucion)
 > - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) - flujo de trabajo y colaboracion
 
@@ -46,7 +46,7 @@
 - [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md)
 - [PLAN_PENDIENTES_APP_WEB_KITTYPAU.md](PLAN_PENDIENTES_APP_WEB_KITTYPAU.md)
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md)
-- [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md)
+- [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md) - puntero historico consolidado en el plan maestro
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md)
 - [PLAN_MEJORA_DB_ACTUAL.md](PLAN_MEJORA_DB_ACTUAL.md)
