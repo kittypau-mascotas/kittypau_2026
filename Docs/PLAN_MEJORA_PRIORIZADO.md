@@ -33,6 +33,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 4. Terminar de limpiar los fallbacks visuales que oculten la verdad de los datos.
 5. Mantener `today` como pantalla operativa con acciones rapidas hacia `story`, `admin` y `registro` cuando falten datos o haya gaps.
 6. Mantener `story` como vista explicativa con salidas directas a `today`, `admin` y `settings` cuando la historia sea insuficiente o este limitada.
+7. Mantener `bowl` como vista operativa con acciones rapidas a `today`, `story` y `admin` cuando falten datos, bateria o diagnosticos claros.
 
 ### P1 - Observabilidad y datos
 
