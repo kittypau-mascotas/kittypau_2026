@@ -79,7 +79,7 @@ Ordenar el trabajo pendiente para mejorar experiencia de usuario, estabilidad op
 - `Docs/FRONT_BACK_APIS.md`
 - `Docs/ARQUITECTURA_PROYECTO.md`
 - `Docs/ESTADO_AVANCE.md`
-- `Docs/PLAN_MEJORA_DB_IOT.md`
+- `Docs/PLAN_MEJORA_DB_ACTUAL.md`
 - `Docs/BATERIA_ESTIMADA_KPCL.md`
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
 - **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.

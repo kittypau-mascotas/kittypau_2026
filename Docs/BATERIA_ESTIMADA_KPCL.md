@@ -1,7 +1,7 @@
-# Funcionamiento de Bateria y Ciclos de Energia en KittyPaw
+# Funcionamiento de Bateria y Ciclos de Energia en Kittypau
 
 ## Objetivo
-Dejar documentado como KittyPaw identifica y guarda el funcionamiento de energia de los dispositivos KPCL:
+Dejar documentado como Kittypau identifica y guarda el funcionamiento de energia de los dispositivos KPCL:
 - cuando estan enchufados o cargando
 - cuando alcanzan carga completa
 - cuando pasan a uso solo con bateria
@@ -61,7 +61,7 @@ Esta tabla sirve para todos los devices y separa:
 - uso solo con bateria
 - cierre del ciclo cuando vuelve energia
 
-Ademas, la tabla quedo coordinada con el BOM financiero de KittyPaw para que cada ciclo pueda quedar ligado a las piezas reales de energia:
+Ademas, la tabla quedo coordinada con el BOM financiero de Kittypau para que cada ciclo pueda quedar ligado a las piezas reales de energia:
 - migration de enlace: `supabase/migrations/20260331162000_add_device_battery_bom_context.sql`
 - columnas nuevas en `public.device_battery_cycles`:
   - `battery_component_code`
@@ -138,7 +138,7 @@ La funcion de reconstruccion historica es:
 
 ---
 
-## Como interpreta KittyPaw los estados de energia
+## Como interpreta Kittypau los estados de energia
 
 ### Enchufado o cargando
 Se considera que el dispositivo esta en energia externa cuando:
@@ -286,7 +286,7 @@ Para que el sistema empiece a medir duracion real desde 100%:
   - `battery_voltage`
   - y cuando se pueda `battery_level`
 
-Sin esos campos, KittyPaw solo puede guardar el periodo de funcionamiento observado, pero no la duracion exacta de la bateria desde carga completa.
+Sin esos campos, Kittypau solo puede guardar el periodo de funcionamiento observado, pero no la duracion exacta de la bateria desde carga completa.
 
 ### Contrato de firmware / ingesta
 El bridge ya quedo preparado para almacenar estos campos si el firmware los manda.
@@ -312,7 +312,7 @@ Si el hardware no puede medir la bateria, el firmware puede omitir esos campos y
 
 ## Resultado esperado
 
-Con este modelo, KittyPaw podra responder:
+Con este modelo, Kittypau podra responder:
 - cuando se enchufa un device
 - cuando termina la carga
 - cuanto dura funcionando sin energia externa

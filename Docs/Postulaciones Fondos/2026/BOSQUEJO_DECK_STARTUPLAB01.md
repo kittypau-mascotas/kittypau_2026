@@ -4,7 +4,7 @@ Objetivo: preparar un deck corto, consistente con formulario y evidencia del rep
 Formato recomendado: 10-12 slides (PDF).
 
 ## Slide 1 - Portada
-- KittyPaw (producto: Kittypau)
+- Kittypau (producto: Kittypau)
 - One-liner: Monitoreo predictivo IoT para bienestar de mascotas.
 - Nombre del equipo y contacto.
 

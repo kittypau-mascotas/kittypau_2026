@@ -1,4 +1,4 @@
-# KittyPaw - Fuente de Verdad
+# Kittypau - Fuente de Verdad
 
 > Este documento es el mapa canonico del ecosistema activo.
 > Si otro doc entra en conflicto con este, este doc gana hasta que la fuente se actualice.
