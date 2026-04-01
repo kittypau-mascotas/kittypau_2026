@@ -7,7 +7,7 @@ La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](document
 1. [`documento_2026/`](documento_2026/) - narrativa madre, evidencia, negocio y checklist.
 2. [`Staruplab01_2026/`](Staruplab01_2026/) - paquete especifico Start-Up Chile.
 3. [`semilla_inicia/`](semilla_inicia/) - paquete especifico Corfo Semilla Inicia.
-4. [`STARTUPLAB01_FORMULARIO_KITTYPAW.md`](STARTUPLAB01_FORMULARIO_KITTYPAW.md) - respuestas sugeridas para el formulario de Start-Up Chile.
+4. [`STARTUPLAB01_FORMULARIO_KITTYPAW.md`](STARTUPLAB01_FORMULARIO_KITTYPAW.md) - version viva del formulario de Start-Up Chile.
 5. [`CRONOGRAMA_2026.md`](CRONOGRAMA_2026.md) - cronograma maestro compartido.
 
 ## Regla de trabajo 2026
@@ -15,6 +15,10 @@ La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](document
 - Derivar cada version por fondo desde el paquete `documento_2026`.
 - Mantener solo diferencias reales: montos, limites de caracteres, formularios y anexos.
 - Si un archivo ya queda cubierto por otro, convertirlo en puntero historico.
+
+## Estado actual del formulario Start-Up Chile
+- Version viva: [`STARTUPLAB01_FORMULARIO_KITTYPAW.md`](STARTUPLAB01_FORMULARIO_KITTYPAW.md)
+- Puntero historico: [`Staruplab01_2026/02_BORRADOR_FORMULARIO.md`](Staruplab01_2026/02_BORRADOR_FORMULARIO.md)
 
 ## Referencias historicas 2025
 - `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/Checklist_Postulacion_Build.md`
