@@ -1,6 +1,9 @@
 ﻿# Plan de Implementacion (Solo Documentacion)
 
 ## Objetivo
+> Documento de seguimiento derivado. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+> Este archivo sirve como checklist tecnico y no como fuente de verdad del proyecto.
+
 Definir las tareas de implementacion para cerrar el MVP sin tocar codigo estrategico.
 
 Este documento complementa a [PLAN_MAESTRO.md](PLAN_MAESTRO.md) y [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md).

@@ -1,7 +1,15 @@
-# Plan Pendientes App + Web KittyPau (Enfoque PetTech AIoT)
+# Plan Pendientes App + Web KittyPau (Seguimiento)
+
+> Documento de seguimiento derivado. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+> Este archivo conserva el backlog funcional y no reemplaza al plan maestro ni al snapshot actual.
 
 ## Objetivo
 Ordenar el trabajo pendiente para mejorar experiencia de usuario, estabilidad operativa y valor AIoT en `web + app` sin perder la logica real `mascota <-> KPCL`.
+
+## Estado actual resumido
+- Lo critico sigue siendo la coherencia de `/today`, la robustez de `/api/readings` y el deploy.
+- La bateria real no esta disponible en telemetria historica de KPCL0034.
+- El cierre de ON/OFF y sesiones de actividad ya queda cubierto en la base, pero el backlog UX/API sigue abierto.
 
 ## Criterios de prioridad
 - P0: rompe flujo critico (login, hoy, datos, deploy).

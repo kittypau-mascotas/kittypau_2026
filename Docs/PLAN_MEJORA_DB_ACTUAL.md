@@ -6,6 +6,9 @@ Mejorar la base actual sin romper el frontend ni el bridge. Se mantiene:
 - sensor_readings como tabla de telemetria cruda.
 - devices.device_id (KPCL texto) y devices.id (UUID).
 
+> Documento de seguimiento tecnico. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+> Este plan conserva la evolucion de base de datos, pero la operacion vigente se lee desde `readings`, `device_operation_records`, `device_power_sessions` y `device_battery_cycles`.
+
 ## Alcance
 - Alinear columnas entre sensor_readings y readings.
 - Robustecer el pipeline de ingestion.
