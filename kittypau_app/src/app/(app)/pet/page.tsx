@@ -766,6 +766,45 @@ export default function PetPage() {
                 </button>
               </div>
             ) : null}
+
+            {profileChecklist.length || !latestReading ? (
+              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-sky-200 bg-sky-50/70 px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.18em] text-sky-500">
+                  Acciones rápidas
+                </p>
+                <p className="mt-1 text-sm font-semibold text-sky-900">
+                  Si faltan datos o historia, salta a la vista operativa.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+                  <Link
+                    href="/today"
+                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
+                  >
+                    Ver hoy
+                  </Link>
+                  <Link
+                    href="/bowl"
+                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
+                  >
+                    Ver plato
+                  </Link>
+                  <Link
+                    href="/story"
+                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
+                  >
+                    Ver historia
+                  </Link>
+                  {!profileChecklist.length ? null : (
+                    <Link
+                      href="/registro"
+                      className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
+                    >
+                      Completar registro
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <section className="surface-card freeform-rise px-6 py-5">
@@ -847,6 +886,12 @@ export default function PetPage() {
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
                 >
                   Ver plato
+                </Link>
+                <Link
+                  href="/admin"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+                >
+                  Ver admin
                 </Link>
               </div>
             </section>
