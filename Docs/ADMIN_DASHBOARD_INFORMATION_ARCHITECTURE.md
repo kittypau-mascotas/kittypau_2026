@@ -25,7 +25,8 @@ Fecha: 2026-02-19
 - `Eventos offline 24h`.
 - `Registros completos % = completed / total_profiles * 100`.
 - `Supabase usado % = used_mb / plan_mb * 100`.
-- `Frescura dashboard = now - effective_ts`: si no hay `summary.generated_at`, usar la Ãºltima lectura por dispositivo (ver `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`, SLOs/observabilidad).
+- `Frescura dashboard = now - effective_ts`: si no hay `summary.generated_at`, usar la última lectura por dispositivo (ver `Docs/FUENTE_DE_VERDAD.md` y `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`).
+- Usar el vocabulario canónico de `Docs/FUENTE_DE_VERDAD.md` para estados, sesiones y ciclos de batería.
 
 ## Reglas de UI
 - No duplicar KPI en mÃ¡s de un bloque.
@@ -55,4 +56,5 @@ Fecha: 2026-02-19
 - Reordenamiento visual por prioridad (operaciÃ³n antes de anÃ¡lisis profundo).
 - Ajuste de padding/espaciado para mobile-first.
 - Modo compacto mobile en Continuidad y Finanzas (cards resumidas, tablas completas en `md+`).
+
 

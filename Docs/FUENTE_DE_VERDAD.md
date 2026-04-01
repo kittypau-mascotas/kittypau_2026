@@ -69,11 +69,23 @@
 - La duracion real de bateria no se puede inferir sin telemetria de energia.
 - `notebooks/` no forma parte del runtime de la app.
 
-## 6) Orden de lectura recomendado
+## 6) Vocabulario canonico
 
+- `activo`: componente, doc o flujo en uso dentro del producto vigente.
+- `legacy`: componente o referencia antigua que puede seguir existiendo por compatibilidad.
+- `archive`: documento o artefacto historico que se conserva solo como referencia.
+- `ON/OFF`: estado operativo inferido por actividad de lecturas.
+- `power session`: periodo continuo de actividad detectada por lecturas.
+- `battery cycle`: periodo de carga o uso con bateria, cuando exista telemetria de energia.
+- `battery state`: campo de telemetria esperado (`charging`, `battery_only`, etc.).
+- `battery source`: fuente de energia detectada (`external_power`, `battery`, etc.).
+- `battery cycles`: nombre recomendado para la tabla historica de carga y autonomia.
+
+## 7) Orden de lectura recomendado
 1. [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md)
 2. [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md)
 3. [SQL_MAESTRO.md](SQL_MAESTRO.md)
 4. [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md)
 5. [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
+
 

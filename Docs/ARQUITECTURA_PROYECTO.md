@@ -2,10 +2,16 @@
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesiÃ³n.
+1. Se registra e inicia sesión.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
+
+Documentación canónica relacionada:
+- Fuente de verdad del ecosistema: `Docs/FUENTE_DE_VERDAD.md`
+- Arquitectura de datos/analítica/ML archivada: `archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
+- Inventario rápido de variables por capa archivado: `archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md`
+- Transformaciones analíticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ---
 
@@ -16,11 +22,6 @@ Tener un MVP funcional donde el usuario:
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
    - El cÃ³digo fuente vive en el repo (`/bridge`).
    - El runtime real estÃ¡ fuera del repo (Raspberry).
-
-DocumentaciÃ³n canÃ³nica relacionada:
-- Arquitectura de datos/analÃ­tica/ML: `archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
-- Inventario rÃ¡pido de variables por capa: `archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md`
-- Transformaciones analÃ­ticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ---
 
@@ -46,16 +47,16 @@ Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetrÃ­a)
+## Flujo de datos (telemetría)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenvÃ­a a Vercel.
+2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
 3. API valida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
-### Transformaciones analÃ­ticas (recomendado)
-- En ingestiÃ³n server-side (despuÃ©s de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
-- Persistencia `raw + transformado`: es **recomendaciÃ³n**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
-- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analÃ­tico (batch o microservicio).
+### Transformaciones analíticas (recomendado)
+- En ingesta server-side (después de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
+- Persistencia `raw + transformado`: es **recomendación**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
+- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analítico (batch o microservicio).
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
