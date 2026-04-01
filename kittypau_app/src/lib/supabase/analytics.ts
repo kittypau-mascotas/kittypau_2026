@@ -1,23 +1,20 @@
 import { createClient } from "@supabase/supabase-js";
 
-function requireEnv(name: string): string {
+function getEnv(name: string): string | null {
   const value = process.env[name];
-  if (!value) {
-    if (process.env.CI === "true") {
-      if (name.includes("URL")) return "https://example.supabase.co";
-      return "ci-placeholder-key";
-    }
-    throw new Error(`Missing env var: ${name}`);
-  }
-  return value;
+  return value && value.trim() ? value : null;
 }
 
-const analyticsUrl = requireEnv("SUPABASE_ANALYTICS_URL");
-const analyticsKey = requireEnv("SUPABASE_ANALYTICS_SERVICE_KEY");
+const analyticsUrl = getEnv("SUPABASE_ANALYTICS_URL");
+const analyticsKey = getEnv("SUPABASE_ANALYTICS_SERVICE_KEY");
 
-export const supabaseAnalytics = createClient(analyticsUrl, analyticsKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+export const analyticsAvailable = Boolean(analyticsUrl && analyticsKey);
+
+export const supabaseAnalytics = analyticsAvailable
+  ? createClient(analyticsUrl!, analyticsKey!, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    })
+  : null;

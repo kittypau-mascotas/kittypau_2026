@@ -40,10 +40,12 @@ Fecha de corte: 2026-04-01
   - `device_power_sessions`
   - `device_battery_cycles`
 - [ ] Mantener observabilidad minima del bridge: health-check, timeout y recovery.
+- [x] Migrar `middleware` a `proxy` para eliminar la advertencia de Next 16.
 
 ### P1
 - [ ] Homologar entornos local, staging y prod para migraciones de `readings`.
 - [ ] Definir pruebas de contrato para lecturas con y sin `battery_*`.
+- [ ] Mantener la capa `analytics` como opcional/legacy y no volver a exigir `SUPABASE_ANALYTICS_URL` como dependencia obligatoria.
 - [ ] Registrar alertas de datos anomales: gaps, lecturas negativas, saltos extremos.
 - [ ] Revisar la politica de reintentos y error handling para webhook y bridge.
 

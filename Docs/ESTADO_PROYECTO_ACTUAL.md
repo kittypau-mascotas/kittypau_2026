@@ -7,6 +7,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 ## 1. Estado ejecutivo
 
 - La app principal, el bridge, Supabase y el esquema oficial estan alineados.
+- El build de `kittypau_app` vuelve a pasar y la capa `analytics` ya no bloquea cuando no existe base analitica.
 - El flujo core `login -> mascota -> dispositivo -> datos` sigue siendo la ruta principal.
 - La documentacion ya tiene una fuente de verdad y un indice principal para lectura rapida.
 - El paquete de postulaciones 2026 sigue vivo, pero la postulacion CORFO Semilla Inicia de O'Higgins ya vencio.
@@ -49,6 +50,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 - Para estado real corto: leer este documento.
 - Para mapa canonico: leer `FUENTE_DE_VERDAD.md`.
 - Para estrategia y plan maestro: leer `PLAN_MAESTRO.md`.
+- Para siguiente mejora accionable: leer `PLAN_MEJORA_PRIORIZADO.md`.
 - Para backlog operativo vivo: leer `TAREAS_PENDIENTES_ACTUALES.md`.
 - Para cronograma de trabajo: leer `PMO/03_SCHEDULE.md`.
 - Para postulaciones 2026: leer `Postulaciones Fondos/2026/README.md`.
@@ -66,6 +68,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 ### Back
 - Mantener estable `/api/readings`, `/api/devices` y `/api/mqtt/webhook` sin romper compatibilidad.
 - Cerrar observabilidad minima: health-check, timeouts, errores y recuperacion del bridge.
+- La capa de borde ya usa `proxy.ts` en lugar de `middleware.ts`, eliminando el warning de deprecacion de Next 16.
 - Homologar el flujo de sesiones operativas:
   - `device_operation_records`
   - `device_power_sessions`

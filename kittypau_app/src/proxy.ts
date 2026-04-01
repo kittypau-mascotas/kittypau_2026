@@ -14,17 +14,17 @@ function withCorsHeaders(res: NextResponse, origin: string | null) {
   res.headers.set("Vary", "Origin");
   res.headers.set(
     "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    "GET,POST,PUT,PATCH,DELETE,OPTIONS",
   );
   res.headers.set(
     "Access-Control-Allow-Headers",
-    "Authorization,Content-Type,x-bridge-token"
+    "Authorization,Content-Type,x-bridge-token",
   );
   res.headers.set("Access-Control-Max-Age", "86400");
   return res;
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const origin = req.headers.get("origin");
 
   if (req.method === "OPTIONS") {
@@ -38,4 +38,3 @@ export function middleware(req: NextRequest) {
 export const config = {
   matcher: ["/api/:path*"],
 };
-

@@ -81,6 +81,7 @@
 - `battery state`: campo de telemetria esperado (`charging`, `battery_only`, etc.).
 - `battery source`: fuente de energia detectada (`external_power`, `battery`, etc.).
 - `battery cycles`: nombre recomendado para la tabla historica de carga y autonomia.
+- `analytics` del historial: subsistema opcional/legacy; si no existe base analitica, las rutas deben degradar a vacio sin romper build ni UI.
 
 ## 7) Orden de lectura recomendado
 1. [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md)

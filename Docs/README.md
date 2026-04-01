@@ -7,8 +7,9 @@ Esta carpeta es la entrada principal a toda la documentacion del proyecto.
 2. [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado del proyecto.
 3. [`FUENTE_DE_VERDAD.md`](FUENTE_DE_VERDAD.md) - reglas canonicas de activos, legacy, tablas y flujos.
 4. [`PLAN_MAESTRO.md`](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia.
-5. [`FONDOS_RASTREADOS_ACTUALES.md`](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de postulaciones y fondos.
-6. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para la base de datos.
+5. [`PLAN_MEJORA_PRIORIZADO.md`](PLAN_MEJORA_PRIORIZADO.md) - siguiente paso real y ordenado.
+6. [`FONDOS_RASTREADOS_ACTUALES.md`](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de postulaciones y fondos.
+7. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para la base de datos.
 
 ## Capas de lectura
 - Producto y arquitectura: `PLAN_MAESTRO.md`, `ARQUITECTURA_PROYECTO.md`, `DOC_MAESTRO_DOMINIO.md`
