@@ -7,6 +7,7 @@ import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
+import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
 import { formatBatterySourceLabel } from "@/lib/battery/contract";
@@ -1110,34 +1111,14 @@ export default function BowlPage() {
             </div>
 
             {showOperationalFallback ? (
-              <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-sky-200 bg-sky-50/70 px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-sky-500">
-                  Acciones rápidas
-                </p>
-                <p className="mt-1 text-sm font-semibold text-sky-900">
-                  Si faltan datos o batería, salta directo a la vista operativa.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
-                  <Link
-                    href="/today"
-                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
-                  >
-                    Ver hoy
-                  </Link>
-                  <Link
-                    href="/story"
-                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
-                  >
-                    Abrir diario
-                  </Link>
-                  <Link
-                    href="/admin"
-                    className="rounded-full border border-sky-200 bg-white px-3 py-2 text-sky-700"
-                  >
-                    Ver admin
-                  </Link>
-                </div>
-              </div>
+              <OperationalActionsCard
+                description="Si faltan datos o batería, salta directo a la vista operativa."
+                actions={[
+                  { href: "/today", label: "Ver hoy" },
+                  { href: "/story", label: "Abrir diario" },
+                  { href: "/admin", label: "Ver admin" },
+                ]}
+              />
             ) : null}
           </section>
 

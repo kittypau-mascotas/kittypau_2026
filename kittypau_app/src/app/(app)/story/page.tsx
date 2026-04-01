@@ -9,6 +9,7 @@ import {
 } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
+import OperationalActionsCard from "@/app/_components/operational-actions-card";
 
 type ApiPet = {
   id: string;
@@ -419,31 +420,14 @@ export default function StoryPage() {
       )}
 
       {!state.analyticsAvailable ? (
-        <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-            Acciones rápidas
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold">
-            <Link
-              href="/today"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-            >
-              Ver hoy
-            </Link>
-            <Link
-              href="/admin"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-            >
-              Ver admin
-            </Link>
-            <Link
-              href="/settings"
-              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-            >
-              Revisar ajustes
-            </Link>
-          </div>
-        </div>
+        <OperationalActionsCard
+          description="Si la historia todavía no está disponible, salta al panel operativo para seguir avanzando."
+          actions={[
+            { href: "/today", label: "Ver hoy" },
+            { href: "/admin", label: "Ver admin" },
+            { href: "/settings", label: "Revisar ajustes" },
+          ]}
+        />
       ) : null}
 
       {state.isLoading ? (

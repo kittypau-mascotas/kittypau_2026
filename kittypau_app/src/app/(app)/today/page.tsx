@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
+import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -2793,37 +2794,14 @@ export default function TodayPage() {
           </div>
 
           <section className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  Acciones rápidas
-                </p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">
-                  Si faltan datos o ves gaps, entra directo a la vista
-                  operativa.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                <Link
-                  href="/story"
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-                >
-                  Abrir diario
-                </Link>
-                <Link
-                  href="/admin"
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-                >
-                  Ver admin
-                </Link>
-                <Link
-                  href="/registro"
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
-                >
-                  Completar registro
-                </Link>
-              </div>
-            </div>
+            <OperationalActionsCard
+              description="Si faltan datos o ves gaps, entra directo a la vista operativa."
+              actions={[
+                { href: "/story", label: "Abrir diario" },
+                { href: "/admin", label: "Ver admin" },
+                { href: "/registro", label: "Completar registro" },
+              ]}
+            />
             <div className="mt-3 grid gap-3 lg:grid-cols-3">
               <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
                 <p className="font-semibold text-slate-900">Lecturas en vivo</p>
