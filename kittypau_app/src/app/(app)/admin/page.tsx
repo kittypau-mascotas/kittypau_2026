@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getValidAccessToken } from "@/lib/auth/token";
@@ -33,7 +33,13 @@ type AuditEvent = {
   created_at: string;
 };
 
-type AuditFilter = "critical" | "bridge" | "devices" | "outages" | "all";
+type AuditFilter =
+  | "critical"
+  | "bridge"
+  | "devices"
+  | "gaps"
+  | "outages"
+  | "all";
 
 type AuditGroup = {
   key: string;
@@ -556,6 +562,22 @@ export default function AdminPage() {
   const fxClpPerUsd = fxReference?.clp_per_usd ?? DEFAULT_FX_CLP_PER_USD;
   const fxJpyPerUsd = fxReference?.jpy_per_usd ?? DEFAULT_FX_JPY_PER_USD;
 
+  const focusAuditSection = useCallback(() => {
+    document.getElementById("admin-auditoria")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
+  const openAuditFilter = useCallback(
+    (nextFilter: AuditFilter) => {
+      setAuditFilter(nextFilter);
+      setExpandedGroupKey(null);
+      focusAuditSection();
+    },
+    [focusAuditSection],
+  );
+
   useEffect(() => {
     let mounted = true;
     const load = async () => {
@@ -582,6 +604,8 @@ export default function AdminPage() {
           params.set("audit_type", "bridge_offline_detected");
         if (auditFilter === "devices")
           params.set("audit_type", "device_offline_detected");
+        if (auditFilter === "gaps")
+          params.set("audit_type", "device_reading_gap_detected");
         if (auditFilter === "outages")
           params.set("audit_type", "general_device_outage_detected");
 
@@ -619,6 +643,7 @@ export default function AdminPage() {
                 "bridge_online_detected",
                 "device_offline_detected",
                 "device_online_detected",
+                "device_reading_gap_detected",
                 "general_device_outage_detected",
                 "general_device_outage_recovered",
               ].includes(event.event_type),
@@ -3726,6 +3751,80 @@ export default function AdminPage() {
                   </div>
                 </section>
 
+                <section className="surface-card freeform-rise order-5 px-4 py-4 sm:px-6 sm:py-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="display-title text-xl font-semibold text-slate-900">
+                      Panel de acciones
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Atajos para separar bridge, device y gaps de lectura.
+                    </p>
+                  </div>
+                  <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                    <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                        Bridge offline
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-slate-900">
+                        Revisa heartbeat y última conexión del bridge.
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Útil cuando el bridge deja de reportar y necesitas
+                        confirmar si cayó el origen o sólo la red.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => openAuditFilter("bridge")}
+                        className="mt-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Ver incidentes bridge
+                      </button>
+                    </article>
+
+                    <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                        Device offline
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-slate-900">
+                        Revisa `last_seen` y estado del KPCL antes de asumir
+                        caída.
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Sirve para distinguir un plato apagado de uno con gap
+                        largo pero aún recuperable.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => openAuditFilter("devices")}
+                        className="mt-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Ver incidentes device
+                      </button>
+                    </article>
+
+                    <article className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                        Reading gap
+                      </p>
+                      <p className="mt-2 text-sm font-semibold text-slate-900">
+                        Detecta silencios de lectura aunque el device siga
+                        activo.
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Útil para confirmar si el problema es de transmisión,
+                        batería o cadencia.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => openAuditFilter("gaps")}
+                        className="mt-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700"
+                      >
+                        Ver gaps de lectura
+                      </button>
+                    </article>
+                  </div>
+                </section>
+
                 <section className="surface-card freeform-rise order-8 px-4 py-4 sm:px-6 sm:py-5">
                   <div className="flex items-center justify-between">
                     <h2 className="display-title text-xl font-semibold text-slate-900">
@@ -3757,6 +3856,7 @@ export default function AdminPage() {
                         <option value="critical">Críticos</option>
                         <option value="bridge">Bridge</option>
                         <option value="devices">Dispositivos</option>
+                        <option value="gaps">Gaps</option>
                         <option value="outages">Outages</option>
                         <option value="all">Todos</option>
                       </select>
