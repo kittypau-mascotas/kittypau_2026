@@ -51,8 +51,9 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## 7) Documentacion relacionada, pero especializada
 - Finanzas admin: [ADMIN_FINANZAS_CONTAINER_SPEC.md](ADMIN_FINANZAS_CONTAINER_SPEC.md).
-- Dashboard admin: [ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md](ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md).
-- Portal admin: [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md).
+- Portal admin (vivo): [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md).
+- Dashboard admin historico: [ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md](ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md).
+- Validacion historica: [VALIDACION_ADMIN_DASHBOARD.md](VALIDACION_ADMIN_DASHBOARD.md).
 - Bateria y sesiones: [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md).
 
 ## 8) Documento legado consolidado

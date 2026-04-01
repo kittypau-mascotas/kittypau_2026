@@ -1,79 +1,97 @@
-# Portal Admin Kittypau (Plan Profesional)
+﻿# Portal Admin Kittypau (Plan Profesional)
 
-## Objetivo
-Diseñar e implementar un portal administrativo para operación ejecutiva de Kittypau, con visibilidad total de negocio y plataforma:
+## Proposito
+Este es el documento vivo del portal admin. Reune la estructura funcional, los KPI, la seguridad, la arquitectura operativa y la lectura ejecutiva del dashboard.
+
+Si algo contradice este plan, primero se actualiza la fuente de verdad y luego se replica aqui.
+
+## 1) Objetivo
+Diseñar e implementar un portal administrativo para la operacion ejecutiva de Kittypau, con visibilidad total de negocio y plataforma:
 - ingresos, compras y costos
 - salud operativa IoT (bridge + dispositivos)
-- incidentes y auditoría
-- gestión de usuarios y permisos
+- incidentes y auditoria
+- gestion de usuarios y permisos
 
-## Alcance (v1)
-1. Resumen ejecutivo (KPI diarios/mensuales).
+## 2) Alcance v1
+1. Resumen ejecutivo (KPI diarios / mensuales).
 2. Finanzas:
 - ingresos por periodo
-- compras/pedidos
+- compras / pedidos
 - ticket promedio
-- estado de pagos/reembolsos
-3. Operación IoT:
-- bridges online/offline
-- KPCL online/offline
+- estado de pagos / reembolsos
+3. Operacion IoT:
+- bridges online / offline
+- KPCL online / offline
 - incidentes activos y recuperados
-4. Centro de auditoría en vivo:
-- stream de `audit_events` en tiempo real dentro del dashboard admin
-- eventos críticos destacados (offline, outage, cambios de estado)
+4. Centro de auditoria en vivo:
+- stream de `audit_events` en tiempo real
+- eventos criticos destacados
 - filtros por `event_type`, `entity_type`, rango de tiempo
-4. Seguridad y cumplimiento:
-- eventos críticos en `audit_events`
+5. Seguridad y cumplimiento:
 - trazabilidad de acciones admin
-5. Gestión:
+- logs de acceso y cambios de estado
+6. Gestion:
 - usuarios, cuentas, roles y accesos
 
-## Roles y permisos
-- `owner_admin`: acceso total (finanzas + operación + seguridad).
-- `ops_admin`: operación IoT + incidentes + dispositivos.
+## 3) Roles y permisos
+- `owner_admin`: acceso total (finanzas + operacion + seguridad).
+- `ops_admin`: operacion IoT + incidentes + dispositivos.
 - `support_admin`: soporte de usuarios, sin acceso a datos financieros sensibles.
 - `readonly_admin`: lectura de paneles, sin acciones de escritura.
 
-Modelo recomendado:
-- Tabla `admin_roles` (user_id, role, active).
-- RLS y validación server-side por rol.
+Reglas:
+- RLS y validacion server-side por rol.
 - Nunca exponer consultas admin en endpoints de usuario final.
 
-## Arquitectura funcional
-1. Frontend:
-- Nueva ruta: `/admin`
-- Vistas: `overview`, `finanzas`, `operacion`, `incidentes`, `usuarios`.
-2. Backend:
-- Endpoints admin dedicados (`/api/admin/*`), server-only.
-- Agregaciones por vista para evitar consultas pesadas en UI.
-3. Base de datos:
-- Reutilizar `audit_events`, `devices`, `bridge_heartbeats`, `bridge_telemetry`, `readings`, `profiles`.
-- Agregar tablas de negocio financiero (si aún no existen): `orders`, `payments`, `refunds`, `expenses`.
+## 4) Arquitectura funcional
+### Frontend
+- Ruta principal: `/admin`
+- Vistas: `overview`, `finanzas`, `operacion`, `incidentes`, `usuarios`
 
-## KPIs mínimos (v1)
+### Backend
+- Endpoints dedicados `/api/admin/*`
+- Agregaciones por vista para evitar consultas pesadas en UI
+- Auditoria obligatoria en acciones sensibles
+
+### Base de datos
+Reutilizar:
+- `public.audit_events`
+- `public.devices`
+- `public.bridge_heartbeats`
+- `public.bridge_telemetry`
+- `public.readings`
+- `public.profiles`
+
+Agregar / mantener tablas de negocio si aplica:
+- `orders`
+- `payments`
+- `refunds`
+- `expenses`
+
+## 5) KPI minimos (v1)
 ### Ejecutivos
-- Ingresos MTD (month-to-date)
+- Ingresos MTD
 - Pedidos completados
 - ARPU / ticket promedio
 - Tasa de reembolso
 
-### Operación IoT
-- Bridges online/offline
-- KPCL online/offline
-- Tiempo medio de recuperación (MTTR)
-- Incidentes últimos 7 días
+### Operacion IoT
+- Bridges online / offline
+- KPCL online / offline
+- MTTR
+- Incidentes ultimos 7 dias
 
-### Auditoría en vivo
-- Últimos eventos críticos (`audit_events`) en tiempo real
-- Conteo por severidad/tipo en ventana de 24h
-- Último evento de falla general y último evento de recuperación
+### Auditoria en vivo
+- Ultimos eventos criticos en tiempo real
+- Conteo por severidad / tipo en ventana de 24h
+- Ultimo evento de falla y recuperacion
 
-### Seguridad/Auditoría
-- Cambios de estado críticos
-- Fallas generales detectadas/recuperadas
+### Seguridad / auditoria
+- Cambios de estado criticos
+- Fallas generales detectadas / recuperadas
 - Acciones admin por usuario
 
-## Contratos API propuestos
+## 6) Contratos API
 - `GET /api/admin/overview`
 - `GET /api/admin/finance/summary?from=&to=`
 - `GET /api/admin/ops/status`
@@ -81,125 +99,81 @@ Modelo recomendado:
 - `GET /api/admin/audit?event_type=&from=&to=`
 - `GET /api/admin/audit/live?limit=50`
 - `POST /api/admin/incidents/:id/close`
+- `POST /api/admin/health-check`
+- `POST /api/admin/tests/run-all`
 
-Todos deben:
-- exigir sesión autenticada + rol admin
-- registrar auditoría de acceso y acciones
-- incluir `request_id` y errores estandarizados
+Reglas:
+- autenticacion obligatoria + rol admin
+- `request_id` en respuestas
+- errores estandarizados
+- auditoria de acceso y acciones
 
-## Seguridad y hardening
-1. Autorización por rol en cada endpoint.
-2. Separación estricta entre APIs usuario y admin.
-3. Rate limit por endpoint admin sensible.
-4. Auditoría obligatoria de acciones de escritura.
-5. Secretos en Vercel/Supabase, nunca hardcodeados.
+## 7) Seguridad y hardening
+1. Autorizacion por rol en cada endpoint.
+2. Separacion estricta entre APIs de usuario y admin.
+3. Rate limit por endpoint sensible.
+4. Auditoria obligatoria de escrituras.
+5. Secretos solo en Vercel / Supabase.
 
-## Roadmap de implementación
-### Fase 1 (Base)
+## 8) UX / UI
+- Dashboard con header operativo fijo.
+- Alertas criticas arriba.
+- KPI ejecutivos en una sola fila.
+- Continuidad KPCL visible.
+- Finanzas y tablas pesadas debajo.
+- Mobile con cards resumidas y tablas en `md+`.
+- Acciones operativas siempre visibles arriba.
+
+## 9) Incrementos ya aplicados
+- Filtros basicos para `audit_events`.
+- Ventana de tiempo configurable.
+- Deduplicacion en backend por ventana corta.
+- Catalogo de objetos / vistas con stats robustos.
+- `x-admin-cache` y invalidacion por eventos criticos.
+
+## 10) Fases de implementacion
+### Fase 1 - Base
 - Esquema de roles admin.
-- Middleware de autorización admin.
-- Endpoint `GET /api/admin/overview`.
-- Pantalla `/admin` con KPIs principales + KPCL online/offline + panel de `audit_events` en vivo.
+- Middleware de autorizacion.
+- `GET /api/admin/overview`.
+- Pantalla `/admin` con KPI principales y audit stream.
 
-### Fase 2 (Finanzas)
-- Modelo financiero mínimo (`orders/payments/refunds` o integración externa).
-- Panel de ingresos, compras y estados de pago.
+### Fase 2 - Finanzas
+- Modelo minimo de `orders/payments/refunds` o integracion externa.
+- Panel de ingresos, compras y pagos.
 
-### Fase 3 (Operación e incidentes)
-- Panel de bridges/KPCL online-offline.
+### Fase 3 - Operacion e incidentes
+- Panel de bridges / KPCL online-offline.
 - Bandeja de incidentes y cierre manual.
-- Métricas operativas históricas.
+- Metricas historicas.
 
-### Fase 4 (Gobernanza)
+### Fase 4 - Gobernanza
 - Reportes descargables.
-- Alertas automáticas por umbrales.
-- Trazabilidad avanzada de acciones admin.
+- Alertas automatizadas por umbrales.
+- Trazabilidad avanzada.
 
-## Criterios de aceptación
-1. Solo usuarios con rol admin acceden a `/admin`.
-2. Dashboard muestra KPI reales y consistentes con DB.
-3. Incidentes y cambios críticos quedan en `audit_events`.
-4. Respuesta de APIs admin bajo carga normal < 300 ms (consultas agregadas).
-5. Cobertura mínima de pruebas para auth/roles y endpoints críticos.
+## 11) Criterios de aceptacion
+1. Solo admins acceden a `/admin`.
+2. KPI reales y consistentes con DB.
+3. Incidentes y cambios criticos quedan en `audit_events`.
+4. APIs agregadas responden bajo carga normal sin degradar la UI.
+5. Cobertura minima de pruebas para auth, roles y endpoints criticos.
 
-## Estado
-- Documento de diseño: listo.
-- Implementación: en producción parcial.
-  - Portal admin operativo en `/admin`.
-  - KPIs, continuidad, auditoría y costos financieros visibles.
-  - Suite de tests admin integrada en dashboard.
-  - Pendiente externo: rotación de claves y costos reales HiveMQ.
+## 12) Marco AIoT / PetTech
+- **AIoT**: termino principal.
+- **PetTech AIoT**: posicionamiento estrategico.
+- Hardware = entrada.
+- Datos longitudinales = ventaja.
+- IA = diferencial.
+- Suscripcion = recurrencia.
 
-## Incremento aplicado (MVP Ops)
-- Filtros básicos para `audit_events` (críticos/bridge/dispositivos/outages/todos).
-- Ventana de tiempo configurable (15 min, 60 min, 3 h, 24 h).
-- Deduplicación en backend por ventana corta (por defecto 30s) para evitar spam de eventos repetidos.
+## 13) Contexto de expansion
+- Core: `Kittypau`.
+- Verticals en evaluacion: `Kitty Plant`, `Senior Kitty`.
+- La expansion no debe degradar el core.
 
-## Incremento propuesto (Finanzas v1)
-- Agregar container final "Resumen de Finanzas" en `/admin`.
-- Basar datos en:
-  - `public.finance_kit_components`
-  - `public.finance_provider_plans`
-  - `public.finance_monthly_snapshots`
-  - `public.finance_admin_summary`
-- Mostrar:
-  - costo unitario estimado,
-  - costo cloud mensual,
-  - costo mensual total,
-  - estado de planes Supabase/Vercel/HiveMQ (free/pago + activo).
+## 14) Referencias relacionadas
+- [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
+- [GUIA_DECISION.md](GUIA_DECISION.md)
+- [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
 
-## Marco AIoT / PetTech (Alineacion 2026)
-
-### Terminologia oficial recomendada
-- **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
-- **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
-- **Smart IoT**: termino marketing, menos tecnico.
-
-### Definicion recomendada de producto
-**Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
-
-### Categoria estrategica
-**PetTech AIoT** = PetTech + IoT + IA.
-
-Esto posiciona a Kittypau no como "solo hardware", sino como:
-- infraestructura de datos longitudinales de salud animal,
-- analitica preventiva,
-- plataforma escalable con suscripcion.
-
-### Arquitectura actual (ya compatible con AIoT)
-1. Dispositivo IoT (ESP8266/ESP32).
-2. Ingestion por MQTT.
-3. Bridge Node.js.
-4. Persistencia en PostgreSQL/Supabase.
-5. Capa de analitica/IA.
-6. Dashboard web para usuario/admin.
-
-### Estrategia tipo "Fitbit de mascotas"
-- Hardware = punto de entrada.
-- Datos longitudinales = ventaja competitiva.
-- IA = diferencial de valor.
-- Suscripcion = recurrencia (modelo SaaS).
-
-### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
-- Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
-
-### Modelo de negocio recomendado (3 capas)
-1. **Hardware**: ingreso inicial por unidad.
-2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
-3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
-## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
-- **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
-- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
-- **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
-- **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
-
-### Implicancias para App/Web (Kittypau)
-1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
-3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
