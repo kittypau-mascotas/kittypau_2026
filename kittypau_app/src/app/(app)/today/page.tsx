@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import {
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { buildSeries, ChartCard } from "@/lib/charts";
+import { buildSeries } from "@/lib/charts";
 
 type ApiPet = {
   id: string;
@@ -207,6 +207,31 @@ function toRoundedSensorValue(value: number | null | undefined): number | null {
   const numeric = toNullableNumber(value);
   if (numeric === null) return null;
   return Math.round(numeric);
+}
+
+function parseListResponse<T>(payload: unknown): T[] {
+  if (Array.isArray(payload)) {
+    return payload as T[];
+  }
+  if (payload && typeof payload === "object" && "data" in payload) {
+    return (payload as { data?: T[] }).data ?? [];
+  }
+  return [];
+}
+
+function parseCursor(payload: unknown): string | null {
+  if (payload && typeof payload === "object" && "next_cursor" in payload) {
+    return (payload as { next_cursor?: string | null }).next_cursor ?? null;
+  }
+  return null;
+}
+
+function parseProfile(payload: unknown): ApiProfile | null {
+  if (!payload || typeof payload !== "object") return null;
+  if (Array.isArray(payload)) {
+    return (payload[0] as ApiProfile) ?? null;
+  }
+  return payload as ApiProfile;
 }
 
 function getDayNightWindow(now = new Date()) {
@@ -448,7 +473,6 @@ function summarizeAnalyticsSessionsByPeriods(
   };
 }
 
-const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
 export default function TodayPage() {
@@ -554,54 +578,32 @@ export default function TodayPage() {
     };
   }, [router]);
 
-  const parseListResponse = <T,>(payload: unknown): T[] => {
-    if (Array.isArray(payload)) {
-      return payload as T[];
-    }
-    if (payload && typeof payload === "object" && "data" in payload) {
-      return (payload as { data?: T[] }).data ?? [];
-    }
-    return [];
-  };
-
-  const parseCursor = (payload: unknown): string | null => {
-    if (payload && typeof payload === "object" && "next_cursor" in payload) {
-      return (payload as { next_cursor?: string | null }).next_cursor ?? null;
-    }
-    return null;
-  };
-
-  const parseProfile = (payload: unknown): ApiProfile | null => {
-    if (!payload || typeof payload !== "object") return null;
-    if (Array.isArray(payload)) {
-      return (payload[0] as ApiProfile) ?? null;
-    }
-    return payload as ApiProfile;
-  };
-
-  const loadReadings = async (
-    deviceId: string,
-    cursor?: string | null,
-    limit = 50,
-    range?: { from?: string; to?: string },
-  ) => {
-    const params = new URLSearchParams({
-      device_id: deviceId,
-      limit: String(limit),
-    });
-    if (cursor) params.set("cursor", cursor);
-    if (range?.from) params.set("from", range.from);
-    if (range?.to) params.set("to", range.to);
-    const res = await authFetch(`/api/readings?${params.toString()}`);
-    if (!res.ok) {
-      throw new Error("No se pudieron cargar las lecturas.");
-    }
-    const payload = await res.json();
-    return {
-      data: parseListResponse<ApiReading>(payload),
-      nextCursor: parseCursor(payload),
-    };
-  };
+  const loadReadings = useCallback(
+    async (
+      deviceId: string,
+      cursor?: string | null,
+      limit = 50,
+      range?: { from?: string; to?: string },
+    ) => {
+      const params = new URLSearchParams({
+        device_id: deviceId,
+        limit: String(limit),
+      });
+      if (cursor) params.set("cursor", cursor);
+      if (range?.from) params.set("from", range.from);
+      if (range?.to) params.set("to", range.to);
+      const res = await authFetch(`/api/readings?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error("No se pudieron cargar las lecturas.");
+      }
+      const payload = await res.json();
+      return {
+        data: parseListResponse<ApiReading>(payload),
+        nextCursor: parseCursor(payload),
+      };
+    },
+    [],
+  );
 
   useEffect(() => {
     if (isAuthed === false) {
@@ -725,7 +727,7 @@ export default function TodayPage() {
     };
 
     void load();
-  }, [isAuthed]);
+  }, [isAuthed, loadReadings]);
 
   useEffect(() => {
     if (!isAuthed || typeof window === "undefined") return;
@@ -858,7 +860,13 @@ export default function TodayPage() {
         onDeviceChange as EventListener,
       );
     };
-  }, [selectedDeviceId, selectedPetId, state.devices, state.pets]);
+  }, [
+    selectedDeviceId,
+    selectedPetId,
+    state.devices,
+    state.pets,
+    loadReadings,
+  ]);
 
   const loadMoreReadings = async () => {
     const deviceId = selectedDeviceId;
@@ -1038,7 +1046,7 @@ export default function TodayPage() {
     return () => {
       active = false;
     };
-  }, [bowlDevice?.id, selectedDeviceId]);
+  }, [bowlDevice?.id, selectedDeviceId, loadReadings]);
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -1072,7 +1080,7 @@ export default function TodayPage() {
       setDevicePreviousReadings((prev) => ({
         ...prev,
         ...Object.fromEntries(
-          entries.map(([deviceId, _latest, previous]) => [deviceId, previous]),
+          entries.map(([deviceId, , previous]) => [deviceId, previous]),
         ),
       }));
     };
@@ -1080,7 +1088,7 @@ export default function TodayPage() {
     return () => {
       active = false;
     };
-  }, [bowlDevice?.id, waterDevice?.id]);
+  }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
 
   useEffect(() => {
     if (!bowlDevice?.id) return;
@@ -1157,7 +1165,7 @@ export default function TodayPage() {
     return () => {
       active = false;
     };
-  }, [bowlDevice?.id, dayCycleOffsetDays, waterDevice?.id]);
+  }, [bowlDevice?.id, dayCycleOffsetDays, waterDevice?.id, loadReadings]);
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -1194,7 +1202,7 @@ export default function TodayPage() {
     return () => {
       active = false;
     };
-  }, [bowlDevice?.id, waterDevice?.id]);
+  }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
 
   useEffect(() => {
     const petId = primaryPet?.id;
@@ -1404,10 +1412,6 @@ export default function TodayPage() {
             : waterGrossWeightGrams,
         )
       : null;
-  const waterContentWeightText =
-    waterContentWeightGrams !== null
-      ? `${Math.round(waterContentWeightGrams)} g`
-      : "N/D";
   const waterPlateWeightText =
     waterPlateWeightGrams !== null
       ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g`
@@ -1481,7 +1485,7 @@ export default function TodayPage() {
       anchor.setDate(anchor.getDate() - dayCycleOffsetDays);
     }
     return getDayNightWindow(anchor);
-  }, [dayCycleOffsetDays, lastRefreshAt]);
+  }, [dayCycleOffsetDays]);
   const dayNightRangeTitle = useMemo(() => {
     const cycleDate = formatCycleDate(dayNightWindow.startMs);
     return dayCycleOffsetDays === 0 ? "hoy" : cycleDate;
@@ -1535,12 +1539,14 @@ export default function TodayPage() {
       );
     }
   };
-  const bowlChartReadings = bowlDevice?.id
-    ? (deviceChartReadings[bowlDevice.id] ?? [])
-    : [];
-  const waterChartReadings = waterDevice?.id
-    ? (deviceChartReadings[waterDevice.id] ?? [])
-    : [];
+  const bowlChartReadings = useMemo(
+    () => (bowlDevice?.id ? (deviceChartReadings[bowlDevice.id] ?? []) : []),
+    [bowlDevice?.id, deviceChartReadings],
+  );
+  const waterChartReadings = useMemo(
+    () => (waterDevice?.id ? (deviceChartReadings[waterDevice.id] ?? []) : []),
+    [waterDevice?.id, deviceChartReadings],
+  );
 
   const todayWeightSeries = useMemo(
     () =>
@@ -1592,23 +1598,29 @@ export default function TodayPage() {
     return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
   };
 
-  const selectBowlSeriesValue = (reading: ApiReading) => {
-    const gross = toNullableNumber(reading.weight_grams);
-    const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
-    if (gross === null) return null;
-    if (plate === null) return gross;
-    return Math.max(0, gross - plate);
-  };
+  const selectBowlSeriesValue = useCallback(
+    (reading: ApiReading) => {
+      const gross = toNullableNumber(reading.weight_grams);
+      const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
+      if (gross === null) return null;
+      if (plate === null) return gross;
+      return Math.max(0, gross - plate);
+    },
+    [bowlDevice?.plate_weight_grams],
+  );
 
-  const selectWaterSeriesValue = (reading: ApiReading) => {
-    const waterMl = toNullableNumber(reading.water_ml);
-    if (waterMl !== null) return Math.max(0, waterMl);
-    const gross = toNullableNumber(reading.weight_grams);
-    const plate = toNullableNumber(waterDevice?.plate_weight_grams);
-    if (gross === null) return null;
-    if (plate === null) return gross;
-    return Math.max(0, gross - plate);
-  };
+  const selectWaterSeriesValue = useCallback(
+    (reading: ApiReading) => {
+      const waterMl = toNullableNumber(reading.water_ml);
+      if (waterMl !== null) return Math.max(0, waterMl);
+      const gross = toNullableNumber(reading.weight_grams);
+      const plate = toNullableNumber(waterDevice?.plate_weight_grams);
+      if (gross === null) return null;
+      if (plate === null) return gross;
+      return Math.max(0, gross - plate);
+    },
+    [waterDevice?.plate_weight_grams],
+  );
 
   const bowlDayNightPoints = useMemo(
     () =>
@@ -1622,7 +1634,7 @@ export default function TodayPage() {
       bowlChartReadings,
       dayNightWindow.endMs,
       dayNightWindow.startMs,
-      bowlDevice?.plate_weight_grams,
+      selectBowlSeriesValue,
     ],
   );
 
@@ -1638,7 +1650,7 @@ export default function TodayPage() {
       waterChartReadings,
       dayNightWindow.endMs,
       dayNightWindow.startMs,
-      waterDevice?.plate_weight_grams,
+      selectWaterSeriesValue,
     ],
   );
 
@@ -1921,10 +1933,7 @@ export default function TodayPage() {
     [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
   );
 
-  const nowMs = useMemo(
-    () => Date.now(),
-    [deviceHistoryReadings, bowlDevice?.id, waterDevice?.id],
-  );
+  const nowMs = useMemo(() => Date.now(), []);
   const monthStartMs = nowMs - 30 * 24 * 60 * 60 * 1000;
   const bowlHistoryPoints = useMemo(
     () =>

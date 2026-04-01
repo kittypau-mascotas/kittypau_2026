@@ -15,7 +15,7 @@ Fecha de corte: 2026-04-01
 ## 2. Front
 
 ### P0
-- [ ] Corregir la coherencia de `/today` entre `hero`, `navbar`, selector de mascota y cards.
+- [x] Corregir la coherencia de `/today` entre `hero`, `navbar`, selector de mascota y cards.
 - [ ] Asegurar que los estados vacios y loading expliquen si faltan datos o si no hay dispositivo vinculado.
 - [ ] Eliminar fallbacks visuales que oculten el estado real de comida, agua y ambiente.
 - [ ] Mantener estable el contrato de UI con `readings` aunque no exista telemetria de bateria.
@@ -74,7 +74,7 @@ Fecha de corte: 2026-04-01
 
 ### Web P0
 - [ ] Cerrar el flujo principal `login -> mascota -> dispositivo -> datos`.
-- [ ] Verificar que `/today` muestre siempre la mascota y el KPCL correctos.
+- [x] Verificar que `/today` muestre siempre la mascota y el KPCL correctos.
 - [ ] Endurecer el flujo de deploy: type-check, build, smoke tests y rollback.
 
 ### Web P1

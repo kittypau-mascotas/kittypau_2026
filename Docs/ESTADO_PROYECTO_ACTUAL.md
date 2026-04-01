@@ -58,6 +58,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 ### Front
 - Cerrar la coherencia de `/today` entre hero, navbar, selector de mascota y tarjetas.
 - La sincronizacion de mascota y dispositivo en `/today` ya responde a eventos de seleccion para evitar estados cruzados.
+- La vista `/today` ya quedo limpia de warnings de ESLint y paso `type-check` + smoke test local en `http://localhost:3000/today`.
 - Eliminar los ultimos fallbacks visuales que esconden el estado real de comida, agua y ambiente.
 - Mantener el contrato de UI para `readings` estable, sin asumir columnas de bateria que no existen.
 - Consolidar estados vacios, loading y errores para que el usuario entienda siempre si hay datos o no.
