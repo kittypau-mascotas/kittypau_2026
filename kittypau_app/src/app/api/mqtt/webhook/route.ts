@@ -9,6 +9,11 @@ import {
 } from "../../_utils";
 import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
+import {
+  normalizeBatterySource,
+  resolveBatteryState,
+  type BatteryState,
+} from "@/lib/battery/contract";
 
 const DUPLICATE_EXCEPTION_DEVICE_CODE = "KPCL0034";
 
@@ -36,15 +41,6 @@ type WebhookPayload = {
   timestamp?: string;
 };
 
-type BatteryState =
-  | "optimal"
-  | "medium"
-  | "low"
-  | "critical"
-  | "charging"
-  | "external_power"
-  | "unknown";
-
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -70,36 +66,6 @@ function parseBoolean(value: unknown): boolean | null {
     if (["0", "false", "no", "off"].includes(normalized)) return false;
   }
   return null;
-}
-
-function normalizeBatterySource(value: unknown): "battery" | "usb" | "unknown" {
-  if (typeof value !== "string") return "unknown";
-  const source = value.trim().toLowerCase();
-  if (!source) return "unknown";
-  if (
-    source.includes("usb") ||
-    source.includes("ac") ||
-    source.includes("external") ||
-    source.includes("plug")
-  ) {
-    return "usb";
-  }
-  if (source.includes("bat")) return "battery";
-  return "unknown";
-}
-
-function toBatteryState(
-  level: number | null,
-  source: "battery" | "usb" | "unknown",
-  charging: boolean,
-): BatteryState {
-  if (charging) return "charging";
-  if (source === "usb") return "external_power";
-  if (level === null) return "unknown";
-  if (level <= 15) return "critical";
-  if (level <= 35) return "low";
-  if (level <= 70) return "medium";
-  return "optimal";
 }
 
 function estimateBatteryLevelFromVoltage(
@@ -194,7 +160,7 @@ export async function POST(req: NextRequest) {
     batteryLevel ?? estimateBatteryLevelFromVoltage(batteryVoltage);
   const batteryIsEstimated =
     batteryLevel === null && effectiveBatteryLevel !== null;
-  const batteryState = toBatteryState(
+  const batteryState: BatteryState = resolveBatteryState(
     effectiveBatteryLevel,
     batterySource,
     charging,

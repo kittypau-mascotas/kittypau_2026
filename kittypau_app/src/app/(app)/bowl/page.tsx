@@ -9,6 +9,7 @@ import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
+import { formatBatterySourceLabel } from "@/lib/battery/contract";
 
 type ApiDevice = {
   id: string;
@@ -166,12 +167,6 @@ const batteryLabel = (battery: number | null) => {
   if (battery <= 35) return "Baja";
   if (battery <= 70) return "Media";
   return "Óptima";
-};
-
-const formatBatterySource = (source?: string | null) => {
-  if (source === "usb") return "USB";
-  if (source === "battery") return "Batería";
-  return "Sin fuente";
 };
 
 const resolveDevicePowerState = (
@@ -822,7 +817,7 @@ export default function BowlPage() {
       : "Sin datos";
   const batteryExtra = [
     batteryEstimatedValue ? "estimada" : null,
-    formatBatterySource(batterySourceValue),
+    formatBatterySourceLabel(batterySourceValue),
     typeof batteryVoltageValue === "number"
       ? `${batteryVoltageValue.toFixed(2)}V`
       : null,

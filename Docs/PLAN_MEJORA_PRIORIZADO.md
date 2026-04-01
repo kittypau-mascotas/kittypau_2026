@@ -10,6 +10,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 - `/today` ya sincroniza mascota y dispositivo y paso `type-check` + smoke test local.
 - `kittypau_app` compila en produccion otra vez.
 - La capa `analytics` dejo de ser bloqueo de build: ahora degrada a vacio cuando no existe base analitica.
+- El contrato de energia ya esta compartido entre webhook y UI para no duplicar semanticas de `battery_*`.
 - `KPCL0034` y `KPCL0036` quedaron registrados para analisis de bateria.
 - La documentacion canonica ya distingue entre vivo, seguimiento e historico.
 
