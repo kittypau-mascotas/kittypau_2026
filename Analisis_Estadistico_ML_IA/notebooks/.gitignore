@@ -1,5 +1,0 @@
-.ipynb_checkpoints/
-.env.notebook.local
-.env
-*.pyc
-__pycache__/
