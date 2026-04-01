@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import mqtt from "mqtt";
+import mqtt, { type MqttClient } from "mqtt";
 
 export type LiveReading = {
   deviceId: string;
@@ -37,20 +37,25 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
   const [reading, setReading] = useState<LiveReading | null>(null);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const clientRef = useRef<mqtt.MqttClient | null>(null);
+  const clientRef = useRef<MqttClient | null>(null);
+  const configError =
+    process.env.NEXT_PUBLIC_MQTT_BROKER?.trim() &&
+    process.env.NEXT_PUBLIC_MQTT_USER_READONLY?.trim() &&
+    process.env.NEXT_PUBLIC_MQTT_PASS_READONLY?.trim()
+      ? null
+      : "MQTT read-only credentials not configured.";
 
   useEffect(() => {
     if (!deviceId) return;
 
-    const broker = process.env.NEXT_PUBLIC_MQTT_BROKER?.trim();
-    const port = (process.env.NEXT_PUBLIC_MQTT_PORT_WS ?? "8884").trim();
-    const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY?.trim();
-    const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY?.trim();
-
-    if (!broker || !username || !password) {
-      setError("MQTT read-only credentials not configured.");
+    if (configError) {
       return;
     }
+
+    const broker = process.env.NEXT_PUBLIC_MQTT_BROKER!.trim();
+    const port = (process.env.NEXT_PUBLIC_MQTT_PORT_WS ?? "8884").trim();
+    const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY!.trim();
+    const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY!.trim();
 
     const client = mqtt.connect(`wss://${broker}:${port}/mqtt`, {
       username,
@@ -68,25 +73,25 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
       client.subscribe(`${deviceId}/SENSORS`, { qos: 0 });
     });
 
-    client.on("message", (_topic, message) => {
+    client.on("message", (_topic: string, message: { toString(): string }) => {
       try {
         const data = JSON.parse(message.toString()) as Record<string, unknown>;
         setReading({
           deviceId,
-          weight:       toNum(data.weight),
-          temperature:  toNum(data.temp),
-          humidity:     toNum(data.hum),
-          lightLux:     toNum((data.light as Record<string, unknown>)?.lux),
-          lightPercent: toNum((data.light as Record<string, unknown>)?.['%']),
+          weight: toNum(data.weight),
+          temperature: toNum(data.temp),
+          humidity: toNum(data.hum),
+          lightLux: toNum((data.light as Record<string, unknown>)?.lux),
+          lightPercent: toNum((data.light as Record<string, unknown>)?.["%"]),
           batteryLevel: toNum(data.battery),
-          receivedAt:   new Date().toISOString(),
+          receivedAt: new Date().toISOString(),
         });
       } catch {
         // mensaje malformado — ignorar
       }
     });
 
-    client.on("error", (err) => {
+    client.on("error", (err: Error) => {
       setError(err.message);
     });
 
@@ -103,9 +108,13 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
       clientRef.current = null;
       setConnected(false);
     };
-  }, [deviceId]);
+  }, [deviceId, configError]);
 
-  return { reading, connected, error };
+  return {
+    reading,
+    connected: connected && !configError,
+    error: configError ?? error,
+  };
 }
 
 function toNum(value: unknown): number | null {
