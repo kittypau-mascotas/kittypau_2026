@@ -42,7 +42,7 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - Pruebas E2E: [PRUEBAS_E2E.md](PRUEBAS_E2E.md).
 - Auditoria de coherencia: [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md).
 - Guia de decision operativa: [GUIA_DECISION.md](GUIA_DECISION.md).
-- Ejecucion de esa guia: [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md).
+- Registro historico de ejecucion: [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md).
 
 ## 6) Estrategia de negocio
 - Analisis economico: [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md).
@@ -61,4 +61,3 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## 9) Regla de coherencia
 - Si algo entra en conflicto con la fuente de verdad o con este plan maestro, primero actualiza la fuente y luego replica el cambio en los docs dependientes.
-

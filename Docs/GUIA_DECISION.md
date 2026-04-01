@@ -99,3 +99,14 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 - No se aprueba la estrategia de multiples cuentas de Vercel por base de datos.
 - Se mantiene una operacion controlada por proyecto/entorno con trazabilidad de cambios.
 - Cualquier experimento (ej. Kitty Plant) no puede degradar estabilidad de Kittypau core.
+
+## Validacion ejecutada
+- Base de validacion: [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md)
+- `npm run type-check` -> OK
+- `npm run build` -> OK
+- `vercel ls` -> OK
+- Produccion activa -> Ready
+- Riesgos abiertos:
+  - migrar `middleware` a `proxy` cuando corresponda,
+  - mantener control de calidad en `/today` para cuentas tester,
+  - homologar migraciones de bateria en todos los entornos.
