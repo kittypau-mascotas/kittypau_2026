@@ -1337,6 +1337,8 @@ export default function TodayPage() {
     ] as StatCard[];
   }, [latestReading]);
 
+  const hasAnalyticsHistory = analyticsHistorySessions.length > 0;
+
   const toneStyles: Record<string, string> = {
     ok: "border-emerald-200/60 bg-emerald-50/60 text-emerald-800",
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
@@ -2789,6 +2791,27 @@ export default function TodayPage() {
               </div>
             ))}
           </div>
+
+          {!hasAnalyticsHistory ? (
+            <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-800">
+              <p className="font-semibold">
+                La historia analítica todavía está en construcción
+              </p>
+              <p className="mt-1 text-sky-700">
+                La vista en vivo ya funciona, pero todavía no hay sesiones
+                históricas acumuladas para este perfil. Cuando el plato siga
+                publicando lecturas, Story empezará a mostrar más contexto.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-3 text-xs">
+                <Link href="/story" className="underline">
+                  Abrir diario
+                </Link>
+                <Link href="/pet" className="underline">
+                  Revisar perfil
+                </Link>
+              </div>
+            </div>
+          ) : null}
 
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">

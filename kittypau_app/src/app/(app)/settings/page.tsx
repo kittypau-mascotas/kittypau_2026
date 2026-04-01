@@ -244,6 +244,41 @@ export default function SettingsPage() {
             </p>
           </section>
 
+          <section className="surface-card freeform-rise px-6 py-5">
+            <h2 className="text-lg font-semibold text-slate-900">
+              Cómo se usan estos datos
+            </h2>
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Perfil
+                </p>
+                <p className="mt-2">
+                  Tu nombre visible y el del dueño ayudan a personalizar la
+                  experiencia y el soporte.
+                </p>
+              </div>
+              <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Notificaciones
+                </p>
+                <p className="mt-2">
+                  El canal preferido define cómo te avisamos si hay actividad o
+                  incidencias.
+                </p>
+              </div>
+              <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Contexto
+                </p>
+                <p className="mt-2">
+                  Ciudad y país ayudan a ordenar soporte, horarios y futuras
+                  sincronizaciones.
+                </p>
+              </div>
+            </div>
+          </section>
+
           <section className="surface-card freeform-rise px-6 py-6">
             <h2 className="text-lg font-semibold text-slate-900">
               Perfil principal
@@ -358,7 +393,7 @@ export default function SettingsPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-slate-500">
                 {saveMessage ??
-                  "Guarda tus cambios para mantener todo actualizado."}
+                  "Guarda tus cambios para mantener la experiencia alineada con tus alertas y vistas."}
               </div>
               <button
                 type="button"
