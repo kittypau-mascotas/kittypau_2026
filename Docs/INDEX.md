@@ -1,5 +1,8 @@
 ﻿# Indice de Documentacion (Kittypau)
 
+> Entrada rapida:
+> - [README.md](README.md) - puerta de entrada para humanos y agentes
+
 > Fuentes maestras:
 > - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md) - mapa canonico de activos, legacy, tablas y flujos
 > - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia
@@ -55,6 +58,8 @@
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md) - puntero historico consolidado en arquitectura y plan maestro
 - [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md) - puntero historico consolidado en el documento maestro
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) - puntero historico consolidado en el documento maestro
+- [Contexto_Mercado_KittyPaw/README.md](Contexto_Mercado_KittyPaw/README.md) - contexto de mercado y posicionamiento
+- [PMO/00_PMO_INDEX.md](PMO/00_PMO_INDEX.md) - indice PMO y gestion de proyecto
 - [Postulaciones Fondos/2026/README.md](Postulaciones%20Fondos/2026/README.md) - indice de la carpeta de postulaciones 2026
 - [Postulaciones Fondos/2026/documento_2026/README.md](Postulaciones%20Fondos/2026/documento_2026/README.md) - indice del paquete maestro 2026
 - [Postulaciones Fondos/2026/semilla_inicia/README.md](Postulaciones%20Fondos/2026/semilla_inicia/README.md) - indice propio del paquete Semilla Inicia 2026
