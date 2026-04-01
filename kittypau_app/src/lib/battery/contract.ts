@@ -9,6 +9,28 @@ export type BatteryState =
   | "external_power"
   | "unknown";
 
+export function normalizeBatteryState(value: unknown): BatteryState | null {
+  if (typeof value !== "string") return null;
+  const state = value.trim().toLowerCase();
+  if (!state) return null;
+  if (
+    state === "optimal" ||
+    state === "medium" ||
+    state === "low" ||
+    state === "critical" ||
+    state === "charging" ||
+    state === "external_power" ||
+    state === "external-power" ||
+    state === "external power" ||
+    state === "unknown"
+  ) {
+    return state.replace(/[-\s]/g, "_") as BatteryState;
+  }
+  if (state === "full" || state === "charged") return "optimal";
+  if (state === "plugged" || state === "plugged_in") return "external_power";
+  return null;
+}
+
 export function normalizeBatterySource(value: unknown): BatterySource {
   if (typeof value !== "string") return "unknown";
   const source = value.trim().toLowerCase();

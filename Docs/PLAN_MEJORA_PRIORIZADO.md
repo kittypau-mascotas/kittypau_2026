@@ -46,6 +46,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
    - `device_operation_records`
    - `device_power_sessions`
    - `device_battery_cycles`
+6. Aceptar `battery_state` y `battery_source` explicitos del firmware, además de las variantes legacy, para no depender siempre de la inferencia por nivel o voltaje.
 
 ### P1 - Firmware
 

@@ -11,6 +11,7 @@ import { logAudit } from "../../_audit";
 import { checkRateLimit, getRateKeyFromRequest } from "../../_rate-limit";
 import {
   normalizeBatterySource,
+  normalizeBatteryState,
   resolveBatteryState,
   type BatteryState,
 } from "@/lib/battery/contract";
@@ -38,8 +39,11 @@ type WebhookPayload = {
   battery_level?: number;
   batteryVoltage?: number;
   battery_voltage?: number;
+  batteryState?: string;
+  battery_state?: string;
   powerSource?: string;
   power_source?: string;
+  source?: string;
   isCharging?: boolean;
   is_charging?: boolean;
   timestamp?: string;
@@ -155,20 +159,21 @@ export async function POST(req: NextRequest) {
   const batteryVoltage = parseNumber(
     payload.batteryVoltage ?? payload.battery_voltage,
   );
+  const incomingBatteryState = normalizeBatteryState(
+    payload.batteryState ?? payload.battery_state,
+  );
   const charging =
     parseBoolean(payload.isCharging ?? payload.is_charging) ?? false;
   const batterySource = normalizeBatterySource(
-    payload.powerSource ?? payload.power_source,
+    payload.powerSource ?? payload.power_source ?? payload.source,
   );
   const effectiveBatteryLevel =
     batteryLevel ?? estimateBatteryLevelFromVoltage(batteryVoltage);
   const batteryIsEstimated =
     batteryLevel === null && effectiveBatteryLevel !== null;
-  const batteryState: BatteryState = resolveBatteryState(
-    effectiveBatteryLevel,
-    batterySource,
-    charging,
-  );
+  const batteryState: BatteryState =
+    incomingBatteryState ??
+    resolveBatteryState(effectiveBatteryLevel, batterySource, charging);
 
   const rangeError =
     validateRange(temperature, "temperature", -10, 60) ??
