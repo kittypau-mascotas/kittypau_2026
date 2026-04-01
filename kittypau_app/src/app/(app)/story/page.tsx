@@ -418,6 +418,34 @@ export default function StoryPage() {
         </div>
       )}
 
+      {!state.analyticsAvailable ? (
+        <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            Acciones rápidas
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold">
+            <Link
+              href="/today"
+              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+            >
+              Ver hoy
+            </Link>
+            <Link
+              href="/admin"
+              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+            >
+              Ver admin
+            </Link>
+            <Link
+              href="/settings"
+              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700"
+            >
+              Revisar ajustes
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       {state.isLoading ? (
         <div className="surface-card freeform-rise px-6 py-6">
           <div className="space-y-3">
@@ -431,12 +459,20 @@ export default function StoryPage() {
         <EmptyState
           title="Aún no hay dispositivos vinculados."
           actions={
-            <Link
-              href="/registro"
-              className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-            >
-              Ir a registro
-            </Link>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/registro"
+                className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Ir a registro
+              </Link>
+              <Link
+                href="/today"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+              >
+                Ver hoy
+              </Link>
+            </div>
           }
         >
           Completa el registro para conectar un plato y comenzar tu diario.
@@ -587,6 +623,29 @@ export default function StoryPage() {
                 {state.analyticsAvailable
                   ? "Cuando el plato detecte actividad, verás la historia aquí."
                   : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
+                actions=
+                {
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href="/today"
+                      className="rounded-[var(--radius)] bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+                    >
+                      Ver hoy
+                    </Link>
+                    <Link
+                      href="/admin"
+                      className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                    >
+                      Abrir admin
+                    </Link>
+                    <Link
+                      href="/settings"
+                      className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                    >
+                      Revisar plan
+                    </Link>
+                  </div>
+                }
               </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (
