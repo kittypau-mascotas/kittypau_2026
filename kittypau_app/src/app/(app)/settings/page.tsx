@@ -9,6 +9,7 @@ import {
 } from "@/lib/auth/token";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
+import OperationalActionsCard from "@/app/_components/operational-actions-card";
 
 type ApiProfile = {
   id: string;
@@ -278,6 +279,15 @@ export default function SettingsPage() {
               </div>
             </div>
           </section>
+
+          <OperationalActionsCard
+            description="Si faltan datos de perfil o quieres revisar el estado operativo, sigue por estas vistas."
+            actions={[
+              { href: "/pet", label: "Editar perfil" },
+              { href: "/today", label: "Ver hoy" },
+              { href: "/admin", label: "Ver admin" },
+            ]}
+          />
 
           <section className="surface-card freeform-rise px-6 py-6">
             <h2 className="text-lg font-semibold text-slate-900">

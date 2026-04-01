@@ -35,6 +35,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 6. Mantener `story` como vista explicativa con salidas directas a `today`, `admin` y `settings` cuando la historia sea insuficiente o este limitada.
 7. Mantener `bowl` como vista operativa con acciones rapidas a `today`, `story` y `admin` cuando falten datos, bateria o diagnosticos claros.
 8. Mantener `pet` como vista de identidad y contexto con salidas operativas a `today`, `bowl`, `story`, `registro` y `admin` cuando falten datos o historia.
+9. Mantener `settings` como panel de control con acceso rapido a `pet`, `today` y `admin` cuando el perfil este incompleto o el usuario quiera volver al flujo operativo.
 
 ### P1 - Observabilidad y datos
 
