@@ -1,7 +1,9 @@
-# Plan de Implementación (Solo Documentación)
+﻿# Plan de Implementacion (Solo Documentacion)
 
 ## Objetivo
-Definir las tareas de implementación para cerrar el MVP sin tocar código.
+Definir las tareas de implementacion para cerrar el MVP sin tocar codigo estrategico.
+
+Este documento complementa a [PLAN_MAESTRO.md](PLAN_MAESTRO.md) y [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md).
 
 ---
 
@@ -17,7 +19,7 @@ Tareas:
 ---
 
 ## 2) Design System Base
-Documento fuente: `Docs/estilos y diseños.md`
+Documento fuente: `Docs/estilos y diseÃ±os.md`
 
 Tareas:
 - Implementar `tokens.css`.
@@ -42,7 +44,7 @@ Tareas:
 Documento fuente: `Docs/PRUEBAS_E2E.md`
 
 Tareas:
-- Suscripción a `readings` por `device_uuid`.
+- Suscripcion a `readings` por `device_uuid`.
 - Actualizar UI sin refresh.
 - Fallback a polling.
 
@@ -54,7 +56,7 @@ Documento fuente: `Docs/RASPBERRY_BRIDGE.md`
 Tareas:
 - Crear servicio systemd.
 - Auto-restart y logs.
-- Validar reconexión MQTT.
+- Validar reconexion MQTT.
 
 ---
 
@@ -70,80 +72,57 @@ Tareas:
 
 ## 7) Playbook de deploy (backend + rollback)
 Tareas:
-- Confirmar variables en Vercel (ver Docs/CHECKLIST_DEPLOY.md).
-- Deploy en Vercel desde kittypau_app.
-- Validar endpoints mínimos.
+- Confirmar variables en Vercel.
+- Deploy en Vercel desde `kittypau_app`.
+- Validar endpoints minimos.
 - Si falla, promover el deployment anterior en Vercel.
 
+---
+
+## 8) Proximos avances (plan priorizado)
+### P0 - Estabilidad y produccion real
+1. Storage policies definitivas para `kittypau-photos`.
+2. Refresh token en frontend.
+3. Bridge 24/7 (`systemd` + watchdog + logging).
+4. Componente Alert unificado.
+
+### P1 - Experiencia de usuario
+1. UI kit base (`Button/Input/Card/Alert`).
+2. Empty states consistentes.
+3. Resumen del dia personalizado.
+
+### P2 - Backend / Operaciones
+1. Auditoria completa en `audit_events`.
+2. Metricas webhook + tracking de errores.
+3. Backpressure: cola / reintentos.
 
 ---
 
-## Plan de trabajo para mañana (acordado)
-1. Front: /bowl y /settings (polish visual + empty/error states).
-2. Front: /story cards (densidad, variaciones, filtro por día) y CTA de exploración.
-3. Front: onboarding final (copys, micro-UX, validación y guía de siguiente paso).
-4. Docs: actualizar Docs/VISTAS_APP.md y Docs/ESTADO_AVANCE.md con avances.
-5. Verificación: smoke test UI + endpoints críticos.
-
+## 9) Plan mejora DB actual (Supabase)
+- Ver [PLAN_MEJORA_DB_ACTUAL.md](PLAN_MEJORA_DB_ACTUAL.md) para fases, SQL y checklist.
 
 ---
 
-## Cierre del dia (2026-02-09)
-- SMTP y reset password configurados.
-- RPC onboarding y schema cache revisados.
-- Bridge env example documentado.
-- Docs actualizados y enviados a git.
-
-
-## Idea futura: perfiles invitados (solo lectura)
-- Un usuario puede asociar multiples cuentas (propietario/invitado).
-- Perfil Invitado: acceso solo lectura a mascotas y platos asociados a la cuenta.
-- Sin permisos de edicion ni vinculacion de dispositivos.
-- Requiere RLS adicional y vistas/roles dedicados.
-
+## 10) Tareas pendientes: Operacion y Confiabilidad IoT
+1. Observabilidad: health-checks, estado vivo y metricas operativas.
+2. Monitoreo de disponibilidad: deteccion de offline por timeout para bridge y platos/sensores.
+3. Gestion de incidentes: registrar y cerrar incidentes de outage/recovery.
+4. Auditoria de eventos: normalizar `audit_events` para cambios de estado.
+5. Hardening backend: validar estados, IDs y chequeos en segundo plano.
+6. Operacion DevOps/Platform: alinear Vercel + Supabase + bridge.
 
 ---
 
-## Proximos avances (plan priorizado)
-### P0 — Estabilidad y producción real
-1. Storage policies definitivas para kittypau-photos (select/insert/delete para uthenticated).
-2. Refresh token en frontend (rotación y reintento silencioso). (Implementado)
-3. Bridge 24/7 (systemd + watchdog + logging).
-4. Componente Alert unificado (errores/estados en UI).
-
-### P1 — Experiencia de usuario
-1. UI kit base (Button/Input/Card/Alert).
-2. Empty states consistentes (copy/tonos).
-3. Resumen del día personalizado (dueño/mascota).
-
-### P2 — Backend/Operaciones
-1. Auditoría completa en udit_events.
-2. Métricas webhook + tracking de errores.
-3. Backpressure: cola/reintentos.
-
-
----
-
-## Plan mejora DB actual (Supabase)
-- Ver Docs/PLAN_MEJORA_DB_ACTUAL.md para fases, SQL y checklist.
-
----
-
-## Tareas pendientes: Operacion y Confiabilidad IoT
-1. Observabilidad: consolidar health-checks, estado vivo (`bridge_status_live`) y metricas operativas por bridge/dispositivo.
-2. Monitoreo de disponibilidad: deteccion de `offline` por timeout para bridge (KPBR) y platos/sensores (KPCL).
-3. Gestion de incidentes: registrar y cerrar incidentes (`general_device_outage_detected` / `general_device_outage_recovered`).
-4. Auditoria de eventos: normalizar `audit_events` para cambios de estado (`bridge_offline_detected`, `device_offline_detected`).
-5. Hardening backend: reforzar validaciones de estado, consistencia de IDs y ejecucion segura de chequeos en segundo plano.
-6. Operacion DevOps/Platform: alinear Vercel + Supabase + bridge (variables, despliegue, verificacion y runbook).
-
----
-
-## Tareas pendientes: Portal Admin (negocio + operacion)
-Referencia: `Docs/ADMIN_PORTAL_PLAN.md`
-1. Crear modelo de roles admin (`owner_admin`, `ops_admin`, `support_admin`, `readonly_admin`).
+## 11) Tareas pendientes: Portal Admin
+Referencia: [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
+1. Crear modelo de roles admin.
 2. Implementar autorizacion server-side para `/api/admin/*`.
-3. Crear vista `/admin` con vision total Kittypau (ingresos, compras, ticket, estado operativo global).
-4. Implementar panel de operacion IoT (bridges + KPCL online/offline con conteos visibles).
-5. Agregar cuadro de `audit_events` en linea dentro del dashboard admin (eventos criticos y filtros basicos).
-6. Implementar auditoria obligatoria de acciones admin en `audit_events`.
+3. Crear vista `/admin` con vision total.
+4. Implementar panel IoT operativo.
+5. Agregar `audit_events` en linea.
+6. Implementar auditoria obligatoria de acciones admin.
+
+---
+
+## 12) Nota de compatibilidad
+Este documento evita repetir estrategia, economia y contexto de expansion: esas capas viven en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md) y [PLAN_MAESTRO.md](PLAN_MAESTRO.md).
