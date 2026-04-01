@@ -770,7 +770,7 @@ export default function PetPage() {
 
             {profileChecklist.length || !latestReading ? (
               <OperationalActionsCard
-                description="Si faltan datos o historia, salta a la vista operativa."
+                description="Si faltan datos o contexto, sigue por la vista operativa."
                 actions={[
                   { href: "/today", label: "Ver hoy" },
                   { href: "/bowl", label: "Ver plato" },

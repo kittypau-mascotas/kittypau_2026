@@ -1112,7 +1112,7 @@ export default function BowlPage() {
 
             {showOperationalFallback ? (
               <OperationalActionsCard
-                description="Si faltan datos o batería, salta directo a la vista operativa."
+                description="Si faltan datos o energía, sigue por la vista operativa."
                 actions={[
                   { href: "/today", label: "Ver hoy" },
                   { href: "/story", label: "Abrir diario" },

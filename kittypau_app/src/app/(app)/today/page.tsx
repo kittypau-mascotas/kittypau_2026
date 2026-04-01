@@ -2795,7 +2795,7 @@ export default function TodayPage() {
 
           <section className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
             <OperationalActionsCard
-              description="Si faltan datos o ves gaps, entra directo a la vista operativa."
+              description="Si faltan datos o aparecen gaps, sigue por la vista operativa."
               actions={[
                 { href: "/story", label: "Abrir diario" },
                 { href: "/admin", label: "Ver admin" },

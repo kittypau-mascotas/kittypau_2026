@@ -421,7 +421,7 @@ export default function StoryPage() {
 
       {!state.analyticsAvailable ? (
         <OperationalActionsCard
-          description="Si la historia todavía no está disponible, salta al panel operativo para seguir avanzando."
+          description="Si la historia aún no está disponible, sigue por el panel operativo."
           actions={[
             { href: "/today", label: "Ver hoy" },
             { href: "/admin", label: "Ver admin" },
