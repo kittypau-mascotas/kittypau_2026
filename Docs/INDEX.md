@@ -55,6 +55,7 @@
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md) - puntero historico consolidado en arquitectura y plan maestro
 - [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md) - puntero historico consolidado en el documento maestro
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) - puntero historico consolidado en el documento maestro
+- [Postulaciones Fondos/2026/semilla_inicia/README.md](Postulaciones%20Fondos/2026/semilla_inicia/README.md) - indice propio del paquete Semilla Inicia 2026
 
 ## UI / UX
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
