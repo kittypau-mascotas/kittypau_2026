@@ -679,11 +679,13 @@ export default function TodayPage() {
 
         let readings: ApiReading[] = [];
         let readingsCursor: string | null = null;
+        const resolvedPet =
+          pets.find((pet) => pet.id === primaryDevice?.pet_id) ?? primaryPet;
         const initialDeviceId = primaryDevice?.id ?? null;
-        setSelectedPetId(primaryPet?.id ?? null);
+        setSelectedPetId(resolvedPet?.id ?? null);
         setSelectedDeviceId(initialDeviceId);
-        if (primaryPet?.id) {
-          syncSelectedPet(primaryPet.id, primaryPet.name ?? "");
+        if (resolvedPet?.id) {
+          syncSelectedPet(resolvedPet.id, resolvedPet.name ?? "");
         }
         if (initialDeviceId) {
           syncSelectedDevice(initialDeviceId);
@@ -737,11 +739,88 @@ export default function TodayPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const onPetChange = async (event: Event) => {
+      const custom = event as CustomEvent<{ petId?: string; petName?: string }>;
+      const nextPetId = custom.detail?.petId ?? null;
+      if (!nextPetId || nextPetId === selectedPetId) return;
+
+      const nextPet =
+        state.pets.find((pet) => pet.id === nextPetId) ??
+        (custom.detail?.petName
+          ? { id: nextPetId, name: custom.detail.petName }
+          : null);
+      if (!nextPet) return;
+
+      const storedDeviceId =
+        window.localStorage.getItem("kittypau_device_id") ?? null;
+      const petSuffix = parsePetNumberSuffix(nextPet.name);
+      const expectedFoodDeviceId = petSuffix
+        ? kpclLabelFromNumber(petSuffix)
+        : null;
+      const devicesByPet = state.devices.filter(
+        (device) => device.pet_id === nextPet.id,
+      );
+      const nextDevice =
+        devicesByPet.find((device) => device.id === storedDeviceId) ??
+        devicesByPet.find(
+          (device) =>
+            (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+        ) ??
+        devicesByPet[0] ??
+        state.devices.find((device) => device.id === storedDeviceId) ??
+        state.devices.find(
+          (device) =>
+            (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+        ) ??
+        null;
+
+      setSelectedPetId(nextPet.id);
+      syncSelectedPet(nextPet.id, nextPet.name ?? "");
+      setSelectedDeviceId(nextDevice?.id ?? null);
+      syncSelectedDevice(nextDevice?.id ?? null);
+
+      if (!nextDevice?.id) {
+        setState((prev) => ({
+          ...prev,
+          readings: [],
+          readingsCursor: null,
+        }));
+        return;
+      }
+
+      try {
+        const result = await loadReadings(nextDevice.id);
+        setState((prev) => ({
+          ...prev,
+          readings: result.data,
+          readingsCursor: result.nextCursor,
+        }));
+        setLastRefreshAt(new Date().toISOString());
+        setRefreshError(null);
+      } catch (err) {
+        setState((prev) => ({
+          ...prev,
+          error:
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar las lecturas.",
+        }));
+      }
+    };
     const onDeviceChange = async (event: Event) => {
       const custom = event as CustomEvent<{ deviceId?: string }>;
       const nextId = custom.detail?.deviceId ?? null;
       if (!nextId || nextId === selectedDeviceId) return;
+      const nextDevice = state.devices.find((device) => device.id === nextId);
+      const nextPet = nextDevice?.pet_id
+        ? (state.pets.find((pet) => pet.id === nextDevice.pet_id) ?? null)
+        : null;
+      if (nextPet?.id && nextPet.id !== selectedPetId) {
+        setSelectedPetId(nextPet.id);
+        syncSelectedPet(nextPet.id, nextPet.name ?? "");
+      }
       setSelectedDeviceId(nextId);
+      syncSelectedDevice(nextId);
       try {
         const result = await loadReadings(nextId);
         setState((prev) => ({
@@ -762,16 +841,24 @@ export default function TodayPage() {
       }
     };
     window.addEventListener(
+      "kittypau-pet-change",
+      onPetChange as EventListener,
+    );
+    window.addEventListener(
       "kittypau-device-change",
       onDeviceChange as EventListener,
     );
     return () => {
       window.removeEventListener(
+        "kittypau-pet-change",
+        onPetChange as EventListener,
+      );
+      window.removeEventListener(
         "kittypau-device-change",
         onDeviceChange as EventListener,
       );
     };
-  }, [selectedDeviceId]);
+  }, [selectedDeviceId, selectedPetId, state.devices, state.pets]);
 
   const loadMoreReadings = async () => {
     const deviceId = selectedDeviceId;
