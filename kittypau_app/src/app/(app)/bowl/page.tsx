@@ -62,8 +62,8 @@ const CHART_RANGES: {
   windowMs: number;
   queryLimit: number;
   maxPages: number;
-  bucketMs: number;    // 0 = raw; >0 = promedio por intervalo (server-side para 1d/1w)
-  bucketS: number;     // bucket_s para /api/readings/bucketed (0 = no usar endpoint bucketed)
+  bucketMs: number; // 0 = raw; >0 = promedio por intervalo (server-side para 1d/1w)
+  bucketS: number; // bucket_s para /api/readings/bucketed (0 = no usar endpoint bucketed)
   maxPoints: number;
   fromLabel: string;
 }[] = [
@@ -219,13 +219,19 @@ export default function BowlPage() {
   const [showConfig, setShowConfig] = useState(false);
   const [configPets, setConfigPets] = useState<ApiPet[]>([]);
   const [configPetId, setConfigPetId] = useState("");
-  const [configDeviceType, setConfigDeviceType] = useState<"food_bowl" | "water_bowl">("food_bowl");
+  const [configDeviceType, setConfigDeviceType] = useState<
+    "food_bowl" | "water_bowl"
+  >("food_bowl");
   const [isSavingConfig, setIsSavingConfig] = useState(false);
-  const [configSaveStatus, setConfigSaveStatus] = useState<"ok" | "error" | null>(null);
+  const [configSaveStatus, setConfigSaveStatus] = useState<
+    "ok" | "error" | null
+  >(null);
   const [wifiSsid, setWifiSsid] = useState("");
   const [wifiPass, setWifiPass] = useState("");
   const [isAddingWifi, setIsAddingWifi] = useState(false);
-  const [wifiAddStatus, setWifiAddStatus] = useState<"ok" | "error" | null>(null);
+  const [wifiAddStatus, setWifiAddStatus] = useState<"ok" | "error" | null>(
+    null,
+  );
   const [knownWifiSsids, setKnownWifiSsids] = useState<string[]>([]);
   const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
 
@@ -237,28 +243,6 @@ export default function BowlPage() {
     if (!res.ok) throw new Error("No se pudieron cargar los dispositivos.");
     const payload = await res.json();
     return parseListResponse<ApiDevice>(payload);
-  };
-
-  const loadReadings = async (
-    deviceId: string,
-    token: string,
-    limit: number,
-    windowMs?: number,
-  ) => {
-    const params = new URLSearchParams();
-    params.set("device_id", deviceId);
-    params.set("limit", String(limit));
-    if (windowMs) {
-      const from = new Date(Date.now() - windowMs).toISOString();
-      params.set("from", from);
-    }
-    const res = await fetch(`/api/readings?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("No se pudieron cargar lecturas.");
-    const payload = await res.json();
-    return parseListResponse<ApiReading>(payload);
   };
 
   // Versión paginada: concatena páginas hasta cubrir la ventana completa
@@ -273,14 +257,21 @@ export default function BowlPage() {
     const all: ApiReading[] = [];
     let cursor: string | null = null;
     for (let page = 0; page < maxPages; page++) {
-      const params = new URLSearchParams({ device_id: deviceId, limit: String(pageSize), from });
+      const params = new URLSearchParams({
+        device_id: deviceId,
+        limit: String(pageSize),
+        from,
+      });
       if (cursor) params.set("cursor", cursor);
       const res = await fetch(`/api/readings?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
       });
       if (!res.ok) break;
-      const payload = (await res.json()) as { data?: ApiReading[]; next_cursor?: string | null };
+      const payload = (await res.json()) as {
+        data?: ApiReading[];
+        next_cursor?: string | null;
+      };
       const page_data = payload.data ?? [];
       all.push(...page_data);
       cursor = payload.next_cursor ?? null;
@@ -297,7 +288,11 @@ export default function BowlPage() {
     bucketS: number,
   ): Promise<ApiReading[]> => {
     const from = new Date(Date.now() - windowMs).toISOString();
-    const params = new URLSearchParams({ device_id: deviceId, from, bucket_s: String(bucketS) });
+    const params = new URLSearchParams({
+      device_id: deviceId,
+      from,
+      bucket_s: String(bucketS),
+    });
     const res = await fetch(`/api/readings/bucketed?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -328,7 +323,9 @@ export default function BowlPage() {
       try {
         const [devices, profileRes] = await Promise.all([
           loadDevices(token),
-          fetch("/api/profiles", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("/api/profiles", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         if (mounted && profileRes.ok) {
           const pRaw = await profileRes.json();
@@ -380,9 +377,21 @@ export default function BowlPage() {
         const selectedConfig =
           CHART_RANGES.find((range) => range.key === selectedRange) ??
           CHART_RANGES[0];
-        const readingData = selectedConfig.bucketS > 0
-          ? await loadReadingsBucketed(selectedDeviceId, token, selectedConfig.windowMs, selectedConfig.bucketS)
-          : await loadReadingsAll(selectedDeviceId, token, selectedConfig.windowMs, selectedConfig.queryLimit, selectedConfig.maxPages);
+        const readingData =
+          selectedConfig.bucketS > 0
+            ? await loadReadingsBucketed(
+                selectedDeviceId,
+                token,
+                selectedConfig.windowMs,
+                selectedConfig.bucketS,
+              )
+            : await loadReadingsAll(
+                selectedDeviceId,
+                token,
+                selectedConfig.windowMs,
+                selectedConfig.queryLimit,
+                selectedConfig.maxPages,
+              );
         if (!active) return;
         setReadings(readingData);
         setReadingsError(null);
@@ -548,17 +557,21 @@ export default function BowlPage() {
       });
       if (res.ok) {
         const payload = await res.json();
-        const list = Array.isArray(payload)
-          ? payload
-          : (payload.data ?? []);
+        const list = Array.isArray(payload) ? payload : (payload.data ?? []);
         setConfigPets(list as ApiPet[]);
       }
-    } catch { /* mostrar modal igual */ }
+    } catch {
+      /* mostrar modal igual */
+    }
     // Cargar lista de SSIDs conocidos guardados localmente
     try {
-      const stored = localStorage.getItem(`kp_wifi_${selectedDevice.device_id}`);
+      const stored = localStorage.getItem(
+        `kp_wifi_${selectedDevice.device_id}`,
+      );
       setKnownWifiSsids(stored ? (JSON.parse(stored) as string[]) : []);
-    } catch { setKnownWifiSsids([]); }
+    } catch {
+      setKnownWifiSsids([]);
+    }
     setWifiSsid("");
     setWifiPass("");
     setWifiAddStatus(null);
@@ -618,7 +631,14 @@ export default function BowlPage() {
       const newSsid = wifiSsid.trim();
       setKnownWifiSsids((prev) => {
         const updated = prev.includes(newSsid) ? prev : [...prev, newSsid];
-        try { localStorage.setItem(`kp_wifi_${selectedDevice.device_id}`, JSON.stringify(updated)); } catch { /* ignore */ }
+        try {
+          localStorage.setItem(
+            `kp_wifi_${selectedDevice.device_id}`,
+            JSON.stringify(updated),
+          );
+        } catch {
+          /* ignore */
+        }
         return updated;
       });
       setWifiSsid("");
@@ -649,11 +669,21 @@ export default function BowlPage() {
       if (!res.ok) throw new Error("Error");
       setKnownWifiSsids((prev) => {
         const updated = prev.filter((s) => s !== ssid);
-        try { localStorage.setItem(`kp_wifi_${selectedDevice.device_id}`, JSON.stringify(updated)); } catch { /* ignore */ }
+        try {
+          localStorage.setItem(
+            `kp_wifi_${selectedDevice.device_id}`,
+            JSON.stringify(updated),
+          );
+        } catch {
+          /* ignore */
+        }
         return updated;
       });
-    } catch { /* silencioso — el usuario puede reintentar */ }
-    finally { setRemovingWifiSsid(null); }
+    } catch {
+      /* silencioso — el usuario puede reintentar */
+    } finally {
+      setRemovingWifiSsid(null);
+    }
   };
 
   const connectionHint = useMemo(() => {
@@ -708,17 +738,20 @@ export default function BowlPage() {
   const statusBlurb = useMemo(() => {
     if (!selectedDevice) return "Sin diagnóstico disponible.";
     if (statusSummary.tone === "warn") {
-      return "Se detectó un riesgo operativo. Prioriza batería y conexión.";
+      return "Se detectó un riesgo operativo. Revisa batería, conexión y última señal.";
     }
     if (statusSummary.tone === "ok") {
       return "Plato estable y conectado. Todo en orden.";
     }
-    return "Sin datos suficientes para diagnóstico completo.";
+    return "Todavía no hay suficientes lecturas para un diagnóstico completo. Cuando el plato siga publicando datos, aquí verás una lectura más precisa.";
   }, [selectedDevice, statusSummary.tone]);
 
   // Rangos disponibles según plan: free → hasta 3d; premium → hasta 1w
   const visibleRanges = useMemo(
-    () => CHART_RANGES.filter((r) => userPlan === "premium" ? r.key !== "3d" : r.key !== "1w"),
+    () =>
+      CHART_RANGES.filter((r) =>
+        userPlan === "premium" ? r.key !== "3d" : r.key !== "1w",
+      ),
     [userPlan],
   );
 
@@ -809,12 +842,22 @@ export default function BowlPage() {
   );
   const tempSeries = useMemo(
     () =>
-      buildSeries(readings, (r) => r.temperature, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs),
+      buildSeries(
+        readings,
+        (r) => r.temperature,
+        selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
+      ),
     [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
   const humiditySeries = useMemo(
     () =>
-      buildSeries(readings, (r) => r.humidity, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs),
+      buildSeries(
+        readings,
+        (r) => r.humidity,
+        selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
+      ),
     [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
   const lightSeries = useMemo(
@@ -906,8 +949,16 @@ export default function BowlPage() {
                   aria-label="Configurar dispositivo"
                   className="flex items-center justify-center rounded-full border border-slate-200 bg-white p-1.5 text-slate-500 transition hover:border-slate-300 hover:text-slate-800 disabled:opacity-40"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
-                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clipRule="evenodd" />
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="h-4 w-4"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </button>
                 <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
@@ -1085,7 +1136,7 @@ export default function BowlPage() {
                 </p>
                 <p className="mt-2 text-slate-700">
                   {batterySummary === "Sin datos"
-                    ? "Sin datos de batería."
+                    ? "Sin datos de batería todavía."
                     : `Batería ${batterySummary}`}
                   {batteryExtra ? ` (${batteryExtra})` : ""}
                 </p>
@@ -1141,7 +1192,9 @@ export default function BowlPage() {
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-slate-400">Configuración</p>
+                <p className="text-[11px] uppercase tracking-widest text-slate-400">
+                  Configuración
+                </p>
                 <p className="text-base font-semibold text-slate-900">
                   {selectedDevice?.device_id ?? "Dispositivo"}
                 </p>
@@ -1248,14 +1301,18 @@ export default function BowlPage() {
               {/* Lista de redes conocidas */}
               {knownWifiSsids.length > 0 && (
                 <div className="mb-3">
-                  <p className="mb-1.5 text-xs font-medium text-slate-600">Redes guardadas</p>
+                  <p className="mb-1.5 text-xs font-medium text-slate-600">
+                    Redes guardadas
+                  </p>
                   <ul className="space-y-1.5">
                     {knownWifiSsids.map((ssid) => (
                       <li
                         key={ssid}
                         className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2"
                       >
-                        <span className="truncate text-sm text-slate-700">{ssid}</span>
+                        <span className="truncate text-sm text-slate-700">
+                          {ssid}
+                        </span>
                         <button
                           type="button"
                           onClick={() => void handleRemoveWifi(ssid)}
@@ -1319,7 +1376,8 @@ export default function BowlPage() {
                 )}
               </button>
               <p className="mt-2 text-[11px] text-slate-400">
-                El dispositivo guardará esta red y la usará en próximas conexiones.
+                El dispositivo guardará esta red y la usará en próximas
+                conexiones.
               </p>
             </div>
           </div>

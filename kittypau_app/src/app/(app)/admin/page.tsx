@@ -1462,8 +1462,8 @@ export default function AdminPage() {
             ? `LTV/CAC: ${ltvCacA.toFixed(1)}x (meta > 3x)`
             : "LTV/CAC: N/D (configurar CAC/churn/suscripción)",
           subscriptionPrice > 0
-            ? `MRR proxy real: USD ${(online * subscriptionPrice).toFixed(2)}`
-            : "MRR proxy: N/D (falta precio suscripción)",
+            ? `MRR real: USD ${(online * subscriptionPrice).toFixed(2)}`
+            : "MRR: N/D (falta precio suscripción)",
           priceA > 0
             ? `Margen hardware: USD ${marginA.toFixed(2)} por unidad`
             : "Margen hardware: N/D (falta precio plato)",
@@ -1476,8 +1476,8 @@ export default function AdminPage() {
         why: "Segundo paso: crecer base activa y convertir a premium.",
         status: conversionFreemium >= 8 ? "Recomendado" : "Atención",
         metrics: [
-          `Conversión proxy free→paid: ${conversionFreemium.toFixed(1)}% (meta > 8%)`,
-          `Retención proxy onboarding: ${completionPct.toFixed(1)}%`,
+          `Conversión free→paid: ${conversionFreemium.toFixed(1)}% (meta > 8%)`,
+          `Retención onboarding: ${completionPct.toFixed(1)}%`,
           `Costo por activo: USD ${opexPerActive.toFixed(2)}`,
         ],
       },
@@ -1959,7 +1959,7 @@ export default function AdminPage() {
                     <p>
                       <span className="font-semibold">Base usuarios:</span>{" "}
                       {saasValuation.premiumUsersProxy}/
-                      {saasValuation.activeUsersProxy} (premium/activos proxy)
+                      {saasValuation.activeUsersProxy} (premium/activos)
                     </p>
                   </div>
                   <p className="mt-2 text-[11px] text-slate-500">

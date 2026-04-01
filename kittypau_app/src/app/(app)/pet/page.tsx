@@ -119,7 +119,9 @@ export default function PetPage() {
     });
     if (!res.ok) {
       const errBody = await res.json().catch(() => null);
-      throw new Error(errBody?.message ?? errBody?.error ?? `Error ${res.status}`);
+      throw new Error(
+        errBody?.message ?? errBody?.error ?? `Error ${res.status}`,
+      );
     }
     return (await res.json()) as ApiPet;
   };
@@ -269,7 +271,9 @@ export default function PetPage() {
   const petFoodDevice =
     petDevices.find((device) =>
       (device.device_type ?? "").toLowerCase().includes("food"),
-    ) ?? petDevices[0] ?? null;
+    ) ??
+    petDevices[0] ??
+    null;
   const petWaterDevice =
     petDevices.find((device) =>
       (device.device_type ?? "").toLowerCase().includes("water"),
@@ -281,15 +285,18 @@ export default function PetPage() {
       return [
         {
           title: "Ritmo general",
-          detail: "Sin lecturas suficientes aún.",
+          detail:
+            "Todavía no hay lecturas suficientes para describir la rutina.",
         },
         {
           title: "Hidratación",
-          detail: "Sin datos recientes.",
+          detail:
+            "Cuando el bebedero envíe actividad, aquí verás el ritmo de agua.",
         },
         {
           title: "Ambiente",
-          detail: "Sin datos recientes.",
+          detail:
+            "La temperatura y humedad aparecerán cuando haya lecturas recientes.",
         },
       ];
     }
@@ -360,7 +367,13 @@ export default function PetPage() {
 
       {state.isLoading ? (
         <div className="surface-card freeform-rise px-6 py-6">
-          Cargando perfil...
+          <p className="text-sm font-semibold text-slate-900">
+            Cargando perfil y lecturas recientes...
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            Estamos armando la ficha de tu mascota y vinculando el último
+            historial disponible.
+          </p>
         </div>
       ) : state.pets.length === 0 ? (
         <EmptyState
@@ -550,7 +563,8 @@ export default function PetPage() {
                   Límites de consumo normal
                 </p>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Define el rango que consideras normal. Las sesiones fuera del rango aparecerán como bajo o elevado en la Historia.
+                  Define el rango que consideras normal. Las sesiones fuera del
+                  rango aparecerán como bajo o elevado en la Historia.
                 </p>
                 <div className="mt-3 grid gap-4 md:grid-cols-2">
                   <div>
@@ -570,7 +584,9 @@ export default function PetPage() {
                           onChange={(event) =>
                             setEditPayload((prev) => ({
                               ...prev,
-                              food_normal_min_g: event.target.value ? Number(event.target.value) : null,
+                              food_normal_min_g: event.target.value
+                                ? Number(event.target.value)
+                                : null,
                             }))
                           }
                         />
@@ -588,7 +604,9 @@ export default function PetPage() {
                           onChange={(event) =>
                             setEditPayload((prev) => ({
                               ...prev,
-                              food_normal_max_g: event.target.value ? Number(event.target.value) : null,
+                              food_normal_max_g: event.target.value
+                                ? Number(event.target.value)
+                                : null,
                             }))
                           }
                         />
@@ -612,7 +630,9 @@ export default function PetPage() {
                           onChange={(event) =>
                             setEditPayload((prev) => ({
                               ...prev,
-                              water_normal_min_ml: event.target.value ? Number(event.target.value) : null,
+                              water_normal_min_ml: event.target.value
+                                ? Number(event.target.value)
+                                : null,
                             }))
                           }
                         />
@@ -630,7 +650,9 @@ export default function PetPage() {
                           onChange={(event) =>
                             setEditPayload((prev) => ({
                               ...prev,
-                              water_normal_max_ml: event.target.value ? Number(event.target.value) : null,
+                              water_normal_max_ml: event.target.value
+                                ? Number(event.target.value)
+                                : null,
                             }))
                           }
                         />
@@ -651,7 +673,11 @@ export default function PetPage() {
                     setIsSaving(true);
                     try {
                       // Excluir campos inmutables antes de enviar
-                      const { type: _type, id: _id, pet_state: _ps, ...sendPayload } = editPayload;
+                      const { type, id, pet_state, ...sendPayload } =
+                        editPayload;
+                      void type;
+                      void id;
+                      void pet_state;
                       const updated = await savePet(
                         token,
                         selectedPet.id,
@@ -799,6 +825,32 @@ export default function PetPage() {
               </div>
             </div>
           </section>
+
+          {!latestReading ? (
+            <section className="surface-card freeform-rise px-6 py-4">
+              <p className="text-sm font-semibold text-slate-900">
+                Aún no hay lecturas recientes para esta mascota.
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                La ficha ya está lista; apenas el comedero o bebedero publique
+                datos, esta vista mostrará comportamiento y contexto ambiental.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3 text-xs">
+                <Link
+                  href="/today"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+                >
+                  Ver resumen en vivo
+                </Link>
+                <Link
+                  href="/bowl"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700"
+                >
+                  Ver plato
+                </Link>
+              </div>
+            </section>
+          ) : null}
 
           <section className="surface-card freeform-rise px-6 py-5">
             <h2 className="text-lg font-semibold text-slate-900">
