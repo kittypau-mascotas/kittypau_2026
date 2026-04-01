@@ -1,7 +1,8 @@
-# Jupyter Notebooks (KittyPau)
+# Jupyter Notebooks (KittyPaw)
 
-Carpeta “comodín” para notebooks.
+Carpeta historica / placeholder.
 
-Canon recomendado (documentación + convenciones):
-- `Analisis_Estadistico_ML_IA/notebooks/README.md`
+No forma parte del runtime de la app.
+La fuente de verdad del ecosistema es:
+- `Docs/FUENTE_DE_VERDAD.md`
 

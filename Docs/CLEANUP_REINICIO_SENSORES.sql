@@ -1,4 +1,4 @@
--- ============================================================
+﻿-- ============================================================
 -- KittyPau - Reinicio de muestras reales
 -- Objetivo:
 --   1) Borrar todo el historico de sensores hasta hace 14 dias.
@@ -8,8 +8,8 @@
 -- Aviso:
 --   Ejecutar primero los SELECT de vista previa.
 --   Este script usa la DB principal de Supabase.
---   Si tambien quieres reiniciar la DB analitica separada,
---   ejecuta el bloque final en supabase-analytics.
+--   La base analitica separada ya se considera legado;
+--   el bloque final se conserva solo como referencia historica.
 -- ============================================================
 
 -- Fecha de corte: todo lo anterior a este punto se borra.
@@ -85,7 +85,7 @@ commit;
 
 -- ============================================================
 -- 3) OPCIONAL: DB ANALITICA SEPARADA
---    Ejecutar este bloque en el proyecto supabase-analytics.
+--    Mantener solo como referencia historica si existiera ese esquema legado.
 -- ============================================================
 
 -- begin;
@@ -98,4 +98,6 @@ commit;
 -- where summary_date < (current_date - 14);
 --
 -- commit;
+
+
 
