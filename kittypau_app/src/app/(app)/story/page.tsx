@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
-import { syncSelectedDevice, syncSelectedPet } from "@/lib/runtime/selection-sync";
+import {
+  syncSelectedDevice,
+  syncSelectedPet,
+} from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 
@@ -50,6 +53,7 @@ type LoadState = {
   sessions: ApiSession[];
   isPremium: boolean;
   historyDays: number;
+  analyticsAvailable: boolean;
 };
 
 const defaultState: LoadState = {
@@ -60,6 +64,7 @@ const defaultState: LoadState = {
   sessions: [],
   isPremium: false,
   historyDays: 3,
+  analyticsAvailable: true,
 };
 
 const formatTimestamp = (value: string) => {
@@ -100,13 +105,15 @@ function applyCustomLimits(
 // Convierte la clasificación del procesador en una historia legible
 const buildStory = (session: ApiSession, petName: string, pet: ApiPet) => {
   const classification = applyCustomLimits(session, pet);
-  const isFood  = session.session_type === "food";
-  const amount  = isFood ? session.grams_consumed : session.water_ml;
-  const unit    = isFood ? "g" : "ml";
-  const durMin  = session.duration_sec ? Math.round(session.duration_sec / 60) : null;
+  const isFood = session.session_type === "food";
+  const amount = isFood ? session.grams_consumed : session.water_ml;
+  const unit = isFood ? "g" : "ml";
+  const durMin = session.duration_sec
+    ? Math.round(session.duration_sec / 60)
+    : null;
 
   const facts: string[] = [];
-  if (amount != null)               facts.push(`${Math.round(amount)} ${unit}`);
+  if (amount != null) facts.push(`${Math.round(amount)} ${unit}`);
   if (durMin != null && durMin > 0) facts.push(`${durMin} min`);
   if (session.avg_temperature != null)
     facts.push(`${Math.round(session.avg_temperature)}°C`);
@@ -119,26 +126,26 @@ const buildStory = (session: ApiSession, petName: string, pet: ApiPet) => {
 
   switch (classification) {
     case "high":
-      title  = isFood ? "Consumo elevado" : "Hidratación intensa";
+      title = isFood ? "Consumo elevado" : "Hidratación intensa";
       detail = isFood
         ? `${petName} comió más de lo habitual.`
         : `${petName} bebió más rápido de lo habitual.`;
       tone = "warn";
       break;
     case "low":
-      title  = isFood ? "Consumo bajo" : "Poca hidratación";
+      title = isFood ? "Consumo bajo" : "Poca hidratación";
       detail = isFood
         ? `${petName} comió menos de lo habitual.`
         : `${petName} bebió menos de lo habitual.`;
       tone = "warn";
       break;
     case "skipped":
-      title  = isFood ? "Sin comer" : "Sin beber";
+      title = isFood ? "Sin comer" : "Sin beber";
       detail = `No se detectó actividad de ${petName} en esta ventana.`;
       tone = "warn";
       break;
     default:
-      title  = isFood ? "Consumo normal" : "Hidratación normal";
+      title = isFood ? "Consumo normal" : "Hidratación normal";
       detail = isFood
         ? `Buen ritmo de alimentación para ${petName}.`
         : `Buen ritmo de agua para ${petName}.`;
@@ -156,10 +163,10 @@ const buildStory = (session: ApiSession, petName: string, pet: ApiPet) => {
 };
 
 export default function StoryPage() {
-  const [state, setState]               = useState<LoadState>(defaultState);
+  const [state, setState] = useState<LoadState>(defaultState);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
-  const [dayOffset, setDayOffset]       = useState(0);
+  const [dayOffset, setDayOffset] = useState(0);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`/api/pets`, {
@@ -180,20 +187,27 @@ export default function StoryPage() {
   };
 
   const loadSessions = async (token: string, petId: string, daysBack = 7) => {
-    const from = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString();
+    const from = new Date(
+      Date.now() - daysBack * 24 * 60 * 60 * 1000,
+    ).toISOString();
     const res = await fetch(
       `/api/analytics/sessions?pet_id=${petId}&from=${from}&limit=120`,
       { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
     );
     if (!res.ok) throw new Error("No se pudieron cargar las sesiones.");
-    const payload = await res.json() as {
+    const payload = (await res.json()) as {
       data: ApiSession[];
-      meta: { is_premium: boolean; history_days: number };
+      meta: {
+        is_premium: boolean;
+        history_days: number;
+        analytics_available?: boolean;
+      };
     };
     return {
       sessions: parseListResponse<ApiSession>(payload),
       isPremium: payload.meta?.is_premium ?? false,
       historyDays: payload.meta?.history_days ?? 7,
+      analyticsAvailable: payload.meta?.analytics_available ?? true,
     };
   };
 
@@ -230,7 +244,7 @@ export default function StoryPage() {
           devices[0];
 
         const initialDeviceId = primaryDevice?.id ?? null;
-        const initialPetId    = primaryDevice?.pet_id ?? primaryPet?.id ?? null;
+        const initialPetId = primaryDevice?.pet_id ?? primaryPet?.id ?? null;
 
         if (initialDeviceId) syncSelectedDevice(initialDeviceId);
         if (initialPetId) {
@@ -241,28 +255,47 @@ export default function StoryPage() {
         setSelectedDeviceId(initialDeviceId);
         setSelectedPetId(initialPetId);
 
-        const { sessions, isPremium, historyDays } = initialPetId
+        const sessionResult = initialPetId
           ? await loadSessions(token, initialPetId)
-          : { sessions: [], isPremium: false, historyDays: 7 };
+          : {
+              sessions: [],
+              isPremium: false,
+              historyDays: 7,
+              analyticsAvailable: true,
+            };
 
         if (!mounted) return;
-        setState({ isLoading: false, error: null, pets, devices, sessions, isPremium, historyDays });
+        setState({
+          isLoading: false,
+          error: null,
+          pets,
+          devices,
+          sessions: sessionResult.sessions,
+          isPremium: sessionResult.isPremium,
+          historyDays: sessionResult.historyDays,
+          analyticsAvailable: sessionResult.analyticsAvailable,
+        });
       } catch (err) {
         if (!mounted) return;
         setState((prev) => ({
           ...prev,
           isLoading: false,
-          error: err instanceof Error ? err.message : "No se pudo cargar la historia.",
+          error:
+            err instanceof Error
+              ? err.message
+              : "No se pudo cargar la historia.",
         }));
       }
     };
     run();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const selectedDevice = state.devices.find((d) => d.id === selectedDeviceId);
-  const selectedPet    = state.pets.find((p) => p.id === selectedPetId);
-  const petLabel       = selectedPet?.name ?? "tu mascota";
+  const selectedPet = state.pets.find((p) => p.id === selectedPetId);
+  const petLabel = selectedPet?.name ?? "tu mascota";
 
   // Días disponibles según plan
   const maxDayOffset = state.isPremium ? 364 : 6;
@@ -291,8 +324,8 @@ export default function StoryPage() {
 
   const summaryCounts = useMemo(() => {
     const total = filteredTimeline.length;
-    const warn  = filteredTimeline.filter((i) => i.story.tone === "warn").length;
-    const good  = filteredTimeline.filter((i) => i.story.tone === "good").length;
+    const warn = filteredTimeline.filter((i) => i.story.tone === "warn").length;
+    const good = filteredTimeline.filter((i) => i.story.tone === "good").length;
     return { total, warn, good };
   }, [filteredTimeline]);
 
@@ -309,12 +342,20 @@ export default function StoryPage() {
     const token = await getValidAccessToken();
     if (!token) return;
     try {
-      const { sessions, isPremium, historyDays } = await loadSessions(token, petId);
-      setState((prev) => ({ ...prev, sessions, isPremium, historyDays }));
+      const { sessions, isPremium, historyDays, analyticsAvailable } =
+        await loadSessions(token, petId);
+      setState((prev) => ({
+        ...prev,
+        sessions,
+        isPremium,
+        historyDays,
+        analyticsAvailable,
+      }));
     } catch (err) {
       setState((prev) => ({
         ...prev,
-        error: err instanceof Error ? err.message : "No se pudo cargar la historia.",
+        error:
+          err instanceof Error ? err.message : "No se pudo cargar la historia.",
       }));
     }
   };
@@ -350,11 +391,30 @@ export default function StoryPage() {
 
       {!state.isPremium && (
         <div className="rounded-[var(--radius)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
-          <span className="font-semibold">Plan Free</span> — historial de los últimos {state.historyDays} días.{" "}
+          <span className="font-semibold">Plan Free</span> — historial de los
+          últimos {state.historyDays} días.{" "}
           <Link href="/settings" className="underline">
             Actualiza a Premium
           </Link>{" "}
           para acceder hasta 1 año de historia.
+        </div>
+      )}
+
+      {!state.analyticsAvailable && (
+        <div className="rounded-[var(--radius)] border border-sky-200 bg-sky-50/80 px-4 py-3 text-sm text-sky-800">
+          <span className="font-semibold">
+            Historial temporalmente limitado
+          </span>{" "}
+          — la base analítica histórica no está disponible en este entorno, por
+          lo que la story muestra sólo lo que el core puede reconstruir.
+          <div className="mt-2 flex flex-wrap gap-3 text-xs">
+            <Link href="/today" className="underline">
+              Ver resumen en vivo
+            </Link>
+            <Link href="/settings" className="underline">
+              Revisar plan y sincronización
+            </Link>
+          </div>
         </div>
       )}
 
@@ -418,7 +478,9 @@ export default function StoryPage() {
                   <select
                     className="mt-1 rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
                     value={selectedPetId ?? ""}
-                    onChange={(e) => { void handlePetChange(e.target.value); }}
+                    onChange={(e) => {
+                      void handlePetChange(e.target.value);
+                    }}
                   >
                     {state.pets.map((pet) => (
                       <option key={pet.id} value={pet.id}>
@@ -434,33 +496,79 @@ export default function StoryPage() {
           <section className="surface-card freeform-rise px-6 py-4">
             <div className="grid gap-3 md:grid-cols-3">
               <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Sesiones</p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">{summaryCounts.total}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Sesiones
+                </p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">
+                  {summaryCounts.total}
+                </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-amber-700">Atención</p>
-                <p className="mt-2 text-lg font-semibold text-amber-900">{summaryCounts.warn}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-700">
+                  Atención
+                </p>
+                <p className="mt-2 text-lg font-semibold text-amber-900">
+                  {summaryCounts.warn}
+                </p>
               </div>
               <div className="rounded-[calc(var(--radius)-6px)] border border-emerald-200 bg-emerald-50/60 px-4 py-3 text-sm text-emerald-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">Normales</p>
-                <p className="mt-2 text-lg font-semibold text-emerald-900">{summaryCounts.good}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-700">
+                  Normales
+                </p>
+                <p className="mt-2 text-lg font-semibold text-emerald-900">
+                  {summaryCounts.good}
+                </p>
               </div>
             </div>
             <p className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-              Sesiones detectadas para {selectedPet?.name ?? "tu mascota"} · {state.historyDays}d de historial disponible.
+              Sesiones detectadas para {selectedPet?.name ?? "tu mascota"} ·{" "}
+              {state.historyDays}d de historial disponible.
               {state.isPremium && (
                 <span
                   title="Plan Premium"
                   className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "linear-gradient(135deg, #f5c842 0%, #e0900a 100%)", boxShadow: "0 1px 4px rgba(224,144,10,0.45)" }}
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #f5c842 0%, #e0900a 100%)",
+                    boxShadow: "0 1px 4px rgba(224,144,10,0.45)",
+                  }}
                 >
-                  <svg viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg" className="h-[13px] w-[13px]">
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-[13px] w-[13px]"
+                  >
                     {/* Huella — 4 dedos + almohadilla central */}
                     <ellipse cx="10" cy="13.2" rx="3.2" ry="2.2" />
-                    <ellipse cx="6"  cy="10.2" rx="1.5" ry="2"   transform="rotate(-20 6 10.2)"  />
-                    <ellipse cx="14" cy="10.2" rx="1.5" ry="2"   transform="rotate(20 14 10.2)"  />
-                    <ellipse cx="8"  cy="7.5"  rx="1.3" ry="1.8" transform="rotate(-10 8 7.5)"   />
-                    <ellipse cx="12" cy="7.5"  rx="1.3" ry="1.8" transform="rotate(10 12 7.5)"   />
+                    <ellipse
+                      cx="6"
+                      cy="10.2"
+                      rx="1.5"
+                      ry="2"
+                      transform="rotate(-20 6 10.2)"
+                    />
+                    <ellipse
+                      cx="14"
+                      cy="10.2"
+                      rx="1.5"
+                      ry="2"
+                      transform="rotate(20 14 10.2)"
+                    />
+                    <ellipse
+                      cx="8"
+                      cy="7.5"
+                      rx="1.3"
+                      ry="1.8"
+                      transform="rotate(-10 8 7.5)"
+                    />
+                    <ellipse
+                      cx="12"
+                      cy="7.5"
+                      rx="1.3"
+                      ry="1.8"
+                      transform="rotate(10 12 7.5)"
+                    />
                   </svg>
                 </span>
               )}
@@ -469,13 +577,26 @@ export default function StoryPage() {
 
           <section className="story-list">
             {filteredTimeline.length === 0 ? (
-              <EmptyState title="Aún no hay sesiones para mostrar.">
-                Cuando el plato detecte actividad, verás la historia aquí.
+              <EmptyState
+                title={
+                  state.analyticsAvailable
+                    ? "Aún no hay sesiones para mostrar."
+                    : "La historia histórica todavía no está disponible."
+                }
+              >
+                {state.analyticsAvailable
+                  ? "Cuando el plato detecte actividad, verás la historia aquí."
+                  : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
               </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (
-                <article key={item.id} className={`story-card tone-${item.story.tone}`}>
-                  <div className="story-time">{formatTimestamp(item.session_start)}</div>
+                <article
+                  key={item.id}
+                  className={`story-card tone-${item.story.tone}`}
+                >
+                  <div className="story-time">
+                    {formatTimestamp(item.session_start)}
+                  </div>
                   <div className="story-line">
                     <div className={`story-dot tone-${item.story.tone}`} />
                     {index < filteredTimeline.length - 1 ? (
@@ -488,7 +609,9 @@ export default function StoryPage() {
                         <span className="story-icon">{item.story.icon}</span>{" "}
                         {item.story.title}
                       </h3>
-                      <span className={`story-tag story-tag-${item.story.tone}`}>
+                      <span
+                        className={`story-tag story-tag-${item.story.tone}`}
+                      >
                         {item.story.classification === "normal"
                           ? "Estable"
                           : item.story.classification === "high"
@@ -505,7 +628,8 @@ export default function StoryPage() {
                       </p>
                     ) : (
                       <p className="story-hint">
-                        Buen ritmo. Mantén la rutina de {selectedPet?.name ?? "tu mascota"}.
+                        Buen ritmo. Mantén la rutina de{" "}
+                        {selectedPet?.name ?? "tu mascota"}.
                       </p>
                     )}
                     <div className="story-meta">

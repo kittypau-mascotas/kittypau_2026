@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Parallax } from "react-scroll-parallax";
@@ -667,7 +668,7 @@ export default function LoginPage() {
     const emailValue = email.trim();
     const passwordValue = password.trim();
     if (!emailValue || !passwordValue) {
-      setError("Completa email y password para continuar.");
+      setError("Completa email y contraseña para continuar.");
       setIsSubmitting(false);
       return;
     }
@@ -677,7 +678,7 @@ export default function LoginPage() {
       return;
     }
     if (passwordValue.length < 8) {
-      setError("El password debe tener al menos 8 caracteres.");
+      setError("La contraseña debe tener al menos 8 caracteres.");
       setIsSubmitting(false);
       return;
     }
@@ -748,12 +749,12 @@ export default function LoginPage() {
     setRegisterError(null);
     setIsRegistering(true);
     if (!registerEmail || !registerPassword) {
-      setRegisterError("Completa email y password para continuar.");
+      setRegisterError("Completa email y contraseña para continuar.");
       setIsRegistering(false);
       return;
     }
     if (registerPassword.length < 8) {
-      setRegisterError("El password debe tener al menos 8 caracteres.");
+      setRegisterError("La contraseña debe tener al menos 8 caracteres.");
       setIsRegistering(false);
       return;
     }
@@ -1032,9 +1033,11 @@ export default function LoginPage() {
                   title="Cambiar nivel visual del plato"
                   {...catWakeInteractions}
                 >
-                  <img
+                  <Image
                     src={currentHeroBowlState.image}
                     alt="Plato de comida Kittypau"
+                    width={240}
+                    height={240}
                     className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
                     loading="eager"
                     draggable={false}
@@ -1074,9 +1077,11 @@ export default function LoginPage() {
           >
             <div className="login-fold-box login-fold-box-brand login-card-brand freeform-rise">
               <div className="brand-logo-badge" aria-hidden="true">
-                <img
+                <Image
                   src="/logo_carga.jpg"
                   alt=""
+                  width={96}
+                  height={96}
                   className="brand-logo-img"
                   draggable={false}
                 />
@@ -1099,9 +1104,11 @@ export default function LoginPage() {
           <div className="login-card-brand freeform-rise">
             <div className="login-brand-core">
               <div className="brand-logo-badge" aria-hidden="true">
-                <img
+                <Image
                   src="/logo_carga.jpg"
                   alt=""
+                  width={96}
+                  height={96}
                   className="brand-logo-img"
                   draggable={false}
                 />
@@ -1217,7 +1224,7 @@ export default function LoginPage() {
                       className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
                       htmlFor="login-password"
                     >
-                      Password
+                      Contraseña
                     </label>
                     <input
                       id="login-password"
@@ -1252,7 +1259,7 @@ export default function LoginPage() {
                         onFocus={wakeTrialCat}
                         onBlur={sleepTrialCat}
                       />
-                      Mostrar password
+                      Mostrar contraseña
                     </label>
                   </div>
                   {verifiedMessage ? (
@@ -1415,7 +1422,7 @@ export default function LoginPage() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                          Password
+                          Contraseña
                         </label>
                         <input
                           type={registerShowPassword ? "text" : "password"}
@@ -1442,7 +1449,7 @@ export default function LoginPage() {
                           setRegisterShowPassword(event.target.checked)
                         }
                       />
-                      Mostrar password
+                      Mostrar contraseña
                     </label>
                     {registerEmail.length > 0 && !isRegisterEmailValid ? (
                       <p className="text-[11px] text-rose-600">
