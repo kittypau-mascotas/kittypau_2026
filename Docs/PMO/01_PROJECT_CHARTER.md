@@ -104,7 +104,7 @@ Desarrollar, validar y escalar una plataforma IoT de monitoreo de mascotas que g
 |------|-------------|----------------|
 | M0 | Prototipo funcional (estado actual) | 2026-03-05 (alcanzado) |
 | M1 | Documentacion PMO completa | 2026-03-12 |
-| M2 | Postulacion CORFO Semilla Inicia | 2026-03-16 |
+| M2 | Postulacion CORFO Semilla Inicia | 2026-03-16 (vencido; replanificar) |
 | M3 | MVP con 10 usuarios piloto activos | 2026-06-30 |
 | M4 | Postulacion ANID Startup Ciencia | 2026-09-01 |
 | M5 | Postulacion StartUp Chile BIG 12 | 2026-10-01 |

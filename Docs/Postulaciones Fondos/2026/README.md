@@ -3,6 +3,11 @@
 Esta carpeta agrupa la narrativa 2026 para Start-Up Chile y Corfo Semilla Inicia.
 La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](documento_2026/00_DOCUMENTO_MAESTRO_2026.md).
 
+## Estado actual (2026-04-01)
+- Estado vivo resumido del proyecto: [`../../ESTADO_PROYECTO_ACTUAL.md`](../../ESTADO_PROYECTO_ACTUAL.md)
+- Start-Up Chile sigue como paquete vivo de trabajo.
+- Corfo Semilla Inicia O'Higgins ya vencio el 2026-03-16; este paquete queda para replanificacion o nueva region.
+
 ## Ruta de lectura
 1. [`documento_2026/`](documento_2026/) - narrativa madre, evidencia, negocio y checklist.
 2. [`Staruplab01_2026/`](Staruplab01_2026/) - paquete especifico Start-Up Chile.

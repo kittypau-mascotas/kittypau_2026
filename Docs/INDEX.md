@@ -2,6 +2,7 @@
 
 > Entrada rapida:
 > - [README.md](README.md) - puerta de entrada para humanos y agentes
+> - [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado del proyecto
 
 > Fuentes maestras:
 > - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md) - mapa canonico de activos, legacy, tablas y flujos
@@ -42,6 +43,7 @@
 - [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md)
 
 ## Plan y estado
+- [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md) - estado vivo y resumido del proyecto
 - [contexto.md](contexto.md)
 - [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)
@@ -51,7 +53,7 @@
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md)
 - [PLAN_MEJORA_DB_ACTUAL.md](PLAN_MEJORA_DB_ACTUAL.md)
-- [ESTADO_AVANCE.md](ESTADO_AVANCE.md)
+- [ESTADO_AVANCE.md](ESTADO_AVANCE.md) - bitacora historica consolidada
 - [NOTAS_IMPLEMENTACION.md](NOTAS_IMPLEMENTACION.md)
 - [MAPA_ECOSISTEMA.md](MAPA_ECOSISTEMA.md)
 - [CIBERSEGURIDAD.md](CIBERSEGURIDAD.md)

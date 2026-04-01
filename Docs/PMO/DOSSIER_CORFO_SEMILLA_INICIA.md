@@ -2,8 +2,8 @@
 **Fondo**: CORFO Semilla Inicia
 **Monto solicitado**: $17.000.000 CLP
 **Cofinanciamiento**: 75% CORFO / 25% emprendedor ($4.250.000 CLP)
-**Fecha limite**: 16 de marzo 2026
-**Estado**: Listo para postular
+**Fecha limite historica**: 16 de marzo 2026
+**Estado**: Base historica de postulacion / replanificacion
 
 > INSTRUCCIONES DE USO:
 > Cada seccion indica el campo del formulario CORFO al que corresponde.
@@ -442,4 +442,4 @@ Los siguientes campos estan marcados con [CORCHETES] en el documento y requieren
 _Ultimo revision: 2026-03-05 | Basado en PMO documentos 01, 04, 05, 07_
 _Datos personales verificados desde postulacion Sercotec 2024 (RUT 17402237-2)_
 _Empresa: IOT CHILE SpA, constituida 10-07-2025_
-_Deadline postulacion: 16 de marzo 2026_
+_Deadline postulacion historico: 16 de marzo 2026_

@@ -68,6 +68,7 @@
 - `battery_state`, `battery_source` y `battery_voltage` no existen en el historico de `KPCL0034` todavia.
 - La duracion real de bateria no se puede inferir sin telemetria de energia.
 - `notebooks/` no forma parte del runtime de la app.
+- El estado vivo resumido del proyecto vive en `ESTADO_PROYECTO_ACTUAL.md`.
 
 ## 6) Vocabulario canonico
 
@@ -84,8 +85,9 @@
 ## 7) Orden de lectura recomendado
 1. [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md)
 2. [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md)
-3. [SQL_MAESTRO.md](SQL_MAESTRO.md)
-4. [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md)
-5. [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
+3. [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md)
+4. [SQL_MAESTRO.md](SQL_MAESTRO.md)
+5. [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md)
+6. [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
 
 

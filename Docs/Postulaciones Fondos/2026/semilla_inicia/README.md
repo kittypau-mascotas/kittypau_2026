@@ -2,6 +2,9 @@
 
 Paquete de trabajo para Corfo Semilla Inicia 2026.
 
+> Fecha de corte actual: 2026-04-01.
+> El plazo de O'Higgins del 2026-03-16 ya paso; este paquete queda como base de replanificacion o reutilizacion para otra convocatoria.
+
 ## Ruta de lectura
 1. [`02_BORRADOR_PROYECTO.md`](02_BORRADOR_PROYECTO.md) - borrador vivo del proyecto.
 2. [`03_PRESUPUESTO_COFINANCIAMIENTO.md`](03_PRESUPUESTO_COFINANCIAMIENTO.md) - presupuesto y cofinanciamiento.

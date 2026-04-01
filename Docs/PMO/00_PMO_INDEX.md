@@ -3,6 +3,7 @@
 **Estado**: Completo v1.0 | Iniciado: 2026-03-05 | Completado: 2026-03-05
 **PM**: Javier Suarez / Mauro Carcamo
 **Version**: 1.0
+**Estado vivo actual**: [../ESTADO_PROYECTO_ACTUAL.md](../ESTADO_PROYECTO_ACTUAL.md)
 
 ---
 
@@ -35,7 +36,7 @@ Todos son adaptables a distintos fondos concursables — ver seccion de adaptaci
 
 | Fondo | Monto max | Deadline | Estado doc |
 |-------|-----------|----------|------------|
-| CORFO Semilla Inicia | $17M CLP | 16 Mar 2026 | URGENTE |
+| CORFO Semilla Inicia | $17M CLP | 16 Mar 2026 | VENCIDO / REPLANIFICAR |
 | StartUp Chile BIG 12 | $75M CLP | ~Oct 2026 | Planificado |
 | ANID Startup Ciencia | $134M CLP | ~Sep 2026 | Planificado |
 | CORFO Semilla Expande | $28M CLP | ~Feb 2027 | Futuro |

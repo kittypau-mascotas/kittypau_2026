@@ -4,6 +4,7 @@ Este paquete es la base viva de la postulacion 2026.
 El contenido estrategico compartido ya vive en `00_DOCUMENTO_MAESTRO_2026.md`.
 
 ## Contenido vivo
+- `../../../ESTADO_PROYECTO_ACTUAL.md` - foto viva del estado general del proyecto.
 - `00_DOCUMENTO_MAESTRO_2026.md` - fuente principal.
 - `01_NARRATIVA_UNIFICADA_2026.md` - narrativa madre por fondo.
 - `02_PROPUESTA_VALOR_MERCADO_2026.md` - propuesta de valor y mercado.

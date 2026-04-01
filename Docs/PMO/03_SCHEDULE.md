@@ -3,6 +3,9 @@
 **Version**: 1.0 | Fecha: 2026-03-05
 **Herramienta**: Hitos clave + Carta Gantt simplificada
 
+> Fecha de corte actual: 2026-04-01.
+> El deadline de CORFO Semilla Inicia O'Higgins ya paso; este cronograma se usa ahora como referencia y replanificacion.
+
 ---
 
 ## Resumen de fases
@@ -10,7 +13,7 @@
 | Fase | Descripcion | Periodo | Estado |
 |------|-------------|---------|--------|
 | F0 | Inception y prototipo | Nov 2025 - Mar 2026 | COMPLETO |
-| F1 | Documentacion PMO + Postulacion CORFO | Mar 2026 | EN CURSO |
+| F1 | Documentacion PMO + Postulacion CORFO | Mar 2026 | VENCIDA / REPLANIFICAR |
 | F2 | MVP piloto + validacion | Abr - Jun 2026 | PLANIFICADO |
 | F3 | Iteracion + postulacion ANID/StartUp Chile | Jul - Oct 2026 | PLANIFICADO |
 | F4 | Escala + break-even | Nov 2026 - Jun 2027 | FUTURO |
@@ -35,7 +38,7 @@
 
 ---
 
-### FASE 1 — Documentacion PMO + Postulacion CORFO (EN CURSO)
+### FASE 1 — Documentacion PMO + Postulacion CORFO (VENCIDA / REPLANIFICAR)
 
 | Hito | Fecha objetivo | Responsable | Estado |
 |------|---------------|-------------|--------|
@@ -45,7 +48,7 @@
 | Presupuesto detallado | 2026-03-10 | Mauro | Pendiente |
 | Registro de riesgos | 2026-03-10 | Javier | Pendiente |
 | Dossier postulacion CORFO armado | 2026-03-13 | Ambos | Pendiente |
-| **Postulacion CORFO Semilla Inicia** | **2026-03-16** | **Ambos** | **DEADLINE** |
+| **Postulacion CORFO Semilla Inicia** | **2026-03-16** | **Ambos** | **DEADLINE VENCIDO** |
 
 ---
 
@@ -133,7 +136,7 @@ Piloto 10 usuarios
 
 Los siguientes hitos son **bloqueantes** (un retraso impacta todo lo que sigue):
 
-1. **Postulacion CORFO antes del 16/03/2026** — sin esto, siguiente oportunidad es junio (si abre otra region)
+1. **Postulacion CORFO Semilla Inicia (16/03/2026)** — deadline vencido; replanificar por otra region o nueva convocatoria
 2. **Piloto con 10 usuarios** — sin datos de validacion no se puede postular a fondos mayores
 3. **Constitucion empresa** — ANID requiere empresa formalmente constituida
 

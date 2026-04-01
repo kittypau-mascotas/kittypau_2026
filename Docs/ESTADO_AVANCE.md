@@ -1,5 +1,8 @@
 ﻿# Estado del Proyecto y Próximos Pasos (2026-02-07)
 
+> Nota: este documento se conserva como bitacora historica.
+> El estado vivo y resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+
 ## Actualizado (2026-03-09) - Coherencia APK/Web + deploy
 - Ajuste visual login **solo para APK nativa**:
   - bloque de marca (`logo`, `Kittypau`, `PetTech AIoT`) centrado y agrandado,

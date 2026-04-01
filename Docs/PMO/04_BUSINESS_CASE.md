@@ -251,7 +251,7 @@ Monto solicitado: **$17.000.000 CLP** (75% CORFO + 25% contraparte propia)
 
 ## 10. Proximos Pasos Inmediatos
 
-1. **[Urgente]** Postular a CORFO Semilla Inicia antes del 16 de marzo 2026
+1. **Postulacion CORFO Semilla Inicia**: el deadline de O'Higgins del 16 de marzo 2026 ya vencio; replanificar por otra region o nueva convocatoria
 2. Completar documentacion PMO restante (alcance, cronograma, riesgos)
 3. Constituir empresa formal (paralelamente al fondo)
 4. Iniciar piloto con primeros 10 usuarios externos

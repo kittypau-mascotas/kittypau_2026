@@ -4,6 +4,7 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## Como leer este documento
 - Si quieres contexto estrategico y de producto, empieza aqui.
+- Si necesitas la foto viva del proyecto, lee [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md).
 - Si necesitas la fuente oficial de nombres, carpetas y tablas, lee [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md).
 - Si buscas el detalle de implementacion o SQL, sigue los enlaces de secciones mas abajo.
 
@@ -38,6 +39,7 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - Flujo tecnico general: [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md).
 
 ## 5) Operacion y calidad
+- Estado actual del proyecto: [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md).
 - Estado de avance: [ESTADO_AVANCE.md](ESTADO_AVANCE.md).
 - Pruebas E2E: [PRUEBAS_E2E.md](PRUEBAS_E2E.md).
 - Auditoria de coherencia: [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md).

@@ -2,6 +2,9 @@
 **Version**: 1.0 | Fecha: 2026-03-05
 **Uso**: Checklist rapido para adaptar la documentacion PMO a cada fondo
 
+> Fecha de corte actual: 2026-04-01.
+> CORFO Semilla Inicia O'Higgins ya vencio; usar esta guia para replanificar otra region o la siguiente convocatoria.
+
 ---
 
 ## Como usar esta guia
@@ -23,8 +26,8 @@ Los documentos base (01-09) ya contienen el contenido; solo hay que copiar/adapt
 | Monto maximo | $17.000.000 CLP |
 | Cofinanciamiento | 75% CORFO / 25% emprendedor |
 | Bonus mujer | 85% CORFO si lidera mujer |
-| Regiones | O'Higgins cerro 16 Mar 2026. Revisar otras regiones. |
-| Proximo deadline | **16 de marzo 2026** (O'Higgins) |
+| Regiones | O'Higgins cerro 16 Mar 2026. Replanificar otra region o nueva convocatoria. |
+| Proximo deadline | **Vencido en O'Higgins** |
 | Etapa objetivo | Idea / prototipo temprano |
 | Requiere empresa | No (persona natural > 18 anos) |
 | URL | https://www.corfo.cl/sites/cpp/inf/semilla-inicia |
@@ -208,8 +211,8 @@ Comenzar a documentar ventas y testimonios de clientes desde el piloto (mid-2026
 
 ```
 2026
-Mar  16 -----> CORFO Semilla Inicia (O'Higgins) [URGENTE]
-Abr  01 -----> Revisar otras regiones Semilla Inicia
+Mar  16 -----> CORFO Semilla Inicia (O'Higgins) [VENCIDO]
+Abr  01 -----> Replanificar Semilla Inicia / revisar otras regiones
 Jun  01 -----> Vigilar apertura StartUp Chile BIG 12
 Jul  01 -----> Vigilar apertura ANID Startup Ciencia
 Ago  01 -----> Preparar postulacion ANID
