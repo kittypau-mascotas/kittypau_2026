@@ -66,6 +66,8 @@ static void notifyEvent(MqttEvent event) {
     if (eventHandler) eventHandler(event);
 }
 
+extern void setPublishInterval(unsigned long ms);
+
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
     String t = String(topic);
     if (t.endsWith("/cmd")) {
@@ -123,6 +125,13 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
                 wifiManagerRemoveSSID(ssid);
             } else {
                 Serial.println("Error: REMOVEWIFI requiere 'ssid'.");
+            }
+        } else if (command && strcmp(command, "SET_INTERVAL") == 0) {
+            unsigned long ms = doc["value_ms"] | 0UL;
+            if (ms >= 1000UL) {
+                setPublishInterval(ms);
+            } else {
+                Serial.println("Error: SET_INTERVAL requiere 'value_ms' >= 1000.");
             }
         } else {
             Serial.println("Comando desconocido o no especificado.");

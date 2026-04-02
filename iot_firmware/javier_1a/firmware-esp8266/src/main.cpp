@@ -11,12 +11,40 @@
 #include <ArduinoOTA.h>
 
 // Intervalos de publicación (en milisegundos)
-#define SENSOR_PUBLISH_INTERVAL 30000  // Datos cada 30 segundos
 #define STATUS_PUBLISH_INTERVAL 15000  // Estado cada 15 segundos
+#define INTERVAL_FILE "/interval.json"
+#define DEFAULT_SENSOR_INTERVAL 30000UL
 
 // Timers
 static unsigned long lastSensorPublishTime = 0;
 static unsigned long lastStatusPublishTime = 0;
+static unsigned long sensorPublishInterval = DEFAULT_SENSOR_INTERVAL;
+
+void loadInterval() {
+    File f = LittleFS.open(INTERVAL_FILE, "r");
+    if (!f) return;
+    StaticJsonDocument<64> doc;
+    if (deserializeJson(doc, f) == DeserializationError::Ok) {
+        unsigned long v = doc["interval_ms"] | DEFAULT_SENSOR_INTERVAL;
+        if (v >= 1000UL) sensorPublishInterval = v;
+    }
+    f.close();
+}
+
+void setPublishInterval(unsigned long ms) {
+    if (ms < 1000UL) ms = 1000UL;
+    sensorPublishInterval = ms;
+    File f = LittleFS.open(INTERVAL_FILE, "w");
+    if (f) {
+        StaticJsonDocument<64> doc;
+        doc["interval_ms"] = ms;
+        serializeJson(doc, f);
+        f.close();
+    }
+    Serial.print("[INTERVAL] Nuevo intervalo: ");
+    Serial.print(ms);
+    Serial.println(" ms");
+}
 
 // Estado de sensores y lógica Online/Offline con debounce
 static String last_sensor_health = "Initializing";
@@ -75,6 +103,7 @@ void publishDeviceStatus() {
     doc["device_type"] = DEVICE_TYPE;
     doc["device_model"] = DEVICE_MODEL;
     appendBatteryTelemetry(doc);
+    doc["sensor_interval_ms"] = sensorPublishInterval;
 
     char payload[384];
     serializeJson(doc, payload);
@@ -131,6 +160,10 @@ void setup() {
 
   // 4. Iniciar los sensores
   sensorsInit();
+  loadInterval();
+  Serial.print("[INTERVAL] Intervalo cargado: ");
+  Serial.print(sensorPublishInterval);
+  Serial.println(" ms");
 
   Serial.println("[" DEVICE_ID "] Initialization complete.");
 }
@@ -182,7 +215,7 @@ void loop() {
   mqttManagerLoop();
 
   // Publicar datos de sensores periódicamente
-  if (now - lastSensorPublishTime > SENSOR_PUBLISH_INTERVAL) {
+  if (now - lastSensorPublishTime > sensorPublishInterval) {
     lastSensorPublishTime = now;
     last_sensor_health = sensorsReadAndPublish(); // Capturar el estado de los sensores
     if (isMqttConnected()) {

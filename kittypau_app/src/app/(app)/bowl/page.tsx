@@ -229,6 +229,9 @@ export default function BowlPage() {
     null,
   );
   const [knownWifiSsids, setKnownWifiSsids] = useState<string[]>([]);
+  const [selectedInterval, setSelectedInterval] = useState<number>(30_000);
+  const [isSettingInterval, setIsSettingInterval] = useState(false);
+  const [intervalStatus, setIntervalStatus] = useState<"ok" | "error" | null>(null);
   const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
 
   const loadDevices = async (token: string) => {
@@ -535,6 +538,27 @@ export default function BowlPage() {
     } finally {
       setIsTaring(false);
       setTimeout(() => setTareStatus(null), 3000);
+    }
+  };
+
+  const handleSetInterval = async () => {
+    if (!selectedDevice?.id || isSettingInterval) return;
+    setIsSettingInterval(true);
+    setIntervalStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch(`/api/devices/${selectedDevice.id}/interval`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ value_ms: selectedInterval }),
+      });
+      setIntervalStatus(res.ok ? "ok" : "error");
+    } catch {
+      setIntervalStatus("error");
+    } finally {
+      setIsSettingInterval(false);
+      setTimeout(() => setIntervalStatus(null), 3000);
     }
   };
 
@@ -1387,6 +1411,53 @@ export default function BowlPage() {
               <p className="mt-2 text-[11px] text-slate-400">
                 El dispositivo guardará esta red y la usará en próximas
                 conexiones.
+              </p>
+            </div>
+
+            {/* ── Sección 4: Intervalo de muestreo ── */}
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Intervalo de muestreo
+              </p>
+              <select
+                value={selectedInterval}
+                onChange={(e) => setSelectedInterval(Number(e.target.value))}
+                className="mb-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
+              >
+                <option value={1_000}>1 segundo</option>
+                <option value={5_000}>5 segundos</option>
+                <option value={15_000}>15 segundos</option>
+                <option value={30_000}>30 segundos</option>
+                <option value={60_000}>1 minuto</option>
+                <option value={300_000}>5 minutos</option>
+                <option value={1_500_000}>25 minutos</option>
+                <option value={1_800_000}>30 minutos</option>
+                <option value={3_600_000}>1 hora</option>
+                <option value={7_200_000}>2 horas</option>
+                <option value={14_400_000}>4 horas</option>
+                <option value={21_600_000}>6 horas</option>
+                <option value={43_200_000}>12 horas</option>
+                <option value={86_400_000}>24 horas</option>
+                <option value={604_800_000}>1 semana</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => void handleSetInterval()}
+                disabled={isSettingInterval}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+              >
+                {isSettingInterval ? (
+                  <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                ) : intervalStatus === "ok" ? (
+                  "✓ Aplicado"
+                ) : intervalStatus === "error" ? (
+                  "✗ Error"
+                ) : (
+                  "Aplicar"
+                )}
+              </button>
+              <p className="mt-2 text-[11px] text-slate-400">
+                El dispositivo recibirá el nuevo intervalo y lo guardará en memoria.
               </p>
             </div>
           </div>
