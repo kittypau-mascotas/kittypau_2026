@@ -1050,6 +1050,49 @@ export default function BowlPage() {
                     )}
                     Tarar
                   </button>
+                  {/* Selector intervalo de escaneo */}
+                  <div className="absolute bottom-4 right-4 flex items-center gap-1.5">
+                    <select
+                      value={selectedInterval}
+                      onChange={(e) => setSelectedInterval(Number(e.target.value))}
+                      disabled={!selectedDevice}
+                      className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 focus:outline-none disabled:opacity-40"
+                    >
+                      <option value={1_000}>1 s</option>
+                      <option value={5_000}>5 s</option>
+                      <option value={15_000}>15 s</option>
+                      <option value={30_000}>30 s</option>
+                      <option value={60_000}>1 min</option>
+                      <option value={300_000}>5 min</option>
+                      <option value={1_500_000}>25 min</option>
+                      <option value={1_800_000}>30 min</option>
+                      <option value={3_600_000}>1 h</option>
+                      <option value={7_200_000}>2 h</option>
+                      <option value={14_400_000}>4 h</option>
+                      <option value={21_600_000}>6 h</option>
+                      <option value={43_200_000}>12 h</option>
+                      <option value={86_400_000}>24 h</option>
+                      <option value={604_800_000}>1 semana</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => void handleSetInterval()}
+                      disabled={isSettingInterval || !selectedDevice}
+                      title="Aplicar intervalo de escaneo"
+                      className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:opacity-40"
+                    >
+                      {isSettingInterval ? (
+                        <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
+                      ) : intervalStatus === "ok" ? (
+                        <span className="text-emerald-600">✓</span>
+                      ) : intervalStatus === "error" ? (
+                        <span className="text-red-500">✗</span>
+                      ) : (
+                        <span>↻</span>
+                      )}
+                      Escaneo
+                    </button>
+                  </div>
                 </div>
                 <ChartCard
                   title="Temperatura"
