@@ -1,0 +1,11 @@
+{
+  "autodeskProduct": "Fusion360",
+  "type": "Script",
+  "id": "agregar_orificios",
+  "author": "KittyPau",
+  "description": "Agrega 2 orificios pasantes a la rosca macho",
+  "version": "1.0",
+  "runOnStartup": false,
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}
