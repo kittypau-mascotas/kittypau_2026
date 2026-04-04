@@ -135,7 +135,10 @@ samsung_tizen_experiment/
 *Samsung*
 *tv*
 *TV*
-Analisis_Estadistico_ML_IA/
+Analisis_Estadistico_ML_IA/*
+!Analisis_Estadistico_ML_IA/notebooks/
+Analisis_Estadistico_ML_IA/notebooks/*
+!Analisis_Estadistico_ML_IA/notebooks/KittyPau_ML_Analysis_synced.ipynb
 
 # Legacy / experimental workspaces
 boton gato/

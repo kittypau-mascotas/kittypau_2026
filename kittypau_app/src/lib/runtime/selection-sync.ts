@@ -16,6 +16,18 @@ function canUseWindow() {
 export function syncSelectedPet(petId: string | null, petName?: string | null) {
   if (!canUseWindow()) return;
 
+  const currentPetId = window.localStorage.getItem("kittypau_pet_id");
+  const currentPetName = window.localStorage.getItem("kittypau_pet_name");
+  const nextPetId = petId ?? null;
+  const nextPetName = petName ?? null;
+  const idUnchanged = currentPetId === nextPetId;
+  const nameUnchanged =
+    nextPetName === null
+      ? currentPetName === null
+      : currentPetName === nextPetName;
+
+  if (idUnchanged && nameUnchanged) return;
+
   if (petId) {
     window.localStorage.setItem("kittypau_pet_id", petId);
   } else {
@@ -37,6 +49,10 @@ export function syncSelectedPet(petId: string | null, petName?: string | null) {
 
 export function syncSelectedDevice(deviceId: string | null) {
   if (!canUseWindow()) return;
+
+  const currentDeviceId = window.localStorage.getItem("kittypau_device_id");
+  const nextDeviceId = deviceId ?? null;
+  if (currentDeviceId === nextDeviceId) return;
 
   if (deviceId) {
     window.localStorage.setItem("kittypau_device_id", deviceId);
