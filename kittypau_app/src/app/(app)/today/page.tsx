@@ -2705,7 +2705,7 @@ export default function TodayPage() {
                     </p>
                   ) : null}
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
                   {BOWL_CATEGORY_CHOICES.map((choice) => {
                     const isBusy = bowlCategoryBusy === choice.key;
                     const isPendingConfirm =
@@ -2835,7 +2835,7 @@ export default function TodayPage() {
                     </p>
                   ) : null}
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
                   {WATER_CATEGORY_CHOICES.map((choice) => {
                     const isBusy = waterCategoryBusy === choice.key;
                     const isPendingConfirm =
