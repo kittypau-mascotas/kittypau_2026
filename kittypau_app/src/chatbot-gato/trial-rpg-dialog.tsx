@@ -1,9 +1,8 @@
 "use client";
 
 import {
-  useLayoutEffect,
   useRef,
-  useState,
+  useSyncExternalStore,
   type CSSProperties,
   type ReactNode,
   type KeyboardEvent,
@@ -47,20 +46,40 @@ export default function TrialRpgDialog(props: TrialRpgDialogProps) {
   const profile = TRIAL_RPG_DIALOG_PROFILES[dialogMode];
   const textPaneRef = useRef<HTMLDivElement | null>(null);
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const [hasOverflow, setHasOverflow] = useState(false);
+  const hasOverflow = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === "undefined") return () => undefined;
+      const textPane = textPaneRef.current;
+      const message = messageRef.current;
+      if (!textPane || !message) return () => undefined;
 
-  useLayoutEffect(() => {
-    const textPane = textPaneRef.current;
-    const message = messageRef.current;
-    if (!textPane || !message) {
-      setHasOverflow(false);
-      return;
-    }
+      let rafId = 0;
+      const handleChange = () => {
+        if (rafId) window.cancelAnimationFrame(rafId);
+        rafId = window.requestAnimationFrame(onStoreChange);
+      };
 
-    const availableHeight = textPane.clientHeight;
-    const contentHeight = message.scrollHeight;
-    setHasOverflow(contentHeight > availableHeight + 2);
-  }, [dialogMode, typedText]);
+      const observer = new ResizeObserver(handleChange);
+      observer.observe(textPane);
+      observer.observe(message);
+      window.addEventListener("resize", handleChange);
+
+      return () => {
+        if (rafId) window.cancelAnimationFrame(rafId);
+        observer.disconnect();
+        window.removeEventListener("resize", handleChange);
+      };
+    },
+    () => {
+      const textPane = textPaneRef.current;
+      const message = messageRef.current;
+      if (!textPane || !message) return false;
+      const availableHeight = textPane.clientHeight;
+      const contentHeight = message.scrollHeight;
+      return contentHeight > availableHeight + 2;
+    },
+    () => false,
+  );
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
