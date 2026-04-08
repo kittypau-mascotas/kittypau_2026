@@ -2718,7 +2718,7 @@ export default function TodayPage() {
                         type="button"
                         onClick={() => void handleBowlCategory(choice)}
                         disabled={Boolean(bowlCategoryBusy)}
-                        className={`flex aspect-square items-center justify-center rounded-2xl border px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-all duration-200 ease-out ${
+                        className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
                           isBusy || isPendingConfirm
                             ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
                             : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
@@ -2848,7 +2848,7 @@ export default function TodayPage() {
                         type="button"
                         onClick={() => void handleWaterCategory(choice)}
                         disabled={Boolean(waterCategoryBusy)}
-                        className={`flex aspect-square items-center justify-center rounded-2xl border px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-all duration-200 ease-out ${
+                        className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
                           isBusy || isPendingConfirm
                             ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
                             : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
