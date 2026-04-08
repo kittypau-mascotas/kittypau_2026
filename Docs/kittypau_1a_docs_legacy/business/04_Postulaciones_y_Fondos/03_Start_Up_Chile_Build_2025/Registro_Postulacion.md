@@ -28,3 +28,5 @@ Este documento servirá como un registro detallado de la información ingresada 
 
 ## Observaciones Adicionales:
 *   [Aquí podemos añadir cualquier nota o aclaración relevante para cada sección.]
+
+

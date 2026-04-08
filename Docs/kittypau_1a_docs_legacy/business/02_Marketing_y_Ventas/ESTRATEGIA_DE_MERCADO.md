@@ -40,3 +40,4 @@ Para que el modelo de suscripción funcione, necesitamos un crecimiento de usuar
 *   **Programa de Referidos:** Incentivar el boca a boca. Los usuarios que refieran a amigos y estos se suscriban, obtienen descuentos o meses gratis.
 
 *   **Fidelización a través del Servicio:** Un soporte y atención al cliente excelente es clave para reducir la tasa de cancelación (churn) y mantener a los clientes suscritos a largo plazo.
+

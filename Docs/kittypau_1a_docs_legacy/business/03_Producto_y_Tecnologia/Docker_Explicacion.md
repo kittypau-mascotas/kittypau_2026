@@ -45,3 +45,5 @@ El siguiente paso lógico en nuestra Fase 2 será:
 1.  **Escribir el `Dockerfile`** para nuestra aplicación `KittyPaw_Unified`.
 2.  **Construir la Imagen** a partir de ese archivo.
 3.  **Ejecutar un Contenedor** para ver nuestra aplicación funcionando dentro de su propia "caja mágica".
+
+

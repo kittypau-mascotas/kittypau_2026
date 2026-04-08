@@ -139,3 +139,4 @@ npx cap open android
 - Verifica que el teléfono tenga internet
 - Asegúrate de usar la URL correcta de ngrok
 - Revisa que el túnel esté activo
+

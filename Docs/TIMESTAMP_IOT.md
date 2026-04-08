@@ -35,3 +35,5 @@ Tabla `readings`:
 
 ## Resumen
 Este patrón transforma el sistema en tolerante a hardware defectuoso, sin romper histórico ni métricas.
+
+

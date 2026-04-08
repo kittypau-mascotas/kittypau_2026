@@ -1,4 +1,4 @@
-﻿# Indice de Documentacion (Kittypau)
+# Indice de Documentacion (Kittypau)
 
 > Entrada rapida:
 > - [README.md](README.md) - puerta de entrada para humanos y agentes
@@ -21,6 +21,11 @@
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql)
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
 - [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
+- [pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md](pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara
+- [pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql](pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado
+- [pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql](pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device
+- [pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md](pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de prueba sin cargador y de los hitos por device
+- [pruebas_kpcl/README.md](pruebas_kpcl/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados
 - [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md)
 - [BRIDGE_HEALTHCHECK.md](BRIDGE_HEALTHCHECK.md)
 - [ESTADO_BRIDGE_ACTUAL.md](ESTADO_BRIDGE_ACTUAL.md)
@@ -38,6 +43,21 @@
 - [GIT_CLI.md](GIT_CLI.md)
 - [VERCEL_CLI.md](VERCEL_CLI.md)
 - [SUPABASE_CLI.md](SUPABASE_CLI.md)
+- [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - chatbot del gato
+- [chatbot/README.md](chatbot/README.md) - indice canonico del chatbot
+- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - documento maestro del chatbot del gato
+- [chatbot/CHATBOT_ADMIN_KITTYPAU.md](chatbot/CHATBOT_ADMIN_KITTYPAU.md) - documento maestro del chatbot de admin
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso del chatbot
+- [chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md](chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md) - plan paso a paso del chatbot de admin
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot
+- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto
+- [chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md](chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica del gato
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque de la demo
+- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio
+- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque de inicio
+- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato
 - [HIVEMQ_MQTT_CLI.md](HIVEMQ_MQTT_CLI.md)
 - [RASPBERRY_CLI.md](RASPBERRY_CLI.md)
 - [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md)
@@ -47,6 +67,8 @@
 - [PLAN_MEJORA_PRIORIZADO.md](PLAN_MEJORA_PRIORIZADO.md) - plan de mejora corto y accionable
 - [TAREAS_PENDIENTES_ACTUALES.md](TAREAS_PENDIENTES_ACTUALES.md) - backlog operativo vivo por area
 - [FONDOS_RASTREADOS_ACTUALES.md](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de fondos y postulaciones
+- [FINANZAS/README.md](FINANZAS/README.md) - entrada al registro financiero operativo
+- [FINANZAS/COMPROBANTES/README.md](FINANZAS/COMPROBANTES/README.md) - carpeta canonica de boletas, transferencias y respaldos
 - [contexto.md](contexto.md)
 - [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)
@@ -94,6 +116,8 @@
 - [Postulaciones Fondos/2026/](Postulaciones%20Fondos/2026/)
 - [Samsung Tizen Experiment](Samsung%20Tizen%20Experiment/README.md)
 - [Android TV Plan](Android%20TV%20Docs/andorid_tv_prueba.md)
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿# Guia de Migracion SQL (Kittypau)
+# Guia de Migracion SQL (Kittypau)
 
 ## Objetivo
 Actualizar esquema sin perder datos existentes.
@@ -60,4 +60,6 @@ Checks agregados:
 - `devices_device_id_format_check`
 - `profiles_onboarding_step_check`
 - `pets_onboarding_step_check`
+
+
 

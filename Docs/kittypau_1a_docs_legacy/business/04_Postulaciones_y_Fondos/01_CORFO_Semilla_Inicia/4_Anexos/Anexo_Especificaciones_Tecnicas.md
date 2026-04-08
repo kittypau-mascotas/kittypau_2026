@@ -81,3 +81,5 @@ El ecosistema KittyPaw se basa en una arquitectura de tres componentes principal
 - **Modularidad y Facilidad de Limpieza:** El plato se diseñará de forma modular, permitiendo que la parte que contiene el alimento se separe fácilmente de la base electrónica para poder lavarla sin riesgo de dañar los componentes.
 - **Integración de Sensores:** La base del dispositivo alojará la celda de carga y la electrónica de forma discreta y protegida de derrames. El sensor de ambiente estará posicionado para medir las condiciones del entorno inmediato sin ser afectado por el contenido del plato.
 - **Estética y Experiencia de Usuario:** El diseño será minimalista y moderno, buscando integrarse de forma armónica en el hogar del usuario. Un indicador LED sutil informará sobre el estado de la conexión del dispositivo.
+
+

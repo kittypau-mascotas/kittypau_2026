@@ -1,4 +1,4 @@
-﻿# Ejecucion Guia de Decision - historico consolidado
+# Ejecucion Guia de Decision - historico consolidado
 
 Este documento quedo consolidado en [GUIA_DECISION.md](GUIA_DECISION.md).
 
@@ -10,3 +10,5 @@ Se conserva como puntero historico para no perder el registro de la validacion e
 
 Si necesitas la version viva y actualizada, lee:
 - [GUIA_DECISION.md](GUIA_DECISION.md)
+
+

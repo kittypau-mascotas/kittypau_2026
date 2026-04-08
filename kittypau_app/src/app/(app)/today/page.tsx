@@ -97,6 +97,30 @@ type ConsumptionSummary = {
 };
 type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
 
+type BowlCategoryChoice = {
+  key: string;
+  label: string;
+};
+
+const BOWL_CATEGORY_CHOICES: BowlCategoryChoice[] = [
+  { key: "kpcl_sin_plato", label: "KPCL SIN PLATO" },
+  { key: "kpcl_con_plato", label: "KPCL CON PLATO" },
+  { key: "tare_con_plato", label: "TARE CON PLATO" },
+  { key: "inicio_servido", label: "INICIO SERVIDO" },
+  { key: "termino_servido", label: "TERMINO SERVIDO" },
+  { key: "inicio_alimentacion", label: "INICIO ALIMENTACION" },
+  { key: "termino_alimentacion", label: "TERMINO ALIMENTACION" },
+];
+const WATER_CATEGORY_CHOICES: BowlCategoryChoice[] = [
+  { key: "kpcl_sin_plato", label: "KPCL SIN PLATO" },
+  { key: "kpcl_con_plato", label: "KPCL CON PLATO" },
+  { key: "tare_con_plato", label: "TARE CON PLATO" },
+  { key: "inicio_servido", label: "INICIO SERVIDO" },
+  { key: "termino_servido", label: "TERMINO SERVIDO" },
+  { key: "inicio_hidratacion", label: "INICIO HIDRATACION" },
+  { key: "termino_hidratacion", label: "TERMINO HIDRATACION" },
+];
+
 type PetAnalyticsSession = {
   id: string;
   device_id: string;
@@ -499,6 +523,40 @@ export default function TodayPage() {
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [bowlCategoryBusy, setBowlCategoryBusy] = useState<string | null>(null);
+  const [bowlCategoryFeedback, setBowlCategoryFeedback] = useState<
+    string | null
+  >(null);
+  const [bowlPlateOverrides, setBowlPlateOverrides] = useState<
+    Record<string, number>
+  >({});
+  const [bowlLastEmptyWeight, setBowlLastEmptyWeight] = useState<
+    Record<string, number>
+  >({});
+  const [bowlTareOffsets, setBowlTareOffsets] = useState<Record<string, number>>(
+    {},
+  );
+  const [bowlPendingPlateConfirm, setBowlPendingPlateConfirm] = useState<
+    Record<string, boolean>
+  >({});
+  const [waterCategoryBusy, setWaterCategoryBusy] = useState<string | null>(
+    null,
+  );
+  const [waterCategoryFeedback, setWaterCategoryFeedback] = useState<
+    string | null
+  >(null);
+  const [waterPlateOverrides, setWaterPlateOverrides] = useState<
+    Record<string, number>
+  >({});
+  const [waterLastEmptyWeight, setWaterLastEmptyWeight] = useState<
+    Record<string, number>
+  >({});
+  const [waterTareOffsets, setWaterTareOffsets] = useState<
+    Record<string, number>
+  >({});
+  const [waterPendingPlateConfirm, setWaterPendingPlateConfirm] = useState<
+    Record<string, boolean>
+  >({});
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
   const [accountType, setAccountType] = useState<
     "admin" | "tester" | "client" | null
@@ -973,7 +1031,7 @@ export default function TodayPage() {
         (device.device_type ?? "").toLowerCase().includes("comedero"),
     ) ??
     primaryDevice;
-  const waterDevice =
+  const baseWaterDevice =
     petDevices.find(
       (device) =>
         (device.device_id ?? "").toUpperCase() === expectedWaterDeviceCode,
@@ -989,6 +1047,11 @@ export default function TodayPage() {
       );
     }) ??
     null;
+  const waterDevice =
+    baseWaterDevice ??
+    (bowlDevice
+      ? petDevices.find((device) => device.id !== bowlDevice.id) ?? null
+      : null);
   const latestReading = state.readings[0] ?? null;
   const bowlLatestReading = bowlDevice?.id
     ? (deviceLatestReadings[bowlDevice.id] ?? null)
@@ -1055,12 +1118,16 @@ export default function TodayPage() {
         Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
-    let active = true;
-    const loadTargets = async () => {
-      const entries = await Promise.all(
-        targetIds.map(async (deviceId) => {
-          try {
-            const result = await loadReadings(deviceId, null, 2);
+      let active = true;
+      let inFlight = false;
+      let interval: number | null = null;
+      const loadTargets = async () => {
+        if (inFlight) return;
+        inFlight = true;
+        const entries = await Promise.all(
+          targetIds.map(async (deviceId) => {
+            try {
+              const result = await loadReadings(deviceId, null, 2);
             return [
               deviceId,
               result.data[0] ?? null,
@@ -1071,24 +1138,31 @@ export default function TodayPage() {
           }
         }),
       );
-      if (!active) return;
-      setDeviceLatestReadings((prev) => ({
-        ...prev,
-        ...Object.fromEntries(
-          entries.map(([deviceId, latest]) => [deviceId, latest]),
-        ),
+        if (!active) {
+          inFlight = false;
+          return;
+        }
+        setDeviceLatestReadings((prev) => ({
+          ...prev,
+          ...Object.fromEntries(
+            entries.map(([deviceId, latest]) => [deviceId, latest]),
+          ),
       }));
       setDevicePreviousReadings((prev) => ({
         ...prev,
-        ...Object.fromEntries(
-          entries.map(([deviceId, , previous]) => [deviceId, previous]),
-        ),
-      }));
-    };
-    void loadTargets();
-    return () => {
-      active = false;
-    };
+          ...Object.fromEntries(
+            entries.map(([deviceId, , previous]) => [deviceId, previous]),
+          ),
+        }));
+        setLastRefreshAt(new Date().toISOString());
+        inFlight = false;
+      };
+      void loadTargets();
+      interval = window.setInterval(loadTargets, 5000);
+      return () => {
+        active = false;
+        if (interval) window.clearInterval(interval);
+      };
   }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
 
   useEffect(() => {
@@ -1361,30 +1435,133 @@ export default function TodayPage() {
       ? `${toRoundedSensorValue(bowlLatestReading.light_percent)}%`
       : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
+  const bowlPlateWeightOverride =
+    bowlDevice?.id && bowlPlateOverrides[bowlDevice.id] !== undefined
+      ? bowlPlateOverrides[bowlDevice.id]
+      : null;
+  const bowlPlateWeightEffective =
+    bowlPlateWeightOverride !== null
+      ? bowlPlateWeightOverride
+      : bowlPlateWeightGrams;
   const bowlGrossWeightGrams = toNullableNumber(
     bowlLatestReading?.weight_grams,
   );
-  const bowlContentWeightGrams =
+  const bowlRawContentWeightGrams =
     bowlGrossWeightGrams !== null
       ? Math.max(
           0,
-          bowlPlateWeightGrams !== null
-            ? bowlGrossWeightGrams - bowlPlateWeightGrams
+          bowlPlateWeightEffective !== null
+            ? bowlGrossWeightGrams - bowlPlateWeightEffective
             : bowlGrossWeightGrams,
         )
+      : null;
+  const bowlTareOffset =
+    bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
+      ? bowlTareOffsets[bowlDevice.id]
+      : 0;
+  const bowlContentWeightGrams =
+    bowlRawContentWeightGrams !== null
+      ? Math.max(0, bowlRawContentWeightGrams - bowlTareOffset)
       : null;
   const bowlContentWeightText =
     bowlContentWeightGrams !== null
       ? `${Math.round(bowlContentWeightGrams)} g`
       : "N/D";
   const bowlPlateWeightText =
-    bowlPlateWeightGrams !== null
-      ? `${Math.round(Math.max(0, bowlPlateWeightGrams))} g`
+    bowlPlateWeightEffective !== null
+      ? `${Math.round(Math.max(0, bowlPlateWeightEffective))} g`
       : "N/D";
   const bowlSensorWeightText =
     bowlGrossWeightGrams !== null
       ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g`
       : "N/D";
+  const handleBowlCategory = useCallback(
+    async (choice: BowlCategoryChoice) => {
+      if (!bowlDevice?.id || bowlCategoryBusy) return;
+      setBowlCategoryBusy(choice.key);
+      setBowlCategoryFeedback(null);
+      try {
+        const res = await authFetch(`/api/devices/${bowlDevice.id}/category`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category: choice.key,
+              snapshot: {
+                device_id: bowlDevice.device_id,
+                weight_grams: bowlGrossWeightGrams,
+                plate_weight_grams: bowlPlateWeightEffective,
+                content_weight_grams: bowlContentWeightGrams,
+                sensor_recorded_at: bowlLatestReading?.recorded_at ?? null,
+              },
+          }),
+        });
+        if (!res.ok) throw new Error("category-save-failed");
+        setBowlCategoryFeedback(`Guardado: ${choice.label}`);
+        if (choice.key === "kpcl_sin_plato") {
+          if (bowlGrossWeightGrams !== null) {
+            setBowlLastEmptyWeight((prev) => ({
+              ...prev,
+              [bowlDevice.id]: bowlGrossWeightGrams,
+            }));
+          }
+          setBowlPlateOverrides((prev) => ({
+            ...prev,
+            [bowlDevice.id]: 0,
+          }));
+          setBowlPendingPlateConfirm((prev) => ({
+            ...prev,
+            [bowlDevice.id]: true,
+          }));
+        }
+        if (choice.key === "kpcl_con_plato") {
+          const emptyWeight =
+            bowlDevice.id in bowlLastEmptyWeight
+              ? bowlLastEmptyWeight[bowlDevice.id]
+              : null;
+          if (emptyWeight !== null && bowlGrossWeightGrams !== null) {
+            const plateWeight = Math.max(
+              0,
+              bowlGrossWeightGrams - emptyWeight,
+            );
+            setBowlPlateOverrides((prev) => ({
+              ...prev,
+              [bowlDevice.id]: plateWeight,
+            }));
+          }
+          setBowlPendingPlateConfirm((prev) => ({
+            ...prev,
+            [bowlDevice.id]: false,
+          }));
+        }
+        if (choice.key === "tare_con_plato") {
+          const tareBase =
+            bowlRawContentWeightGrams !== null ? bowlRawContentWeightGrams : 0;
+          setBowlTareOffsets((prev) => ({
+            ...prev,
+            [bowlDevice.id]: tareBase,
+          }));
+        }
+      } catch {
+        setBowlCategoryFeedback("No se pudo guardar la categoría.");
+      } finally {
+        setBowlCategoryBusy(null);
+        window.setTimeout(() => setBowlCategoryFeedback(null), 3000);
+      }
+    },
+    [
+      bowlCategoryBusy,
+      bowlContentWeightGrams,
+      bowlLastEmptyWeight,
+      bowlDevice?.device_id,
+      bowlDevice?.id,
+      bowlGrossWeightGrams,
+      bowlLatestReading?.recorded_at,
+      bowlPlateWeightGrams,
+      bowlPlateWeightEffective,
+      bowlRawContentWeightGrams,
+      bowlPendingPlateConfirm,
+    ],
+  );
   const waterTempText =
     waterLatestReading?.temperature !== null &&
     waterLatestReading?.temperature !== undefined
@@ -1403,30 +1580,133 @@ export default function TodayPage() {
   const waterPlateWeightGrams = toNullableNumber(
     waterDevice?.plate_weight_grams,
   );
+  const waterPlateWeightOverride =
+    waterDevice?.id && waterPlateOverrides[waterDevice.id] !== undefined
+      ? waterPlateOverrides[waterDevice.id]
+      : null;
+  const waterPlateWeightEffective =
+    waterPlateWeightOverride !== null
+      ? waterPlateWeightOverride
+      : waterPlateWeightGrams;
   const waterGrossWeightGrams = toNullableNumber(
     waterLatestReading?.weight_grams,
   );
-  const waterContentWeightGrams =
+  const waterRawContentWeightGrams =
     waterGrossWeightGrams !== null
       ? Math.max(
           0,
-          waterPlateWeightGrams !== null
-            ? waterGrossWeightGrams - waterPlateWeightGrams
+          waterPlateWeightEffective !== null
+            ? waterGrossWeightGrams - waterPlateWeightEffective
             : waterGrossWeightGrams,
         )
       : null;
+  const waterTareOffset =
+    waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
+      ? waterTareOffsets[waterDevice.id]
+      : 0;
+  const waterContentWeightGrams =
+    waterRawContentWeightGrams !== null
+      ? Math.max(0, waterRawContentWeightGrams - waterTareOffset)
+      : null;
   const waterPlateWeightText =
-    waterPlateWeightGrams !== null
-      ? `${Math.round(Math.max(0, waterPlateWeightGrams))} g`
+    waterPlateWeightEffective !== null
+      ? `${Math.round(Math.max(0, waterPlateWeightEffective))} g`
       : "N/D";
   const waterSensorWeightText =
     waterGrossWeightGrams !== null
       ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g`
       : "N/D";
-  const waterVolumeCm3Text =
+  const waterVolumeMlText =
     waterContentWeightGrams !== null
-      ? `${Math.round(waterContentWeightGrams)} cm3`
+      ? `${Math.round(waterContentWeightGrams)} mL`
       : "N/D";
+  const handleWaterCategory = useCallback(
+    async (choice: BowlCategoryChoice) => {
+      if (!waterDevice?.id || waterCategoryBusy) return;
+      setWaterCategoryBusy(choice.key);
+      setWaterCategoryFeedback(null);
+      try {
+        const res = await authFetch(`/api/devices/${waterDevice.id}/category`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category: choice.key,
+              snapshot: {
+                device_id: waterDevice.device_id,
+                weight_grams: waterGrossWeightGrams,
+                plate_weight_grams: waterPlateWeightEffective,
+                content_weight_grams: waterContentWeightGrams,
+                sensor_recorded_at: waterLatestReading?.recorded_at ?? null,
+              },
+          }),
+        });
+        if (!res.ok) throw new Error("category-save-failed");
+        setWaterCategoryFeedback(`Guardado: ${choice.label}`);
+        if (choice.key === "kpcl_sin_plato") {
+          if (waterGrossWeightGrams !== null) {
+            setWaterLastEmptyWeight((prev) => ({
+              ...prev,
+              [waterDevice.id]: waterGrossWeightGrams,
+            }));
+          }
+          setWaterPlateOverrides((prev) => ({
+            ...prev,
+            [waterDevice.id]: 0,
+          }));
+          setWaterPendingPlateConfirm((prev) => ({
+            ...prev,
+            [waterDevice.id]: true,
+          }));
+        }
+        if (choice.key === "kpcl_con_plato") {
+          const emptyWeight =
+            waterDevice.id in waterLastEmptyWeight
+              ? waterLastEmptyWeight[waterDevice.id]
+              : null;
+          if (emptyWeight !== null && waterGrossWeightGrams !== null) {
+            const plateWeight = Math.max(
+              0,
+              waterGrossWeightGrams - emptyWeight,
+            );
+            setWaterPlateOverrides((prev) => ({
+              ...prev,
+              [waterDevice.id]: plateWeight,
+            }));
+          }
+          setWaterPendingPlateConfirm((prev) => ({
+            ...prev,
+            [waterDevice.id]: false,
+          }));
+        }
+        if (choice.key === "tare_con_plato") {
+          const tareBase =
+            waterRawContentWeightGrams !== null ? waterRawContentWeightGrams : 0;
+          setWaterTareOffsets((prev) => ({
+            ...prev,
+            [waterDevice.id]: tareBase,
+          }));
+        }
+      } catch {
+        setWaterCategoryFeedback("No se pudo guardar la categoría.");
+      } finally {
+        setWaterCategoryBusy(null);
+        window.setTimeout(() => setWaterCategoryFeedback(null), 3000);
+      }
+    },
+    [
+      waterCategoryBusy,
+      waterContentWeightGrams,
+      waterLastEmptyWeight,
+      waterDevice?.device_id,
+      waterDevice?.id,
+      waterGrossWeightGrams,
+      waterLatestReading?.recorded_at,
+      waterPlateWeightGrams,
+      waterPlateWeightEffective,
+      waterRawContentWeightGrams,
+      waterPendingPlateConfirm,
+    ],
+  );
 
   const bowlPrevGrossWeightGrams = toNullableNumber(
     bowlPreviousReading?.weight_grams,
@@ -1435,8 +1715,8 @@ export default function TodayPage() {
     bowlPrevGrossWeightGrams !== null
       ? Math.max(
           0,
-          bowlPlateWeightGrams !== null
-            ? bowlPrevGrossWeightGrams - bowlPlateWeightGrams
+          bowlPlateWeightEffective !== null
+            ? bowlPrevGrossWeightGrams - bowlPlateWeightEffective
             : bowlPrevGrossWeightGrams,
         )
       : null;
@@ -1451,8 +1731,8 @@ export default function TodayPage() {
     waterPrevGrossWeightGrams !== null
       ? Math.max(
           0,
-          waterPlateWeightGrams !== null
-            ? waterPrevGrossWeightGrams - waterPlateWeightGrams
+          waterPlateWeightEffective !== null
+            ? waterPrevGrossWeightGrams - waterPlateWeightEffective
             : waterPrevGrossWeightGrams,
         )
       : null;
@@ -1557,14 +1837,20 @@ export default function TodayPage() {
         bowlLongReadings,
         (r) => {
           const gross = r.weight_grams;
-          const plate = bowlDevice?.plate_weight_grams;
           if (gross === null || gross === undefined) return null;
-          if (plate === null || plate === undefined) return gross;
-          return Math.max(0, gross - plate);
+          const base =
+            bowlPlateWeightEffective !== null
+              ? Math.max(0, gross - bowlPlateWeightEffective)
+              : gross;
+          const offset =
+            bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
+              ? bowlTareOffsets[bowlDevice.id]
+              : 0;
+          return Math.max(0, base - offset);
         },
         THREE_DAYS_MS,
       ),
-    [bowlLongReadings, bowlDevice?.plate_weight_grams],
+    [bowlLongReadings, bowlPlateWeightEffective, bowlDevice?.id, bowlTareOffsets],
   );
   const todayTempSeries = useMemo(
     () => buildSeries(bowlLongReadings, (r) => r.temperature, THREE_DAYS_MS),
@@ -1604,12 +1890,18 @@ export default function TodayPage() {
   const selectBowlSeriesValue = useCallback(
     (reading: ApiReading) => {
       const gross = toNullableNumber(reading.weight_grams);
-      const plate = toNullableNumber(bowlDevice?.plate_weight_grams);
       if (gross === null) return null;
-      if (plate === null) return gross;
-      return Math.max(0, gross - plate);
+      const base =
+        bowlPlateWeightEffective !== null
+          ? Math.max(0, gross - bowlPlateWeightEffective)
+          : gross;
+      const offset =
+        bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
+          ? bowlTareOffsets[bowlDevice.id]
+          : 0;
+      return Math.max(0, base - offset);
     },
-    [bowlDevice?.plate_weight_grams],
+    [bowlPlateWeightEffective, bowlDevice?.id, bowlTareOffsets],
   );
 
   const selectWaterSeriesValue = useCallback(
@@ -1617,12 +1909,18 @@ export default function TodayPage() {
       const waterMl = toNullableNumber(reading.water_ml);
       if (waterMl !== null) return Math.max(0, waterMl);
       const gross = toNullableNumber(reading.weight_grams);
-      const plate = toNullableNumber(waterDevice?.plate_weight_grams);
       if (gross === null) return null;
-      if (plate === null) return gross;
-      return Math.max(0, gross - plate);
+      const base =
+        waterPlateWeightEffective !== null
+          ? Math.max(0, gross - waterPlateWeightEffective)
+          : gross;
+      const offset =
+        waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
+          ? waterTareOffsets[waterDevice.id]
+          : 0;
+      return Math.max(0, base - offset);
     },
-    [waterDevice?.plate_weight_grams],
+    [waterPlateWeightEffective, waterDevice?.id, waterTareOffsets],
   );
 
   const bowlDayNightPoints = useMemo(
@@ -1947,13 +2245,21 @@ export default function TodayPage() {
         (reading) => {
           const gross = toNullableNumber(reading.weight_grams);
           if (gross === null) return null;
-          const tare = Math.max(0, bowlDevice?.plate_weight_grams ?? 0);
-          return Math.max(0, gross - tare);
+          const base =
+            bowlPlateWeightEffective !== null
+              ? Math.max(0, gross - bowlPlateWeightEffective)
+              : gross;
+          const offset =
+            bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
+              ? bowlTareOffsets[bowlDevice.id]
+              : 0;
+          return Math.max(0, base - offset);
         },
       ),
     [
       bowlDevice?.id,
-      bowlDevice?.plate_weight_grams,
+      bowlPlateWeightEffective,
+      bowlTareOffsets,
       deviceHistoryReadings,
       monthStartMs,
       nowMs,
@@ -1968,13 +2274,21 @@ export default function TodayPage() {
         (reading) => {
           const gross = toNullableNumber(reading.weight_grams);
           if (gross === null) return null;
-          const tare = Math.max(0, waterDevice?.plate_weight_grams ?? 0);
-          return Math.max(0, gross - tare);
+          const base =
+            waterPlateWeightEffective !== null
+              ? Math.max(0, gross - waterPlateWeightEffective)
+              : gross;
+          const offset =
+            waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
+              ? waterTareOffsets[waterDevice.id]
+              : 0;
+          return Math.max(0, base - offset);
         },
       ),
     [
       waterDevice?.id,
-      waterDevice?.plate_weight_grams,
+      waterPlateWeightEffective,
+      waterTareOffsets,
       deviceHistoryReadings,
       monthStartMs,
       nowMs,
@@ -2284,12 +2598,13 @@ export default function TodayPage() {
           </section>
 
           <section
-            id="today-bowls"
-            role="region"
-            aria-label="Estado de platos"
-            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
+          id="today-bowls"
+          role="region"
+          aria-label="Estado de platos"
+          className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-2">
               <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
                 <div className="relative min-h-[180px]">
                   <div className="absolute right-2 top-2 flex items-center gap-1">
@@ -2379,7 +2694,47 @@ export default function TodayPage() {
                   </div>
                 </div>
               </article>
+              <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                    Categorías
+                  </p>
+                  {bowlCategoryFeedback ? (
+                    <p className="text-[10px] font-semibold text-slate-500">
+                      {bowlCategoryFeedback}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {BOWL_CATEGORY_CHOICES.map((choice) => {
+                    const isBusy = bowlCategoryBusy === choice.key;
+                    const isPendingConfirm =
+                      choice.key === "kpcl_con_plato" &&
+                      bowlDevice?.id &&
+                      bowlPendingPlateConfirm[bowlDevice.id];
+                    return (
+                      <button
+                        key={choice.key}
+                        type="button"
+                        onClick={() => void handleBowlCategory(choice)}
+                        disabled={Boolean(bowlCategoryBusy)}
+                        className={`flex aspect-square items-center justify-center rounded-2xl border px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-all duration-200 ease-out ${
+                          isBusy || isPendingConfirm
+                            ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
+                            : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                        aria-pressed={isBusy}
+                        aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
+                      >
+                        {choice.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
 
+            <div className="flex flex-col gap-2">
               <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
                 <div className="relative min-h-[180px]">
                   <div className="absolute right-2 top-2 flex items-center gap-1">
@@ -2407,7 +2762,7 @@ export default function TodayPage() {
                   </div>
                   <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
                     <p className="text-[14px] font-semibold text-slate-700">
-                      {waterVolumeCm3Text} (aprox)
+                      {waterVolumeMlText} (aprox)
                       {renderTrend(
                         waterContentWeightGrams,
                         waterPrevContentWeightGrams,
@@ -2469,6 +2824,45 @@ export default function TodayPage() {
                   </div>
                 </div>
               </article>
+              <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                    Categorías
+                  </p>
+                  {waterCategoryFeedback ? (
+                    <p className="text-[10px] font-semibold text-slate-500">
+                      {waterCategoryFeedback}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {WATER_CATEGORY_CHOICES.map((choice) => {
+                    const isBusy = waterCategoryBusy === choice.key;
+                    const isPendingConfirm =
+                      choice.key === "kpcl_con_plato" &&
+                      waterDevice?.id &&
+                      waterPendingPlateConfirm[waterDevice.id];
+                    return (
+                      <button
+                        key={choice.key}
+                        type="button"
+                        onClick={() => void handleWaterCategory(choice)}
+                        disabled={Boolean(waterCategoryBusy)}
+                        className={`flex aspect-square items-center justify-center rounded-2xl border px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-all duration-200 ease-out ${
+                          isBusy || isPendingConfirm
+                            ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
+                            : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                        aria-pressed={isBusy}
+                        aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
+                      >
+                        {choice.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                </div>
+              </div>
             </div>
           </section>
 

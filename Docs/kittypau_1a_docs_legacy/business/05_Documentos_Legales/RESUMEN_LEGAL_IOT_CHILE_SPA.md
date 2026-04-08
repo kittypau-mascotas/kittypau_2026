@@ -41,3 +41,5 @@ Este documento consolida la información legal clave de la empresa IOT CHILE SpA
 *   **Descripción del Servicio:** KittyPaw es un servicio de monitoreo de mascotas que consiste en un Dispositivo inteligente y un Software para visualizar y analizar datos. **Importante: No es un dispositivo médico.**
 *   **Propiedad Intelectual:** El Servicio, incluyendo software, hardware, diseño, branding y contenido, es propiedad exclusiva de IoT Chile SpA y sus licenciantes.
 *   **Ley Aplicable:** Los Términos se rigen por las leyes de Chile.
+
+

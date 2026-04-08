@@ -1,4 +1,4 @@
-﻿# Contexto de Mercado y Analisis - Kittypau
+# Contexto de Mercado y Analisis - Kittypau
 
 Esta carpeta consolida el contexto de mercado y el analisis estrategico que fundamenta Kittypau.
 
@@ -22,3 +22,5 @@ Centralizar en un solo lugar los argumentos de mercado, competencia, cliente, ti
 
 ## Nota de uso
 Cuando un dato sea sensible o variable (finanzas, traccion, porcentajes), se debe declarar como supuesto y validar antes de envio externo.
+
+

@@ -12,6 +12,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 - La capa `analytics` dejo de ser bloqueo de build: ahora degrada a vacio cuando no existe base analitica.
 - El contrato de energia ya esta compartido entre webhook y UI para no duplicar semanticas de `battery_*`.
 - `KPCL0034` y `KPCL0036` quedaron registrados para analisis de bateria.
+- `KPCL0036` ya tiene una observacion manual de carga completa entre `08:36` y `12:42` hora local, y ahora tambien quedo registrado el inicio de autonomia en `battery_only` al desconectar el cargador a las `15:55:23` hora local, util para futuros calculos.
 - La documentacion canonica ya distingue entre vivo, seguimiento e historico.
 
 ## 2. Prioridades inmediatas
@@ -36,6 +37,7 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 7. Mantener `bowl` como vista operativa con acciones rapidas a `today`, `story` y `admin` cuando falten datos, bateria o diagnosticos claros.
 8. Mantener `pet` como vista de identidad y contexto con salidas operativas a `today`, `bowl`, `story`, `registro` y `admin` cuando falten datos o historia.
 9. Mantener `settings` como panel de control con acceso rapido a `pet`, `today` y `admin` cuando el perfil este incompleto o el usuario quiera volver al flujo operativo.
+10. Futura version de `today`: en el cuadro del plato, cuando el estado este verde, exponer botones de categorizacion interna/admin para `sin nada encima`, `plato con comida`, `inicio de servir comida` y `termino de servir comida`; dejar esta interaccion como apoyo operativo y no como flujo publico.
 
 ### P1 - Observabilidad y datos
 

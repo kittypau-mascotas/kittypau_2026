@@ -79,3 +79,5 @@ flowchart LR
   - `kittypau_app/public/logo_carga.jpg` -> iconos/splash Android.
 - Documento operativo de referencia:
   - `Docs/APK_ANDROID_STUDIO_KITTYPAU.md`
+
+

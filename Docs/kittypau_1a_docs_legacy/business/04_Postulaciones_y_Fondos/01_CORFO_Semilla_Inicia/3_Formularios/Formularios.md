@@ -36,3 +36,4 @@ Para KittyPaw, el llenado de los formularios debe ser estratégico, destacando l
 - **Revisión Cruzada:** Que al menos dos personas del equipo revisen las respuestas para detectar errores o áreas de mejora.
 
 Un formulario bien redactado y estructurado es la carta de presentación de KittyPaw ante los evaluadores.
+

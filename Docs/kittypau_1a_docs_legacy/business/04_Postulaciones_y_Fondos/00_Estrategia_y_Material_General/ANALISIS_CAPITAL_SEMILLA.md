@@ -74,3 +74,5 @@ Este documento resume y compara las dos principales oportunidades de "Capital Se
 
 1.  **Postular a Ambos:** Son compatibles. Se debe postular a Semilla Inicia (CORFO) por su alto monto y calce tecnológico, y en paralelo a Capital Semilla Emprende (Sercotec) como una segunda opción muy viable para asegurar capital operativo.
 2.  **Preparar Material Base:** Desarrollar un "Kit de Postulación" que incluya el modelo de negocio, descripción del problema/solución, presupuesto base y el video pitch. Este kit se adaptará luego a las bases específicas de cada fondo.
+
+

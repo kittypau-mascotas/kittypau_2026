@@ -14,3 +14,5 @@ Fecha: 19 de noviembre de 2025
 Firma: ___________________________________
 MAURICIO CRISTIAN CÁRCAMO DÍAZ
 Líder de Equipo y Representante Legal de IOT CHILE SpA
+
+

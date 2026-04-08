@@ -36,3 +36,4 @@ Para KittyPaw, la revisión de las bases debe ser meticulosa, prestando especial
 - **Identificar Palabras Clave:** Subrayar o destacar palabras clave y conceptos que se repiten en las bases para incorporarlos en la redacción de la propuesta de KittyPaw.
 
 Al tener un entendimiento profundo de las bases, KittyPaw podrá adaptar su propuesta para maximizar sus posibilidades de éxito en la obtención de financiamiento.
+

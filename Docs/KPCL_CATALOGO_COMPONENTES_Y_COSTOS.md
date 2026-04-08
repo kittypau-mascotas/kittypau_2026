@@ -1,4 +1,4 @@
-ï»¿# KPCL - Catalogo Estandar de Componentes y Costos
+# KPCL - Catalogo Estandar de Componentes y Costos
 ## Producto: Kittypau (Comedero inteligente para mascotas)
 
 > Este catalogo cubre los perfiles de hardware del **comedero automatico Kittypau** (KPCL).
@@ -12,7 +12,7 @@ Estandarizar la cuantificacion absoluta de cada KPCL para construccion, mantenim
 - compra filamento PLA+ (CLP 16.000 / 1kg con envio)
 - tipo de cambio operativo: `1 USD = 950 CLP`
 
-## Perfiles de hardware â€” Kittypau
+## Perfiles de hardware — Kittypau
 ### A) KPCL Comedero (NodeMCU v3 CP2102)
 Uso tipico: Kittypau sin camara.
 
@@ -71,7 +71,7 @@ Fallback para unidades Kittypau sin modelo explicitado.
 }
 ```
 
-## Reglas de mapeo â€” Kittypau
+## Reglas de mapeo — Kittypau
 1. Si `device_model` contiene `ESP32-CAM` o `device_type` contiene `cam` -> `esp32-cam`.
 2. Si `device_model` contiene `NodeMCU` o `CP2102` -> `nodemcu-v3`.
 3. Si falta modelo -> `generic-kpcl`.
@@ -133,4 +133,6 @@ Control administrativo:
 
 Test recomendado en suite admin:
 - `kpcl_catalog`: valida perfiles, componentes activos y mapeo de hardware.
+
+
 

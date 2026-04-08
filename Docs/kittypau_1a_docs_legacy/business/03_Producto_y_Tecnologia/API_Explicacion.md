@@ -51,3 +51,5 @@ Casi siempre, las interacciones con una API se resumen en cuatro acciones básic
 3.  **Flexibilidad:** El día de mañana, si queremos crear una nueva app o un panel de control diferente, no necesitamos empezar de cero. Simplemente consumimos la misma API que ya existe.
 
 En resumen, la API es el corazón que conecta todas las partes de nuestro ecosistema KittyPaw, permitiéndoles hablar entre sí de manera ordenada y eficiente.
+
+

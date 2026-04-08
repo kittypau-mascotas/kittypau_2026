@@ -40,3 +40,5 @@ registro → confirmación → onboarding (usuario/mascota/dispositivo) → dash
 - Password: `Test1234!`
 - Mascota: `Bandida`, tipo `cat`
 - Device: `KPCL0001`, tipo `food_bowl`
+
+

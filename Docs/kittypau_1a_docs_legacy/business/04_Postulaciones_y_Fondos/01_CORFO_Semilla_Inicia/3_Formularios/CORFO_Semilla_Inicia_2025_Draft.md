@@ -228,3 +228,5 @@ Se adjuntará un video-pitch de 3 minutos, siguiendo las directrices de CORFO, d
 
 
 (Se identificará y contactará a una Entidad Patrocinadora una vez que el proyecto sea pre-seleccionado, según los requisitos de CORFO).
+
+

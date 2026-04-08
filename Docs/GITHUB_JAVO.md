@@ -18,6 +18,21 @@ Actualizar en cada jornada y en cada PR relevante.
 
 ## Registro
 
+## 2026-04-07
+- Rama: feat/javo-mauro
+- Objetivo: Dejar platos KPCL0034/KPCL0036 operativos para pruebas reales con Bandida.
+- Cambios realizados:
+  - Se dejaron ambos platos reportando datos reales en Today.
+  - Se inicio la recoleccion de data de Bandida (tester).
+- Archivos principales:
+  - Docs/pruebas_kpcl/HITO_2026-04-07_PLATOS_BANDIDA.md
+  - Docs/pruebas_kpcl/DIAGNOSTICO_ERRORES_Y_REGISTROS_2026-04-07.md
+- PR/Commit: Pendiente.
+- Pruebas ejecutadas:
+  - Validacion de cards de platos con datos reales (Today).
+- Riesgos/Pendientes:
+  - Continuar captura de data y validar estabilidad de sensores.
+
 ## 2026-03-04
 - Rama: feat/javo-mauro
 - Objetivo: Calibrar sensor HX711 (KPCL0036), configurar bridge v2.6, alinear gobernanza GitHub.
@@ -107,3 +122,5 @@ Actualizar en cada jornada y en cada PR relevante.
   - Vercel preview (OK)
 - Riesgos/Pendientes:
   - Mergear PR #14 a main y sincronizar ambos PCs.
+
+

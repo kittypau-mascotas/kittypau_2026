@@ -102,3 +102,5 @@ Ordenar el trabajo pendiente para mejorar experiencia de usuario, estabilidad op
 2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
 4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+
+

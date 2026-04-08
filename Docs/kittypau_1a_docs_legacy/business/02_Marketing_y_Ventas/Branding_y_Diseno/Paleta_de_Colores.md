@@ -46,3 +46,5 @@ Estos son los colores que definen la identidad visual de la marca.
 
 - **Texto en Contraste:** `#ffffff` (Blanco)
   - **Uso:** Texto sobre botones con color de fondo oscuro (ej. Coral Principal).
+
+

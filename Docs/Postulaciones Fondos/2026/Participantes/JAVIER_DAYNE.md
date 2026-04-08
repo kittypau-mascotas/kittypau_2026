@@ -62,3 +62,5 @@
 
 ## Resumen para formulario
 > Ingeniero en Automatización con más de 15 años de experiencia en sistemas de control industrial (DCS, SCADA, IIoT/MQTT). Co-fundador de Kittypau, liderando el desarrollo técnico de hardware IoT, firmware, bridge y arquitectura de software.
+
+

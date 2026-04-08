@@ -58,3 +58,4 @@ GOOGLE_SHEETS_ID=1u0o5YKunyMWYd5-Zuhcw3zDLP9xJumFr01P4dxvfRM4
 - La aplicación se conectará a la misma base de datos de Replit
 - Todos los usuarios y datos estarán disponibles
 - Podrás hacer login con `jdayne/jdayne21` o `jdayne3/jdayne3`
+

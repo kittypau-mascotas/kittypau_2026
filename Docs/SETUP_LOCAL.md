@@ -120,3 +120,5 @@ npm run type-check   # Verificar tipos TypeScript
 
 *Proyecto ID Supabase: `zgwqtzazvkjkfocxnxsh`*
 *Última actualización: 2026-03-16*
+
+

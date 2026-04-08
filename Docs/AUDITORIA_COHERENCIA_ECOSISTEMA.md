@@ -200,3 +200,5 @@ Objetivo: pasar de `3.74` a `>= 4.10`, priorizando cierre de brechas en Producto
   - referencia en `Docs/PRUEBAS_E2E.md` e `Docs/INDEX.md`.
 - Estado:
   - C-004 pasa de **Abierto** a **En curso** (pendiente ejecucion formal en entorno Supabase objetivo).
+
+

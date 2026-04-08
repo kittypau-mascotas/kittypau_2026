@@ -1,4 +1,4 @@
-ï»¿# Vistas y Pages de la App (Kittypau)
+# Vistas y Pages de la App (Kittypau)
 
 ## Objetivo
 Definir la estructura de vistas antes de implementar UI o routing.
@@ -7,14 +7,14 @@ Definir la estructura de vistas antes de implementar UI o routing.
 
 ## Implementacion actual (2026-02-07)
 - /login implementado con layout parallax + login real (Supabase Auth) y validaciones inline.
-- /today implementado como feed vertical interpretado conectado a APIs. Incluye modo guÃ­a inicial con tips.
+- /today implementado como feed vertical interpretado conectado a APIs. Incluye modo guía inicial con tips.
 - /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
-- /story implementado como timeline narrativo bÃ¡sico.
-- /pet implementado como perfil conductual bÃ¡sico con insights.
-- /bowl implementado como estado tÃ©cnico del plato.
+- /story implementado como timeline narrativo básico.
+- /pet implementado como perfil conductual básico con insights.
+- /bowl implementado como estado técnico del plato.
 - /settings implementado como ajustes de perfil y notificaciones.
-- /register implementado como ruta pÃºblica con reenvÃ­o de confirmaciÃ³n y validaciones inline.
+- /register implementado como ruta pública con reenvío de confirmación y validaciones inline.
 - UI tolera respuestas API en formato lista o `{ data, next_cursor }`.
 
 ---
@@ -213,7 +213,7 @@ pet_onboarding_step:
 ---
 
 ## Referencia visual del tablero
-- Ver `Docs/estilos y diseÃ±os.md` (paleta final, tipografia y estructura del tablero).
+- Ver `Docs/estilos y diseños.md` (paleta final, tipografia y estructura del tablero).
 
 ---
 
@@ -269,7 +269,7 @@ Los numeros existen, pero como evidencia secundaria.
 ### 2) Registro (public)
 **Objetivo**: activar cuenta y disparar el modal de registro.
 **Layout**
-- Pop-up con pasos: Cuenta â†’ Usuario â†’ Mascota â†’ Dispositivo.
+- Pop-up con pasos: Cuenta ? Usuario ? Mascota ? Dispositivo.
 - Progreso visible.
 **Datos / API**
 - Supabase Auth (signUp).
@@ -345,12 +345,12 @@ Los numeros existen, pero como evidencia secundaria.
 
 ---
 
-## Plan de implementaciÃ³n front (pasos)
-1. **/story**: timeline narrativo del dÃ­a (lecturas â†’ interpretaciones).
-2. **/pet**: perfil conductual con insights y ediciÃ³n bÃ¡sica.
-3. **/bowl**: estado tÃ©cnico del plato + acciones.
+## Plan de implementación front (pasos)
+1. **/story**: timeline narrativo del día (lecturas ? interpretaciones).
+2. **/pet**: perfil conductual con insights y edición básica.
+3. **/bowl**: estado técnico del plato + acciones.
 4. **/settings**: ajustes de usuario y notificaciones.
-5. **/register**: ruta pÃºblica (ademÃ¡s del popup) + reenvÃ­o de confirmaciÃ³n.
+5. **/register**: ruta pública (además del popup) + reenvío de confirmación.
 
 
 
@@ -370,4 +370,6 @@ Los numeros existen, pero como evidencia secundaria.
 
 ## Onboarding
 - Paso 1: avatar por seleccion (4 opciones).
+
+
 

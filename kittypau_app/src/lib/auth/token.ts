@@ -31,19 +31,70 @@ export function clearTokens() {
   window.localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
+function clearSupabaseBrowserSession() {
+  if (typeof window === "undefined") return;
+  const keysToRemove: string[] = [];
+
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key) continue;
+    if (key.startsWith("sb-")) {
+      keysToRemove.push(key);
+    }
+  }
+
+  for (const key of keysToRemove) {
+    window.localStorage.removeItem(key);
+  }
+}
+
+function isInvalidRefreshTokenError(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const message = "message" in error ? String(error.message ?? "") : "";
+  return /invalid refresh token|refresh token not found/i.test(message);
+}
+
+function resetBrokenAuthState() {
+  clearTokens();
+  clearSupabaseBrowserSession();
+}
+
 async function getSupabaseSessionToken(): Promise<string | null> {
   const supabase = getSupabaseBrowser();
   if (!supabase) return null;
 
-  const { data, error } = await supabase.auth.getSession();
-  if (error || !data.session?.access_token) return null;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.access_token) return null;
 
-  setTokens({
-    accessToken: data.session.access_token,
-    refreshToken: data.session.refresh_token,
-  });
+    setTokens({
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token,
+    });
 
-  return data.session.access_token;
+    return data.session.access_token;
+  } catch (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      resetBrokenAuthState();
+    }
+    return null;
+  }
+}
+
+export async function getSupabaseSessionSafely() {
+  const supabase = getSupabaseBrowser();
+  if (!supabase) return null;
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) return null;
+    return data.session;
+  } catch (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      resetBrokenAuthState();
+    }
+    return null;
+  }
 }
 
 function decodeJwtExp(accessToken: string): number | null {
@@ -78,18 +129,25 @@ async function refreshWithSupabase(refreshToken: string) {
   const supabase = getSupabaseBrowser();
   if (!supabase) return null;
 
-  const { data, error } = await supabase.auth.refreshSession({
-    refresh_token: refreshToken,
-  });
+  try {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
 
-  if (error || !data.session?.access_token) return null;
+    if (error || !data.session?.access_token) return null;
 
-  setTokens({
-    accessToken: data.session.access_token,
-    refreshToken: data.session.refresh_token ?? refreshToken,
-  });
+    setTokens({
+      accessToken: data.session.access_token,
+      refreshToken: data.session.refresh_token ?? refreshToken,
+    });
 
-  return data.session.access_token;
+    return data.session.access_token;
+  } catch (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      resetBrokenAuthState();
+    }
+    return null;
+  }
 }
 
 export async function getValidAccessToken(): Promise<string | null> {

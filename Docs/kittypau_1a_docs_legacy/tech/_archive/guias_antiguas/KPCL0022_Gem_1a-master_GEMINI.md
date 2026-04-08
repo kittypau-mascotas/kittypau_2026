@@ -35,3 +35,5 @@ El dispositivo puede ser controlado remotamente mediante mensajes JSON:
 ### Sistema de Archivos (LittleFS)
 - **`wifi.txt`:** Almacena el SSID y la contraseña de la red WiFi.
 - **`scale_offset.txt`:** Guarda el valor de offset de la celda de carga para mantener la calibración entre reinicios.
+
+

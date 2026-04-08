@@ -24,3 +24,5 @@ El backend es funcional en lo que respecta a la base de datos, pero no puede com
 ## Tarea Pendiente
 
 Se ha creado una tarea en `TASK_BOARD.md` para que un desarrollador revise la configuración de la cuenta de AWS IoT Core y solucione el problema de conexión.
+
+

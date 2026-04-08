@@ -21,3 +21,5 @@ npm start
 - `POST /api/bridge/heartbeat` responde 200.
 - Dashboard admin refleja estado de bridge sin degradacion inesperada.
 
+
+

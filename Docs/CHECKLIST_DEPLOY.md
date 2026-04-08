@@ -1,4 +1,4 @@
-﻿# Checklist de Deploy (Kittypau)
+# Checklist de Deploy (Kittypau)
 
 ## 1) Supabase listo
 - [ ] Proyecto creado en Supabase.
@@ -69,4 +69,6 @@ Agregar en **Settings -> Environment Variables**:
 - [x] Produccion activa: `https://kittypau-app.vercel.app`.
 - [x] Ultimo deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`.
 - [x] Ajustes UX APK nativa aplicados (login + `/today` mobile).
+
+
 

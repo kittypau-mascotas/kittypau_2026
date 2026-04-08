@@ -68,3 +68,5 @@ Revisar:
 - Timeout TLS: revisar `--ssl`, host y puerto 8883.
 - Sin mensajes en bridge: revisar topic exacto y wildcard.
 - 400/404 en webhook: revisar formato `device_id` (`KPCL0000`) y registro del dispositivo.
+
+

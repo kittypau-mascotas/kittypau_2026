@@ -25,3 +25,4 @@ El cliente (dueños de mascotas, veterinarias, criadores, etc.) paga por una sol
 *   **Valor Agregado:** Funcionalidades premium como alertas inteligentes, análisis de tendencias, reconocimiento por cámara, etc.
 
 Para que este modelo sea escalable y sostenible, la estrategia es que el hardware tenga un costo razonable (potencialmente amortizable) y el servicio de suscripción mensual genere los ingresos recurrentes (MRR) que den rentabilidad al negocio.
+

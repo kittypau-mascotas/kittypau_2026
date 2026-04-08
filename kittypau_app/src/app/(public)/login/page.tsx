@@ -1,11 +1,15 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Parallax } from "react-scroll-parallax";
-import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
+import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";
+import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
+import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
+import { LOGIN_CHATBOT_CONTEXT } from "@/chatbot-gato/login-context";
+import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 import { setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -60,8 +64,13 @@ export default function LoginPage() {
   const [isLoginCatHidden, setIsLoginCatHidden] = useState(false);
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
+  const [aiTrialDialogReply, setAiTrialDialogReply] = useState<{
+    key: string;
+    lines: readonly string[];
+  } | null>(null);
   const trialCatRef = useRef<HTMLDivElement | null>(null);
   const trialDialogCatRef = useRef<HTMLDivElement | null>(null);
+  const trialBackgroundAudioRef = useRef<HTMLAudioElement | null>(null);
   const loginPanelWrapRef = useRef<HTMLDivElement | null>(null);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const trialDialogAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -116,16 +125,26 @@ export default function LoginPage() {
     "/audio/agua_2.mp3",
     "/audio/agua_3.mp3",
   ] as const;
-  const trialDialogLines = useMemo(
-    () =>
-      [
-        "Ah... perfecto, humanos. Justo lo que necesitaba.",
-        "Gracias. Muchas gracias por despertarme. De verdad.",
-        "¿Estás probando la app?",
-        "Al menos haz algo útil y síguenos en Instagram.",
-      ] as const,
+  const loginRuntime = useMemo(
+    () => buildChatbotRuntime({ page: "login" }),
     [],
   );
+  const trialDialogRequestKey = useMemo(
+    () =>
+      [
+        "login",
+        showTrialModal ? "open" : "closed",
+        trialOwnerName.trim(),
+        trialPetName.trim(),
+        trialEmail.trim().toLowerCase(),
+      ].join(":"),
+    [showTrialModal, trialEmail, trialOwnerName, trialPetName],
+  );
+  const trialDialogLines =
+    aiTrialDialogReply?.key === trialDialogRequestKey
+      ? aiTrialDialogReply.lines
+      : [];
+  const trialDialogIntro = loginRuntime.intro;
   const randomFrom = (arr: readonly string[]) =>
     arr[Math.floor(Math.random() * arr.length)];
   const playBowlClickSound = (group: "food" | "water") => {
@@ -145,6 +164,70 @@ export default function LoginPage() {
     audio.currentTime = 0;
   }, []);
 
+  const stopTrialBackgroundAudio = useCallback(() => {
+    const audio = trialBackgroundAudioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+  }, []);
+
+  const handleTrialMuteToggle = useCallback(() => {
+    setIsTrialDialogMuted((prevMuted) => !prevMuted);
+  }, []);
+
+  useEffect(() => {
+    if (!showTrialModal) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void fetchChatbotGatoResponse(
+        {
+          page: "login",
+          ownerName: trialOwnerName,
+          petName: trialPetName,
+          email: trialEmail,
+          loginStep: 0,
+        },
+        controller.signal,
+      )
+        .then((reply) => {
+          if (!reply || controller.signal.aborted) return;
+          if (reply.lines.length) {
+            setAiTrialDialogReply({
+              key: trialDialogRequestKey,
+              lines: reply.lines,
+            });
+            return;
+          }
+          setAiTrialDialogReply({
+            key: trialDialogRequestKey,
+            lines: loginRuntime.lines,
+          });
+        })
+        .catch(() => {
+          if (controller.signal.aborted) return;
+          setAiTrialDialogReply({
+            key: trialDialogRequestKey,
+            lines: loginRuntime.lines,
+          });
+        });
+    }, 450);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    loginRuntime.lines,
+    showTrialModal,
+    trialDialogRequestKey,
+    trialEmail,
+    trialOwnerName,
+    trialPetName,
+  ]);
+
   useEffect(() => {
     if (!showTrialModal || !isTrialDialogVisible) return;
     if (!isTrialDialogMuted) return;
@@ -154,6 +237,33 @@ export default function LoginPage() {
     isTrialDialogVisible,
     showTrialModal,
     stopTrialDialogAudio,
+  ]);
+
+  useEffect(() => {
+    const audio = trialBackgroundAudioRef.current;
+    if (!audio) return;
+
+    if (!showTrialModal || !isTrialDialogVisible) {
+      audio.pause();
+      audio.currentTime = 0;
+      return;
+    }
+
+    if (isTrialDialogMuted) {
+      stopTrialBackgroundAudio();
+      return;
+    }
+
+    if (audio.paused) {
+      audio.loop = true;
+      audio.volume = 0.28;
+      void audio.play().catch(() => undefined);
+    }
+  }, [
+    isTrialDialogMuted,
+    isTrialDialogVisible,
+    showTrialModal,
+    stopTrialBackgroundAudio,
   ]);
 
   const wakeTrialCat = () => setIsTrialCatAwake(true);
@@ -286,6 +396,7 @@ export default function LoginPage() {
       setTrialDialogTypedText("");
 
       setIsTrialDialogTyping(false);
+      setAiTrialDialogReply(null);
 
       setIsDialogCatAwake(true);
 
@@ -295,8 +406,8 @@ export default function LoginPage() {
       return;
     }
 
-    const dialogDelayMs = 1700;
-    const hideCatBeforeDialogMs = 1000;
+    const dialogDelayMs = 450;
+    const hideCatBeforeDialogMs = 240;
     const hideDelay = Math.max(0, dialogDelayMs - hideCatBeforeDialogMs);
 
     const hideTimer = window.setTimeout(() => {
@@ -384,7 +495,7 @@ export default function LoginPage() {
     const audio = trialDialogAudioRef.current;
     if (audio && !isTrialDialogMuted) {
       audio.loop = true;
-      audio.volume = 0.3 + Math.random() * 0.1;
+      audio.volume = (0.3 + Math.random() * 0.1) * 0.85;
       audio.currentTime = 0;
       void audio.play().catch(() => undefined);
     }
@@ -452,7 +563,7 @@ export default function LoginPage() {
             aria-current={number === modalStep ? "step" : undefined}
           >
             <span className="login-step2-dot" aria-hidden="true">
-              {completedMap[number] ? "✓" : number}
+              {completedMap[number] ? "?" : number}
             </span>
             <span className="login-step2-label">{step.label}</span>
           </button>
@@ -899,6 +1010,7 @@ export default function LoginPage() {
   const closeTrial = () => {
     setShowTrialModal(false);
     setTrialError(null);
+    stopTrialBackgroundAudio();
   };
 
   const recordDemoIngreso = useCallback(
@@ -967,6 +1079,7 @@ export default function LoginPage() {
 
   const onTrialDialogAdvance = useCallback(() => {
     if (!isTrialDialogVisible) return;
+    if (!trialDialogLines.length) return;
     const lastIndex = trialDialogLines.length - 1;
     if (isTrialDialogTyping) {
       setTrialDialogTypedText(trialDialogLines[trialDialogIndex] ?? "");
@@ -1082,6 +1195,7 @@ export default function LoginPage() {
                   alt=""
                   width={96}
                   height={96}
+                  priority
                   className="brand-logo-img"
                   draggable={false}
                 />
@@ -1109,6 +1223,7 @@ export default function LoginPage() {
                   alt=""
                   width={96}
                   height={96}
+                  priority
                   className="brand-logo-img"
                   draggable={false}
                 />
@@ -1351,12 +1466,12 @@ export default function LoginPage() {
       {showRegister ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10">
           <div className="relative w-full max-w-4xl sm:px-0">
-            <div
-              className={`glass-panel login-register-modal w-full overflow-hidden ${
-                registerStep === "registro"
-                  ? "login-register-modal-registro"
-                  : ""
-              }`}
+          <div
+            className={`glass-panel login-register-modal w-full overflow-hidden ${
+              registerStep === "registro"
+                ? "login-register-modal-registro"
+                : ""
+            }`}
             >
               <div className="login-register-head border-b border-white/30 px-6 py-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1528,14 +1643,22 @@ export default function LoginPage() {
           }}
         >
           <audio
+            ref={trialBackgroundAudioRef}
+            src="/audio/cancion_fondo.mp3"
+            preload="auto"
+          />
+          <audio
             ref={trialDialogAudioRef}
             src="/audio/dialogo_rpg.mp3"
             preload="auto"
           />
           <div
-            className="login-register-modal login-trial-modal glass-panel w-full max-w-md rounded-[var(--radius)] p-4 sm:p-6"
+            className={`login-trial-modal-host relative w-full max-w-md${
+              isTrialDialogVisible ? " login-trial-modal-host--dialog-open" : ""
+            }`}
             onClick={(event) => event.stopPropagation()}
           >
+            <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-4 sm:p-6">
             <div className="mb-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -1543,21 +1666,22 @@ export default function LoginPage() {
                     Modo prueba
                   </p>
                   <h2 className="login-trial-title mt-1 text-xl font-semibold">
-                    Personaliza tu demo
+                    {trialDialogIntro.title}
                   </h2>
                   <p className="login-trial-copy mt-1 text-sm">
-                    Te mostraremos Kittypau con tus datos para una sesion de
-                    prueba.
+                    {trialDialogIntro.body}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={closeTrial}
-                  className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
-                  aria-label="Cerrar"
-                >
-                  Cerrar
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={closeTrial}
+                    className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
+                    aria-label="Cerrar"
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1617,49 +1741,57 @@ export default function LoginPage() {
                 onClick={startTrial}
                 className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
               >
-                Entrar a prueba
+                {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
               </button>
             </div>
           </div>
+          </div>
           {isTrialDialogVisible ? (
-            <TrialRpgDialog
-              typedText={trialDialogTypedText}
-              isMuted={isTrialDialogMuted}
-              onToggleMute={() => setIsTrialDialogMuted((prev) => !prev)}
-              onClose={closeTrial}
-              onAdvance={onTrialDialogAdvance}
-              catSvg={trialCatSvg}
-              isCatAwake={isDialogCatAwake}
-              catEyeOffset={dialogCatEyeOffset}
-              catRef={trialDialogCatRef}
-              actions={
-                <a
-                  href="https://www.instagram.com/kittypau.mascotas/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white trial-rpg-instagram ${
-                    trialDialogIndex === trialDialogLines.length - 1 &&
-                    !isTrialDialogTyping
-                      ? "is-visible"
-                      : "is-hidden"
-                  }`}
+            <TrialRpgDialogDock>
+              <div className="login-trial-dialog-scene">
+                <TrialRpgDialog
+                  dialogMode="login"
+                  typedText={trialDialogTypedText}
+                  isTyping={isTrialDialogTyping}
+                  isMuted={isTrialDialogMuted}
+                  onToggleMute={handleTrialMuteToggle}
+                  onClose={closeTrial}
+                  onAdvance={onTrialDialogAdvance}
+                  catSvg={trialCatSvg}
+                  isCatAwake={isDialogCatAwake}
+                  catEyeOffset={dialogCatEyeOffset}
+                  catRef={trialDialogCatRef}
+                  actions={
+                    <a
+                      href="https://www.instagram.com/kittypau.mascotas/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white trial-rpg-instagram ${
+                        trialDialogIndex === trialDialogLines.length - 1 &&
+                        !isTrialDialogTyping
+                          ? "is-visible"
+                          : "is-hidden"
+                      }`}
                   onClick={(event) => event.stopPropagation()}
                 >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4 text-[#E1306C]"
-                    fill="currentColor"
-                  >
-                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
-                  </svg>
-                  <span>Síguenos en Instagram</span>
-                </a>
-              }
-            />
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        className="h-4 w-4 text-[#E1306C]"
+                        fill="currentColor"
+                      >
+                        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                      </svg>
+                      <span>Síguenos en Instagram</span>
+                    </a>
+                  }
+                />
+              </div>
+            </TrialRpgDialogDock>
           ) : null}
         </div>
       ) : null}
     </div>
   );
 }
+

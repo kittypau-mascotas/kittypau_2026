@@ -20,3 +20,5 @@ Para impulsar la adopción, ofrecemos **3 meses de Premium gratis** con la compr
 **Solicitud de Fondos:** Solicitamos financiamiento para un plan de validación inicial y puesta en marcha a 3 meses, centrado en la producción de 5 prototipos funcionales de KittyPaw y la validación de su concepto con early adopters. Los fondos cubrirán gastos de inversión (hardware para 5 unidades), operación (logística, soporte, costos de la nube para 3 meses) y recursos humanos para el ensamblaje y validación inicial.
 
 **Proyecciones Financieras:** Proyectamos un camino claro hacia la rentabilidad, con un costo de producción por unidad de $44.895 CLP (escenario China) y un precio de venta de $56.119 CLP, logrando un 20% de margen. Para esta fase inicial de 3 meses, nos enfocaremos en la producción y validación de los 5 prototipos, sin proyecciones de ventas masivas o suscripciones Premium en este periodo. Los costos operativos clave para esta fase incluyen $875.000 CLP (3 meses de cloud hosting) y $6.000.000 CLP (3 meses de salarios de fundadores).
+
+

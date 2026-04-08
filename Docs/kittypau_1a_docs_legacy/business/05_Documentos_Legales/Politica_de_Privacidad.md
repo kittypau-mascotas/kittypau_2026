@@ -45,3 +45,5 @@ Si realizamos cambios importantes en esta política, te notificaremos a través 
 ### 7. Contacto
 
 Si tienes preguntas sobre esta Política de Privacidad, por favor contáctanos en javomauro.contacto@gmail.com.
+
+

@@ -1,0 +1,405 @@
+﻿# Raspberry Pi Zero 2 W - Bridge MQTT (Kittypau)
+
+## Objetivo
+Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
+Esta documentación integra la construcción IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
+
+---
+
+## Alcance (lo que hace y lo que NO hace)
+**Hace**
+- Se conecta a HiveMQ (MQTT).
+- Escucha topics IoT (ver `Docs/TOPICOS_MQTT.md`).
+- Normaliza payloads y envia `POST` a `/api/mqtt/webhook`.
+
+**No hace**
+- No consulta datos (no hace `GET`).
+- No almacena datos finales (solo reenvía).
+- No reemplaza la API ni la DB.
+- No se conecta directamente a Supabase en producción (el backend en Vercel es el unico que escribe en DB).
+
+---
+
+## Estado del bridge en el proyecto
+- El codigo fuente del bridge vive en `/bridge` dentro del repo.
+- El **runtime** del bridge corre en la Raspberry (externo al repo).
+- El `.env` del bridge **no se versiona** (ver `.gitignore`).
+
+---
+
+## Dependencias
+- Raspberry Pi Zero 2 W con Raspberry Pi OS (Lite recomendado)
+- Acceso SSH
+- Conexion Wi-Fi estable
+- Node.js 18+
+
+---
+
+## Variables de entorno del bridge
+```
+MQTT_HOST=<TU_HOST_HIVEMQ>
+MQTT_PORT=8883
+MQTT_USERNAME=<TU_USUARIO>
+MQTT_PASSWORD=<TU_PASSWORD>
+MQTT_TOPIC=+/SENSORS
+WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
+WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+BRIDGE_ID=KPBR0001
+BRIDGE_HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+BRIDGE_HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
+HEARTBEAT_INTERVAL_SEC=30
+```
+**Regla**: `WEBHOOK_TOKEN` debe ser igual a `MQTT_WEBHOOK_SECRET` en Vercel.
+**Regla**: `BRIDGE_HEARTBEAT_TOKEN` debe ser igual a `BRIDGE_HEARTBEAT_SECRET` en Vercel.
+
+**Nota**: si el firmware publica en otro patron (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
+
+**Nota de seguridad**: las credenciales reales (WiFi, HiveMQ, Supabase) se guardan en `.env` local del bridge y no se documentan aqui.
+
+---
+
+## Certificados, accesos y manejo seguro (sin exponer secretos)
+Este bloque define **que debe tener el codigo** del bridge respecto a certificados, accesos y envs.
+
+### 1) Certificado TLS (HiveMQ)
+- El cliente MQTT debe usar TLS y confiar en el CA (ej. ISRG Root X1).
+- Se puede cargar el CA via archivo (`ca.crt`) o embebido en codigo.
+- **No** hardcodear credenciales MQTT en el codigo.
+
+### 2) Accesos y archivos locales
+- `.env` vive en `/home/kittypau/kittypau-bridge/.env` (fuera de git).
+- Permisos recomendados: `chmod 600 .env`.
+- Usuario del proceso: `kittypau` (systemd).
+
+### 3) Variables obligatorias (placeholders)
+```
+MQTT_HOST=<TU_HOST_HIVEMQ>
+MQTT_PORT=8883
+MQTT_USERNAME=<TU_USUARIO>
+MQTT_PASSWORD=<TU_PASSWORD>
+MQTT_TOPIC=+/SENSORS
+WEBHOOK_URL=https://kittypau-app.vercel.app/api/mqtt/webhook
+WEBHOOK_TOKEN=<TU_WEBHOOK_TOKEN>
+HEARTBEAT_URL=https://kittypau-app.vercel.app/api/bridge/heartbeat
+HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
+```
+- `WEBHOOK_TOKEN` = `MQTT_WEBHOOK_SECRET` (Vercel).
+- `HEARTBEAT_TOKEN` = `BRIDGE_HEARTBEAT_SECRET` (Vercel).
+
+### 4) Reglas de no exposicion
+- Nunca versionar `.env` ni claves.
+- No copiar credenciales en documentación.
+- Si se comparte el repo, usar placeholders.
+
+### 5) Rotacion y cambios
+- Cambiar credenciales HiveMQ y `WEBHOOK_TOKEN` si se sospecha fuga.
+- Al rotar, actualizar `.env` en la Pi y variables en Vercel.
+
+### 6) Validaciones mínimas en runtime
+- Verificar que envs existan al iniciar (fail fast).
+- Loggear error claro si falta alguna variable.
+
+---
+
+## Checklist de conexion (cuando haya acceso a la Raspberry)
+Este bloque sirve para validar que la Raspberry esta operativa como bridge.
+
+### 1) Conectividad basica
+```bash
+ping <IP_DE_LA_PI>
+```
+Esperado: respuestas sin perdida.
+
+### 2) Acceso SSH
+```bash
+ssh kittypau@<IP_DE_LA_PI>
+# o con key:
+ssh -i <RUTA_KEY> kittypau@<IP_DE_LA_PI>
+```
+Esperado: login exitoso.
+
+### 3) Estado del servicio
+```bash
+sudo systemctl status kittypau-bridge
+```
+Esperado: `active (running)`.
+
+### 4) Logs en vivo
+```bash
+journalctl -u kittypau-bridge -f
+```
+Esperado:
+- `MQTT connected`
+- `Subscribed to: +/SENSORS`
+- `Webhook ok` (cuando hay mensajes)
+
+### 5) Verificar envs
+```bash
+cat /home/kittypau/kittypau-bridge/.env
+```
+Esperado: todas las variables definidas (sin exponerlas en docs).
+
+### 6) Prueba manual (simulada)
+Si se tiene un publicador MQTT, enviar un mensaje de prueba al broker y revisar:
+- Logs del bridge.
+- `/api/mqtt/webhook` en Vercel.
+- nueva fila en `readings`.
+
+---
+
+## Contrato de datos (Bridge -> API)
+**Endpoint**
+```
+POST /api/mqtt/webhook
+Headers:
+  x-webhook-token: <WEBHOOK_TOKEN>
+  Content-Type: application/json
+```
+
+**Payload obligatorio**
+```json
+{
+  "device_id": "KPCL0001",
+  "temperature": 23.5,
+  "humidity": 65,
+  "weight_grams": 3500,
+  "battery_level": 85,
+  "water_ml": 120,
+  "flow_rate": 120,
+  "timestamp": "2026-02-03T18:30:00Z"
+}
+```
+Notas:
+- `device_id` es obligatorio. Si el payload del IoT no lo trae, el Bridge debe inferirlo del topic y agregarlo.
+- `timestamp` es opcional. Si no se envia, la API usa hora actual.
+- La API acepta `device_id`/`deviceId` (KPCL) y opcional `device_uuid` (UUID). Recomendación oficial: enviar `device_id`.
+
+**Validaciones de rango (API)**
+- `temperature`: -10 a 60
+- `humidity`: 0 a 100
+- `battery_level`: 0 a 100
+- `weight_grams`: 0 a 20000
+- `water_ml`: 0 a 5000
+- `flow_rate`: 0 a 1000
+- `device_id`: formato `KPCL0000`
+
+---
+
+## Transformaciones analíticas (log10 + Fourier) - criterio operativo
+- `log10(x + 1)` es un paso de **ingestión**: se aplica server-side **después de validar** (ej. Zod) y **antes de persistir** en DB, para reducir skew/outliers sin eliminar eventos.
+- Guardar **raw + transformado** (ej. `weight_grams` + `weight_grams_log`, `water_ml` + `water_ml_log`) para mantener trazabilidad y estabilidad analítica.
+- Fourier/FFT **no** se ejecuta en el Bridge: va en un worker/servicio analítico (batch) sobre series temporales por mascota.
+
+Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
+**Errores esperados**
+- `401 Unauthorized`: token invalido o faltante.
+- `400 Bad Request`: payload invalido (campos faltantes o fuera de rango).
+- `404 Not Found`: `device_id` no existe en `devices`.
+
+---
+
+## Mapeo de topics IoT -> payload API
+El firmware actual publica en:
+- `KPCLXXXX/SENSORS` (sensores)
+- `KPCLXXXX/STATUS` (estado)
+- `KPCLXXXX/cmd` (comandos)
+
+El bridge debe traducir los mensajes de `SENSORS` al contrato del webhook:
+
+| IoT (SENSORS) | API (webhook) |
+|---|---|
+| `weight` | `weight_grams` |
+| `temp` | `temperature` |
+| `hum` | `humidity` |
+| `ldr` | (opcional, no se persiste hoy) |
+| `timestamp` | `timestamp` |
+
+Para `STATUS`, hoy **no** se guarda un payload separado en la DB. Si se necesita, se recomienda:
+- Usar `devices` para `last_seen` y `battery_level` (ya existe trigger).
+- Extender schema con columnas de `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`.
+
+---
+
+## Requisitos del codigo del Bridge (Raspberry)
+El bridge debe cumplir estos puntos para mantener compatibilidad con HiveMQ, Vercel y Supabase:
+
+### 1) Conexion HiveMQ
+- Conectar por TLS a `MQTT_HOST:MQTT_PORT`.
+- Suscribirse al topic configurable `MQTT_TOPIC`.
+- Reconectar automaticamente con backoff.
+
+### 2) Normalizacion del payload
+- Convertir el payload IoT (`SENSORS`) al contrato del webhook.
+- Inyectar `device_id` desde el topic (`KPCLXXXX`).
+- Validar que `device_id` respete formato `KPCL0000`.
+
+### 3) Integracion con Vercel (API)
+- Enviar `POST` a `WEBHOOK_URL` con header `x-webhook-token`.
+- Manejar respuestas `200/400/401/404` y loggear errores.
+- Reintentar en errores transitorios.
+
+### 3.1) Healthcheck y heartbeat (obligatorio)
+El bridge debe reportar su estado para evitar ceguera operativa.
+
+**Heartbeat (write)**
+```
+POST /api/bridge/heartbeat
+Headers:
+  x-bridge-token: <BRIDGE_HEARTBEAT_TOKEN>
+Body:
+{
+  "bridge_id": "KPBR0001",
+  "ip": "192.168.1.90",
+  "uptime_sec": 123456,
+  "mqtt_connected": true,
+  "last_mqtt_at": "2026-02-10T02:10:00Z"
+}
+```
+
+**Health check (read)**
+```
+GET /api/bridge/health-check?bridge_id=raspi-kitty-01
+Headers:
+  x-bridge-token: <BRIDGE_HEARTBEAT_TOKEN>
+```
+
+**Regla**
+- Si `last_seen` > 5 min, marcar bridge como degradado y alertar.
+
+### 3.2) Politica de reintentos
+- Errores 5xx o timeout: reintentar con backoff exponencial.
+- Recomendado: 3 intentos (1s, 3s, 7s) y luego log + alerta.
+- Errores 4xx (payload/credenciales): **no reintentar**.
+
+### 3.3) Logs minimos (formato sugerido)
+- `mqtt_connected`, `mqtt_disconnected`
+- `webhook_ok` (status, latency_ms)
+- `webhook_retry` (attempt, status)
+- `webhook_fail` (status, body)
+
+### 4) Supabase (relacion indirecta)
+- El bridge **no** escribe en Supabase directamente.
+- Toda escritura pasa por `/api/mqtt/webhook`.
+- Esto permite mantener RLS/validaciones centralizadas.
+
+### 5) Observabilidad minima
+- Logs para: conecto MQTT, recibio mensaje, envio webhook, respuesta.
+- Si falla, dejar codigo/razon en log.
+
+---
+
+## Flujo completo
+1. Dispositivo publica MQTT en HiveMQ.
+2. Bridge recibe mensaje.
+3. Bridge construye payload y agrega `device_id`.
+4. Bridge hace `POST` a `/api/mqtt/webhook`.
+5. API guarda en `readings` y actualiza `devices.last_seen`.
+
+---
+
+## Estrategia para cambios futuros
+**Si cambia el firmware o el payload IoT**:
+- Actualizar el mapeo de payload en el Bridge.
+- Mantener estable el contrato hacia la API.
+
+**Si cambia la API**:
+- Ajustar el Bridge para cumplir el nuevo contrato.
+- Versionar el payload en docs si se rompe compatibilidad.
+
+---
+
+## Observabilidad
+- Logs del Bridge (journald):
+  `journalctl -u kittypau-bridge -f`
+- Logs en Vercel: buscar POST a `/api/mqtt/webhook`
+- Supabase: tabla `readings`
+
+---
+
+## Prueba end-to-end (sin dispositivo físico)
+> Usa MQTT CLI para simular el dispositivo y validar el flujo completo.
+
+### 1) Publicar mensaje en HiveMQ
+Ejemplo (TLS/8883):
+```bash
+mqtt pub \
+  -h <TU_HOST_HIVEMQ> -p 8883 \
+  -u <TU_USUARIO> -P <TU_PASSWORD> \
+  -t KPCL0001/SENSORS \
+  -m "{\"timestamp\":\"2026-02-08T02:00:00Z\",\"weight\":3500,\"temp\":23.5,\"hum\":65}"
+```
+Esperado:
+- El bridge recibe el mensaje.
+- El bridge envía `POST` a `/api/mqtt/webhook`.
+
+### 2) Verificar en Vercel
+```bash
+vercel logs kittypau-app --since 5m
+```
+Esperado:
+- Request `POST /api/mqtt/webhook` con `200`.
+
+### 3) Verificar lectura en Supabase
+```sql
+select * from public.readings
+where device_uuid = '<DEVICE_UUID>'
+order by recorded_at desc
+limit 3;
+```
+Esperado:
+- Nueva fila con `weight_grams`, `temperature`, `humidity`.
+
+---
+
+## Service 24/7 (referencia)
+Objetivo: que el bridge quede corriendo 24/7 y reinicie solo si cae.
+
+### 1) Estructura sugerida en la Pi
+- Carpeta: `/home/kittypau/kittypau-bridge`
+- `.env` en esa carpeta (no versionado), permisos: `chmod 600 .env`
+
+### 2) Instalar como servicio systemd
+En este repo existe plantilla:
+- `bridge/systemd/kittypau-bridge.service`
+
+Pasos (en la Pi):
+```bash
+sudo cp /home/kittypau/kittypau-bridge/systemd/kittypau-bridge.service /etc/systemd/system/kittypau-bridge.service
+sudo systemctl daemon-reload
+sudo systemctl enable kittypau-bridge
+sudo systemctl start kittypau-bridge
+sudo systemctl status kittypau-bridge --no-pager
+```
+
+Logs:
+```bash
+journalctl -u kittypau-bridge -f
+```
+
+### 3) Validación rápida (operativa)
+- Debe verse `MQTT connected` y `Subscribed to: ...`
+- Debe verse `Heartbeat ok` cada ~`HEARTBEAT_INTERVAL_SEC`
+- En Supabase:
+  - `bridge_heartbeats.last_seen` debe actualizarse
+  - `bridge_status_live.bridge_status` debe pasar a `active` (o `degraded` si mqtt_connected=false)
+
+---
+
+## Pruebas de funcionamiento (mínimas)
+1. Enviar mensaje MQTT desde un simulador.
+2. Ver log de POST exitoso.
+3. Ver nueva fila en `readings`.
+
+
+
+
+
+
+
+
+
+
+## Variables de entorno del bridge
+- Ver Docs/.env.bridge.example para valores esperados.
+

@@ -35,3 +35,4 @@ La innovación de KittyPaw no reside en un solo componente, sino en la **integra
 *   **Monitoreo Holístico:** Además del consumo de alimento y agua, incorporamos sensores ambientales (temperatura y humedad) para entender cómo el entorno afecta el bienestar de la mascota, ofreciendo una visión de 360 grados.
 *   **Datos para el Ecosistema Veterinario:** Nuestra plataforma no es solo para el dueño. Los datos históricos y objetivos generados son una herramienta de gran valor para los veterinarios, permitiendo diagnósticos más rápidos y precisos.
 *   **Modelo de Negocio HaaS (Hardware as a Service):** La combinación de una venta de hardware con una suscripción premium opcional nos permite tener un modelo de negocio sostenible y escalable, generando ingresos recurrentes y fomentando una relación a largo plazo con el cliente.
+

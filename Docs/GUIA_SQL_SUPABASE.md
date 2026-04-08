@@ -1,4 +1,4 @@
-﻿# Guia: Ejecutar SQL en Supabase (Kittypau)
+# Guia: Ejecutar SQL en Supabase (Kittypau)
 
 ## Objetivo
 Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`.
@@ -30,4 +30,6 @@ Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`
 ## Errores comunes
 - **Permisos**: revisar que las policies esten creadas correctamente.
 - **UUID**: Supabase usa `auth.users.id`, no inventar ids manuales.
+
+
 

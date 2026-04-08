@@ -8,3 +8,5 @@
 | SEGEGOB - Fondo de Fortalecimiento | 2 mayo 2025 | Apoya organizaciones de interés público. Monto máximo: $10.000.000. | https://fondodefortalecimiento.gob.cl/fondos-segegob-se-abren-las-postulaciones-al-fondo-de-fortalecimiento-de-organizaciones-de-interes-publico-2025/ |
 | CDPR Antofagasta - Inversión Productiva | 30 abril 2025 | Financia proyectos productivos sostenibles en Antofagasta. Monto máximo: $20.000.000. | https://www.fomentoantofagasta.cl/programas-financiamiento/primer-concurso-regional-antofagasta-2025-linea-de-apoyo-desarrolla-inversion-inversion-productiva-para-proyectos-de-sostenibilidad-en-las-comunas-de-la-provincia-de-antofagasta-y/ |
 | INACAP - Fondos Concursables Estudiantiles | 27 agosto 2025 | Fondo dirigido a estudiantes INACAP para iniciativas innovadoras. | https://portal.inacap.cl/w/fondos-concursables-2025 |
+
+

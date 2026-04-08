@@ -45,3 +45,5 @@ vercel --prod
 - Suite admin ejecuta correctamente.
 - Secretos rotados.
 - HiveMQ real integrado (sin simulación).
+
+

@@ -44,3 +44,4 @@
 *   Dueños de mascotas con condiciones de salud que requieren seguimiento de su dieta.
 
 *Este documento debe ser revisado y completado con las otras secciones del Business Model Canvas.*
+

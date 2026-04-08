@@ -1,4 +1,4 @@
-﻿# 05 - Riesgos, Supuestos y Metricas de Validacion
+# 05 - Riesgos, Supuestos y Metricas de Validacion
 
 ## Riesgos criticos
 - Hardware: precision/durabilidad insuficiente en uso real.
@@ -20,3 +20,5 @@
 
 ## Criterio de decision
 Si no hay retencion o conversion suficiente, priorizar iteracion de propuesta de valor antes de escalar adquisicion.
+
+

@@ -209,3 +209,5 @@ R = Responsable | A = Aprobador | C = Consultado | I = Informado
 
 _Referencias: PMBOK 6ta Ed. Cap. 10 (Gestion de las Comunicaciones) | PMBOK 7ma Ed. Dominio de Equipo y Stakeholders_
 _Documento anterior: [08_QUALITY_PLAN.md](08_QUALITY_PLAN.md) | Volver al indice: [00_PMO_INDEX.md](00_PMO_INDEX.md)_
+
+

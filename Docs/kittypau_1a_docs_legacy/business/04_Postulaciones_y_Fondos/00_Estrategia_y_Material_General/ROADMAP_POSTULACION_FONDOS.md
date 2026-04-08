@@ -101,3 +101,5 @@ Esta fase abarca la revisión final, el envío de la postulación a CORFO Semill
 -   **Modelo de Negocios Sólido:** El modelo de negocios debe resolver un problema real, mostrar crecimiento y ambición.
 -   **Equipo Capaz:** Contar con un equipo comprometido y con las capacidades necesarias para ejecutar el proyecto.
 -   **Buena Puesta en Escena:** La calidad del video y la elaboración del pitch son fundamentales para destacar en el proceso de evaluación.
+
+

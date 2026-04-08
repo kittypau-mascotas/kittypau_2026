@@ -94,3 +94,5 @@ Definir detalles cuando esten claros:
 - alertas avanzadas,
 - integraciones B2B2C,
 - SLA/soporte.
+
+

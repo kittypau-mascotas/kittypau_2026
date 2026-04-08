@@ -853,3 +853,5 @@ Si un componente no existe en esta lista, primero se agrega aqui y luego se impl
 - Se aplica zoom/escala al logo dentro del contenedor.
 - En mobile, los menus del navbar quedan centrados respecto al ancho de pantalla.
 
+
+

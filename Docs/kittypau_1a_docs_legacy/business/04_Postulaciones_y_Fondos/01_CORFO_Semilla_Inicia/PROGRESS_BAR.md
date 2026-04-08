@@ -18,3 +18,5 @@ Este documento detalla el avance de la preparación para la postulación a CORFO
 
 ---
 **Estado General:** En preparación. Esperando nuevas bases el 19 de noviembre.
+
+

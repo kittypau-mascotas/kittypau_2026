@@ -44,3 +44,4 @@ Hacer un backup consiste en guardar una copia de estos archivos. Restaurar consi
 
 4.  **Reiniciar:**
     Reinicia el dispositivo ESP32 para que cargue la configuración restaurada.
+

@@ -1,4 +1,4 @@
-ï»¿# Estado del Proyecto y PrÃ³ximos Pasos (2026-02-07)
+# Estado del Proyecto y Próximos Pasos (2026-02-07)
 
 > Nota: este documento se conserva como bitacora historica.
 > El estado vivo y resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
@@ -50,13 +50,13 @@
 - `general_device_outage_detected` / `general_device_outage_recovered`.
 - Endpoint `POST /api/bridge/heartbeat` ahora registra cambios de estado en `audit_events` (`bridge_status_changed`).
 - Vista SQL `public.bridge_status_live` creada para estado vivo (`active`/`degraded`/`offline`) sin depender de cron de Vercel.
-- `GET /api/devices` dispara health-check en segundo plano (best-effort) para ejecutar detecciÃ³n operativa sin cron en plan Hobby.
+- `GET /api/devices` dispara health-check en segundo plano (best-effort) para ejecutar detección operativa sin cron en plan Hobby.
 - Portal admin base implementado: `admin_roles`, vista `admin_dashboard_live`, endpoint `GET /api/admin/overview` y vista web `/admin`.
 - Usuario admin operativo creado: `javomauro.contacto@gmail.com` (rol `owner_admin`).
 - Validacion CLI admin/dashboard documentada en `Docs/VALIDACION_ADMIN_DASHBOARD.md` (Vercel + Supabase + auth).
-- API: soporte CORS en `/api/*` (preflight `OPTIONS`) para evitar "Failed to fetch" en herramientas/orÃƒÂ­genes externos.
-- Storage: referencia de policies para `kittypau-photos` en `Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql` (configurar vÃƒÂ­a Dashboard).
-- Auth: refresh silencioso mejorado (se renueva access_token cuando estÃƒÂ¡ expirando) + helper `authFetch()` para reintentar una vez ante `401`.
+- API: soporte CORS en `/api/*` (preflight `OPTIONS`) para evitar "Failed to fetch" en herramientas/orÃ­genes externos.
+- Storage: referencia de policies para `kittypau-photos` en `Docs/SQL_STORAGE_POLICIES_kittypau_photos.sql` (configurar vÃ­a Dashboard).
+- Auth: refresh silencioso mejorado (se renueva access_token cuando estÃ¡ expirando) + helper `authFetch()` para reintentar una vez ante `401`.
 
 ## Pendiente inmediato (implementacion)
 1. Aplicar Design Tokens + componentes base (Button, Card, Input).
@@ -74,64 +74,64 @@
 2. Configurar alertas / watchdog en Raspberry.
 3. Nota: Bridge 24/7 queda fuera del alcance actual.
 
-## Implementado hoy\n- UI login/registro: validaciÃ³n y toggle de password en registro.\n- Onboarding: preview del avatar seleccionado + errores con role=alert.\n- Today/Story/Pet/Bowl: copy de estados vacÃ­os refinado.\n- Settings: menÃº accesible (aria-label + Escape).\n- UI login: micro-UX (estado cargando, mensajes breves, botones coherentes).\n- UI onboarding: guÃ­a mejorada (badge obligatorio, tips por paso, aria-live).\n- UI today: chips de frescura/24h y vacÃ­o con guÃ­a.\n- UI story: resumen contextual y tags alineados.\n- UI settings: acciones rÃ¡pidas con microcopy.\n- UI login: hero refinado (espaciado, tipografÃ­a, fondo).\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Ãšltima lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selecciÃ³n (4 opciones).\n- Ajustes: acciones rÃ¡pidas (Editar perfil ? /pet, Cerrar sesiÃ³n).\n- Build Vercel: corregido error por setAccountEmail eliminado.
-- Branding aplicado: logo en navbar, login/register y loading; favicon/OG/Twitter con logo.\n- Paleta light actualizada segun Docs/estilos y diseÃ±os.md.
-- Bridge: guÃ­a de healthcheck/heartbeat + polÃ­tica de reintentos y logs mÃ­nimos.
+## Implementado hoy\n- UI login/registro: validación y toggle de password en registro.\n- Onboarding: preview del avatar seleccionado + errores con role=alert.\n- Today/Story/Pet/Bowl: copy de estados vacíos refinado.\n- Settings: menú accesible (aria-label + Escape).\n- UI login: micro-UX (estado cargando, mensajes breves, botones coherentes).\n- UI onboarding: guía mejorada (badge obligatorio, tips por paso, aria-live).\n- UI today: chips de frescura/24h y vacío con guía.\n- UI story: resumen contextual y tags alineados.\n- UI settings: acciones rápidas con microcopy.\n- UI login: hero refinado (espaciado, tipografía, fondo).\n- UI login: redes sociales debajo del logo + hero limpio (sin cards de Última lectura/Estado).\n- UI app footer: redes sociales + texto legal (IoT Chile S.A) y correo.\n- Onboarding: eliminado login/resend/reset del paso 1; ahora avatar por selección (4 opciones).\n- Ajustes: acciones rápidas (Editar perfil ? /pet, Cerrar sesión).\n- Build Vercel: corregido error por setAccountEmail eliminado.
+- Branding aplicado: logo en navbar, login/register y loading; favicon/OG/Twitter con logo.\n- Paleta light actualizada segun Docs/estilos y diseños.md.
+- Bridge: guía de healthcheck/heartbeat + política de reintentos y logs mínimos.
 - Storage: pasos para crear bucket `kittypau-photos` + policies (select/insert/delete).
-- Webhook: idempotencia explÃ­cita con respuesta `idempotent` y log de duplicados.
-- UI: texto de guÃ­a inicial corregido y mÃ¡s cercano.
-- Story/Bowl: narrativa mÃ¡s clara y estado general del plato.
+- Webhook: idempotencia explícita con respuesta `idempotent` y log de duplicados.
+- UI: texto de guía inicial corregido y más cercano.
+- Story/Bowl: narrativa más clara y estado general del plato.
 - Tests OK (2026-02-10): TEST_DB_API.ps1 + TEST_ONBOARDING_BACKEND.ps1.
 - Onboarding: estados de guardado y banner de error global.
 - Tests OK (2026-02-10): TEST_DB_API.ps1, TEST_ONBOARDING_BACKEND.ps1, TEST_AUTH_FLOW.ps1 (reset).
 - Onboarding: soporte de fotos (usuario y mascota) con carga a Supabase Storage (bucket kittypau-photos).\n- Auth SMTP (Gmail) configurado: reset password operativo con /reset.\n- URL Configuration en Supabase: agregar /reset a Redirect URLs.\n- Onboarding fix: RPC link_device_to_pet actualizado (returns devices) + refresh schema cache.\n- Bridge: creado Docs/.env.bridge.example y documentado en Docs/RASPBERRY_BRIDGE.md.\n- Docs: TIMESTAMP_IOT.md agregado y indexado.\n- Supabase migraciones confirmadas hasta 20260208205000.
 - Plan de compatibilidad Raspberry documentado (sin ejecutar migraciones).
-- UI /pet: checklist visual y CTA para completar perfil; CTA de vinculaciÃ³n cuando no hay dispositivo.
-- UI /today: modo guÃ­a inicial con tips y CTA a onboarding.
-- UI /today: guÃ­a de primer dÃ­a personalizada con nombre de mascota y dueÃ±o.
-- Onboarding: paso 1 incluye cuenta (email/password), reenvÃ­o de confirmaciÃ³n y recuperaciÃ³n sin salir del flujo.
-- UI /login: recuperaciÃ³n deshabilitada sin email vÃ¡lido.
-- UI /register: validaciones inline y botÃ³n activo sÃ³lo con datos vÃ¡lidos.
-- UI /login: validaciones inline y botÃ³n bloqueado hasta datos vÃ¡lidos.
-- UI /register: copy normalizado y mensajes de confirmaciÃ³n claros.
+- UI /pet: checklist visual y CTA para completar perfil; CTA de vinculación cuando no hay dispositivo.
+- UI /today: modo guía inicial con tips y CTA a onboarding.
+- UI /today: guía de primer día personalizada con nombre de mascota y dueño.
+- Onboarding: paso 1 incluye cuenta (email/password), reenvío de confirmación y recuperación sin salir del flujo.
+- UI /login: recuperación deshabilitada sin email válido.
+- UI /register: validaciones inline y botón activo sólo con datos válidos.
+- UI /login: validaciones inline y botón bloqueado hasta datos válidos.
+- UI /register: copy normalizado y mensajes de confirmación claros.
 - UI /today y /story: skeletons de carga para lecturas.
-- UI onboarding: bloque de siguiente paso con guÃ­a contextual.
-- UI: errores con CTA de login en /pet, /bowl, /settings y /story.\n- UI /pet: acciones rÃ¡pidas hacia plato e historia.\n- UI /bowl: Ãºltima conexiÃ³n y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y sÃ­mbolos).
-- UI /today: resumen rÃ¡pido de hidrataciÃ³n, alimento y ambiente.
-- UI /story: conteo de alertas y resumen visual del dÃ­a.
-- DB?API: se documentÃ³ quÃ© validaciones estÃ¡n en DB vs API y pasos para endurecer constraints.
-- UI/API contrato: /story, /pet y /bowl ahora toleran respuestas paginadas {data,next_cursor}.\n- UI /settings: bloque de seguridad con cierre de sesiÃ³n.\n- UI /story: tags de tono y texto limpio en timeline.\n- UI /today: acciones rÃ¡pidas hacia perfil, plato y ajustes.\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validaciÃ³n email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
+- UI onboarding: bloque de siguiente paso con guía contextual.
+- UI: errores con CTA de login en /pet, /bowl, /settings y /story.\n- UI /pet: acciones rápidas hacia plato e historia.\n- UI /bowl: última conexión y atajos a mascota/ajustes.\n- UI /settings: bloque de cuenta visible.\n- Copys UI normalizados (acentos y símbolos).
+- UI /today: resumen rápido de hidratación, alimento y ambiente.
+- UI /story: conteo de alertas y resumen visual del día.
+- DB?API: se documentó qué validaciones están en DB vs API y pasos para endurecer constraints.
+- UI/API contrato: /story, /pet y /bowl ahora toleran respuestas paginadas {data,next_cursor}.\n- UI /settings: bloque de seguridad con cierre de sesión.\n- UI /story: tags de tono y texto limpio en timeline.\n- UI /today: acciones rápidas hacia perfil, plato y ajustes.\n- Onboarding UX: avisos de campos pendientes en perfil/mascota/dispositivo.\n- UX auth refinado: validación email, mostrar password y mensajes accesibles en /login y /register.\n- UI /pet reforzado: estado de perfil, checklist y guardado seguro.\n- UI /bowl mejorado: acciones recomendadas y badges de estado.\n- UI /settings: completitud del perfil y pendientes visibles.
 - UI onboarding reforzado: validaciones, gating, tooltips y resumen de progreso.
 - UI today: selector de device, refresco con timestamp y badge de frescura.
-- UI story: timeline narrativo bÃ¡sico con selector de dispositivo.
-- UI pet: perfil conductual bÃ¡sico con insights y selector de mascota.
-- UI bowl: estado tÃ©cnico del plato con baterÃ­a y Ãºltima conexiÃ³n.
+- UI story: timeline narrativo básico con selector de dispositivo.
+- UI pet: perfil conductual básico con insights y selector de mascota.
+- UI bowl: estado técnico del plato con batería y última conexión.
 - UI settings: ajustes de perfil y notificaciones.
-- UI register: ruta pÃºblica con reenvÃ­o de confirmaciÃ³n.
+- UI register: ruta pública con reenvío de confirmación.
 - Realtime integrado en /today y /story (lecturas en vivo).
 - Realtime integrado en /pet (lecturas en vivo).
-- Estados vacÃ­os/errores unificados en story, pet, bowl y settings.
-- Login/register: validaciÃ³n bÃ¡sica + recuperaciÃ³n de contraseÃ±a + banner de verificaciÃ³n.
+- Estados vacíos/errores unificados en story, pet, bowl y settings.
+- Login/register: validación básica + recuperación de contraseña + banner de verificación.
 - /today refinado: resumen interpretado y acceso a /story.
-- /story refinado: filtro por dÃ­a (hoy/ayer/2 dÃ­as).
-- /pet refinado: ediciÃ³n bÃ¡sica de perfil con PATCH /api/pets/:id.
-- /bowl refinado: estado con diagnÃ³stico de conexiÃ³n y acciones futuras.
+- /story refinado: filtro por día (hoy/ayer/2 días).
+- /pet refinado: edición básica de perfil con PATCH /api/pets/:id.
+- /bowl refinado: estado con diagnóstico de conexión y acciones futuras.
 - /settings refinado: validaciones de perfil antes de guardar.
-- /register refinado: copy, ayuda y confirmaciÃ³n clara.
-- /login refinado: accesibilidad bÃ¡sica y recuperaciÃ³n de contraseÃ±a.
-- /story refinado: cards mÃ¡s expresivas.
+- /register refinado: copy, ayuda y confirmación clara.
+- /login refinado: accesibilidad básica y recuperación de contraseña.
+- /story refinado: cards más expresivas.
 - /today refinado: insight principal destacado y acceso directo al diario.
 - /story refinado: timeline con rail visual y meta de dispositivo/mascota.
 - Tests DB/API + onboarding backend ejecutados OK (2026-02-08).
-- NavegaciÃ³n global aÃ±adida para vistas app (today/story/pet/bowl/settings).
+- Navegación global añadida para vistas app (today/story/pet/bowl/settings).
 - Fix auth errors undefined en endpoints (devices/pets/profiles/onboarding/readings).
 - Signup redirect configurado en frontend (emailRedirectTo) pendiente SMTP en Supabase.
 - Observabilidad minima: logs estructurados con `request_id` + `duration_ms` en endpoints API.
-- Webhook hardening: si se envÃ­an `device_id` y `device_uuid`, deben coincidir.
-- Clock drift: cÃ¡lculo usa `serverTimeMs` consistente y registra `delta_ms`.
-- Trigger de devices optimizado: actualiza `last_seen` solo si pasÃ³ 1 min.
-- Ãndice cubriente para readings (device_uuid, recorded_at) con INCLUDE de mÃ©tricas.
-- Algoritmos de interpretaciÃ³n documentados (baseline, ventanas, guardrails).
+- Webhook hardening: si se envían `device_id` y `device_uuid`, deben coincidir.
+- Clock drift: cálculo usa `serverTimeMs` consistente y registra `delta_ms`.
+- Trigger de devices optimizado: actualiza `last_seen` solo si pasó 1 min.
+- Índice cubriente para readings (device_uuid, recorded_at) con INCLUDE de métricas.
+- Algoritmos de interpretación documentados (baseline, ventanas, guardrails).
 - Health check del bridge documentado (heartbeat + cron + alertas).
 - Plan de particionado de `readings` documentado (Postgres nativo + Timescale).
 - Endpoints bridge/heartbeat y bridge/health-check implementados.
@@ -191,7 +191,7 @@
 - [x] Docs ? Backend (SQL + APIs + errores consistentes).
 - [x] Backend ? Supabase (constraints + schema cache + RLS smoke test).
 - [x] Backend ? Front (contratos documentados y pruebas OK).
-- [x] DiseÃ±o ? Producto (lineamientos y componentes definidos).
+- [x] Diseño ? Producto (lineamientos y componentes definidos).
 
 ## Riesgos conocidos
 - Refresh token no implementado en UI (pendiente siguiente iteracion).
@@ -215,28 +215,28 @@
 
 
 
-## Resumen por mÃ³dulo
+## Resumen por módulo
 - UI: onboarding guiado con validaciones, tooltips visuales, popup de registro y mejoras en today (selector device + refresh + frescura).
 - API: endpoints estandarizados con request_id, rate limit distribuido, idempotencia en webhook, bridge healthcheck y onboarding status.
-- DB: SQL con helpers idempotentes, Ã­ndices clave y ajustes de lecturas (ingested_at, clock_invalid).
+- DB: SQL con helpers idempotentes, índices clave y ajustes de lecturas (ingested_at, clock_invalid).
 - Infra: Vercel + Supabase CLI documentados, Upstash Redis integrado.
 - Tests: scripts DB/API y onboarding backend, checklist Postman/Newman.
 
 
 ## Pendientes prioritarios (actualizado)
 - Seguridad: rotar secretos expuestos (service role, MQTT, tokens) y regenerar credenciales de prueba.
-- Admin Cloud Costing: integrar costo real de HiveMQ por API (actualmente simulaciÃ³n proporcional por MB/horas).
-- Finanzas KPCL: completado en cÃ³digo/base de datos (`finance_kpcl_profiles` + `finance_kpcl_profile_components` + endpoint admin).
+- Admin Cloud Costing: integrar costo real de HiveMQ por API (actualmente simulación proporcional por MB/horas).
+- Finanzas KPCL: completado en código/base de datos (`finance_kpcl_profiles` + `finance_kpcl_profile_components` + endpoint admin).
 - Admin release hygiene: consolidar cambios pendientes en commits por bloque (UI/API, SQL, docs) y dejar changelog.
-- Observabilidad IoT: mantener health-check operativo y revisar alertas automÃ¡ticas por timeout/offline en producciÃ³n.
+- Observabilidad IoT: mantener health-check operativo y revisar alertas automáticas por timeout/offline en producción.
 
-## Cierre tÃ©cnico (2026-02-19)
+## Cierre técnico (2026-02-19)
 - Dashboard admin reorganizado por prioridad operativa y mobile-first.
 - KPIs ejecutivos unificados en bloque superior.
-- CatÃ¡logo financiero KPCL servido desde backend y persistido en DB.
-- Fallback robusto para mÃ©tricas de tablas/vistas (`admin_object_stats_live` -> RPC `admin_object_stats()`).
+- Catálogo financiero KPCL servido desde backend y persistido en DB.
+- Fallback robusto para métricas de tablas/vistas (`admin_object_stats_live` -> RPC `admin_object_stats()`).
 - Suite de tests admin integrada:
-  - botÃ³n "Correr todos los tests" en UI,
+  - botón "Correr todos los tests" en UI,
   - historial de errores persistido en `audit_events`.
 
 
@@ -282,22 +282,22 @@
 - Navbar app renovado:
   - logo de marca agrandado (`logo_2.png`) en `app-nav`.
   - eliminado texto `IoT` junto a la marca.
-  - menÃº de acciones movido al trigger de perfil (avatar + nombre).
-  - acciones en menÃº: `Ajustes`, `Editar perfil`, `Cerrar sesiÃ³n` (+ `Dashboard admin` si corresponde).
+  - menú de acciones movido al trigger de perfil (avatar + nombre).
+  - acciones en menú: `Ajustes`, `Editar perfil`, `Cerrar sesión` (+ `Dashboard admin` si corresponde).
 - Popup de registro unificado:
-  - header simplificado (se eliminÃ³ bloque redundante de descripciÃ³n por paso).
+  - header simplificado (se eliminó bloque redundante de descripción por paso).
   - etapas clickeables desde el stepper (`Cuenta`, `Usuario`, `Mascota`, `Dispositivo`).
-  - cÃ­rculos de etapas completadas en verde con check.
-  - modo modal sin duplicaciÃ³n visual respecto del flujo interno.
+  - círculos de etapas completadas en verde con check.
+  - modo modal sin duplicación visual respecto del flujo interno.
 - Paso `Dispositivo` mejorado:
-  - selecciÃ³n de tipo por tarjetas con imagen (`Comida` / `Agua`) en lugar de select simple.
+  - selección de tipo por tarjetas con imagen (`Comida` / `Agua`) en lugar de select simple.
   - resumen persistente del tipo seleccionado en el flujo.
 - Cierre de registro mejorado:
   - mensaje `Bienvenido a Kittypau`.
   - resumen de cuenta + perfil + mascota + dispositivo.
   - incluye preview de foto de perfil/mascota cuando existe.
   - CTA final: `Continuar al dashboard`.
-- Layout del popup ajustado para evitar scroll y espacios vacÃ­os innecesarios en desktop.
+- Layout del popup ajustado para evitar scroll y espacios vacíos innecesarios en desktop.
 
 ## Actualizado (2026-02-19) - Hardening Admin + Advisor
 - Admin dashboard con cache Upstash en `GET /api/admin/overview` (TTL configurable por `ADMIN_OVERVIEW_CACHE_TTL_SEC`).
@@ -319,35 +319,35 @@
 - Extraido `buildSeries<T>` y `ChartCard` a libreria compartida (`@/lib/charts`).
 - `ChartJS.register(...)` centralizado una sola vez; eliminados ~180 lineas duplicadas de `/bowl`.
 - `/bowl` y `/today` consumen la misma libreria; `canvasClassName` parametrizable.
-- Graficos aÃ±adidos a `/today`: Comida (3h, `#EBB7AA`), Temperatura (3h, `#D99686`, enteros), Humedad (3h, `hsl(198,70%,45%)`, enteros). Grid 3 columnas en desktop.
+- Graficos añadidos a `/today`: Comida (3h, `#EBB7AA`), Temperatura (3h, `#D99686`, enteros), Humedad (3h, `hsl(198,70%,45%)`, enteros). Grid 3 columnas en desktop.
 - Peso en graficos de `/today` muestra contenido neto (bruto - `plate_weight_grams`).
 
 ### Edge Runtime + Cache-Control en APIs
-- `export const runtime = "edge"` aÃ±adido a `/api/profiles`, `/api/pets`, `/api/devices`, `/api/account/type`.
+- `export const runtime = "edge"` añadido a `/api/profiles`, `/api/pets`, `/api/devices`, `/api/account/type`.
 - `Cache-Control: private, max-age=N, stale-while-revalidate=N` en GET de cada endpoint:
   - profiles: 60s / 300s, pets: 60s / 300s, devices: 30s / 120s, account/type: 300s / 3600s.
 - Columnas explicitas en `readings` SELECT (elimina transferencia de campos innecesarios).
 
-### next/image â€” migraciÃ³n completa
-- `next.config.ts`: aÃ±adido `images.remotePatterns` para `zgwqtzazvkjkfocxnxsh.supabase.co/storage/v1/object/public/**`.
+### next/image — migración completa
+- `next.config.ts`: añadido `images.remotePatterns` para `zgwqtzazvkjkfocxnxsh.supabase.co/storage/v1/object/public/**`.
 - Todos los `<img>` reemplazados por `<Image>` de `next/image`:
-  - `app-nav.tsx`: logo 44Ã—44, avatar 38Ã—38.
-  - `today/page.tsx`: foto mascota 96Ã—96, ilustraciones comedero/bebedero 160Ã—112.
-  - `loading.tsx` y `route-loading-overlay.tsx`: logo de carga 200Ã—200.
-- Beneficios: lazy loading automÃ¡tico, WebP/AVIF en navegadores compatibles, prevenciÃ³n de CLS.
+  - `app-nav.tsx`: logo 44×44, avatar 38×38.
+  - `today/page.tsx`: foto mascota 96×96, ilustraciones comedero/bebedero 160×112.
+  - `loading.tsx` y `route-loading-overlay.tsx`: logo de carga 200×200.
+- Beneficios: lazy loading automático, WebP/AVIF en navegadores compatibles, prevención de CLS.
 
-### AppDataContext â€” estado compartido para evitar fetch duplicado
+### AppDataContext — estado compartido para evitar fetch duplicado
 - Nuevo archivo `src/lib/context/app-context.tsx`:
   - `AppDataProvider`: fetcha profiles, pets, devices, account/type **una sola vez** al montar el shell de la app.
   - `useAppData()`: hook para consumir `{ profile, petName, devices, accountType, isAdmin, ready }`.
 - `(app)/layout.tsx`: wrapeado con `<AppDataProvider>`.
-- `app-nav.tsx`: eliminados los 4 `fetch` paralelos y sus 6 estados; ahora lee de `useAppData()`. Solo quedan los fetch admin-especÃ­ficos (admin/access, admin/overview).
-- Resultado: en cada navegaciÃ³n de pÃ¡gina el nav ya no dispara 4 peticiones duplicadas.
+- `app-nav.tsx`: eliminados los 4 `fetch` paralelos y sus 6 estados; ahora lee de `useAppData()`. Solo quedan los fetch admin-específicos (admin/access, admin/overview).
+- Resultado: en cada navegación de página el nav ya no dispara 4 peticiones duplicadas.
 
 ### Optimizaciones menores
-- `next.config.ts`: aÃ±adido `optimizePackageImports: ["lucide-react", "chart.js", "react-chartjs-2"]`.
+- `next.config.ts`: añadido `optimizePackageImports: ["lucide-react", "chart.js", "react-chartjs-2"]`.
 - `globals.css`: override mobile para `.page-shell` (padding reducido en <640px).
-- `layout.tsx` raÃ­z: corregido `lang="en"` ? `lang="es"`, aÃ±adido `viewport` export (`maximumScale: 1`, `themeColor`).
+- `layout.tsx` raíz: corregido `lang="en"` ? `lang="es"`, añadido `viewport` export (`maximumScale: 1`, `themeColor`).
 
 ## Actualizado (2026-02-21) - UI today/login + assets unificados
 - `/today` usa fondo global de app (mismo gradiente visual del login), eliminando el fondo inline local.
@@ -410,5 +410,7 @@
 - Build APK validado localmente:
   - Debug: `android/app/build/outputs/apk/debug/app-debug.apk`
   - Release unsigned: `android/app/build/outputs/apk/release/app-release-unsigned.apk`
+
+
 
 

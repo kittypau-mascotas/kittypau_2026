@@ -66,3 +66,5 @@ En señal de conformidad, las partes firman el presente documento en duplicado, 
 **[Nombre Completo del Participante]**
 **C.I. N° [Número de Cédula de Identidad]**
 **Participante**
+
+

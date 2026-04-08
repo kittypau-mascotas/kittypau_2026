@@ -1,4 +1,4 @@
-﻿# Portal Admin Kittypau (Plan Profesional)
+# Portal Admin Kittypau (Plan Profesional)
 
 ## Proposito
 Este es el documento vivo del portal admin. Reune la estructura funcional, los KPI, la seguridad, la arquitectura operativa y la lectura ejecutiva del dashboard.
@@ -6,7 +6,7 @@ Este es el documento vivo del portal admin. Reune la estructura funcional, los K
 Si algo contradice este plan, primero se actualiza la fuente de verdad y luego se replica aqui.
 
 ## 1) Objetivo
-Diseñar e implementar un portal administrativo para la operacion ejecutiva de Kittypau, con visibilidad total de negocio y plataforma:
+Dise�ar e implementar un portal administrativo para la operacion ejecutiva de Kittypau, con visibilidad total de negocio y plataforma:
 - ingresos, compras y costos
 - salud operativa IoT (bridge + dispositivos)
 - incidentes y auditoria
@@ -176,4 +176,6 @@ Reglas:
 - [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)
 - [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
+
+
 

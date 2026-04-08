@@ -1,19 +1,19 @@
-﻿# DiseÃ±o de la Base de Datos v2.2
+# Diseño de la Base de Datos v2.2
 
-> Estado: **LEGACY**. Propuesta histÃ³rica (Drizzle/monorepo anterior). Para schema vigente ver `Docs/SQL_SCHEMA.sql` y para arquitectura de datos ver `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`.
+> Estado: **LEGACY**. Propuesta histórica (Drizzle/monorepo anterior). Para schema vigente ver `Docs/SQL_SCHEMA.sql` y para arquitectura de datos ver `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`.
 
 **Autor:** Gemini (con feedback de Mauro)
 **Fecha:** 2025-10-09
 
-## 1. IntroducciÃ³n
+## 1. Introducción
 
-Esta versiÃ³n del esquema (v2.2) expande la arquitectura v2.1 para dar soporte a la **"Ficha Integral de la Mascota"**. Se aÃ±aden numerosos campos a las tablas `pets` y `households` y se crean nuevas tablas para el historial de salud, permitiendo una recolecciÃ³n de datos rica y estructurada.
+Esta versión del esquema (v2.2) expande la arquitectura v2.1 para dar soporte a la **"Ficha Integral de la Mascota"**. Se añaden numerosos campos a las tablas `pets` y `households` y se crean nuevas tablas para el historial de salud, permitiendo una recolección de datos rica y estructurada.
 
 ---
 
-## 2. DefiniciÃ³n del Esquema (Drizzle ORM) v2.2
+## 2. Definición del Esquema (Drizzle ORM) v2.2
 
-Este es el cÃ³digo propuesto para `shared/schema.ts`.
+Este es el código propuesto para `shared/schema.ts`.
 
 ```typescript
 import { pgTable, text, serial, integer, timestamp, date, real, pgEnum, boolean } from "drizzle-orm/pg-core";
@@ -81,7 +81,7 @@ export const devices = pgTable("devices", {
   mode: deviceModeEnum("mode").notNull(),
 });
 
-// --- TABLAS DE UNIÃ“N Y DE HISTORIAL ---
+// --- TABLAS DE UNIÓN Y DE HISTORIAL ---
 
 export const petsToDevices = pgTable("pets_to_devices", {
     petId: integer("pet_id").notNull().references(() => pets.id, { onDelete: 'cascade' }),
@@ -111,7 +111,7 @@ export const consumptionEvents = pgTable("consumption_events", {
   durationSeconds: integer("duration_seconds").notNull(),
 });
 
-// --- DEFINICIÃ“N DE RELACIONES ---
+// --- DEFINICIÓN DE RELACIONES ---
 
 export const householdsRelations = relations(households, ({ many }) => ({
   users: many(users),
@@ -153,4 +153,6 @@ export const consumptionEventsRelations = relations(consumptionEvents, ({ one })
   device: one(devices, { fields: [consumptionEvents.deviceId], references: [devices.id] }),
 }));
 ```
+
+
 

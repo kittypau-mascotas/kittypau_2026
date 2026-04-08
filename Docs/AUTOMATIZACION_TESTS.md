@@ -1,4 +1,4 @@
-ï»¿# AutomatizaciÃ³n de Tests (Kittypau)
+# Automatización de Tests (Kittypau)
 
 ## Objetivo
 Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructura ni credenciales reales en docs.
@@ -8,18 +8,18 @@ Estandarizar pruebas repetibles para backend y flujo IoT sin tocar infraestructu
 ## Alcance
 - API directa (sin Bridge): **obligatoria**.
 - Bridge/MQTT: **opcional** (depende del entorno IoT).
-- Realtime: validaciÃ³n manual (frontend).
+- Realtime: validación manual (frontend).
 
-Referencia de colecciÃ³n: ver `Docs/POSTMAN_COLLECTION.md`.
+Referencia de colección: ver `Docs/POSTMAN_COLLECTION.md`.
 
 ---
 
 ## Herramienta recomendada
-**OpciÃ³n A (rÃ¡pida y portable): Newman + Postman Collection**
-- Pros: fÃ¡cil de compartir con equipo, ejecuciÃ³n en CI.
-- Contras: depende de colecciÃ³n externa.
+**Opción A (rápida y portable): Newman + Postman Collection**
+- Pros: fácil de compartir con equipo, ejecución en CI.
+- Contras: depende de colección externa.
 
-**OpciÃ³n B (sencilla y nativa): PowerShell**
+**Opción B (sencilla y nativa): PowerShell**
 - Pros: no requiere tooling extra.
 - Contras: menos reportes.
 
@@ -100,7 +100,7 @@ Invoke-RestMethod -Method Get `
 - `POST /api/mqtt/webhook` sin `device_id` -> `400`.
 - `POST /api/mqtt/webhook` con `device_id` inexistente -> `404`.
 - `PATCH /api/devices/:id` con `status` invalido -> `400`.
-- `GET /api/readings` con `device_uuid` ajeno -> `403` o lista vacÃ­a.
+- `GET /api/readings` con `device_uuid` ajeno -> `403` o lista vacía.
 
 ---
 
@@ -111,7 +111,7 @@ Invoke-RestMethod -Method Get `
 
 ---
 
-## Reporte esperado (mÃ­nimo)
+## Reporte esperado (mínimo)
 - Salida de consola con:
   - `200` para flujo base
   - `400/404/403` para casos negativos
@@ -232,11 +232,11 @@ Si eso ocurre, recarga tu entorno desde `Docs/.env.test.local` o restaura tu `.e
 ## Auth flow (manual)
 - Registro: crear usuario nuevo, confirmar email, debe abrir /onboarding.
 - Reset: pedir reset en /login, link debe abrir /reset.
-- Login: despuÃ©s de reset, login debe llevar a /today.
+- Login: después de reset, login debe llevar a /today.
 
 ## Rate limit (Upstash)
 1. Asegurar envs en Vercel: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
-2. Ejecutar rÃ¡faga al webhook y verificar 429:
+2. Ejecutar ráfaga al webhook y verificar 429:
 ```powershell
 $webhook = "<MQTT_WEBHOOK_SECRET>"
 $body = '{"device_id":"KPCL0001","temperature":23.5,"humidity":65}'
@@ -251,4 +251,6 @@ $body = '{"device_id":"KPCL0001","temperature":23.5,"humidity":65}'
   }
 }
 ```
+
+
 

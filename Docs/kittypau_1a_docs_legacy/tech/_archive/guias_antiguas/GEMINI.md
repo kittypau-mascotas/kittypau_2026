@@ -104,3 +104,5 @@ KittyPaw/
 5.  **Crear un `README.md` Principal**: En la raíz del nuevo proyecto (`KittyPaw/`), crea un archivo `README.md` que explique la nueva estructura, cómo iniciar el servidor web, cómo compilar la aplicación móvil y cómo programar el dispositivo IoT.
 
 Siguiendo este plan, obtendrás un proyecto mucho más limpio, organizado y fácil de mantener, conservando todas las funcionalidades existentes.
+
+

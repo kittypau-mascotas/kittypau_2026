@@ -36,7 +36,7 @@ El comportamiento se arma asi:
 
 Esta seccion documenta las medidas "reales" que usamos hoy en CSS/TS. Hay 3 niveles:
 - Geometria del SVG (coordenadas internas por `viewBox`)
-- Tamaños renderizados del wrapper (pixeles en el layout)
+- TamaÃ±os renderizados del wrapper (pixeles en el layout)
 - Offsets animados (respiracion, ojos) y sus rangos
 
 ### 1) Geometria del SVG (interno)
@@ -58,7 +58,7 @@ Traduccion aproximada a pixeles (segun ancho CSS del wrapper):
 - Si `width: 72px` => alto aproximado `55.90px`
 
 Nota:
-- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaño final lo domina el contenedor en px.
+- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaÃ±o final lo domina el contenedor en px.
 
 ### 2) Medidas del gato en Login (sobre el card de iniciar sesion)
 
@@ -100,7 +100,7 @@ Caja del gato dentro del dialogo:
 - Selector: `.trial-rpg-cat`
   - `flex: 0 0 74px` (base width)
   - `margin-top: 14px` (baja el gato para tocar su sombra)
-  - `margin-right: -2px` (pequeño solape hacia el borde)
+  - `margin-right: -2px` (pequeÃ±o solape hacia el borde)
   - `position: relative`
 
 SVG wrapper (RPG):
@@ -498,6 +498,29 @@ El cuadro RPG es un "button-like container":
 Los botones X y mute:
 - usan `event.stopPropagation()` para evitar que el click avance el dialogo.
 
+## Contrato del cuadro RPG
+
+El dialogo RPG debe editarse siempre con la misma estructura para no romper la experiencia visual:
+- un solo componente compartido: `TrialRpgDialog`
+- una sola geometria base para login, demo e inicio
+- altura y ancho fijos en CSS
+- el texto nunca debe modificar el alto del cuadro
+- el espacio de acciones debe reservarse aunque no haya botones visibles
+- no agregar barras, cursores o animaciones que alteren el tamano del cuadro
+
+Reglas de edicion:
+1. Si el texto cambia, solo cambia el contenido, no el contenedor.
+2. Si una pagina necesita texto distinto, debe pasarlo al mismo componente.
+3. Si un caso necesita acciones distintas, debe usar el slot `actions`.
+4. Si el cuadro no aparece en `/demo`, revisar primero el estado de apertura en la pagina, no crear otro componente paralelo.
+
+Checklist rapido antes de tocar el cuadro:
+- `TrialRpgDialog` sigue siendo la unica fuente visual del dialogo
+- `.trial-rpg-modal` mantiene dimensiones fijas
+- `.trial-rpg-line` no empuja el layout
+- `.trial-rpg-actions` reserva espacio estable
+- `login`, `demo` e `inicio` usan la misma pieza
+
 ## Checklist rapido de debug (cuando "no funciona")
 
 1. Ojos no se mueven:
@@ -526,3 +549,12 @@ Si queremos ordenarlo, el siguiente refactor "limpio" seria:
 1. mover el SVG a `kittypau_app/src/app/_assets/cat_sleeping.svg.ts` (export string)
 2. crear componente `kittypau_app/src/app/_components/cat-sleepy.tsx`
 3. dejar en `globals.css` solo variables/animaciones, y el resto en un css module del componente
+
+## Estado del demo
+
+- `/demo` debe abrir el mismo `TrialRpgDialog` aunque el usuario entre directo a la ruta.
+- Si no existe una sesion demo previa, la pagina debe autosembrar valores por defecto y mostrar el cuadro.
+- `kittypau_demo_show_rpg` ya no es la unica llave de apertura; sirve como marcador historico, pero el dialogo debe aparecer igual.
+- Si el cuadro no aparece, el primer paso de debug es revisar `isGuideVisible` y el montaje del componente, no crear otra variante.
+
+

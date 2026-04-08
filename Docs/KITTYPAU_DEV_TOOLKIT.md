@@ -102,3 +102,5 @@ git push
 
 `npm run lint` puede reportar warnings existentes del repo.  
 Los bloqueantes de PR son errores (`error`), no warnings.
+
+

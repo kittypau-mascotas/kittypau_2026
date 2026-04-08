@@ -87,3 +87,5 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
   - `npm run type-check` OK.
 - Pendiente para cierre DoD completo:
   - validar visualmente en 360x800, 393x852, 412x915 con evidencia adjunta.
+
+

@@ -25,6 +25,7 @@ Fecha de corte: 2026-04-01
 - [ ] Revisar accesibilidad de tooltips, labels y mensajes de estado.
 - [ ] Convertir el timeline/story en insights utiles y no solo narrativa.
 - [ ] Verificar consistencia visual entre web, mobile y APK.
+- [ ] En `today`, cuando el cuadro del plato este en estado verde, mostrar botones de categorizacion para uso interno/admin: `sin nada encima`, `plato con comida`, `inicio de servir comida` y `termino de servir comida`.
 
 ### P2
 - [ ] Refinar empty states y microcopy en `today`, `story`, `pet`, `bowl` y `settings`.
@@ -67,6 +68,7 @@ Fecha de corte: 2026-04-01
   - `battery_state`
   - `battery_source`
 - [ ] Confirmar que las lecturas sigan llegando con cadencia util para inferir ON/OFF.
+- [ ] Ejecutar y documentar prueba controlada de `KPCL0034` y `KPCL0036` conectado al cargador, sin objeto encima, con secuencia por device del grafico 2 (`KPCL0034: tare_record -> food_fill_start -> food_fill_end` / `KPCL0036: tare_record -> food_fill_start -> food_fill_end`), para comparar contra la misma prueba en bateria sola y dejar ambos devices con la misma referencia de auditoria.
 
 ### P2
 - [ ] Documentar cualquier campo nuevo antes de activar en produccion.
@@ -126,3 +128,5 @@ Fecha de corte: 2026-04-01
 - Si una tarea ya se resolvio, moverla al documento historico correspondiente.
 - Si una tarea genera una decision de arquitectura, reflejarla en `FUENTE_DE_VERDAD.md`.
 - Si una tarea cambia la foto viva, actualizar `ESTADO_PROYECTO_ACTUAL.md`.
+
+

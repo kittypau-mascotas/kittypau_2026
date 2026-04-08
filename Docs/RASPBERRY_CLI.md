@@ -90,3 +90,5 @@ curl -H "x-bridge-token: <BRIDGE_HEARTBEAT_SECRET>" \
 - Sin conexión MQTT: revisar host/credenciales/TLS.
 - Webhook 401: `WEBHOOK_TOKEN` no coincide con secreto Vercel.
 - Heartbeat 401: `BRIDGE_HEARTBEAT_TOKEN` no coincide con secreto Vercel.
+
+

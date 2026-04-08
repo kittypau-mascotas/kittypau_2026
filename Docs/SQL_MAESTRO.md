@@ -26,3 +26,5 @@
 - [SQL_ASSERTS.md](SQL_ASSERTS.md) — Queries de validación del schema
 - [SQL_CHECK_BRIDGE_UNIQUENESS.sql](SQL_CHECK_BRIDGE_UNIQUENESS.sql) — Check de unicidad del bridge
 - [CLEANUP_SQL.sql](CLEANUP_SQL.sql) — Queries de limpieza de datos
+
+

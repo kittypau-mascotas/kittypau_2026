@@ -1,9 +1,23 @@
 "use client";
 
-import type { CSSProperties, ReactNode, KeyboardEvent, RefObject } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type KeyboardEvent,
+  type RefObject,
+} from "react";
+import {
+  TRIAL_RPG_DIALOG_PROFILES,
+  type TrialRpgDialogMode,
+} from "@/chatbot-gato/dialog-profile";
 
 type TrialRpgDialogProps = {
+  dialogMode: TrialRpgDialogMode;
   typedText: string;
+  isTyping?: boolean;
   isMuted: boolean;
   onToggleMute: () => void;
   onClose: () => void;
@@ -13,12 +27,13 @@ type TrialRpgDialogProps = {
   catEyeOffset: { x: number; y: number };
   catRef?: RefObject<HTMLDivElement | null>;
   actions?: ReactNode;
-  ariaLabel?: string;
 };
 
 export default function TrialRpgDialog(props: TrialRpgDialogProps) {
   const {
+    dialogMode,
     typedText,
+    isTyping = false,
     isMuted,
     onToggleMute,
     onClose,
@@ -28,8 +43,24 @@ export default function TrialRpgDialog(props: TrialRpgDialogProps) {
     catEyeOffset,
     catRef,
     actions,
-    ariaLabel = "Avanzar dialogo",
   } = props;
+  const profile = TRIAL_RPG_DIALOG_PROFILES[dialogMode];
+  const textPaneRef = useRef<HTMLDivElement | null>(null);
+  const messageRef = useRef<HTMLDivElement | null>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  useLayoutEffect(() => {
+    const textPane = textPaneRef.current;
+    const message = messageRef.current;
+    if (!textPane || !message) {
+      setHasOverflow(false);
+      return;
+    }
+
+    const availableHeight = textPane.clientHeight;
+    const contentHeight = message.scrollHeight;
+    setHasOverflow(contentHeight > availableHeight + 2);
+  }, [dialogMode, typedText]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -37,6 +68,7 @@ export default function TrialRpgDialog(props: TrialRpgDialogProps) {
       onAdvance();
     }
   };
+  const showContinueButton = !isTyping && hasOverflow;
 
   return (
     <div className="trial-rpg-modal w-full max-w-lg">
@@ -46,7 +78,7 @@ export default function TrialRpgDialog(props: TrialRpgDialogProps) {
         tabIndex={0}
         onClick={onAdvance}
         onKeyDown={onKeyDown}
-        aria-label={ariaLabel}
+        aria-label={profile.ariaLabel}
       >
         <div className="trial-rpg-controls" aria-label="Controles de dialogo">
           <button
@@ -86,17 +118,43 @@ export default function TrialRpgDialog(props: TrialRpgDialogProps) {
           </button>
         </div>
         <div className="trial-rpg-body">
-          <div className="trial-rpg-textpane">
+          <div className="trial-rpg-textpane" ref={textPaneRef}>
             <div className="trial-rpg-copy">
-              <p className="trial-rpg-line">
-                {typedText}
-                <span
-                  className="trial-rpg-caret"
-                  aria-hidden={typedText.length === 0}
-                >
-                  |
-                </span>
-              </p>
+              <div className="trial-rpg-message" ref={messageRef}>
+                <div className="trial-rpg-header" aria-hidden="true">
+                  <span className="trial-rpg-speaker">
+                    {profile.speakerLabel}
+                  </span>
+                  <span className="trial-rpg-header-line" />
+                </div>
+                <p className="trial-rpg-line">
+                  {typedText}
+                  <span
+                    className="trial-rpg-caret"
+                    aria-hidden={typedText.length === 0}
+                  >
+                    |
+                  </span>
+                </p>
+              </div>
+              {showContinueButton ? (
+                <div className="trial-rpg-continue-row">
+                  <span className="trial-rpg-ellipsis">...</span>
+                  <button
+                    type="button"
+                    className="trial-rpg-continue"
+                    aria-label="Continuar dialogo"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onAdvance();
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 5l10 7-10 7V5z" />
+                    </svg>
+                  </button>
+                </div>
+              ) : null}
               {actions ? (
                 <div className="trial-rpg-actions" aria-hidden={false}>
                   {actions}

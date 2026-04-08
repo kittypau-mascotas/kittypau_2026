@@ -53,3 +53,5 @@ Se han seleccionado dos fuentes principales para crear una jerarquía visual cla
 ## Implementación
 
 Estas fuentes se importan desde Google Fonts en el archivo `index.html` y se aplican globalmente a través de `index.css` utilizando las utilidades de Tailwind CSS.
+
+

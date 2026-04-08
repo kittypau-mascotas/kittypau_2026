@@ -1,4 +1,4 @@
-ï»¿# Plan Paso a Paso: Estructura SQL (Kittypau)
+# Plan Paso a Paso: Estructura SQL (Kittypau)
 
 ## Principio guia
 Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y eventos**. El SQL debe reflejar exactamente lo que la app necesita.
@@ -117,7 +117,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - El QR entrega el `device_id`.
 - El dispositivo se asocia a una mascota para activar envio de datos.
 
-**Datos mÃ­nimos**
+**Datos mínimos**
 - id
 - owner_id (usuario)
 - pet_id (obligatorio)
@@ -132,7 +132,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 **Origen**: formulario "Registro de Kittypau".
 
 ### D. Lecturas (streaming)
-**Datos mÃ­nimos**
+**Datos mínimos**
 - id
 - device_id
 - pet_id (opcional)
@@ -287,7 +287,7 @@ Antes de escribir codigo, definimos **datos, formularios, relaciones, reglas y e
 - `clock_invalid` boolean (default false)
 
 Reglas recomendadas:
-- Idempotencia por llave `(device_id, recorded_at)` (Ãºnico / upsert).
+- Idempotencia por llave `(device_id, recorded_at)` (único / upsert).
 - Eje temporal canon para series: `effective_ts = CASE WHEN clock_invalid THEN ingested_at ELSE recorded_at END`.
 
 ---
@@ -315,6 +315,8 @@ Reglas recomendadas:
 
 ## Proximo paso
 Cuando confirmes este plan, generamos el **script SQL final** y lo guardamos en `Docs/SQL_SCHEMA.sql` antes de tocar codigo.
+
+
 
 
 

@@ -144,3 +144,5 @@ Los siguientes hitos son **bloqueantes** (un retraso impacta todo lo que sigue):
 
 _Referencias: PMBOK 6ta Ed. Cap. 6 (Gestion del Cronograma) | PMBOK 7ma Ed. Dominio de Planificacion_
 _Documento anterior: [02_SCOPE_WBS.md](02_SCOPE_WBS.md) | Siguiente: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md)_
+
+

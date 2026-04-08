@@ -110,3 +110,5 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
   - migrar `middleware` a `proxy` cuando corresponda,
   - mantener control de calidad en `/today` para cuentas tester,
   - homologar migraciones de bateria en todos los entornos.
+
+

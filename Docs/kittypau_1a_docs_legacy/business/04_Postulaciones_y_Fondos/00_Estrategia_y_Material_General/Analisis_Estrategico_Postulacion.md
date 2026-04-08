@@ -91,3 +91,5 @@ Debemos usar estos datos y tendencias para construir un caso de negocio sólido.
 **Fuentes:**
 *   [Informes de Expertos - Mercado de Mascotas en Chile](https://www.informesdeexpertos.com/informes/mercado-de-cuidado-de-mascotas-en-chile)
 *   [La Tercera - Pet Tech](https://www.latercera.com/piensa-digital/noticia/pet-tech-la-tecnologia-al-servicio-de-las-mascotas/Y26S3ZJ6WJHWZJ4X6XF7Y3Z3Z4/)
+
+

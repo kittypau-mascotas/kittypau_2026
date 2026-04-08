@@ -15,3 +15,5 @@ Paquete de trabajo para Corfo Semilla Inicia 2026.
 - El presupuesto acompana al borrador, pero no lo reemplaza.
 - El checklist solo marca avances y pendientes.
 - Si una respuesta se replica en otros docs, moverla al borrador vivo.
+
+

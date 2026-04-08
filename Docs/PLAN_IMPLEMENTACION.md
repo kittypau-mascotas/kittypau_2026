@@ -1,4 +1,4 @@
-﻿# Plan de Implementacion (Solo Documentacion)
+# Plan de Implementacion (Solo Documentacion)
 
 ## Objetivo
 > Documento de seguimiento derivado. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
@@ -22,7 +22,7 @@ Tareas:
 ---
 
 ## 2) Design System Base
-Documento fuente: `Docs/estilos y diseÃ±os.md`
+Documento fuente: `Docs/estilos y diseños.md`
 
 Tareas:
 - Implementar `tokens.css`.
@@ -129,3 +129,5 @@ Referencia: [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
 
 ## 12) Nota de compatibilidad
 Este documento evita repetir estrategia, economia y contexto de expansion: esas capas viven en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md) y [PLAN_MAESTRO.md](PLAN_MAESTRO.md).
+
+

@@ -1,4 +1,4 @@
-﻿# Flujo de Registro de Dispositivo (Kittypau)
+# Flujo de Registro de Dispositivo (Kittypau)
 
 ## Objetivo
 Registrar un plato Kittypau (comida o agua), escanear su QR y asociarlo a una mascota.
@@ -27,4 +27,6 @@ Registrar un plato Kittypau (comida o agua), escanear su QR y asociarlo a una ma
 
 ## Resultado
 El dispositivo queda activo y listo para enviar datos via HiveMQ.
+
+
 

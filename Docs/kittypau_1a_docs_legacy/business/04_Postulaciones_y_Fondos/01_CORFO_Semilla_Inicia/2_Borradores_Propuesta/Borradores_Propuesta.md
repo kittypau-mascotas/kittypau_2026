@@ -35,3 +35,4 @@ Para KittyPaw, esta carpeta será crucial para desarrollar y pulir los elementos
 - **Versiones:** Utilizar un sistema de versionado claro (ej. `pitch_deck_corfo_v1.pptx`, `video_script_sercotec_v2.docx`) para no perder el progreso.
 
 Esta carpeta es el corazón de la preparación de la postulación, donde la visión de KittyPaw se transforma en una propuesta ganadora.
+

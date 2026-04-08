@@ -41,3 +41,4 @@ KittyPaw tiene los cimientos de una empresa importante, no solo de un proyecto i
 Dividan el liderazgo ahora mismo. **Javier** debe ser el CTO interino, obsesionado con entregar un prototipo funcional que capture datos fiables. **Mauro**, tú debes ser el CEO interino, y tu única obsesión debe ser todo lo que no es código: hablar con 50 dueños de mascotas, construir la lista de espera, tener reuniones con veterinarios y empezar a tejer la red de contactos para la primera ronda de inversión.
 
 El producto no es solo el código y el plástico; es el modelo de negocio, la marca y la comunidad que lo rodean. Empiecen a construir todo en paralelo desde hoy.
+

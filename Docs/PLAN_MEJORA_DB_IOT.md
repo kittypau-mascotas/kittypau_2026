@@ -1,4 +1,4 @@
-﻿# Plan de Mejora DB (Supabase) - historico consolidado
+# Plan de Mejora DB (Supabase) - historico consolidado
 
 Este documento quedo consolidado en [PLAN_MEJORA_DB_ACTUAL.md](PLAN_MEJORA_DB_ACTUAL.md).
 
@@ -11,3 +11,5 @@ Se conserva como puntero historico para no perder el contexto original de:
 
 Si necesitas el contenido vivo y actualizado, lee:
 - [PLAN_MEJORA_DB_ACTUAL.md](PLAN_MEJORA_DB_ACTUAL.md)
+
+

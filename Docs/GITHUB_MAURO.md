@@ -18,6 +18,21 @@ Actualizar en cada jornada y en cada PR relevante.
 
 ## Registro
 
+## 2026-04-07
+- Rama: feat/mauro-curcuma
+- Objetivo: Hito operativo de platos (KPCL0034/KPCL0036) con data real para Bandida.
+- Cambios realizados:
+  - Se dejaron ambos platos funcionando en Today con datos reales.
+  - Inicio de recoleccion de data de Bandida (tester).
+- Archivos principales:
+  - Docs/pruebas_kpcl/HITO_2026-04-07_PLATOS_BANDIDA.md
+  - Docs/pruebas_kpcl/DIAGNOSTICO_ERRORES_Y_REGISTROS_2026-04-07.md
+- PR/Commit: Pendiente.
+- Pruebas ejecutadas:
+  - Validacion de funcionamiento en Today.
+- Riesgos/Pendientes:
+  - Seguir capturando data y revisar estabilidad de sensores.
+
 ## 2026-03-02
 - Rama: feat/mauro-curcuma
 - Objetivo: Estructurar flujo colaborativo Mauro/Javo y base de integracion IoT.
@@ -105,3 +120,5 @@ Actualizar en cada jornada y en cada PR relevante.
 - Riesgos/Pendientes:
   - Hacer merge final del PR #14 a main.
   - Ejecutar pull de main en ambos PCs tras el merge.
+
+

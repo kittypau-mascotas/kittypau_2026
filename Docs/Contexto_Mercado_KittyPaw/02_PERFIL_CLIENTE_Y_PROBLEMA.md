@@ -1,4 +1,4 @@
-﻿# 02 - Perfil de Cliente y Problema
+# 02 - Perfil de Cliente y Problema
 
 ## ICP inicial (B2C)
 Duenos de mascotas urbanos, digitalizados, con alta preocupacion por bienestar y disposicion a pagar por monitoreo preventivo.
@@ -19,3 +19,5 @@ Clinicas veterinarias y comercios pet que buscan diferenciar servicio y fideliza
 ## Evidencia interna disponible
 - Prototipo funcional con flujo IoT documentado.
 - Interes de usuarios para pilotos y validacion temprana.
+
+

@@ -121,3 +121,5 @@ git diff --name-only origin/main...origin/feat/javo-mauro
 3. Definir lista de PRs de fusion del mes.
 4. Ejecutar pruebas minimas antes de merge.
 5. Registrar resultado de la revision mensual en ambas bitacoras.
+
+

@@ -64,3 +64,5 @@ npx supabase db lint
 - `project not linked`: correr `npx supabase link --project-ref ...`.
 - `auth failed`: repetir `npx supabase login`.
 - drift entre local/remoto: revisar migraciones faltantes y orden de ejecución.
+
+

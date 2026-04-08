@@ -61,3 +61,5 @@ Con el RUT y la escritura de la empresa, se puede abrir una cuenta corriente par
 ## Alternativa Simplificada: "Tu Empresa en un Día"
 
 Existe un régimen simplificado del gobierno de Chile que permite constituir empresas de forma electrónica a través del portal `www.registrodeempresasysociedades.cl`. Este método puede ser más rápido y económico para la constitución inicial.
+
+

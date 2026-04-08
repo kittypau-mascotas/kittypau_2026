@@ -1,4 +1,4 @@
-﻿# 03 - Competencia y Posicionamiento
+# 03 - Competencia y Posicionamiento
 
 ## Competencia directa
 Soluciones pet-tech con hardware y app para monitoreo basico de consumo.
@@ -15,3 +15,5 @@ Soluciones pet-tech con hardware y app para monitoreo basico de consumo.
 
 ## Ventaja defendible
 La barrera principal es la capa de datos + interpretacion + experiencia de uso, no solo el hardware.
+
+

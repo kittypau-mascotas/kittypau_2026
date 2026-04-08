@@ -443,3 +443,5 @@ _Ultimo revision: 2026-03-05 | Basado en PMO documentos 01, 04, 05, 07_
 _Datos personales verificados desde postulacion Sercotec 2024 (RUT 17402237-2)_
 _Empresa: IOT CHILE SpA, constituida 10-07-2025_
 _Deadline postulacion historico: 16 de marzo 2026_
+
+

@@ -46,3 +46,5 @@ select create_hypertable('public.readings', 'recorded_at');
 ## Validación
 - `EXPLAIN` debe mostrar “Partition Pruning”.
 - Queries `/api/readings` deben usar índice por partición.
+
+

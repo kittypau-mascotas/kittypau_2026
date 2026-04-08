@@ -245,3 +245,5 @@ Objetivo: onboarding claro, rapido y confiable.
 ### Accesibilidad
 - Labels visibles o `aria-label` consistente.
 - Contraste AA minimo.
+
+

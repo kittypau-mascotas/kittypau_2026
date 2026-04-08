@@ -36,3 +36,5 @@ La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](document
 - `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/02_Analisis_Competencia.md`
 - `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/01_CORFO_Semilla_Inicia/Resumen_Ejecutivo_CORFO.md`
 - `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/01_CORFO_Semilla_Inicia/3_Formularios/CORFO_Semilla_Inicia_2025_Draft.md`
+
+

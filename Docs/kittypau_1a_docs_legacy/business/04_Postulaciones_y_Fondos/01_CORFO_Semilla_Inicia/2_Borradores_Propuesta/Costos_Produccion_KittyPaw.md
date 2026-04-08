@@ -93,3 +93,5 @@ Este documento detalla las estimaciones de costos de producción por unidad de K
 *   **Con 40% de Ganancia sobre Venta:**
     *   Precio de Venta: $74.825 CLP
     *   **Gross Profit (GP): $29.930 CLP** ($74.825 - $44.895)
+
+

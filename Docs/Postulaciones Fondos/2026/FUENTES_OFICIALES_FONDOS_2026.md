@@ -57,3 +57,5 @@ Cada vez que se actualice el radar, volver a consultar:
 - Esta hoja no reemplaza al radar vivo.
 - El radar vivo sigue siendo `../../../FONDOS_RASTREADOS_ACTUALES.md`.
 - Si cambia una fecha o convocatoria, actualizar primero el radar y luego esta hoja si la fuente nueva merece guardarse.
+
+

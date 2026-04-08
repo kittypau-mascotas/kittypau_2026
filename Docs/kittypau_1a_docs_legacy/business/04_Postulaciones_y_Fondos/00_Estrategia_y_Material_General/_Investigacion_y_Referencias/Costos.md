@@ -38,3 +38,5 @@
 | " |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  |  |  | "Habilitación de infraestructura: $30 | 000 mensuales durante todo el año. Capital de trabajo: $161 | 667 mensuales durante todo el año. " |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+
+

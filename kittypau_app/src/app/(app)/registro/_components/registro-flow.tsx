@@ -1,9 +1,14 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { clearTokens, getValidAccessToken, setTokens } from "@/lib/auth/token";
+import {
+  clearTokens,
+  getSupabaseSessionSafely,
+  getValidAccessToken,
+  setTokens,
+} from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 
 type RegistroStatus = {
@@ -419,12 +424,12 @@ export default function RegistroFlow({
         if (!supabase) {
           throw new Error("Tu sesión expiró. Inicia sesión nuevamente.");
         }
-        const { data } = await supabase.auth.getSession();
-        const nextToken = data.session?.access_token ?? null;
+        const session = await getSupabaseSessionSafely();
+        const nextToken = session?.access_token ?? null;
         if (nextToken && nextToken !== accessToken) {
           setTokens({
             accessToken: nextToken,
-            refreshToken: data.session?.refresh_token,
+            refreshToken: session?.refresh_token,
           });
           setToken(nextToken);
           await loadStatus(nextToken, false);
@@ -512,15 +517,15 @@ export default function RegistroFlow({
       };
     }
 
-    supabase.auth.getSession().then(({ data }) => {
+    getSupabaseSessionSafely().then((session) => {
       if (!isMounted) return;
-      if (data.session?.access_token) {
-        setAccountEmail(data.session.user?.email ?? null);
+      if (session?.access_token) {
+        setAccountEmail(session.user?.email ?? null);
         setTokens({
-          accessToken: data.session.access_token,
-          refreshToken: data.session.refresh_token,
+          accessToken: session.access_token,
+          refreshToken: session.refresh_token,
         });
-        setToken(data.session.access_token);
+        setToken(session.access_token);
       } else {
         setError("Necesitas iniciar sesión para completar el registro.");
         setIsLoading(false);

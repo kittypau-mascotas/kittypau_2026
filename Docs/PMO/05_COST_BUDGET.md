@@ -346,3 +346,5 @@ CLP (millones)
 _Referencias: PMBOK 6ta Ed. Cap. 7 (Gestion de los Costos) | PMBOK 7ma Ed. Dominio de Planificacion_
 _Datos reales: `Docs/Postulaciones Fondos/2026/Participantes/REGISTRO_COMPRAS_JAVIER.md`_
 _Documento anterior: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md) | Siguiente: [06_RISK_REGISTER.md](06_RISK_REGISTER.md)_
+
+

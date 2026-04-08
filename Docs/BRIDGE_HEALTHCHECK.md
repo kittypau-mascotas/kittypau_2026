@@ -37,3 +37,5 @@ Detectar caída del bridge y alertar si no hay tráfico en tiempo esperado.
 
 ## Nota
 Si no se implementa heartbeat, usar `audit_events` + `readings` como señal secundaria.
+
+

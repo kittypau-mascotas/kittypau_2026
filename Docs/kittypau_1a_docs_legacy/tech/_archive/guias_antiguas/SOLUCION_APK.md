@@ -29,3 +29,4 @@ La APK no puede conectarse a Replit porque las URLs no son públicamente accesib
 - Archivos configurados para usar localhost temporalmente
 - Cambiar URL en `client/src/lib/environment.ts` línea 27
 - Rebuild APK después del cambio
+

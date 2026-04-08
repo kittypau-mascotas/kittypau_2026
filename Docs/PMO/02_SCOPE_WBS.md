@@ -306,3 +306,5 @@ KP-2026 Kittypau IoT
 
 _Referencias: PMBOK 6ta Ed. Cap. 5 (Gestion del Alcance) | PMBOK 7ma Ed. Dominio de Planificacion_
 _Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguiente: [03_SCHEDULE.md](03_SCHEDULE.md)_
+
+

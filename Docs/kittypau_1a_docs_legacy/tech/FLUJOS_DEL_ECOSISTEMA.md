@@ -75,3 +75,5 @@ Este documento detalla, paso a paso, las secuencias de interacción entre los di
     9B. **`Backend` -> `Base de Datos`**: Consulta la tabla `consumption_events` para ese dispositivo en el rango de tiempo solicitado.
     10B. **`Backend` -> `App Cliente`**: Devuelve una lista de los eventos en formato JSON.
     11B. **`App Cliente`** -> Renderiza los datos en el gráfico del dashboard.
+
+

@@ -222,3 +222,5 @@ Monitorear:            S08, S10
 
 _Referencias: PMBOK 6ta Ed. Cap. 13 (Gestion de Interesados) | PMBOK 7ma Ed. Dominio de Stakeholders_
 _Documento anterior: [06_RISK_REGISTER.md](06_RISK_REGISTER.md) | Siguiente: [08_QUALITY_PLAN.md](08_QUALITY_PLAN.md)_
+
+

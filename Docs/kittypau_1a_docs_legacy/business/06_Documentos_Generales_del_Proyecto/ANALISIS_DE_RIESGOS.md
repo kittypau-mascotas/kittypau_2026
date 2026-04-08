@@ -51,3 +51,4 @@ Este documento identifica los riesgos clave para el éxito del proyecto KittyPaw
     *   **Mitigación:**
         *   Consultar con un experto legal para redactar una Política de Privacidad y Términos y Condiciones que cumplan con la ley local (ej. GDPR en Europa, o leyes equivalentes).
         *   Anonimizar todos los datos que se usen para análisis agregados o para venta a terceros.
+

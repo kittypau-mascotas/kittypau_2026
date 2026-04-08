@@ -263,3 +263,5 @@ Cerrar issue con referencia al commit
 
 _Referencias: PMBOK 6ta Ed. Cap. 8 (Gestion de la Calidad) | PMBOK 7ma Ed. Dominio de Entrega_
 _Documento anterior: [07_STAKEHOLDERS.md](07_STAKEHOLDERS.md) | Siguiente: [09_COMMUNICATIONS.md](09_COMMUNICATIONS.md)_
+
+

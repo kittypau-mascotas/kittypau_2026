@@ -11,3 +11,5 @@ La estructura está dividida en las siguientes áreas clave:
 - **04_Postulaciones_y_Fondos:** Historial y documentos de postulación a fondos.
 - **05_Documentos_Legales:** Aspectos de constitución y registro.
 - **06_Documentos_Generales_del_Proyecto:** Presentaciones, análisis de competencia, etc.
+
+

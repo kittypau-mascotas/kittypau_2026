@@ -1,4 +1,4 @@
-﻿# Pruebas End-to-End (Kittypau)
+# Pruebas End-to-End (Kittypau)
 
 ## Objetivo
 Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> Realtime.
@@ -222,10 +222,12 @@ Ver `Docs/TEST_READINGS_CONTRACT.ps1` (contrato de `/api/readings`: casos OK + e
 - pet_state -> `device_linked`
 
 **Resultado (2026-02-07, webhook device_id + strings OK)**
-- POST /api/mqtt/webhook con `device_id` (KPCL) y valores numéricos como string: OK
+- POST /api/mqtt/webhook con `device_id` (KPCL) y valores num�ricos como string: OK
 - Reading creado: `dcb9e265-c825-4acb-9516-e1a77187d9f0`
 - device UUID (`devices.id`): `db4ab517-ba80-43dd-865f-3207354d4b18`
 - recorded_at: `2026-02-07T23:45:14.002+00:00`
+
+
 
 
 

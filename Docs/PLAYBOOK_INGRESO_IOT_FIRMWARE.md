@@ -1,4 +1,4 @@
-ï»¿# Playbook de Ingreso - Trabajo IoT/Firmware/Microcontroladores
+# Playbook de Ingreso - Trabajo IoT/Firmware/Microcontroladores
 
 ## Objetivo
 Asegurar que el trabajo externo (firmware, ESP32/NodeMCU, bridge y microcontroladores) ingrese a Kittypau sin romper el contrato de datos ni la operacion.
@@ -28,7 +28,7 @@ Debe respetarse sin excepcion:
   - `water_ml`: 0..5000
   - `flow_rate`: 0..1000
 - Idempotencia: no duplicar `readings` para mismo `device_id + recorded_at`.
-- Criterio analÃ­tico (recomendado): en ingestiÃ³n server-side aplicar `log10(x + 1)` a variables skewed y persistir raw + transformado (Fourier/FFT queda fuera del Gate 1, corre en worker).
+- Criterio analítico (recomendado): en ingestión server-side aplicar `log10(x + 1)` a variables skewed y persistir raw + transformado (Fourier/FFT queda fuera del Gate 1, corre en worker).
 
 Referencia:
 - `Docs/TOPICOS_MQTT.md`
@@ -96,3 +96,5 @@ git diff --name-only origin/main...HEAD -- bridge supabase kittypau_app/src/app/
 
 ## Nota operativa
 Mientras no exista rama remota de Javier, se prepara este flujo y se congela `main` para trabajo IoT en PR obligatorio.
+
+

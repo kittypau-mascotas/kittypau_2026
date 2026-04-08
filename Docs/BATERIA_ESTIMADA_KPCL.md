@@ -203,7 +203,7 @@ Conclusion:
 ### Registro manual actual
 El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no perder el contexto del analisis:
 - momento registrado: `2026-04-01 04:36:28Z` (`2026-04-01 01:36:28` hora local `-03`)
-- estado: `battery_only`
+- estado inicial: `battery_only`
 - tabla actualizada:
   - `public.device_power_sessions`
   - `public.device_battery_cycles`
@@ -211,12 +211,145 @@ El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no 
   - se desconecto el cargador
   - el dispositivo quedo funcionando sin enchufe
   - no hay telemetria real de bateria aun, por lo que este registro es manual y sirve como marcador inicial para el analisis posterior
-- estado actualizado a `2026-04-01 13:18:55Z`:
-  - la bateria sigue activa
-  - no se cierra el ciclo todavia
-  - se espera reconexion para cerrar el tramo y medir la duracion completa
+- cierre manual del tramo `battery_only`:
+  - `2026-04-06 12:50:00-03`
+  - desde ahi comienza el nuevo tramo de carga
 
-La fila de `device_battery_cycles` quedo abierta como `battery_only` para cerrarla cuando se vuelva a conectar el cargador o cuando exista telemetria de energia suficiente para medir el tramo completo.
+La fila de `device_battery_cycles` quedo cerrada como `battery_only` y la nueva carga manual se abre desde `2026-04-06 12:50:00-03`.
+
+---
+
+## Caso real de KPCL0036
+
+### Identidad del device
+- `device_code`: `KPCL0036`
+- `device_type`: `comedero`
+
+### Registro manual de carga completa
+El ciclo de carga de `KPCL0036` quedo registrado manualmente para analisis y calculos futuros:
+- momento de inicio de carga: `2026-04-01 08:36:00-03`
+- momento de carga completa: `2026-04-01 12:42:00-03`
+- duracion total observada: `04:06:00`
+- duracion en segundos: `14760`
+- tabla actualizada:
+  - `public.device_battery_cycles`
+- estado del ciclo:
+  - `full`
+
+Observacion:
+- este tramo se guarda como la base real de tiempo de carga del dispositivo
+- el dato sirve para calculos posteriores de autonomia, carga y comparacion entre KPCL
+- no reemplaza telemetria real de energia, pero ya queda como referencia operativa canonica
+
+### Inicio manual de autonomia de KPCL0036
+El dispositivo fue desconectado del cargador y quedo en bateria sola para medir autonomia total:
+- momento de desconexion e inicio de autonomia: `2026-04-06 15:55:23-04:00`
+- indicador visual al salir del cargador: `azul`
+- estado registrado:
+  - `battery_only`
+- nivel inicial estimado:
+  - `100%`
+- tabla actualizada:
+  - `public.device_battery_cycles`
+
+Observacion:
+- este tramo marca el inicio canonico de autonomia de `KPCL0036`
+- se guarda como referencia para calcular cuanto dura la bateria completa desde carga total
+- el dato queda listo para cerrar el tramo cuando el dispositivo se descargue o vuelva a cargarse
+
+### Inicio manual de carga de KPCL0034
+El tramo de `KPCL0034` paso de bateria a carga manual y quedo guardado para analisis:
+- fin del tramo `battery_only`: `2026-04-06 12:50:00-03`
+- inicio de carga: `2026-04-06 12:50:00-03`
+- estado del nuevo ciclo: `charging`
+- tabla actualizada:
+  - `public.device_battery_cycles`
+
+Observacion:
+- el ciclo anterior se cierra como referencia historica
+- desde ese horario se puede medir el nuevo tramo de carga
+- este dato sirve para calculos posteriores de autonomia y comparacion entre KPCL
+
+### Prueba controlada compartida pendiente para KPCL0034 y KPCL0036
+Para comparar comportamiento real de peso con la misma escena fisica y la misma secuencia de tare, se deja pendiente una prueba controlada comun para:
+
+- `KPCL0034`
+- `KPCL0036`
+
+Condiciones de la prueba:
+
+- cargador conectado;
+- sin objeto encima al inicio;
+- mismo plato y misma secuencia de manipulacion en ambos devices;
+- misma taxonomia de registro.
+
+Secuencia a registrar para el grafico 2:
+
+1. `KPCL0034`:
+   - `tare_record` -> `2026-04-06 21:42:34+00:00`
+   - `food_fill_start` -> `2026-04-06 21:43:34+00:00`
+   - `food_fill_end` -> `2026-04-06 21:44:03+00:00`
+2. `KPCL0036`:
+   - `tare_record` -> `2026-04-06 21:42:22+00:00`
+   - `food_fill_start` -> `2026-04-06 21:43:48+00:00`
+   - `food_fill_end` -> `2026-04-06 21:44:27+00:00`
+
+Objetivo:
+
+- comparar estabilidad de peso entre `KPCL0034` y `KPCL0036`;
+- verificar si la fuente de energia cambia el patron observado;
+- dejar una referencia comun para futuras auditorias de bateria y de peso neto.
+
+### Estado actual de la prueba compartida
+Observacion de estado al `2026-04-06 17:40:13-04:00`:
+
+- `KPCL0034` esta con plato encima, con el plato activo y sin cargador.
+- `KPCL0036` esta con plato encima, con el plato activo y sin cargador.
+- ambos devices permanecen en la misma escena de prueba para ejecutar la secuencia compartida cuando corresponda.
+
+Este estado se conserva como foto operativa para no perder el punto de partida comun de la comparacion.
+
+### Tare en curso
+Inicio de tare registrado al `2026-04-06 21:42:34+00:00` para `KPCL0034` y al `2026-04-06 21:42:22+00:00` para `KPCL0036`:
+
+- `KPCL0034`
+- `KPCL0036`
+
+Estado:
+
+- tare iniciado desde la app;
+- en espera del resultado final de la tare y del siguiente valor neto para cerrar la fase;
+- sin modificar aun la referencia canonica de comparacion.
+
+Este tramo queda abierto hasta que llegue la lectura final posterior al tare.
+
+### Inicio de servido en curso
+Inicio de servido de comida registrado al `2026-04-06 21:43:34+00:00` para `KPCL0034` y al `2026-04-06 21:43:48+00:00` para `KPCL0036`:
+
+- `KPCL0034`
+- `KPCL0036`
+
+Estado:
+
+- servido iniciado desde la app;
+- queda pendiente el cierre del servido para fijar el peso final;
+- la secuencia sigue la misma taxonomia canonica de comparacion.
+
+Este tramo queda abierto hasta que llegue el termino de servido y la lectura asociada.
+
+### Termino de servido en curso
+Termino de servido de comida registrado al `2026-04-06 21:44:03+00:00` para `KPCL0034` y al `2026-04-06 21:44:27+00:00` para `KPCL0036`:
+
+- `KPCL0034`
+- `KPCL0036`
+
+Estado:
+
+- servido cerrado desde la app;
+- el grafico 2 ya puede marcar el cierre como `food_fill_end`;
+- la secuencia compartida queda completa para esta corrida.
+
+Este tramo cierra la fase de servido del grafico compartido.
 
 ---
 

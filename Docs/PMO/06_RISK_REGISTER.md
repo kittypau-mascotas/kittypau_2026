@@ -217,3 +217,5 @@
 
 _Referencias: PMBOK 6ta Ed. Cap. 11 (Gestion de Riesgos) | PMBOK 7ma Ed. Dominio de Incertidumbre_
 _Documento anterior: [05_COST_BUDGET.md](05_COST_BUDGET.md) | Siguiente: [07_STAKEHOLDERS.md](07_STAKEHOLDERS.md)_
+
+

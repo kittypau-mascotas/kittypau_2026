@@ -22,3 +22,5 @@ El objeto social de IOT CHILE SpA está en perfecta sintonía con la naturaleza 
 *   **Habilita el Modelo de Negocio:** La capacidad de "comercialización, distribución, venta y arriendo de equipos electrónicos" y el "desarrollo de aplicaciones y plataformas" son fundamentales para nuestro modelo de negocio híbrido (venta de hardware y suscripción de software).
 
 En resumen, el objeto social de IOT CHILE SpA fue diseñado estratégicamente para ser el vehículo legal ideal para el desarrollo y escalamiento de proyectos de base tecnológica como KittyPaw.
+
+

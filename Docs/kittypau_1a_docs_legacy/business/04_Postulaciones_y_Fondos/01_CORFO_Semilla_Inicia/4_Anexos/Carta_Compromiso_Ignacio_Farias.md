@@ -68,3 +68,4 @@ En señal de conformidad, las partes firman el presente documento en duplicado, 
 **Ignacio farias**
 **C.I. N° 17268631-1**
 **Participante**
+

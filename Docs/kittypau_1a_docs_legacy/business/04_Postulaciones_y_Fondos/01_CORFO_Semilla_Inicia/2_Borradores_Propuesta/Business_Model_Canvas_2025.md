@@ -58,3 +58,4 @@
     *   Gastos de Inversión: Adquisición de componentes y materiales para la fabricación de 5 unidades del ecosistema KittyPaw.
     *   Gastos de Operación: Logística, soporte inicial, costos de la nube (cloud hosting por 3 meses - $875.000 CLP).
     *   Recursos Humanos: Salarios del equipo técnico (3 meses - $6.000.000 CLP).
+

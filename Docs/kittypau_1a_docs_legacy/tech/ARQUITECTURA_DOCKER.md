@@ -52,3 +52,5 @@ El flujo de trabajo correcto es:
 5.  **Compartir Cambios:** Los cambios en el código se suben a GitHub a través de commits y pull requests. El otro desarrollador simplemente necesita hacer `git pull` para obtener los cambios y, si es necesario, reconstruir las imágenes con `docker-compose up --build`.
 
 Este enfoque garantiza que ambos trabajen con la misma arquitectura y dependencias, eliminando el clásico problema de "en mi máquina sí funciona".
+
+

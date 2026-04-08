@@ -126,3 +126,5 @@ Kittypau actual:
 3. Ejecutar migración en staging (Supabase).
 4. Validar API `/api/devices` y `/api/readings`.
 5. Validar bridge con MQTT CLI.
+
+

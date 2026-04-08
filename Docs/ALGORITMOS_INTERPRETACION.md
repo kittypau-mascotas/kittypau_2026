@@ -58,3 +58,5 @@ Convertir lecturas crudas en mensajes interpretativos consistentes, evitando con
 - Fourier/FFT en worker/servicio analítico (batch) para rutinas y cambios de patrón.
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+
+

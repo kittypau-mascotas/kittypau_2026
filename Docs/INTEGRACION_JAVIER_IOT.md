@@ -1,4 +1,4 @@
-﻿# Integracion Javier IoT (kittypau_1a)
+# Integracion Javier IoT (kittypau_1a)
 
 ## Fuente
 - Repo origen: `https://github.com/javo-mauro/kittypau_1a`
@@ -37,3 +37,5 @@ Crear PR tecnico para revisar diferencias entre:
 - `iot_firmware/javier_1a/bridge_v2_4/bridge.js`
 - `bridge/src/index.js`
 y decidir una unificacion de bridge en una sola implementacion.
+
+

@@ -33,3 +33,5 @@
   - Rama `feat/mauro-curcuma` sincronizada con `main` para continuidad de trabajo.
 - Recomendacion post-merge:
   - Ambos PCs deben ejecutar `git checkout main && git pull origin main`.
+
+

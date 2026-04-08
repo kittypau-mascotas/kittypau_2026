@@ -57,3 +57,5 @@ Fecha de corte: 2026-04-01
 - Si un fondo pasa de "vigilar" a "aplicar", moverlo tambien a `TAREAS_PENDIENTES_ACTUALES.md`.
 - Si un fondo deja de aplicar, mover la nota al historial o al paquete de postulacion correspondiente.
 - Revalidar fechas y apertura antes de cada postulacion; este radar es una lista de trabajo, no una adjudicacion.
+
+

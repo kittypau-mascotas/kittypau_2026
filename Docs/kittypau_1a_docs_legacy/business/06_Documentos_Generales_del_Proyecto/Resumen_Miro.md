@@ -119,3 +119,5 @@ Este documento resume el contenido exportado del tablero de Miro relacionado con
 - **APIs de imágenes:** Unsplash, The Cat API, Dog API, Pixabay.
 - **Instituciones:** CORFO, ProChile, Chiletec, Startup Chile, SERCOTEC.
 - **Legales:** registrodemarcaschile.cl, inapi.cl, registrodeempresasysociedades.cl.
+
+

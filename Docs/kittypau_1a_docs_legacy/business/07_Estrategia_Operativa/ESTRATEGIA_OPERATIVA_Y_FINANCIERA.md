@@ -56,3 +56,5 @@ Para analizar "dineros, entregas y gastos" de forma efectiva, debemos medir obse
 ### Herramientas de Análisis
 
 Para empezar, no se necesita un software complejo. Se debe crear una **Hoja de Cálculo (Google Sheets o Excel)** que funcione como un "Panel Financiero". Este panel debe ser actualizado religiosamente cada mes con estas métricas para tener un pulso constante de la salud del negocio.
+
+

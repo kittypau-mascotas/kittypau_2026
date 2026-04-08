@@ -51,3 +51,4 @@ npx cap open android
 - **Usuario**: jdayne / **Contraseña**: jdayne21
 
 ¡APK lista para generar!
+

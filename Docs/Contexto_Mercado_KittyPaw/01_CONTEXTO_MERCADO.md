@@ -1,4 +1,4 @@
-﻿# 01 - Contexto de Mercado
+# 01 - Contexto de Mercado
 
 ## Problema estructural
 Los duenos de mascotas carecen de visibilidad continua sobre hidratacion y alimentacion, lo que retrasa deteccion de problemas de salud y empuja un cuidado reactivo.
@@ -15,3 +15,5 @@ Los duenos de mascotas carecen de visibilidad continua sobre hidratacion y alime
 
 ## Tesis de mercado de Kittypau
 El valor no esta solo en un dispositivo, sino en transformar habitos diarios en datos accionables para decisiones de cuidado temprano.
+
+

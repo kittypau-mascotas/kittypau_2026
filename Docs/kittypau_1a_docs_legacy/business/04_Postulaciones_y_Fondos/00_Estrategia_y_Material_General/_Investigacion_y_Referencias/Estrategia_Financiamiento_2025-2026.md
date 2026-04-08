@@ -67,3 +67,5 @@ El capital privado busca un alto retorno de la inversión. Aquí, la narrativa s
 2.  **Alinear el Roadmap:** Revisar nuestro `ROADMAP.md` y asignar fechas tentativas para tener el prototipo listo para las primeras ventanas de postulación de CORFO en 2025.
 3.  **Networking:** Empezar a participar (incluso como oyente) en eventos del ecosistema startup en Chile para entender qué buscan los inversionistas.
 4.  **Actualizar Carpeta:** Mover los documentos antiguos de `Historico_Postulaciones` y crear carpetas para `Postulaciones_2025` con este plan como guía.
+
+

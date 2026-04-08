@@ -150,3 +150,5 @@ Si pasa a 1 vez al día:
 2) **Fase 2**: agregaciones por mascota (cron) + series temporales limpias
 3) **Fase 3 (diferenciación)**: servicio Python con `numpy.fft` + detección de picos + scoring
 
+
+

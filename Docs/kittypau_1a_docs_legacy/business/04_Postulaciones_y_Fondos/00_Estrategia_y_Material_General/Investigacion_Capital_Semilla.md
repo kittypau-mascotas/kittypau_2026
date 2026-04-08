@@ -90,3 +90,5 @@ Este fondo de Corfo se enfoca en emprendimientos innovadores con alto potencial 
 *   [Global Gesta - Errores comunes](https://globalgesta.com/noticias/errores-comunes-al-postular-a-fondos-concursables/)
 *   [YouTube - Video Pitch](https://www.youtube.com/watch?v=xAYjI-BCx4M)
 *   [YouTube - Errores Comunes](https://www.youtube.com/watch?v=wW0s-Ue3k_s)
+
+

@@ -164,3 +164,5 @@ Este plan nos permitirá validar la funcionalidad básica del hardware, la exper
 2.  **Tendencia de Humanización:** La Tercera, "Humanización de las mascotas: más del 90% de los hogares con animales los consideran parte de su familia".
 3.  **Enfermedades Comunes en Gatos:** Gabrica, "Las 10 enfermedades más comunes en los gatos".
 4.  **Enfermedades Comunes en Perros:** BioBioChile, "Las 5 enfermedades más comunes en perros y cómo prevenirlas".
+
+

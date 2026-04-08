@@ -55,3 +55,4 @@ Estos fondos son excelentes si se necesita financiar la investigación y el desa
 - **Por qué es pertinente:** Permite levantar capital directamente de una comunidad de inversionistas ángeles. El caso de Zensi (otra startup IoT) demuestra que es un camino viable en Chile.
 - **Monto (aprox.):** Variable, depende de la ronda de financiamiento.
 - **Consideración Clave:** Requiere una buena estrategia de marketing para la campaña y ceder un porcentaje de la empresa (equity).
+

@@ -62,3 +62,4 @@ En Android Studio:
 - Reemplaza `12345abc` con tu código real de ngrok
 - Usa HTTPS para API y WSS para WebSocket
 - Mantén ambas terminales abiertas
+

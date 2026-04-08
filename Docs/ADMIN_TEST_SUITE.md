@@ -44,3 +44,5 @@ Validar rapidamente que las fuentes criticas del dashboard admin esten operativa
   - `event_type`: `admin_test_suite_failed`.
   - `payload`: status, conteos y detalle de resultados.
 - El dashboard muestra este historial en la seccion **Suite de Tests Admin**.
+
+

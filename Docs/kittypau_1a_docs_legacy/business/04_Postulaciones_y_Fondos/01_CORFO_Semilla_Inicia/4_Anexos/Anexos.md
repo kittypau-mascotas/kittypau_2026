@@ -32,3 +32,4 @@ Para KittyPaw, los anexos deben ser cuidadosamente seleccionados para respaldar 
 - **Formato:** Asegurarse de que los anexos estén en el formato solicitado (PDF es lo más común) y que no excedan los límites de tamaño de archivo.
 
 Los anexos son la oportunidad de KittyPaw para mostrar la profundidad y solidez de su proyecto.
+

@@ -246,3 +246,5 @@ Para complementar y validar la información presentada en esta postulación, se 
 ---
 
 **Palabras Clave para CORFO:** Innovación, IoT, Inteligencia Artificial, Pet Tech, Prototipo Funcional, Escalabilidad Global, Alto Potencial de Crecimiento, Disrupción.
+
+

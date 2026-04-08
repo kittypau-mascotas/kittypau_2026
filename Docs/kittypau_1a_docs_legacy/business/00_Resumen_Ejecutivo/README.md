@@ -25,3 +25,4 @@ Ser la plataforma global de referencia en 'Pet Tech', reconocida por nuestra inn
 ## Elevator Pitch (Discurso de 30 segundos - Enfoque SERCOTEC Capital Semilla Emprende)
 
 "¿Buscas una oportunidad de negocio sólida y con impacto local? KittyPaw es una innovadora solución de monitoreo de mascotas que combina un dispositivo inteligente con una plataforma de análisis. No solo resolvemos una necesidad real de los dueños de mascotas en la Región Metropolitana, sino que generamos valor a través de un modelo de suscripción recurrente y creamos empleos en desarrollo tecnológico y soporte. Con KittyPaw, invertimos en el bienestar animal y en el crecimiento económico de nuestra región."
+

@@ -1,4 +1,4 @@
-﻿# Contratos por Vista (Kittypau)
+# Contratos por Vista (Kittypau)
 
 ## Objetivo
 Definir inputs, outputs y errores por pantalla antes de implementar UI.
@@ -198,4 +198,6 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Errores**
 - phone_number requerido si WhatsApp
+
+
 

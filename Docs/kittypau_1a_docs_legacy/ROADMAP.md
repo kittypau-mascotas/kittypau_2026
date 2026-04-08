@@ -97,3 +97,4 @@ Este anexo complementa el roadmap técnico con una visión de negocio.
 4.  **Fase de Ecosistema:**
     *   Desarrollar la API pública.
     *   Fomentar integraciones con terceros y explorar el modelo de marketplace.
+

@@ -77,3 +77,4 @@ Para diversificar ingresos y aumentar el valor de vida del cliente (LTV):
 *   **Venta de Datos Agregados:** Ofrecer datos anonimizados y agregados para investigación de mercado, estudios científicos o farmacéuticas veterinarias.
 *   **Marketplace e Integraciones:** Crear un marketplace de servicios o integrarse con plataformas de registro veterinario, generando comisiones.
 *   **Versiones Enterprise:** Licencias por volumen y soporte dedicado para negocios grandes como cadenas de clínicas o criaderos.
+

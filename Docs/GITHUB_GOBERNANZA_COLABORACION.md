@@ -100,3 +100,5 @@ Acción:
 - [x] Revisión mensual automatizada (issue)
 - [x] Documentación de flujo y bitácoras
 - [ ] Configurar branch protection en GitHub UI (manual, una vez)
+
+

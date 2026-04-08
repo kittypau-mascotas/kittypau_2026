@@ -39,3 +39,4 @@ http://localhost:5000
 2. Copiar la URL HTTPS de ngrok
 3. Actualizar `client/src/lib/environment.ts`
 4. Reconstruir APK
+

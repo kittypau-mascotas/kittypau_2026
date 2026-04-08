@@ -256,3 +256,5 @@ Esperamos acelerar la transicion desde validacion tecnica interna hacia un pilot
 - **PhD count:** Se cambio a 1 (Javier califica por grado universitario en ingenieria). Mauro tiene diplomas universitarios en IA y Data Science pero su titulo base es Sociologia, lo que no califica estrictamente.
 - **Experiencia comercial:** Se cambio a 2 — ambos fundadores tienen experiencia comercial acreditada (Mauro: Sales Coach, Project Coordinator; Javier: Senior Inside Sales en Emerson, contratos hasta USD 5M).
 - **Deck:** Aunque es opcional, es altamente recomendado subirlo. Prioridad alta.
+
+

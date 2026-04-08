@@ -2,65 +2,84 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import AppNav from "@/app/(app)/_components/app-nav";
 import { AppDataProvider } from "@/lib/context/app-context";
-import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
+import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";
+import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
+import {
+  DEMO_SCREEN_CONTEXT,
+  type DemoChoice,
+  type DemoGuideStep,
+} from "@/chatbot-gato/demo-context";
+import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
+
+const DEMO_QUICK_PROMPTS = [
+  "Qué es la demo",
+  "Qué muestra Kittypau",
+  "Cómo sigo",
+] as const;
 
 export default function DemoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ownerName, setOwnerName] = useState("Invitado");
   const [petName, setPetName] = useState("Tu mascota");
-  const [pendingGuide, setPendingGuide] = useState(false);
   const [isGuideVisible, setIsGuideVisible] = useState(false);
-  const [guideIndex, setGuideIndex] = useState(0);
-  const [guideTypedText, setGuideTypedText] = useState("");
-  const [isGuideTyping, setIsGuideTyping] = useState(false);
+  const [guideStep, setGuideStep] = useState<DemoGuideStep>(0);
+  const [guideChoice, setGuideChoice] = useState<DemoChoice | null>(null);
   const [isGuideMuted, setIsGuideMuted] = useState(false);
   const [isGuideCatAwake, setIsGuideCatAwake] = useState(true);
   const [guideCatEyeOffset, setGuideCatEyeOffset] = useState({ x: 0, y: 0 });
   const [guideCatSvg, setGuideCatSvg] = useState<string | null>(null);
+  const [guideReplyText, setGuideReplyText] = useState("");
+  const [guideDraft, setGuideDraft] = useState("");
+  const [isGuideSubmitting, setIsGuideSubmitting] = useState(false);
+  const [guideTypedText, setGuideTypedText] = useState("");
+  const [isGuideTyping, setIsGuideTyping] = useState(false);
   const guideCatRef = useRef<HTMLDivElement | null>(null);
   const guideAudioRef = useRef<HTMLAudioElement | null>(null);
+  const guideReplyHistoryRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
     const isDemo = window.localStorage.getItem("kittypau_demo_mode") === "1";
     if (!isDemo) {
-      router.replace("/login");
-      return;
+      window.localStorage.setItem("kittypau_demo_mode", "1");
+      window.localStorage.setItem("kittypau_demo_owner_name", "Invitado");
+      window.localStorage.setItem("kittypau_demo_pet_name", "Tu mascota");
+      window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
+      window.localStorage.setItem("kittypau_demo_kind", "demo");
+      window.localStorage.setItem("kittypau_demo_show_rpg", "1");
     }
+
     const owner = window.localStorage.getItem("kittypau_demo_owner_name");
     const pet = window.localStorage.getItem("kittypau_demo_pet_name");
-    const shouldShow =
-      window.localStorage.getItem("kittypau_demo_show_rpg") === "1";
-    // Avoid triggering react-hooks/set-state-in-effect by deferring state updates.
+
+    const guideDelayMs = 2800;
     const timer = window.setTimeout(() => {
       if (owner) setOwnerName(owner);
       if (pet) setPetName(pet);
-
-      if (shouldShow) {
-        window.localStorage.removeItem("kittypau_demo_show_rpg");
-        setPendingGuide(true);
-      }
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [router]);
-
-  useEffect(() => {
-    if (!pendingGuide) return;
-
-    const timer = window.setTimeout(() => {
+      window.localStorage.removeItem("kittypau_demo_show_rpg");
       setIsGuideVisible(true);
-      setGuideIndex(0);
-      setGuideTypedText("");
-      setPendingGuide(false);
-    }, 5000);
+      setGuideStep(0);
+      setGuideChoice(null);
+      setGuideReplyText("Sí? Pregunta por Kittypau.");
+      guideReplyHistoryRef.current = ["Sí? Pregunta por Kittypau."];
+    }, guideDelayMs);
 
-    return () => window.clearTimeout(timer);
-  }, [pendingGuide]);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [router]);
 
   const updatedAtLabel = useMemo(
     () =>
@@ -73,32 +92,6 @@ export default function DemoPage() {
     [],
   );
 
-  const guideLines = useMemo(() => {
-    const owner = ownerName.trim();
-    const ownerLine = owner
-      ? `“${owner}”... qué nombre más aburrido`
-      : "Tu nombre es aburrido, muy aburrido";
-    return [
-      "…¿Otra vez un humano?",
-      ownerLine,
-      "¿Y ahora qué? ¿Quieres saber qué hace esta app?",
-      "Yo vigilo a tu mascota",
-      "Reviso si está comiendo",
-      "Si está tomando agua",
-      "Y si algo anda mal",
-      "Básicamente… hago tu trabajo",
-      "...",
-      "Los humanos se distraen fácil",
-      "Son un éxito de la evolución... jajajaja",
-      "Redes sociales",
-      "Reuniones",
-      "Stalkear a tu ex",
-      "Horas en TikTok",
-      "Y les quita tiempo muy importante para nuestro cuidado",
-      "Para eso está Kittypau",
-    ] as const;
-  }, [ownerName]);
-
   const stopGuideAudio = useCallback(() => {
     const audio = guideAudioRef.current;
     if (!audio) return;
@@ -106,50 +99,18 @@ export default function DemoPage() {
     audio.currentTime = 0;
   }, []);
 
-  useEffect(() => {
-    if (!isGuideVisible) return;
-    if (!isGuideMuted) return;
-    stopGuideAudio();
-  }, [isGuideMuted, isGuideVisible, stopGuideAudio]);
-
-  const closeGuide = () => {
+  const closeGuide = useCallback(() => {
     setIsGuideVisible(false);
-    setGuideIndex(0);
-    setGuideTypedText("");
-    setIsGuideTyping(false);
+    setGuideStep(0);
+    setGuideChoice(null);
+    guideReplyHistoryRef.current = [];
     stopGuideAudio();
-  };
+  }, [stopGuideAudio]);
 
-  const toggleGuideMute = () => {
-    setIsGuideMuted((prev) => !prev);
-  };
-
-  const onGuideAdvance = useCallback(() => {
-    if (!isGuideVisible) return;
-    const lastIndex = guideLines.length - 1;
-    if (isGuideTyping) {
-      setGuideTypedText(guideLines[guideIndex] ?? "");
-      setIsGuideTyping(false);
-      stopGuideAudio();
-      return;
-    }
-    if (guideIndex < lastIndex) {
-      setGuideIndex((prev) => Math.min(lastIndex, prev + 1));
-      return;
-    }
-    closeGuide();
-  }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
+  const guideSections = DEMO_SCREEN_CONTEXT.sections;
 
   useEffect(() => {
     if (!isGuideVisible) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setGuideTypedText("");
-
-      setIsGuideTyping(false);
-
-      setIsGuideCatAwake(true);
-
-      setGuideCatEyeOffset({ x: 0, y: 0 });
       stopGuideAudio();
       return;
     }
@@ -184,9 +145,11 @@ export default function DemoPage() {
   }, [guideCatSvg, isGuideVisible, stopGuideAudio]);
 
   useEffect(() => {
-    if (!isGuideVisible || !isGuideCatAwake) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setGuideCatEyeOffset({ x: 0, y: 0 });
+    if (!isGuideVisible) {
+      return;
+    }
+
+    if (!isGuideCatAwake) {
       return;
     }
 
@@ -213,46 +176,168 @@ export default function DemoPage() {
   }, [isGuideCatAwake, isGuideVisible]);
 
   useEffect(() => {
-    if (!isGuideVisible) return;
-    if (guideIndex >= guideLines.length) return;
-
-    const line = guideLines[guideIndex];
-    let pointer = 0;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGuideTypedText("");
-
-    setIsGuideTyping(true);
-
-    const audio = guideAudioRef.current;
-    if (audio && !isGuideMuted) {
-      audio.loop = true;
-      audio.volume = 0.3 + Math.random() * 0.1;
-      audio.currentTime = 0;
-      void audio.play().catch(() => undefined);
+    if (!isGuideVisible) {
+      stopGuideAudio();
+      return;
     }
 
-    const typingTimer = window.setInterval(() => {
-      pointer += 1;
-      setGuideTypedText(line.slice(0, pointer));
-      if (pointer >= line.length) {
-        window.clearInterval(typingTimer);
-        stopGuideAudio();
-        setIsGuideTyping(false);
+    const audio = guideAudioRef.current;
+    if (isGuideMuted) {
+      stopGuideAudio();
+    }
+
+    let typingTimer: number | null = null;
+    const line = guideReplyText.trim();
+
+    if (!line) {
+      setGuideTypedText("");
+      setIsGuideTyping(false);
+      return;
+    }
+
+    setGuideTypedText("");
+    setIsGuideTyping(true);
+
+    const startTyping = window.setTimeout(() => {
+      if (audio && !isGuideMuted) {
+        audio.loop = true;
+        audio.volume = (0.24 + Math.random() * 0.05) * 0.85;
+        audio.currentTime = 0;
+        void audio.play().catch(() => undefined);
       }
-    }, 28);
+
+      let charIndex = 0;
+      typingTimer = window.setInterval(() => {
+        charIndex += 1;
+        setGuideTypedText(line.slice(0, charIndex));
+
+        if (charIndex >= line.length) {
+          if (typingTimer !== null) window.clearInterval(typingTimer);
+          stopGuideAudio();
+          setIsGuideTyping(false);
+        }
+      }, 28);
+    }, 90);
 
     return () => {
-      window.clearInterval(typingTimer);
+      window.clearTimeout(startTyping);
+      if (typingTimer !== null) window.clearInterval(typingTimer);
       stopGuideAudio();
       setIsGuideTyping(false);
     };
-  }, [guideIndex, guideLines, isGuideVisible, stopGuideAudio]);
+  }, [guideReplyText, isGuideMuted, isGuideVisible, stopGuideAudio]);
+
+  const sendGuideMessage = useCallback(
+    async (question: string) => {
+      const trimmedQuestion = question.trim();
+      if (!trimmedQuestion || isGuideSubmitting) return;
+
+      setIsGuideSubmitting(true);
+      setGuideDraft("");
+
+      const controller = new AbortController();
+      try {
+        const reply = await fetchChatbotGatoResponse(
+          {
+            page: "demo",
+            ownerName,
+            petName,
+            recentAssistantReplies: guideReplyHistoryRef.current.slice(0, 3),
+            demoStep: guideStep,
+            demoChoice: guideChoice,
+            userMessage: trimmedQuestion,
+          },
+          controller.signal,
+        );
+
+        if (reply?.text) {
+          setGuideReplyText(reply.text);
+          guideReplyHistoryRef.current = [
+            reply.text,
+            ...guideReplyHistoryRef.current.filter((line) => line !== reply.text),
+          ].slice(0, 3);
+        } else {
+          setGuideReplyText("No voy a perder mi tiempo en responder eso.");
+        }
+      } catch {
+        setGuideReplyText("No voy a perder mi tiempo en responder eso.");
+      } finally {
+        controller.abort();
+        setIsGuideSubmitting(false);
+      }
+    },
+    [guideChoice, guideStep, isGuideSubmitting, ownerName, petName],
+  );
+
+  const handleGuideSubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const question = guideDraft.trim();
+      if (!question) return;
+
+      await sendGuideMessage(question);
+    },
+    [guideDraft, sendGuideMessage],
+  );
+
+  const guideComposer = (
+    <div className="trial-rpg-composer-wrap">
+      <form
+        className="trial-rpg-composer"
+        onSubmit={handleGuideSubmit}
+        onClick={(event) => event.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
+      >
+        <input
+          type="text"
+          value={guideDraft}
+          onChange={(event) => setGuideDraft(event.target.value)}
+          placeholder="Preguntame sobre Kittypau"
+          className="trial-rpg-composer-input"
+          autoComplete="off"
+          disabled={isGuideSubmitting || isGuideTyping}
+        />
+        <button
+          type="submit"
+          className="trial-rpg-composer-button"
+          disabled={
+            isGuideSubmitting ||
+            isGuideTyping ||
+            guideDraft.trim().length === 0
+          }
+        >
+          {isGuideSubmitting ? "..." : "Enviar"}
+        </button>
+      </form>
+      <div className="trial-rpg-choices" aria-label="Preguntas rapidas">
+        {DEMO_QUICK_PROMPTS.map((prompt) => (
+          <button
+            key={prompt}
+            type="button"
+            className="trial-rpg-choice"
+            disabled={isGuideSubmitting || isGuideTyping}
+            onClick={() => {
+              void sendGuideMessage(prompt);
+            }}
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   const selectedMenu = (searchParams.get("menu") ?? "today") as
     | "today"
     | "story"
     | "pet"
     | "bowl";
+  const renderedGuideCatEyeOffset =
+    isGuideVisible && isGuideCatAwake
+      ? guideCatEyeOffset
+      : { x: 0, y: 0 };
   const isPendingSection = selectedMenu !== "today";
   const pendingLabel =
     selectedMenu === "story"
@@ -286,20 +371,42 @@ export default function DemoPage() {
               preload="auto"
             />
             {isGuideVisible ? (
-              <div className="pointer-events-none fixed bottom-6 left-0 right-0 z-[120] flex justify-center px-4">
-                <div className="pointer-events-auto">
+              <div
+                className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
+                role="dialog"
+                aria-modal="true"
+                onClick={(event) => {
+                  if (event.target === event.currentTarget) closeGuide();
+                }}
+              >
+                <TrialRpgDialogDock>
                   <TrialRpgDialog
+                    dialogMode="demo"
                     typedText={guideTypedText}
+                    isTyping={isGuideTyping}
                     isMuted={isGuideMuted}
-                    onToggleMute={toggleGuideMute}
+                    onToggleMute={() => setIsGuideMuted((prev) => !prev)}
                     onClose={closeGuide}
-                    onAdvance={onGuideAdvance}
+                    onAdvance={() => {
+                      if (guideStep === 0) {
+                        setGuideStep(1);
+                        return;
+                      }
+                      if (guideStep === 2) {
+                        setGuideStep(3);
+                        return;
+                      }
+                      if (guideStep === 3) {
+                        closeGuide();
+                      }
+                    }}
                     catSvg={guideCatSvg ?? ""}
                     isCatAwake={isGuideCatAwake}
-                    catEyeOffset={guideCatEyeOffset}
+                    catEyeOffset={renderedGuideCatEyeOffset}
                     catRef={guideCatRef}
+                    actions={guideComposer}
                   />
-                </div>
+                </TrialRpgDialogDock>
               </div>
             ) : null}
             {isPendingSection ? (
@@ -311,7 +418,7 @@ export default function DemoPage() {
                   {pendingLabel} pendiente
                 </h1>
                 <p className="mt-2 text-sm text-slate-600">
-                  Esta sección se habilitará en próximas iteraciones del modo
+                  Esta seccion se habilitara en proximas iteraciones del modo
                   prueba.
                 </p>
               </section>
@@ -377,6 +484,12 @@ export default function DemoPage() {
                 Esta es una vista de demostracion personalizada para explorar
                 Kittypau.
               </p>
+              <p className="text-xs text-slate-400">
+                Guia del gato:{" "}
+                {guideSections
+                  .map((section) => section.label)
+                  .join(" · ")}
+              </p>
               <button
                 type="button"
                 onClick={exitDemo}
@@ -391,3 +504,5 @@ export default function DemoPage() {
     </AppDataProvider>
   );
 }
+
+

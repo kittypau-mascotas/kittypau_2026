@@ -140,3 +140,4 @@ The system is designed to run on platforms like Replit with automatic environmen
   - API Base: `https://workspace--javomaurocontac.repl.app/api`
 - **Environment Detection**: Created `client/src/lib/environment.ts` for robust mobile/web detection
 - **Mobile Connectivity**: WebSocket and API clients automatically detect Capacitor environment
+

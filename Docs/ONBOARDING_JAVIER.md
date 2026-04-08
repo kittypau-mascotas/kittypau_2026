@@ -421,3 +421,5 @@ git diff --name-only origin/main...origin/feat/javo-mauro
 3. Definir backlog de fusion mensual (PRs a `main`).
 4. Validar pruebas minimas antes de merge.
 5. Registrar resultado de la revision mensual en ambas bitacoras.
+
+

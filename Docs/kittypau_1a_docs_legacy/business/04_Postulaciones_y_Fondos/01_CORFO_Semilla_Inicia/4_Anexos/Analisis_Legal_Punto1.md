@@ -28,3 +28,4 @@ Se han revisado los documentos `Politica_de_Privacidad.md` y `Terminos_y_Condici
 ---
 
 **Estado del Punto 1 del Roadmap:** Completado en cuanto a la revisión inicial y la identificación de la fecha de constitución. Pendiente la validación legal profesional de los documentos de políticas.
+

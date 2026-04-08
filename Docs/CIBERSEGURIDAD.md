@@ -71,3 +71,5 @@ Definir controles mínimos para proteger datos, API, MQTT y credenciales.
 4. Avisar al equipo.
 5. Documentar incidente en `Docs/ESTADO_AVANCE.md`.
 
+
+

@@ -64,3 +64,5 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## 9) Regla de coherencia
 - Si algo entra en conflicto con la fuente de verdad o con este plan maestro, primero actualiza la fuente y luego replica el cambio en los docs dependientes.
+
+

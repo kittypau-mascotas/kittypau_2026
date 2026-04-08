@@ -51,3 +51,4 @@ Si Android Studio no abre automáticamente:
 1. Abrir Android Studio manualmente
 2. File → Open
 3. Seleccionar carpeta: `D:\APP Pruebas\Kittyapp_Django_v1\android`
+

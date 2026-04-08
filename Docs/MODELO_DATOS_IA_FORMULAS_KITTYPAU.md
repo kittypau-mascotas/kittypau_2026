@@ -1,4 +1,4 @@
-﻿# Modelo de Datos, Formulas y Logica IA (Kittypau)
+# Modelo de Datos, Formulas y Logica IA (Kittypau)
 
 ## 1) Objetivo
 Definir un marco unico para transformar lecturas IoT en informacion util de comportamiento:
@@ -14,14 +14,14 @@ Este documento es la base para:
 - Features para Machine Learning.
 - Reglas de interpretacion en la app.
 
-Ver tambiÃ©n (arquitectura canon): `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
+Ver también (arquitectura canon): `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
 
 ## 2) Variables base (fuente)
 Tabla principal: `readings`.
 
 Campos clave:
 - `recorded_at` (timestamp de lectura)
-- `device_id` (UUID FK a `public.devices.id` â€” no confundir con el cÃ³digo KPCL)
+- `device_id` (UUID FK a `public.devices.id` — no confundir con el código KPCL)
 - `pet_id`
 - `weight_grams` (peso bruto medido)
 - `water_ml` (si existe, volumen directo)
@@ -33,7 +33,7 @@ Campos clave:
 
 Campos de dispositivo:
 - `plate_weight_grams` (tara del plato superior)
-- `device_id` (en `public.devices.device_id`: cÃ³digo humano KPCL para QR/UI)
+- `device_id` (en `public.devices.device_id`: código humano KPCL para QR/UI)
 
 ## 3) Normalizacion y limpieza
 Para cada lectura `i`:
@@ -48,14 +48,14 @@ Reglas:
 - Mantener control de duplicados (`device_id`, `recorded_at`).
 - Canon temporal para series/ventanas: `effective_ts = CASE WHEN clock_invalid THEN ingested_at ELSE recorded_at END`.
 
-### 3.2 TransformaciÃ³n `log10(x + 1)` (feature engineering)
+### 3.2 Transformación `log10(x + 1)` (feature engineering)
 Para variables altamente skewed (consumo, intervalos, deltas), usar:
 - `x_log = log10(x + 1)`
 
 Regla:
-- Aplicar en ingestiÃ³n server-side despuÃ©s de validar (ej. Zod) y antes de persistir, guardando raw + transformado.
+- Aplicar en ingestión server-side después de validar (ej. Zod) y antes de persistir, guardando raw + transformado.
 
-Fourier/FFT no va en ingestiÃ³n: se aplica en capa analÃ­tica/ML sobre series temporales por mascota.
+Fourier/FFT no va en ingestión: se aplica en capa analítica/ML sobre series temporales por mascota.
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
@@ -382,4 +382,6 @@ CREATE TABLE IF NOT EXISTS intake_events (
 3. Entrenar baseline ML y comparar contra reglas.
 4. Implementar versionado de features y modelos.
 5. Medir impacto de recomendaciones en salud/habitos.
+
+
 

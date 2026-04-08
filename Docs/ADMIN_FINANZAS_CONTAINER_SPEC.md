@@ -1,4 +1,4 @@
-﻿# Admin - Container Resumen de Finanzas (Spec Oficial)
+# Admin - Container Resumen de Finanzas (Spec Oficial)
 
 ## Objetivo
 Mostrar una lectura ejecutiva, clara y estable del costo de Kittypau en 4 niveles:
@@ -128,4 +128,6 @@ Formulas:
 Reglas:
 - si no hay datos de suscripcion/CAC/churn, mostrar `N/D`.
 - declarar fuente de usuarios (`proxy` o `real`) en el bloque.
+
+
 

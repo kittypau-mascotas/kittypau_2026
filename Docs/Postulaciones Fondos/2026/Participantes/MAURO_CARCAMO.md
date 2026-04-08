@@ -51,3 +51,5 @@
 
 ## Resumen para formulario
 > Sociólogo especializado en Ciencia de Datos con experiencia en Machine Learning, análisis predictivo y desarrollo Full Stack. Co-fundador de Kittypau, liderando negocio, producto y estrategia comercial.
+
+

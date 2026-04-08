@@ -42,3 +42,5 @@ Fuente unica de verdad para valores permitidos en frontend y backend.
 - `has_health_condition`: `true` | `false`
 - `has_neuter_tattoo`: `true` | `false`
 - `has_microchip`: `true` | `false`
+
+

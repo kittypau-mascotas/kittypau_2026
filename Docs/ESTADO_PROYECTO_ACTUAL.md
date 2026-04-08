@@ -73,9 +73,30 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
   - `device_operation_records`
   - `device_power_sessions`
   - `device_battery_cycles`
-- `KPCL0034` ya quedo marcado manualmente como `battery_only` al desconectarse el cargador el `2026-04-01 04:36:28Z`.
-- `KPCL0036` quedo registrado manualmente como `battery_only` totalmente cargado desde `2026-04-01 09:00` hora local, con muestreo esperado cada `10s`.
-- `KPCL0034` sigue activo en bateria y no se cierra el ciclo todavia; se espera reconexion para medir la duracion completa.
+- `KPCL0034` quedo marcado manualmente como tramo `battery_only` al desconectarse el cargador el `2026-04-01 04:36:28Z` y luego paso a carga manual a las `2026-04-06 12:50` hora local.
+- `KPCL0036` quedo registrado manualmente como ciclo de carga completa entre `2026-04-01 08:36` y `2026-04-01 12:42` hora local, con duracion observada de `4h06m` y muestreo esperado cada `10s`.
+- `KPCL0036` ahora quedo en `battery_only` desde `2026-04-06 15:55:23-04:00`, tras desconectar el cargador cuando el indicador seguia azul / bateria completa, para medir autonomia real.
+- `KPCL0036` tambien quedo con el plato de comida montado sobre el dispositivo y sin comida, registrado manualmente a las `2026-04-06 16:04:27-04:00` como observacion operativa puntual.
+- `KPCL0036` quedo con tare aplicado al plato y base de alimento en `0 g` desde las `2026-04-06 16:05:00-04:00`, para registrar mediciones netas desde ese punto.
+- `KPCL0036` quedo con alimento agregado y registro neto de `36 g` desde las `2026-04-06 16:07:50-04:00`, usando el tare previo como baseline.
+- `KPCL0036` quedo con peso neto actual de `28 g` desde las `2026-04-06 16:23:08-04:00`, sin consumo observado ni ajuste manual entre mediciones.
+- `KPCL0036` quedo con peso neto actual de `26 g` desde las `2026-04-06 16:27:47-04:00`, tras la lectura sucesiva mas reciente.
+- `KPCL0036` quedo con una nueva secuencia manual posterior de tare entre `2026-04-06 20:05:12.356102+00` y `2026-04-06 20:07:00.191354+00`, con inicio de llenado de comida a las `2026-04-06 20:06:55+00`, cierre del llenado entre `2026-04-06 20:07:00.191354+00` y `2026-04-06 20:07:10.132855+00`, y descenso de peso desde ese instante.
+- `KPCL0034` ya tiene un inicio de carga manual guardado para poder medir el siguiente tramo y sacar calculos.
+- Al `2026-04-06 17:40:13-04:00`, `KPCL0034` y `KPCL0036` quedaron con plato encima, con el plato activo y sin cargador, listos para ejecutar la prueba compartida de tare, peso de plato e inicio/termino de llenado.
+- Al `2026-04-07 00:17:41+00:00`, `KPCL0034` quedo categorizado manualmente como `inicio_alimentacion` desde la nueva capa de botones del plato.
+- Al `2026-04-07 00:20:41+00:00`, `KPCL0034` quedo categorizado manualmente como `termino_alimentacion` desde la nueva capa de botones del plato.
+- Al `2026-04-06 21:42:34+00:00`, comenzo la tare en la app para `KPCL0034`; el tramo queda abierto hasta que llegue la lectura final posterior.
+- Al `2026-04-06 21:43:34+00:00`, comenzo el servido de comida en la app para `KPCL0034`; el tramo queda abierto hasta que llegue el termino y la lectura final asociada.
+- Al `2026-04-06 21:44:03+00:00`, termino el servido de comida en la app para `KPCL0034`; el grafico 2 queda completo con `food_fill_end` para ese device.
+- Al `2026-04-06 21:42:22+00:00`, comenzo la tare en la app para `KPCL0036`; el tramo queda abierto hasta que llegue la lectura final posterior.
+- Al `2026-04-06 21:43:48+00:00`, comenzo el servido de comida en la app para `KPCL0036`; el tramo queda abierto hasta que llegue el termino y la lectura final asociada.
+- Al `2026-04-06 21:44:27+00:00`, termino el servido de comida en la app para `KPCL0036`; el grafico 2 queda completo con `food_fill_end` para ese device.
+- Para `KPCL0034`, el grafico 2 queda definido con `tare_record` a `2026-04-06 21:42:34+00:00`, `food_fill_start` a `2026-04-06 21:43:34+00:00` y `food_fill_end` a `2026-04-06 21:44:03+00:00`.
+- Para `KPCL0036`, el grafico 2 queda definido con `tare_record` a `2026-04-06 21:42:22+00:00`, `food_fill_start` a `2026-04-06 21:43:48+00:00` y `food_fill_end` a `2026-04-06 21:44:27+00:00`.
+- El CSV bruto `Docs/pruebas_kpcl/kpcl0034_kpcl0036_prueba_sincargador.csv` quedo guardado como snapshot del experimento compartido sin cargador, con lectura combinada de ambos devices para analisis posterior.
+- El analisis de ese CSV se interpreta sin gato ni interrupcion externa directa del sensor; cualquier variacion de peso se toma primero como posible deriva, alimentacion, mecanica o recalibracion.
+- Quedo pendiente una prueba controlada compartida de `KPCL0034` y `KPCL0036` con cargador conectado, sin objeto encima, y la misma secuencia `tare_record -> food_fill_start -> food_fill_end` para comparar comportamiento de peso con una escena comun.
 - Continuar endureciendo la base sin introducir fallback oculto en produccion.
 
 ### Firmware

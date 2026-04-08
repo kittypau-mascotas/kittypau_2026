@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { getSupabaseSessionSafely } from "@/lib/auth/token";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -24,9 +25,9 @@ export default function ResetPasswordPage() {
       }
     });
 
-    supabase.auth.getSession().then(({ data: sessionData }) => {
+    getSupabaseSessionSafely().then((sessionData) => {
       if (!isMounted) return;
-      if (sessionData.session?.user) {
+      if (sessionData?.user) {
         setIsReady(true);
       }
     });

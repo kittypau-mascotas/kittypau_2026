@@ -1,4 +1,4 @@
-﻿# Mapa de Ecosistema (Onboarding Rapido)
+# Mapa de Ecosistema (Onboarding Rapido)
 
 Fuente de verdad del ecosistema:
 - `Docs/FUENTE_DE_VERDAD.md`
@@ -39,3 +39,5 @@ Endpoints MVP:
 2. Leer `Docs/ARQUITECTURA_PROYECTO.md`
 3. Ejecutar `Docs/SQL_SCHEMA.sql`
 4. Probar endpoints con `Docs/PRUEBAS_E2E.md`
+
+

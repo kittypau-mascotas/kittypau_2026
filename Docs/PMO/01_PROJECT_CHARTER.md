@@ -196,3 +196,5 @@ El proyecto se considera exitoso si:
 
 _Referencias: PMBOK 6ta Ed. Seccion 4.1 | PMBOK 7ma Ed. Principio de Administracion Responsable y Dominio de Entrega_
 _Documento siguiente: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md)_
+
+

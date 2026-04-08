@@ -24,3 +24,5 @@ A continuación, se presenta la individualización y roles de los miembros clave
 
 ---
 Fecha: 19 de noviembre de 2025
+
+

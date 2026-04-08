@@ -68,3 +68,5 @@ La prueba confirma que el procedimiento de fusion está operativo:
 
 Siguiente uso recomendado:
 - repetir esta misma prueba cuando Javo tenga commits nuevos antes de fusionar a `main`.
+
+

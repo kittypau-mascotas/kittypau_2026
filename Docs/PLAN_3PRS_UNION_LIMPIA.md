@@ -132,3 +132,5 @@ Rama común siempre: `main`.
    - correr `npm run build` en `kittypau_app`
    - actualizar `Docs/AVANCE_PUSHES_GITHUB.md`
    - actualizar bitacoras `Docs/GITHUB_MAURO.md` y/o `Docs/GITHUB_JAVO.md`
+
+

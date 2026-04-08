@@ -12,3 +12,5 @@ Se conserva como puntero historico para no perder el detalle de:
 Si necesitas la version viva y actualizada, lee:
 - [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
 
+
+

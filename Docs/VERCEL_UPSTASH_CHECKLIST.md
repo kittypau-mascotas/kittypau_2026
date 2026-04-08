@@ -27,3 +27,5 @@ Objetivo: asegurar rate limit distribuido en producción.
 - Nunca exponer `UPSTASH_REDIS_REST_TOKEN` en frontend.
 - Mantener secretos solo en Vercel (server-side).
 
+
+

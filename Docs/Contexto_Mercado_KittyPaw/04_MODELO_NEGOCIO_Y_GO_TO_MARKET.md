@@ -1,4 +1,4 @@
-﻿# 04 - Modelo de Negocio y Go-To-Market
+# 04 - Modelo de Negocio y Go-To-Market
 
 ## Modelo base
 Hardware + suscripcion (HaaS).
@@ -19,3 +19,5 @@ Hardware + suscripcion (HaaS).
 - Conversion a premium.
 - Churn mensual.
 - LTV/CAC.
+
+

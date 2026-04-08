@@ -1,7 +1,7 @@
-ï»¿# ColecciÃ³n Postman/Newman (Kittypau)
+# Colección Postman/Newman (Kittypau)
 
 ## Objetivo
-Tener una colecciÃ³n reproducible para validar el flujo API sin tocar infraestructura IoT.
+Tener una colección reproducible para validar el flujo API sin tocar infraestructura IoT.
 
 ---
 
@@ -48,7 +48,7 @@ pm.environment.set("access_token", pm.response.json().access_token);
 
 ---
 
-## ColecciÃ³n: `Kittypau API`
+## Colección: `Kittypau API`
 Orden recomendado:
 1. `POST Auth (Supabase)`
 2. `GET /api/onboarding/status`
@@ -247,7 +247,7 @@ pm.test("has readings array", () => pm.expect(pm.response.json()).to.be.an("arra
 ---
 
 ## Newman (CLI)
-Ejemplo (una vez exportada la colecciÃ³n y el environment):
+Ejemplo (una vez exportada la colección y el environment):
 ```bash
 newman run Kittypau_API.postman_collection.json \
   -e kittypau.postman_environment.json \
@@ -259,7 +259,9 @@ newman run Kittypau_API.postman_collection.json \
 
 ## Notas
 - No subir tokens reales al repo.
-- Si cambian los contratos, actualizar esta colecciÃ³n.
+- Si cambian los contratos, actualizar esta colección.
+
+
 
 
 

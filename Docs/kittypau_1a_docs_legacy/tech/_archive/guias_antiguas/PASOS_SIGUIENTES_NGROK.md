@@ -45,3 +45,4 @@ npx cap open android
 ## CREDENCIALES PARA APK:
 - jdayne3 / jdayne3
 - jdayne / jdayne21
+

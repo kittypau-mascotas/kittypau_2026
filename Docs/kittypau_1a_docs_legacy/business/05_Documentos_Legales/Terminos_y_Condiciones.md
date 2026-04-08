@@ -42,3 +42,5 @@ Nos reservamos el derecho de modificar estos Términos en cualquier momento. Te 
 ### 8. Ley Aplicable
 
 Estos Términos se regirán por las leyes de Chile.
+
+

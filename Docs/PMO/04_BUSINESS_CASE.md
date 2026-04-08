@@ -261,3 +261,5 @@ Monto solicitado: **$17.000.000 CLP** (75% CORFO + 25% contraparte propia)
 
 _Referencias: PMBOK 6ta Ed. Seccion 4.1 (Business Case como insumo) | PMBOK 7ma Ed. Principio de Enfoque en el Valor_
 _Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguiente: [05_COST_BUDGET.md](05_COST_BUDGET.md)_
+
+

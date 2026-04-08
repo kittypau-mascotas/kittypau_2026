@@ -1,24 +1,38 @@
-﻿"use client";
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import TrialRpgDialog from "@/app/_components/trial-rpg-dialog";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
+import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
+import { type InicioChatStep } from "@/chatbot-gato/inicio-context";
+import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 
 export default function InicioClientePage() {
   const GUIDE_SEEN_KEY = "kittypau_client_guide_seen_v1";
   const GUIDE_CHOICE_KEY = "kittypau_client_guide_choice_v1";
-  const guideLines = [
-    "Bienvenido a Kittypau",
-    "¿Quieres que sea tu guía? 1 Sí / 2 No",
-  ] as const;
-
+  const inicioRuntime = useMemo(
+    () => buildChatbotRuntime({ page: "inicio" }),
+    [],
+  );
   const [isGuideVisible, setIsGuideVisible] = useState(false);
-  const [guideIndex, setGuideIndex] = useState(0);
+  const [guideIndex, setGuideIndex] = useState<InicioChatStep>(0);
   const [guideTypedText, setGuideTypedText] = useState("");
   const [isGuideTyping, setIsGuideTyping] = useState(false);
   const [isGuideMuted, setIsGuideMuted] = useState(false);
   const [isGuideCatAwake] = useState(true);
   const [guideCatEyeOffset, setGuideCatEyeOffset] = useState({ x: 0, y: 0 });
   const [guideCatSvg, setGuideCatSvg] = useState<string | null>(null);
+  const [aiGuideReply, setAiGuideReply] = useState<{
+    key: string;
+    lines: readonly string[];
+  } | null>(null);
+  const guideRequestKey = useMemo(
+    () => ["inicio", isGuideVisible ? "open" : "closed", guideIndex].join(":"),
+    [guideIndex, isGuideVisible],
+  );
+  const guideLines =
+    aiGuideReply?.key === guideRequestKey
+      ? aiGuideReply.lines
+      : inicioRuntime.lines;
 
   const guideCatRef = useRef<HTMLDivElement | null>(null);
   const guideAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -37,7 +51,7 @@ export default function InicioClientePage() {
     if (isGuideMuted) return;
     audio.loop = true;
     // Randomize between 0.30 and 0.40.
-    audio.volume = 0.3 + Math.random() * 0.1;
+    audio.volume = (0.3 + Math.random() * 0.1) * 0.85;
     audio.currentTime = 0;
     void audio.play().catch(() => undefined);
   }, [isGuideMuted]);
@@ -77,7 +91,9 @@ export default function InicioClientePage() {
     // If we're on the question step, only buttons should close it.
     if (guideIndex >= guideLines.length - 1) return;
 
-    setGuideIndex((prev) => Math.min(guideLines.length - 1, prev + 1));
+    setGuideIndex((prev) =>
+      Math.min(guideLines.length - 1, prev + 1) as InicioChatStep,
+    );
     setGuideTypedText("");
   }, [guideIndex, guideLines, isGuideTyping, isGuideVisible, stopGuideAudio]);
 
@@ -94,6 +110,33 @@ export default function InicioClientePage() {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!isGuideVisible) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    void fetchChatbotGatoResponse(
+      {
+        page: "inicio",
+        inicioStep: guideIndex,
+      },
+      controller.signal,
+    )
+      .then((reply) => {
+        if (!reply || controller.signal.aborted) return;
+        if (reply.lines.length) {
+          setAiGuideReply({ key: guideRequestKey, lines: reply.lines });
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) return;
+      });
+
+    return () => controller.abort();
+  }, [guideIndex, guideRequestKey, isGuideVisible]);
 
   useEffect(() => {
     if (!isGuideVisible) return;
@@ -195,17 +238,17 @@ export default function InicioClientePage() {
           <div className="pointer-events-none fixed bottom-6 left-0 right-0 z-[120] flex justify-center px-4">
             <div className="pointer-events-auto">
               <TrialRpgDialog
-                typedText={guideTypedText}
-                isMuted={isGuideMuted}
-                onToggleMute={() => setIsGuideMuted((prev) => !prev)}
-                onClose={closeGuide}
-                onAdvance={onGuideAdvance}
-                catSvg={guideCatSvg ?? ""}
-                isCatAwake={isGuideCatAwake}
-                catEyeOffset={guideCatEyeOffset}
-                catRef={guideCatRef}
-                ariaLabel="Avanzar guia"
-                actions={
+                  dialogMode="inicio"
+                  typedText={guideTypedText}
+                  isMuted={isGuideMuted}
+                  onToggleMute={() => setIsGuideMuted((prev) => !prev)}
+                  onClose={closeGuide}
+                  onAdvance={onGuideAdvance}
+                  catSvg={guideCatSvg ?? ""}
+                  isCatAwake={isGuideCatAwake}
+                  catEyeOffset={guideCatEyeOffset}
+                  catRef={guideCatRef}
+                  actions={
                   guideIndex === 1 && !isGuideTyping ? (
                     <div className="trial-rpg-choices">
                       <button
@@ -254,3 +297,4 @@ export default function InicioClientePage() {
     </div>
   );
 }
+

@@ -61,3 +61,5 @@ Dashboard de Milo
     *   **Material-UI**, **Ant Design** o **Chakra UI:** Ofrecen componentes pre-hechos y de alta calidad como Popovers y Tooltips que podemos usar para mostrar los detalles de los eventos.
 *   **Para Iconos:**
     *   **React-Icons:** Permite importar fácilmente iconos de librerías populares como FontAwesome, Material Design Icons, etc.
+
+

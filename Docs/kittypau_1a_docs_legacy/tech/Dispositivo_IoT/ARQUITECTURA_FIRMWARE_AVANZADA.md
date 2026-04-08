@@ -87,3 +87,5 @@ La clase `DeviceManager` se encargará de:
 ---
 
 Esta arquitectura nos proporciona una base sólida y profesional, mucho más fácil de mantener y expandir que un único archivo `.ino`.
+
+

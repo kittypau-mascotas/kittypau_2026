@@ -1,4 +1,4 @@
-﻿# Contexto Canonico - Sesion 260703_planificacion
+# Contexto Canonico - Sesion 260703_planificacion
 
 ## Metadatos
 - Fuente: transcripcion interna `260703_planificacion.m4a`.
@@ -105,4 +105,6 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 - commit principal: `daff54f` (main),
 - produccion actual: `https://kittypau-app.vercel.app`,
 - deploy asociado: `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`.
+
+
 

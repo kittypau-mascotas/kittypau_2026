@@ -1,4 +1,4 @@
-ï»¿# Mini-spec: Pop-up de Registro (Kittypau)
+# Mini-spec: Pop-up de Registro (Kittypau)
 
 ## Objetivo
 Guiar al usuario en un solo flujo (sin salir de `/login`) con progreso persistente hasta completar:
@@ -62,7 +62,7 @@ Objetivo: cuando el usuario confirma el correo, debe volver al mismo pop-up y co
 - OTP/hash: `/login?register=1&type=signup&token_hash=...`
   - Se usa `verifyOtp({ type, token_hash })` y luego se avanza a onboarding.
 - Mensaje simple: `/login?register=1&verified=1`
-  - Abre el pop-up. En cuanto exista sesion (confirmacion en otra pestaÃ±a), el pop-up avanza a Paso 2.
+  - Abre el pop-up. En cuanto exista sesion (confirmacion en otra pestaña), el pop-up avanza a Paso 2.
 
 ### Regla UX en Step 1
 - Si `signUp` no entrega `session` (lo normal con confirmacion por correo), el Step 1 muestra:
@@ -91,16 +91,16 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
 ## Persistencia
 - Guardar `first_time_guide_seen` en perfil de usuario.
 
-## ActualizaciÃ³n UI/UX (2026-02-17)
+## Actualización UI/UX (2026-02-17)
 
-### Stepper y navegaciÃ³n entre pasos
+### Stepper y navegación entre pasos
 - Los pasos del stepper son clickeables en modal: `Cuenta`, `Usuario`, `Mascota`, `Dispositivo`.
 - El estado completado de cada etapa se refleja en verde (`done`) con check visual.
-- Se mantiene validaciÃ³n real por etapa (no solo navegaciÃ³n visual).
+- Se mantiene validación real por etapa (no solo navegación visual).
 
 ### Contenido superior del popup
-- Se eliminÃ³ el bloque descriptivo redundante por etapa en el header del modal.
-- Se conserva Ãºnicamente el banner verde de confirmaciÃ³n de cuenta en el paso de Cuenta cuando aplica.
+- Se eliminó el bloque descriptivo redundante por etapa en el header del modal.
+- Se conserva únicamente el banner verde de confirmación de cuenta en el paso de Cuenta cuando aplica.
 
 ### Paso Dispositivo
 - Selector de tipo migrado a cards visuales:
@@ -108,7 +108,7 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
   - `Agua` (`/illustrations/green_water_full.png`)
 - El tipo seleccionado se mantiene en el resumen final del registro.
 
-### FinalizaciÃ³n del flujo
+### Finalización del flujo
 - Pantalla final actualizada a `Bienvenido a Kittypau`.
 - Resumen final ampliado con:
   - Cuenta
@@ -117,4 +117,6 @@ En el primer ingreso con usuario + mascota + dispositivo listos, mostrar un modo
   - Dispositivos
   - Foto de perfil (si existe)
   - Foto de mascota (si existe)
-- BotÃ³n final: `Continuar al dashboard`.
+- Botón final: `Continuar al dashboard`.
+
+
