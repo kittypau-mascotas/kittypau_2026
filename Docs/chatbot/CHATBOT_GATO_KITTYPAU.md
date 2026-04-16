@@ -1,4 +1,4 @@
-# Especificacion Integral - Chatbot del Gato de Kittypau
+﻿# Especificacion Integral - Chatbot del Gato de Kittypau
 
 ## 1. Proposito
 
@@ -367,7 +367,7 @@ queda reservada para el futuro chatbot o panel de `admin`.
 
 La especificacion de ese alcance total vive en:
 
-- [chatbot/CHATBOT_ADMIN_KITTYPAU.md](chatbot/CHATBOT_ADMIN_KITTYPAU.md)
+- [chatbot/CHATBOT_ADMIN_KITTYPAU.md\](CHATBOT_ADMIN_KITTYPAU.md)
 
 ### Regla operativa
 Cuando el usuario este en la experiencia del gato visible:
@@ -379,19 +379,20 @@ Cuando el usuario este en la experiencia del gato visible:
 
 ## 16. Documentos complementarios
 
-- [COMPONENTE_GATO.md](COMPONENTE_GATO.md) - detalle visual y tecnico del SVG, estados y animaciones.
-- [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - backend IA y orquestacion con CLI.
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
-- [chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md](chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica, ejemplos y reglas duras.
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo.
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque visual de la demo.
-- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio.
-- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque visual de inicio.
-- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato en la experiencia.
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot.
-- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso para construir el chatbot.
-- [POPUP_REGISTRO_SPEC.md](POPUP_REGISTRO_SPEC.md) - flujo del registro y su modal principal.
+- [COMPONENTE_GATO.md\](../COMPONENTE_GATO.md) - detalle visual y tecnico del SVG, estados y animaciones.
+- [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md\](../CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - backend IA y orquestacion con CLI.
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
+- [chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md\](CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica, ejemplos y reglas duras.
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md\](CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo.
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md\](CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque visual de la demo.
+- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md\](CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio.
+- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md\](CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque visual de inicio.
+- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md\](CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato en la experiencia.
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot.
+- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md\](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso para construir el chatbot.
+- [POPUP_REGISTRO_SPEC.md\](../POPUP_REGISTRO_SPEC.md) - flujo del registro y su modal principal.
+
 
 
 

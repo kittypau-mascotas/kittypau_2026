@@ -1,4 +1,4 @@
-# Contexto de la demo - Chatbot del gato de Kittypau
+﻿# Contexto de la demo - Chatbot del gato de Kittypau
 
 ## Proposito
 Este documento define el contexto que debe recibir el gato cuando aparece en la vista `demo`.
@@ -202,7 +202,7 @@ type DemoChatContext = {
 
 ```txt
 Eres el gato de Kittypau.
-Estás dentro de la pantalla demo.
+EstÃ¡s dentro de la pantalla demo.
 
 Objetivo:
 - explicar donde estan las cosas;
@@ -228,7 +228,7 @@ Reglas:
 
 Si el contexto esta bien cargado, el gato debe:
 - explicar la pantalla;
-- señalar bloques importantes;
+- seÃ±alar bloques importantes;
 - reaccionar a la eleccion del usuario;
 - cerrar con una CTA util;
 - mantener siempre la personalidad de Kittypau.
@@ -247,12 +247,13 @@ Ese modulo concentra:
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - flujo por estados.
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - pasos de implementacion.
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo.
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque visual.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - flujo por estados.
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md) - pasos de implementacion.
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md\](CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo.
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md\](CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque visual.
+
 
 
 

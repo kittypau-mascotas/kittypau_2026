@@ -21,7 +21,8 @@ REPO_ROOT = ROOT.parent.parent
 ENV_PATH = REPO_ROOT / ".env.local"
 OUTPUT_COMBINED = ROOT / "kpcl0034_kpcl0036_prueba_sincargador.csv"
 DEVICE_CODES = ("KPCL0034", "KPCL0036")
-EXPORT_START_UTC = datetime(2026, 4, 4, tzinfo=timezone.utc)
+# Inicio amplio para extraer todo el historico disponible de los KPCL.
+EXPORT_START_UTC = datetime(2020, 1, 1, tzinfo=timezone.utc)
 READING_FIELDS = (
     "id",
     "device_id",
@@ -164,7 +165,9 @@ def format_json(value: Any) -> str:
 
 
 def reading_event(device_code: str, recorded_at: datetime) -> str:
-    windows = READING_EVENT_WINDOWS[device_code]
+    windows = READING_EVENT_WINDOWS.get(device_code)
+    if not windows:
+        return "sin_categoria"
     for cutoff, label in windows:
         if cutoff is None or recorded_at < cutoff:
             return label
@@ -345,8 +348,13 @@ def main() -> None:
 
     output_rows = build_output_rows(device_map, readings, audits)
     write_csv(OUTPUT_COMBINED, output_rows)
+    # Export dedicado para foco operacional en KPCL0034.
+    output_0034 = ROOT / "kpcl0034_full_eventos.csv"
+    rows_0034 = [row for row in output_rows if row.get("device_code") == "KPCL0034"]
+    write_csv(output_0034, rows_0034)
 
     print(f"CSV combinado actualizado: {OUTPUT_COMBINED}")
+    print(f"CSV KPCL0034 actualizado: {output_0034}")
     print(f"Rango UTC: {start_iso} -> {end_iso}")
     print(f"Lecturas: {len(readings)} | Eventos audit: {len(audits)} | Filas totales: {len(output_rows)}")
 

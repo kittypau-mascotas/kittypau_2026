@@ -1,4 +1,4 @@
-# Maquina de estados - Chatbot del gato de Kittypau
+﻿# Maquina de estados - Chatbot del gato de Kittypau
 
 ## Proposito
 Definir el comportamiento conversacional del gato como una maquina de estados guiada.
@@ -187,6 +187,7 @@ Al implementar esta maquina de estados, Kittypau tendra:
 - respuestas controladas por estado;
 - una base real para IA futura;
 - cero riesgo de romper el layout.
+
 
 
 

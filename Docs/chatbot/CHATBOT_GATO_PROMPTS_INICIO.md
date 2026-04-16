@@ -1,4 +1,4 @@
-# Prompts operativos de inicio - Chatbot del gato de Kittypau
+﻿# Prompts operativos de inicio - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -19,7 +19,7 @@ Este documento convierte la guia de `inicio` en prompts concretos.
 ### 2. Pregunta de guia
 
 **El gato puede decir**
-- "¿Quieres que sea tu guia?"
+- "Â¿Quieres que sea tu guia?"
 - "Te doy el recorrido rapido o te dejo seguir solo."
 
 **El gato debe evitar**
@@ -62,12 +62,13 @@ Estos prompts sirven para:
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
-- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md)
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md)
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
+- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md\](CHATBOT_GATO_BLOQUES_INICIO.md)
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md)
 
 ## Resultado esperado
 
 Con esta guia, el gato de `inicio` puede ser breve, util y consistente.
+
 
 

@@ -1,4 +1,4 @@
-# Prompts operativos de la demo - Chatbot del gato de Kittypau
+﻿# Prompts operativos de la demo - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -40,7 +40,7 @@ Cada bloque visible tiene:
 - identificar a la mascota y al titular.
 
 **El gato puede decir**
-- "Ese bloque identifica a la mascota y a quien registró la prueba."
+- "Ese bloque identifica a la mascota y a quien registrÃ³ la prueba."
 - "La foto y el nombre vienen de lo que ingresaste en login."
 
 **El gato debe evitar**
@@ -104,13 +104,14 @@ Estos prompts se usan como referencia para:
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total.
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - tabla operativa de bloques visibles.
-- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total.
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md\](CHATBOT_GATO_BLOQUES_DEMO.md) - tabla operativa de bloques visibles.
+- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md\](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
 
 ## Resultado esperado
 
 Con esta guia, el gato puede narrar la demo con frases concretas, consistentes y ligadas a la UI real.
+
 
 

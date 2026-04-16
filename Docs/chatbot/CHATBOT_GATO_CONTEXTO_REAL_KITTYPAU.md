@@ -1,10 +1,10 @@
-# Contexto real del chatbot del gato de Kittypau
+﻿# Contexto real del chatbot del gato de Kittypau
 
 ## Proposito
 
 Este documento describe la realidad actual del producto para que el gato hable solo de lo que existe hoy.
 
-La idea es evitar explicaciones genéricas o inventadas.
+La idea es evitar explicaciones genÃ©ricas o inventadas.
 El gato debe reconocer:
 
 - que existe un modal de prueba en `login`;
@@ -155,7 +155,7 @@ El gato debe enfocarse en:
 
 - dar la bienvenida;
 - explicar que hay un modo de prueba;
-- acompañar el registro;
+- acompaÃ±ar el registro;
 - reforzar la personalidad de Kittypau;
 - guiar al usuario hacia la demo;
 - cerrar con una referencia clara a Instagram cuando corresponda.
@@ -165,7 +165,7 @@ El gato debe enfocarse en:
 El gato debe enfocarse en:
 
 - explicar el hero personalizado;
-- señalar que la mascota y el titular provienen del registro;
+- seÃ±alar que la mascota y el titular provienen del registro;
 - explicar el panel de estado;
 - guiar con opciones A / B;
 - cerrar con CTA o salida.
@@ -216,7 +216,7 @@ type KittypauCatContext = {
 
 ### En `demo`
 
-1. señalar el hero personalizado;
+1. seÃ±alar el hero personalizado;
 2. explicar la foto, el nombre y el titular;
 3. explicar alimentacion e hidratacion;
 4. indicar las acciones o secciones;
@@ -231,15 +231,15 @@ type KittypauCatContext = {
 
 ## Relacion con los documentos canonicos
 
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - flujo por estados.
-- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - tabla operativa de bloques visibles en la demo.
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos para narrar los bloques de la demo.
-- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - tabla operativa de bloques visibles en inicio.
-- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos para narrar inicio.
-- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato.
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - pasos de implementacion.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - flujo por estados.
+- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md\](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md\](CHATBOT_GATO_BLOQUES_DEMO.md) - tabla operativa de bloques visibles en la demo.
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md\](CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos para narrar los bloques de la demo.
+- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md\](CHATBOT_GATO_BLOQUES_INICIO.md) - tabla operativa de bloques visibles en inicio.
+- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md\](CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos para narrar inicio.
+- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md\](CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato.
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md) - pasos de implementacion.
 
 ## Resultado esperado
 
@@ -266,5 +266,6 @@ Eso significa que puede hablar de:
 El gato no debe usar este espacio para explicar la totalidad del proyecto, administracion interna, roadmap completo o decisiones generales de la plataforma.
 
 Esa lectura amplia se reserva para el futuro chatbot de `admin`, que sera el lugar para consultar el proyecto completo.
+
 
 

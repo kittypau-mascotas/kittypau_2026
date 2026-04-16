@@ -1,4 +1,4 @@
-# Plan paso a paso - Chatbot de Admin de Kittypau
+﻿# Plan paso a paso - Chatbot de Admin de Kittypau
 
 ## Objetivo
 
@@ -62,7 +62,7 @@ Definir el hero de admin como superficie simple de consulta interna.
 
 ### Tareas
 
-1. Diseñar un bloque visual pequeño y claro dentro del admin.
+1. DiseÃ±ar un bloque visual pequeÃ±o y claro dentro del admin.
 2. Preparar una entrada de preguntas internas.
 3. Mantener la interfaz ligera y no invasiva.
 4. Mostrar respuestas breves con posibilidad de ampliar.
@@ -93,7 +93,7 @@ Definir como el chatbot de admin va a leer y resumir la documentacion del proyec
    - roadmap.
 2. Asociar cada tema a sus documentos fuente.
 3. Definir prioridad entre docs vivos y docs historicos.
-4. Diseñar un indice de contexto para respuestas rapidas.
+4. DiseÃ±ar un indice de contexto para respuestas rapidas.
 
 ### Criterio de salida
 
@@ -114,7 +114,7 @@ Permitir que el chatbot de admin consulte fragmentos relevantes de la documentac
 
 ### Tareas
 
-1. Diseñar una estrategia de busqueda por tema.
+1. DiseÃ±ar una estrategia de busqueda por tema.
 2. Definir como priorizar coincidencias.
 3. Resumir documentos largos sin perder contexto.
 4. Preparar salida estructurada para respuestas internas.
@@ -180,7 +180,7 @@ Conectar el chatbot de admin a una implementacion real dentro del proyecto.
 
 1. Elegir el backend donde vivira.
 2. Conectar el runtime de contexto.
-3. Añadir soporte para respuestas estructuradas.
+3. AÃ±adir soporte para respuestas estructuradas.
 4. Preparar el canal de consulta interna.
 
 ### Criterio de salida
@@ -230,7 +230,7 @@ Activar el chatbot de admin sin afectar el resto del ecosistema.
 1. Cerrar base documental.
 2. Definir el hero interno simple.
 3. Construir capa de contexto.
-4. Diseñar recuperacion de conocimiento.
+4. DiseÃ±ar recuperacion de conocimiento.
 5. Definir formato de respuesta.
 6. Blindar seguridad.
 7. Integrar tecnicamente.
@@ -239,9 +239,9 @@ Activar el chatbot de admin sin afectar el resto del ecosistema.
 
 ## Relacion con la documentacion existente
 
-- [chatbot/CHATBOT_ADMIN_KITTYPAU.md](chatbot/CHATBOT_ADMIN_KITTYPAU.md) -> especificacion integral del chatbot de admin.
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) -> especificacion integral del gato visible para cliente.
-- [INDEX.md](INDEX.md) -> mapa global de la documentacion.
+- [chatbot/CHATBOT_ADMIN_KITTYPAU.md\](CHATBOT_ADMIN_KITTYPAU.md) -> especificacion integral del chatbot de admin.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) -> especificacion integral del gato visible para cliente.
+- [INDEX.md\](../INDEX.md) -> mapa global de la documentacion.
 - [README.md](README.md) -> entrada principal a la documentacion.
 
 ## Resultado esperado
@@ -253,5 +253,6 @@ Al terminar este plan, Kittypau tendra:
 - separacion clara entre cliente e interno;
 - base para consultas operativas y estrategicas;
 - y una guia de conocimiento util para el equipo completo.
+
 
 

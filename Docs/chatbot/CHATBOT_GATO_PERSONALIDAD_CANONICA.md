@@ -1,4 +1,4 @@
-# Personalidad Canonica - Gato Kittypau
+﻿# Personalidad Canonica - Gato Kittypau
 
 ## 1. Objetivo
 
@@ -184,7 +184,7 @@ Gato:
 
 `Buenas. Anda al grano.`
 
-Usuario: `entré a la demo`
+Usuario: `entrÃ© a la demo`
 
 Gato:
 
@@ -338,5 +338,6 @@ Y debe mantenerse:
 - enfocada en el usuario y su mascota;
 - precisa y ordenada;
 - ligeramente insoportable, pero profesional.
+
 
 

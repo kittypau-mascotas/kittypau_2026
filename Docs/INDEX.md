@@ -1,4 +1,4 @@
-# Indice de Documentacion (Kittypau)
+﻿# Indice de Documentacion (Kittypau)
 
 > Entrada rapida:
 > - [README.md](README.md) - puerta de entrada para humanos y agentes
@@ -87,13 +87,13 @@
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) - puntero historico consolidado en el documento maestro
 - [Contexto_Mercado_KittyPaw/README.md](Contexto_Mercado_KittyPaw/README.md) - contexto de mercado y posicionamiento
 - [PMO/00_PMO_INDEX.md](PMO/00_PMO_INDEX.md) - indice PMO y gestion de proyecto
-- [Postulaciones Fondos/2026/README.md](Postulaciones%20Fondos/2026/README.md) - indice de la carpeta de postulaciones 2026
-- [Postulaciones Fondos/2026/documento_2026/README.md](Postulaciones%20Fondos/2026/documento_2026/README.md) - indice del paquete maestro 2026
-- [Postulaciones Fondos/2026/semilla_inicia/README.md](Postulaciones%20Fondos/2026/semilla_inicia/README.md) - indice propio del paquete Semilla Inicia 2026
+- [Postulaciones Fondos/2026/README.md](Postulaciones Fondos/2026/README.md) - indice de la carpeta de postulaciones 2026
+- [Postulaciones Fondos/2026/documento_2026/README.md](Postulaciones Fondos/2026/documento_2026/README.md) - indice del paquete maestro 2026
+- [Postulaciones Fondos/2026/semilla_inicia/README.md](Postulaciones Fondos/2026/semilla_inicia/README.md) - indice propio del paquete Semilla Inicia 2026
 
 ## UI / UX
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
-- [estilos y diseÃ±os.md](estilos%20y%20diseÃ±os.md)
+- [estilos y diseÃƒÂ±os.md](estilos y diseños.md)
 - [CATALOGO_GRAFICOS.md](CATALOGO_GRAFICOS.md)
 - [VISTAS_APP.md](VISTAS_APP.md)
 - [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
@@ -111,11 +111,12 @@
 - [archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md](archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md)
 - [TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md](TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md)
 - [notebooks/](../notebooks/)
-- [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/INDEX.md)
+- [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/)
 - [kittypau_1a_docs_legacy/](kittypau_1a_docs_legacy/)
-- [Postulaciones Fondos/2026/](Postulaciones%20Fondos/2026/)
-- [Samsung Tizen Experiment](Samsung%20Tizen%20Experiment/README.md)
-- [Android TV Plan](Android%20TV%20Docs/andorid_tv_prueba.md)
+- [Postulaciones Fondos/2026/](Postulaciones Fondos/2026/)
+- `Samsung Tizen Experiment` (no versionado en este repo)
+- `Android TV Plan` (no versionado en este repo)
+
 
 
 

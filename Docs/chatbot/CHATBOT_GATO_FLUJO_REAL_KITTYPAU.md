@@ -1,4 +1,4 @@
-# Flujo real del gato en KittyPau
+﻿# Flujo real del gato en KittyPau
 
 ## Proposito
 
@@ -146,11 +146,11 @@ Asi evitamos mezclar una experiencia de cliente con una vista interna del proyec
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md)
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md)
-- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md)
-- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md)
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
+- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md\](CHATBOT_GATO_BLOQUES_DEMO.md)
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md\](CHATBOT_GATO_PROMPTS_DEMO.md)
+- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md\](CHATBOT_GATO_BLOQUES_INICIO.md)
+- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md\](CHATBOT_GATO_PROMPTS_INICIO.md)
 
 ## Resultado esperado
 
@@ -161,5 +161,6 @@ Cuando este flujo se implemente por completo, el usuario deberia sentir que:
 - ve su hero en demo;
 - escucha al gato explicar lo que ve;
 - y finalmente puede seguir o salir hacia Instagram.
+
 
 

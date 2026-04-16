@@ -1,4 +1,4 @@
-# Bloques visuales de inicio - Chatbot del gato de Kittypau
+﻿# Bloques visuales de inicio - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -16,7 +16,7 @@ Debe ser breve, util y suave.
 | Bloque | Que muestra | Para que sirve | Que puede decir el gato | Que no debe decir |
 | --- | --- | --- | --- | --- |
 | Bienvenida | Primera frase del gato | Abrir la experiencia | "Bienvenido a Kittypau." | Hacer un discurso largo |
-| Pregunta de guia | Si quiere que el gato lo guie | Definir si sigue el flujo | "¿Quieres que sea tu guia?" | Insistir demasiado |
+| Pregunta de guia | Si quiere que el gato lo guie | Definir si sigue el flujo | "Â¿Quieres que sea tu guia?" | Insistir demasiado |
 | Opciones | Si / No | Elegir el nivel de guia | "Si eliges si, te oriento. Si eliges no, cierro rapido." | Mostrar muchas opciones |
 | Cierre | Fin de la guia | Dejar al usuario seguir | "Listo, puedes seguir tu camino." | Alargar el cierre |
 
@@ -49,10 +49,10 @@ La capa de prompts por bloque vive en:
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
-- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md)
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md)
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md)
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md)
+- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md\](CHATBOT_GATO_PROMPTS_INICIO.md)
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md)
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md)
 
 ## Resultado esperado
 
@@ -61,6 +61,7 @@ Con esta tabla, el gato de `inicio` puede:
 - preguntar si quiere guia;
 - responder rapido;
 - y cerrar sin ocupar mas espacio del necesario.
+
 
 
 

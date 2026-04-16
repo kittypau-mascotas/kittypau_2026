@@ -1,4 +1,4 @@
-# Especificacion Integral - Chatbot de Admin de Kittypau
+﻿# Especificacion Integral - Chatbot de Admin de Kittypau
 
 ## 1. Proposito
 
@@ -184,12 +184,13 @@ La experiencia debe quedar pensada para el uso interno de Javo, Mauro y administ
 
 ## 12. Documentos relacionados
 
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - especificacion integral del gato visible para cliente.
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real del producto para el gato visible.
-- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato visible.
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del gato visible.
-- [chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md](chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md) - plan paso a paso para implementar el chatbot de admin.
-- [INDEX.md](INDEX.md) - indice total de documentacion.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) - especificacion integral del gato visible para cliente.
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real del producto para el gato visible.
+- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md\](CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato visible.
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del gato visible.
+- [chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md\](PLAN_CHATBOT_ADMIN_KITTYPAU.md) - plan paso a paso para implementar el chatbot de admin.
+- [INDEX.md\](../INDEX.md) - indice total de documentacion.
 - [README.md](README.md) - entrada principal a la documentacion.
+
 
 

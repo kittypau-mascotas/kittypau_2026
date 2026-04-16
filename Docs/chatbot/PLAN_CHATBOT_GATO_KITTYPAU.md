@@ -1,4 +1,4 @@
-# Plan paso a paso - Chatbot del gato de Kittypau
+﻿# Plan paso a paso - Chatbot del gato de Kittypau
 
 ## Objetivo
 Construir el chatbot del gato de Kittypau de forma ordenada, sin romper la UI actual del dialogo, y dejando listo el camino para una IA futura.
@@ -83,7 +83,7 @@ Definir el chatbot como una maquina de estados con opciones A / B en lugar de te
 - `chatbot/CHATBOT_GATO_STATE_MACHINE.md` con estados, acciones y transiciones por pagina.
 - `src/chatbot-gato/runtime.ts` como capa compartida de contexto.
 
-## Fase 2 - Diseñar la narrativa base
+## Fase 2 - DiseÃ±ar la narrativa base
 
 ### Objetivo
 Definir el tono y los contenidos iniciales del gato para cada pagina.
@@ -228,10 +228,10 @@ Publicar cambios sin romper la experiencia ya existente.
 
 ## Relacion con la documentacion existente
 
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) -> especificacion integral.
-- [COMPONENTE_GATO.md](COMPONENTE_GATO.md) -> detalle tecnico visual.
-- [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) -> orquestacion CLI y backend IA.
-- [POPUP_REGISTRO_SPEC.md](POPUP_REGISTRO_SPEC.md) -> flujo del registro donde convive el dialogo.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) -> especificacion integral.
+- [COMPONENTE_GATO.md\](../COMPONENTE_GATO.md) -> detalle tecnico visual.
+- [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md\](../CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) -> orquestacion CLI y backend IA.
+- [POPUP_REGISTRO_SPEC.md\](../POPUP_REGISTRO_SPEC.md) -> flujo del registro donde convive el dialogo.
 
 ## Resultado esperado
 
@@ -241,6 +241,7 @@ Al terminar este plan, Kittypau tendra:
 - una narrativa guiada por estados;
 - una base lista para IA futura;
 - una experiencia sin ambiguedades entre login, demo e inicio.
+
 
 
 

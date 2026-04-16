@@ -1,4 +1,4 @@
-# Componente "Gato" (Kittypau) - Detalle Extremo
+﻿# Componente "Gato" (Kittypau) - Detalle Extremo
 
 Este documento describe el gato estilo cartoon usado en el login (y su variante del cuadro de dialogo tipo RPG) con detalle de:
 - estructura HTML/DOM,
@@ -9,14 +9,14 @@ Este documento describe el gato estilo cartoon usado en el login (y su variante 
 ## Archivos fuente (canon)
 
 1. Login (gato del panel + gato del cuadro de dialogo de Demo App)
-- [page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx)
+- `../kittypau_app/src/app/(public)/login/page.tsx`
 
 2. Demo (cuadro RPG dentro de `/demo` con "gato despierto" cargado desde SVG externo)
-- [page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx)
-- [cat_awake_copy.svg](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg)
+- `../kittypau_app/src/app/(public)/demo/page.tsx`
+- [cat_awake_copy.svg](../kittypau_app/public/illustrations/cat_awake_copy.svg)
 
 3. CSS global (incluye el skin Nebelung + ojos + sombras + respiracion + cuadro RPG)
-- [globals.css](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/globals.css)
+- [globals.css](../kittypau_app/src/app/globals.css)
 
 ## Resumen mental del sistema (1 pagina)
 
@@ -36,7 +36,7 @@ El comportamiento se arma asi:
 
 Esta seccion documenta las medidas "reales" que usamos hoy en CSS/TS. Hay 3 niveles:
 - Geometria del SVG (coordenadas internas por `viewBox`)
-- TamaÃ±os renderizados del wrapper (pixeles en el layout)
+- TamaÃƒÂ±os renderizados del wrapper (pixeles en el layout)
 - Offsets animados (respiracion, ojos) y sus rangos
 
 ### 1) Geometria del SVG (interno)
@@ -58,7 +58,7 @@ Traduccion aproximada a pixeles (segun ancho CSS del wrapper):
 - Si `width: 72px` => alto aproximado `55.90px`
 
 Nota:
-- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaÃ±o final lo domina el contenedor en px.
+- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaÃƒÂ±o final lo domina el contenedor en px.
 
 ### 2) Medidas del gato en Login (sobre el card de iniciar sesion)
 
@@ -100,7 +100,7 @@ Caja del gato dentro del dialogo:
 - Selector: `.trial-rpg-cat`
   - `flex: 0 0 74px` (base width)
   - `margin-top: 14px` (baja el gato para tocar su sombra)
-  - `margin-right: -2px` (pequeÃ±o solape hacia el borde)
+  - `margin-right: -2px` (pequeÃƒÂ±o solape hacia el borde)
   - `position: relative`
 
 SVG wrapper (RPG):
@@ -191,7 +191,7 @@ svg?.getBBox();        // bounding box del contenido
 
 ## Paleta/variables (CSS)
 
-En [globals.css](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/globals.css) se definen variables en `:root`:
+En [globals.css](../kittypau_app/src/app/globals.css) se definen variables en `:root`:
 
 ```css
 :root {
@@ -269,7 +269,7 @@ En demo (`/demo`) el gato del dialogo:
 
 ### A) SVG inline de login (`trialCatSvg`)
 
-En [login/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx) existe un string `trialCatSvg` que ya incluye IDs "semanticos" agregados a mano.
+En `../kittypau_app/src/app/(public)/login/page.tsx` existe un string `trialCatSvg` que ya incluye IDs "semanticos" agregados a mano.
 
 Partes principales (IDs):
 - Cabeza/cuerpo superior: `#head`
@@ -296,7 +296,7 @@ Bigotes (originales):
 
 ### B) SVG externo de demo (`cat_awake_copy.svg`)
 
-En [cat_awake_copy.svg](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/public/illustrations/cat_awake_copy.svg) los IDs historicos son `path1`, `path2`, etc.
+En [cat_awake_copy.svg](../kittypau_app/public/illustrations/cat_awake_copy.svg) los IDs historicos son `path1`, `path2`, etc.
 
 Implicancia:
 - Los estilos que dependen de IDs semanticos (`#head`, `#paw-front-right`, etc.) NO aplican a este archivo.
@@ -434,7 +434,7 @@ Si se quiere "respira solo dormido", se puede condicionar con `.kp-trial-cat:not
 Nota: no hay "Java". La logica es TypeScript dentro de componentes React.
 
 ### 1) Estados del gato (login)
-En [login/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/login/page.tsx):
+En `../kittypau_app/src/app/(public)/login/page.tsx`:
 - `isTrialCatAwake`: controla el gato del panel de login
 - `catEyeOffset`: `{x,y}` para pupila/brillo
 - `trialCatRef`: ref al wrapper para bounding box
@@ -469,7 +469,7 @@ Estados equivalentes:
 El tracking es el mismo patron: `pointermove` + clamp + setState.
 
 ### 4) Gato del cuadro RPG en `/demo`
-En [demo/page.tsx](D:/Escritorio/Proyectos/Kittypau/kittypau_2026_hivemq/kittypau_app/src/app/(public)/demo/page.tsx):
+En `../kittypau_app/src/app/(public)/demo/page.tsx`:
 - `isGuideCatAwake`: el gato se mantiene despierto siguiendo el mouse, pero "duerme 1s" aleatoriamente
 - Timers:
   - cada ~`5200..8800ms` se duerme (`setIsGuideCatAwake(false)`)
@@ -556,5 +556,9 @@ Si queremos ordenarlo, el siguiente refactor "limpio" seria:
 - Si no existe una sesion demo previa, la pagina debe autosembrar valores por defecto y mostrar el cuadro.
 - `kittypau_demo_show_rpg` ya no es la unica llave de apertura; sirve como marcador historico, pero el dialogo debe aparecer igual.
 - Si el cuadro no aparece, el primer paso de debug es revisar `isGuideVisible` y el montaje del componente, no crear otra variante.
+
+
+
+
 
 

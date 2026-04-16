@@ -1,6 +1,6 @@
-# Chatbot Kittypau
+﻿# Chatbot Kittypau
 
-Carpeta canónica de la documentación del chatbot del gato y del chatbot de admin.
+Carpeta canÃ³nica de la documentaciÃ³n del chatbot del gato y del chatbot de admin.
 
 ## Leer primero
 1. [`CHATBOT_GATO_KITTYPAU.md`](CHATBOT_GATO_KITTYPAU.md) - documento maestro del chatbot del gato.
@@ -25,3 +25,4 @@ Carpeta canónica de la documentación del chatbot del gato y del chatbot de adm
 - Para el flujo demo, usa `CHATBOT_GATO_CONTEXTO_DEMO.md` y los bloques/prompts de demo.
 - Para la geometria y posicion del cuadro, usa `CHATBOT_GATO_ESCENA_UNICA.md`.
 - Para el admin, revisa el documento maestro y su plan.
+

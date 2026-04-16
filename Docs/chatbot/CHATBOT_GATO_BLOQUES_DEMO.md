@@ -1,4 +1,4 @@
-# Bloques visuales de la demo - Chatbot del gato de Kittypau
+﻿# Bloques visuales de la demo - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -24,7 +24,7 @@ Si un bloque esta visible pero es secundario, el gato puede mencionarlo solo de 
 | Acciones rapidas | Botones hacia story, bowl, pet o settings | Lleva a otras vistas | "Desde aqui saltas a las vistas operativas." | Inventar rutas que no existen |
 | Hero de la demo | Bloque principal personalizado con datos del usuario | Presenta la experiencia guiada | "Este hero usa lo que cargaste en login." | Decir que es un formulario o un dashboard real de produccion |
 | CTA de salida | Instagram o volver a probar la app | Cerrar la experiencia o invitar a seguir | "Si ya viste todo, puedes seguir o salir." | Forzar una accion que no corresponde |
-| Cuadro del gato | Dialogo fijo, acciones A / B, botones de sonido y cierre | Guía la experiencia | "Yo te explico la pantalla y te llevo al siguiente paso." | Decir que cambia de forma o que es libre |
+| Cuadro del gato | Dialogo fijo, acciones A / B, botones de sonido y cierre | GuÃ­a la experiencia | "Yo te explico la pantalla y te llevo al siguiente paso." | Decir que cambia de forma o que es libre |
 
 ## Orden recomendado de explicacion
 
@@ -50,7 +50,7 @@ Debe mencionar:
 
 ### 3. Acciones rapidas
 
-Luego puede señalar los accesos a otras vistas.
+Luego puede seÃ±alar los accesos a otras vistas.
 
 Debe mencionar:
 - `story`;
@@ -121,11 +121,11 @@ Ese modulo define:
 
 ## Relacion con otros documentos
 
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
-- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque.
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - plan de construccion.
+- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md\](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
+- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md\](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
+- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md\](CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque.
+- [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) - especificacion integral.
+- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md) - plan de construccion.
 
 ## Resultado esperado
 
@@ -135,6 +135,7 @@ Con esta tabla, el gato de la demo puede:
 - guiar al usuario por la pantalla;
 - hablar con datos que si existen;
 - y evitar inventar elementos que no estan en la UI.
+
 
 
 

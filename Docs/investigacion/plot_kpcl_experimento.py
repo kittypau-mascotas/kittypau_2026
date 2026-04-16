@@ -732,22 +732,26 @@ def build_event_intervals(points: list[SeriesPoint]) -> list[tuple[datetime, dat
     return intervals
 
 
-def add_event_bands(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None:
+def add_event_bands(
+    fig: go.Figure,
+    row: int,
+    points: list[SeriesPoint],
+    *,
+    y_lo: float,
+    y_hi: float,
+    seen_bands: set[str],
+) -> None:
+    """Agrega bandas como Scatter traces para que sean toggleables en la leyenda."""
     xref, yref = _annotation_refs(row)
     intervals = build_event_intervals(points)
+    band_keys_order = list(BAND_STYLES.keys())
     label_offset = 0
     for start, end, band_key in intervals:
         style = BAND_STYLES.get(band_key, BAND_STYLES["servido"])
-        fig.add_vrect(
-            x0=start, x1=end,
-            fillcolor=style["fillcolor"],
-            opacity=1.0,
-            line_width=1.5,
-            line_color=style["line_color"],
-            row=row, col=1,
-            layer="below",
-        )
-        # Compute consumed grams and duration for the label
+        show_leg = band_key not in seen_bands
+        if show_leg:
+            seen_bands.add(band_key)
+
         w_start = _weight_at(points, start)
         w_end = _weight_at(points, end)
         duration_min = (end - start).total_seconds() / 60
@@ -759,14 +763,36 @@ def add_event_bands(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None
                 parts.append(f"{sign}{abs(delta):.0f}g")
         if duration_min >= 0.5:
             parts.append(f"{duration_min:.0f}min")
-        label = " · ".join(parts)
+        hover_text = " · ".join(parts)
+
+        # Banda como Scatter fill toself → aparece en leyenda y es toggleable
+        rank_base = 200 + (band_keys_order.index(band_key) if band_key in band_keys_order else 9)
+        fig.add_trace(
+            go.Scatter(
+                x=[start, start, end, end, start],
+                y=[y_lo, y_hi * 0.999, y_hi * 0.999, y_lo, y_lo],
+                fill="toself",
+                fillcolor=style["fillcolor"],
+                line=dict(color=style["line_color"], width=1.5),
+                mode="lines",
+                name=style["label"],
+                legendgroup=f"band_{band_key}",
+                showlegend=show_leg,
+                legendrank=rank_base,
+                hovertemplate=(
+                    f"<b>{hover_text}</b><br>"
+                    "Inicio: %{x|%d %b %H:%M}<extra></extra>"
+                ),
+            ),
+            row=row, col=1,
+        )
 
         y_pos = 0.85 - (label_offset % 4) * 0.09
         label_offset += 1
         fig.add_annotation(
             x=start, y=y_pos,
             xref=xref, yref=yref,
-            text=label,
+            text=hover_text,
             showarrow=False, xanchor="left", yanchor="bottom",
             font=dict(size=11, color=style["line_color"], family="Arial, sans-serif"),
             bgcolor="rgba(255,255,255,0.88)",
@@ -1006,123 +1032,117 @@ _RANGE_BUTTONS = [
 ]
 
 
-def build_figure(
-    points_by_device: dict[str, list[SeriesPoint]],
-) -> tuple[go.Figure, dict[str, float | None], dict[str, tuple[datetime, datetime]]]:
-    fig = make_subplots(
-        rows=3,
-        cols=1,
-        shared_xaxes=False,
-        row_heights=[0.41, 0.41, 0.18],
-        vertical_spacing=0.07,
-        subplot_titles=(
-            "KPCL0034 · Comedero — Peso bruto / Contenido neto / Eventos",
-            "KPCL0036 · Bebedero — Peso bruto / Eventos",
-            "Batería (%)",
-        ),
-    )
+def build_device_figure(
+    device_code: str,
+    points: list[SeriesPoint],
+    *,
+    end_cap: datetime,
+) -> tuple[go.Figure, float | None, tuple[datetime, datetime]]:
+    titles = {
+        "KPCL0034": "KPCL0034 · Comedero — Peso bruto / Contenido neto / Eventos",
+        "KPCL0036": "KPCL0036 · Bebedero — Peso bruto / Eventos",
+    }
+    fig = make_subplots(rows=1, cols=1, subplot_titles=(titles.get(device_code, device_code),))
 
-    row_map = {"KPCL0034": 1, "KPCL0036": 2}
-    window_map: dict[str, tuple[datetime, datetime]] = {}
-    device_q3: dict[str, float | None] = {}
-    latest_timestamp = max(
-        (p.timestamp for dp in points_by_device.values() for p in dp),
-        default=datetime.now(timezone.utc),
-    )
-    end_cap = latest_timestamp
-    full_history_0034 = os.environ.get("FULL_HISTORY_0034", "1").strip().lower() in {"1", "true", "yes"}
+    full_history = os.environ.get("FULL_HISTORY_0034", "1").strip().lower() in {"1", "true", "yes"}
+    if device_code == "KPCL0034" and full_history:
+        window_start, window_end = build_full_history_window(points, end_cap)
+    elif device_code == "KPCL0034":
+        window_start, window_end = build_fixed_window(points, start_hour=21, end_hour=1, end_cap=end_cap)
+    else:
+        window_start, window_end = build_device_window(points, end_cap)
 
-    for device_code in DEVICE_ORDER:
-        device_points = points_by_device.get(device_code, [])
-        weight_row = row_map[device_code]
+    raw_weights = [p.weight for p in points if p.weight is not None]
+    device_q3 = quantile(raw_weights, 0.75) if raw_weights else None
 
-        if device_code == "KPCL0034":
-            if full_history_0034:
-                window_start, window_end = build_full_history_window(device_points, end_cap)
-            else:
-                window_start, window_end = build_fixed_window(
-                    device_points, start_hour=21, end_hour=1, end_cap=end_cap,
-                )
-        else:
-            window_start, window_end = build_device_window(device_points, end_cap)
-        window_map[device_code] = (window_start, window_end)
+    seen_bands: set[str] = set()
+    y_lo, y_hi = _auto_yrange(points)
 
-        raw_weights = [p.weight for p in device_points if p.weight is not None]
-        device_q3[device_code] = quantile(raw_weights, 0.75) if raw_weights else None
-
-        add_series_traces(fig, weight_row, device_points, show_legend=True, device_code=device_code)
-        add_power_markers(fig, weight_row, device_points)
-        add_event_bands(fig, weight_row, device_points)
-        add_event_markers(fig, weight_row, device_points)
-
-        y_lo, y_hi = _auto_yrange(device_points)
-        fig.update_xaxes(
-            range=[window_start, window_end],
-            tickformat="%d %b\n%H:%M",
-            tickangle=0,
-            rangeselector=dict(
-                buttons=_RANGE_BUTTONS,
-                bgcolor="#f1f5f9",
-                activecolor="#3b82f6",
-                font=dict(size=11, color="#334155"),
-            ),
-            rangeslider=dict(visible=True, thickness=0.03, bgcolor="#f8fafc"),
-            row=weight_row, col=1,
-        )
-        fig.update_yaxes(
-            range=[y_lo, y_hi],
-            title_text="Peso (g)",
-            gridcolor="#f1f5f9",
-            zerolinecolor="#e2e8f0",
-            row=weight_row, col=1,
-        )
-
-    add_battery_traces(fig, 3, points_by_device)
+    add_series_traces(fig, 1, points, show_legend=True, device_code=device_code)
+    add_power_markers(fig, 1, points)
+    add_event_bands(fig, 1, points, y_lo=y_lo, y_hi=y_hi, seen_bands=seen_bands)
+    add_event_markers(fig, 1, points)
 
     fig.update_xaxes(
+        range=[window_start, window_end],
         tickformat="%d %b\n%H:%M",
-        row=3, col=1,
+        tickangle=0,
+        rangeselector=dict(
+            buttons=_RANGE_BUTTONS,
+            bgcolor="#f1f5f9",
+            activecolor="#3b82f6",
+            font=dict(size=11, color="#334155"),
+        ),
+        rangeslider=dict(visible=True, thickness=0.03, bgcolor="#f8fafc"),
+        row=1, col=1,
     )
     fig.update_yaxes(
-        title_text="Batería (%)",
-        range=[0, 108],
+        range=[y_lo, y_hi],
+        title_text="Peso (g)",
         gridcolor="#f1f5f9",
-        row=3, col=1,
+        zerolinecolor="#e2e8f0",
+        row=1, col=1,
     )
     fig.update_layout(
         template="plotly_white",
-        height=1380,
+        height=540,
         width=1920,
-        title=dict(
-            text="KPCL — Análisis de peso, eventos y batería",
-            font=dict(size=18, color="#0f172a"),
-            x=0.02,
-        ),
         legend=dict(
             orientation="h",
-            yanchor="bottom", y=1.015,
+            yanchor="bottom", y=1.02,
             xanchor="right", x=1,
             bgcolor="rgba(255,255,255,0.85)",
             bordercolor="#e2e8f0",
             borderwidth=1,
             font=dict(size=12),
         ),
-        margin=dict(l=80, r=50, t=110, b=60),
+        margin=dict(l=80, r=50, t=80, b=60),
         font=dict(size=13, family="Inter, Arial, sans-serif"),
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=12,
-            font_family="Inter, Arial, sans-serif",
-            bordercolor="#e2e8f0",
-        ),
+        hoverlabel=dict(bgcolor="white", font_size=12,
+                        font_family="Inter, Arial, sans-serif", bordercolor="#e2e8f0"),
     )
-
-    # Subtle grid style on all axes
     fig.update_xaxes(showgrid=True, gridcolor="#f1f5f9", gridwidth=1)
+    return fig, device_q3, (window_start, window_end)
 
-    return fig, device_q3, window_map
+
+def build_battery_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.Figure:
+    fig = make_subplots(rows=1, cols=1)
+    add_battery_traces(fig, 1, points_by_device)
+    fig.update_xaxes(
+        tickformat="%d %b\n%H:%M",
+        rangeselector=dict(
+            buttons=_RANGE_BUTTONS,
+            bgcolor="#f1f5f9",
+            activecolor="#3b82f6",
+            font=dict(size=11, color="#334155"),
+        ),
+        rangeslider=dict(visible=True, thickness=0.04, bgcolor="#f8fafc"),
+        row=1, col=1,
+    )
+    fig.update_yaxes(title_text="Batería (%)", range=[0, 108], gridcolor="#f1f5f9", row=1, col=1)
+    fig.update_layout(
+        template="plotly_white",
+        height=300,
+        width=1920,
+        title=dict(text="Nivel de batería (%)", font=dict(size=14, color="#0f172a"), x=0.02),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=1.02,
+            xanchor="right", x=1,
+            bgcolor="rgba(255,255,255,0.85)",
+            bordercolor="#e2e8f0",
+            borderwidth=1,
+            font=dict(size=12),
+        ),
+        margin=dict(l=80, r=50, t=60, b=50),
+        font=dict(size=13, family="Inter, Arial, sans-serif"),
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#ffffff",
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="#f1f5f9", gridwidth=1)
+    return fig
 
 
 def build_export_filename(device_code: str, window_start: datetime, window_end: datetime) -> str:
@@ -1186,52 +1206,131 @@ def build_boxplot_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.F
     return fig
 
 
+def _interval_stats(ivs: list[tuple[datetime, datetime]]) -> dict:
+    if not ivs:
+        return {"count": 0}
+    durations = [(e - s).total_seconds() / 60 for s, e in ivs]
+    return {
+        "count": len(ivs),
+        "dur_avg": sum(durations) / len(durations),
+        "dur_min": min(durations),
+        "dur_max": max(durations),
+        "dur_total": sum(durations),
+    }
+
+
+def _fmt_interval_stats(st: dict) -> str:
+    if st["count"] == 0:
+        return "Sin datos"
+    return (
+        f"<b>{st['count']}</b> sesiones · "
+        f"prom <b>{st['dur_avg']:.1f} min</b> · "
+        f"min {st['dur_min']:.1f} · max {st['dur_max']:.1f} · "
+        f"total {st['dur_total']:.0f} min"
+    )
+
+
 def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
-    rows_html = ""
+    sections: list[str] = []
+
     for device_code in DEVICE_ORDER:
         points = points_by_device.get(device_code, [])
         audit_pts = [p for p in points if p.is_audit]
         intervals = build_event_intervals(points)
-
-        n_alimentacion = sum(1 for _, _, k in intervals if k == "alimentacion")
-        n_hidratacion = sum(1 for _, _, k in intervals if k == "hidratacion")
-        n_servido = sum(1 for _, _, k in intervals if k == "servido")
-
-        durations = [
-            (end - start).total_seconds() / 60
-            for start, end, _ in intervals
-        ]
-        avg_dur = f"{sum(durations) / len(durations):.1f} min" if durations else "—"
         n_readings = sum(1 for p in points if not p.is_audit and p.weight is not None)
-        n_audit = len(audit_pts)
 
-        rows_html += f"""
-        <tr>
-          <td><b>{device_code}</b></td>
-          <td>{DEVICE_TYPE.get(device_code, "—")}</td>
-          <td>{n_readings:,}</td>
-          <td>{n_audit}</td>
-          <td>{n_alimentacion}</td>
-          <td>{n_hidratacion}</td>
-          <td>{n_servido}</td>
-          <td>{avg_dur}</td>
-        </tr>"""
-    return f"""
-    <table style="border-collapse:collapse;font-size:13px;width:100%;max-width:900px">
-      <thead>
-        <tr style="background:#f1f5f9;text-align:left">
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Device</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Tipo</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Lecturas</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Audit events</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Sesiones alim.</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Sesiones hidrat.</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Servidos</th>
-          <th style="padding:6px 12px;border-bottom:1px solid #cbd5e1">Duración prom.</th>
-        </tr>
-      </thead>
-      <tbody>{rows_html}</tbody>
-    </table>"""
+        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacion"]
+        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacion"]
+        serv_ivs = [(s, e) for s, e, k in intervals if k == "servido"]
+
+        alim_st = _interval_stats(alim_ivs)
+        hidr_st = _interval_stats(hidr_ivs)
+        serv_st = _interval_stats(serv_ivs)
+
+        # Per-session alimentacion table rows
+        session_rows_html = ""
+        consumed_values: list[float] = []
+        for i, (s, e) in enumerate(sorted(alim_ivs, key=lambda x: x[0]), 1):
+            dur = (e - s).total_seconds() / 60
+            w_start = _weight_at(points, s)
+            w_end = _weight_at(points, e)
+            consumed_str = "—"
+            if w_start is not None and w_end is not None:
+                delta = w_start - w_end
+                consumed_str = f"{delta:.0f} g" if abs(delta) > 0.5 else "~0 g"
+                if abs(delta) > 0.5:
+                    consumed_values.append(delta)
+            s_iso = s.isoformat().replace("+00:00", "Z")
+            e_iso = e.isoformat().replace("+00:00", "Z")
+            session_rows_html += (
+                f"<tr class='session-row' data-device='{device_code}' "
+                f"data-start='{s_iso}' data-end='{e_iso}' "
+                f"onclick='zoomToEvent(this)' "
+                f"style='cursor:pointer' title='Click para ver en el gráfico'>"
+                f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{i}</td>"
+                f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{s.strftime('%Y-%m-%d %H:%M')} UTC</td>"
+                f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{e.strftime('%H:%M')} UTC</td>"
+                f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{dur:.1f} min</td>"
+                f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{consumed_str}</td>"
+                f"</tr>"
+            )
+
+        consumed_summary = ""
+        if consumed_values:
+            consumed_summary = (
+                f"· consumo prom <b>{sum(consumed_values)/len(consumed_values):.0f}g</b> "
+                f"(min {min(consumed_values):.0f}g · max {max(consumed_values):.0f}g · "
+                f"total {sum(consumed_values):.0f}g)"
+            )
+
+        session_table = ""
+        if alim_ivs:
+            session_table = f"""
+          <details open style="margin-top:14px">
+            <summary style="cursor:pointer;font-size:13px;font-weight:500;color:#334155;padding:4px 0;user-select:none">
+              Detalle sesiones de alimentación ({len(alim_ivs)}) {consumed_summary}
+            </summary>
+            <table style="border-collapse:collapse;font-size:13px;width:100%;max-width:680px;margin-top:8px">
+              <thead>
+                <tr style="background:#f0fdf4;text-align:left">
+                  <th style="padding:5px 10px;border-bottom:1px solid #bbf7d0">#</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #bbf7d0">Inicio</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #bbf7d0">Fin</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #bbf7d0">Duración</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #bbf7d0">Consumido (Δpeso)</th>
+                </tr>
+              </thead>
+              <tbody>{session_rows_html}</tbody>
+            </table>
+          </details>"""
+
+        section = f"""
+        <div style="margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid #e2e8f0">
+          <h3 style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:12px">
+            {device_code} · {DEVICE_TYPE.get(device_code, "")}
+            <span style="font-size:11px;font-weight:400;color:#64748b;margin-left:10px">
+              {n_readings:,} lecturas · {len(audit_pts)} audit events
+            </span>
+          </h3>
+          <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 18px;min-width:240px">
+              <div style="font-size:11px;color:#16a34a;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Alimentación</div>
+              <div style="font-size:13px;color:#0f172a;margin-top:6px">{_fmt_interval_stats(alim_st)}</div>
+            </div>
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;min-width:240px">
+              <div style="font-size:11px;color:#0284c7;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Hidratación</div>
+              <div style="font-size:13px;color:#0f172a;margin-top:6px">{_fmt_interval_stats(hidr_st)}</div>
+            </div>
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 18px;min-width:200px">
+              <div style="font-size:11px;color:#ea580c;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Servido</div>
+              <div style="font-size:13px;color:#0f172a;margin-top:6px">{_fmt_interval_stats(serv_st)}</div>
+            </div>
+          </div>
+          {session_table}
+        </div>"""
+        sections.append(section)
+
+    return "\n".join(sections)
 
 
 _PLOT_CONFIG = {
@@ -1243,23 +1342,54 @@ _PLOT_CONFIG = {
 
 
 def write_and_open(
-    fig: go.Figure,
+    device_figs: dict[str, go.Figure],
+    battery_fig: go.Figure,
     boxplot: go.Figure,
     *,
     window_map: dict[str, tuple[datetime, datetime]],
     q3_map: dict[str, float | None],
     stats_html: str,
+    supabase_url: str = "",
+    device_uuid_map: dict[str, str] | None = None,
 ) -> Path:
-    main_html = fig.to_html(full_html=False, include_plotlyjs="cdn", config=_PLOT_CONFIG)
-    box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
+    import json as _json
+    device_uuid_json = _json.dumps(device_uuid_map or {})
+    sb_url = supabase_url.rstrip("/")
+    device_codes_js = "var codes = " + _json.dumps(list(DEVICE_ORDER)) + ";"
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    # First figure carries plotly.js; rest reference it.
+    device_htmls: dict[str, str] = {}
+    for idx, device_code in enumerate(DEVICE_ORDER):
+        fig = device_figs[device_code]
+        include_js = "cdn" if idx == 0 else False
+        device_htmls[device_code] = fig.to_html(
+            full_html=False, include_plotlyjs=include_js, config=_PLOT_CONFIG,
+            div_id=f"chart_{device_code}",
+        )
+    batt_html = battery_fig.to_html(
+        full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG,
+        div_id="chart_battery",
+    )
+    box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
+
     window_rows = "".join(
         f"<tr><td><b>{device}</b></td>"
-        f"<td>{window_map[device][0]:%Y-%m-%d %H:%M}</td>"
-        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M}</td>"
+        f"<td>{window_map[device][0]:%Y-%m-%d %H:%M} UTC</td>"
+        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC</td>"
         f"<td>{'Q3: ' + f'{q3_map[device]:.1f}g' if q3_map.get(device) is not None else '—'}</td></tr>"
         for device in DEVICE_ORDER if device in window_map
     )
+
+    device_cards = ""
+    for device_code in DEVICE_ORDER:
+        label = {"KPCL0034": "Comedero", "KPCL0036": "Bebedero"}.get(device_code, device_code)
+        device_cards += f"""
+    <div class="card">
+      <h2>{device_code} · {label}</h2>
+      {device_htmls[device_code]}
+    </div>"""
+
     html_text = f"""<!DOCTYPE html>
 <html lang="es" data-theme="light">
 <head>
@@ -1304,6 +1434,42 @@ def write_and_open(
     .swatch {{ width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0; }}
     .meta-table td {{ padding: 3px 14px; border: none; color: var(--muted); font-size: 12px; }}
     .meta-table td:first-child {{ color: var(--text); font-weight: 500; }}
+    details summary::-webkit-details-marker {{ display: none; }}
+    details summary::before {{ content: "▶ "; font-size: 10px; }}
+    details[open] summary::before {{ content: "▼ "; }}
+    .session-row:hover {{ background: #f0fdf4; }}
+    .session-row.row-active {{ background: #dcfce7 !important; outline: 2px solid #16a34a; outline-offset: -2px; }}
+    /* ── Modal categorización ── */
+    #cat-modal {{ display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);
+                  z-index:1000;align-items:center;justify-content:center; }}
+    #cat-modal.open {{ display:flex; }}
+    .modal-card {{ background:#fff;border-radius:14px;padding:28px 30px;max-width:540px;
+                   width:94%;box-shadow:0 24px 64px rgba(0,0,0,0.28);position:relative; }}
+    .modal-card h3 {{ font-size:15px;font-weight:600;color:#0f172a;margin-bottom:16px; }}
+    .modal-meta {{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+                   background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:20px; }}
+    .modal-meta span {{ font-size:11px;color:#64748b;display:block;margin-bottom:3px; }}
+    .modal-meta b {{ font-size:13px;color:#0f172a; }}
+    .cat-group {{ margin-bottom:16px; }}
+    .cat-group-label {{ font-size:11px;color:#64748b;font-weight:600;
+                        text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px; }}
+    .cat-btn {{ padding:7px 14px;border-radius:6px;border:1.5px solid #cbd5e1;
+                background:#fff;color:#334155;cursor:pointer;font-size:13px;
+                transition:all .15s; }}
+    .cat-btn:hover {{ border-color:#94a3b8;background:#f8fafc; }}
+    .cat-btn.active {{ border-color:#16a34a;background:#f0fdf4;color:#15803d;font-weight:600; }}
+    .cat-btn.blue.active {{ border-color:#0284c7;background:#eff6ff;color:#0369a1; }}
+    .cat-btn.orange.active {{ border-color:#ea580c;background:#fff7ed;color:#c2410c; }}
+    .modal-footer {{ display:flex;justify-content:flex-end;gap:10px;margin-top:20px; }}
+    .btn-cancel {{ padding:8px 18px;border-radius:6px;border:1px solid #cbd5e1;
+                   background:#fff;color:#64748b;cursor:pointer;font-size:13px; }}
+    .btn-save {{ padding:8px 20px;border-radius:6px;border:none;background:#16a34a;
+                 color:#fff;cursor:pointer;font-size:13px;font-weight:500; }}
+    .btn-save:disabled {{ background:#86efac;cursor:not-allowed; }}
+    #toast {{ position:fixed;bottom:28px;right:28px;background:#0f172a;color:#fff;
+              padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;
+              z-index:2000;opacity:0;transform:translateY(16px);
+              transition:opacity .3s,transform .3s;pointer-events:none; }}
   </style>
 </head>
 <body>
@@ -1323,11 +1489,6 @@ def write_and_open(
         <tr><th>Device</th><th>Inicio</th><th>Fin</th><th>Q3 peso</th></tr>
         {window_rows}
       </table>
-    </div>
-
-    <div class="card">
-      <h2>Resumen sesiones</h2>
-      {stats_html}
     </div>
 
     <div class="card">
@@ -1355,14 +1516,21 @@ def write_and_open(
         </div>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">
-        Línea continua = peso bruto · Línea punteada = contenido neto (food_content_g) ·
-        ◆ = evento manual (pinchado en la curva) · Selector de rango disponible sobre cada gráfico.
+        Línea continua = peso bruto · Área morada = contenido neto ·
+        ◆ = evento manual · Cada gráfico tiene su propio selector de rango independiente.
       </p>
     </div>
 
     <div class="card">
-      <h2>Serie temporal con eventos</h2>
-      {main_html}
+      <h2>Datos descriptivos — sesiones de alimentación e hidratación</h2>
+      {stats_html}
+    </div>
+
+    {device_cards}
+
+    <div class="card">
+      <h2>Batería (%)</h2>
+      {batt_html}
     </div>
 
     <div class="card">
@@ -1370,6 +1538,172 @@ def write_and_open(
       {box_html}
     </div>
   </main>
+
+  <!-- ── Modal de categorización ── -->
+  <div id="cat-modal">
+    <div class="modal-card">
+      <h3>Categorizar punto</h3>
+      <div class="modal-meta">
+        <div><span>Device</span><b id="m-device"></b></div>
+        <div><span>Timestamp (UTC)</span><b id="m-ts"></b></div>
+        <div><span>Peso</span><b id="m-weight"></b></div>
+      </div>
+      <div class="cat-group">
+        <div class="cat-group-label" style="color:#16a34a">Alimentación</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacion','Inicio alimentación')">▶ Inicio alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacion','Término alimentación')">■ Término alimentación</button>
+        </div>
+      </div>
+      <div class="cat-group">
+        <div class="cat-group-label" style="color:#0284c7">Hidratación</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacion','Inicio hidratación')">▶ Inicio hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacion','Término hidratación')">■ Término hidratación</button>
+        </div>
+      </div>
+      <div class="cat-group">
+        <div class="cat-group-label" style="color:#ea580c">Servido / Plato</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="cat-btn orange" onclick="selectCat(this,'inicio_servido','Inicio servido')">▶ Inicio servido</button>
+          <button class="cat-btn orange" onclick="selectCat(this,'termino_servido','Término servido')">■ Término servido</button>
+          <button class="cat-btn orange" onclick="selectCat(this,'kpcl_sin_plato','KPCL sin plato')">Sin plato</button>
+          <button class="cat-btn orange" onclick="selectCat(this,'kpcl_con_plato','KPCL con plato')">Con plato</button>
+          <button class="cat-btn orange" onclick="selectCat(this,'tare_con_plato','Tare con plato')">Tare con plato</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-save" id="m-save" disabled onclick="saveEvent()">Guardar en Supabase</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+  var KPCL = {{
+    supabaseUrl: "{sb_url}",
+    supabaseKey: "",
+    deviceUuids: {device_uuid_json}
+  }};
+  var _ev = null;
+
+  /* ── Zoom desde tabla de sesiones ── */
+  function zoomToEvent(row) {{
+    var device = row.dataset.device;
+    var t0 = new Date(new Date(row.dataset.start).getTime() - 5*60*1000).toISOString();
+    var t1 = new Date(new Date(row.dataset.end).getTime()   + 5*60*1000).toISOString();
+    var el = document.getElementById('chart_' + device);
+    if (!el) return;
+    el.scrollIntoView({{ behavior:'smooth', block:'center' }});
+    Plotly.relayout('chart_' + device, {{'xaxis.range': [t0, t1]}});
+    document.querySelectorAll('.session-row').forEach(function(r) {{ r.classList.remove('row-active'); }});
+    row.classList.add('row-active');
+  }}
+
+  /* ── Click en punto del gráfico → abrir modal ── */
+  function attachClicks() {{
+    {device_codes_js}
+    codes.forEach(function(code) {{
+      var el = document.getElementById('chart_' + code);
+      if (!el || !el.on) return;
+      el.on('plotly_click', function(data) {{
+        var pt = data.points[0];
+        var name = (pt.data && pt.data.name) || '';
+        /* ignorar clics en bandas de eventos */
+        if (name === 'Alimentación' || name === 'Hidratación' || name === 'Servido') return;
+        /* normalizar timestamp a ISO UTC */
+        var raw = pt.x;
+        var ts;
+        if (typeof raw === 'number') {{
+          ts = new Date(raw).toISOString();
+        }} else {{
+          ts = String(raw).replace(' ','T');
+          if (!ts.endsWith('Z') && ts.indexOf('+') === -1) ts += 'Z';
+        }}
+        openModal(code, ts, pt.y);
+      }});
+    }});
+  }}
+  document.addEventListener('DOMContentLoaded', function() {{
+    /* Plotly divs se renderizan síncronamente, pero esperamos un tick */
+    setTimeout(attachClicks, 500);
+  }});
+
+  /* ── Modal ── */
+  function openModal(deviceCode, ts, weight) {{
+    _ev = {{ deviceCode: deviceCode, ts: ts, weight: weight, category: null, label: null }};
+    document.getElementById('m-device').textContent = deviceCode;
+    document.getElementById('m-ts').textContent = ts.replace('T',' ').slice(0,19);
+    document.getElementById('m-weight').textContent = (weight != null ? weight.toFixed(1) + ' g' : '—');
+    document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
+    document.getElementById('m-save').disabled = true;
+    document.getElementById('cat-modal').classList.add('open');
+  }}
+  function closeModal() {{
+    document.getElementById('cat-modal').classList.remove('open');
+    _ev = null;
+  }}
+  /* cerrar con click fuera */
+  document.getElementById('cat-modal').addEventListener('click', function(e) {{
+    if (e.target === this) closeModal();
+  }});
+
+  function selectCat(btn, category, label) {{
+    document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
+    btn.classList.add('active');
+    _ev.category = category;
+    _ev.label = label;
+    document.getElementById('m-save').disabled = false;
+  }}
+
+  async function saveEvent() {{
+    if (!_ev || !_ev.category) return;
+    if (!KPCL.supabaseKey) {{
+      alert('Guardado deshabilitado en esta exportacion HTML para evitar exponer credenciales.');
+      return;
+    }}
+    var uuid = KPCL.deviceUuids[_ev.deviceCode];
+    if (!uuid) {{ alert('UUID de device no disponible — recarga tras cargar desde Supabase.'); return; }}
+    var btn = document.getElementById('m-save');
+    btn.disabled = true; btn.textContent = 'Guardando…';
+    var body = JSON.stringify({{
+      event_type: 'manual_bowl_category',
+      entity_type: 'device',
+      entity_id: uuid,
+      payload: {{ category: _ev.category, category_label: _ev.label, source: 'kpcl_plot_manual',
+                  weight_at_event: _ev.weight }},
+      created_at: _ev.ts
+    }});
+    try {{
+      var resp = await fetch(KPCL.supabaseUrl + '/rest/v1/audit_events', {{
+        method: 'POST',
+        headers: {{
+          'apikey': KPCL.supabaseKey,
+          'Authorization': 'Bearer ' + KPCL.supabaseKey,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        }},
+        body: body
+      }});
+      if (!resp.ok) {{ var txt = await resp.text(); throw new Error(resp.status + ': ' + txt); }}
+      closeModal();
+      showToast('✓ Guardado — "' + _ev.label + '" en ' + _ev.ts.slice(0,16) + ' UTC');
+    }} catch(e) {{
+      btn.disabled = false; btn.textContent = 'Guardar en Supabase';
+      alert('Error al guardar: ' + e.message);
+    }}
+  }}
+
+  /* ── Toast ── */
+  function showToast(msg) {{
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.opacity = '1'; t.style.transform = 'translateY(0)';
+    setTimeout(function() {{ t.style.opacity='0'; t.style.transform='translateY(16px)'; }}, 4500);
+  }}
+  </script>
 </body>
 </html>"""
     OUTPUT_HTML.write_text(html_text, encoding="utf-8")
@@ -1428,10 +1762,36 @@ def main() -> None:
         for device_code in DEVICE_ORDER
     }
 
-    fig, device_q3, window_map = build_figure(points_by_device)
+    end_cap = max(
+        (p.timestamp for dp in points_by_device.values() for p in dp),
+        default=datetime.now(timezone.utc),
+    )
+    device_figs: dict[str, go.Figure] = {}
+    device_q3: dict[str, float | None] = {}
+    window_map: dict[str, tuple[datetime, datetime]] = {}
+    for device_code in DEVICE_ORDER:
+        pts = points_by_device.get(device_code, [])
+        dfig, q3, win = build_device_figure(device_code, pts, end_cap=end_cap)
+        device_figs[device_code] = dfig
+        device_q3[device_code] = q3
+        window_map[device_code] = win
+    battery_fig = build_battery_figure(points_by_device)
     boxplot_fig = build_boxplot_figure(points_by_device)
     stats = build_stats_html(points_by_device)
-    output = write_and_open(fig, boxplot_fig, window_map=window_map, q3_map=device_q3, stats_html=stats)
+
+    device_uuid_map: dict[str, str] = {}
+    for row in raw_rows:
+        code = row.get("device_code", "").strip()
+        uuid = row.get("device_uuid", "").strip()
+        if code and uuid and code not in device_uuid_map:
+            device_uuid_map[code] = uuid
+
+    output = write_and_open(
+        device_figs, battery_fig, boxplot_fig,
+        window_map=window_map, q3_map=device_q3, stats_html=stats,
+        supabase_url=os.environ.get(SUPABASE_URL_KEY, ""),
+        device_uuid_map=device_uuid_map,
+    )
     print(f"Vista interactiva abierta: {output}")
     for device_code in DEVICE_ORDER:
         print(f"CSV exportado: {export_paths[device_code]}")

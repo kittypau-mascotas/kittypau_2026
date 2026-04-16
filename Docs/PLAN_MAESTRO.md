@@ -1,4 +1,4 @@
-# Plan Maestro - Kittypau
+﻿# Plan Maestro - Kittypau
 
 Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
@@ -21,7 +21,7 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - Fuente canonica de estructura: [ARQUITECTURA_PROYECTO.md](ARQUITECTURA_PROYECTO.md).
 
 ## 3) Modelo de datos
-- Base relacional oficial: [SQL_SCHEMA.md](SQL_SCHEMA.md) y [SQL_MAESTRO.md](SQL_MAESTRO.md).
+- Base relacional oficial: [SQL_SCHEMA.sql](SQL_SCHEMA.sql) y [SQL_MAESTRO.md](SQL_MAESTRO.md).
 - Tablas operativas clave:
   - `public.profiles`
   - `public.pets`
@@ -64,5 +64,6 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## 9) Regla de coherencia
 - Si algo entra en conflicto con la fuente de verdad o con este plan maestro, primero actualiza la fuente y luego replica el cambio en los docs dependientes.
+
 
 

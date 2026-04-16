@@ -1,4 +1,4 @@
-# Escena Unica del Cuadro del Gato
+﻿# Escena Unica del Cuadro del Gato
 
 ## Regla Canonica
 
@@ -62,3 +62,4 @@ Mantener una experiencia consistente:
 - misma posicion base;
 - mismo personaje;
 - distinto contexto segun la pagina.
+
