@@ -334,23 +334,35 @@ def describe_dsn(dsn: str) -> str:
     return f"{parsed.username or 'unknown'}@{parsed.hostname or 'unknown'}:{parsed.port or ''}"
 
 
+def _fetch_sql(url: str, sql: str, params: tuple) -> list[dict[str, object]]:
+    with connect_supabase(url) as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            columns = [desc[0] for desc in cur.description]
+            return [dict(zip(columns, record)) for record in cur.fetchall()]
+
+
 def load_rows_from_supabase(*, start: datetime, end: datetime) -> list[dict[str, str]]:
     db_url = os.environ.get(SUPABASE_DB_URL)
-    pooler_url = os.environ.get(SUPABASE_DB_POOLER_URL)
+    pooler_url = os.environ.get(SUPABASE_DB_POOLER_URL) or None
     if not db_url:
         raise ValueError(
             f"No se encontro {SUPABASE_DB_URL}. Define el connection string en .env.local."
         )
     sql = build_supabase_sql()
-    chosen_url = pooler_url or db_url
-    label = "pooler" if pooler_url else "directo"
-    print(f"[supabase] usando {label}: {describe_dsn(chosen_url)}")
-    with connect_supabase(chosen_url) as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql, (start, end))
-            columns = [desc[0] for desc in cur.description]
-            rows = [dict(zip(columns, record)) for record in cur.fetchall()]
-    return [normalize_row(row) for row in rows]
+    params = (start, end)
+
+    if pooler_url:
+        try:
+            print(f"[supabase] pooler: {describe_dsn(pooler_url)}")
+            rows = _fetch_sql(pooler_url, sql, params)
+            return [normalize_row(r) for r in rows]
+        except psycopg2.OperationalError as exc:
+            print(f"[supabase] pooler fallo ({exc!s:.80}) — reintentando con directo...")
+
+    print(f"[supabase] directo: {describe_dsn(db_url)}")
+    rows = _fetch_sql(db_url, sql, params)
+    return [normalize_row(r) for r in rows]
 
 
 def rows_to_points(
@@ -423,9 +435,19 @@ def group_by_device(points: Iterable[SeriesPoint]) -> dict[str, list[SeriesPoint
 
 
 def _annotation_refs(row: int) -> tuple[str, str]:
-    """Return (xref, yref) for placing annotations at the top of a subplot."""
     xaxis, yaxis = ROW_AXES.get(row, ("x", "y"))
     return xaxis, f"{yaxis} domain"
+
+
+def _weight_at(points: list[SeriesPoint], ts: datetime, window_s: float = 90) -> float | None:
+    candidates = [
+        p for p in points
+        if not p.is_audit and p.weight is not None
+        and abs((p.timestamp - ts).total_seconds()) <= window_s
+    ]
+    if not candidates:
+        return None
+    return min(candidates, key=lambda p: abs((p.timestamp - ts).total_seconds())).weight
 
 
 def add_power_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None:
@@ -433,24 +455,24 @@ def add_power_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         return
     xref, yref = _annotation_refs(row)
 
-    # Prefer explicit kpcl_apagado audit events; fall back to device_offline_detected.
     off_events = sorted(
         p.timestamp for p in points
         if p.is_audit and p.evento in ("kpcl_apagado", "device_offline_detected")
     )
     for ts in off_events:
         fig.add_vline(
-            x=ts, line_width=1, line_dash="dot",
+            x=ts, line_width=1.5, line_dash="dot",
             line_color=EVENT_COLORS["kpcl_apagado"], row=row, col=1,
         )
         fig.add_annotation(
-            x=ts, y=0.98, xref=xref, yref=yref,
-            text=EVENT_LABELS["kpcl_apagado"],
+            x=ts, y=0.99, xref=xref, yref=yref,
+            text="⏻ Apagado",
             showarrow=False, xanchor="left", yanchor="top",
             font=dict(size=10, color=EVENT_COLORS["kpcl_apagado"]),
+            bgcolor="rgba(255,255,255,0.85)", bordercolor=EVENT_COLORS["kpcl_apagado"],
+            borderpad=2,
         )
 
-    # Prefer explicit kpcl_prendido events; fall back to first reading + reading after offline.
     on_explicit = [p.timestamp for p in points if p.is_audit and p.evento == "kpcl_prendido"]
     if on_explicit:
         on_events = sorted(set(on_explicit))
@@ -460,21 +482,23 @@ def add_power_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         if reading_points:
             on_events.append(reading_points[0].timestamp)
             for off_ts in off_events:
-                next_after = next((p.timestamp for p in reading_points if p.timestamp > off_ts), None)
-                if next_after:
-                    on_events.append(next_after)
+                nxt = next((p.timestamp for p in reading_points if p.timestamp > off_ts), None)
+                if nxt:
+                    on_events.append(nxt)
         on_events = sorted(set(on_events))
 
     for ts in on_events:
         fig.add_vline(
-            x=ts, line_width=1, line_dash="dot",
+            x=ts, line_width=1.5, line_dash="dot",
             line_color=EVENT_COLORS["kpcl_prendido"], row=row, col=1,
         )
         fig.add_annotation(
             x=ts, y=0.92, xref=xref, yref=yref,
-            text=EVENT_LABELS["kpcl_prendido"],
+            text="⏻ Encendido",
             showarrow=False, xanchor="left", yanchor="top",
             font=dict(size=10, color=EVENT_COLORS["kpcl_prendido"]),
+            bgcolor="rgba(255,255,255,0.85)", bordercolor=EVENT_COLORS["kpcl_prendido"],
+            borderpad=2,
         )
 
 
@@ -536,17 +560,31 @@ def add_event_bands(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None
             row=row, col=1,
             layer="below",
         )
-        y_pos = 0.84 - (label_offset % 4) * 0.08
+        # Compute consumed grams and duration for the label
+        w_start = _weight_at(points, start)
+        w_end = _weight_at(points, end)
+        duration_min = (end - start).total_seconds() / 60
+        parts = [style["label"]]
+        if w_start is not None and w_end is not None:
+            delta = w_start - w_end
+            if abs(delta) > 0.5:
+                sign = "−" if delta > 0 else "+"
+                parts.append(f"{sign}{abs(delta):.0f}g")
+        if duration_min >= 0.5:
+            parts.append(f"{duration_min:.0f}min")
+        label = " · ".join(parts)
+
+        y_pos = 0.85 - (label_offset % 4) * 0.09
         label_offset += 1
         fig.add_annotation(
             x=start, y=y_pos,
             xref=xref, yref=yref,
-            text=style["label"],
+            text=label,
             showarrow=False, xanchor="left", yanchor="bottom",
-            font=dict(size=11, color=style["line_color"], family="Arial"),
-            bgcolor="rgba(255,255,255,0.82)",
+            font=dict(size=11, color=style["line_color"], family="Arial, sans-serif"),
+            bgcolor="rgba(255,255,255,0.88)",
             bordercolor=style["line_color"],
-            borderpad=2,
+            borderpad=3,
         )
 
 
@@ -560,10 +598,8 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         "inicio_alimentacion", "termino_alimentacion",
         "inicio_hidratacion", "termino_hidratacion",
     }
-    # Only show markers for audit events — never for sensor reading rows.
     marker_points = [p for p in points if p.is_audit and p.evento in key_events]
 
-    # Deduplicate: same category within 60 s → keep only the first occurrence.
     deduped: list[SeriesPoint] = []
     last_seen: dict[str, datetime] = {}
     for point in sorted(marker_points, key=lambda p: p.timestamp):
@@ -579,21 +615,55 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         label = EVENT_LABELS.get(event_name, event_name)
         color = EVENT_COLORS.get(event_name, "#666666")
 
+        # Find the actual weight at this timestamp to place the marker on the curve.
+        y_data = _weight_at(points, ts, window_s=120)
+
         fig.add_vline(
             x=ts, line_width=1, line_dash="dash",
             line_color=color, row=row, col=1,
         )
-        y_pos = 0.72 - (idx % 6) * 0.09
-        fig.add_annotation(
-            x=ts, y=y_pos,
-            xref=xref, yref=yref,
-            text=label,
-            showarrow=False, xanchor="left", yanchor="bottom",
-            font=dict(size=10, color=color),
-            bgcolor="rgba(255,255,255,0.88)",
-            bordercolor=color,
-            borderpad=2,
-        )
+
+        if y_data is not None:
+            # Diamond marker pinned to the curve with an arrow label.
+            fig.add_trace(
+                go.Scatter(
+                    x=[ts], y=[y_data],
+                    mode="markers",
+                    marker=dict(size=10, color=color, symbol="diamond",
+                                line=dict(color="white", width=1.5)),
+                    hovertemplate=(
+                        f"<b>{label}</b><br>"
+                        "%{x|%Y-%m-%d %H:%M:%S}<br>"
+                        "Peso: %{y:.1f} g<extra></extra>"
+                    ),
+                    showlegend=False,
+                ),
+                row=row, col=1,
+            )
+            # Label with arrow pointing to the diamond.
+            fig.add_annotation(
+                x=ts, y=y_data,
+                xref=xref.replace("domain", ""), yref=ROW_AXES.get(row, ("x", "y"))[1],
+                text=f"<b>{label}</b>",
+                showarrow=True, arrowhead=2, arrowsize=0.8,
+                arrowcolor=color, arrowwidth=1.2,
+                ax=28, ay=-32 - (idx % 4) * 18,
+                font=dict(size=10, color=color),
+                bgcolor="rgba(255,255,255,0.90)",
+                bordercolor=color, borderpad=2,
+            )
+        else:
+            # Fallback: annotation at fixed paper position when no nearby reading.
+            y_pos = 0.68 - (idx % 6) * 0.09
+            fig.add_annotation(
+                x=ts, y=y_pos,
+                xref=xref, yref=yref,
+                text=label,
+                showarrow=False, xanchor="left", yanchor="bottom",
+                font=dict(size=10, color=color),
+                bgcolor="rgba(255,255,255,0.88)",
+                bordercolor=color, borderpad=2,
+            )
 
 
 def add_series_traces(
@@ -604,8 +674,9 @@ def add_series_traces(
     show_legend: bool,
     device_code: str,
 ) -> None:
-    palette = {"KPCL0034": "#c66f62", "KPCL0036": "#557a95"}
+    palette = {"KPCL0034": "#e05c4a", "KPCL0036": "#3b82f6"}
     color = palette.get(device_code, "#6a994e")
+    fill_color = {"KPCL0034": "rgba(224,92,74,0.08)", "KPCL0036": "rgba(59,130,246,0.08)"}
 
     xs = [p.timestamp for p in points if p.weight is not None]
     ys = [p.weight for p in points if p.weight is not None]
@@ -615,14 +686,20 @@ def add_series_traces(
                 x=xs, y=ys,
                 mode="lines",
                 name=f"{device_code} — Peso bruto",
-                line=dict(color=color, width=2),
-                hovertemplate="%{x|%Y-%m-%d %H:%M:%S}<br>Peso: %{y} g<extra>" + device_code + "</extra>",
+                line=dict(color=color, width=2, shape="hv"),
+                fill="tozeroy",
+                fillcolor=fill_color.get(device_code, "rgba(100,116,139,0.07)"),
+                hovertemplate=(
+                    "<b>" + device_code + "</b><br>"
+                    "%{x|%d %b %H:%M:%S}<br>"
+                    "Peso: <b>%{y:.1f} g</b><extra></extra>"
+                ),
                 showlegend=show_legend,
             ),
             row=row, col=1,
         )
 
-    # Food content (net weight) — only for food bowls when plate_weight is configured.
+    # Net food content — food bowls only, filled area under curve.
     if DEVICE_TYPE.get(device_code) == "food_bowl":
         fc_xs = [p.timestamp for p in points if p.food_content is not None]
         fc_ys = [p.food_content for p in points if p.food_content is not None]
@@ -632,8 +709,14 @@ def add_series_traces(
                     x=fc_xs, y=fc_ys,
                     mode="lines",
                     name=f"{device_code} — Contenido neto",
-                    line=dict(color="#a78bfa", width=1.5, dash="dot"),
-                    hovertemplate="%{x|%Y-%m-%d %H:%M:%S}<br>Contenido neto: %{y} g<extra>neto</extra>",
+                    line=dict(color="#a78bfa", width=1.5, shape="hv"),
+                    fill="tozeroy",
+                    fillcolor="rgba(167,139,250,0.12)",
+                    hovertemplate=(
+                        "Contenido neto<br>"
+                        "%{x|%d %b %H:%M:%S}<br>"
+                        "<b>%{y:.1f} g</b><extra></extra>"
+                    ),
                     showlegend=show_legend,
                 ),
                 row=row, col=1,
@@ -645,7 +728,7 @@ def add_battery_traces(
     row: int,
     points_by_device: dict[str, list[SeriesPoint]],
 ) -> None:
-    palette = {"KPCL0034": "#f97316", "KPCL0036": "#8b5cf6"}
+    palette = {"KPCL0034": "#e05c4a", "KPCL0036": "#3b82f6"}
     for device_code in DEVICE_ORDER:
         device_points = points_by_device.get(device_code, [])
         batt_xs = [p.timestamp for p in device_points if p.battery_level is not None]
@@ -657,13 +740,27 @@ def add_battery_traces(
             go.Scatter(
                 x=batt_xs, y=batt_ys,
                 mode="lines",
-                name=f"{device_code} — Batería %",
-                line=dict(color=color, width=1.5),
-                hovertemplate="%{x|%Y-%m-%d %H:%M:%S}<br>Batería: %{y}%<extra>" + device_code + "</extra>",
+                name=f"{device_code} — Batería",
+                line=dict(color=color, width=1.5, shape="hv"),
+                fill="tozeroy",
+                fillcolor=color.replace(")", ",0.10)").replace("rgb", "rgba") if color.startswith("rgb") else color + "1a",
+                hovertemplate=(
+                    "<b>" + device_code + "</b> batería<br>"
+                    "%{x|%d %b %H:%M}<br>"
+                    "<b>%{y:.0f}%%</b><extra></extra>"
+                ),
                 showlegend=True,
             ),
             row=row, col=1,
         )
+    # Low-battery reference line at 20%
+    fig.add_hline(
+        y=20, line_width=1, line_dash="dot",
+        line_color="#ef4444",
+        row=row, col=1,
+        annotation_text="20%", annotation_position="right",
+        annotation_font=dict(size=10, color="#ef4444"),
+    )
 
 
 def build_device_window(points: list[SeriesPoint], end_cap: datetime) -> tuple[datetime, datetime]:
@@ -713,6 +810,15 @@ def _auto_yrange(points: list[SeriesPoint], *, padding: float = 0.12) -> tuple[f
     return max(0.0, lo - span * padding), hi + span * padding
 
 
+_RANGE_BUTTONS = [
+    dict(count=1,  label="1h",  step="hour", stepmode="backward"),
+    dict(count=6,  label="6h",  step="hour", stepmode="backward"),
+    dict(count=24, label="24h", step="hour", stepmode="backward"),
+    dict(count=7,  label="7d",  step="day",  stepmode="backward"),
+    dict(step="all", label="Todo"),
+]
+
+
 def build_figure(
     points_by_device: dict[str, list[SeriesPoint]],
 ) -> tuple[go.Figure, dict[str, float | None], dict[str, tuple[datetime, datetime]]]:
@@ -720,11 +826,11 @@ def build_figure(
         rows=3,
         cols=1,
         shared_xaxes=False,
-        row_heights=[0.42, 0.42, 0.16],
-        vertical_spacing=0.08,
+        row_heights=[0.41, 0.41, 0.18],
+        vertical_spacing=0.07,
         subplot_titles=(
-            "KPCL0034 — peso bruto / contenido neto / eventos",
-            "KPCL0036 — peso bruto / eventos",
+            "KPCL0034 · Comedero — Peso bruto / Contenido neto / Eventos",
+            "KPCL0036 · Bebedero — Peso bruto / Eventos",
             "Batería (%)",
         ),
     )
@@ -733,7 +839,7 @@ def build_figure(
     window_map: dict[str, tuple[datetime, datetime]] = {}
     device_q3: dict[str, float | None] = {}
     latest_timestamp = max(
-        (p.timestamp for device_points in points_by_device.values() for p in device_points),
+        (p.timestamp for dp in points_by_device.values() for p in dp),
         default=datetime.now(timezone.utc),
     )
     end_cap = latest_timestamp
@@ -763,24 +869,71 @@ def build_figure(
         add_event_markers(fig, weight_row, device_points)
 
         y_lo, y_hi = _auto_yrange(device_points)
-        fig.update_xaxes(range=[window_start, window_end], row=weight_row, col=1)
-        fig.update_yaxes(range=[y_lo, y_hi], row=weight_row, col=1)
+        fig.update_xaxes(
+            range=[window_start, window_end],
+            tickformat="%d %b\n%H:%M",
+            tickangle=0,
+            rangeselector=dict(
+                buttons=_RANGE_BUTTONS,
+                bgcolor="#f1f5f9",
+                activecolor="#3b82f6",
+                font=dict(size=11, color="#334155"),
+            ),
+            rangeslider=dict(visible=True, thickness=0.03, bgcolor="#f8fafc"),
+            row=weight_row, col=1,
+        )
+        fig.update_yaxes(
+            range=[y_lo, y_hi],
+            title_text="Peso (g)",
+            gridcolor="#f1f5f9",
+            zerolinecolor="#e2e8f0",
+            row=weight_row, col=1,
+        )
 
     add_battery_traces(fig, 3, points_by_device)
 
-    fig.update_xaxes(title_text="Tiempo (UTC)", tickformat="%m-%d %H:%M")
-    fig.update_yaxes(title_text="Peso (g)", row=1, col=1)
-    fig.update_yaxes(title_text="Peso (g)", row=2, col=1)
-    fig.update_yaxes(title_text="Batería (%)", range=[0, 105], row=3, col=1)
+    fig.update_xaxes(
+        tickformat="%d %b\n%H:%M",
+        row=3, col=1,
+    )
+    fig.update_yaxes(
+        title_text="Batería (%)",
+        range=[0, 108],
+        gridcolor="#f1f5f9",
+        row=3, col=1,
+    )
     fig.update_layout(
         template="plotly_white",
-        height=1300,
-        width=1900,
-        title_text="KPCL — pruebas de peso por device",
-        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="right", x=1),
-        margin=dict(l=80, r=40, t=120, b=70),
-        font=dict(size=14),
+        height=1380,
+        width=1920,
+        title=dict(
+            text="KPCL — Análisis de peso, eventos y batería",
+            font=dict(size=18, color="#0f172a"),
+            x=0.02,
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom", y=1.015,
+            xanchor="right", x=1,
+            bgcolor="rgba(255,255,255,0.85)",
+            bordercolor="#e2e8f0",
+            borderwidth=1,
+            font=dict(size=12),
+        ),
+        margin=dict(l=80, r=50, t=110, b=60),
+        font=dict(size=13, family="Inter, Arial, sans-serif"),
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#ffffff",
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+            font_family="Inter, Arial, sans-serif",
+            bordercolor="#e2e8f0",
+        ),
     )
+
+    # Subtle grid style on all axes
+    fig.update_xaxes(showgrid=True, gridcolor="#f1f5f9", gridwidth=1)
 
     return fig, device_q3, window_map
 
@@ -894,6 +1047,14 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
     </table>"""
 
 
+_PLOT_CONFIG = {
+    "responsive": True,
+    "displaylogo": False,
+    "toImageButtonOptions": {"format": "svg", "filename": "kpcl_plot", "height": 1380, "width": 1920},
+    "modeBarButtonsToRemove": ["autoScale2d", "lasso2d", "select2d"],
+}
+
+
 def write_and_open(
     fig: go.Figure,
     boxplot: go.Figure,
@@ -902,56 +1063,127 @@ def write_and_open(
     q3_map: dict[str, float | None],
     stats_html: str,
 ) -> Path:
-    main_html = fig.to_html(full_html=False, include_plotlyjs="cdn", config={"responsive": True})
-    box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config={"responsive": True})
+    main_html = fig.to_html(full_html=False, include_plotlyjs="cdn", config=_PLOT_CONFIG)
+    box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    window_text = "; ".join(
-        f"{device}: {window_map[device][0]:%Y-%m-%d %H:%M} → {window_map[device][1]:%Y-%m-%d %H:%M} UTC"
-        for device in DEVICE_ORDER
-        if device in window_map
-    )
-    q3_text = ", ".join(
-        f"{device}: Q3={q3_map[device]:.1f}g" for device in DEVICE_ORDER if q3_map.get(device) is not None
+    window_rows = "".join(
+        f"<tr><td><b>{device}</b></td>"
+        f"<td>{window_map[device][0]:%Y-%m-%d %H:%M}</td>"
+        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M}</td>"
+        f"<td>{'Q3: ' + f'{q3_map[device]:.1f}g' if q3_map.get(device) is not None else '—'}</td></tr>"
+        for device in DEVICE_ORDER if device in window_map
     )
     html_text = f"""<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <title>KPCL — gráficos</title>
-    <style>
-      body {{ font-family: Arial, sans-serif; margin: 24px; background: #fff; color: #1e293b; }}
-      .section {{ margin-bottom: 48px; }}
-      h2 {{ margin: 0 0 10px 0; font-size: 17px; color: #334155; }}
-      .meta {{ margin: 0 0 20px 0; color: #475569; font-size: 13px; line-height: 1.6; }}
-      .legend {{ display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; font-size:12px; }}
-      .legend-item {{ display:flex; align-items:center; gap:6px; }}
-      .swatch {{ width:14px; height:14px; border-radius:3px; }}
-    </style>
-  </head>
-  <body>
-    <div class="meta">
-      <b>Generado:</b> {generated}<br>
-      <b>Ventana:</b> {window_text}<br>
-      <b>Q3 peso:</b> {q3_text}
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPCL — Análisis de peso</title>
+  <style>
+    :root {{
+      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0;
+      --text: #0f172a; --muted: #64748b; --accent: #3b82f6;
+    }}
+    [data-theme="dark"] {{
+      --bg: #0f172a; --surface: #1e293b; --border: #334155;
+      --text: #f1f5f9; --muted: #94a3b8; --accent: #60a5fa;
+    }}
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{ font-family: Inter, -apple-system, Arial, sans-serif;
+            background: var(--bg); color: var(--text); font-size: 14px; }}
+    header {{ position: sticky; top: 0; z-index: 100;
+              background: var(--surface); border-bottom: 1px solid var(--border);
+              padding: 10px 28px; display: flex; align-items: center;
+              justify-content: space-between; gap: 16px; }}
+    header h1 {{ font-size: 15px; font-weight: 600; color: var(--text); }}
+    .badge {{ font-size: 11px; color: var(--muted); }}
+    .theme-btn {{ cursor: pointer; border: 1px solid var(--border); border-radius: 6px;
+                  padding: 4px 10px; background: var(--surface); color: var(--text);
+                  font-size: 12px; white-space: nowrap; }}
+    main {{ padding: 24px 28px; max-width: 2000px; }}
+    .card {{ background: var(--surface); border: 1px solid var(--border);
+             border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }}
+    .card h2 {{ font-size: 13px; font-weight: 600; color: var(--muted);
+                text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; }}
+    table {{ border-collapse: collapse; width: 100%; font-size: 13px; }}
+    th {{ padding: 7px 14px; background: var(--bg); color: var(--muted);
+          font-weight: 500; font-size: 11px; text-transform: uppercase;
+          letter-spacing: .04em; text-align: left; border-bottom: 1px solid var(--border); }}
+    td {{ padding: 7px 14px; border-bottom: 1px solid var(--border); }}
+    tr:last-child td {{ border-bottom: none; }}
+    .legend {{ display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }}
+    .legend-item {{ display: flex; align-items: center; gap: 7px; font-size: 12px;
+                    color: var(--muted); }}
+    .swatch {{ width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0; }}
+    .meta-table td {{ padding: 3px 14px; border: none; color: var(--muted); font-size: 12px; }}
+    .meta-table td:first-child {{ color: var(--text); font-weight: 500; }}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KPCL — Análisis de peso, eventos y batería</h1>
+    <span class="badge">Generado: {generated}</span>
+    <button class="theme-btn" onclick="
+      const h=document.documentElement;
+      h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+      this.textContent=h.dataset.theme==='dark'?'☀ Claro':'☾ Oscuro';
+    ">☾ Oscuro</button>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Ventana de datos</h2>
+      <table class="meta-table">
+        <tr><th>Device</th><th>Inicio</th><th>Fin</th><th>Q3 peso</th></tr>
+        {window_rows}
+      </table>
     </div>
-    <div class="section">
-      <h2>Resumen por device</h2>
+
+    <div class="card">
+      <h2>Resumen sesiones</h2>
       {stats_html}
     </div>
-    <div class="legend">
-      <div class="legend-item"><div class="swatch" style="background:rgba(34,197,94,0.55);border:1.5px solid #16a34a"></div>Alimentación</div>
-      <div class="legend-item"><div class="swatch" style="background:rgba(14,165,233,0.55);border:1.5px solid #0284c7"></div>Hidratación</div>
-      <div class="legend-item"><div class="swatch" style="background:rgba(249,115,22,0.45);border:1.5px solid #ea580c"></div>Servido</div>
+
+    <div class="card">
+      <h2>Leyenda de bandas</h2>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="swatch" style="background:rgba(34,197,94,0.45);border:2px solid #16a34a"></div>
+          Alimentación — verde
+        </div>
+        <div class="legend-item">
+          <div class="swatch" style="background:rgba(14,165,233,0.45);border:2px solid #0284c7"></div>
+          Hidratación — azul
+        </div>
+        <div class="legend-item">
+          <div class="swatch" style="background:rgba(249,115,22,0.40);border:2px solid #ea580c"></div>
+          Servido — naranja
+        </div>
+        <div class="legend-item">
+          <div class="swatch" style="background:#e05c4a;border-radius:50%"></div>
+          KPCL0034 comedero
+        </div>
+        <div class="legend-item">
+          <div class="swatch" style="background:#3b82f6;border-radius:50%"></div>
+          KPCL0036 bebedero
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px">
+        Línea continua = peso bruto · Línea punteada = contenido neto (food_content_g) ·
+        ◆ = evento manual (pinchado en la curva) · Selector de rango disponible sobre cada gráfico.
+      </p>
     </div>
-    <div class="section">
+
+    <div class="card">
       <h2>Serie temporal con eventos</h2>
       {main_html}
     </div>
-    <div class="section">
-      <h2>Boxplot por device (≤ Q3)</h2>
+
+    <div class="card">
+      <h2>Distribución de peso — boxplot (≤ Q3)</h2>
       {box_html}
     </div>
-  </body>
+  </main>
+</body>
 </html>"""
     OUTPUT_HTML.write_text(html_text, encoding="utf-8")
     webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
