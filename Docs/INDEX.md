@@ -21,11 +21,11 @@
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql)
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
 - [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
-- [pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md](pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara
-- [pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql](pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado
-- [pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql](pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device
-- [pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md](pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de prueba sin cargador y de los hitos por device
-- [pruebas_kpcl/README.md](pruebas_kpcl/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados
+- [investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md](investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara
+- [investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql](investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado
+- [investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql](investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device
+- [investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md](investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de prueba sin cargador y de los hitos por device
+- [investigacion/README.md](investigacion/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados
 - [FRONT_BACK_APIS.md](FRONT_BACK_APIS.md)
 - [BRIDGE_HEALTHCHECK.md](BRIDGE_HEALTHCHECK.md)
 - [ESTADO_BRIDGE_ACTUAL.md](ESTADO_BRIDGE_ACTUAL.md)

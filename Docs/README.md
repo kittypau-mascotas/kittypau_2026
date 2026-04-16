@@ -25,11 +25,11 @@ Esta carpeta es la entrada principal a toda la documentacion del proyecto.
 20. [`chatbot/CHATBOT_GATO_BLOQUES_INICIO.md`](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - tabla operativa de bloques visibles en inicio.
 21. [`chatbot/CHATBOT_GATO_PROMPTS_INICIO.md`](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque visual de inicio.
 22. [`chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md`](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato en la experiencia.
-23. [`pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`](pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara aplicada.
-24. [`pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql`](pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado.
-25. [`pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql`](pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device.
-26. [`pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md`](pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de la prueba sin cargador de ambos KPCL y de los hitos por device.
-27. [`pruebas_kpcl/README.md`](pruebas_kpcl/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados.
+23. [`investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`](investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara aplicada.
+24. [`investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql`](investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado.
+25. [`investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql`](investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device.
+26. [`investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md`](investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de la prueba sin cargador de ambos KPCL y de los hitos por device.
+27. [`investigacion/README.md`](investigacion/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados.
 
 ## Capas de lectura
 - Producto y arquitectura: `PLAN_MAESTRO.md`, `ARQUITECTURA_PROYECTO.md`, `DOC_MAESTRO_DOMINIO.md`

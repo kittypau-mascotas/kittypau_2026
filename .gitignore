@@ -126,8 +126,8 @@ Docs/**/*.env*
 Docs/Samsung Tizen Experiment/
 Docs/Android TV Docs/
 Docs/_local/
-Docs/pruebas_kpcl/*.csv
-Docs/pruebas_kpcl/por_dia/*.csv
+Docs/investigacion/*.csv
+Docs/investigacion/por_dia/*.csv
 Docs/kittypau_1a_docs_legacy/business/docs_kittypau_2025.zip
 tools/
 samsung_tizen_experiment/

@@ -94,7 +94,7 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
 - Al `2026-04-06 21:44:27+00:00`, termino el servido de comida en la app para `KPCL0036`; el grafico 2 queda completo con `food_fill_end` para ese device.
 - Para `KPCL0034`, el grafico 2 queda definido con `tare_record` a `2026-04-06 21:42:34+00:00`, `food_fill_start` a `2026-04-06 21:43:34+00:00` y `food_fill_end` a `2026-04-06 21:44:03+00:00`.
 - Para `KPCL0036`, el grafico 2 queda definido con `tare_record` a `2026-04-06 21:42:22+00:00`, `food_fill_start` a `2026-04-06 21:43:48+00:00` y `food_fill_end` a `2026-04-06 21:44:27+00:00`.
-- El CSV bruto `Docs/pruebas_kpcl/kpcl0034_kpcl0036_prueba_sincargador.csv` quedo guardado como snapshot del experimento compartido sin cargador, con lectura combinada de ambos devices para analisis posterior.
+- El CSV bruto `Docs/investigacion/kpcl0034_kpcl0036_prueba_sincargador.csv` quedo guardado como snapshot del experimento compartido sin cargador, con lectura combinada de ambos devices para analisis posterior.
 - El analisis de ese CSV se interpreta sin gato ni interrupcion externa directa del sensor; cualquier variacion de peso se toma primero como posible deriva, alimentacion, mecanica o recalibracion.
 - Quedo pendiente una prueba controlada compartida de `KPCL0034` y `KPCL0036` con cargador conectado, sin objeto encima, y la misma secuencia `tare_record -> food_fill_start -> food_fill_end` para comparar comportamiento de peso con una escena comun.
 - Continuar endureciendo la base sin introducir fallback oculto en produccion.

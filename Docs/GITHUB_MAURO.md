@@ -25,8 +25,8 @@ Actualizar en cada jornada y en cada PR relevante.
   - Se dejaron ambos platos funcionando en Today con datos reales.
   - Inicio de recoleccion de data de Bandida (tester).
 - Archivos principales:
-  - Docs/pruebas_kpcl/HITO_2026-04-07_PLATOS_BANDIDA.md
-  - Docs/pruebas_kpcl/DIAGNOSTICO_ERRORES_Y_REGISTROS_2026-04-07.md
+  - Docs/investigacion/HITO_2026-04-07_PLATOS_BANDIDA.md
+  - Docs/investigacion/DIAGNOSTICO_ERRORES_Y_REGISTROS_2026-04-07.md
 - PR/Commit: Pendiente.
 - Pruebas ejecutadas:
   - Validacion de funcionamiento en Today.

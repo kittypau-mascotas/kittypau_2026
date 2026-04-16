@@ -46,19 +46,19 @@
 - `public.audit_events` tambien para registrar alimento neto puntual luego del tare, como el `KPCL0036` con `36 g`.
 - `public.audit_events` tambien para registrar una lectura neta sucesiva del plato sin consumo observado, como el `KPCL0036` con `28 g`.
 - `public.audit_events` tambien para registrar lecturas sucesivas de alimento neto, como el `KPCL0036` con `26 g`.
-- `Docs/pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md` como auditoria canonica del CSV `Docs/pruebas_kpcl/kpcl0036_error_peso_sinbateria.csv`, cuando se necesite revisar peso bruto sin tara aplicada y su diagnostico tecnico.
+- `Docs/investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md` como auditoria canonica del CSV `Docs/investigacion/kpcl0036_error_peso_sinbateria.csv`, cuando se necesite revisar peso bruto sin tara aplicada y su diagnostico tecnico.
 - `public.audit_events` tambien para registrar secuencias manuales de tare, llenado de plato y descenso posterior, como la serie de `KPCL0036` del `2026-04-06 20:05:12.356102+00` al `2026-04-06 20:07:10.132855+00`.
-- `Docs/pruebas_kpcl/SQL_VALIDACION_KPCL0036_TARE_FILL.sql` como consulta canonica para validar secuencias de tare, peso de plato, inicio de llenado a las `20:06:55+00` y termino de llenado en `KPCL0036`.
+- `Docs/investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql` como consulta canonica para validar secuencias de tare, peso de plato, inicio de llenado a las `20:06:55+00` y termino de llenado en `KPCL0036`.
 - `Docs/BATERIA_ESTIMADA_KPCL.md` como referencia canonica para la prueba controlada compartida de `KPCL0034` y `KPCL0036` con cargador conectado, sin objeto encima, y la secuencia por device del grafico 2 (`KPCL0034: tare_record -> food_fill_start -> food_fill_end` / `KPCL0036: tare_record -> food_fill_start -> food_fill_end`).
-- `Docs/pruebas_kpcl/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md` como referencia de auditoria para la misma secuencia cuando se compare `KPCL0036` con `KPCL0034`.
+- `Docs/investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md` como referencia de auditoria para la misma secuencia cuando se compare `KPCL0036` con `KPCL0034`.
 - Estado actual canonico de esa comparacion al `2026-04-06 17:40:13-04:00`: ambos `KPCL0034` y `KPCL0036` estan con plato encima, con el plato activo y sin cargador, listos para ejecutar la secuencia compartida.
 - Tare en curso canonica al `2026-04-06 21:42:34+00:00` para `KPCL0034` y al `2026-04-06 21:42:22+00:00` para `KPCL0036` desde la app, pendiente de la lectura final posterior para cerrar el tramo.
 - Inicio de servido en curso canonico al `2026-04-06 21:43:34+00:00` para `KPCL0034` y al `2026-04-06 21:43:48+00:00` para `KPCL0036` desde la app, pendiente de la lectura final posterior para cerrar el tramo.
 - Termino de servido canonico al `2026-04-06 21:44:03+00:00` para `KPCL0034` y al `2026-04-06 21:44:27+00:00` para `KPCL0036` desde la app, cerrando el grafico 2 con `food_fill_end`.
 - Categoria manual canonica al `2026-04-07 00:17:41+00:00` para `KPCL0034` con `inicio_alimentacion`, registrada desde la nueva capa de botones del plato.
 - Categoria manual canonica al `2026-04-07 00:20:41+00:00` para `KPCL0034` con `termino_alimentacion`, registrada desde la nueva capa de botones del plato.
-- `Docs/pruebas_kpcl/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql` como export canonico del tramo de experimento compartido de ambos devices, desde 5 minutos antes de la foto operativa hasta ahora.
-- `Docs/pruebas_kpcl/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md` como auditoria canonica del CSV bruto del experimento compartido sin cargador.
+- `Docs/investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql` como export canonico del tramo de experimento compartido de ambos devices, desde 5 minutos antes de la foto operativa hasta ahora.
+- `Docs/investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md` como auditoria canonica del CSV bruto del experimento compartido sin cargador.
 - Interpretacion canonica de ese CSV: se analiza la variacion de peso sin gato ni interrupcion externa directa del sensor; cualquier cambio debe priorizar hipotesis de medicion, alimentacion, mecanica o calibracion.
 
 ### Finanzas y BOM
