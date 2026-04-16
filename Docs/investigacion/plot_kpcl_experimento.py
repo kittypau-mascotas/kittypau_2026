@@ -300,6 +300,13 @@ order by event_at asc, row_source asc, device_code asc;
 """
 
 
+import json
+import urllib.request as _urllib_request
+
+SUPABASE_URL_KEY = "SUPABASE_URL"
+SUPABASE_SERVICE_ROLE_KEY_KEY = "SUPABASE_SERVICE_ROLE_KEY"
+
+
 def normalize_row(row: dict[str, object]) -> dict[str, str]:
     normalized: dict[str, str] = {}
     for key, value in row.items():
@@ -342,27 +349,207 @@ def _fetch_sql(url: str, sql: str, params: tuple) -> list[dict[str, object]]:
             return [dict(zip(columns, record)) for record in cur.fetchall()]
 
 
+def _rest_get_all(
+    base_url: str,
+    headers: dict[str, str],
+    table: str,
+    *,
+    select: str,
+    filters: list[tuple[str, str]],
+    order: str,
+    page_size: int = 1000,
+) -> list[dict]:
+    from urllib.parse import urlencode, quote
+    rows: list[dict] = []
+    offset = 0
+    while True:
+        params = [("select", select), *filters, ("order", order),
+                  ("limit", str(page_size)), ("offset", str(offset))]
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urlencode(params, quote_via=quote)}"
+        req = _urllib_request.Request(url, headers=headers, method="GET")
+        with _urllib_request.urlopen(req, timeout=60) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+        if not payload:
+            break
+        rows.extend(payload)
+        if len(payload) < page_size:
+            break
+        offset += page_size
+    return rows
+
+
+def _audit_evento(event_type: str, payload: dict | None) -> str:
+    if event_type == "manual_bowl_category":
+        cat = (payload or {}).get("category", "")
+        return str(cat).strip() or "sin_categoria"
+    mapping = {
+        "device_online_detected": "kpcl_prendido",
+        "device_offline_detected": "kpcl_apagado",
+        "device_power_event": None,
+        "manual_plate_tare_start": "tare_record",
+        "manual_plate_tare": "plate_weight",
+        "manual_food_refill": "food_fill_start",
+        "manual_food_refill_end": "food_fill_end",
+    }
+    if event_type == "device_power_event" and payload:
+        return str(payload.get("category", event_type)).strip()
+    return mapping.get(event_type, event_type or "otro_evento")
+
+
+def load_rows_from_rest(*, start: datetime, end: datetime) -> list[dict[str, str]]:
+    base_url = os.environ.get(SUPABASE_URL_KEY, "").rstrip("/")
+    service_key = os.environ.get(SUPABASE_SERVICE_ROLE_KEY_KEY, "")
+    if not base_url or not service_key:
+        raise ValueError("SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no definidos.")
+
+    headers = {
+        "apikey": service_key,
+        "Authorization": f"Bearer {service_key}",
+        "Content-Type": "application/json",
+    }
+    iso_start = start.isoformat().replace("+00:00", "Z")
+    iso_end = end.isoformat().replace("+00:00", "Z")
+    device_codes = list(DEVICE_ORDER)
+
+    print(f"[rest] cargando devices ({', '.join(device_codes)})...")
+    raw_devices = _rest_get_all(
+        base_url, headers, "devices",
+        select="id,device_id,device_type,status,device_state,plate_weight_grams",
+        filters=[("device_id", f"in.({','.join(device_codes)})")],
+        order="device_id.asc",
+    )
+    devices_by_uuid = {str(d["id"]): d for d in raw_devices}
+    devices_by_code = {str(d["device_id"]): d for d in raw_devices}
+    uuids = [str(d["id"]) for d in raw_devices]
+    if not uuids:
+        raise ValueError(f"No se encontraron devices para {device_codes}")
+
+    print(f"[rest] cargando readings ({len(uuids)} devices)...")
+    raw_readings = _rest_get_all(
+        base_url, headers, "readings",
+        select="device_id,recorded_at,ingested_at,clock_invalid,weight_grams,"
+               "water_ml,flow_rate,temperature,humidity,battery_level,"
+               "battery_voltage,battery_state,battery_source",
+        filters=[
+            ("device_id", f"in.({','.join(uuids)})"),
+            ("recorded_at", f"gte.{iso_start}"),
+            ("recorded_at", f"lte.{iso_end}"),
+        ],
+        order="recorded_at.asc",
+    )
+
+    print(f"[rest] cargando audit_events ({len(uuids)} devices)...")
+    raw_audits = _rest_get_all(
+        base_url, headers, "audit_events",
+        select="id,event_type,entity_id,created_at,payload",
+        filters=[
+            ("entity_id", f"in.({','.join(uuids)})"),
+            ("entity_type", "eq.device"),
+            ("created_at", f"gte.{iso_start}"),
+            ("created_at", f"lte.{iso_end}"),
+        ],
+        order="created_at.asc",
+    )
+
+    rows: list[dict[str, str]] = []
+
+    for r in raw_readings:
+        uuid = str(r.get("device_id", ""))
+        dev = devices_by_uuid.get(uuid, {})
+        dev_code = str(dev.get("device_id", ""))
+        weight = r.get("weight_grams")
+        plate = dev.get("plate_weight_grams")
+        food_content = ""
+        if weight is not None and plate is not None:
+            food_content = str(max(0, int(weight) - int(plate)))
+        rows.append({
+            "row_source": "reading",
+            "evento": "",
+            "device_code": dev_code,
+            "device_uuid": uuid,
+            "event_at": str(r.get("recorded_at", "")),
+            "ingested_at": str(r.get("ingested_at") or ""),
+            "event_type": "",
+            "payload": "",
+            "clock_invalid": str(r.get("clock_invalid", "")).lower(),
+            "weight_grams": "" if weight is None else str(weight),
+            "food_content_g": food_content,
+            "water_ml": "" if r.get("water_ml") is None else str(r["water_ml"]),
+            "flow_rate": str(r.get("flow_rate") or ""),
+            "temperature": str(r.get("temperature") or ""),
+            "humidity": str(r.get("humidity") or ""),
+            "battery_level": "" if r.get("battery_level") is None else str(r["battery_level"]),
+            "plate_weight_grams_device": "" if plate is None else str(plate),
+            "battery_voltage": str(r.get("battery_voltage") or ""),
+            "battery_state": str(r.get("battery_state") or ""),
+            "battery_source": str(r.get("battery_source") or ""),
+            "device_type": str(dev.get("device_type", "")),
+            "device_status": str(dev.get("status", "")),
+            "device_state": str(dev.get("device_state", "")),
+        })
+
+    for a in raw_audits:
+        uuid = str(a.get("entity_id", ""))
+        dev = devices_by_uuid.get(uuid, {})
+        dev_code = str(dev.get("device_id", ""))
+        raw_payload = a.get("payload")
+        payload_dict = raw_payload if isinstance(raw_payload, dict) else {}
+        evento = _audit_evento(str(a.get("event_type", "")), payload_dict)
+        rows.append({
+            "row_source": "audit_event",
+            "evento": evento,
+            "device_code": dev_code,
+            "device_uuid": uuid,
+            "event_at": str(a.get("created_at", "")),
+            "ingested_at": "",
+            "event_type": str(a.get("event_type", "")),
+            "payload": json.dumps(payload_dict, ensure_ascii=False) if payload_dict else "",
+            "clock_invalid": "",
+            "weight_grams": "",
+            "food_content_g": "",
+            "water_ml": "",
+            "flow_rate": "",
+            "temperature": "",
+            "humidity": "",
+            "battery_level": "",
+            "plate_weight_grams_device": str(dev.get("plate_weight_grams") or ""),
+            "battery_voltage": "",
+            "battery_state": "",
+            "battery_source": "",
+            "device_type": str(dev.get("device_type", "")),
+            "device_status": str(dev.get("status", "")),
+            "device_state": str(dev.get("device_state", "")),
+        })
+
+    rows.sort(key=lambda r: (r["event_at"], r["row_source"]))
+    print(f"[rest] {len(rows)} filas ({len(raw_readings)} readings + {len(raw_audits)} audit events)")
+    return rows
+
+
 def load_rows_from_supabase(*, start: datetime, end: datetime) -> list[dict[str, str]]:
+    """Intenta psycopg2 (pooler → directo) y si falla cae a REST API."""
     db_url = os.environ.get(SUPABASE_DB_URL)
     pooler_url = os.environ.get(SUPABASE_DB_POOLER_URL) or None
-    if not db_url:
-        raise ValueError(
-            f"No se encontro {SUPABASE_DB_URL}. Define el connection string en .env.local."
-        )
     sql = build_supabase_sql()
     params = (start, end)
+    errors: list[str] = []
 
-    if pooler_url:
+    if pooler_url and db_url:
         try:
             print(f"[supabase] pooler: {describe_dsn(pooler_url)}")
-            rows = _fetch_sql(pooler_url, sql, params)
-            return [normalize_row(r) for r in rows]
-        except psycopg2.OperationalError as exc:
-            print(f"[supabase] pooler fallo ({exc!s:.80}) — reintentando con directo...")
+            return [normalize_row(r) for r in _fetch_sql(pooler_url, sql, params)]
+        except Exception as exc:
+            errors.append(f"pooler: {exc!s:.80}")
 
-    print(f"[supabase] directo: {describe_dsn(db_url)}")
-    rows = _fetch_sql(db_url, sql, params)
-    return [normalize_row(r) for r in rows]
+    if db_url:
+        try:
+            print(f"[supabase] directo: {describe_dsn(db_url)}")
+            return [normalize_row(r) for r in _fetch_sql(db_url, sql, params)]
+        except Exception as exc:
+            errors.append(f"directo: {exc!s:.80}")
+
+    print(f"[supabase] psycopg2 no disponible ({'; '.join(errors)}) — usando REST API...")
+    return load_rows_from_rest(start=start, end=end)
 
 
 def rows_to_points(
@@ -1201,11 +1388,21 @@ def main() -> None:
     )
 
     force_local_csv = os.environ.get("FORCE_LOCAL_CSV", "").strip() in {"1", "true", "TRUE", "yes", "YES"}
-    if os.environ.get(SUPABASE_DB_URL) and not force_local_csv:
-        fetch_end = datetime.now(timezone.utc)
-        raw_rows = load_rows_from_supabase(start=WINDOW_START_UTC, end=fetch_end)
+    data_source = "?"
+    if not force_local_csv and (os.environ.get(SUPABASE_DB_URL) or os.environ.get(SUPABASE_URL_KEY)):
+        try:
+            fetch_end = datetime.now(timezone.utc)
+            raw_rows = load_rows_from_supabase(start=WINDOW_START_UTC, end=fetch_end)
+            data_source = "supabase"
+        except Exception as exc:
+            print(f"[warn] Supabase no disponible ({exc!s:.120})")
+            print("[warn] Usando CSV local como fallback.")
+            raw_rows = load_rows(combined_spec)
+            data_source = "csv (fallback)"
     else:
         raw_rows = load_rows(combined_spec)
+        data_source = "csv"
+    print(f"[info] Fuente de datos: {data_source} — {len(raw_rows)} filas")
 
     raw_points = rows_to_points(raw_rows, combined_spec)
     window_start, window_end = utc_window_from_points(raw_points)
