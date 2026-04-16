@@ -32,6 +32,11 @@ Carpeta canonica para las pruebas compartidas de `KPCL0034` y `KPCL0036`.
 11. [`SQL_VALIDACION_KPCL0036_TARE_FILL.sql`](SQL_VALIDACION_KPCL0036_TARE_FILL.sql) para validar la secuencia canonica de tare y llenado.
 12. [`plot_kpcl_experimento.py`](plot_kpcl_experimento.py) para abrir el grafico consolidado en navegador con dos paneles separados y notas de `evento`, incluyendo las categorias manuales del plato cuando vienen en la exportacion.
 
+## Documentos de reglas y ML
+
+- [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) — regla maestra canónica: qué es una sesión de alimentación, mapa de las 4 fuentes de detección del proyecto (audit_events, heurístico cliente, processor bridge, health-check) y cómo se unifican con el gráfico hero.
+- [`ML_PREDICCION_ALIMENTACION.md`](ML_PREDICCION_ALIMENTACION.md) — especificación completa para entrenar un modelo supervisado que prediga `inicio_alimentacion` y `termino_alimentacion` desde la curva de peso. Incluye formulación del problema, features, pipeline SQL, baseline heurístico, arquitecturas sugeridas y métricas.
+
 ## Regla de uso
 
 - Esta carpeta se usa para consolidar los artefactos de prueba y auditoria de peso/bateria de los KPCL.
@@ -48,9 +53,55 @@ Carpeta canonica para las pruebas compartidas de `KPCL0034` y `KPCL0036`.
 - SQL canonico equivalente: `Docs/investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql`.
 - Grafico y CSV por device: `Docs/investigacion/plot_kpcl_experimento.py`.
 
-## Categorias clave
+## Taxonomia canonica de categorias
 
-- `tare_record`, `plate_weight`, `food_fill_start`, `food_fill_end`.
-- `inicio_alimentacion`, `termino_alimentacion`.
-- `kpcl_prendido`, `kpcl_apagado`.
-- `manual_food_amount`, `plate_observation`.
+Todas las categorias se registran en `public.audit_events` con `event_type`:
+- `manual_bowl_category` — originadas desde la UI (botones en Today)
+- `device_power_event` — originadas desde el bridge (automaticas, pendiente implementar en bridge v2.x)
+
+### Setup de dispositivo (ambos tipos de bowl)
+| Key canonica | Label UI | Comportamiento |
+|---|---|---|
+| `kpcl_sin_plato` | KPCL SIN PLATO | Snapshot de peso vacio del bowl |
+| `kpcl_con_plato` | KPCL CON PLATO | Calcula `plate_weight_grams = con_plato - sin_plato` y actualiza `devices` |
+| `tare_con_plato` | TARE CON PLATO | Tara el contenido a 0 (no altera `plate_weight_grams`) |
+
+### Servido (ambos tipos de bowl)
+| Key canonica | Label UI |
+|---|---|
+| `inicio_servido` | INICIO SERVIDO |
+| `termino_servido` | TERMINO SERVIDO |
+
+### Consumo — alimentacion (food_bowl / KPCL0034)
+| Key canonica | Label UI |
+|---|---|
+| `inicio_alimentacion` | INICIO ALIMENTACION |
+| `termino_alimentacion` | TERMINO ALIMENTACION |
+
+### Consumo — hidratacion (water_bowl / KPCL0036)
+| Key canonica | Label UI |
+|---|---|
+| `inicio_hidratacion` | INICIO HIDRATACION |
+| `termino_hidratacion` | TERMINO HIDRATACION |
+
+### Encendido/apagado de dispositivo (bridge-generated)
+| Key canonica | Origen | Estado |
+|---|---|---|
+| `kpcl_prendido` | Bridge: primer STATUS tras ausencia | **Pendiente** — bridge aun no escribe a `audit_events` |
+| `kpcl_apagado` | Bridge: heartbeat check detecta offline | **Pendiente** — bridge aun no escribe a `audit_events` |
+
+Nota: actualmente el bridge solo actualiza `devices.last_seen` y `devices.device_state`.
+El registro en `audit_events` con `event_type = 'device_power_event'` debe implementarse
+en `bridge/src/index.js` (`handleStatusData` + heartbeat check).
+
+### Aliases legacy (solo para trazabilidad historica)
+Estos nombres aparecen en auditorias y CSVs anteriores a 2026-04-07. No usar en codigo nuevo.
+
+| Alias legacy | Key canonica actual |
+|---|---|
+| `tare_record` | `tare_con_plato` |
+| `food_fill_start` | `inicio_servido` |
+| `food_fill_end` | `termino_servido` |
+| `plate_weight` | campo `devices.plate_weight_grams` (no es categoria) |
+| `manual_food_amount` | no implementado |
+| `plate_observation` | no implementado |

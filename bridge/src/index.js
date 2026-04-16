@@ -1,7 +1,8 @@
 /**
- * Kittypau Bridge v3.0 - MQTT to Supabase + Analytics Processor
+ * Kittypau Bridge v3.1 - MQTT to Supabase + Analytics Processor
  * Escucha mensajes MQTT de los dispositivos y los almacena en Supabase
  *
+ * v3.1: Registra kpcl_prendido / kpcl_apagado en audit_events (device_power_event)
  * v3.0: Integra processor.js — detección de sesiones + analytics DB (doble escritura)
  * v2.6: Schema unificado
  * v2.4: Upsert bridge_heartbeats y bridge_status_live con cada STATUS de KPBR0001
@@ -29,6 +30,7 @@ const DEVICE_TYPE_MAP = {
   'bebedero_cam': 'water_bowl'
 };
 const BRIDGE_STATUS_INTERVAL_MS = 60000;
+const OFFLINE_THRESHOLD_MS = 3 * 60 * 1000; // 3 minutos sin STATUS → offline
 const USE_WILDCARD = true;
 const DEVICES = ['KPCL0031', 'KPCL0033', 'KPCL0035', 'KPCL0036', 'KPCL0037', 'KPCL0038', 'KPCL0040', 'KPCL0041'];
 const DEVICE_PREFIX = 'KPCL';
@@ -363,6 +365,17 @@ async function handleStatusData(deviceId, data) {
     lastKnownIp.set(deviceId, newIp);
   }
 
+  // Leer estado previo para detectar reconexión (kpcl_prendido)
+  let prevDevice = null;
+  if (deviceId !== BRIDGE_DEVICE_ID) {
+    const { data: d } = await supabase
+      .from('devices')
+      .select('id, device_state, device_type')
+      .eq('device_id', deviceId)
+      .maybeSingle();
+    prevDevice = d;
+  }
+
   // Actualiza campos IoT directamente por device_id (sin UUID)
   // Evita sobreescribir con null si el firmware antiguo no envía ciertos campos.
   const updateFields = {
@@ -393,8 +406,80 @@ async function handleStatusData(deviceId, data) {
   } else {
     const mqttStatus = data[deviceId] || 'Unknown';
     console.log(`[SUPABASE] ✓ Status actualizado para ${deviceId} (${mqttStatus})`);
+
+    // Si el device estaba offline y vuelve → registrar kpcl_prendido
+    if (prevDevice?.device_state === 'offline') {
+      await logPowerEvent(deviceId, 'kpcl_prendido', prevDevice);
+    }
   }
 }
+
+// ============ POWER EVENTS ============
+
+async function logPowerEvent(deviceId, category, deviceMeta = null) {
+  let device = deviceMeta;
+  if (!device) {
+    const { data } = await supabase
+      .from('devices')
+      .select('id, device_type')
+      .eq('device_id', deviceId)
+      .maybeSingle();
+    device = data;
+  }
+  if (!device?.id) return;
+
+  const label = category === 'kpcl_prendido' ? 'KPCL PRENDIDO' : 'KPCL APAGADO';
+  const { error } = await supabase
+    .from('audit_events')
+    .insert({
+      event_type: 'device_power_event',
+      actor_id: null,
+      entity_type: 'device',
+      entity_id: device.id,
+      payload: {
+        device_id: deviceId,
+        category,
+        category_label: label,
+        source: 'bridge',
+        device_type: device.device_type ?? null,
+      }
+    });
+
+  if (error) {
+    console.error(`[POWER-EVENT] Error ${category} para ${deviceId}: ${error.message}`);
+  } else {
+    console.log(`[POWER-EVENT] ✓ ${category} → ${deviceId}`);
+  }
+}
+
+async function checkOfflineDevices() {
+  const cutoff = new Date(Date.now() - OFFLINE_THRESHOLD_MS).toISOString();
+  const { data: staleDevices, error } = await supabase
+    .from('devices')
+    .select('id, device_id, device_type')
+    .eq('device_state', 'linked')
+    .lt('last_seen', cutoff)
+    .neq('device_id', BRIDGE_DEVICE_ID);
+
+  if (error) {
+    console.error(`[HEARTBEAT] Error consultando devices: ${error.message}`);
+    return;
+  }
+  if (!staleDevices || staleDevices.length === 0) return;
+
+  for (const device of staleDevices) {
+    const { error: updateError } = await supabase
+      .from('devices')
+      .update({ device_state: 'offline' })
+      .eq('id', device.id);
+
+    if (!updateError) {
+      console.log(`[HEARTBEAT] ${device.device_id} marcado offline`);
+      await logPowerEvent(device.device_id, 'kpcl_apagado', device);
+    }
+  }
+}
+setInterval(checkOfflineDevices, 30_000);
 
 async function appendIpHistory(deviceId, oldIp, ssid) {
   // Leer ip_history actual

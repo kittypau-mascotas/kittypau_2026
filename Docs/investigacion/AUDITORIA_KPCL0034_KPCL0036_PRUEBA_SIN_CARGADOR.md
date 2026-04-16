@@ -165,24 +165,24 @@ Para cerrar esta auditoria, conviene seguir el protocolo ya documentado:
 - conservar esta exportacion como snapshot del tramo compartido;
 - cruzarla con `Docs/investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql`;
 - cruzarla con `Docs/BATERIA_ESTIMADA_KPCL.md`;
-- cuando llegue la lectura final posterior al servido, cerrar la secuencia con la misma taxonomia:
-  - `tare_record`
-  - `food_fill_start`
-  - `food_fill_end`
+- cuando llegue la lectura final posterior al servido, cerrar la secuencia con la taxonomia canonica:
+  - `tare_con_plato` (alias legacy: `tare_record`)
+  - `inicio_servido` (alias legacy: `food_fill_start`)
+  - `termino_servido` (alias legacy: `food_fill_end`)
 
 ## 8) Grafico 2 canonico
 
 La corrida compartida del grafico 2 queda fijada con estos hitos por device:
 
 - `KPCL0034`
-  - `tare_record` -> `2026-04-06 21:42:34+00:00`
-  - `food_fill_start` -> `2026-04-06 21:43:34+00:00`
-  - `food_fill_end` -> `2026-04-06 21:44:03+00:00`
+  - `tare_con_plato` [legacy: `tare_record`] -> `2026-04-06 21:42:34+00:00`
+  - `inicio_servido` [legacy: `food_fill_start`] -> `2026-04-06 21:43:34+00:00`
+  - `termino_servido` [legacy: `food_fill_end`] -> `2026-04-06 21:44:03+00:00`
   - `manual_bowl_category` -> `2026-04-07 00:17:41+00:00` (`inicio_alimentacion`)
 - `KPCL0036`
-  - `tare_record` -> `2026-04-06 21:42:22+00:00`
-  - `food_fill_start` -> `2026-04-06 21:43:48+00:00`
-  - `food_fill_end` -> `2026-04-06 21:44:27+00:00`
+  - `tare_con_plato` [legacy: `tare_record`] -> `2026-04-06 21:42:22+00:00`
+  - `inicio_servido` [legacy: `food_fill_start`] -> `2026-04-06 21:43:48+00:00`
+  - `termino_servido` [legacy: `food_fill_end`] -> `2026-04-06 21:44:27+00:00`
 
 Lectura operacional:
 
