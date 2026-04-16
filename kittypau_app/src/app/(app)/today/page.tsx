@@ -64,6 +64,13 @@ type ApiReading = {
 
 type DayNightPoint = { x: number; y: number; t: number };
 
+type AuditEvent = {
+  id: string;
+  created_at: string;
+  category: string;
+  category_label: string;
+};
+
 type IntakeSession = {
   startIndex: number;
   endIndex: number;
@@ -395,6 +402,63 @@ function detectIntakeSessions(points: DayNightPoint[]): IntakeSession[] {
   return sessions;
 }
 
+// Convierte pares inicio/termino de audit_events en IntakeSessions usando los puntos del gráfico.
+// Prioridad sobre el heurístico cuando existen etiquetas confirmadas por el operador.
+function buildAuditSessions(
+  events: AuditEvent[],
+  points: DayNightPoint[],
+  startCategory: string,
+  endCategory: string,
+): IntakeSession[] {
+  if (!points.length || !events.length) return [];
+  const sessions: IntakeSession[] = [];
+
+  const starts = events.filter((e) => e.category === startCategory);
+  const ends = events.filter((e) => e.category === endCategory);
+
+  for (const start of starts) {
+    const startMs = new Date(start.created_at).getTime();
+    const end = ends.find(
+      (e) => new Date(e.created_at).getTime() > startMs,
+    );
+    if (!end) continue;
+    const endMs = new Date(end.created_at).getTime();
+
+    // Encontrar los índices de puntos más cercanos al inicio y fin
+    let si = 0;
+    let ei = points.length - 1;
+    let minStartDiff = Infinity;
+    let minEndDiff = Infinity;
+    for (let i = 0; i < points.length; i++) {
+      const dStart = Math.abs(points[i].t - startMs);
+      const dEnd = Math.abs(points[i].t - endMs);
+      if (dStart < minStartDiff) { minStartDiff = dStart; si = i; }
+      if (dEnd < minEndDiff) { minEndDiff = dEnd; ei = i; }
+    }
+    if (si >= ei) continue;
+
+    const startPt = points[si];
+    const endPt = points[ei];
+    const consumed = Math.max(0, Math.round(startPt.y - endPt.y));
+    const durationMinutes = (endMs - startMs) / 60000;
+    if (durationMinutes <= 0) continue;
+
+    sessions.push({
+      startIndex: si,
+      endIndex: ei,
+      startX: startPt.x,
+      endX: endPt.x,
+      startT: startMs,
+      endT: endMs,
+      startValue: startPt.y,
+      endValue: endPt.y,
+      consumed,
+      durationMinutes,
+    });
+  }
+  return sessions;
+}
+
 function findSessionForPoint(
   sessions: IntakeSession[],
   pointIndex: number,
@@ -564,6 +628,9 @@ export default function TodayPage() {
   const [consumptionPeriod, setConsumptionPeriod] =
     useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
+  const [deviceAuditEvents, setDeviceAuditEvents] = useState<
+    Record<string, AuditEvent[]>
+  >({});
 
   // device_id en formato KPCL (texto) para suscripción MQTT
   const mqttDeviceId = useMemo(
@@ -1279,6 +1346,43 @@ export default function TodayPage() {
     };
   }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
 
+  // Cargar audit_events (inicio/termino alimentacion e hidratacion) para los devices activos.
+  // Se recargan cuando cambia el device o el offset del día seleccionado.
+  useEffect(() => {
+    const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
+      (v, i, arr): v is string => Boolean(v) && arr.indexOf(v) === i,
+    );
+    if (!targetIds.length) return;
+    let active = true;
+    const loadAuditEvents = async () => {
+      const from = new Date(Date.now() - (dayCycleOffsetDays + 2) * 24 * 60 * 60 * 1000).toISOString();
+      const to = new Date(Date.now() - dayCycleOffsetDays * 24 * 60 * 60 * 1000 + 60 * 60 * 1000).toISOString();
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const res = await authFetch(
+              `/api/devices/${deviceId}/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+            );
+            if (!res.ok) return [deviceId, []] as const;
+            const payload = await res.json();
+            return [deviceId, (payload.data ?? []) as AuditEvent[]] as const;
+          } catch {
+            return [deviceId, []] as const;
+          }
+        }),
+      );
+      if (!active) return;
+      setDeviceAuditEvents((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+    };
+    void loadAuditEvents();
+    return () => {
+      active = false;
+    };
+  }, [bowlDevice?.id, waterDevice?.id, dayCycleOffsetDays]);
+
   useEffect(() => {
     const petId = primaryPet?.id;
     if (!petId) return;
@@ -1955,15 +2059,29 @@ export default function TodayPage() {
     ],
   );
 
-  const bowlIntakeSessions = useMemo(
-    () => detectIntakeSessions(bowlDayNightPoints),
-    [bowlDayNightPoints],
-  );
+  const bowlIntakeSessions = useMemo(() => {
+    const auditSessions = buildAuditSessions(
+      deviceAuditEvents[bowlDevice?.id ?? ""] ?? [],
+      bowlDayNightPoints,
+      "inicio_alimentacion",
+      "termino_alimentacion",
+    );
+    return auditSessions.length > 0
+      ? auditSessions
+      : detectIntakeSessions(bowlDayNightPoints);
+  }, [bowlDayNightPoints, deviceAuditEvents, bowlDevice?.id]);
 
-  const waterIntakeSessions = useMemo(
-    () => detectIntakeSessions(waterDayNightPoints),
-    [waterDayNightPoints],
-  );
+  const waterIntakeSessions = useMemo(() => {
+    const auditSessions = buildAuditSessions(
+      deviceAuditEvents[waterDevice?.id ?? ""] ?? [],
+      waterDayNightPoints,
+      "inicio_hidratacion",
+      "termino_hidratacion",
+    );
+    return auditSessions.length > 0
+      ? auditSessions
+      : detectIntakeSessions(waterDayNightPoints);
+  }, [waterDayNightPoints, deviceAuditEvents, waterDevice?.id]);
 
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
@@ -2169,17 +2287,24 @@ export default function TodayPage() {
               const label = context.dataset.label ?? "Serie";
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
-              const sessions =
-                context.datasetIndex === 0
-                  ? bowlIntakeSessions
-                  : waterIntakeSessions;
+              const isFood = context.datasetIndex === 0;
+              const sessions = isFood ? bowlIntakeSessions : waterIntakeSessions;
               const session = findSessionForPoint(sessions, context.dataIndex);
-              if (!session) return ["Proceso: sin evento detectado"];
+              if (!session) return ["Sin evento registrado"];
+              const deviceId = isFood ? (bowlDevice?.id ?? "") : (waterDevice?.id ?? "");
+              const auditEvents = deviceAuditEvents[deviceId] ?? [];
+              const startCat = isHydration ? "inicio_hidratacion" : "inicio_alimentacion";
+              const isConfirmed = auditEvents.some(
+                (e) =>
+                  e.category === startCat &&
+                  Math.abs(new Date(e.created_at).getTime() - session.startT) < 5 * 60 * 1000,
+              );
               return [
+                isConfirmed ? "✓ Alimentación confirmada" : "Proceso detectado",
                 `Inicio: ${formatSessionClock(session.startT)}`,
                 `Fin: ${formatSessionClock(session.endT)}`,
                 `Duración: ${formatSessionDuration(session.durationMinutes)}`,
-                `Consumo proceso: ${Math.round(session.consumed)} ${unit}`,
+                `Consumo: ${Math.round(session.consumed)} ${unit}`,
               ];
             },
             footer: () => "KittyPaw · Ciclo diario",

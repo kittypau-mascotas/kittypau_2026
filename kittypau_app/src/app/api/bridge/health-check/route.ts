@@ -144,13 +144,14 @@ export async function GET(req: NextRequest) {
 
   const transitionedOfflineDevices: string[] = [];
   for (const device of staleDevices) {
-    if (device.device_state === "offline") continue;
-
-    const { error: updateDeviceError } = await supabaseServer
+    // neq garantiza idempotencia: si otra invocación paralela ya actualizó,
+    // count=0 y no duplicamos el audit event.
+    const { error: updateDeviceError, count: updatedCount } = await supabaseServer
       .from("devices")
-      .update({ device_state: "offline" })
-      .eq("id", device.id);
-    if (updateDeviceError) continue;
+      .update({ device_state: "offline" }, { count: "exact" })
+      .eq("id", device.id)
+      .neq("device_state", "offline");
+    if (updateDeviceError || !updatedCount) continue;
 
     transitionedOfflineDevices.push(device.device_id);
     await logAudit({
@@ -174,11 +175,12 @@ export async function GET(req: NextRequest) {
   });
   const transitionedOnlineDevices: string[] = [];
   for (const device of recoveredDevices) {
-    const { error: updateDeviceError } = await supabaseServer
+    const { error: updateDeviceError, count: updatedCount } = await supabaseServer
       .from("devices")
-      .update({ device_state: "linked" })
-      .eq("id", device.id);
-    if (updateDeviceError) continue;
+      .update({ device_state: "linked" }, { count: "exact" })
+      .eq("id", device.id)
+      .eq("device_state", "offline");
+    if (updateDeviceError || !updatedCount) continue;
 
     transitionedOnlineDevices.push(device.device_id);
     await logAudit({
