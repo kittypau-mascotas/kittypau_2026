@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -236,7 +236,7 @@ export default function StoryPage() {
     const run = async () => {
       const token = await getValidAccessToken();
       if (!token) {
-        clearTokens();
+        await signOutSession();
         if (mounted) {
           setState((prev) => ({
             ...prev,
@@ -627,12 +627,7 @@ export default function StoryPage() {
                     ? "Aún no hay sesiones para mostrar."
                     : "La historia histórica todavía no está disponible."
                 }
-              >
-                {state.analyticsAvailable
-                  ? "Cuando el plato detecte actividad, verás la historia aquí."
-                  : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
-                actions=
-                {
+                actions={
                   <div className="flex flex-wrap gap-2">
                     <Link
                       href="/today"
@@ -654,6 +649,10 @@ export default function StoryPage() {
                     </Link>
                   </div>
                 }
+              >
+                {state.analyticsAvailable
+                  ? "Cuando el plato detecte actividad, verás la historia aquí."
+                  : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
               </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (

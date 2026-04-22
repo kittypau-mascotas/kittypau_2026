@@ -95,8 +95,8 @@ export const DayCycleChart: React.FC<Props> = ({ data, height = 320, compact = f
       .enter()
       .append("image")
       .attr("class", "session-icon")
-      .attr("xlink:href", d => d.type === 'food' 
-        ? "/illustrations/pink_food_full.png" 
+      .attr("href", d => d.type === 'food'
+        ? "/illustrations/pink_food_full.png"
         : "/illustrations/green_water_full.png")
       .attr("x", d => x(new Date(d.startT)) - 15)
       .attr("y", -50) // Posición inicial por encima del área visible
