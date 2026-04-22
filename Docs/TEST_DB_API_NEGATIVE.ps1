@@ -56,7 +56,7 @@ try {
 # 4) GET /api/readings con device ajeno -> 403/404
 try {
   Invoke-RestMethod -Method Get `
-    -Uri "$baseUrl/api/readings?device_uuid=00000000-0000-0000-0000-000000000000" `
+    -Uri "$baseUrl/api/readingsdevice_uuid=00000000-0000-0000-0000-000000000000" `
     -Headers @{ Authorization="Bearer $token" } | Out-Null
   Write-Host "WARN: readings for unknown device did not fail (check response)"
 } catch {

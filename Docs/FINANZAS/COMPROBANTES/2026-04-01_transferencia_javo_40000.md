@@ -4,7 +4,7 @@
 - Fecha y hora: `2026-04-01 19:53 hrs`
 - Monto: `$40.000 CLP`
 - Concepto: pago de deuda con Javo
-- Estado: operacion realizada
+- Estado: operacin realizada
 
 ## Destinatario
 - Nombre: `javier dayne`
@@ -17,8 +17,8 @@
 - Tipo de cuenta: `CuentaRUT`
 - N de cuenta: `****2237`
 
-## Transaccion
-- N de transaccion: `8058222`
+## Transaccin
+- N de transaccin: `8058222`
 
 ## Observaciones
 - Este comprobante queda como respaldo del pago de la deuda con Javo.

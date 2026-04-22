@@ -7,7 +7,7 @@ Proyecto: Kittypau
 
 ## 1. Objetivo
 
-Estandarizar verificaciones antes de subir codigo para:
+Estandarizar verificacines antes de subir codigo para:
 
 - Reducir errores de CI
 - Mantener consistencia
@@ -54,7 +54,7 @@ npm run ci:check
 
 ## 5. Hook de pre-commit
 
-Hook versionado en:
+Hook versinado en:
 
 - `.husky/pre-commit`
 

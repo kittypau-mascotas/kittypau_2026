@@ -24,7 +24,7 @@ Sirve para:
 - crear y desplegar Edge Functions;
 - gestionar migraciones y esquema;
 - enlazar el proyecto local con Supabase;
-- probar y versionar cambios de backend.
+- probar y versinar cambios de backend.
 
 ### Vercel CLI
 Sirve para:
@@ -35,13 +35,13 @@ Sirve para:
 
 ### Hugging Face CLI (`hf`)
 Sirve para:
-- autenticar una cuenta;
+- autnticar una cuenta;
 - listar y gestionar modelos del Hub;
 - descargar artefactos o pesos locales;
 - administrar repositorios y recursos del Hub.
 
 Importante:
-- el CLI de Hugging Face es util para gestion y desarrollo;
+- el CLI de Hugging Face es til para gestion y desarrollo;
 - la inferencia de produccion se realiza por HTTP contra la Inference API o un endpoint compatible.
 
 ## Arquitectura recomendada
@@ -59,16 +59,16 @@ Importante:
 - Llamada al modelo: backend solamente.
 - Secretos: variables de entorno, nunca en el cliente.
 
-## Configuracion local
+## Configuracin local
 
 ### 1) Instalar CLI
 Usar el mecanismo oficial de cada herramienta en tu entorno.
 
 Comandos de referencia:
 ```powershell
-npx supabase --version
-npx vercel --version
-hf --version
+npx supabase --versin
+npx vercel --versin
+hf --versin
 ```
 
 ### 2) Login
@@ -124,12 +124,12 @@ Reglas:
 3. Hacer la llamada a Hugging Face desde el servidor.
 4. Devolver la respuesta al componente del gato.
 
-## Ejemplo minimo de funcion backend
+## Ejemplo mnimo de funcion backend
 
 Ejemplo conceptual con `fetch` hacia la Inference API:
 
 ```ts
-const model = Deno.env.get("HF_MODEL_ID") ?? "mistralai/Mistral-7B-Instruct-v0.2";
+const model = Deno.env.get("HF_MODEL_ID")  "mistralai/Mistral-7B-Instruct-v0.2";
 const token = Deno.env.get("HUGGING_FACE_ACCESS_TOKEN");
 
 if (!token) {
@@ -159,15 +159,15 @@ const response = await fetch(`https://api-inference.huggingface.co/models/${mode
 
 La personalidad del gato no se define en la CLI, sino en el prompt del backend.
 
-Buenas practicas:
+Buenas prcticas:
 - definir un system prompt fuerte y estable;
 - separar personalidad, contexto y restricciones;
 - mantener respuestas consistentes;
-- registrar version del prompt si cambia.
+- registrar versin del prompt si cambia.
 
 ### Ejemplo de personalidad
 - gato sarcastico, curioso y algo gruñon;
-- responde corto cuando el usuario pide ayuda rapida;
+- responde corto cuando el usuario pide ayuda rpida;
 - acompaña el flujo de onboarding o demo;
 - no rompe el tono del producto.
 
@@ -176,7 +176,7 @@ Buenas practicas:
 ### Reglas
 - Nunca mandar el token de Hugging Face al cliente.
 - Nunca exponer `SUPABASE_SERVICE_ROLE_KEY` en el frontend.
-- Hacer que el backend valide autenticacion y permisos.
+- Hacer que el backend valide autnticacion y permisos.
 - Registrar errores, pero sin volcar secretos en logs.
 
 ### Recomendacion
@@ -186,7 +186,7 @@ Si el bot va a producir datos importantes:
 - guardar trazabilidad de request y respuesta;
 - mantener una ruta de fallback cuando el modelo falle.
 
-## Comandos utiles
+## Comandos tiles
 
 ### Supabase
 ```powershell
@@ -216,13 +216,13 @@ hf download <repo_id>
 - No es seguro dejar el token del modelo visible en el frontend.
 
 ## Recomendacion para Kittypau
-Para este proyecto, la combinacion mas ordenada es:
+Para este proyecto, la combinacion ms ordenada es:
 - Supabase CLI para funciones y datos;
 - Vercel CLI para la app web;
 - Hugging Face API para inferencia;
-- prompt versionado dentro del backend.
+- prompt versinado dentro del backend.
 
-## Siguiente paso sugerido
+## Siguente paso sugerido
 Crear una `Edge Function` o un `route handler` dedicado para el dialogo del gato, con:
 - prompt base;
 - lectura de contexto desde Supabase;

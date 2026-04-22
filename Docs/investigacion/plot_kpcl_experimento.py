@@ -4,9 +4,9 @@ Abre una pestaña del navegador con tres paneles:
 
 1. KPCL0034 — peso bruto + contenido neto de comida + eventos.
 2. KPCL0036 — peso bruto + eventos.
-3. Nivel de bateria de ambos dispositivos.
+3. Nivel de batera de ambos dispositivos.
 
-Ademas exporta la data filtrada de cada device desde el inicio del 2026-04-04
+Adems exporta la data filtrada de cada device desde el inicio del 2026-04-04
 UTC hasta el ultimo timestamp disponible en el CSV compartido.
 """
 
@@ -15,6 +15,7 @@ from __future__ import annotations
 import csv
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+import glob
 import os
 from pathlib import Path
 import sys
@@ -30,14 +31,14 @@ from plotly.subplots import make_subplots
 ROOT = Path(__file__).resolve().parent
 COMBINED_CSV = ROOT / "kpcl0034_kpcl0036_prueba_sincargador.csv"
 OUTPUT_HTML = ROOT / "kpcl_pruebas_eventos.html"
-EXPERIMENT_LABEL = "sin_bateria"
-DEVICE_ORDER = ("KPCL0034", "KPCL0036")
+EXPERIMENT_LABEL = "sin_batera"
+DEVICE_ORDER = ("KPCL0034",)
 WINDOW_START_UTC = datetime(2020, 1, 1, tzinfo=timezone.utc)
 ENV_FILE = ROOT.parent.parent / ".env.local"
 SUPABASE_DB_URL = "SUPABASE_DB_URL"
 SUPABASE_DB_POOLER_URL = "SUPABASE_DB_POOLER_URL"
 
-# plotly subplot axis names: row → (xaxis_name, yaxis_name)
+# plotly subplot axis names: row -> (xaxis_name, yaxis_name)
 ROW_AXES: dict[int, tuple[str, str]] = {
     1: ("x", "y"),
     2: ("x2", "y2"),
@@ -69,10 +70,10 @@ EVENT_LABELS: dict[str, str] = {
     "tare_con_plato": "Tare con plato",
     "inicio_servido": "Inicio servido",
     "termino_servido": "Termino servido",
-    "inicio_alimentacion": "Inicio alimentacion",
-    "termino_alimentacion": "Termino alimentacion",
-    "inicio_hidratacion": "Inicio hidratacion",
-    "termino_hidratacion": "Termino hidratacion",
+    "inicio_alimentacin": "Inicio alimentacin",
+    "termino_alimentacin": "Termino alimentacin",
+    "inicio_hidratacin": "Inicio hidratacin",
+    "termino_hidratacin": "Termino hidratacin",
     "plate_observation": "Plato observado",
     "manual_food_amount": "Cantidad manual",
     "otro_evento": "Otro evento",
@@ -92,10 +93,10 @@ EVENT_COLORS: dict[str, str] = {
     "tare_con_plato": "#c56e57",
     "inicio_servido": "#f97316",
     "termino_servido": "#ea580c",
-    "inicio_alimentacion": "#16a34a",
-    "termino_alimentacion": "#15803d",
-    "inicio_hidratacion": "#0284c7",
-    "termino_hidratacion": "#0369a1",
+    "inicio_alimentacin": "#16a34a",
+    "termino_alimentacin": "#15803d",
+    "inicio_hidratacin": "#0284c7",
+    "termino_hidratacin": "#0369a1",
     "plate_observation": "#7a7a7a",
     "manual_food_amount": "#d97706",
     "otro_evento": "#444444",
@@ -103,12 +104,12 @@ EVENT_COLORS: dict[str, str] = {
 
 # Band style per interval type: fillcolor, border color, label
 BAND_STYLES: dict[str, dict[str, str]] = {
-    "alimentacion": {
+    "alimentacin": {
         "fillcolor": "rgba(34,197,94,0.18)",
         "line_color": "#16a34a",
         "label": "Alimentación",
     },
-    "hidratacion": {
+    "hidratacin": {
         "fillcolor": "rgba(14,165,233,0.18)",
         "line_color": "#0284c7",
         "label": "Hidratación",
@@ -365,7 +366,7 @@ def _rest_get_all(
     while True:
         params = [("select", select), *filters, ("order", order),
                   ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urlencode(params, quote_via=quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urlencode(params, quote_via=quote)}"
         req = _urllib_request.Request(url, headers=headers, method="GET")
         with _urllib_request.urlopen(req, timeout=60) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
@@ -527,7 +528,7 @@ def load_rows_from_rest(*, start: datetime, end: datetime) -> list[dict[str, str
 
 
 def load_rows_from_supabase(*, start: datetime, end: datetime) -> list[dict[str, str]]:
-    """Intenta psycopg2 (pooler → directo) y si falla cae a REST API."""
+    """Intenta psycopg2 (pooler -> directo) y si falla cae a REST API."""
     db_url = os.environ.get(SUPABASE_DB_URL)
     pooler_url = os.environ.get(SUPABASE_DB_POOLER_URL) or None
     sql = build_supabase_sql()
@@ -699,14 +700,14 @@ def build_event_intervals(points: list[SeriesPoint]) -> list[tuple[datetime, dat
     start_events: dict[str, tuple[str, str]] = {
         "food_fill_start": ("servido", "servido"),
         "inicio_servido":  ("servido", "servido"),
-        "inicio_alimentacion": ("alimentacion", "alimentacion"),
-        "inicio_hidratacion":  ("hidratacion", "hidratacion"),
+        "inicio_alimentacin": ("alimentacin", "alimentacin"),
+        "inicio_hidratacin":  ("hidratacin", "hidratacin"),
     }
     end_events: dict[str, str] = {
         "food_fill_end":      "servido",
         "termino_servido":    "servido",
-        "termino_alimentacion": "alimentacion",
-        "termino_hidratacion":  "hidratacion",
+        "termino_alimentacin": "alimentacin",
+        "termino_hidratacin":  "hidratacin",
     }
 
     open_intervals: dict[str, datetime] = {}
@@ -765,7 +766,7 @@ def add_event_bands(
             parts.append(f"{duration_min:.0f}min")
         hover_text = " · ".join(parts)
 
-        # Banda como Scatter fill toself → aparece en leyenda y es toggleable
+        # Banda como Scatter fill toself -> aparece en leyenda y es toggleable
         rank_base = 200 + (band_keys_order.index(band_key) if band_key in band_keys_order else 9)
         fig.add_trace(
             go.Scatter(
@@ -808,8 +809,8 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         "tare_record", "plate_weight",
         "food_fill_start", "food_fill_end",
         "inicio_servido", "termino_servido",
-        "inicio_alimentacion", "termino_alimentacion",
-        "inicio_hidratacion", "termino_hidratacion",
+        "inicio_alimentacin", "termino_alimentacin",
+        "inicio_hidratacin", "termino_hidratacin",
     }
     marker_points = [p for p in points if p.is_audit and p.evento in key_events]
 
@@ -1146,21 +1147,33 @@ def build_battery_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.F
 
 
 def build_export_filename(device_code: str, window_start: datetime, window_end: datetime) -> str:
-    start_part = window_start.strftime("%Y%m%d_%H%Mutc")
-    end_part = window_end.strftime("%H%Mutc")
-    return f"{device_code.lower()}_{EXPERIMENT_LABEL}_{start_part}_a_{end_part}.csv"
+    # Regla: mantener solo un CSV "actual" por dispositivo.
+    return f"{device_code.lower()}_{EXPERIMENT_LABEL}_actual.csv"
+
+
+def cleanup_old_device_exports(device_code: str, keep_path: Path) -> None:
+    pattern = str(ROOT / f"{device_code.lower()}_{EXPERIMENT_LABEL}_*.csv")
+    for candidate in glob.glob(pattern):
+        path = Path(candidate)
+        if path.resolve() == keep_path.resolve():
+            continue
+        try:
+            path.unlink(missing_ok=True)
+        except OSError:
+            # Best-effort cleanup: no bloquear el flujo por un archivo en uso.
+            pass
 
 
 def build_boxplot_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.Figure:
+    active_devices = [d for d in DEVICE_ORDER if d in points_by_device]
+    if not active_devices:
+        active_devices = list(DEVICE_ORDER)
     fig = make_subplots(
-        rows=1, cols=2,
+        rows=1, cols=max(1, len(active_devices)),
         shared_yaxes=True,
-        subplot_titles=(
-            "KPCL0034 — boxplot de peso",
-            "KPCL0036 — boxplot de peso",
-        ),
+        subplot_titles=tuple(f"{d} — boxplot de peso" for d in active_devices),
     )
-    device_map = {"KPCL0034": 1, "KPCL0036": 2}
+    device_map = {device_code: idx + 1 for idx, device_code in enumerate(active_devices)}
     fill_colors = {"KPCL0034": "rgba(15,118,110,0.35)", "KPCL0036": "rgba(99,102,241,0.35)"}
     marker_colors = {"KPCL0034": "#0f766e", "KPCL0036": "#6366f1"}
 
@@ -1239,15 +1252,15 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
         intervals = build_event_intervals(points)
         n_readings = sum(1 for p in points if not p.is_audit and p.weight is not None)
 
-        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacion"]
-        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacion"]
+        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacin"]
+        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacin"]
         serv_ivs = [(s, e) for s, e, k in intervals if k == "servido"]
 
         alim_st = _interval_stats(alim_ivs)
         hidr_st = _interval_stats(hidr_ivs)
         serv_st = _interval_stats(serv_ivs)
 
-        # Per-session alimentacion table rows
+        # Per-session alimentacin table rows
         session_rows_html = ""
         consumed_values: list[float] = []
         for i, (s, e) in enumerate(sorted(alim_ivs, key=lambda x: x[0]), 1):
@@ -1351,6 +1364,7 @@ def write_and_open(
     stats_html: str,
     supabase_url: str = "",
     device_uuid_map: dict[str, str] | None = None,
+    open_browser: bool = True,
 ) -> Path:
     import json as _json
     device_uuid_json = _json.dumps(device_uuid_map or {})
@@ -1474,17 +1488,25 @@ def write_and_open(
 </head>
 <body>
   <header>
-    <h1>KPCL — Análisis de peso, eventos y batería</h1>
+    <h1>KPCL — Análisis de peso y eventos</h1>
     <span class="badge">Generado: {generated}</span>
+    <button id="refresh-btn" class="theme-btn" style="background:#16a34a;color:#fff;border-color:#15803d" onclick="refreshDataAndCsv()">Actualizar CSV + vista</button>
     <button class="theme-btn" onclick="
       const h=document.documentElement;
-      h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
-      this.textContent=h.dataset.theme==='dark'?'☀ Claro':'☾ Oscuro';
+      h.dataset.theme=h.dataset.theme==='dark''light':'dark';
+      this.textContent=h.dataset.theme==='dark''☀ Claro':'☾ Oscuro';
     ">☾ Oscuro</button>
   </header>
   <main>
     <div class="card">
       <h2>Ventana de datos</h2>
+      <div id="refresh-wrap" style="display:none;margin-bottom:10px;max-width:560px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Actualizando desde Supabase...</div>
+        <div style="height:10px;background:#dcfce7;border:1px solid #86efac;border-radius:999px;overflow:hidden">
+          <div id="refresh-bar" style="height:100%;width:6%;background:#16a34a;transition:width .45s ease"></div>
+        </div>
+        <div id="refresh-status" style="font-size:12px;color:#166534;margin-top:6px"></div>
+      </div>
       <table class="meta-table">
         <tr><th>Device</th><th>Inicio</th><th>Fin</th><th>Q3 peso</th></tr>
         {window_rows}
@@ -1510,10 +1532,6 @@ def write_and_open(
           <div class="swatch" style="background:#e05c4a;border-radius:50%"></div>
           KPCL0034 comedero
         </div>
-        <div class="legend-item">
-          <div class="swatch" style="background:#3b82f6;border-radius:50%"></div>
-          KPCL0036 bebedero
-        </div>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">
         Línea continua = peso bruto · Área morada = contenido neto ·
@@ -1527,11 +1545,6 @@ def write_and_open(
     </div>
 
     {device_cards}
-
-    <div class="card">
-      <h2>Batería (%)</h2>
-      {batt_html}
-    </div>
 
     <div class="card">
       <h2>Distribución de peso — boxplot (≤ Q3)</h2>
@@ -1551,15 +1564,15 @@ def write_and_open(
       <div class="cat-group">
         <div class="cat-group-label" style="color:#16a34a">Alimentación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacion','Inicio alimentación')">▶ Inicio alimentación</button>
-          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacion','Término alimentación')">■ Término alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacin','Inicio alimentación')">▶ Inicio alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacin','Término alimentación')">■ Término alimentación</button>
         </div>
       </div>
       <div class="cat-group">
         <div class="cat-group-label" style="color:#0284c7">Hidratación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacion','Inicio hidratación')">▶ Inicio hidratación</button>
-          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacion','Término hidratación')">■ Término hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacin','Inicio hidratación')">▶ Inicio hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacin','Término hidratación')">■ Término hidratación</button>
         </div>
       </div>
       <div class="cat-group">
@@ -1574,8 +1587,12 @@ def write_and_open(
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-        <button class="btn-save" id="m-save" disabled onclick="saveEvent()">Guardar en Supabase</button>
+        <button class="btn-cancel" onclick="downloadPendingEvents()">Descargar pendientes</button>
+        <button class="btn-save" id="m-save" disabled onclick="saveEvent()">Guardar evento</button>
       </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px">
+        Sin credenciales en este HTML: se guarda localmente y luego se sincroniza en lote.
+      </p>
     </div>
   </div>
 
@@ -1587,6 +1604,7 @@ def write_and_open(
     supabaseKey: "",
     deviceUuids: {device_uuid_json}
   }};
+  var KPCL_PENDING_KEY = 'kpcl_manual_events_pending_v1';
   var _ev = null;
 
   /* ── Zoom desde tabla de sesiones ── */
@@ -1602,7 +1620,7 @@ def write_and_open(
     row.classList.add('row-active');
   }}
 
-  /* ── Click en punto del gráfico → abrir modal ── */
+  /* ── Click en punto del gráfico -> abrir modal ── */
   function attachClicks() {{
     {device_codes_js}
     codes.forEach(function(code) {{
@@ -1636,7 +1654,7 @@ def write_and_open(
     _ev = {{ deviceCode: deviceCode, ts: ts, weight: weight, category: null, label: null }};
     document.getElementById('m-device').textContent = deviceCode;
     document.getElementById('m-ts').textContent = ts.replace('T',' ').slice(0,19);
-    document.getElementById('m-weight').textContent = (weight != null ? weight.toFixed(1) + ' g' : '—');
+    document.getElementById('m-weight').textContent = (weight != null  weight.toFixed(1) + ' g' : '—');
     document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
     document.getElementById('m-save').disabled = true;
     document.getElementById('cat-modal').classList.add('open');
@@ -1658,12 +1676,62 @@ def write_and_open(
     document.getElementById('m-save').disabled = false;
   }}
 
-  async function saveEvent() {{
-    if (!_ev || !_ev.category) return;
-    if (!KPCL.supabaseKey) {{
-      alert('Guardado deshabilitado en esta exportacion HTML para evitar exponer credenciales.');
+  function getPendingEvents() {{
+    try {{
+      var raw = localStorage.getItem(KPCL_PENDING_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed)  parsed : [];
+    }} catch (e) {{
+      return [];
+    }}
+  }}
+
+  function setPendingEvents(items) {{
+    localStorage.setItem(KPCL_PENDING_KEY, JSON.stringify(items));
+  }}
+
+  function enqueuePendingEvent(item) {{
+    var queue = getPendingEvents();
+    var key = [item.device_uuid, item.created_at, item.category].join('|');
+    var exists = queue.some(function(x) {{
+      return [x.device_uuid, x.created_at, x.category].join('|') === key;
+    }});
+    if (!exists) {{
+      queue.push(item);
+      setPendingEvents(queue);
+    }}
+    return queue.length;
+  }}
+
+  function downloadPendingEvents() {{
+    var queue = getPendingEvents();
+    if (!queue.length) {{
+      showToast('No hay eventos pendientes para exportar.');
       return;
     }}
+    var payload = {{
+      exported_at: new Date().toISOString(),
+      source: 'kpcl_plot_local_queue',
+      count: queue.length,
+      events: queue
+    }};
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
+    var a = document.createElement('a');
+    var stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'kpcl_eventos_pendientes_' + stamp + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {{
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }}, 0);
+    showToast('Pendientes exportados: ' + queue.length);
+  }}
+
+  async function saveEvent() {{
+    if (!_ev || !_ev.category) return;
     var uuid = KPCL.deviceUuids[_ev.deviceCode];
     if (!uuid) {{ alert('UUID de device no disponible — recarga tras cargar desde Supabase.'); return; }}
     var btn = document.getElementById('m-save');
@@ -1677,6 +1745,7 @@ def write_and_open(
       created_at: _ev.ts
     }});
     try {{
+      if (!KPCL.supabaseKey) throw new Error('NO_KEY');
       var resp = await fetch(KPCL.supabaseUrl + '/rest/v1/audit_events', {{
         method: 'POST',
         headers: {{
@@ -1689,10 +1758,25 @@ def write_and_open(
       }});
       if (!resp.ok) {{ var txt = await resp.text(); throw new Error(resp.status + ': ' + txt); }}
       closeModal();
-      showToast('✓ Guardado — "' + _ev.label + '" en ' + _ev.ts.slice(0,16) + ' UTC');
+      showToast('✓ Guardado en Supabase: "' + _ev.label + '" en ' + _ev.ts.slice(0,16) + ' UTC');
     }} catch(e) {{
-      btn.disabled = false; btn.textContent = 'Guardar en Supabase';
-      alert('Error al guardar: ' + e.message);
+      var pendingCount = enqueuePendingEvent({{
+        device_code: _ev.deviceCode,
+        device_uuid: uuid,
+        category: _ev.category,
+        category_label: _ev.label,
+        created_at: _ev.ts,
+        payload: {{
+          category: _ev.category,
+          category_label: _ev.label,
+          source: 'kpcl_plot_manual_local_queue',
+          weight_at_event: _ev.weight
+        }}
+      }});
+      closeModal();
+      showToast('Guardado local (pendiente sync): ' + _ev.label + ' · pendientes ' + pendingCount);
+    }} finally {{
+      btn.disabled = false; btn.textContent = 'Guardar evento';
     }}
   }}
 
@@ -1703,15 +1787,61 @@ def write_and_open(
     t.style.opacity = '1'; t.style.transform = 'translateY(0)';
     setTimeout(function() {{ t.style.opacity='0'; t.style.transform='translateY(16px)'; }}, 4500);
   }}
+
+  async function refreshDataAndCsv() {{
+    if (window.location.protocol === 'file:') {{
+      showToast('Abre el dashboard en http://127.0.0.1:8765/ para actualizar.');
+      window.open('http://127.0.0.1:8765/', '_blank');
+      return;
+    }}
+    var btn = document.getElementById('refresh-btn');
+    var wrap = document.getElementById('refresh-wrap');
+    var bar = document.getElementById('refresh-bar');
+    var status = document.getElementById('refresh-status');
+    btn.disabled = true;
+    btn.textContent = 'Actualizando...';
+    wrap.style.display = 'block';
+    status.textContent = '';
+    var pct = 6;
+    bar.style.width = pct + '%';
+    var timer = setInterval(function() {{
+      pct = Math.min(92, pct + (pct < 40  9 : pct < 70  5 : 2));
+      bar.style.width = pct + '%';
+    }}, 450);
+    try {{
+      var resp = await fetch('/refresh', {{ method: 'POST' }});
+      if (!resp.ok) {{
+        var txt = await resp.text();
+        throw new Error('HTTP ' + resp.status + ' ' + txt);
+      }}
+      bar.style.width = '100%';
+      status.textContent = 'Actualizado';
+      setTimeout(function() {{
+        var u = new URL(window.location.href);
+        u.searchParams.set('v', Date.now().toString());
+        window.location.href = u.toString();
+      }}, 700);
+    }} catch (e) {{
+      status.textContent = 'No se pudo actualizar automáticamente. Ejecuta: python Docs/investigacion/plot_kpcl_experimento.py';
+      showToast('Error de actualización local: ' + e.message);
+    }} finally {{
+      clearInterval(timer);
+      btn.disabled = false;
+      btn.textContent = 'Actualizar CSV + vista';
+    }}
+  }}
   </script>
 </body>
 </html>"""
-    OUTPUT_HTML.write_text(html_text, encoding="utf-8")
-    webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
+    # Use UTF-8 with BOM to improve compatibility when opening local HTML files
+    # directly in browsers/OS configurations that mis-detect plain UTF-8.
+    OUTPUT_HTML.write_text(html_text, encoding="utf-8-sig")
+    if open_browser:
+        webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
     return OUTPUT_HTML
 
 
-def main() -> None:
+def generate_dashboard(*, open_browser: bool = True) -> Path:
     load_env_from_file(ENV_FILE)
     combined_spec = Dataset(
         path=COMBINED_CSV,
@@ -1722,7 +1852,7 @@ def main() -> None:
     )
 
     force_local_csv = os.environ.get("FORCE_LOCAL_CSV", "").strip() in {"1", "true", "TRUE", "yes", "YES"}
-    data_source = "?"
+    data_source = ""
     if not force_local_csv and (os.environ.get(SUPABASE_DB_URL) or os.environ.get(SUPABASE_URL_KEY)):
         try:
             fetch_end = datetime.now(timezone.utc)
@@ -1756,6 +1886,7 @@ def main() -> None:
     }
     for device_code, rows in filtered_rows.items():
         export_rows(rows, output_path=export_paths[device_code], fieldnames=fieldnames)
+        cleanup_old_device_exports(device_code, export_paths[device_code])
 
     points_by_device = {
         device_code: rows_to_points(filtered_rows[device_code], combined_spec, device_code=device_code)
@@ -1791,10 +1922,16 @@ def main() -> None:
         window_map=window_map, q3_map=device_q3, stats_html=stats,
         supabase_url=os.environ.get(SUPABASE_URL_KEY, ""),
         device_uuid_map=device_uuid_map,
+        open_browser=open_browser,
     )
     print(f"Vista interactiva abierta: {output}")
     for device_code in DEVICE_ORDER:
         print(f"CSV exportado: {export_paths[device_code]}")
+    return output
+
+
+def main() -> None:
+    generate_dashboard(open_browser=True)
 
 
 if __name__ == "__main__":

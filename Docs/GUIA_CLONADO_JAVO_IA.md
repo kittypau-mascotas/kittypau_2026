@@ -1,6 +1,6 @@
 # Guia de Clonado para Javier (ejecutable por IA)
 
-Objetivo: asegurar que Javier está autenticado con la cuenta correcta de GitHub antes de clonar y trabajar.
+Objetivo: asegurar que Javier está autnticado con la cuenta correcta de GitHub antes de clonar y trabajar.
 
 Cuenta esperada:
 - Email Git: `javomauro.contacto@gmail.com`
@@ -34,13 +34,13 @@ git config --global user.email "javomauro.contacto@gmail.com"
 ## Opcion A (recomendada): con GitHub CLI (`gh`)
 1. Ver si existe:
 ```powershell
-gh --version
+gh --versin
 ```
 2. Login:
 ```powershell
 gh auth login
 ```
-3. Verificar usuario autenticado:
+3. Verificar usuario autnticado:
 ```powershell
 gh auth status
 gh api user --jq ".login"
@@ -56,7 +56,7 @@ gh auth login
 ```
 
 ## Opcion B: sin `gh` (Git Credential Manager)
-1. Forzar re-autenticación GitHub:
+1. Forzar re-autnticación GitHub:
 ```powershell
 git credential-manager github logout javo-mauro --url https://github.com
 ```
@@ -83,7 +83,7 @@ cd kittypau_2026_hivemq
 
 ---
 
-## Paso 4: Verificar remotos y ramas oficiales
+## Paso 4: Verificar remotos y rams oficiales
 ```powershell
 git remote -v
 git fetch origin --prune
@@ -167,7 +167,7 @@ Senales de exito esperadas:
 - URL del PR: `https://github.com/kittypau-mascotas/kittypau_2026/pull/<numero>`
 
 Nota:
-- Si el usuario autenticado no es `javo-mauro`, ejecutar:
+- Si el usuario autnticado no es `javo-mauro`, ejecutar:
 ```powershell
 gh auth logout --hostname github.com
 gh auth login -h github.com -p https -w

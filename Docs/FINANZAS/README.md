@@ -1,4 +1,4 @@
-# Finanzas Kittypau
+# Finanzas y Comprobantes - Kittypau
 
 Registro operativo de movimientos financieros, comprobantes y respaldos del proyecto.
 

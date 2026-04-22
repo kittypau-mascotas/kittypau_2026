@@ -6,15 +6,15 @@ Definir la estructura de vistas antes de implementar UI o routing.
 ---
 
 ## Implementacion actual (2026-02-07)
-- /login implementado con layout parallax + login real (Supabase Auth) y validaciones inline.
-- /today implementado como feed vertical interpretado conectado a APIs. Incluye modo guÌa inicial con tips.
-- /onboarding implementado en una sola vista con pasos guiados, barra de progreso y persistencia por `user_onboarding_step`.
+- /login implementado con layout parallax + login real (Supabase Auth) y vlidaciones inline.
+- /today implementado como feed vertical interpretado conectado a APIs. Incluye modo gu√≠a inicial con tips.
+- /onboarding implementado en una sola vista con pasos guados, barra de progreso y persistencia por `user_onboarding_step`.
 - / redirige a /login.
-- /story implementado como timeline narrativo b·sico.
-- /pet implementado como perfil conductual b·sico con insights.
-- /bowl implementado como estado tÈcnico del plato.
+- /story implementado como timeline narrativo b√°sico.
+- /pet implementado como perfil conductual b√°sico con insights.
+- /bowl implementado como estado t√©cnico del plato.
 - /settings implementado como ajustes de perfil y notificaciones.
-- /register implementado como ruta p˙blica con reenvÌo de confirmaciÛn y validaciones inline.
+- /register implementado como ruta p√∫blica con reenv√≠o de confirmaci√≥n y vlidaciones inline.
 - UI tolera respuestas API en formato lista o `{ data, next_cursor }`.
 
 ---
@@ -76,7 +76,7 @@ por "eventos / interpretaciones / historia".
 ---
 
 ## Flujo de registro
-### /login?register=1
+### /loginregister=1
 - El flujo vive dentro del modal de registro en `/login`.
 - Paso 1: crear cuenta.
 - Paso 2: completar perfil de usuario.
@@ -97,7 +97,7 @@ por "eventos / interpretaciones / historia".
 - Comparacion historica.
 - Ultimo evento.
 - No mostrar graficos inicialmente.
-- Primer ingreso: mostrar **modo guia** (popup con fondo difuminado).
+- Primer ingreso: mostrar **modo gua** (popup con fondo difuminado).
 - Hero operativo actual:
   - avatar mascota (clic directo a `/pet` para ajuste de foto),
   - selector de mascota por nombre (dropdown con mini fotos),
@@ -107,40 +107,40 @@ por "eventos / interpretaciones / historia".
   - soporte de mapeo por `test_####`: comida `KPCL####`, agua `KPCL####+1`.
 - Datos mostrados por card (siempre por KPCL real):
   - estado ON/OFF/Sin data,
-  - bateria,
+  - batera,
   - temperatura y humedad,
   - ultima lectura (timestamp real del dispositivo).
-- Interaccion UX en card comida:
-  - actualmente sin interaccion manual (imagen estatica en `/today`).
+- Interaccin UX en card comida:
+  - actualmente sin interaccin manual (imagen estatica en `/today`).
   - pendiente: cambiar estado visual por porcentaje real de comida/agua por KPCL:
     - 0%: vacio,
     - ~50%: medio,
     - 100%: lleno.
 **Datos / API**
-- `GET /api/readings?device_uuid=...&limit=50` (historial)
+- `GET /api/readingsdevice_uuid=...&limit=50` (historial)
 - Supabase Realtime (`readings`) integrado.
-- `devices` (estado, bateria, last_seen)
+- `devices` (estado, batera, last_seen)
 - `profiles.first_time_guide_seen` (flag)
 
 ### /story
 - Timeline narrativo del dia.
 - Ejemplos: "07:12 desayuno tranquilo", "18:32 mucha agua".
 **Datos / API**
-- `GET /api/readings?device_uuid=...&limit=50`
+- `GET /api/readingsdevice_uuid=...&limit=50`
 - Interpretaciones a partir de lecturas
 - Realtime `readings` integrado.
 
 ### /pet (antes /pets)
 - Perfil conductual y personalidad alimentaria.
-- No priorizar raza; priorizar patrones.
+- No priorizar raza; priorizar patrnes.
 **Datos / API**
 - `GET /api/pets`
-- `GET /api/readings?device_uuid=...&limit=80`
+- `GET /api/readingsdevice_uuid=...&limit=80`
 - Realtime `readings` integrado.
 
 ### /bowl (antes /devices)
 - Estado tecnico del plato.
-- Bateria, conexion, calibracion, firmware.
+- Bateria, conexin, calibracion, firmware.
 **Datos / API**
 - `GET /api/devices`
 - `PATCH /api/devices/:id` (propuesto, ver `Docs/FRONT_BACK_APIS.md`)
@@ -168,15 +168,15 @@ por "eventos / interpretaciones / historia".
 START
   |
   v
-[Auth?] -- no --> /login
+[Auth] -- no --> /login
   |
   yes
   v
-[Tiene mascotas?] -- no --> /onboarding/pet
+[Tiene mascotas] -- no --> /onboarding/pet
   |
   yes
   v
-[Tiene dispositivo?] -- no --> /onboarding/device
+[Tiene dispositivo] -- no --> /onboarding/device
   |
   yes
   v
@@ -213,7 +213,7 @@ pet_onboarding_step:
 ---
 
 ## Referencia visual del tablero
-- Ver `Docs/estilos y diseÒos.md` (paleta final, tipografia y estructura del tablero).
+- Ver `Docs/estilos y dise√±os.md` (paleta final, tipografia y estructura del tablero).
 
 ---
 
@@ -233,7 +233,7 @@ Los numeros existen, pero como evidencia secundaria.
 |---|---|
 | muchas micro ingestas | ansiedad |
 | ingesta nocturna | estres o aburrimiento |
-| baja hidratacion | alerta salud |
+| baja hidratacin | alerta salud |
 | cambio horario | cambio rutina casa |
 | comer al irte | apego |
 | comer al volver | confianza |
@@ -264,12 +264,12 @@ Los numeros existen, pero como evidencia secundaria.
 - Supabase Auth (signInWithPassword / OAuth).
 **Estados**
 - Loading: usar loader global/route.
-- Error: credenciales invalidas.
+- Error: credenciales invlidas.
 
 ### 2) Registro (public)
 **Objetivo**: activar cuenta y disparar el modal de registro.
 **Layout**
-- Pop-up con pasos: Cuenta ? Usuario ? Mascota ? Dispositivo.
+- Pop-up con pasos: Cuenta  Usuario  Mascota  Dispositivo.
 - Progreso visible.
 **Datos / API**
 - Supabase Auth (signUp).
@@ -301,9 +301,9 @@ Los numeros existen, pero como evidencia secundaria.
 **Objetivo**: lectura interpretada del dia.
 **Layout**
 - Feed vertical, cards.
-- 1 mensaje principal + 1 accion.
+- 1 mensaje principal + 1 accin.
 **Datos / API**
-- `GET /api/readings?device_uuid=...&limit=50`
+- `GET /api/readingsdevice_uuid=...&limit=50`
 - Realtime `readings`.
 **Estados**
 - Empty: "Aun no hay lecturas".
@@ -314,7 +314,7 @@ Los numeros existen, pero como evidencia secundaria.
 **Layout**
 - Timeline vertical con tarjetas.
 **Datos / API**
-- `GET /api/readings?device_uuid=...`
+- `GET /api/readingsdevice_uuid=...`
 - Reglas de `Docs/REGLAS_INTERPRETACION_IOT.md`.
 
 ### 8) Pet (perfil)
@@ -328,7 +328,7 @@ Los numeros existen, pero como evidencia secundaria.
 ### 9) Bowl (dispositivo)
 **Objetivo**: estado tecnico.
 **Layout**
-- Estado, bateria, ultima conexion.
+- Estado, batera, ultima conexin.
 **Datos / API**
 - `GET /api/devices`.
 - `PATCH /api/devices/:id`.
@@ -341,16 +341,16 @@ Los numeros existen, pero como evidencia secundaria.
 ### Estados globales
 - Loading: `app/loading.tsx` + overlay global.
 - Empty: tarjetas con CTA.
-- Error: mensaje corto y accion de reintento.
+- Error: mensaje corto y accin de reintento.
 
 ---
 
-## Plan de implementaciÛn front (pasos)
-1. **/story**: timeline narrativo del dÌa (lecturas ? interpretaciones).
-2. **/pet**: perfil conductual con insights y ediciÛn b·sica.
-3. **/bowl**: estado tÈcnico del plato + acciones.
+## Plan de implementaci√≥n front (pasos)
+1. **/story**: timeline narrativo del d√≠a (lecturas  interpretaciones).
+2. **/pet**: perfil conductual con insights y edici√≥n b√°sica.
+3. **/bowl**: estado t√©cnico del plato + accines.
 4. **/settings**: ajustes de usuario y notificaciones.
-5. **/register**: ruta p˙blica (adem·s del popup) + reenvÌo de confirmaciÛn.
+5. **/register**: ruta p√∫blica (adem√°s del popup) + reenv√≠o de confirmaci√≥n.
 
 
 
@@ -360,8 +360,8 @@ Los numeros existen, pero como evidencia secundaria.
 ## Branding UI
 - Logo presente en top nav y pantallas de login/registro.
 - Loading con logo girando + texto Cargando.
-- Fondo global app alineado al estilo visual del login.
-- Navbar mobile centrado (links y acciones).
+- Fondo global app alneado al estilo visual del login.
+- Navbar mobile centrado (links y accines).
 
 
 ## Redes sociales

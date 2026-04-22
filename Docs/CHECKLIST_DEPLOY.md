@@ -59,6 +59,12 @@ Agregar en **Settings -> Environment Variables**:
   - [ ] `android/app/build/outputs/apk/release/app-release-unsigned.apk`
 - [ ] Validar device real o emulador Android antes de distribuir.
 
+## 9) Higiene de encoding y repo
+- [ ] Ejecutar `python scripts/check_encoding.py`.
+- [ ] Ejecutar `npm --prefix kittypau_app run encoding-check`.
+- [ ] Confirmar que el `pre-commit` local no falla por mojibake o archivos no UTF-8.
+- [ ] Confirmar que GitHub Actions (`PR Quality`) deja pasar el check de encoding antes de mergear.
+
 ## Estado local (hasta 2026-02-03)
 - [x] Endpoint `/api/mqtt/webhook` creado.
 - [x] Script local `scripts/test-webhook.ps1` funciona.
@@ -67,8 +73,7 @@ Agregar en **Settings -> Environment Variables**:
 ## Estado operativo actualizado (2026-03-09)
 - [x] Cambios recientes publicados en `main` y desplegados en Vercel.
 - [x] Produccion activa: `https://kittypau-app.vercel.app`.
-- [x] Ultimo deploy validado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`.
+- [x] Ultimo deploy vlidado: `https://kittypau-nxxpuju1b-kittypaus-projects.vercel.app`.
 - [x] Ajustes UX APK nativa aplicados (login + `/today` mobile).
-
 
 

@@ -1,4 +1,4 @@
-﻿# Bloques visuales de la demo - Chatbot del gato de Kittypau
+# Bloques visuales de la demo - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -19,12 +19,12 @@ Si un bloque esta visible pero es secundario, el gato puede mencionarlo solo de 
 | Bloque | Que muestra | Para que sirve | Que puede decir el gato | Que no debe decir |
 | --- | --- | --- | --- | --- |
 | Perfil de la mascota | Foto, nombre de la mascota y titular de la cuenta | Identifica a quien pertenece la demo | "Arriba ves el perfil. Ese nombre y esa foto representan a tu mascota." | Datos que no esten cargados |
-| Panel de estado | Alimentacion, hidratacion y resumen visual | Resume el estado actual de la demo | "Ese panel central resume comida e hidratacion." | Medidas inventadas o lecturas no visibles |
+| Panel de estado | Alimentacion, hidratacin y resumen visual | Resume el estado actual de la demo | "Ese panel central resume comida e hidratacin." | Medidas inventadas o lecturas no visibles |
 | Sello de actualizacion | Fecha u hora de ultima actualizacion | Da contexto temporal | "Eso te dice cuando se actualizo por ultima vez." | Explicar un proceso tecnico que no se ve |
-| Acciones rapidas | Botones hacia story, bowl, pet o settings | Lleva a otras vistas | "Desde aqui saltas a las vistas operativas." | Inventar rutas que no existen |
-| Hero de la demo | Bloque principal personalizado con datos del usuario | Presenta la experiencia guiada | "Este hero usa lo que cargaste en login." | Decir que es un formulario o un dashboard real de produccion |
-| CTA de salida | Instagram o volver a probar la app | Cerrar la experiencia o invitar a seguir | "Si ya viste todo, puedes seguir o salir." | Forzar una accion que no corresponde |
-| Cuadro del gato | Dialogo fijo, acciones A / B, botones de sonido y cierre | GuÃ­a la experiencia | "Yo te explico la pantalla y te llevo al siguiente paso." | Decir que cambia de forma o que es libre |
+| Acciones rpidas | Botones hacia story, bowl, pet o settings | Lleva a otras vistas | "Desde aqu saltas a las vistas operativas." | Inventar rutas que no existen |
+| Hero de la demo | Bloque principal personalizado con datos del usuario | Presenta la experiencia guada | "Este hero usa lo que cargaste en login." | Decir que es un formulario o un dashboard real de produccion |
+| CTA de salida | Instagram o volver a probar la app | Cerrar la experiencia o invitar a seguir | "Si ya viste todo, puedes seguir o salir." | Forzar una accin que no corresponde |
+| Cuadro del gato | Dialogo fijo, accines A / B, botones de sonido y cierre | Gua la experiencia | "Yo te explico la pantalla y te llevo al siguente paso." | Decir que cambia de forma o que es libre |
 
 ## Orden recomendado de explicacion
 
@@ -43,14 +43,14 @@ Debe mencionar:
 Despues del hero, el gato puede explicar el panel central.
 
 Debe mencionar:
-- alimentacion;
-- hidratacion;
+- alimentacin;
+- hidratacin;
 - que es un resumen visual;
 - que sirve para ver el estado rapido.
 
-### 3. Acciones rapidas
+### 3. Acciones rpidas
 
-Luego puede seÃ±alar los accesos a otras vistas.
+Luego puede sealar los accesos a otras vistas.
 
 Debe mencionar:
 - `story`;
@@ -60,7 +60,7 @@ Debe mencionar:
 
 ### 4. CTA final
 
-Si el usuario ya entendio la pantalla, el gato cierra con una accion:
+Si el usuario ya entendio la pantalla, el gato cierra con una accin:
 - ir a Instagram;
 - volver a probar la app;
 - salir de la demo.
@@ -77,11 +77,11 @@ Mensaje esperado:
 ### Panel de estado
 
 Mensaje esperado:
-- orientado a lectura rapida;
+- orientado a lectura rpida;
 - explica el resumen;
 - evita tecnicismos.
 
-### Acciones rapidas
+### Acciones rpidas
 
 Mensaje esperado:
 - directo;
@@ -99,7 +99,7 @@ Mensaje esperado:
 ## Ejemplo de guion operativo
 
 1. "Mira arriba. Ese es el perfil de tu mascota."
-2. "Al centro tienes el estado resumido de comida e hidratacion."
+2. "Al centro tienes el estado resumido de comida e hidratacin."
 3. "Abajo o a un lado estan los accesos a las vistas operativas."
 4. "Si quieres seguir, entra a una seccion. Si no, ve a Instagram."
 
@@ -113,11 +113,11 @@ La capa de prompts por bloque vive en:
 
 - `kittypau_app/src/chatbot-gato/demo-block-prompts.ts`
 
-Ese modulo define:
+Ese mdulo define:
 - el mapa semantico de la demo;
 - el contexto del hero;
 - el paso del flujo;
-- y las acciones del gato.
+- y las accines del gato.
 
 ## Relacion con otros documentos
 
@@ -132,7 +132,7 @@ Ese modulo define:
 Con esta tabla, el gato de la demo puede:
 
 - explicar el hero real;
-- guiar al usuario por la pantalla;
+- guar al usuario por la pantalla;
 - hablar con datos que si existen;
 - y evitar inventar elementos que no estan en la UI.
 

@@ -8,7 +8,7 @@
 ## 1. Objetivo
 
 Garantizar que cada interesado reciba la informacion correcta, en el momento oportuno, por el canal adecuado.
-El equipo es distribuido y trabaja de forma asincronica — la documentacion escrita es el medio principal de coordinacion.
+El equipo es distribuido y trabaja de forma asincronica — la documentacin escrita es el medio principal de coordinacion.
 
 ---
 
@@ -16,7 +16,7 @@ El equipo es distribuido y trabaja de forma asincronica — la documentacion esc
 
 1. **Documentacion como fuente de verdad**: toda decision tecnica o de producto se registra en el repositorio
 2. **Asincronico por defecto**: no se requieren reuniones para decisiones operativas rutinarias
-3. **Pull requests como punto de revision**: el codigo y la documentacion se revisan en GitHub
+3. **Pull requests como punto de revision**: el codigo y la documentacin se revisan en GitHub
 4. **Transparencia**: el estado del proyecto es visible para ambos fundadores en todo momento
 5. **Eficiencia**: comunicar lo necesario, no todo lo pensado
 
@@ -28,10 +28,10 @@ El equipo es distribuido y trabaja de forma asincronica — la documentacion esc
 |-------|-----|-----------|---------------------|
 | GitHub (Issues + PRs) | Tareas tecnicas, bugs, revision de codigo, decisiones de arquitectura | Equipo tecnico | Asincronico |
 | GitHub (Commits) | Registro de cambios, evidencia de avance | Equipo tecnico + evaluadores de fondo | Asincronico |
-| Documentos `Docs/` | Especificaciones, guias, PMO, contexto del proyecto | Equipo + fondos | Asincronico |
-| WhatsApp / Telegram | Coordinacion rapida, alertas urgentes, sincronizacion puntual | Solo equipo fundador | Sincrono |
+| Documentos `Docs/` | Especificaciones, guas, PMO, contexto del proyecto | Equipo + fondos | Asincronico |
+| WhatsApp / Telegram | Coordinacion rpida, alertas urgentes, sincronizacin puntual | Solo equipo fundador | Sincrono |
 | Email | Comunicacion formal con fondos, legal, proveedores | Externos | Asincronico |
-| Vercel / GitHub Actions | Estado del deploy, CI, alertas automaticas | Equipo tecnico | Automatico |
+| Vercel / GitHub Actions | Estado del deploy, CI, alertas automticas | Equipo tecnico | Automatico |
 | Panel admin Kittypau | Estado operativo del sistema (bridge, dispositivos, finanzas) | Equipo tecnico | Automatico |
 
 ---
@@ -57,7 +57,7 @@ El equipo es distribuido y trabaja de forma asincronica — la documentacion esc
 |------|----------|-----------|-------|-------------|
 | Postulacion formal | Formulario completo con dossier adjunto | 1 vez (antes del 16/03/2026) | Plataforma CORFO | Ambos |
 | Seguimiento post-postulacion | Estado de evaluacion, preguntas del evaluador | Cuando lo requiera CORFO | Email / plataforma | Mauro |
-| Informe de hitos (si adjudica) | Avance segun plan, uso de fondos, entregables | Mensual (si adjudica) | Plataforma CORFO | Mauro |
+| Informe de hitos (si adjudica) | Avance segn plan, uso de fondos, entregables | Mensual (si adjudica) | Plataforma CORFO | Mauro |
 | Cierre del proyecto (si adjudica) | Informe final de resultados y aprendizajes | 1 vez al terminar | Plataforma CORFO | Ambos |
 
 ---
@@ -70,7 +70,7 @@ El equipo es distribuido y trabaja de forma asincronica — la documentacion esc
 | Seguimiento piloto | Como va el uso, problemas encontrados, feedback | Semanal (1er mes), quincenal (2do mes) | WhatsApp / email | Mauro |
 | Actualizacion de features | Nuevas funcionalidades disponibles | Por release | Email o WhatsApp | Mauro |
 | Resolucion de incidencias | Respuesta a problemas reportados | < 48h | WhatsApp / email | Javier (hw) / Mauro (sw) |
-| Encuesta de satisfaccion | NPS, usabilidad, disposicion a pagar | Mes 1 y mes 3 del piloto | Google Forms / email | Mauro |
+| Encuesta de satisfaccin | NPS, usabilidad, disposicion a pagar | Mes 1 y mes 3 del piloto | Google Forms / email | Mauro |
 
 ---
 
@@ -82,8 +82,8 @@ El equipo es distribuido y trabaja de forma asincronica — la documentacion esc
 HITO COMPLETADO: [nombre del hito]
 Fecha: [fecha]
 Entregables: [lista]
-Siguiente hito: [nombre]
-Responsable siguiente: [Javier / Mauro / Ambos]
+Siguente hito: [nombre]
+Responsable siguente: [Javier / Mauro / Ambos]
 Link relevante: [PR / doc / deploy]
 ```
 
@@ -119,7 +119,7 @@ USO DE FONDOS (si aplica):
 - Categoria 2: $X gastado de $Y presupuestado
 
 DESVIACIONES Y ACCIONES:
-- [si existe alguna]
+- [si existe algna]
 
 PROXIMA COMUNICACION: [fecha]
 ```
@@ -183,10 +183,10 @@ R = Responsable | A = Aprobador | C = Consultado | I = Informado
 | Herramienta | Estado | Proposito |
 |------------|--------|-----------|
 | GitHub Issues | Activo | Seguimiento de tareas y bugs |
-| GitHub Actions | Activo | CI/CD y alertas automaticas |
+| GitHub Actions | Activo | CI/CD y alertas automticas |
 | Vercel | Activo | Estado de deploy + preview |
 | Panel admin Kittypau | Activo | Estado operativo IoT + finanzas |
-| bridge_heartbeats (Supabase) | Activo | Uptime y telemetria del bridge |
+| bridge_heartbeats (Supabase) | Activo | Uptime y telemetra del bridge |
 | audit_events (Supabase) | Activo | Log de eventos criticos |
 | GitHub monthly-fusion-review | Activo | Issue mensual automatico de revision |
 | Email (Gmail) | Activo | Comunicacion formal externa |
@@ -194,7 +194,7 @@ R = Responsable | A = Aprobador | C = Consultado | I = Informado
 
 ---
 
-## 9. Frecuencia de actualizacion de la documentacion
+## 9. Frecuencia de actualizacion de la documentacin
 
 | Documento | Cuando actualizar |
 |-----------|------------------|
@@ -202,7 +202,7 @@ R = Responsable | A = Aprobador | C = Consultado | I = Informado
 | AVANCE_PUSHES_GITHUB.md | Despues de cada merge a main |
 | GITHUB_JAVO.md | Despues de cada push de Javier |
 | ESTADO_AVANCE.md | Al completar hitos significativos |
-| MEMORY.md (Claude) | Al inicio/fin de cada sesion de trabajo con IA |
+| MEMORY.md (Claude) | Al inicio/fin de cada sesin de trabajo con IA |
 | kittypau_fondos_2026.ics | Al confirmar nuevas fechas de fondos |
 
 ---

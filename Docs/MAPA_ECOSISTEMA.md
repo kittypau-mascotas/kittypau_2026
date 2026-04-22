@@ -20,7 +20,7 @@ Endpoints MVP:
 - `POST /api/mqtt/webhook`
 - `GET/POST /api/pets`
 - `GET/POST /api/devices`
-- `GET /api/readings?device_uuid=<UUID>`
+- `GET /api/readingsdevice_uuid=<UUID>`
 
 ## 4) IoT + Bridge
 - Dispositivo publica a HiveMQ.

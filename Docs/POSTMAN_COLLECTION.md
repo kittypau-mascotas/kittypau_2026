@@ -1,7 +1,7 @@
-# Colecci髇 Postman/Newman (Kittypau)
+# Colecci贸n Postman/Newman (Kittypau)
 
 ## Objetivo
-Tener una colecci髇 reproducible para validar el flujo API sin tocar infraestructura IoT.
+Tener una colecci贸n reproducible para vlidar el flujo API sin tocar infraestructura IoT.
 
 ---
 
@@ -18,7 +18,7 @@ device_id = KPCL0100
 
 ## Obtener access_token (Auth)
 Endpoint (Supabase Auth):
-`{{supabase_url}}/auth/v1/token?grant_type=password`
+`{{supabase_url}}/auth/v1/tokengrant_type=password`
 
 Agregar a variables de entorno:
 ```
@@ -48,7 +48,7 @@ pm.environment.set("access_token", pm.response.json().access_token);
 
 ---
 
-## Colecci髇: `Kittypau API`
+## Colecci贸n: `Kittypau API`
 Orden recomendado:
 1. `POST Auth (Supabase)`
 2. `GET /api/onboarding/status`
@@ -59,7 +59,7 @@ Orden recomendado:
 7. `POST /api/devices`
 8. `PATCH /api/devices/:id`
 9. `POST /api/mqtt/webhook`
-10. `GET /api/readings?device_uuid={{device_uuid}}`
+10. `GET /api/readingsdevice_uuid={{device_uuid}}`
 
 ---
 
@@ -234,7 +234,7 @@ pm.test("status 200", () => pm.response.to.have.status(200));
 
 ### 9) GET /api/readings
 **Method:** GET  
-**URL:** `{{base_url}}/api/readings?device_uuid={{device_uuid}}`  
+**URL:** `{{base_url}}/api/readingsdevice_uuid={{device_uuid}}`  
 **Headers:**  
 `Authorization: Bearer {{access_token}}`
 
@@ -247,7 +247,7 @@ pm.test("has readings array", () => pm.expect(pm.response.json()).to.be.an("arra
 ---
 
 ## Newman (CLI)
-Ejemplo (una vez exportada la colecci髇 y el environment):
+Ejemplo (una vez exportada la colecci贸n y el environment):
 ```bash
 newman run Kittypau_API.postman_collection.json \
   -e kittypau.postman_environment.json \
@@ -259,7 +259,7 @@ newman run Kittypau_API.postman_collection.json \
 
 ## Notas
 - No subir tokens reales al repo.
-- Si cambian los contratos, actualizar esta colecci髇.
+- Si cambian los contratos, actualizar esta colecci贸n.
 
 
 

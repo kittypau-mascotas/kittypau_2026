@@ -21,9 +21,9 @@ Kittypau es un sistema integrado de monitoreo inteligente de mascotas compuesto 
 El producto se considera aceptado cuando:
 
 1. Un usuario puede registrarse, crear una mascota y vincular un dispositivo en < 5 minutos
-2. Los datos de peso llegan al dashboard en < 10 segundos desde el evento fisico
+2. Los datos de peso llegan al dashboard en < 10 segndos desde el evento fisico
 3. El sistema opera de forma continua 24/7 sin intervencion manual del equipo
-4. La precision del sensor de peso es de ±5g o mejor en el rango 0-1000g
+4. La precisin del sensor de peso es de ±5g o mejor en el rango 0-1000g
 5. La app funciona correctamente en Chrome/Safari/Firefox (desktop y mobile)
 
 ---
@@ -38,9 +38,9 @@ El producto se considera aceptado cuando:
 - Bridge MQTT-Supabase v2.6 (Raspberry Pi)
 - API REST Next.js (10 endpoints productivos)
 - App web completa: login, registro, onboarding, today, story, pet, bowl, settings
-- Panel de administracion con telemetria y finanzas
+- Panel de administracion con telemetra y finanzas
 - Sistema CI/CD (GitHub Actions + Vercel)
-- Migraciones de base de datos versionadas
+- Migraciones de base de datos versinadas
 
 ### Entregables de hardware
 
@@ -48,10 +48,10 @@ El producto se considera aceptado cuando:
 - Plato inteligente bebedero (perfil NodeMCU v3)
 - Plato comedero con camara (perfil ESP32-CAM)
 - Carcasa 3D impresa (disenio modular, reparable)
-- PCB de regulacion de energia
+- PCB de regulacion de energa
 - Documentacion de montaje y calibracion
 
-### Entregables de documentacion
+### Entregables de documentacin
 
 - Set PMO completo (10 documentos)
 - Dossier de postulacion para fondos concursables
@@ -65,12 +65,12 @@ El producto se considera aceptado cuando:
 | Exclusion | Justificacion | Version objetivo |
 |-----------|--------------|-----------------|
 | App movil nativa (iOS/Android) | Requiere presupuesto adicional post-fondo | v2 |
-| Integracion con veterinarias | Requiere modelo B2B validado | v3 |
+| Integracion con veterinarias | Requiere modelo B2B vlidado | v3 |
 | IA/ML predictivo de enfermedades | Requiere dataset suficiente (> 6 meses de datos) | Fase 3 |
 | Produccion industrial en serie | Post-financiamiento | Post-CORFO |
 | Sistema de pagos integrado | SaaS billing via tercero (Stripe) | v2 |
 | Soporte a mascotas exoticas (reptiles, aves) | Sensores distintos, fuera de MVP | v3 |
-| App offline sin conexion | Complejidad no justificada en piloto | v3 |
+| App offline sin conexin | Complejidad no justificada en piloto | v3 |
 
 ---
 
@@ -103,7 +103,7 @@ KP-2026 Kittypau IoT
 │   │   ├── 2.1.1 Sensor HX711 (peso, tara, calibracion)
 │   │   ├── 2.1.2 Sensor DHT (temperatura y humedad)
 │   │   ├── 2.1.3 Sensor LDR (luz ambiental)
-│   │   ├── 2.1.4 Conectividad WiFi (reconexion automatica)
+│   │   ├── 2.1.4 Conectividad WiFi (reconexin automtica)
 │   │   ├── 2.1.5 Cliente MQTT TLS (HiveMQ Cloud)
 │   │   ├── 2.1.6 Publicacion topics SENSORS y STATUS
 │   │   ├── 2.1.7 Modo calibracion serial
@@ -132,7 +132,7 @@ KP-2026 Kittypau IoT
 │   │   ├── 4.1.4 Indices (readings, devices, sensor_readings)
 │   │   ├── 4.1.5 Vistas admin (bridge_status_live, admin_dashboard_live)
 │   │   ├── 4.1.6 Tablas financieras (finance_kit_components, snapshots)
-│   │   └── 4.1.7 Migraciones versionadas (supabase/migrations/)
+│   │   └── 4.1.7 Migraciones versinadas (supabase/migrations/)
 │   ├── 4.2 Autenticacion
 │   │   ├── 4.2.1 Supabase Auth (email + password)
 │   │   ├── 4.2.2 Confirmacion de correo
@@ -172,7 +172,7 @@ KP-2026 Kittypau IoT
 │   │   ├── 5.4.4 Suite de tests admin
 │   │   └── 5.4.5 Auditoria y logs
 │   └── 5.5 Sistema de alertas (v2)
-│       ├── 5.5.1 Configuracion de umbrales por usuario
+│       ├── 5.5.1 Configuracin de umbrales por usuario
 │       ├── 5.5.2 Notificacion email/push
 │       └── 5.5.3 Logica de deteccion de anomalias
 │
@@ -237,19 +237,19 @@ KP-2026 Kittypau IoT
 ### 3.4 Sincronizacion a tabla readings
 
 **Descripcion**: El bridge procesa datos de sensor_readings y los sincroniza a la tabla readings (UUID) para consumo de la app web.
-**Criterio de aceptacion**: Latencia < 5 segundos entre lectura del dispositivo y disponibilidad en la app. Manejo correcto de clock_invalid cuando el reloj del dispositivo difiere > 10 minutos.
+**Criterio de aceptacion**: Latencia < 5 segndos entre lectura del dispositivo y disponibilidad en la app. Manejo correcto de clock_invalid cuando el reloj del dispositivo difiere > 10 minutos.
 **Responsable**: Javier Suarez / Mauro Carcamo
 
 ### 5.3.1 /today (dashboard interpretado)
 
 **Descripcion**: Vista principal de la app. Muestra estado interpretado del dia para la mascota activa. Conectada a Supabase Realtime para actualizaciones en vivo.
-**Criterio de aceptacion**: Datos se actualizan sin recargar la pagina. Muestra correctamente cuando el dispositivo esta offline. Funciona con selector de mascota y mapeo KPCL. Tiempo de carga inicial < 3 segundos.
+**Criterio de aceptacion**: Datos se actualizan sin recargar la pagina. Muestra correctamente cuando el dispositivo esta offline. Funciona con selector de mascota y mapeo KPCL. Tiempo de carga inicial < 3 segndos.
 **Responsable**: Mauro Carcamo
 
 ### 5.5 Sistema de alertas (v2)
 
-**Descripcion**: Modulo de notificaciones que detecta anomalias en patrones de alimentacion/hidratacion y las comunica al dueno via email o push.
-**Criterio de aceptacion**: Alerta disparada en < 30 segundos de detectada la condicion. Tasa de falsos positivos < 5%. Usuario puede configurar umbrales.
+**Descripcion**: Modulo de notificaciones que detecta anomalias en patrnes de alimentacin/hidratacin y las comunica al dueno via email o push.
+**Criterio de aceptacion**: Alerta disparada en < 30 segndos de detectada la condicion. Tasa de falsos positivos < 5%. Usuario puede configurar umbrales.
 **Estado**: Fuera del alcance v1. Planificado para Fase 2 (post-CORFO).
 **Responsable**: Mauro Carcamo
 
@@ -263,7 +263,7 @@ KP-2026 Kittypau IoT
 - [x] Bridge v2.6 deployado en RPi
 - [x] API REST completa (10 endpoints)
 - [x] App web: login, registro, onboarding, today, story, pet, bowl, settings
-- [x] Panel admin con telemetria y finanzas
+- [x] Panel admin con telemetra y finanzas
 - [x] CI/CD operativo (GitHub Actions + Vercel)
 - [x] 8 dispositivos activos (KPCL0034-KPCL0041)
 
@@ -288,7 +288,7 @@ KP-2026 Kittypau IoT
 
 ## 7. Supuestos del alcance
 
-1. El diseno de carcasa 3D actual es reutilizable para todas las variantes del piloto
+1. El diseno de carcasa 3D actual es retilizable para todas las variantes del piloto
 2. La API de Supabase Realtime es suficiente para la latencia requerida
 3. El firmware OTA permite actualizar dispositivos ya desplegados sin intervencion fisica
 4. Los usuarios del piloto tienen WiFi 2.4GHz disponible en el area donde colocan el plato
@@ -305,6 +305,6 @@ KP-2026 Kittypau IoT
 ---
 
 _Referencias: PMBOK 6ta Ed. Cap. 5 (Gestion del Alcance) | PMBOK 7ma Ed. Dominio de Planificacion_
-_Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguiente: [03_SCHEDULE.md](03_SCHEDULE.md)_
+_Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguente: [03_SCHEDULE.md](03_SCHEDULE.md)_
 
 

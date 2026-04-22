@@ -3,35 +3,35 @@
 ## Objetivo
 Mejorar la base actual sin romper el frontend ni el bridge. Se mantiene:
 - readings como tabla de app.
-- sensor_readings como tabla de telemetria cruda.
+- sensor_readings como tabla de telemetr?a cruda.
 - devices.device_id (KPCL texto) y devices.id (UUID).
 
-> Documento de seguimiento tecnico. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
-> Este plan conserva la evolucion de base de datos, pero la operacion vigente se lee desde `readings`, `device_operation_records`, `device_power_sessions` y `device_battery_cycles`.
+> Documento de seguimiento t?cnico. El estado vivo resumido del proyecto vive en [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md).
+> Este plan conserva la evolución de base de datos, pero la operación vigente se lee desde `readings`, `device_operation_records`, `device_power_sessions` y `device_battery_cycles`.
 
 ## Alcance
 - Alinear columnas entre sensor_readings y readings.
-- Robustecer el pipeline de ingestion.
-- Mejorar indices y vistas de lectura.
-- Agregar queries de verificacion de integridad.
+- Robustecer el pipeline de ingesti?n.
+- Mejorar ?ndices y vistas de lectura.
+- Agregar queries de verificaci?n de integridad.
 
 ## No se hace (por ahora)
 - Cambios de arquitectura IoT (particiones o time-series).
-- Eliminacion de tablas actuales.
+- Eliminaci?n de tablas actuales.
 - Cambios de nombres que rompan el frontend.
 
 ---
 
-## Fase 0 — Seguridad antes de cambios
+## Fase 0 - Seguridad antes de cambios
 1. Backup o export de esquema.
-2. Verificar conteos basicos:
+2. Verificar conteos b?sicos:
    - select count(*) from devices;
    - select count(*) from sensor_readings;
    - select count(*) from readings;
 
 ---
 
-## Fase 1 — Alinear esquema de readings con sensor_readings
+## Fase 1 - Alinear esquema de readings con sensor_readings
 Asegurar que readings tenga todos los campos que existen en sensor_readings:
 
 ```sql
@@ -42,7 +42,7 @@ alter table public.readings
   add column if not exists device_timestamp text;
 ```
 
-Indices recomendados (sin romper front):
+?ndices recomendados (sin romper front):
 
 ```sql
 create index if not exists idx_readings_device_time
@@ -57,7 +57,7 @@ create index if not exists idx_readings_ingested
 
 ---
 
-## Fase 2 — Pipeline robusto (sensor_readings -> readings)
+## Fase 2 - Pipeline robusto (sensor_readings -> readings)
 Objetivo: copiar datos crudos a readings para que la app lea una sola tabla.
 
 Reglas:
@@ -115,7 +115,7 @@ create trigger trg_sync_sensor_reading
 
 ---
 
-## Fase 3 — Backfill controlado (sin duplicar)
+## Fase 3 - Backfill controlado (sin duplicar)
 Si ya existe data en sensor_readings, copiar a readings solo si no existe:
 
 ```sql
@@ -139,7 +139,7 @@ where not exists (
 
 ---
 
-## Fase 4 — Vistas para lectura rapida
+## Fase 4 - Vistas para lectura rápida
 Si la app usa latest_readings o device_summary, incluir nuevos campos:
 
 ```sql
@@ -154,7 +154,7 @@ order by device_id, recorded_at desc;
 
 ---
 
-## Fase 5 — Validaciones de integridad (reporte)
+## Fase 5 - Validaciones de integridad (reporte)
 
 ```sql
 -- readings sin device
@@ -184,7 +184,7 @@ where d.pet_id is not null and p.id is null;
 - Se habilita visibilidad completa (luz y timestamp) en UI sin romper.
 
 ## Checklist de ejecucion
-1. Fase 1 (schema + indices).
+1. Fase 1 (schema + ?ndices).
 2. Fase 2 (trigger pipeline).
 3. Fase 3 (backfill).
 4. Fase 4 (vistas).
@@ -195,7 +195,7 @@ where d.pet_id is not null and p.id is null;
 ## Requisito funcional: ver data real por usuario
 - Verificar que cada usuario solo vea su mascota y sus dispositivos.
 - Validar vinculos: profiles.id -> pets.user_id -> devices.pet_id -> readings.device_id.
-- Query de verificacion (ejemplo):
+- Query de verificaci?n (ejemplo):
 
 `sql
 select p.user_id, p.id as pet_id, d.id as device_uuid, d.device_id as device_kpcl, r.id as reading_id
@@ -212,8 +212,8 @@ where p.user_id = auth.uid();
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
-- **Smart IoT**: termino marketing, menos tecnico.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
+- **Smart IoT**: termino marketing, menos t?cnico.
 
 ### Definicion recomendada de producto
 **Kittypau is an AIoT platform that monitors pet feeding and hydration cycles to generate health insights and preventive alerts.**
@@ -234,16 +234,16 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 5. Capa de analitica/IA.
 6. Dashboard web para usuario/admin.
 
-### Estrategia tipo �Fitbit de mascotas�
+### Estrategia tipo “Fitbit de mascotas”
 - Hardware = punto de entrada.
 - Datos longitudinales = ventaja competitiva.
 - IA = diferencial de valor.
 - Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
@@ -253,12 +253,12 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 ### Implicancias directas para este plan DB
 - Priorizar calidad, continuidad e historial de datos (`readings` + agregados).
 - Mantener trazabilidad temporal para modelos de IA (datos longitudinales).
-- Dise�ar retencion por capas: crudo corto plazo + consolidado largo plazo.
+- Diseñar retencion por capas: crudo corto plazo + consolidado largo plazo.
 - Asegurar compatibilidad API para no frenar adopcion del producto AIoT.
 
-## Contexto de expansion del ecosistema
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+## Contexto de expansin del ecosistema
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
 - **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
@@ -266,8 +266,8 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+2. Las decisiones visuales deben reforzar lectura rápida de estado real (alimentación, hidratación, ambiente, batería).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 

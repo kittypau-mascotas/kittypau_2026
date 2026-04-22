@@ -57,6 +57,8 @@ type LoadState = {
   analyticsAvailable: boolean;
 };
 
+const AUTHORITATIVE_FOOD_DEVICE_CODE = "KPCL0034";
+
 const defaultState: LoadState = {
   isLoading: true,
   error: null,
@@ -86,6 +88,23 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
   }
   return [];
 };
+
+function filterSessionsByEvidence(
+  sessions: ApiSession[],
+  devices: ApiDevice[],
+): ApiSession[] {
+  const codeByDeviceId = new Map(
+    devices.map((device) => [
+      device.id,
+      (device.device_id ?? "").toUpperCase(),
+    ]),
+  );
+  return sessions.filter((session) => {
+    if (session.session_type !== "food") return true;
+    const deviceCode = codeByDeviceId.get(session.device_id) ?? "";
+    return deviceCode === AUTHORITATIVE_FOOD_DEVICE_CODE;
+  });
+}
 
 // Reclasifica según límites personalizados del dueño, si están configurados.
 function applyCustomLimits(
@@ -266,12 +285,16 @@ export default function StoryPage() {
             };
 
         if (!mounted) return;
+        const vettedSessions = filterSessionsByEvidence(
+          sessionResult.sessions,
+          devices,
+        );
         setState({
           isLoading: false,
           error: null,
           pets,
           devices,
-          sessions: sessionResult.sessions,
+          sessions: vettedSessions,
           isPremium: sessionResult.isPremium,
           historyDays: sessionResult.historyDays,
           analyticsAvailable: sessionResult.analyticsAvailable,
@@ -345,9 +368,10 @@ export default function StoryPage() {
     try {
       const { sessions, isPremium, historyDays, analyticsAvailable } =
         await loadSessions(token, petId);
+      const vettedSessions = filterSessionsByEvidence(sessions, state.devices);
       setState((prev) => ({
         ...prev,
-        sessions,
+        sessions: vettedSessions,
         isPremium,
         historyDays,
         analyticsAvailable,

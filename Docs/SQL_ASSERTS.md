@@ -1,8 +1,8 @@
 # SQL Assertions (Kittypau)
 
-Objetivo: Validar schema, constraints y datos base de forma r·pida en Supabase.
+Objetivo: Validar schema, constraints y datos base de forma r√°pida en Supabase.
 
-## 1) Columnas crÌticas existen
+## 1) Columnas cr√≠ticas existen
 ```sql
 select
   table_name,
@@ -56,7 +56,7 @@ Esperado:
 
 ---
 
-## 3) Õndices mÌnimos
+## 3) √çndices m√≠nimos
 ```sql
 select
   indexname,
@@ -90,7 +90,7 @@ Esperado: `relrowsecurity = true` en todas.
 
 ---
 
-## 5) PolÌticas RLS registradas
+## 5) Pol√≠ticas RLS registradas
 ```sql
 select
   schemaname,
@@ -125,7 +125,7 @@ Esperado: 1 fila en `public.readings`.
 
 ---
 
-## 7) Columnas de bateria estimada (readings + devices)
+## 7) Columnas de batera estimada (readings + devices)
 ```sql
 select
   table_name,
@@ -143,7 +143,7 @@ Esperado: 8 filas.
 
 ---
 
-## 8) Constraints de bateria (rango + estado)
+## 8) Constraints de batera (rango + estado)
 ```sql
 select conname, pg_get_constraintdef(c.oid) as def
 from pg_constraint c
@@ -163,7 +163,7 @@ Esperado: 4 filas.
 
 ---
 
-## 9) Indice de lecturas para bateria
+## 9) Indice de lecturas para batera
 ```sql
 select indexname, indexdef
 from pg_indexes

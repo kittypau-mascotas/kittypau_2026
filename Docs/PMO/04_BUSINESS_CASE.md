@@ -7,13 +7,13 @@
 
 ## Resumen Ejecutivo
 
-Kittypau es una plataforma IoT + SaaS de monitoreo inteligente de mascotas que combina hardware propio de bajo costo (platos inteligentes con sensores) con una aplicacion web en tiempo real. El sistema detecta automaticamente cambios en los patrones de alimentacion e hidratacion, generando alertas tempranas que permiten a los duenos actuar antes de que un problema de salud se agrave.
+Kittypau es una plataforma IoT + SaaS de monitoreo inteligente de mascotas que combina hardware propio de bajo costo (platos inteligentes con sensores) con una aplicacion web en tiempo real. El sistema detecta automticamente cambios en los patrnes de alimentacin e hidratacin, generando alertas tempranas que permiten a los duenos actuar antes de que un problema de salud se agrave.
 
 **El problema es real, el prototipo funciona y el mercado existe.**
 
 - Prototipo operativo con 8 dispositivos activos enviando datos 24/7
 - Stack tecnologico completo: firmware IoT + bridge + backend + app web
-- Modelo de negocio validado conceptualmente con potencial de recurrencia SaaS
+- Modelo de negocio vlidado conceptualmente con potencial de recurrencia SaaS
 - Costo de produccion unitario estimado en < $20 USD con produccion en serie
 
 ---
@@ -22,21 +22,21 @@ Kittypau es una plataforma IoT + SaaS de monitoreo inteligente de mascotas que c
 
 ### Contexto
 
-Chile tiene una de las tasas de tenencia de mascotas mas altas de Latinoamerica. Se estima que el 66% de los hogares tiene al menos una mascota, con una poblacion de mas de 10 millones de gatos y perros. El gasto veterinario promedio por mascota ha crecido un 40% en los ultimos 5 anos.
+Chile tiene una de las tasas de tenencia de mascotas ms altas de Latinoamerica. Se estima que el 66% de los hogares tiene al menos una mascota, con una poblacion de ms de 10 millones de gatos y perros. El gasto veterinario promedio por mascota ha crecido un 40% en los ultimos 5 anos.
 
 ### Dolor especifico
 
 Los duenos no tienen visibilidad sobre los habitos diarios de sus mascotas cuando no estan presentes:
 
 - No saben si su mascota comio o bebio agua durante el dia
-- No detectan cambios de comportamiento hasta que hay sintomas clinicos evidentes
+- No detectan cambios de comportamiento hasta que hay sintoms clinicos evidentes
 - Las consultas veterinarias de emergencia son costosas ($50.000 - $200.000 CLP) y muchas veces evitables
 - No hay herramientas digitales accesibles para el monitoreo cotidiano en Chile
 
 ### Evidencia del problema
 
 - 60% de las mascotas en Chile presenta sobrepeso (fuente: Colegio Medico Veterinario de Chile)
-- La deshidratacion es causa de insuficiencia renal en gatos, frecuentemente detectada tarde
+- La deshidratacin es causa de insuficiencia renal en gatos, frecuentemente detectada tarde
 - Los duenos son incapaces de cuantificar cuanto come o bebe su mascota sin medicion objetiva
 
 ---
@@ -49,7 +49,7 @@ Un ecosistema integrado de tres capas:
 
 **Capa 1 — Hardware (KPCL)**
 Platos inteligentes con:
-- Sensor de peso (celda de carga HX711, precision ±2g)
+- Sensor de peso (celda de carga HX711, precisin ±2g)
 - Sensor de temperatura y humedad (DHT11/22)
 - Sensor de luz ambiental (LDR)
 - Microcontrolador ESP8266 (WiFi integrado) o ESP32-CAM (con camara)
@@ -63,10 +63,10 @@ Platos inteligentes con:
 
 **Capa 3 — Aplicacion Web**
 - Dashboard en tiempo real con datos de peso, temperatura y humedad
-- Historico de 30/90 dias con graficos interactivos
-- Registro de mascotas y dispositivos con flujo de onboarding guiado
-- Panel de administracion con telemetria y finanzas operativas
-- Alertas configurables (proxima version)
+- Historico de 30/90 das con graficos interactivos
+- Registro de mascotas y dispositivos con flujo de onboarding guado
+- Panel de administracion con telemetra y finanzas operativas
+- Alertas configurables (proxima versin)
 
 ### Diferenciadores clave
 
@@ -88,13 +88,13 @@ Platos inteligentes con:
 **Perfil**: Duenos de mascotas de 25-45 anos, NSE medio-alto, conectados digitalmente, que consideran a su mascota como parte de la familia y gastan activamente en su bienestar.
 
 - Tamano mercado Chile: ~1,2 millones de hogares objetivo
-- Dispuestos a pagar por tecnologia que mejore la salud de su mascota
+- Dispuestos a pagar por tecnologa que mejore la salud de su mascota
 - Alta penetracion de smartphones y conectividad WiFi en el hogar
 
 ### Segmento secundario (B2B — fase 3)
 
 - Clinicas veterinarias: monitoreo remoto post-cirugia o dietetica
-- Pet hotels y guarderias: registro automatico de alimentacion
+- Pet hotels y guarderias: registro automatico de alimentacin
 - Seguros de mascotas: datos objetivos para cobertura preventiva
 
 ### Tamano de mercado (TAM/SAM/SOM)
@@ -102,7 +102,7 @@ Platos inteligentes con:
 | Nivel | Descripcion | Estimado |
 |-------|-------------|---------|
 | TAM | Mercado total mascotas Chile | $350M USD/ano |
-| SAM | Segmento tecnologia / accesorios inteligentes | $35M USD/ano |
+| SAM | Segmento tecnologa / accesorios inteligentes | $35M USD/ano |
 | SOM | Captura realista ano 1-2 (piloto + early adopters) | $50.000 USD/ano |
 
 ---
@@ -124,7 +124,7 @@ El cliente compra el hardware (margen bruto ~45%) y opcionalmente paga suscripci
 | KPI | Valor objetivo |
 |-----|---------------|
 | Usuarios activos | 200 |
-| Conversion free -> paid | > 20% |
+| Conversin free -> paid | > 20% |
 | ARPU (promedio) | $4.990 CLP/mes |
 | MRR | $199.600 CLP (~$210 USD) |
 | Churn mensual | < 5% |
@@ -153,11 +153,11 @@ El cliente compra el hardware (margen bruto ~45%) y opcionalmente paga suscripci
 | Actual (plan free) | $1 USD | $5 USD | **1 suscriptor** |
 | Shadow-price | $44 USD | $5 USD | **9 suscriptores** |
 | Plan pago (sostenibilidad) | $65 USD | $5 USD | **13 suscriptores** |
-| Objetivo operacional (buffer x2) | $65 USD | $5 USD | **~30 suscriptores** |
+| Objetivo operacinal (buffer x2) | $65 USD | $5 USD | **~30 suscriptores** |
 
 > El break-even de **13 suscriptores** cubre toda la infraestructura cloud en plan pago.
-> El objetivo de **30 suscriptores** asegura sostenibilidad con margen operacional.
-> Break-even en unidades hardware: ~35 ventas a $30 USD c/u para recuperar inversion inicial.
+> El objetivo de **30 suscriptores** asegura sostenibilidad con margen operacinal.
+> Break-even en unidades hardware: ~35 ventas a $30 USD c/u para recuperar inversin inicial.
 
 ---
 
@@ -170,12 +170,12 @@ El cliente compra el hardware (margen bruto ~45%) y opcionalmente paga suscripci
 | Firmware ESP8266 v1.0 | Funcional | 4 unidades activas (KPCL0034-0038) |
 | Firmware ESP32-CAM | Funcional | 1 unidad activa (KPCL0040) |
 | Bridge MQTT v2.6 | Deployado | RPi en produccion 24/7 |
-| Base de datos Supabase | Activa | Schema completo, RLS, migraciones versionadas |
+| Base de datos Supabase | Activa | Schema completo, RLS, migraciones versinadas |
 | App web (Next.js) | Deployada | Vercel, dashboard en tiempo real operativo |
 | Panel admin | Funcional | Telemetria, finanzas, estado de dispositivos |
 | Sistema CI/CD | Activo | GitHub Actions + Vercel |
 
-### Nivel de madurez tecnologica (TRL)
+### Nivel de madurez tecnolgica (TRL)
 
 **TRL 6 — Demostracion de prototipo en entorno relevante**
 
@@ -187,7 +187,7 @@ El sistema completo opera en condiciones reales de hogar, con datos siendo recol
 
 | Nombre | Rol | Competencias clave |
 |--------|-----|-------------------|
-| Javier Suarez | Co-fundador / CTO | Firmware IoT, hardware, PlatformIO, C++, sistemas embebidos |
+| Javier Suarez | Co-fundador / CTO | Firmware IoT, hardware, PlatformIO, C++, sistems embebidos |
 | Mauro Carcamo | Co-fundador / CPO | Full-stack (Next.js/TypeScript), SQL, arquitectura de producto, UX |
 
 **Complementariedad**: El equipo cubre el 100% del stack sin dependencia externa — desde el firmware del microcontrolador hasta el frontend de la aplicacion web.
@@ -240,7 +240,7 @@ Monto solicitado: **$17.000.000 CLP** (75% CORFO + 25% contraparte propia)
 
 | Riesgo | Mitigacion |
 |--------|-----------|
-| Bajo adoption rate inicial | Piloto controlado con 10 usuarios, iteracion rapida |
+| Bajo adoption rate inicial | Piloto controlado con 10 usuarios, iteracion rpida |
 | Falla de hardware en campo | Garantia 6 meses, stock de repuestos, disenio modular |
 | Escalabilidad cloud | Shadow-pricing activo, planes de upgrade documentados |
 | Copia del producto | Velocidad de ejecucion + datos propietarios como moat |
@@ -252,7 +252,7 @@ Monto solicitado: **$17.000.000 CLP** (75% CORFO + 25% contraparte propia)
 ## 10. Proximos Pasos Inmediatos
 
 1. **Postulacion CORFO Semilla Inicia**: el deadline de O'Higgins del 16 de marzo 2026 ya vencio; replanificar por otra region o nueva convocatoria
-2. Completar documentacion PMO restante (alcance, cronograma, riesgos)
+2. Completar documentacin PMO restante (alcance, cronograma, riesgos)
 3. Constituir empresa formal (paralelamente al fondo)
 4. Iniciar piloto con primeros 10 usuarios externos
 5. Desarrollar sistema de alertas (funcionalidad premium prioritaria)
@@ -260,6 +260,6 @@ Monto solicitado: **$17.000.000 CLP** (75% CORFO + 25% contraparte propia)
 ---
 
 _Referencias: PMBOK 6ta Ed. Seccion 4.1 (Business Case como insumo) | PMBOK 7ma Ed. Principio de Enfoque en el Valor_
-_Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguiente: [05_COST_BUDGET.md](05_COST_BUDGET.md)_
+_Documento anterior: [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Siguente: [05_COST_BUDGET.md](05_COST_BUDGET.md)_
 
 

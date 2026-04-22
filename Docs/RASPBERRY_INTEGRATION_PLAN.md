@@ -6,7 +6,7 @@ Conectar el bridge que corre en la PC/Raspberry con el backend de Kittypau (Verc
 ---
 
 ## Flujo E2E
-ESP32 → HiveMQ → Bridge (Raspberry/PC) → `POST /api/mqtt/webhook` (Vercel) → Supabase.
+ESP32 -> HiveMQ -> Bridge (Raspberry/PC) -> `POST /api/mqtt/webhook` (Vercel) -> Supabase.
 
 ---
 
@@ -38,7 +38,7 @@ Se recibió un fragmento de SQL V3 con:
 - `devices.retired_at`
 - vista `device_summary`
 
-Problemas detectados:
+Problems detectados:
 1. En Kittypau usamos `devices.device_id` (KPCL) y `devices.id` (UUID).
 2. El SQL menciona columnas inexistentes: `wifi_status`, `wifi_ssid`, `wifi_ip`, `sensor_health`.
 3. Menciona la vista `latest_readings`, no definida en este repo.
@@ -116,9 +116,9 @@ Kittypau actual:
 4. **Mantener `device_id`** como fuente de verdad para el bridge.
 
 ### Riesgos y mitigaciones
-- **Riesgo**: romper UI/API si renombramos sin migración → Mitigación: fase 1 con aliases
-- **Riesgo**: datos duplicados si bridge manda `device_id` distinto → Mitigación: normalizar formato KPCL
-- **Riesgo**: vistas referencian columnas inexistentes → Mitigación: agregar columnas antes de crear vistas
+- **Riesgo**: romper UI/API si renombramos sin migración -> Mitigación: fase 1 con aliases
+- **Riesgo**: datos duplicados si bridge manda `device_id` distinto -> Mitigación: normalizar formato KPCL
+- **Riesgo**: vistas referencian columnas inexistentes -> Mitigación: agregar columnas antes de crear vistas
 
 ### Checklist previo a ejecutar
 1. Confirmar que bridge envía `device_id` (KPCL).

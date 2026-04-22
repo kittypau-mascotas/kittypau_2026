@@ -4,7 +4,7 @@
 Los duenos de mascotas carecen de visibilidad continua sobre habitos criticos (agua y alimento), lo que retrasa deteccion de problemas y fuerza cuidado reactivo.
 
 ## Solucion Kittypau
-Kittypau integra hardware IoT, backend y aplicacion para monitorear consumo y contexto, detectar desvíos y habilitar decisiones tempranas de cuidado.
+Kittypau integra hardware IoT, backend y aplicacion para monitorear consumo y contexto, detectar desvÃ­os y habilitar decisiones tempranas de cuidado.
 
 ## Por que ahora
 1. Mayor digitalizacion del usuario final.
@@ -18,15 +18,15 @@ No se limita a automatizar dispensacion. Prioriza capa de datos y analitica para
 Kittypau transforma habitos diarios de mascota en decisiones de cuidado basadas en datos.
 
 ## Adaptacion por fondo
-- Start-Up Chile: ejecutar rapido, escalar y demostrar traccion.
-- Semilla Inicia: innovar, validar y consolidar potencial de crecimiento.
+- Start-Up Chile: ejecutar rapido, escalar y demostrar traccin.
+- Semilla Inicia: innovar, vlidar y consolidar potencial de crecimiento.
 
-## Marco AIoT / PetTech (Alineacion 2026)
+## Marco AIoT / PetTech (Alneacion 2026)
 
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
@@ -55,17 +55,17 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 - Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
 2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
 3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
 - **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
@@ -73,8 +73,8 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+2. Las decisiones visuales deben reforzar lectura rpida de estado real (alimentacin, hidratacin, ambiente, batera).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 

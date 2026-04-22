@@ -35,7 +35,7 @@ Uso:
 
 ---
 
-## Como asignar el plan a un usuario (operacion)
+## Como asignar el plan a un usuario (operacin)
 En Supabase SQL Editor (server-only / admin):
 
 ```sql
@@ -67,11 +67,11 @@ Proposito:
 - Plan base para **piloto** y **clientes iniciales** (incluye testers si no se decide lo contrario).
 
 Valor (que compra el usuario):
-- Visibilidad objetiva (no manual) de alimentacion/hidratacion.
+- Visibilidad objetiva (no manual) de alimentacin/hidratacin.
 - Datos en vivo + historial para detectar cambios de habito temprano.
-- Estado operativo del dispositivo (online/offline, bateria, ultima lectura).
+- Estado operativo del dispositivo (online/offline, batera, ultima lectura).
 
-Acceso incluido (alineado al MVP actual):
+Acceso incluido (alneado al MVP actual):
 - Login + onboarding (Cuenta -> Usuario -> Mascota -> Dispositivo).
 - CRUD de `pets` y `devices` (registro por QR / `device_id` KPCL).
 - Dashboard con lecturas y estado vivo via Supabase Realtime.
@@ -80,7 +80,7 @@ Acceso incluido (alineado al MVP actual):
 
 Reglas sugeridas (para implementar en backend/UI cuando corresponda):
 - Limites por cuenta (ej. mascotas/dispositivos) y features premium deben depender de `account_plan`.
-- Precio: definir en documento comercial (este repo lo trata como parametro externo; durante piloto puede ser $0 o descuento por cohorts).
+- Precio: definir en documento comercial (este repo lo trata como parmetro externo; durante piloto puede ser $0 o descuento por cohorts).
 
 ---
 

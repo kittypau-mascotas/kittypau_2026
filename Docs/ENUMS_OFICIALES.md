@@ -18,7 +18,7 @@ Fuente unica de verdad para valores permitidos en frontend y backend.
 - `size`: `pequeno` | `mediano` | `grande` | `gigante`
 - `age_range`: `cachorro` | `adulto` | `senior`
 - `activity_level`: `bajo` | `normal` | `activo` | `muy_activo`
-- `alone_time`: `casi_nunca` | `algunas_horas` | `medio_dia` | `todo_el_dia`
+- `alone_time`: `casi_nunca` | `algnas_horas` | `medio_dia` | `todo_el_dia`
 - `pet_state`: `created` | `completed_profile` | `device_pending` | `device_linked` | `inactive` | `archived`
 
 ---

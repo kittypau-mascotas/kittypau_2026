@@ -32,7 +32,7 @@
 **Nombre**: Javier Suarez
 **RUT**: [RUT JAVIER — pendiente]
 **Email**: javomauro.contacto@gmail.com
-**Rol**: Co-fundador, Director Tecnico (firmware IoT, hardware, sistemas embebidos)
+**Rol**: Co-fundador, Director Tecnico (firmware IoT, hardware, sistems embebidos)
 
 ---
 
@@ -58,29 +58,29 @@ alerta al dueno antes de que un problema de salud se agrave.
 ---
 
 ## CAMPO 3: DESCRIPCION DEL PROBLEMA
-*(max ~1.000-1.500 caracteres segun formulario)*
+*(max ~1.000-1.500 caracteres segn formulario)*
 
 ```
 El 66% de los hogares chilenos tiene al menos una mascota, con una
-poblacion estimada de mas de 10 millones de gatos y perros. Sin embargo,
+poblacion estimada de ms de 10 millones de gatos y perros. Sin embargo,
 los duenos no tienen forma de saber cuanto come o bebe su animal cuando
 no estan presentes.
 
 Esta falta de visibilidad tiene consecuencias concretas:
 - El 60% de los gatos y perros en Chile presenta sobrepeso (Colegio
-  Medico Veterinario de Chile), muchas veces por sobrealimentacion
+  Medico Veterinario de Chile), muchas veces por sobrealimentacin
   no detectada a tiempo.
-- La deshidratacion cronica es la principal causa de insuficiencia renal
+- La deshidratacin cronica es la principal causa de insuficiencia renal
   felina, una enfermedad silenciosa que solo se detecta cuando ya hay
   dano organico.
 - Las consultas veterinarias de emergencia por causas relacionadas con
-  alimentacion cuestan entre $50.000 y $200.000 CLP y en muchos casos
+  alimentacin cuestan entre $50.000 y $200.000 CLP y en muchos casos
   son evitables si el dueno hubiera notado el cambio de comportamiento
   antes.
 
-El mercado de tecnologia para mascotas en Chile no cuenta con un producto
+El mercado de tecnologa para mascotas en Chile no cuenta con un producto
 local que combine hardware accesible, conectividad en tiempo real y
-analisis de comportamiento en una sola solucion. Los productos importados
+anlisis de comportamiento en una sola solucion. Los productos importados
 disponibles cuestan entre $80.000 y $200.000 CLP y no tienen soporte local.
 ```
 
@@ -93,20 +93,20 @@ disponibles cuestan entre $80.000 y $200.000 CLP y no tienen soporte local.
 Kittypau es una plataforma IoT compuesta por tres elementos integrados:
 
 1. HARDWARE PROPIO (fabricado en Chile):
-Platos inteligentes con sensor de peso (precision ±2 gramos), sensor de
+Platos inteligentes con sensor de peso (precisin ±2 gramos), sensor de
 temperatura y humedad, y opcionalmente camara. Fabricados con carcasa
 impresa en 3D y electronica de bajo costo (microcontrolador ESP8266/
 ESP32). Precio unitario de construccion: ~$21.500 CLP.
 
 2. CONECTIVIDAD EN TIEMPO REAL:
 Los dispositivos se conectan a WiFi del hogar y envian datos cada 5
-segundos al sistema en la nube mediante protocolo MQTT cifrado. Un
+segndos al sistema en la nube mediante protocolo MQTT cifrado. Un
 servidor puente (Raspberry Pi) procesa y almacena los datos 24/7.
 
-3. APLICACION WEB (en operacion desde enero 2026):
+3. APLICACION WEB (en operacin desde enero 2026):
 Dashboard en tiempo real donde el dueno ve cuanto comio y bebio su
-mascota, con historico de 90 dias, alertas configurables y analisis de
-patrones de comportamiento.
+mascota, con historico de 90 das, alertas configurables y anlisis de
+patrnes de comportamiento.
 
 El sistema ya esta funcionando: contamos con 8 dispositivos activos
 enviando datos en tiempo real. La app esta deployada en internet y
@@ -126,21 +126,21 @@ importados y soporte local.
 La innovacion de Kittypau opera en tres dimensiones:
 
 INNOVACION DE PRODUCTO: integramos en un solo sistema hardware IoT
-fabricado localmente, conectividad en tiempo real y analisis de
+fabricado localmente, conectividad en tiempo real y anlisis de
 comportamiento animal. Ninguna solucion existente en Chile combina
 estas tres capas a este precio.
 
 INNOVACION DE PROCESO: usamos impresion 3D y electronica accesible
 (componentes < $30 USD) para producir hardware que los competidores
 importan a $80-200 USD. Esto nos permite llegar a un segmento de mercado
-masivo que hoy no tiene acceso a tecnologia de monitoreo.
+msivo que hoy no tiene acceso a tecnologa de monitoreo.
 
 INNOVACION DE MODELO DE NEGOCIO: el hardware es el canal de adquisicion
 (margen ~45%) y la suscripcion mensual es el motor de valor recurrente
 (modelo SaaS). Los datos anonimizados de comportamiento animal tienen
 potencial de valor secundario para veterinarias e investigacion.
 
-Nivel de madurez tecnologica: TRL 6 (prototipo funcionando en entorno
+Nivel de madurez tecnolgica: TRL 6 (prototipo funcionando en entorno
 real, 8 dispositivos activos en hogares).
 ```
 
@@ -152,19 +152,19 @@ real, 8 dispositivos activos en hogares).
 ```
 SEGMENTO PRIMARIO: duenos de mascotas de 25-45 anos, nivel
 socioeconomico medio-alto, con conectividad WiFi en el hogar y
-disposicion a pagar por tecnologia que mejore la salud de su animal.
+disposicion a pagar por tecnologa que mejore la salud de su animal.
 
 Tamano de mercado Chile:
 - Hogares con mascota: ~3,2 millones
 - Segmento objetivo (NSE medio-alto + conectados): ~1,2 millones
-- Dispuestos a pagar por tecnologia de monitoreo (estimado 8%): ~96.000
+- Dispuestos a pagar por tecnologa de monitoreo (estimado 8%): ~96.000
 
 SEGMENTO SECUNDARIO (fase 3): clinicas veterinarias, pet hotels y
-guarderias que necesitan registro automatico de alimentacion.
+guarderias que necesitan registro automatico de alimentacin.
 
 El mercado de productos para mascotas en Chile crece sostenidamente:
 ~$350 millones USD anuales, con aceleracion post-pandemia. El segmento
-de tecnologia e accesorios inteligentes representa ~10% y no tiene
+de tecnologa e accesorios inteligentes representa ~10% y no tiene
 jugadores locales relevantes.
 
 META ANO 1: 50 unidades vendidas, 10 suscriptores activos.
@@ -215,7 +215,7 @@ y estrategia de producto y negocio.
 [AGREGAR: nivel educacional, institucion, experiencia laboral previa]
 
 JAVIER SUAREZ — Co-fundador y Director Tecnico
-Especialista en sistemas embebidos, firmware IoT y hardware.
+Especialista en sistems embebidos, firmware IoT y hardware.
 Responsable del desarrollo del dispositivo fisico: firmware en
 C++ (PlatformIO), electronica, carcasa 3D y sistema de
 conectividad MQTT.
@@ -273,12 +273,12 @@ ETAPA: Prototipo funcional
 El proyecto cuenta con:
 - 8 dispositivos IoT activos enviando datos en tiempo real
 - Aplicacion web deployada y accesible en internet
-- Sistema de base de datos con mas de 387.000 lecturas recolectadas (activo en tiempo real)
+- Sistema de base de datos con ms de 387.000 lecturas recolectadas (activo en tiempo real)
 - Pipeline CI/CD automatizado (GitHub Actions + Vercel)
-- Arquitectura documentada y codigo versionado en GitHub
+- Arquitectura documentada y codigo versinado en GitHub
 
 El sistema opera de forma continua 24/7 sin intervencion manual.
-Nivel de madurez tecnologica: TRL 6.
+Nivel de madurez tecnolgica: TRL 6.
 ```
 
 ---
@@ -321,7 +321,7 @@ MES 5-6: Iteracion basada en feedback del piloto
 MES 6:   Inicio desarrollo app movil (React Native)
 MES 7-8: App movil v1 (iOS/Android)
 MES 8-9: Ampliar piloto a 50 usuarios
-MES 9-10: Medicion de conversion free->paid
+MES 9-10: Medicion de conversin free->paid
 MES 10-11: Optimizacion COGS + nuevos proveedores
 MES 11-12: Cierre piloto, informe de resultados, plan escala
 
@@ -355,7 +355,7 @@ HITO CLAVE MES 12: 50+ usuarios, MRR > $100.000 CLP, COGS < $19.000
 [Email] | [Telefono] | [Ciudad, Chile]
 
 PERFIL
-[2-3 lineas describiendo experiencia y enfoque tecnico/comercial]
+[2-3 lneas describiendo experiencia y enfoque tecnico/comercial]
 
 EDUCACION
 [Titulo / Carrera] — [Institucion] — [Ano egreso o en curso]
@@ -366,7 +366,7 @@ EXPERIENCIA RELEVANTE
 - [Logro concreto 2]
 
 HABILIDADES TECNICAS
-[Lista de tecnologias/herramientas relevantes para el proyecto]
+[Lista de tecnologas/herramientas relevantes para el proyecto]
 
 ROL EN KITTYPAU
 [Descripcion del rol y responsabilidades especificas]
@@ -403,19 +403,19 @@ ROL EN KITTYPAU
 
 ## PREGUNTAS FRECUENTES DEL EVALUADOR (y como responderlas)
 
-**P: "No tienen empresa constituida. ¿Como van a ejecutar el proyecto?"**
+**P: "No tienen empresa constituida. ¿Como van a ejecutar el proyecto"**
 R: Semilla Inicia permite postular como persona natural. La constitucion de empresa esta en el plan de uso de fondos (mes 1-2) y es parte del presupuesto solicitado.
 
-**P: "¿Como saben que hay mercado para esto?"**
+**P: "¿Como saben que hay mercado para esto"**
 R: El 66% de hogares chilenos tiene mascota. El mercado de productos para mascotas crece 40% en 5 anos. Los productos equivalentes importados se venden a $80.000-200.000 CLP y tienen demanda — simplemente no hay oferta local accesible.
 
-**P: "¿Que los diferencia de apps que ya existen?"**
-R: Las apps existentes solo registran datos manualmente (el dueno escribe cuanto comio el gato). Kittypau mide automaticamente con hardware fisico. No hay que recordar, no hay error humano. Es la diferencia entre un fitbit y un diario de ejercicio en papel.
+**P: "¿Que los diferencia de apps que ya existen"**
+R: Las apps existentes solo registran datos manualmente (el dueno escribe cuanto comio el gato). Kittypau mide automticamente con hardware fisico. No hay que recordar, no hay error humano. Es la diferencia entre un fitbit y un diario de ejercicio en papel.
 
-**P: "¿Por que Chile y no importar?"**
+**P: "¿Por que Chile y no importar"**
 R: Fabricar localmente reduce el costo 5x, permite soporte presencial, garantia real y ajuste del producto al mercado local. El emprendimiento genera valor en Chile, no solo consume divisas.
 
-**P: "¿Es sostenible financieramente?"**
+**P: "¿Es sostenible financieramente"**
 R: Si. El modelo hardware + suscripcion permite break-even con 26 suscriptores activos (~$130.000 CLP/mes). La recurrencia SaaS hace el modelo predecible y escalable.
 
 ---
@@ -424,7 +424,7 @@ R: Si. El modelo hardware + suscripcion permite break-even con 26 suscriptores a
 
 ## DATOS PENDIENTES DE COMPLETAR
 
-Los siguientes campos estan marcados con [CORCHETES] en el documento y requieren informacion:
+Los siguentes campos estan marcados con [CORCHETES] en el documento y requieren informacion:
 
 | Campo | Estado | Donde aparece |
 |-------|--------|--------------|

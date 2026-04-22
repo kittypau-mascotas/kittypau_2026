@@ -5,7 +5,7 @@
 ---
 
 ## Flujo oficial (leer primero)
-- [GITHUB_FLUJO_OFICIAL.md](GITHUB_FLUJO_OFICIAL.md) — Ramas, commits, PRs, reglas del repo
+- [GITHUB_FLUJO_OFICIAL.md](GITHUB_FLUJO_OFICIAL.md) — Rams, commits, PRs, reglas del repo
 - [GITHUB_GOBERNANZA_COLABORACION.md](GITHUB_GOBERNANZA_COLABORACION.md) — Branch protection, CI checks, políticas
 
 ## Comandos operativos
@@ -22,7 +22,7 @@
 - [GITHUB_MAURO.md](GITHUB_MAURO.md) — Registro de actividad de Mauro
 - [AVANCE_PUSHES_GITHUB.md](AVANCE_PUSHES_GITHUB.md) — Tabla consolidada de pushes (ambos)
 
-## Integración de ramas
+## Integración de rams
 - [PLAN_3PRS_UNION_LIMPIA.md](PLAN_3PRS_UNION_LIMPIA.md) — Estrategia de 3 PRs para fusión limpia
 - [REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md](REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md) — Log de prueba de fusión conjunta
 

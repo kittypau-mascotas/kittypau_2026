@@ -2,28 +2,28 @@
 
 ## Objetivo
 Validar el flujo completo desde la UI:
-registro → confirmación → onboarding (usuario/mascota/dispositivo) → dashboard.
+registro -> confirmación -> onboarding (usuario/mascota/dispositivo) -> dashboard.
 
 ## Prerrequisitos
 - Deploy activo en Vercel.
 - Supabase Auth configurado con redirect URLs:
   - `/login`
   - `/reset`
-  - `/login?register=1`
+  - `/loginregister=1`
 - Bucket `kittypau-photos` creado y policies aplicadas.
 
 ## Flujo manual (checklist)
 1. **Registro**
-   - Ir a `/login` → “Crear cuenta”.
+   - Ir a `/login` -> “Crear cuenta”.
    - Ingresar email + password.
    - Ver mensaje “Revisa tu correo”.
 2. **Confirmación**
    - Abrir correo y confirmar.
-   - Debe redirigir a `/login?register=1&verified=1`.
+   - Debe redirigir a `/loginregister=1&verified=1`.
 3. **Onboarding**
-   - Paso 1 (Usuario): completar perfil + subir foto → Guardado → continúa.
-   - Paso 2 (Mascota): completar datos + foto → Guardado → continúa.
-   - Paso 3 (Dispositivo): `device_id` KPCL + tipo → registrar → `device_linked`.
+   - Paso 1 (Usuario): completar perfil + subir foto -> Guardado -> continúa.
+   - Paso 2 (Mascota): completar datos + foto -> Guardado -> continúa.
+   - Paso 3 (Dispositivo): `device_id` KPCL + tipo -> registrar -> `device_linked`.
 4. **Dashboard**
    - Redirección a `/today`.
    - Debe mostrar “Modo guía” con nombre de mascota.

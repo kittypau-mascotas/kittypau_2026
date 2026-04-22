@@ -33,7 +33,7 @@ Convertir lecturas crudas en mensajes interpretativos consistentes, evitando con
 - Ambiente riesgoso: temperatura > 30°C o humedad > 75% por > 2h.
 
 ## Mensajes UX (ejemplos)
-- "Bebió menos de lo habitual en las últimas 24h."
+- "Bebió menos de lo habitual en las últims 24h."
 - "Se detectaron varias micro-ingestas."
 - "Hubo consumo nocturno inusual."
 - "Ambiente caluroso por más de 2h."

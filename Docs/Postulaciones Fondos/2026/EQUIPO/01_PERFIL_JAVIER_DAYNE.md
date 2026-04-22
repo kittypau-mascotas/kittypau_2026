@@ -9,7 +9,7 @@
 
 ## Rol en Kittypau
 - **Cargo:** Co-fundador — Desarrollo Técnico (IoT / Software)
-- **Participación accionaria:** 50%
+- **Participación accinaria:** 50%
 
 ## Formación académica
 | Año | Título / Diploma | Institución |
@@ -24,7 +24,7 @@
 | Período | Cargo | Organización |
 |---------|-------|--------------|
 | 2021 – Sep 2025 | Senior Inside Sales — Automatización Industrial | Emerson Electric |
-| 2014 – 2021 | Ingeniero de Proyectos — Sistemas DCS y SCADA | Emerson Electric |
+| 2014 – 2021 | Ingeniero de Proyectos — Sistems DCS y SCADA | Emerson Electric |
 | 2013 – Feb 2014 | Coordinador de Integración | Ineco SpA |
 | 2012 – Ene 2013 | Ingeniero Proyectista | Insaa Ltda. |
 | 2009 – 2012 | Supervisor de Proyecto e Ingeniería | Albanetwork S.A. |
@@ -32,19 +32,19 @@
 - **Años totales de experiencia:** 15+
 
 ## Competencias técnicas clave
-- **Sistemas de control:** DCS DeltaV, DCS Ovation, Siemens, ABB
+- **Sistems de control:** DCS DeltaV, DCS Ovation, Siemens, ABB
 - **Automatización:** SCADA / HMI, Redes Industriales, Fibra Óptica
 - **IoT / Conectividad:** IIoT, MQTT (brokers, tópicos, sensores en tiempo real)
-- **Ciberseguridad:** OT / Sistemas de control industrial
+- **Ciberseguridad:** OT / Sistems de control industrial
 - **Virtualización:** Infraestructura industrial virtualizada
 - **Herramientas:** Power BI, VS Code, AutoCAD, MS Project
-- **Idiomas:** Español (nativo), Inglés intermedio
+- **Idioms:** Español (nativo), Inglés intermedio
 
 ## Proyectos destacados
 - **Virtualización Ovation – AES Gener:** migración completa SCADA + nodos DCS a infraestructura virtual
-- **Migración DCS Ralco – Siemens → Ovation:** administración integral, lógica de control, comisionamiento
+- **Migración DCS Ralco – Siemens -> Ovation:** administración integral, lógica de control, comisionamiento
 - **DeltaV – Minera Centinela:** implementación DCS para pila de lixiviación
-- **Migración ABB → DeltaV – Patache CMDIC:** reemplazo de plataforma, integración instrumentación
+- **Migración ABB -> DeltaV – Patache CMDIC:** reemplazo de plataforma, integración instrumentación
 - **Conectividad IIoT/MQTT:** monitoreo industrial con brokers MQTT y visualización de datos de sensores
 - **Kittypau:** co-fundador, responsable del desarrollo IoT/firmware/bridge/software
 
@@ -61,6 +61,6 @@
 | Julio Cáceres | Gerente de Operaciones – API Ingeniería | +56 9 5798 7761 |
 
 ## Resumen para formulario
-> Ingeniero en Automatización con más de 15 años de experiencia en sistemas de control industrial (DCS, SCADA, IIoT/MQTT). Co-fundador de Kittypau, liderando el desarrollo técnico de hardware IoT, firmware, bridge y arquitectura de software.
+> Ingeniero en Automatización con más de 15 años de experiencia en sistems de control industrial (DCS, SCADA, IIoT/MQTT). Co-fundador de Kittypau, liderando el desarrollo técnico de hardware IoT, firmware, bridge y arquitectura de software.
 
 

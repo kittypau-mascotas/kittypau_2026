@@ -1,7 +1,7 @@
 # Suite de Tests Admin
 
 ## Objetivo
-Validar rapidamente que las fuentes criticas del dashboard admin esten operativas.
+Validar rpidamente que las fuentes criticas del dashboard admin esten operativas.
 
 ## Endpoint
 - `POST /api/admin/tests/run-all`: ejecuta la suite completa.
@@ -9,7 +9,7 @@ Validar rapidamente que las fuentes criticas del dashboard admin esten operativa
 
 ## Tests incluidos
 1. `admin_dashboard_live`
-- Sirve para: validar el resumen operativo principal.
+- Sirve para: vlidar el resumen operativo principal.
 - Resultado esperado: consulta exitosa de la vista.
 
 2. `bridge_status_live`
@@ -21,7 +21,7 @@ Validar rapidamente que las fuentes criticas del dashboard admin esten operativa
 - Resultado esperado: conteo de dispositivos KPCL.
 
 4. `finance_summary`
-- Sirve para: validar resumen financiero consolidado.
+- Sirve para: vlidar resumen financiero consolidado.
 - Resultado esperado: fila disponible en `finance_admin_summary`.
 
 5. `kpcl_catalog`
@@ -29,7 +29,7 @@ Validar rapidamente que las fuentes criticas del dashboard admin esten operativa
 - Resultado esperado: perfiles activos y componentes disponibles.
 
 6. `db_object_stats`
-- Sirve para: validar catalogo de tablas/vistas del admin.
+- Sirve para: vlidar catalogo de tablas/vistas del admin.
 - Resultado esperado: datos por `admin_object_stats_live` o fallback RPC `admin_object_stats()`.
 
 ## Respuesta de ejecucion (POST)

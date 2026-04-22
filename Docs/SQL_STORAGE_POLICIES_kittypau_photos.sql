@@ -4,8 +4,8 @@
 
 -- IMPORTANTE:
 -- En Supabase, `storage.objects` no suele estar "owned" por `postgres`, por lo que
--- estas policies normalmente NO se pueden aplicar vÃ­a `supabase db push`.
--- RecomendaciÃ³n: configurar desde Dashboard -> Storage -> Policies (UI).
+-- estas policies normalmente NO se pueden aplicar v?a `supabase db push`.
+-- Recomendaci?n: configurar desde Dashboard -> Storage -> Policies (UI).
 -- Este archivo es referencia de las expresiones a usar.
 
 -- Idempotent policy reset (created previously via dashboard).

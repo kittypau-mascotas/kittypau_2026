@@ -1,16 +1,16 @@
-# Plan de Costos y Presupuesto — Kittypau IoT
+# Plan de Costos y Presupuesto - Kittypau IoT
 **Proceso PMBOK**: 7.1-7.4 Planificacion, Estimacion, Presupuesto y Control de Costos
 **Dominio PMBOK 7**: Planificacion / Entrega de Valor
 **Version**: 2.0 | Fecha: 2026-03-16
 **Tipo de cambio operativo**: 1 USD = 950 CLP
 
-> **v2.0 — actualizacion con datos reales:** costos de componentes actualizados con precios reales AliExpress (2023-2026), inversion acumulada real por fundadores, nuevo perfil **KPLANT** (ESP32-C3 SuperMini).
+> **v2.0 - actualizacion con datos reales:** costos de componentes actualizados con precios reales AliExpress (2023-2026), inversin acumulada real por fundadores, nuevo perfil **KPLANT** (ESP32-C3 SuperMini).
 
 ---
 
 ## 1. Costo Unitario de Produccion (BOM + Manufactura)
 
-### Perfil A — KPCL NodeMCU v3 CP2102 (Kittypau — sin camara)
+### Perfil A - KPCL NodeMCU v3 CP2102 (Kittypau - sin camara)
 
 | Componente | Categoria | Estimado v1 | **Real AliExpress** |
 |-----------|-----------|-------------|---------------------|
@@ -33,7 +33,7 @@
 
 > Precios actualizados en DB: migracion `20260316120000_update_real_component_prices.sql`
 
-### Perfil B — KPCL ESP32-CAM AI-Thinker (Kittypau — con camara)
+### Perfil B - KPCL ESP32-CAM AI-Thinker (Kittypau - con camara)
 
 | Componente | Categoria | Estimado v1 | **Real AliExpress** |
 |-----------|-----------|-------------|---------------------|
@@ -58,8 +58,8 @@
 
 | Perfil | BOM | Manufactura | **Total** | CLP |
 |--------|-----|-------------|-----------|-----|
-| A — NodeMCU | $14,47 | $5,80 | **$20,27** | $19.257 |
-| B — ESP32-CAM | $17,19 | $6,65 | **$23,84** | $22.648 |
+| A - NodeMCU | $14,47 | $5,80 | **$20,27** | $19.257 |
+| B - ESP32-CAM | $17,19 | $6,65 | **$23,84** | $22.648 |
 
 ### Referencia de impresion 3D
 
@@ -83,7 +83,7 @@
 
 ### OPEX cloud (shadow-pricing a 100 dispositivos)
 
-Ventana operativa: 28 dias
+Ventana operativa: 28 das
 Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 | Proveedor | Formula | Costo global (100 devs) | Por dispositivo |
@@ -97,14 +97,14 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 | Perfil | OPEX base | OPEX cloud | OPEX total/mes |
 |--------|-----------|-----------|----------------|
-| A — NodeMCU | $1,40 | $0,154 | **$1,554 USD** |
-| B — ESP32-CAM | $1,75 | $0,154 | **$1,904 USD** |
+| A - NodeMCU | $1,40 | $0,154 | **$1,554 USD** |
+| B - ESP32-CAM | $1,75 | $0,154 | **$1,904 USD** |
 
 ---
 
 ## 3. Costos Operativos Mensuales (empresa)
 
-### Escenario actual (plan free — shadow price)
+### Escenario actual (plan free - shadow price)
 
 | Proveedor | Plan | Costo facturado | Shadow-price/mes |
 |-----------|------|----------------|-----------------|
@@ -128,7 +128,7 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 ### Break-even en suscripciones
 
-- Burn rate real actual: **$1 USD/mes** (plan free — confirmado)
+- Burn rate real actual: **$1 USD/mes** (plan free - confirmado)
 - Burn rate shadow-price: **$44 USD/mes** (valor real de los servicios)
 - Burn rate plan pago: **$65 USD/mes** (al escalar a 100 usuarios)
 - Precio suscripcion premium: $5,00 USD/mes (~$4.750 CLP)
@@ -142,13 +142,13 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 ---
 
-## 4. Inversion Real Acumulada (recursos propios — actualizado v2.0)
+## 4. Inversin Real Acumulada (recursos propios - actualizado v2.0)
 
-> Datos extraidos de `REGISTRO_COMPRAS_JAVIER.md` y pedidos AliExpress 2023-2026.
-> Fuente unica verificable: cuenta AliExpress Javier Dayne (Ñuñoa/ES/CLP).
+> Datos extraidos de `03_REGISTRO_COMPRAS_JAVIER.md` y pedidos AliExpress 2023-2026.
+> Fuente única verificable: cuenta AliExpress Javier Dayne (Ñuñoa/ES/CLP).
 > Compras de Mauro Carcamo pendientes de registrar.
 
-### Compras Javier Dayne — componentes Kittypau
+### Compras Javier Dayne - componentes Kittypau
 
 | Periodo | CLP | USD aprox |
 |---------|-----|-----------|
@@ -165,18 +165,18 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 | Mar 2026 (en camino) | $106.942 | ~$113 |
 | **Subtotal componentes Javier** | **$242.072** | **~$255** |
 
-### Inversion total conocida (Javier — todos los items)
+### Inversin total conocida (Javier - todos los items)
 
 | Concepto | CLP | USD aprox |
 |----------|-----|-----------|
 | Componentes Kittypau + KPLANT (AliExpress) | $242.072 | ~$255 |
-| RPi Zero 2W — bridge (estimado) | $19.000 | ~$20 |
+| RPi Zero 2W - bridge (estimado) | $19.000 | ~$20 |
 | Filamento PLA+ 2kg (estimado) | $32.000 | ~$34 |
-| **Total inversion Javier conocida** | **$293.072** | **~$308** |
-| Compras Mauro Carcamo (pendiente registro) | — | — |
+| **Total inversin Javier conocida** | **$293.072** | **~$308** |
+| Compras Mauro Carcamo (pendiente registro) | - | - |
 | **Total real acumulado estimado** | **~$350.000+** | **~$368+** |
 
-> **Nota:** PMO v1.0 estimaba inversion propia en $280,68 USD. Dato real de Javier solo supera esa cifra ($308 USD conocido). Total real con Mauro se estima mayor.
+> **Nota:** PMO v1.0 estimaba inversin propia en $280,68 USD. Dato real de Javier solo supera esa cifra ($308 USD conocido). Total real con Mauro se estima mayor.
 
 ### Distribucion de deuda interna (acuerdo 50/50)
 
@@ -190,11 +190,11 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 ## 5. Presupuesto Total del Proyecto (18 meses)
 
-### Inversion inicial (Fase 0 — completada con recursos propios)
+### Inversin inicial (Fase 0 - completada con recursos propios)
 
 | Concepto | Costo USD | CLP |
 |----------|-----------|-----|
-| Componentes Kittypau — Javier (verificado AliExpress, sin lab) | $190,00 | $180.645 |
+| Componentes Kittypau - Javier (verificado AliExpress, sin lab) | $190,00 | $180.645 |
 | Raspberry Pi Zero 2W (bridge) | $20,00 | $19.000 |
 | Filamento 3D (2kg) | $33,68 | $32.000 |
 | Aporte Mauro Carcamo (50% pre-Mar-2026, ya liquidado) | $60,00 | $57.000 |
@@ -202,12 +202,12 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 | Deuda pendiente Mauro (batch Mar 2026) | $35,00 | $33.414 |
 | **Total comprometido (ambos fundadores)** | **~$338,68** | **~$322.059** |
 
-### Presupuesto piloto (Fase 2 — 50 unidades, 6 meses)
+### Presupuesto piloto (Fase 2 - 50 unidades, 6 meses)
 
 | Concepto | Unidades | Costo USD | CLP |
 |----------|---------|-----------|-----|
-| KPCL NodeMCU — Kittypau (35 unidades) | 35 | $709,45 | $673.978 |
-| KPCL ESP32-CAM — Kittypau (15 unidades) | 15 | $357,60 | $339.720 |
+| KPCL NodeMCU - Kittypau (35 unidades) | 35 | $709,45 | $673.978 |
+| KPCL ESP32-CAM - Kittypau (15 unidades) | 15 | $357,60 | $339.720 |
 | Filamento 3D adicional (5kg) | 1 lote | $84,00 | $79.800 |
 | Envios y logistica piloto | 50 | $75,00 | $71.250 |
 | **Subtotal hardware piloto** | | **$1.151,05** | **$1.093.578** |
@@ -215,7 +215,7 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 | Marketing y adquisicion piloto | -- | $500,00 | $475.000 |
 | Constitucion legal empresa | -- | $700,00 | $665.000 |
 | Infraestructura cloud 6 meses | -- | $390,00 | $370.500 |
-| **Subtotal operacion** | | **$3.590,00** | **$3.410.500** |
+| **Subtotal operacin** | | **$3.590,00** | **$3.410.500** |
 | **TOTAL FASE PILOTO** | | **$4.741,05** | **$4.503.998** |
 
 ---
@@ -246,18 +246,18 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 - Software: $5.000.000 CLP
 - Total servicios: $5.000.000 CLP (29,4%)
 
-**Gastos operacionales** (validacion, legal, manufactura):
+**Gastos operacinales** (vlidacion, legal, manufactura):
 - Manufactura: $2.500.000 CLP
 - Validacion: $2.000.000 CLP
 - Legal: $1.500.000 CLP
 - Imprevistos: $1.500.000 CLP
-- Total operacional: $7.500.000 CLP (44,1%)
+- Total operacinal: $7.500.000 CLP (44,1%)
 
 ---
 
 ## 7. Proyeccion de Ingresos (18 meses)
 
-### Modelo A — Hardware + Suscripcion (recomendado)
+### Modelo A - Hardware + Suscripcion (recomendado)
 
 Supuestos:
 - Precio venta plato: $29.990 CLP (~$31,50 USD)
@@ -278,9 +278,9 @@ Supuestos:
 
 **Ingresos acumulados 18 meses**: ~$5.147.600 CLP (~$5.418 USD)
 
-### Retorno sobre inversion (ROI simple)
+### Retorno sobre inversin (ROI simple)
 
-- Inversion total (propia + CORFO): $21.250.000 CLP
+- Inversin total (propia + CORFO): $21.250.000 CLP
 - Ingresos acumulados 18m: $5.147.600 CLP
 - Ingresos proyectados 36m: ~$25.000.000 CLP
 - **ROI proyectado a 36 meses**: ~18%
@@ -310,7 +310,7 @@ CLP (millones)
 
 ## 9. Control de Costos (PMBOK 7.4)
 
-### Valor Ganado (EVM) — indicadores clave
+### Valor Ganado (EVM) - indicadores clave
 
 | Indicador | Formula | Objetivo |
 |-----------|---------|---------|
@@ -324,7 +324,7 @@ CLP (millones)
 |-----------|--------|
 | Gasto hardware > 30% sobre presupuesto | Revision de BOM, busqueda de proveedor alternativo |
 | Gasto cloud > $100 USD/mes sin ingresos | Revisar plan y optimizar queries/frecuencia |
-| COGS Kittypau > $24 USD por unidad | Renegociar componentes o redisenar placa |
+| COGS Kittypau > $24 USD por unidad | Renegociar componentes o redisear placa |
 | CAC > $20.000 CLP | Revisar estrategia de adquisicion |
 
 ### Inventario en base de datos
@@ -344,7 +344,8 @@ CLP (millones)
 ---
 
 _Referencias: PMBOK 6ta Ed. Cap. 7 (Gestion de los Costos) | PMBOK 7ma Ed. Dominio de Planificacion_
-_Datos reales: `Docs/Postulaciones Fondos/2026/Participantes/REGISTRO_COMPRAS_JAVIER.md`_
-_Documento anterior: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md) | Siguiente: [06_RISK_REGISTER.md](06_RISK_REGISTER.md)_
+_Datos reales: `Docs/Postulaciones Fondos/2026/EQUIPO/03_REGISTRO_COMPRAS_JAVIER.md`_
+_Documento anterior: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md) | Siguente: [06_RISK_REGISTER.md](06_RISK_REGISTER.md)_
+
 
 

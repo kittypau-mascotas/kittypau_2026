@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -10,7 +10,7 @@ import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
 import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
 import { LOGIN_CHATBOT_CONTEXT } from "@/chatbot-gato/login-context";
 import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
-import { setTokens } from "@/lib/auth/token";
+import { resolveAuthenticatedPath, setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
@@ -18,12 +18,13 @@ import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
   const router = useRouter();
-  const isNativeParallax = isNativeFlavorEnabled();
+  const isNativeApk = isNativeFlavorEnabled();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [trialButtonMessageIndex, setTrialButtonMessageIndex] = useState(0);
   const [showRegister, setShowRegister] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -321,70 +322,45 @@ export default function LoginPage() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const root = document.documentElement;
-    const isNativeView =
-      root.classList.contains("kp-native-apk") ||
-      root.classList.contains("kp-flavor-native");
-    if (!isNativeView) {
-      root.classList.remove("kp-login-scrolled");
-      return;
-    }
-
-    const onScroll = () => {
-      if (window.scrollY > 4) {
-        root.classList.add("kp-login-scrolled");
-      } else {
-        root.classList.remove("kp-login-scrolled");
-      }
-    };
-
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const onTouchStart = (event: TouchEvent) => {
-      touchStartY = event.touches[0]?.clientY ?? 0;
-      touchEndY = touchStartY;
-    };
-    const onTouchMove = (event: TouchEvent) => {
-      const currentY = event.touches[0]?.clientY ?? touchStartY;
-      touchEndY = currentY;
-      const delta = touchStartY - currentY;
-      if (delta > 6) {
-        root.classList.add("kp-login-scrolled");
-      } else if (window.scrollY <= 2 && delta < -6) {
-        root.classList.remove("kp-login-scrolled");
-      }
-    };
-    const onTouchEnd = () => {
-      const delta = touchStartY - touchEndY;
-      const panelTop =
-        (loginPanelWrapRef.current?.getBoundingClientRect().top ?? 0) +
-        window.scrollY;
-
-      if (delta > 24) {
-        window.scrollTo({
-          top: Math.max(0, panelTop - 72),
-          behavior: "smooth",
-        });
-        return;
-      }
-
-      if (delta < -24) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    root.classList.remove("kp-login-scrolled");
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
       root.classList.remove("kp-login-scrolled");
     };
   }, []);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setTrialButtonMessageIndex((prev) => (prev + 1) % 2);
+    }, 2600);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hasPendingAuthFlow =
+      params.get("register") === "1" ||
+      params.get("reset") === "1" ||
+      params.get("verified") === "1" ||
+      Boolean(params.get("code")) ||
+      Boolean(params.get("token_hash")) ||
+      Boolean(params.get("type"));
+
+    if (hasPendingAuthFlow) return;
+
+    let cancelled = false;
+
+    void resolveAuthenticatedPath().then((path) => {
+      if (cancelled || !path) return;
+      router.replace(path);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   useEffect(() => {
     if (!showTrialModal) {
@@ -1111,7 +1087,7 @@ export default function LoginPage() {
   return (
     <div
       className="login-bg login-ui-font"
-      data-kp-parallax-container={isNativeParallax ? "1" : undefined}
+      data-kp-parallax-container={isNativeApk ? undefined : "1"}
     >
       <div className="login-layer">
         <div className="login-collage" />
@@ -1119,100 +1095,102 @@ export default function LoginPage() {
       <audio ref={loginAudioRef} src="/audio/sonido_marca.mp3" preload="auto" />
 
       <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:py-2">
-        <div className="login-hero-column max-w-xl space-y-4 text-center">
-          <div className="login-fold-box login-fold-box-plate">
+        {!isNativeApk ? (
+          <div className="login-hero-column max-w-xl space-y-4 text-center">
+            <div className="login-fold-box login-fold-box-plate">
+              <Parallax
+                translateY={
+                  isNativeApk
+                    ? ["22px", "-28px", "easeOutQuad"]
+                    : ["14px", "-18px", "easeOutQuad"]
+                }
+                rotate={isNativeApk ? ["-1deg", "1deg"] : ["0deg", "0deg"]}
+                shouldAlwaysCompleteAnimation
+                disabled={isNativeApk}
+              >
+                <div className="login-hero-asset freeform-rise">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextIndex =
+                        (heroBowlCycleIndex + 1) % heroBowlCycle.length;
+                      const nextState = heroBowlCycle[nextIndex];
+                      playBowlClickSound(nextState.soundGroup);
+                      setHeroBowlCycleIndex(nextIndex);
+                    }}
+                    className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
+                    aria-label="Cambiar nivel visual del plato"
+                    title="Cambiar nivel visual del plato"
+                    {...catWakeInteractions}
+                  >
+                    <Image
+                      src={currentHeroBowlState.image}
+                      alt="Plato de comida Kittypau"
+                      width={240}
+                      height={240}
+                      className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
+                      loading="eager"
+                      draggable={false}
+                    />
+                  </button>
+                </div>
+              </Parallax>
+            </div>
+            <div className="login-hero-divider" aria-hidden="true" />
             <Parallax
-              translateY={
-                isNativeParallax
-                  ? ["22px", "-28px", "easeOutQuad"]
-                  : ["14px", "-18px", "easeOutQuad"]
-              }
-              rotate={isNativeParallax ? ["-1deg", "1deg"] : ["0deg", "0deg"]}
+              translateY={isNativeApk ? undefined : ["8px", "-16px"]}
+              opacity={isNativeApk ? undefined : [0.95, 1]}
+              disabled={isNativeApk}
               shouldAlwaysCompleteAnimation
-              disabled={!isNativeParallax}
             >
-              <div className="login-hero-asset freeform-rise">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const nextIndex =
-                      (heroBowlCycleIndex + 1) % heroBowlCycle.length;
-                    const nextState = heroBowlCycle[nextIndex];
-                    playBowlClickSound(nextState.soundGroup);
-                    setHeroBowlCycleIndex(nextIndex);
-                  }}
-                  className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
-                  aria-label="Cambiar nivel visual del plato"
-                  title="Cambiar nivel visual del plato"
-                  {...catWakeInteractions}
-                >
-                  <Image
-                    src={currentHeroBowlState.image}
-                    alt="Plato de comida Kittypau"
-                    width={240}
-                    height={240}
-                    className="login-hero-asset-img mx-auto select-none transition-transform duration-150 ease-out group-hover:scale-95 group-active:scale-90"
-                    loading="eager"
-                    draggable={false}
-                  />
-                </button>
-              </div>
-            </Parallax>
-          </div>
-          <div className="login-hero-divider" aria-hidden="true" />
-          <Parallax
-            translateY={isNativeParallax ? ["8px", "-16px"] : undefined}
-            opacity={isNativeParallax ? [0.95, 1] : undefined}
-            disabled={!isNativeParallax}
-            shouldAlwaysCompleteAnimation
-          >
-            <div className="login-fold-box login-fold-box-message">
-              <p className="login-hero-static text-slate-700">
-                Descubre lo que tu mascota intenta decirte.
-              </p>
-              <div className="login-hero-slider" aria-live="polite">
-                <div className="login-hero-slider-viewport scroller">
-                  <div className="login-hero-slider-track inner">
-                    <p>Monitorea ciclos de comida y agua</p>
-                    <p>Recibe alertas tempranas de salud</p>
-                    <p>Tenencia responsable y tecnología</p>
-                    <p>Bienestar Animal - IA - IoT</p>
+              <div className="login-fold-box login-fold-box-message">
+                <p className="login-hero-static text-slate-700">
+                  Descubre lo que tu mascota intenta decirte.
+                </p>
+                <div className="login-hero-slider" aria-live="polite">
+                  <div className="login-hero-slider-viewport scroller">
+                    <div className="login-hero-slider-track inner">
+                      <p>Monitorea ciclos de comida y agua</p>
+                      <p>Recibe alertas tempranas de salud</p>
+                      <p>Tenencia responsable y tecnología</p>
+                      <p>Bienestar Animal - IA - IoT</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Parallax>
-          <Parallax
-            translateY={isNativeParallax ? ["10px", "-18px"] : undefined}
-            opacity={isNativeParallax ? [0.92, 1] : undefined}
-            disabled={!isNativeParallax}
-            shouldAlwaysCompleteAnimation
-          >
-            <div className="login-fold-box login-fold-box-brand login-card-brand freeform-rise">
-              <div className="brand-logo-badge" aria-hidden="true">
-                <Image
-                  src="/logo_carga.jpg"
-                  alt=""
-                  width={96}
-                  height={96}
-                  priority
-                  className="brand-logo-img"
-                  draggable={false}
-                />
+            </Parallax>
+            <Parallax
+              translateY={isNativeApk ? undefined : ["10px", "-18px"]}
+              opacity={isNativeApk ? undefined : [0.92, 1]}
+              disabled={isNativeApk}
+              shouldAlwaysCompleteAnimation
+            >
+              <div className="login-fold-box login-fold-box-brand login-card-brand freeform-rise">
+                <div className="brand-logo-badge" aria-hidden="true">
+                  <Image
+                    src="/logo_carga.jpg"
+                    alt=""
+                    width={96}
+                    height={96}
+                    priority
+                    className="brand-logo-img"
+                    draggable={false}
+                  />
+                </div>
+                <span className="brand-title text-3xl text-primary">
+                  Kittypau
+                </span>
+                <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
               </div>
-              <span className="brand-title text-3xl text-primary">
-                Kittypau
-              </span>
-              <p className="kp-pettech-tagline mt-1">PetTech AIoT</p>
-            </div>
-          </Parallax>
-          <SocialLinks
-            className="login-hero-social login-hero-social-web social-header"
-            size="md"
-            onInteractionStart={wakeTrialCat}
-            onInteractionEnd={sleepTrialCat}
-          />
-        </div>
+            </Parallax>
+            <SocialLinks
+              className="login-hero-social login-hero-social-web social-header"
+              size="md"
+              onInteractionStart={wakeTrialCat}
+              onInteractionEnd={sleepTrialCat}
+            />
+          </div>
+        ) : null}
 
         <div className="login-auth-column w-full max-w-md">
           <div className="login-card-brand freeform-rise">
@@ -1244,45 +1222,47 @@ export default function LoginPage() {
                 className="stagger login-login-stack"
                 onMouseMove={onTrialCatMouseMove}
               >
-                <div className="login-login-head flex items-start justify-between gap-3">
-                  <h2 className="display-title text-[1.7rem] font-semibold leading-[1.05] text-slate-900">
+                <div className="login-login-head flex items-center justify-center gap-3">
+                  <h2 className="display-title w-full whitespace-nowrap text-center text-[1.7rem] font-semibold leading-[1.05] text-slate-900">
                     Iniciar sesión
                   </h2>
                 </div>
-                <div
-                  className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
-                    isTrialCatAwake ? " is-awake" : ""
-                  }${isLoginCatHidden ? " login-panel-cat-hidden" : ""}`}
-                  ref={trialCatRef}
-                  onMouseEnter={wakeTrialCat}
-                  onMouseLeave={sleepTrialCat}
-                  style={
-                    {
-                      "--cat-eye-x": `${catEyeOffset.x}px`,
-                      "--cat-eye-y": `${catEyeOffset.y}px`,
-                      opacity: isLoginCatHidden ? 0 : 1,
-                      visibility: isLoginCatHidden ? "hidden" : "visible",
-                      transform: isLoginCatHidden
-                        ? "translateY(8px) scale(0.98)"
-                        : "translateY(0) scale(1)",
-                    } as CSSProperties
-                  }
-                >
-                  <div className="cat">
-                    <div className="sleep-symbol" aria-hidden="true">
-                      <span className="z z1">Z</span>
-                      <span className="z z2">z</span>
-                      <span className="z z3">Z</span>
+                {!isNativeApk ? (
+                  <div
+                    className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
+                      isTrialCatAwake ? " is-awake" : ""
+                    }${isLoginCatHidden ? " login-panel-cat-hidden" : ""}`}
+                    ref={trialCatRef}
+                    onMouseEnter={wakeTrialCat}
+                    onMouseLeave={sleepTrialCat}
+                    style={
+                      {
+                        "--cat-eye-x": `${catEyeOffset.x}px`,
+                        "--cat-eye-y": `${catEyeOffset.y}px`,
+                        opacity: isLoginCatHidden ? 0 : 1,
+                        visibility: isLoginCatHidden ? "hidden" : "visible",
+                        transform: isLoginCatHidden
+                          ? "translateY(8px) scale(0.98)"
+                          : "translateY(0) scale(1)",
+                      } as CSSProperties
+                    }
+                  >
+                    <div className="cat">
+                      <div className="sleep-symbol" aria-hidden="true">
+                        <span className="z z1">Z</span>
+                        <span className="z z2">z</span>
+                        <span className="z z3">Z</span>
+                      </div>
+                      <div
+                        className="thecat"
+                        aria-hidden="true"
+                        dangerouslySetInnerHTML={{ __html: trialCatSvg }}
+                      />
                     </div>
-                    <div
-                      className="thecat"
-                      aria-hidden="true"
-                      dangerouslySetInnerHTML={{ __html: trialCatSvg }}
-                    />
                   </div>
-                </div>
+                ) : null}
                 <div className="login-login-intro">
-                  <p className="text-sm text-slate-500">
+                  <p className="text-center text-sm text-slate-500">
                     Accede a la actividad diaria de tu plato.
                   </p>
                 </div>
@@ -1291,11 +1271,29 @@ export default function LoginPage() {
                     type="button"
                     onClick={openTrial}
                     className="kp-trial-button"
-                    aria-label="Abrir Demo App"
-                    title="Demo App"
+                    aria-label="Abrir Demo App. No necesitas registrarte."
+                    title="Demo App - No necesitas registrarte"
                     {...catWakeInteractions}
                   >
-                    Demo App
+                    <span className="kp-trial-button-main">Demo App</span>
+                    <span
+                      className={`kp-trial-button-note ${
+                        trialButtonMessageIndex === 0
+                          ? "is-visible"
+                          : "is-hidden"
+                      }`}
+                    >
+                      Pruébala ahora
+                    </span>
+                    <span
+                      className={`kp-trial-button-note kp-trial-button-note-accent ${
+                        trialButtonMessageIndex === 1
+                          ? "is-visible"
+                          : "is-hidden"
+                      }`}
+                    >
+                      No Necesitas Registrarte !!
+                    </span>
                   </button>
                 </div>
 
@@ -1401,7 +1399,7 @@ export default function LoginPage() {
                   </button>
                   {isSubmitting ? (
                     <p className="text-[11px] text-slate-500">
-                      Verificando credenciales…
+                      Verificando credenciales...
                     </p>
                   ) : null}
                 </form>
@@ -1460,18 +1458,24 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
+          <SocialLinks
+            className="login-auth-social social-header-center"
+            size="md"
+            onInteractionStart={wakeTrialCat}
+            onInteractionEnd={sleepTrialCat}
+          />
         </div>
       </div>
 
       {showRegister ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10">
           <div className="relative w-full max-w-4xl sm:px-0">
-          <div
-            className={`glass-panel login-register-modal w-full overflow-hidden ${
-              registerStep === "registro"
-                ? "login-register-modal-registro"
-                : ""
-            }`}
+            <div
+              className={`glass-panel login-register-modal w-full overflow-hidden ${
+                registerStep === "registro"
+                  ? "login-register-modal-registro"
+                  : ""
+              }`}
             >
               <div className="login-register-head border-b border-white/30 px-6 py-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1588,7 +1592,7 @@ export default function LoginPage() {
                     </button>
                     {isRegistering ? (
                       <p className="text-[11px] text-slate-500">
-                        Creando cuenta…
+                        Creando cuenta...
                       </p>
                     ) : null}
                     <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
@@ -1659,92 +1663,92 @@ export default function LoginPage() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-4 sm:p-6">
-            <div className="mb-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
-                    Modo prueba
-                  </p>
-                  <h2 className="login-trial-title mt-1 text-xl font-semibold">
-                    {trialDialogIntro.title}
-                  </h2>
-                  <p className="login-trial-copy mt-1 text-sm">
-                    {trialDialogIntro.body}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={closeTrial}
-                    className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
-                    aria-label="Cerrar"
-                  >
-                    Cerrar
-                  </button>
+              <div className="mb-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
+                      Modo prueba
+                    </p>
+                    <h2 className="login-trial-title mt-1 text-xl font-semibold">
+                      {trialDialogIntro.title}
+                    </h2>
+                    <p className="login-trial-copy mt-1 text-sm">
+                      {trialDialogIntro.body}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={closeTrial}
+                      className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
+                      aria-label="Cerrar"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-3">
-              <label className="block space-y-1">
-                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
-                  Tu nombre
-                </span>
-                <input
-                  type="text"
-                  value={trialOwnerName}
-                  onChange={(event) => setTrialOwnerName(event.target.value)}
-                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                />
-              </label>
-              <label className="block space-y-1">
-                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
-                  Nombre de tu mascota
-                </span>
-                <input
-                  type="text"
-                  value={trialPetName}
-                  onChange={(event) => setTrialPetName(event.target.value)}
-                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                />
-              </label>
-              <label className="block space-y-1">
-                <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
-                  Correo
-                </span>
-                <input
-                  type="email"
-                  value={trialEmail}
-                  onChange={(event) => setTrialEmail(event.target.value)}
-                  className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
-                  autoComplete="email"
-                />
-              </label>
-            </div>
+              <div className="space-y-3">
+                <label className="block space-y-1">
+                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                    Tu nombre
+                  </span>
+                  <input
+                    type="text"
+                    value={trialOwnerName}
+                    onChange={(event) => setTrialOwnerName(event.target.value)}
+                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                  />
+                </label>
+                <label className="block space-y-1">
+                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                    Nombre de tu mascota
+                  </span>
+                  <input
+                    type="text"
+                    value={trialPetName}
+                    onChange={(event) => setTrialPetName(event.target.value)}
+                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                  />
+                </label>
+                <label className="block space-y-1">
+                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                    Correo
+                  </span>
+                  <input
+                    type="email"
+                    value={trialEmail}
+                    onChange={(event) => setTrialEmail(event.target.value)}
+                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                    autoComplete="email"
+                  />
+                </label>
+              </div>
 
-            {trialError ? (
-              <p className="login-trial-error mt-3 rounded-[var(--radius)] border px-3 py-2 text-xs">
-                {trialError}
-              </p>
-            ) : null}
+              {trialError ? (
+                <p className="login-trial-error mt-3 rounded-[var(--radius)] border px-3 py-2 text-xs">
+                  {trialError}
+                </p>
+              ) : null}
 
-            <div className="mt-5 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={closeTrial}
-                className="login-trial-cancel rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={startTrial}
-                className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
-              >
-                {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
-              </button>
+              <div className="mt-5 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={closeTrial}
+                  className="login-trial-cancel rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={startTrial}
+                  className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
+                >
+                  {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
+                </button>
+              </div>
             </div>
-          </div>
           </div>
           {isTrialDialogVisible ? (
             <TrialRpgDialogDock>
@@ -1772,8 +1776,8 @@ export default function LoginPage() {
                           ? "is-visible"
                           : "is-hidden"
                       }`}
-                  onClick={(event) => event.stopPropagation()}
-                >
+                      onClick={(event) => event.stopPropagation()}
+                    >
                       <svg
                         aria-hidden="true"
                         viewBox="0 0 24 24"
@@ -1794,4 +1798,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

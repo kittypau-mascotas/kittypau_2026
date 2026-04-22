@@ -5,7 +5,7 @@ Documento operativo para que Javier (o una IA asistente) pueda:
 - abrir,
 - ejecutar,
 - editar,
-- validar,
+- vlidar,
 - y subir cambios del proyecto `kittypau_2026`.
 
 Fecha de referencia: 2026-03-02.
@@ -33,12 +33,12 @@ Secretos criticos a rotar despues:
 ## 1.2 Para firmware (si va a compilar/subir a placas)
 - VS Code extension: PlatformIO IDE
 - Python (PlatformIO lo instala o lo detecta)
-- Drivers USB de placa (ESP32/ESP8266), segun hardware
+- Drivers USB de placa (ESP32/ESP8266), segn hardware
 
-## 1.3 Comprobacion rapida
+## 1.3 Comprobacion rpida
 En terminal (PowerShell o bash):
 ```bash
-git --version
+git --versin
 node -v
 npm -v
 ```
@@ -62,7 +62,7 @@ Deben existir estas carpetas:
 - `bridge/` (bridge MQTT -> API webhook)
 - `iot_firmware/javier_1a/` (firmware integrado de Javier)
 - `supabase/` (migrations)
-- `Docs/` (documentacion operativa)
+- `Docs/` (documentacin operativa)
 
 ## 3) Configurar app web (Next.js)
 
@@ -104,7 +104,7 @@ npm run dev
 URL local esperada:
 - `http://localhost:3000`
 
-## 3.4 Verificaciones funcionales minimas
+## 3.4 Verificaciones funcionales minims
 1. Login carga.
 2. Vista `/today` carga.
 3. Si cuenta admin: `/admin` carga.
@@ -208,14 +208,14 @@ Regla: nunca trabajar en `main`.
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feat/javier-iot/<modulo>
+git checkout -b feat/javier-iot/<mdulo>
 ```
 
 ## 6.2 Commit y push
 ```bash
 git add .
 git commit -m "feat(iot): <descripcion-clara>"
-git push -u origin feat/javier-iot/<modulo>
+git push -u origin feat/javier-iot/<mdulo>
 ```
 
 ## 6.3 Pull Request
@@ -223,7 +223,7 @@ git push -u origin feat/javier-iot/<modulo>
 - Adjuntar evidencia de pruebas.
 - No mergear si fallan checks criticos.
 
-### 6.3.1 Crear PR con GitHub CLI (`gh`) - flujo validado
+### 6.3.1 Crear PR con GitHub CLI (`gh`) - flujo vlidado
 Si `gh` no esta instalado:
 ```bash
 winget install --id GitHub.cli -e
@@ -239,15 +239,15 @@ Esperado en salida:
 
 Crear PR hacia `main` desde rama activa:
 ```bash
-gh pr create --base main --head feat/javo-mauro --title "feat(admin): integrar modulo Javo en dashboard admin" --fill
+gh pr create --base main --head feat/javo-mauro --title "feat(admin): integrar mdulo Javo en dashboard admin" --fill
 ```
 
 Esperado en salida:
 - `Creating pull request for feat/javo-mauro into main ...`
 - URL del PR, por ejemplo: `https://github.com/kittypau-mascotas/kittypau_2026/pull/<numero>`
 
-## 6.4 Ramas oficiales de trabajo (Kittypau)
-Ramas creadas para separar trabajo por persona:
+## 6.4 Rams oficiales de trabajo (Kittypau)
+Rams creadas para separar trabajo por persona:
 - `feat/mauro-curcuma`
 - `feat/javo-mauro`
 
@@ -285,7 +285,7 @@ Regla de uso:
 3. Tras cada `git push`: actualizar `AVANCE_PUSHES_GITHUB.md`.
 4. No cerrar una jornada sin actualizar la bitacora correspondiente.
 
-Formato minimo por entrada:
+Formato mnimo por entrada:
 - Fecha
 - Rama
 - Objetivo
@@ -350,7 +350,7 @@ Estado actual:
 - No hay flujo principal dependiente de Docker en este repo.
 - Para Javier basta: Node + npm + PlatformIO + git.
 
-Docker solo seria util despues para:
+Docker solo seria til despues para:
 - estandarizar entorno de bridge,
 - correr pruebas/servicios reproducibles en equipo.
 
@@ -361,7 +361,7 @@ Docker solo seria util despues para:
 - Confirmar que todas las claves obligatorias existen.
 
 ## 10.2 `403` o `401` en APIs
-- Revisar token de sesion.
+- Revisar token de sesin.
 - Revisar `MQTT_WEBHOOK_SECRET` / `BRIDGE_HEARTBEAT_SECRET`.
 
 ## 10.3 Bridge no conecta MQTT
@@ -402,12 +402,12 @@ Docker solo seria util despues para:
 Frecuencia: cada 1 mes calendario.
 
 Objetivo:
-- Evaluar diferencias entre ramas de Mauro y Javo.
+- Evaluar diferencias entre rams de Mauro y Javo.
 - Definir que se fusiona a `main`.
 - Mantener coherencia tecnica y documental del proyecto.
 
 Procedimiento mensual:
-1. Comparar ramas:
+1. Comparar rams:
 ```bash
 git fetch origin --prune
 git log --oneline origin/main..origin/feat/mauro-curcuma
@@ -415,11 +415,11 @@ git log --oneline origin/main..origin/feat/javo-mauro
 git diff --name-only origin/main...origin/feat/mauro-curcuma
 git diff --name-only origin/main...origin/feat/javo-mauro
 ```
-2. Revisar bitacoras:
+2. Revisar bitcoras:
 - `Docs/GITHUB_MAURO.md`
 - `Docs/GITHUB_JAVO.md`
 3. Definir backlog de fusion mensual (PRs a `main`).
-4. Validar pruebas minimas antes de merge.
-5. Registrar resultado de la revision mensual en ambas bitacoras.
+4. Validar pruebas minims antes de merge.
+5. Registrar resultado de la revision mensual en ambas bitcoras.
 
 

@@ -31,20 +31,20 @@ Actualizar en cada jornada y en cada PR relevante.
 - Pruebas ejecutadas:
   - Validacion de cards de platos con datos reales (Today).
 - Riesgos/Pendientes:
-  - Continuar captura de data y validar estabilidad de sensores.
+  - Continuar captura de data y vlidar estabilidad de sensores.
 
 ## 2026-03-04
 - Rama: feat/javo-mauro
-- Objetivo: Calibrar sensor HX711 (KPCL0036), configurar bridge v2.6, alinear gobernanza GitHub.
+- Objetivo: Calibrar sensor HX711 (KPCL0036), configurar bridge v2.6, alnear gobernanza GitHub.
 - Cambios realizados:
   - Configuración de identidad git: user.name="javo", user.email="javomauro.contacto@gmail.com"
-  - Instalación y autenticación de GitHub CLI (gh v2.87.3, cuenta javo-mauro)
+  - Instalación y autnticación de GitHub CLI (gh v2.87.3, cuenta javo-mauro)
   - Merge de origin/main en feat/javo-mauro (fast-forward, 51 commits)
-  - DEVICE_ID cambiado de KPCL0038 → KPCL0036 en config.h
+  - DEVICE_ID cambiado de KPCL0038 -> KPCL0036 en config.h
   - Agregado [env:calibration] en platformio.ini para flujo de calibración HX711
   - Agregado bloque CALIBRATION_MODE en main.cpp (RAW serial + comandos T/gramos)
   - Agregada función sensorsGetRawValue() en sensors.cpp / sensors.h
-  - Bridge v2.6: función writeToReadings() para sincronizar sensor_readings → readings (UUID)
+  - Bridge v2.6: función writeToReadings() para sincronizar sensor_readings -> readings (UUID)
   - Fix en pr-quality.yml: excluir .example del check de .env (falso positivo)
   - Calibración HX711: factor 4033.33 guardado en LittleFS, 30s de estabilización
   - Firmware production flasheado en KPCL0036 (COM10), verificado Weight=0.00 + MQTT OK
@@ -80,7 +80,7 @@ Actualizar en cada jornada y en cada PR relevante.
   - Docs/GITHUB_FLUJO_OFICIAL.md
   - Docs/ONBOARDING_JAVIER.md
 - PR/Commit: Pendiente de consolidacion en PR.
-- Pruebas ejecutadas: Validacion de ramas remotas y estructura documental.
+- Pruebas ejecutadas: Validacion de rams remotas y estructura documental.
 - Riesgos/Pendientes:
   - Completar primeras tareas tecnicas IoT en rama personal.
   - Actualizar esta bitacora al cerrar cada PR.

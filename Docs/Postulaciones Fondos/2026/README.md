@@ -1,40 +1,41 @@
-# Postulaciones 2026 - Kittypau
+﻿# Postulaciones 2026 - Kittypau
 
-Esta carpeta agrupa la narrativa 2026 para Start-Up Chile y Corfo Semilla Inicia.
+Esta carpeta agrupa la operacin 2026 de fondos (Chile + LATAM + global) y los paquetes especificos por convocatoria.
 La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](documento_2026/00_DOCUMENTO_MAESTRO_2026.md).
 
-## Estado actual (2026-04-01)
+## Estado actual (2026-04-19)
+- Sistema de trabajo colaborativo (orden maestro): [`00_SISTEMA_TRABAJO.md`](00_SISTEMA_TRABAJO.md)
 - Estado vivo resumido del proyecto: [`../../ESTADO_PROYECTO_ACTUAL.md`](../../ESTADO_PROYECTO_ACTUAL.md)
 - Radar vivo de fondos: [`../../FONDOS_RASTREADOS_ACTUALES.md`](../../FONDOS_RASTREADOS_ACTUALES.md)
-- Fuentes oficiales guardadas: [`FUENTES_OFICIALES_FONDOS_2026.md`](FUENTES_OFICIALES_FONDOS_2026.md)
-- Start-Up Chile sigue como paquete vivo de trabajo.
-- Corfo Semilla Inicia O'Higgins ya vencio el 2026-03-16; este paquete queda para replanificacion o nueva region.
+- Fuentes oficiales guardadas: [`03_FUENTES_OFICIALES_2026.md`](03_FUENTES_OFICIALES_2026.md)
+- Guia consolidada Chile + LATAM/Global: [`01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md`](01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md)
+- Checklist operativo de elegibilidad: [`02_CHECKLIST_ELEGIBILIDAD_2026.md`](02_CHECKLIST_ELEGIBILIDAD_2026.md)
 
 ## Ruta de lectura
-1. [`documento_2026/`](documento_2026/) - narrativa madre, evidencia, negocio y checklist.
-2. [`Staruplab01_2026/`](Staruplab01_2026/) - paquete especifico Start-Up Chile.
-3. [`semilla_inicia/`](semilla_inicia/) - paquete especifico Corfo Semilla Inicia.
-4. [`FUENTES_OFICIALES_FONDOS_2026.md`](FUENTES_OFICIALES_FONDOS_2026.md) - links oficiales y pauta de re-scraping.
-5. [`STARTUPLAB01_FORMULARIO_KITTYPAW.md`](STARTUPLAB01_FORMULARIO_KITTYPAW.md) - version viva del formulario de Start-Up Chile.
-6. [`CRONOGRAMA_2026.md`](CRONOGRAMA_2026.md) - cronograma maestro compartido.
+1. [`00_SISTEMA_TRABAJO.md`](00_SISTEMA_TRABAJO.md) - forma oficial de trabajo en equipo.
+2. [`../../FONDOS_RASTREADOS_ACTUALES.md`](../../FONDOS_RASTREADOS_ACTUALES.md) - decision semanal (aplicar/preparar/vigilar).
+3. [`02_CHECKLIST_ELEGIBILIDAD_2026.md`](02_CHECKLIST_ELEGIBILIDAD_2026.md) - brechas y elegibilidad real.
+4. [`01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md`](01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md) - mapa completo por etapa y geografia.
+5. [`03_FUENTES_OFICIALES_2026.md`](03_FUENTES_OFICIALES_2026.md) - links oficiales y pauta de re-scraping.
+6. [`documento_2026/`](documento_2026/) - narrativa madre, evidencia, negocio y checklist.
+7. [`STARTUPLAB01_2026/`](STARTUPLAB01_2026/) - paquete especifico Start-Up Chile.
+8. [`CORFO_SEMILLA_INICIA_2026/`](CORFO_SEMILLA_INICIA_2026/) - paquete especifico Corfo Semilla Inicia.
+9. [`05_STARTUPLAB01_FORMULARIO_VIVO.md`](05_STARTUPLAB01_FORMULARIO_VIVO.md) - versin viva del formulario Start-Up Chile.
+
+## Soporte operativo
+- Respuestas de diagnostico para asistencia externa: [`04_RESPUESTAS_DIAGNOSTICO_CLOUDE.md`](04_RESPUESTAS_DIAGNOSTICO_CLOUDE.md)
+- Perfiles del equipo para formularios:
+  - [`EQUIPO/01_PERFIL_JAVIER_DAYNE.md`](EQUIPO/01_PERFIL_JAVIER_DAYNE.md)
+  - [`EQUIPO/02_PERFIL_MAURO_CARCAMO.md`](EQUIPO/02_PERFIL_MAURO_CARCAMO.md)
+- Registro de respaldo financiero:
+  - [`EQUIPO/03_REGISTRO_COMPRAS_JAVIER.md`](EQUIPO/03_REGISTRO_COMPRAS_JAVIER.md)
+
+## Entregables binarios
+- PDF de postulacion Start-Up Chile: `STARTUPLAB01_2026/90_POSTULACION_2026.pdf`
 
 ## Regla de trabajo 2026
-- No duplicar la narrativa madre en nuevos documentos.
-- Derivar cada version por fondo desde el paquete `documento_2026`.
-- Mantener solo diferencias reales: montos, limites de caracteres, formularios y anexos.
-- Si un archivo ya queda cubierto por otro, convertirlo en puntero historico.
-- Si una fuente oficial cambia, refrescar `FUENTES_OFICIALES_FONDOS_2026.md` antes de tocar la narrativa.
-
-## Estado actual del formulario Start-Up Chile
-- Version viva: [`STARTUPLAB01_FORMULARIO_KITTYPAW.md`](STARTUPLAB01_FORMULARIO_KITTYPAW.md)
-- Puntero historico: [`Staruplab01_2026/02_BORRADOR_FORMULARIO.md`](Staruplab01_2026/02_BORRADOR_FORMULARIO.md)
-
-## Referencias historicas 2025
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/Checklist_Postulacion_Build.md`
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/preguntas_formulario_postulacion.md`
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/01_Descripcion_Producto_Servicio.md`
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/03_Start_Up_Chile_Build_2025/02_Analisis_Competencia.md`
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/01_CORFO_Semilla_Inicia/Resumen_Ejecutivo_CORFO.md`
-- `Docs/kittypau_1a_docs_legacy/business/04_Postulaciones_y_Fondos/01_CORFO_Semilla_Inicia/3_Formularios/CORFO_Semilla_Inicia_2025_Draft.md`
-
+- No duplicar narrativa madre en nuevos documentos.
+- Derivar cada versin por fondo desde `documento_2026`.
+- Mantener solo diferencias reales: montos, limites, formularios y anexos.
+- Si una fuente oficial cambia, refrescar primero `03_FUENTES_OFICIALES_2026.md`.
 

@@ -1,7 +1,7 @@
 """Backfill canonico de eventos manuales KPCL hacia Supabase.
 
 Este script registra en `audit_events` los hitos manuales que ya existen en la
-documentacion canonica, para que el export UTC de las pruebas los arrastre al
+documentacin canonica, para que el export UTC de las pruebas los arrastre al
 CSV combinado y a los CSV por device.
 """
 
@@ -60,7 +60,7 @@ def rest_get_all(
     offset = 0
     while True:
         params = [("select", select), *filters, ("order", order), ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
         request = urllib.request.Request(url, headers=headers, method="GET")
         with urllib.request.urlopen(request, timeout=60) as response:
             payload = json.loads(response.read().decode("utf-8"))
@@ -292,7 +292,7 @@ def main() -> None:
                 str(device_map["KPCL0034"]["status"]),
                 str(device_map["KPCL0034"]["device_state"]),
                 {
-                    "category": "inicio_alimentacion",
+                    "category": "inicio_alimentacin",
                     "category_label": "INICIO ALIMENTACION",
                     "observed_at": "2026-04-07T00:17:41+00:00",
                     "notes": "KPCL0034 was categorized as the start of feeding.",
@@ -309,7 +309,7 @@ def main() -> None:
                 str(device_map["KPCL0034"]["status"]),
                 str(device_map["KPCL0034"]["device_state"]),
                 {
-                    "category": "termino_alimentacion",
+                    "category": "termino_alimentacin",
                     "category_label": "TERMINO ALIMENTACION",
                     "observed_at": "2026-04-07T00:20:41+00:00",
                     "notes": "KPCL0034 was categorized as the end of feeding.",

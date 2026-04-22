@@ -1,6 +1,6 @@
-﻿# Chatbot Kittypau
+# Chatbot Kittypau
 
-Carpeta canÃ³nica de la documentaciÃ³n del chatbot del gato y del chatbot de admin.
+Carpeta cannica de la documentacin del chatbot del gato y del chatbot de admin.
 
 ## Leer primero
 1. [`CHATBOT_GATO_KITTYPAU.md`](CHATBOT_GATO_KITTYPAU.md) - documento maestro del chatbot del gato.
@@ -10,7 +10,7 @@ Carpeta canÃ³nica de la documentaciÃ³n del chatbot del gato y del chatbot de
 5. [`CHATBOT_GATO_PERSONALIDAD_CANONICA.md`](CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica, ejemplos y reglas duras.
 6. [`CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md`](CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto.
 7. [`CHATBOT_GATO_CONTEXTO_DEMO.md`](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico y operativo de la demo.
-8. [`CHATBOT_GATO_STATE_MACHINE.md`](CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot.
+8. [`CHATBOT_GATO_STATE_MACHINE.md`](CHATBOT_GATO_STATE_MACHINE.md) - maquna de estados del chatbot.
 9. [`CHATBOT_GATO_BLOQUES_DEMO.md`](CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo.
 10. [`CHATBOT_GATO_PROMPTS_DEMO.md`](CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque de la demo.
 11. [`CHATBOT_GATO_BLOQUES_INICIO.md`](CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio.
@@ -21,7 +21,7 @@ Carpeta canÃ³nica de la documentaciÃ³n del chatbot del gato y del chatbot de
 ## Uso recomendado
 - Para entender la personalidad del gato, empieza por `CHATBOT_GATO_PERSONALIDAD_CANONICA.md`.
 - Para entender el producto Kittypau, sigue con `CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md`.
-- La base de producto debe leerse como guia semantica, no como texto literal para el chatbot.
+- La base de producto debe leerse como gua semantica, no como texto literal para el chatbot.
 - Para el flujo demo, usa `CHATBOT_GATO_CONTEXTO_DEMO.md` y los bloques/prompts de demo.
 - Para la geometria y posicion del cuadro, usa `CHATBOT_GATO_ESCENA_UNICA.md`.
 - Para el admin, revisa el documento maestro y su plan.

@@ -24,7 +24,7 @@ git pull origin main
 
 ## 3) Crear rama de trabajo
 ```bash
-git checkout -b feat/<autor>-<modulo>
+git checkout -b feat/<autor>-<mdulo>
 ```
 
 Ejemplos:
@@ -74,12 +74,12 @@ git rebase --continue
 
 ## 8) Pull Request
 Checklist antes de PR:
-- [ ] app/bridge/firmware probados segun modulo
+- [ ] app/bridge/firmware probados segn mdulo
 - [ ] docs actualizadas si cambió contrato
 - [ ] sin archivos sensibles (`.env`, secretos, dumps)
 - [ ] cambios acotados al objetivo
 
-## 9) Comandos utiles
+## 9) Comandos tiles
 Ultimos commits:
 ```bash
 git log --oneline -n 20
@@ -90,7 +90,7 @@ Archivos cambiados vs main:
 git diff --name-only origin/main...HEAD
 ```
 
-Limpiar ramas remotas borradas:
+Limpiar rams remotas borradas:
 ```bash
 git fetch origin --prune
 ```

@@ -1,22 +1,22 @@
-# Auditoria KPCL0036 - error de peso sin bateria
+# Auditoria KPCL0036 - error de peso sin batera
 
-> Documento canonico de auditoria tecnica para el archivo `Docs/investigacion/kpcl0036_error_peso_sinbateria.csv`.
+> Documento canonico de auditoria tecnica para el archivo `Docs/investigacion/kpcl0036_error_peso_sinbatera.csv`.
 > Este informe se conserva como evidencia operativa del comportamiento de peso del dispositivo `KPCL0036`.
 
 ## 1) Alcance
 
 Se reviso el archivo:
 
-- `Docs/investigacion/kpcl0036_error_peso_sinbateria.csv`
+- `Docs/investigacion/kpcl0036_error_peso_sinbatera.csv`
 
 Objetivo de la auditoria:
 
-- validar si el comportamiento observado corresponde a un problema de bateria, de tara, de firmware o de calculo en la capa de datos;
+- vlidar si el comportamiento observado corresponde a un problema de batera, de tara, de firmware o de calculo en la capa de datos;
 - conservar una referencia clara para futuras revisiones de funcionamiento.
 
 ## 2) Resumen ejecutivo
 
-La evidencia apunta a un problema de **tara / sincronizacion de tara**, no a un fallo directo de lectura del HX711.
+La evidencia apunta a un problema de **tara / sincronizacin de tara**, no a un fallo directo de lectura del HX711.
 
 Hallazgos principales:
 
@@ -26,7 +26,7 @@ Hallazgos principales:
   - ultima lectura: `2026-04-06 20:49:15.762144+00`
 - `plate_weight_grams` esta en `null` en el `100%` de las filas;
 - `food_content_g` replica `weight_grams` en todo el archivo;
-- los valores mas repetidos son `56`, `57` y `0`, lo que sugiere un peso bruto del plato o lecturas de cero, no un contenido neto descontado.
+- los valores ms repetidos son `56`, `57` y `0`, lo que sugiere un peso bruto del plato o lecturas de cero, no un contenido neto descontado.
 
 ## 3) Evidencia observada en el CSV
 
@@ -56,7 +56,7 @@ Top de valores observados:
 
 ### Lectura tecnica
 
-La forma mas consistente de interpretar este patron es:
+La forma ms consistente de interpretar este patrn es:
 
 - existe una serie larga de lecturas crudas;
 - la tara del plato no esta aplicada en el dataset exportado;
@@ -79,7 +79,7 @@ El flujo relevante es:
 Conclusiones:
 
 - el firmware esta preparado para recordar la tara entre reinicios;
-- si el offset no aparece en lectura o no se restaura, el problema probablemente esta en la persistencia, el reset del dispositivo o la sincronizacion con la base.
+- si el offset no aparece en lectura o no se restaura, el problema probablemente esta en la persistencia, el reset del dispositivo o la sincronizacin con la base.
 
 ### 4.2 Firmware: comando remoto de tara
 
@@ -98,7 +98,7 @@ Flujo:
 Conclusiones:
 
 - el firmware si sabe tarar;
-- el problema no parece ser falta de soporte, sino falta de sincronizacion o de persistencia visible en el lado de datos.
+- el problema no parece ser falta de soporte, sino falta de sincronizacin o de persistencia visible en el lado de datos.
 
 ### 4.3 API web: persistencia de tara de dispositivo
 
@@ -110,7 +110,7 @@ Ese endpoint actualiza:
 
 - `plate_weight_grams`
 
-Ademas existe el endpoint para disparar tara remota:
+Adems existe el endpoint para disparar tara remota:
 
 - `kittypau_app/src/app/api/devices/[id]/tare/route.ts`
 
@@ -123,16 +123,16 @@ Conclusiones:
 
 ## 5) Diagnostico probable
 
-Diagnostico mas probable:
+Diagnostico ms probable:
 
 1. el dispositivo genera lecturas crudas correctas;
-2. la tara del plato no esta disponible en el reporte o no quedo sincronizada con `devices.plate_weight_grams`;
+2. la tara del plato no esta disponible en el reporte o no qued sincronizada con `devices.plate_weight_grams`;
 3. el calculo de `food_content_g` se esta haciendo sin descontar tara;
 4. por eso el CSV termina reflejando peso bruto o cero como si fuera contenido neto.
 
 ## 6) Causas posibles
 
-Las causas mas probables, ordenadas por severidad:
+Las causas ms probables, ordenadas por severidad:
 
 1. **Export/report sin join a `devices.plate_weight_grams`**
    - el CSV pudo generarse desde una consulta que no incorporo la tara persistida.
@@ -145,12 +145,12 @@ Las causas mas probables, ordenadas por severidad:
 
 ## 7) Conclusion operativa
 
-Este caso no parece un fallo primario de bateria.
+Este caso no parece un fallo primario de batera.
 
-La lectura mas honesta es:
+La lectura ms honesta es:
 
 - el problema central es de **tara y calculo neto**;
-- la bateria puede influir solo de forma secundaria si produjo reinicios o perdida de estado;
+- la batera puede influir solo de forma secundaria si produjo reinicios o perdida de estado;
 - el CSV no demuestra por si solo un defecto de hardware en el HX711;
 - si no se aplica la tara correcta, el sistema termina reportando peso bruto como si fuera contenido.
 
@@ -160,7 +160,7 @@ Para cerrar este frente de auditoria, conviene:
 
 - asegurar que la tara del dispositivo quede persistida en `devices.plate_weight_grams`;
 - confirmar que los reportes usan `weight_grams - plate_weight_grams`;
-- dejar una validacion que marque `plate_weight_grams = null` como dato incompleto para analitica de alimento;
+- dejar una vlidacion que marque `plate_weight_grams = null` como dato incompleto para analitica de alimento;
 - guardar esta auditoria como referencia canonica antes de hacer nuevos calculos historicos.
 
 ## 10) Nueva secuencia manual registrada
@@ -189,7 +189,7 @@ Lectura operativa:
 - la ventana entre tare y agregado es corta y consistente con una manipulacion directa del plato;
 - si futuras formulas de consumo usan esta secuencia, deben tomar `20:06:55+00` como baseline estable de llenado y `20:07:10.132855+00` como cierre del llenado antes de medir descenso.
 
-## 11) Consulta SQL de validacion
+## 11) Consulta SQL de vlidacion
 
 La secuencia queda categorizada en cuatro fases canonicas:
 
@@ -204,7 +204,7 @@ La consulta canonica para comparar esta secuencia con futuras lecturas queda en:
 
 Uso recomendado:
 
-- tomar la secuencia como referencia para validar eventos historicos;
+- tomar la secuencia como referencia para vlidar eventos historicos;
 - agregar nuevas lecturas a la ventana y revisar si la transicion de `food_fill_start` a `food_fill_end` sigue siendo coherente;
 - usar `food_fill_start` como baseline estable de llenado y `food_fill_end` como cierre antes del descenso;
 - usar `plate_weight` como baseline estable para todo calculo neto posterior.
@@ -223,11 +223,11 @@ Interpretacion tecnica:
 - no se ve una deriva continua inmediata;
 - primero hay estabilidad posterior al llenado;
 - despues aparecen descensos por escalones;
-- eso es mas consistente con consumo real, redistribucion del contenido o microajustes mecanicos del plato que con un error puro de bateria.
+- eso es ms consistente con consumo real, redistribucion del contenido o microajustes mecanicos del plato que con un error puro de batera.
 
 Lectura diagnostica:
 
-- la bateria no explica por si sola este patron;
+- la batera no explica por si sola este patrn;
 - el problema original del CSV sigue siendo la tara ausente;
 - pero el tramo de descenso posterior si parece representar un cambio real de contenido, no un simple ruido aleatorio.
 
@@ -236,9 +236,9 @@ Lectura diagnostica:
 Para seguir aislando la causa, se define una prueba controlada de comparacion:
 
 - dispositivos: `KPCL0034` y `KPCL0036`
-- energia: **con cargador conectado**
+- energa: **con cargador conectado**
 - condicion mecanica: **sin objeto encima al inicio**
-- objetivo: comparar estabilidad del peso frente a la misma secuencia ya observada en bateria sola, usando la misma escena y el mismo criterio de registro para ambos devices
+- objetivo: comparar estabilidad del peso frente a la misma secuencia ya observada en batera sola, usando la misma escena y el mismo criterio de registro para ambos devices
 
 Secuencia de la prueba:
 
@@ -251,9 +251,9 @@ Regla de lectura:
 
 - `food_fill_start` marca el inicio del servido y `plate_weight` marca el cierre del tare;
 - el cambio posterior se interpreta siempre desde esa secuencia y no desde un valor aislado;
-- si el peso baja aun con cargador conectado y sin animal, se refuerza la sospecha de problema de alimentacion, deriva mecanica o sensor/calibracion;
-- si el patron cambia respecto a bateria sola, la diferencia entre ambas pruebas nos va a ayudar a aislar si la fuente de energia esta influyendo;
-- la misma secuencia debe repetirse en `KPCL0034` y `KPCL0036` para que la comparacion entre devices sea valida.
+- si el peso baja aun con cargador conectado y sin animal, se refuerza la sospecha de problema de alimentacin, deriva mecanica o sensor/calibracion;
+- si el patrn cambia respecto a batera sola, la diferencia entre ambas pruebas nos va a ayudar a aislar si la fuente de energa esta influyendo;
+- la misma secuencia debe repetirse en `KPCL0034` y `KPCL0036` para que la comparacion entre devices sea vlida.
 
 Formato esperado de los proximos registros:
 

@@ -33,21 +33,21 @@ Reemplázalos con los valores reales:
 NEXT_PUBLIC_SUPABASE_URL=https://zgwqtzazvkjkfocxnxsh.supabase.co
 SUPABASE_URL=https://zgwqtzazvkjkfocxnxsh.supabase.co
 
-# Supabase → Project Settings → API → "anon public"
+# Supabase -> Project Settings -> API -> "anon public"
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<copiar desde Supabase>
 SUPABASE_ANON_KEY=<copiar desde Supabase>
 
-# Supabase → Project Settings → API → "service_role" (solo backend, nunca exponer)
+# Supabase -> Project Settings -> API -> "service_role" (solo backend, nunca exponer)
 SUPABASE_SERVICE_ROLE_KEY=<copiar desde Supabase>
 
 # ── Secrets de API ────────────────────────────────────────
-# Vercel → kittypau-app → Settings → Environment Variables
+# Vercel -> kittypau-app -> Settings -> Environment Variables
 MQTT_WEBHOOK_SECRET=<copiar desde Vercel>
 BRIDGE_HEARTBEAT_SECRET=<copiar desde Vercel>
 CRON_SECRET=<copiar desde Vercel>
 
 # ── Upstash Redis ─────────────────────────────────────────
-# Upstash → tu database → REST API
+# Upstash -> tu database -> REST API
 UPSTASH_REDIS_REST_URL=<copiar desde Upstash>
 UPSTASH_REDIS_REST_TOKEN=<copiar desde Upstash>
 
@@ -61,13 +61,13 @@ NEXT_PUBLIC_APP_FLAVOR=web
 | Variable | Dónde |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Ya conocida: `https://zgwqtzazvkjkfocxnxsh.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | [Supabase](https://supabase.com/dashboard) → Project → Settings → API → anon public |
-| `SUPABASE_SERVICE_ROLE_KEY` | [Supabase](https://supabase.com/dashboard) → Project → Settings → API → service_role |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | [Supabase](https://supabase.com/dashboard) -> Project -> Settings -> API -> anon public |
+| `SUPABASE_SERVICE_ROLE_KEY` | [Supabase](https://supabase.com/dashboard) -> Project -> Settings -> API -> service_role |
 | `MQTT_WEBHOOK_SECRET` | [Vercel](https://vercel.com/kittypaus-projects/kittypau-app/settings/environment-variables) |
 | `BRIDGE_HEARTBEAT_SECRET` | [Vercel](https://vercel.com/kittypaus-projects/kittypau-app/settings/environment-variables) |
 | `CRON_SECRET` | [Vercel](https://vercel.com/kittypaus-projects/kittypau-app/settings/environment-variables) |
-| `UPSTASH_REDIS_REST_URL` | [Upstash](https://console.upstash.com) → tu base de datos → REST API |
-| `UPSTASH_REDIS_REST_TOKEN` | [Upstash](https://console.upstash.com) → tu base de datos → REST API |
+| `UPSTASH_REDIS_REST_URL` | [Upstash](https://console.upstash.com) -> tu base de datos -> REST API |
+| `UPSTASH_REDIS_REST_TOKEN` | [Upstash](https://console.upstash.com) -> tu base de datos -> REST API |
 
 ---
 

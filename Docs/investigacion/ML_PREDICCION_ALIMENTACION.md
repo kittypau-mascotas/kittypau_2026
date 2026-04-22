@@ -11,8 +11,8 @@
 Entrenar un modelo supervisado que, dado el historial reciente de la curva de peso de un
 food_bowl, prediga automáticamente los timestamps de:
 
-- `inicio_alimentacion` — Bandida empieza a comer (peso empieza a descender)
-- `termino_alimentacion` — Bandida termina de comer (peso se estabiliza en un nuevo plateau)
+- `inicio_alimentacin` — Bandida empieza a comer (peso empieza a descender)
+- `termino_alimentacin` — Bandida termina de comer (peso se estabiliza en un nuevo plateau)
 
 El modelo reemplazaría (o complementaría) la detección heurística actual de sesiones de
 `IntakeSession` que corre en el cliente (`kittypau_app/src/app/(app)/today/page.tsx`,
@@ -30,16 +30,16 @@ pertenece a uno de 3 estados:
 | Clase | Descripción |
 |---|---|
 | `0` — baseline | Peso estable, sin consumo activo |
-| `1` — inicio_alimentacion | Descenso activo de peso (gato comiendo) |
-| `2` — post_alimentacion | Nuevo plateau tras el consumo |
+| `1` — inicio_alimentacin | Descenso activo de peso (gato comiendo) |
+| `2` — post_alimentacin | Nuevo plateau tras el consumo |
 
-El inicio de la clase `1` es `inicio_alimentacion`; el fin de la clase `1` (o el inicio de
-`2`) es `termino_alimentacion`.
+El inicio de la clase `1` es `inicio_alimentacin`; el fin de la clase `1` (o el inicio de
+`2`) es `termino_alimentacin`.
 
 ### 2b. Alternativa: regresión de timestamp
 
 Dado una ventana centrada en un candidato a evento, predecir la probabilidad de que ese
-punto sea un `inicio_alimentacion` o `termino_alimentacion`. Más complejo pero más preciso
+punto sea un `inicio_alimentacin` o `termino_alimentacin`. Más complejo pero más preciso
 para timestamps exactos.
 
 ---
@@ -49,7 +49,7 @@ para timestamps exactos.
 ### Fuente de etiquetas
 - Tabla: `public.audit_events`
 - `event_type = 'manual_bowl_category'`
-- `payload->>'category' IN ('inicio_alimentacion', 'termino_alimentacion')`
+- `payload->>'category' IN ('inicio_alimentacin', 'termino_alimentacin')`
 - `entity_id` = UUID de KPCL0034
 
 ### Lote KPCL0034 (canónico al 2026-04-16)
@@ -64,7 +64,7 @@ para timestamps exactos.
 
 ### Importante: sesiones incompletas
 Algunos pares inicio/término tienen un elemento faltante (ej: `2026-04-12 14:24:38`
-tiene `termino_alimentacion` sin `inicio` previo). Estos deben ser filtrados o imputados
+tiene `termino_alimentacin` sin `inicio` previo). Estos deben ser filtrados o imputados
 antes del entrenamiento.
 
 ---
@@ -107,7 +107,7 @@ Columnas relevantes por lectura:
 ### Query SQL base
 
 ```sql
--- Lecturas de KPCL0034 con sus eventos manuales alineados
+-- Lecturas de KPCL0034 con sus eventos manuales alneados
 select
   r.recorded_at,
   r.ingested_at,
@@ -128,7 +128,7 @@ left join public.audit_events ae
       case when r.clock_invalid then null else r.recorded_at end,
       r.ingested_at
     ) - ae.created_at
-  ))) < 30  -- ventana de ±30s para alinear etiqueta al reading más cercano
+  ))) < 30  -- ventana de ±30s para alnear etiqueta al reading más cercano
 where d.device_id = 'KPCL0034'
   and r.recorded_at >= '2026-04-08 00:00:00+00'
 order by coalesce(
@@ -178,7 +178,7 @@ El modelo supervisado debe superar este baseline en F1 sobre el dataset etiqueta
   (`log10(x + 1)` en delta peso para manejar outliers)
 
 ### Opción B — LSTM / GRU sobre serie temporal
-- **Modelo:** secuencia → secuencia (seq2seq) o clasificación por ventana
+- **Modelo:** secuencia -> secuencia (seq2seq) o clasificación por ventana
 - **Input:** serie temporal raw de peso + features ambientales
 - **Ventaja:** captura dependencias temporales largas
 - **Desventaja:** requiere más datos etiquetados (~200+ sesiones)
@@ -187,7 +187,7 @@ El modelo supervisado debe superar este baseline en F1 sobre el dataset etiqueta
 - **Modelo:** PELT (Pruned Exact Linear Time) o BOCPD
 - **Output:** timestamps de cambio de régimen en la curva de peso
 - **Ventaja:** no requiere etiquetas, es semi-supervisado
-- **Uso:** generar candidatos de `inicio/termino`, validar contra etiquetas manuales
+- **Uso:** generar candidatos de `inicio/termino`, vlidar contra etiquetas manuales
 
 ---
 
@@ -196,8 +196,8 @@ El modelo supervisado debe superar este baseline en F1 sobre el dataset etiqueta
 | Métrica | Descripción | Umbral sugerido MVP |
 |---|---|---|
 | F1 macro | Balance entre precisión y recall para las 3 clases | ≥ 0.75 |
-| Precisión `inicio_alimentacion` | Falsos positivos costosos en UX | ≥ 0.80 |
-| Error de timestamp | MAE en segundos vs. etiqueta manual | ≤ 60s |
+| Precisión `inicio_alimentacin` | Falsos positivos costosos en UX | ≥ 0.80 |
+| Error de timestamp | MAE en segndos vs. etiqueta manual | ≤ 60s |
 | Comparación vs. heurístico | F1 del modelo > F1 del `detectIntakeSessions` | +5 puntos mínimo |
 
 ---
@@ -209,7 +209,7 @@ El modelo supervisado debe superar este baseline en F1 sobre el dataset etiqueta
 - **Servido vs. consumo:** excluir tramos entre `inicio_servido` y `termino_servido`
   del target de predicción (el peso cambia por llenado, no por consumo).
 - **Tare:** resetear el baseline de peso relativo tras cada `tare_con_plato`.
-- **Gap por apagado:** segmentar la serie en `kpcl_apagado` → `kpcl_prendido`;
+- **Gap por apagado:** segmentar la serie en `kpcl_apagado` -> `kpcl_prendido`;
   no interpolar entre sesiones de encendido distintas.
 - **Sesiones incompletas:** filtrar pares donde falta inicio o término antes de
   entrenar; documentar en `REGISTRO_EVENTOS_KPCL0034_2026-04-16.md`.

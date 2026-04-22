@@ -7,8 +7,8 @@
 - Ultima actualizacion: 2026-03-09.
 
 ## Resumen Ejecutivo
-La sesion define una expansion del ecosistema en tres horizontes:
-1. `Kittypau` (core actual): PetTech AIoT para alimentacion e hidratacion de mascotas.
+La sesin define una expansin del ecosistema en tres horizontes:
+1. `Kittypau` (core actual): PetTech AIoT para alimentacin e hidratacin de mascotas.
 2. `Kitty Plant` (exploracion): IoT para plantas con deteccion por foto, monitoreo ambiental y analitica de riego.
 3. `Senior Kitty` (vision): aplicacion futura de capacidades AIoT para cuidado en hogar.
 
@@ -18,7 +18,7 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 1. Mantener foco operativo en Kittypau (mascotas) como prioridad de producto.
 2. Tratar Kitty Plant como vertical de evaluacion, sin desviar roadmap critico de la app actual.
 3. Sostener el enfoque PetTech AIoT como narrativa unificada de marca y arquitectura.
-4. Priorizar simplicidad UX: onboarding corto, vista demo clara, lectura rapida en `/today`.
+4. Priorizar simplicidad UX: onboarding corto, vista demo clara, lectura rpida en `/today`.
 5. Mantener consistencia entre perfiles `tester` y `cliente real` en reglas de mascota/dispositivo.
 
 ## Decisiones No Aprobadas (Descartadas o en Analisis)
@@ -28,7 +28,7 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 
 2. Incorporar mecanicas de clickbait como objetivo de producto.
 - Estado: **no aprobado**.
-- Razon: se permite analitica UX, pero no patrones que degraden experiencia o confianza.
+- Razon: se permite analitica UX, pero no patrnes que degraden experiencia o confianza.
 
 3. Cambios de branding que desplacen el core de mascotas en el corto plazo.
 - Estado: **no aprobado**.
@@ -38,18 +38,18 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 1. `/today` debe mantener coherencia estricta entre `pet_id`, `device_id` y selector visual.
 2. Regla tester obligatoria: mapeo `test_#### -> KPCL####` (comida) y `KPCL####+1` (agua), con fallback por `pet_id`.
 3. API `/api/readings` debe ser robusta ante diferencias de esquema entre entornos (migraciones pendientes).
-4. Navbar, hero y cards deben leer la misma fuente de seleccion activa para evitar desincronizacion.
-5. Las metricas de ambiente y bateria deben priorizar exactitud de dato sobre efecto visual.
+4. Navbar, hero y cards deben leer la misma fuente de seleccion activa para evitar desincronizacin.
+5. Las metricas de ambiente y batera deben priorizar exactitud de dato sobre efecto visual.
 
 ## Implicancias de Producto y UX
 1. Sustituir etiquetas ambiguas por nomenclatura clara (ejemplo: `Unidad`, `Dia`, `Semana`, `Mes`).
 2. Mantener interfaz minimal y entendible: menos ruido, mayor legibilidad de estado.
-3. Demo mode debe capturar datos minimos utiles (nombre, mascota, correo) sin mezclarlo con cuentas reales.
-4. Story debe evolucionar a insights accionables, no solo visualizacion pasiva.
+3. Demo mode debe capturar datos mnimos tiles (nombre, mascota, correo) sin mezclarlo con cuentas reales.
+4. Story debe evolucionar a insights accinables, no solo visualizacion pasiva.
 
 ## Riesgos Detectados
 1. Incoherencia documental por mezcla de notas crudas con definiciones canonicas.
-2. Deriva de alcance por expansion simultanea (Kittypau + Kitty Plant + Senior Kitty) sin puertas de decision.
+2. Deriva de alcance por expansin simultanea (Kittypau + Kitty Plant + Senior Kitty) sin puertas de decision.
 3. Contradicciones operativas entre "rapidez" y "gobernanza" (infra, despliegues, cuentas).
 
 ## Guardrails del Ecosistema
@@ -61,7 +61,7 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 ## Backlog Derivado del Contexto
 ### P0
 - Cerrar coherencia completa de seleccion mascota/dispositivo en `/today` + `navbar`.
-- Completar migraciones de bateria en DB y eliminar fallback transitorio cuando corresponda.
+- Completar migraciones de batera en DB y eliminar fallback transitorio cuando corresponda.
 
 ### P1
 - Formalizar especificacion funcional de Kitty Plant (solo discovery tecnico/comercial).
@@ -85,7 +85,7 @@ El principio central acordado es: **hardware como puerta de entrada + datos long
 - compactar distancias verticales (plato, bloque marca, card login),
 - rebalancear dimensiones para vista de telefono real.
 3. Ajuste mobile APK aplicado en `/today`:
-- compactacion de hero (resumen alimentacion/hidratacion + selector de periodo),
+- compactacion de hero (resumen alimentacin/hidratacin + selector de periodo),
 - reduccion tipografica de metricas dentro de cards de plato.
 4. Despliegue productivo vigente:
 - URL productiva: `https://kittypau-app.vercel.app`

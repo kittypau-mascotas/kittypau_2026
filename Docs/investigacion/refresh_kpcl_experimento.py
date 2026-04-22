@@ -133,7 +133,7 @@ def rest_get_all(
     offset = 0
     while True:
         params = [("select", select), *filters, ("order", order), ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
         request = urllib.request.Request(url, headers=headers, method="GET")
         with urllib.request.urlopen(request, timeout=60) as response:
             payload = json.loads(response.read().decode("utf-8"))
@@ -348,7 +348,7 @@ def main() -> None:
 
     output_rows = build_output_rows(device_map, readings, audits)
     write_csv(OUTPUT_COMBINED, output_rows)
-    # Export dedicado para foco operacional en KPCL0034.
+    # Export dedicado para foco operacinal en KPCL0034.
     output_0034 = ROOT / "kpcl0034_full_eventos.csv"
     rows_0034 = [row for row in output_rows if row.get("device_code") == "KPCL0034"]
     write_csv(output_0034, rows_0034)

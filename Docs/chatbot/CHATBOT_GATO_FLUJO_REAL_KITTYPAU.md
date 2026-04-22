@@ -9,7 +9,7 @@ La meta es separar claramente:
 - lo que pasa en `login`;
 - lo que pasa en `demo`;
 - lo que pasa en `inicio`;
-- y lo que seria la siguiente fase conversacional.
+- y lo que seria la siguente fase conversacional.
 
 ## Flujo 1 - Ingreso a la demo desde login
 
@@ -32,7 +32,7 @@ La meta es separar claramente:
 - que esta en modo prueba;
 - que el usuario debe completar sus datos;
 - que la demo se abrira con esa informacion;
-- que la experiencia es ligera, breve y guiada;
+- que la experiencia es ligera, breve y guada;
 - que Instagram es la salida o cierre narrativo natural.
 
 ### Lo que el gato no debe hacer
@@ -53,14 +53,14 @@ La meta es separar claramente:
    - nombre del titular;
    - nombre de la mascota;
    - foto de perfil;
-   - resumen de alimentacion;
-   - resumen de hidratacion.
+   - resumen de alimentacin;
+   - resumen de hidratacin.
 4. Aparece el gato nuevamente.
 5. El gato explica la pantalla con un texto parecido al actual.
 6. El gato termina con una invitacion clara:
    - seguir viendo la app;
    - ir a Instagram;
-   - o seguir a la experiencia guiada.
+   - o seguir a la experiencia guada.
 
 ### Lo que el gato debe decir en este flujo
 
@@ -68,7 +68,7 @@ La meta es separar claramente:
 - que la foto y el nombre representan a la mascota;
 - que el panel central resume el estado;
 - que los accesos llevan a las vistas operativas;
-- que la demo es una guia real, no un formulario.
+- que la demo es una gua real, no un formulario.
 
 ### Lo que el gato no debe hacer
 
@@ -83,7 +83,7 @@ La meta es separar claramente:
 
 1. El usuario llega a la vista `inicio`.
 2. El gato saluda.
-3. El gato pregunta si quiere guia.
+3. El gato pregunta si quiere gua.
 4. El usuario responde si o no.
 5. El flujo termina rapido.
 
@@ -92,13 +92,13 @@ La meta es separar claramente:
 - que es una bienvenida breve;
 - que puede orientar rapido;
 - que no va a hablar demasiado;
-- que puede cerrar si el usuario no quiere guia.
+- que puede cerrar si el usuario no quiere gua.
 
 ## Flujo 4 - Fase futura de chatbot libre
 
 ### Idea futura
 
-Luego de la version guiada, el gato puede evolucionar a una conversacion escrita por el usuario.
+Luego de la versin guada, el gato puede evolucionar a una conversacion escrita por el usuario.
 
 En esa fase:
 
@@ -120,7 +120,7 @@ En la experiencia visible del gato para cliente:
 - el contenido debe enfocarse en el uso de Kittypau;
 - debe ayudar a resolver necesidades de la mascota;
 - debe explicar lo que el usuario ve en la app;
-- debe guiar hacia la siguiente accion util.
+- debe guar hacia la siguente accin til.
 
 La explicacion de la totalidad del proyecto, la administracion y las consultas globales de la plataforma deben reservarse para el chatbot de `admin`.
 

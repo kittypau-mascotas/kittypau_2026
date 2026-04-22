@@ -24,7 +24,7 @@
 
 ### Problema que resuelve
 
-Los duenos de mascotas en Chile no tienen forma sencilla de monitorear los habitos alimenticios e hidricos de sus animales en tiempo real. El 60% de los gatos y perros en hogares chilenos presenta problemas de salud relacionados con alimentacion inadecuada (sobrepeso, deshidratacion, anorexia). La deteccion temprana de cambios de comportamiento puede prevenir enfermedades costosas y mejorar la calidad de vida del animal.
+Los duenos de mascotas en Chile no tienen forma sencilla de monitorear los habitos alimenticios e hidricos de sus animales en tiempo real. El 60% de los gatos y perros en hogares chilenos presenta problemas de salud relacionados con alimentacin inadecuada (sobrepeso, deshidratacin, anorexia). La deteccion temprana de cambios de comportamiento puede prevenir enfermedades costosas y mejorar la calidad de vida del animal.
 
 ### Solucion propuesta
 
@@ -32,7 +32,7 @@ Kittypau es una plataforma IoT + SaaS que combina:
 - **Hardware propio**: platos inteligentes (comedero y bebedero) con sensores de peso, temperatura, humedad y camara opcional
 - **Conectividad**: dispositivos ESP8266/ESP32-CAM conectados via MQTT (HiveMQ Cloud) a un bridge Raspberry Pi
 - **Backend en la nube**: Supabase (PostgreSQL + Auth + Realtime) + Vercel (Next.js)
-- **App web responsiva**: dashboard en tiempo real, alertas, historico y analisis por mascota
+- **App web responsiva**: dashboard en tiempo real, alertas, historico y anlisis por mascota
 
 ### Justificacion estrategica
 
@@ -47,14 +47,14 @@ Kittypau es una plataforma IoT + SaaS que combina:
 
 ### Objetivo general
 
-Desarrollar, validar y escalar una plataforma IoT de monitoreo de mascotas que genere datos accionables para el dueno y que opere como negocio SaaS rentable en Chile.
+Desarrollar, vlidar y escalar una plataforma IoT de monitoreo de mascotas que genere datos accinables para el dueno y que opere como negocio SaaS rentable en Chile.
 
 ### Objetivos especificos (SMART)
 
 | # | Objetivo | Indicador | Meta | Plazo |
 |---|----------|-----------|------|-------|
 | O1 | Lanzar MVP funcional con app web y dispositivos | Usuarios activos con lectura en vivo | 10 usuarios piloto | Jun 2026 |
-| O2 | Validar modelo de negocio | Conversion free->paid | > 20% en piloto | Sep 2026 |
+| O2 | Validar modelo de negocio | Conversin free->paid | > 20% en piloto | Sep 2026 |
 | O3 | Obtener financiamiento no dilutivo | Fondo adjudicado | 1 fondo (CORFO/ANID) | Sep 2026 |
 | O4 | Reducir costo unitario de produccion | COGS por kit | < $25 USD | Dic 2026 |
 | O5 | Alcanzar MRR inicial | Ingreso recurrente mensual | > $200 USD | Dic 2026 |
@@ -67,10 +67,10 @@ Desarrollar, validar y escalar una plataforma IoT de monitoreo de mascotas que g
 
 - Firmware ESP8266 y ESP32-CAM (sensores peso, temp, humedad, camara)
 - Bridge MQTT-to-Supabase en Raspberry Pi Zero 2W
-- Backend en Supabase: esquema de datos, RLS, autenticacion
+- Backend en Supabase: esquema de datos, RLS, autnticacion
 - API Next.js en Vercel: endpoints CRUD + streaming de datos
 - App web: registro, onboarding, dashboard en tiempo real, historico
-- Panel admin: telemetria, finanzas, estado de dispositivos
+- Panel admin: telemetra, finanzas, estado de dispositivos
 - Documentacion tecnica y de negocio (PMO + postulacion a fondos)
 - Hardware: carcasa 3D impresa, PCB, ensamblaje manual
 
@@ -119,7 +119,7 @@ Desarrollar, validar y escalar una plataforma IoT de monitoreo de mascotas que g
 | Hardware (BOM x10 unidades piloto) | $300 | Fondos propios |
 | Impresion 3D y manufactura | $150 | Fondos propios |
 | Infraestructura cloud (12 meses) | $0 (planes free) | Shadow-price: ~$50/mes |
-| Postulacion y documentacion | $0 | Trabajo propio |
+| Postulacion y documentacin | $0 | Trabajo propio |
 | Fondo solicitado CORFO Semilla Inicia | $17.000.000 CLP (~$17.900 USD) | CORFO (75%) |
 | Contrapartida emprendedor (25%) | $5.633.333 CLP (~$5.930 USD) | Fondos propios |
 
@@ -133,9 +133,9 @@ Desarrollar, validar y escalar una plataforma IoT de monitoreo de mascotas que g
 |--------|-------------|---------|------------|
 | Falla de componente electronico en campo | Media | Alto | Stock de repuestos + garantia |
 | No adjudicacion de fondo CORFO | Media | Medio | Postular a multiples fondos |
-| Churn alto en piloto | Baja | Alto | Iteracion rapida por feedback |
+| Churn alto en piloto | Baja | Alto | Iteracion rpida por feedback |
 | Costos cloud escalan al crecer | Baja | Medio | Shadow-pricing continuo |
-| Competidor lanza producto similar | Baja | Alto | Acelerar validacion y traccion |
+| Competidor lanza producto similar | Baja | Alto | Acelerar vlidacion y traccin |
 
 > Detalle completo en [06_RISK_REGISTER.md](06_RISK_REGISTER.md)
 
@@ -161,9 +161,9 @@ El proyecto se considera exitoso si:
 
 1. El MVP esta funcional y deployado con al menos 5 usuarios activos enviando datos reales
 2. Se adjudica al menos un fondo concursable en 2026
-3. Se valida que > 20% de usuarios piloto pagarian por el servicio
+3. Se vlida que > 20% de usuarios piloto pagarian por el servicio
 4. El costo unitario de produccion se mantiene por debajo de $30 USD
-5. La plataforma opera sin incidentes criticos durante 30 dias consecutivos
+5. La plataforma opera sin incidentes criticos durante 30 das consecutivos
 
 ---
 
@@ -195,6 +195,6 @@ El proyecto se considera exitoso si:
 ---
 
 _Referencias: PMBOK 6ta Ed. Seccion 4.1 | PMBOK 7ma Ed. Principio de Administracion Responsable y Dominio de Entrega_
-_Documento siguiente: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md)_
+_Documento siguente: [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md)_
 
 

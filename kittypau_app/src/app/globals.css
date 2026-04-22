@@ -316,6 +316,97 @@ body {
   border-color: color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
 }
 
+.today-wellness-card {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 48%, rgba(255, 255, 255, 0.99) 100%);
+}
+
+.today-wellness-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 10px 18px -18px rgba(15, 23, 42, 0.55);
+}
+
+.today-wellness-bar {
+  position: relative;
+  width: 54px;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.92) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    0 14px 26px -20px rgba(15, 23, 42, 0.45);
+}
+
+.today-wellness-bar::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+
+.today-wellness-bar-fill {
+  position: absolute;
+  inset-inline: 8px;
+  bottom: 8px;
+  min-height: 18px;
+  border-radius: 18px;
+  transition:
+    height 280ms ease,
+    opacity 220ms ease;
+}
+
+.today-wellness-bar-fill.is-confirmed {
+  height: calc(100% - 16px);
+  opacity: 1;
+}
+
+.today-wellness-bar-fill.is-empty {
+  height: 18px;
+  opacity: 0.18;
+}
+
+.today-wellness-bar-fill-food {
+  background: linear-gradient(180deg, #8af59d 0%, #d8eb68 42%, #ffac58 72%, #f25b4a 100%);
+}
+
+.today-wellness-bar-fill-water {
+  background: linear-gradient(180deg, #9defff 0%, #58c7ff 45%, #1f92f0 100%);
+}
+
+.today-wellness-bar-guides {
+  position: absolute;
+  inset: 12px;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: repeat(9, 1fr);
+  gap: 5px;
+  pointer-events: none;
+}
+
+.today-wellness-bar-guides span {
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  opacity: 0.92;
+}
+
+.today-wellness-detail summary::-webkit-details-marker {
+  display: none;
+}
+
+.today-wellness-detail[open] {
+  background: rgba(255, 255, 255, 0.96);
+}
+
 .story-line {
   position: relative;
   display: flex;
@@ -1162,30 +1253,62 @@ body {
 }
 
 .kp-trial-button {
-  min-width: 128px;
-  min-height: 30px;
-  padding: 5px 11px;
-  border-radius: 10px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--border)));
-  background: #ffffff;
-  color: #7a6a65;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  text-transform: none;
+  min-width: 100%;
+  min-height: 58px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 58%, hsl(var(--border)));
+  background: linear-gradient(135deg, color-mix(in oklab, hsl(var(--primary)) 22%, #ffffff) 0%, #ffffff 54%, color-mix(in oklab, hsl(var(--primary)) 12%, #fff7f3) 100%);
+  color: hsl(var(--primary-strong));
   cursor: pointer;
-  box-shadow: 0 2px 8px -7px rgba(15, 23, 42, 0.35);
-  transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease, color 160ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: 0 10px 30px -18px rgba(232, 116, 86, 0.65);
+  transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
 .kp-trial-button:hover {
-  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 42%, hsl(var(--border)));
+  background: linear-gradient(135deg, color-mix(in oklab, hsl(var(--primary)) 30%, #ffffff) 0%, #ffffff 48%, color-mix(in oklab, hsl(var(--primary)) 18%, #fff6f1) 100%);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 72%, hsl(var(--border)));
   color: hsl(var(--primary-strong));
+  box-shadow: 0 14px 32px -18px rgba(232, 116, 86, 0.75);
 }
 
 .kp-trial-button:active {
   transform: scale(0.98);
+}
+
+.kp-trial-button-main {
+  font-size: 0.97rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.kp-trial-button-note {
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.1;
+  min-height: 0.85rem;
+  opacity: 0.72;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.kp-trial-button-note-accent {
+  color: hsl(var(--primary-strong));
+}
+
+.kp-trial-button-note.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kp-trial-button-note.is-hidden {
+  opacity: 0.45;
+  transform: translateY(-1px);
 }
 
 .kp-trial-cat .sleep-symbol {
@@ -1310,7 +1433,8 @@ body {
 
 .login-trial-inline {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  width: 100%;
   margin-top: -2px;
   margin-bottom: 2px;
   min-height: 26px;
@@ -1322,7 +1446,8 @@ body {
 
 .login-login-head {
   min-height: 28px;
-  padding-right: 178px;
+  width: 100%;
+  padding-right: 0;
 }
 
 .login-login-intro p {
@@ -2208,6 +2333,18 @@ body {
 .login-hero-social {
   justify-content: center;
   margin-top: 4px;
+}
+
+.login-auth-social {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.login-auth-social .social-link-md {
+  width: 42px;
+  height: 42px;
 }
 
 .login-hero-social-web .social-link-md {
@@ -4110,39 +4247,38 @@ textarea::placeholder {
     padding: 12px;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-card .relative,
-  .kp-flavor-native #today-bowls .today-bowl-card .relative {
-    min-height: 165px;
+  .kp-native-apk #today-bowls .today-wellness-status-row,
+  .kp-flavor-native #today-bowls .today-wellness-status-row {
+    justify-content: flex-start;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-metrics,
-  .kp-flavor-native #today-bowls .today-bowl-metrics {
-    width: 142px;
-    gap: 5px;
+  .kp-native-apk #today-bowls .today-wellness-status-chip,
+  .kp-flavor-native #today-bowls .today-wellness-status-chip {
+    font-size: 10px;
+    padding: 6px 8px;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-metrics > p,
-  .kp-flavor-native #today-bowls .today-bowl-metrics > p {
-    font-size: 12px !important;
-    line-height: 1.12;
+  .kp-native-apk #today-bowls .today-wellness-visual,
+  .kp-flavor-native #today-bowls .today-wellness-visual {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-ambient,
-  .kp-flavor-native #today-bowls .today-bowl-ambient {
-    gap: 2px;
-    margin-top: 0;
+  .kp-native-apk #today-bowls .today-wellness-bar,
+  .kp-flavor-native #today-bowls .today-wellness-bar {
+    width: 42px;
+    height: 184px;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-ambient p:first-child,
-  .kp-flavor-native #today-bowls .today-bowl-ambient p:first-child {
-    font-size: 9px !important;
-    letter-spacing: 0.08em;
+  .kp-native-apk #today-bowls .today-wellness-plate-panel img,
+  .kp-flavor-native #today-bowls .today-wellness-plate-panel img {
+    height: 126px;
   }
 
-  .kp-native-apk #today-bowls .today-bowl-ambient p:not(:first-child),
-  .kp-flavor-native #today-bowls .today-bowl-ambient p:not(:first-child) {
-    font-size: 10px !important;
-    line-height: 1.05rem;
+  .kp-native-apk #today-bowls .today-wellness-detail,
+  .kp-flavor-native #today-bowls .today-wellness-detail {
+    padding-inline: 12px;
+    padding-block: 10px;
   }
 }
 
@@ -4152,101 +4288,20 @@ textarea::placeholder {
   .kp-flavor-native .login-bg {
     min-height: 100dvh;
     height: auto;
-    overflow-y: visible;
+    overflow-y: auto;
   }
 
   .kp-native-apk .login-bg > .relative.mx-auto,
   .kp-flavor-native .login-bg > .relative.mx-auto {
-    min-height: auto;
+    min-height: 100dvh;
     justify-content: flex-start;
-    gap: 6px;
-    padding-top: calc(4px + env(safe-area-inset-top));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 0;
+    padding-top: max(28px, calc(env(safe-area-inset-top) + 20px));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 
   .kp-native-apk .login-hero-column,
   .kp-flavor-native .login-hero-column {
-    gap: 0;
-    width: 100%;
-    max-width: 100%;
-    margin-inline: auto;
-    min-height: 78dvh;
-    align-items: center;
-    text-align: center;
-    transition: min-height 320ms ease, gap 320ms ease;
-  }
-
-  .kp-native-apk .login-fold-box,
-  .kp-flavor-native .login-fold-box {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .kp-native-apk .login-fold-box-plate,
-  .kp-flavor-native .login-fold-box-plate {
-    min-height: 30dvh;
-    transition: min-height 320ms ease;
-  }
-
-  .kp-native-apk .login-hero-divider,
-  .kp-flavor-native .login-hero-divider {
-    display: none;
-  }
-
-  .kp-native-apk .login-fold-box-message,
-  .kp-flavor-native .login-fold-box-message {
-    min-height: 22dvh;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    transition: min-height 320ms ease, padding 320ms ease;
-  }
-
-  .kp-native-apk .login-fold-box-brand,
-  .kp-flavor-native .login-fold-box-brand {
-    display: flex;
-    min-height: 22dvh;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(-16px);
-    transition: min-height 420ms ease, transform 420ms ease;
-  }
-
-  .kp-native-apk .login-brand-core,
-  .kp-flavor-native .login-brand-core {
-    display: none;
-  }
-
-  .kp-native-apk .login-hero-asset,
-  .kp-flavor-native .login-hero-asset {
-    margin-top: 0;
-  }
-
-  .kp-native-apk .login-hero-asset-img,
-  .kp-flavor-native .login-hero-asset-img {
-    width: min(246px, 69vw);
-  }
-
-  .kp-native-apk .login-hero-title,
-  .kp-flavor-native .login-hero-title {
-    display: block;
-    margin: 0 auto;
-    max-width: 92%;
-    text-align: center;
-  }
-
-  .kp-native-apk .login-hero-title,
-  .kp-flavor-native .login-hero-title {
-    font-size: clamp(2rem, 9.2vw, 2.35rem);
-    line-height: 1.02;
-    margin-bottom: 0;
-  }
-
-  .kp-native-apk .login-hero-copy,
-  .kp-flavor-native .login-hero-copy {
     display: none;
   }
 
@@ -4254,56 +4309,58 @@ textarea::placeholder {
   .kp-flavor-native .login-auth-column {
     width: 100%;
     max-width: 100%;
-    margin-top: 2px;
     margin-inline: auto;
     align-items: center;
+  }
+
+  .kp-native-apk .login-brand-core,
+  .kp-flavor-native .login-brand-core {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .kp-native-apk .login-card-brand,
   .kp-flavor-native .login-card-brand {
     width: 100%;
     max-width: 100%;
-    gap: 2px;
-    margin-bottom: 0;
+    gap: 4px;
+    margin-bottom: 12px;
     align-items: center;
     text-align: center;
-    transform: translateY(-12px);
-    transition: transform 420ms ease;
+    transform: none;
   }
 
   .kp-native-apk .brand-logo-badge,
   .kp-flavor-native .brand-logo-badge {
-    width: 136px;
-    height: 136px;
+    width: 104px;
+    height: 104px;
     margin-inline: auto;
-    margin-bottom: 12px;
-    transition: width 420ms ease, height 420ms ease, transform 420ms ease;
+    margin-bottom: 8px;
   }
 
   .kp-native-apk .brand-title,
   .kp-flavor-native .brand-title {
-    font-size: clamp(3.05rem, 14.2vw, 3.7rem);
-    line-height: 0.94;
+    font-size: clamp(2.1rem, 10vw, 2.8rem);
+    line-height: 0.95;
     text-align: center;
     margin-inline: auto;
-    transition: font-size 420ms ease, line-height 420ms ease;
   }
 
   .kp-native-apk .kp-pettech-tagline,
   .kp-flavor-native .kp-pettech-tagline {
     width: 100%;
     text-align: center;
-    font-size: 1.22rem;
-    line-height: 1.16;
-    margin-top: 10px;
+    font-size: 0.95rem;
+    line-height: 1.1;
+    margin-top: 4px;
     margin-inline: auto;
-    transition: font-size 420ms ease, line-height 420ms ease;
   }
 
   .kp-native-apk .login-login-stack .login-panel-cat,
   .kp-flavor-native .login-login-stack .login-panel-cat {
-    right: -6px;
-    top: 4px;
+    display: none;
   }
 
   .kp-native-apk .login-card-brand .social-links,
@@ -4315,88 +4372,9 @@ textarea::placeholder {
   .kp-flavor-native .login-deferred-social,
   .kp-native-apk .login-deferred-panel,
   .kp-flavor-native .login-deferred-panel {
-    opacity: 0;
-    transform: translateY(14px);
-    pointer-events: none;
-    transition: opacity 420ms ease, transform 420ms ease;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-deferred-social,
-  .kp-flavor-native.kp-login-scrolled .login-deferred-social,
-  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
-  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-hero-column,
-  .kp-flavor-native.kp-login-scrolled .login-hero-column {
-    min-height: 50dvh;
-    gap: 0;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-fold-box-plate,
-  .kp-flavor-native.kp-login-scrolled .login-fold-box-plate {
-    min-height: 25dvh;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-fold-box-message,
-  .kp-flavor-native.kp-login-scrolled .login-fold-box-message {
-    min-height: 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-fold-box-brand,
-  .kp-flavor-native.kp-login-scrolled .login-fold-box-brand {
-    min-height: 10dvh;
-    transform: translateY(-20px);
-  }
-
-  .kp-native-apk.kp-login-scrolled .brand-logo-badge,
-  .kp-flavor-native.kp-login-scrolled .brand-logo-badge {
-    width: 108px;
-    height: 108px;
-    margin-bottom: 12px;
-  }
-
-  .kp-native-apk.kp-login-scrolled .brand-title,
-  .kp-flavor-native.kp-login-scrolled .brand-title {
-    font-size: clamp(2.35rem, 10.6vw, 2.85rem);
-    line-height: 0.95;
-    margin-top: 2px;
-  }
-
-  .kp-native-apk.kp-login-scrolled .kp-pettech-tagline,
-  .kp-flavor-native.kp-login-scrolled .kp-pettech-tagline {
-    font-size: 1.06rem;
-    line-height: 1.05;
-    margin-top: 6px;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-card-brand,
-  .kp-flavor-native.kp-login-scrolled .login-card-brand {
-    transform: translateY(-20px);
-    margin-bottom: 10px;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-deferred-social,
-  .kp-flavor-native.kp-login-scrolled .login-deferred-social {
-    display: none;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-deferred-panel,
-  .kp-flavor-native.kp-login-scrolled .login-deferred-panel {
-    margin-top: 6px;
-  }
-
-  .kp-native-apk.kp-login-scrolled .login-hero-title,
-  .kp-flavor-native.kp-login-scrolled .login-hero-title {
-    display: none;
   }
 
   .kp-native-apk .login-panel-wrap .glass-panel,
@@ -4413,6 +4391,17 @@ textarea::placeholder {
   .kp-native-apk .login-login-form,
   .kp-flavor-native .login-login-form {
     gap: 10px;
+  }
+
+  .kp-native-apk .login-login-form input,
+  .kp-flavor-native .login-login-form input {
+    height: 44px;
+  }
+
+  .kp-native-apk .login-submit-button,
+  .kp-flavor-native .login-submit-button {
+    height: 46px;
+    margin-top: 0.5rem;
   }
 }
 
@@ -4536,3 +4525,4 @@ textarea::placeholder {
   line-height: 1.12;
   margin-top: 4px;
 }
+

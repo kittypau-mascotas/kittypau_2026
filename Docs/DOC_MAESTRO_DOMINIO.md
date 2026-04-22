@@ -103,7 +103,7 @@ El frontend no debe inventar valores fuera de estas listas.
 
 ## 7) Permisos y seguridad
 - Cada usuario solo ve sus mascotas, dispositivos y lecturas.
-- Tokens con expiracion segun Supabase.
+- Tokens con expiracin segn Supabase.
 - Fase futura: cuidadores con permisos limitados.
 
 ## 8) Eventos del sistema
@@ -128,8 +128,8 @@ El frontend no debe inventar valores fuera de estas listas.
   - Usuario -> Mascota -> Dispositivo
 - El progreso se conserva si el usuario cierra.
 
-## 10) Modo guia y errores UX
-### Modo guia
+## 10) Modo gua y errores UX
+### Modo gua
 - Mostrar popup con fondo difuminado en primer ingreso.
 - Guardar flag `first_time_guide_seen`.
 - Reabrible desde Settings.
@@ -145,7 +145,7 @@ El frontend no debe inventar valores fuera de estas listas.
 ### Terminologia oficial
 - **AIoT (Artificial Intelligence of Things)**: termino principal.
 - **Intelligent IoT**: variante comercial.
-- **Edge AI + IoT**: analisis parcial en dispositivo.
+- **Edge AI + IoT**: anlisis parcial en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion de producto
@@ -166,9 +166,9 @@ Esto posiciona a Kittypau como:
 - Suscripcion = recurrencia.
 
 ### Casos de uso preventivos
-- Riesgo de deshidratacion por baja de consumo de agua.
+- Riesgo de deshidratacin por baja de consumo de agua.
 - Cambios de conducta alimentaria.
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ## 12) Modelo de negocio
 ### Capas recomendadas
@@ -187,8 +187,8 @@ Esto posiciona a Kittypau como:
    - KPI critico: `LTV/CAC > 3`
    - Objetivo: predictibilidad y valor SaaS.
 2. **Camino C - Freemium escalable**
-   - KPI critico: conversion free->paid y retencion.
-   - Objetivo: crecimiento de base y conversion.
+   - KPI critico: conversin free->paid y retencion.
+   - Objetivo: crecimiento de base y conversin.
 3. **Camino B - Hardware premium sin suscripcion**
    - KPI critico: margen bruto unitario.
    - Objetivo: caja tactica.
@@ -207,7 +207,7 @@ Esto posiciona a Kittypau como:
 `valor_saas = ARR * multiplo_saas`
 
 ### Regla ejecutiva
-- objetivo operacional: `LTV/CAC > 3`
+- objetivo operacinal: `LTV/CAC > 3`
 - crecimiento sano: churn bajo y retencion alta
 
 ## 14) Fuentes de datos economicas
@@ -224,16 +224,16 @@ Esto posiciona a Kittypau como:
 - Los reemplazos y garantias suben overhead y empujan el break-even.
 - El dashboard admin debe mostrar costo unitario, OPEX y costo por KPCL.
 
-## 16) Contexto de expansion
-- Foco actual: `Kittypau` como PetTech AIoT para alimentacion e hidratacion de mascotas.
+## 16) Contexto de expansin
+- Foco actual: `Kittypau` como PetTech AIoT para alimentacin e hidratacin de mascotas.
 - Expansiones en evaluacion: `Kitty Plant` y `Senior Kitty`.
 - La gobernanza tecnica debe preservar una base relacional coherente y contratos API estables.
 
 ## 17) Implicancias para App/Web
 1. `/today` y `navbar` deben mantener consistencia entre mascota activa, `pet_id` y KPCL.
-2. La UI debe reforzar lectura rapida de estado real.
+2. La UI debe reforzar lectura rpida de estado real.
 3. El backlog funcional prioriza confiabilidad de datos sobre efectos visuales.
-4. Cualquier expansion debe reutilizar componentes del core.
+4. Cualquier expansin debe retilizar componentes del core.
 
 ## 18) Referencias relacionadas
 - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md)

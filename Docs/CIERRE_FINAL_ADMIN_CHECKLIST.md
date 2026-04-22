@@ -2,7 +2,7 @@
 
 ## Estado actual
 - Todo el trabajo de código/documentación del dashboard admin está implementado.
-- Lo pendiente es operacional (externo al repo).
+- Lo pendiente es operacinal (externo al repo).
 
 ## Paso 1: aplicar migraciones
 ```bash
@@ -18,7 +18,7 @@ Migraciones clave:
 vercel --prod
 ```
 
-## Paso 3: validación rápida
+## Paso 3: vlidación rápida
 1. Abrir `/admin`.
 2. Confirmar carga de:
 - KPIs ejecutivos.

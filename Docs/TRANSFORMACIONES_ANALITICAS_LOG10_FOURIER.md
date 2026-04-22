@@ -8,7 +8,7 @@ Este documento define **dónde** y **cómo** aplicar dos transformaciones clave 
 
 ### Dónde aplicarlo
 En el **proceso de ingestión server-side** que finalmente escribe en DB (**webhook/API** o **Bridge** si fuera el componente que persiste):
-- **Justo después** de validar el payload (ej. Zod)
+- **Justo después** de vlidar el payload (ej. Zod)
 - **Justo antes** de persistir en DB
 
 En el MVP actual, donde el Bridge solo reenvía, este paso debe ejecutarse en el webhook `/api/mqtt/webhook` (o en el componente server-only que inserta en `readings`).
@@ -18,7 +18,7 @@ Implementación en este repo (referencia): `kittypau_app/src/app/api/mqtt/webhoo
 ### Variables candidatas (críticas)
 - Consumo de alimento (gramos por evento / deltas de `weight_grams`)
 - Consumo de agua (ml)
-- Intervalos entre eventos (segundos)
+- Intervalos entre eventos (segndos)
 - Intensidad de actividad (si se agregan sensores)
 - Señales crudas (peso continuo del plato)
 
@@ -97,7 +97,7 @@ Frecuencia dominante => cada cuántas horas come/bebe.
 Si desaparece una frecuencia o cambia su potencia => cambio de hábito (early signal).
 
 3) **Ruido vs comportamiento real**
-Permite filtrar vibraciones/eventos falsos versus patrones consistentes.
+Permite filtrar vibraciones/eventos falsos versus patrnes consistentes.
 
 ### Ejemplo
 Si come a las 8am y 8pm todos los días:
@@ -108,7 +108,7 @@ Si pasa a 1 vez al día:
 
 ---
 
-## Pipeline recomendado (alineado a la arquitectura)
+## Pipeline recomendado (alneado a la arquitectura)
 ```
 [Dispositivo IoT]
         ↓
@@ -124,7 +124,7 @@ Si pasa a 1 vez al día:
 [ML Service / Worker]
     - agregaciones por mascota
     - FFT (Fourier)
-    - detección de patrones
+    - detección de patrnes
     - scoring de anomalías
         ↓
 [Backend API]

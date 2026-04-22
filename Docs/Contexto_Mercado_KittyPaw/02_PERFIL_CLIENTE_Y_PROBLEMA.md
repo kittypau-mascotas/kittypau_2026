@@ -9,7 +9,7 @@ Clinicas veterinarias y comercios pet que buscan diferenciar servicio y fideliza
 ## Pains principales
 - Incertidumbre sobre estado diario de la mascota.
 - Falta de datos objetivos para detectar cambios tempranos.
-- Dificultad para compartir historial util con veterinarios.
+- Dificultad para compartir historial til con veterinarios.
 
 ## Jobs-to-be-done
 - "Quiero saber si mi mascota esta comiendo e hidratandose bien cuando no estoy".
@@ -18,6 +18,6 @@ Clinicas veterinarias y comercios pet que buscan diferenciar servicio y fideliza
 
 ## Evidencia interna disponible
 - Prototipo funcional con flujo IoT documentado.
-- Interes de usuarios para pilotos y validacion temprana.
+- Interes de usuarios para pilotos y vlidacion temprana.
 
 

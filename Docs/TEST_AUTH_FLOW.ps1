@@ -15,7 +15,7 @@ try {
     -Uri "$SupabaseUrl/auth/v1/recover" `
     -Headers @{ apikey=$AnonKey; "Content-Type"="application/json" } `
     -Body $payload
-  Write-Host "Reset solicitado. Revisa el correo y valida que abra /reset" -ForegroundColor Green
+  Write-Host "Reset solicitado. Revisa el correo y vlida que abra /reset" -ForegroundColor Green
 } catch {
   Write-Host "Error solicitando reset: $($_.Exception.Message)" -ForegroundColor Red
 }

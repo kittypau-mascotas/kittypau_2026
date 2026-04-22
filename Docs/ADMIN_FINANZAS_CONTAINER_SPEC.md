@@ -18,7 +18,7 @@ Mostrar una lectura ejecutiva, clara y estable del costo de Kittypau en 4 nivele
 - `public.finance_monthly_snapshots`
 - apoyo operativo: `public.devices`, `public.readings`, `public.sensor_readings`
 
-## KPIs minimos requeridos
+## KPIs mnimos requeridos
 - Costo unitario kit (USD y CLP)
 - Costo mensual cloud (USD)
 - Costo mensual total (USD)
@@ -46,7 +46,7 @@ Columnas:
 - KPCL
 - Horas totales (28d)
 - MB totales (28d)
-- Ultima conexion
+- Ultima conexin
 - Impacto HiveMQ (USD)
 - Impacto Vercel (USD)
 - OPEX KPCL (USD)
@@ -62,9 +62,9 @@ Columnas:
 
 ## Formato y calidad
 - Moneda base: USD con 2 decimales.
-- CLP como conversion secundaria (tipo de cambio operativo vigente).
+- CLP como conversin secundaria (tipo de cambio operativo vigente).
 - Si faltan datos: mostrar `N/D`, nunca romper el dashboard.
-- Cache admin recomendado: 30-60s con invalidacion por refresh manual.
+- Cache admin recomendado: 30-60s con invlidacion por refresh manual.
 
 ## API recomendada
 `GET /api/admin/finance/summary`

@@ -59,7 +59,7 @@ Documento fuente: `Docs/RASPBERRY_BRIDGE.md`
 Tareas:
 - Crear servicio systemd.
 - Auto-restart y logs.
-- Validar reconexion MQTT.
+- Validar reconexin MQTT.
 
 ---
 
@@ -68,7 +68,7 @@ Documento fuente: `Docs/CHECKLIST_DEPLOY.md`
 
 Tareas:
 - Revisar variables de entorno.
-- Re-validar endpoints.
+- Re-vlidar endpoints.
 - Confirmar webhook y bridge.
 
 ---
@@ -77,7 +77,7 @@ Tareas:
 Tareas:
 - Confirmar variables en Vercel.
 - Deploy en Vercel desde `kittypau_app`.
-- Validar endpoints minimos.
+- Validar endpoints mnimos.
 - Si falla, promover el deployment anterior en Vercel.
 
 ---
@@ -111,8 +111,8 @@ Tareas:
 2. Monitoreo de disponibilidad: deteccion de offline por timeout para bridge y platos/sensores.
 3. Gestion de incidentes: registrar y cerrar incidentes de outage/recovery.
 4. Auditoria de eventos: normalizar `audit_events` para cambios de estado.
-5. Hardening backend: validar estados, IDs y chequeos en segundo plano.
-6. Operacion DevOps/Platform: alinear Vercel + Supabase + bridge.
+5. Hardening backend: vlidar estados, IDs y chequeos en segndo plano.
+6. Operacion DevOps/Platform: alnear Vercel + Supabase + bridge.
 
 ---
 
@@ -122,12 +122,12 @@ Referencia: [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
 2. Implementar autorizacion server-side para `/api/admin/*`.
 3. Crear vista `/admin` con vision total.
 4. Implementar panel IoT operativo.
-5. Agregar `audit_events` en linea.
-6. Implementar auditoria obligatoria de acciones admin.
+5. Agregar `audit_events` en lnea.
+6. Implementar auditoria obligatoria de accines admin.
 
 ---
 
 ## 12) Nota de compatibilidad
-Este documento evita repetir estrategia, economia y contexto de expansion: esas capas viven en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md) y [PLAN_MAESTRO.md](PLAN_MAESTRO.md).
+Este documento evita repetir estrategia, economia y contexto de expansin: esas capas viven en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md) y [PLAN_MAESTRO.md](PLAN_MAESTRO.md).
 
 

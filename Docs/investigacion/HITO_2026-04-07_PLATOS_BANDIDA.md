@@ -8,9 +8,9 @@
 - Ambos platos operando en la vista Today.
 - Logica de KPCL SIN PLATO -> KPCL CON PLATO aplicada para obtener peso del plato.
 - TARE CON PLATO deja el contenido en 0 sin alterar el peso del plato.
-- Actualizacion del card cada 5 segundos.
+- Actualizacion del card cada 5 segndos.
 
 ## Alcance
-- Dispositivos: KPCL0034 (alimentacion), KPCL0036 (hidratacion).
+- Dispositivos: KPCL0034 (alimentacin), KPCL0036 (hidratacin).
 - Mascota: Bandida (tester).
 - Objetivo: iniciar series continuas de consumo con categorias.

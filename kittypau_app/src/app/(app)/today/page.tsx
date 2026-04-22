@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import * as d3 from "d3";
 import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
@@ -143,6 +144,55 @@ type SessionDetailStats = {
   events: number;
   avgConsumed: number | null;
   avgDurationMinutes: number | null;
+};
+
+type WellnessState = {
+  stateLabel: string;
+  actionLabel: string;
+  levelLabel: string;
+  lastEventLabel: string;
+  hasEvidence: boolean;
+};
+
+type D3MarkerType = "food" | "water";
+type D3MarkerPhase = "start" | "end";
+
+type D3Marker = {
+  id: string;
+  type: D3MarkerType;
+  phase: D3MarkerPhase;
+  renderT: number;
+  renderValue: number;
+  startT: number;
+  startValue: number;
+  endT: number;
+  endValue: number;
+  avgValue: number;
+  consumed: number;
+  durationMinutes: number;
+  confirmed: boolean;
+  unit: "g" | "mL";
+  icon: string;
+  size: number;
+};
+
+type D3LineSegment = {
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  strokeWidth: number;
+};
+
+type D3AnomalyState = "normal" | "off_schedule" | "pending" | "no_evidence";
+
+type MultiDayRow = {
+  key: string;
+  label: string;
+  startMs: number;
+  foodPoints: DayNightPoint[];
+  waterPoints: DayNightPoint[];
 };
 
 type LoadState = {
@@ -302,6 +352,13 @@ function formatSessionDuration(minutes: number) {
   return `${h} h ${m} min`;
 }
 
+function formatSessionDurationClock(minutes: number) {
+  const totalSeconds = Math.max(0, Math.round(minutes * 60));
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}m ${String(s).padStart(2, "0")}s`;
+}
+
 function formatCycleDate(ts: number) {
   return new Date(ts).toLocaleDateString("es-CL", {
     weekday: "short",
@@ -339,69 +396,6 @@ function toDayNightPoints(
     .sort((a, b) => a.x - b.x);
 }
 
-function detectIntakeSessions(points: DayNightPoint[]): IntakeSession[] {
-  if (points.length < 2) return [];
-  const minDrop = 2;
-  const maxGapMinutes = 180;
-  const sessions: IntakeSession[] = [];
-  let active: {
-    startIndex: number;
-    endIndex: number;
-    consumed: number;
-  } | null = null;
-
-  const closeActive = () => {
-    if (!active) return;
-    const start = points[active.startIndex];
-    const end = points[active.endIndex];
-    const consumed = Math.max(0, Math.round(active.consumed));
-    const durationMinutes = (end.t - start.t) / 60000;
-    if (consumed >= minDrop && durationMinutes > 0) {
-      sessions.push({
-        startIndex: active.startIndex,
-        endIndex: active.endIndex,
-        startX: start.x,
-        endX: end.x,
-        startT: start.t,
-        endT: end.t,
-        startValue: start.y,
-        endValue: end.y,
-        consumed,
-        durationMinutes,
-      });
-    }
-    active = null;
-  };
-
-  for (let idx = 1; idx < points.length; idx += 1) {
-    const prev = points[idx - 1];
-    const curr = points[idx];
-    const gapMinutes = (curr.t - prev.t) / 60000;
-    if (gapMinutes > maxGapMinutes) {
-      closeActive();
-      continue;
-    }
-    const delta = curr.y - prev.y;
-    if (delta <= -minDrop) {
-      if (!active) {
-        active = {
-          startIndex: idx - 1,
-          endIndex: idx,
-          consumed: -delta,
-        };
-      } else {
-        active.endIndex = idx;
-        active.consumed += -delta;
-      }
-      continue;
-    }
-    closeActive();
-  }
-
-  closeActive();
-  return sessions;
-}
-
 // Convierte pares inicio/termino de audit_events en IntakeSessions usando los puntos del gráfico.
 // Prioridad sobre el heurístico cuando existen etiquetas confirmadas por el operador.
 function buildAuditSessions(
@@ -418,9 +412,7 @@ function buildAuditSessions(
 
   for (const start of starts) {
     const startMs = new Date(start.created_at).getTime();
-    const end = ends.find(
-      (e) => new Date(e.created_at).getTime() > startMs,
-    );
+    const end = ends.find((e) => new Date(e.created_at).getTime() > startMs);
     if (!end) continue;
     const endMs = new Date(end.created_at).getTime();
 
@@ -432,8 +424,14 @@ function buildAuditSessions(
     for (let i = 0; i < points.length; i++) {
       const dStart = Math.abs(points[i].t - startMs);
       const dEnd = Math.abs(points[i].t - endMs);
-      if (dStart < minStartDiff) { minStartDiff = dStart; si = i; }
-      if (dEnd < minEndDiff) { minEndDiff = dEnd; ei = i; }
+      if (dStart < minStartDiff) {
+        minStartDiff = dStart;
+        si = i;
+      }
+      if (dEnd < minEndDiff) {
+        minEndDiff = dEnd;
+        ei = i;
+      }
     }
     if (si >= ei) continue;
 
@@ -562,7 +560,194 @@ function summarizeAnalyticsSessionsByPeriods(
   };
 }
 
+function buildWellnessState(params: {
+  type: "food" | "water";
+  sessions: IntakeSession[];
+}): WellnessState {
+  const latestSession =
+    [...params.sessions].sort((a, b) => b.endT - a.endT)[0] ?? null;
+  if (!latestSession) {
+    return {
+      stateLabel: "Sin evidencia real",
+      actionLabel:
+        params.type === "food"
+          ? "Solo mostraremos alimentación confirmada con eventos reales."
+          : "Aún no hay eventos reales confirmados para hidratación.",
+      levelLabel: "Sin confirmación",
+      lastEventLabel:
+        params.type === "food"
+          ? "Última comida confirmada: sin registro"
+          : "Último consumo confirmado: sin registro",
+      hasEvidence: false,
+    };
+  }
+
+  return {
+    stateLabel: "Confirmado",
+    actionLabel:
+      params.type === "food"
+        ? "Basado solo en eventos reales de inicio y término de alimentación."
+        : "Basado solo en eventos reales de hidratación.",
+    levelLabel: params.type === "food" ? "Evento auditado" : "Evento auditado",
+    lastEventLabel:
+      params.type === "food"
+        ? `Última comida confirmada: ${formatTimestamp(new Date(latestSession.endT).toISOString())}`
+        : `Último consumo confirmado: ${formatTimestamp(new Date(latestSession.endT).toISOString())}`,
+    hasEvidence: true,
+  };
+}
+
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+const AUTHORITATIVE_FOOD_DEVICE_CODE = "KPCL0034";
+const FOOD_START_CATEGORY = "inicio_alimentacion";
+const FOOD_END_CATEGORY = "termino_alimentacion";
+const WATER_START_CATEGORY = "inicio_hidratacion";
+const WATER_END_CATEGORY = "termino_hidratacion";
+
+function isAuthoritativeFoodDeviceCode(value?: string | null): boolean {
+  return (value ?? "").toUpperCase() === AUTHORITATIVE_FOOD_DEVICE_CODE;
+}
+
+function toCycleHourOffset(ts: number, cycleStartMs: number): number {
+  return (ts - cycleStartMs) / (60 * 60 * 1000);
+}
+
+function getCycleStartAtSix(ts: number): number {
+  const date = new Date(ts);
+  const cycleStart = new Date(date);
+  cycleStart.setHours(6, 0, 0, 0);
+  if (date.getTime() < cycleStart.getTime()) {
+    cycleStart.setDate(cycleStart.getDate() - 1);
+  }
+  return cycleStart.getTime();
+}
+
+function toCycleHourOffsetByTimestamp(ts: number): number {
+  return (ts - getCycleStartAtSix(ts)) / (60 * 60 * 1000);
+}
+
+type KpclD3EventKey =
+  | "inicio_servido"
+  | "termino_servido"
+  | "inicio_alimentacion"
+  | "termino_alimentacion"
+  | "inicio_hidratacion"
+  | "termino_hidratacion";
+
+type KpclD3ChartObject = {
+  library: "d3";
+  timezone: string;
+  cycle: {
+    startHour: number;
+    durationHours: number;
+    navigation: ["prev", "today", "next"];
+  };
+  data: {
+    readingsEndpoint: string;
+    eventsEndpointTemplate: string;
+    readingFields: ["recorded_at", "weight_grams", "water_ml", "battery_level"];
+    eventCategories: KpclD3EventKey[];
+    useOnlyRealData: true;
+  };
+  pipeline: {
+    prioritizeAuditEvents: true;
+    foodEvidence: {
+      authoritativeDeviceCode: string;
+      requiredCategories: ["inicio_alimentacion", "termino_alimentacion"];
+      allowHeuristicInference: false;
+    };
+    hydrationHeuristicFallback: {
+      minDropGrams: number;
+      maxGapMinutes: number;
+    };
+  };
+  visuals: {
+    assets: {
+      fondo: string;
+      foodIcon: string;
+      waterIcon: string;
+    };
+    colors: {
+      food: string;
+      water: string;
+      line: string;
+      servedStart: string;
+      servedEnd: string;
+      foodStart: string;
+      foodEnd: string;
+    };
+    iconSizingByConsumption: {
+      min: number;
+      max: number;
+    };
+  };
+  comparison: {
+    days: number;
+    sharedXDomain: boolean;
+    stacked: boolean;
+  };
+};
+
+const KPCL_D3_CHART_OBJECT: KpclD3ChartObject = {
+  library: "d3",
+  timezone: "America/Santiago",
+  cycle: {
+    startHour: 6,
+    durationHours: 24,
+    navigation: ["prev", "today", "next"],
+  },
+  data: {
+    readingsEndpoint: "/api/readings",
+    eventsEndpointTemplate: "/api/devices/:deviceId/events",
+    readingFields: ["recorded_at", "weight_grams", "water_ml", "battery_level"],
+    eventCategories: [
+      "inicio_servido",
+      "termino_servido",
+      "inicio_alimentacion",
+      "termino_alimentacion",
+      "inicio_hidratacion",
+      "termino_hidratacion",
+    ],
+    useOnlyRealData: true,
+  },
+  pipeline: {
+    prioritizeAuditEvents: true,
+    foodEvidence: {
+      authoritativeDeviceCode: AUTHORITATIVE_FOOD_DEVICE_CODE,
+      requiredCategories: [FOOD_START_CATEGORY, FOOD_END_CATEGORY],
+      allowHeuristicInference: false,
+    },
+    hydrationHeuristicFallback: {
+      minDropGrams: 2,
+      maxGapMinutes: 180,
+    },
+  },
+  visuals: {
+    assets: {
+      fondo: "/fondo.png",
+      foodIcon: "/illustrations/pink_food_full.png",
+      waterIcon: "/illustrations/green_water_full.png",
+    },
+    colors: {
+      food: "#ec4899",
+      water: "#14b8a6",
+      line: "#64748b",
+      servedStart: "#22c55e",
+      servedEnd: "#ef4444",
+      foodStart: "#3b82f6",
+      foodEnd: "#f97316",
+    },
+    iconSizingByConsumption: {
+      min: 16,
+      max: 42,
+    },
+  },
+  comparison: {
+    days: 4,
+    sharedXDomain: true,
+    stacked: true,
+  },
+};
 
 export default function TodayPage() {
   const router = useRouter();
@@ -597,9 +782,9 @@ export default function TodayPage() {
   const [bowlLastEmptyWeight, setBowlLastEmptyWeight] = useState<
     Record<string, number>
   >({});
-  const [bowlTareOffsets, setBowlTareOffsets] = useState<Record<string, number>>(
-    {},
-  );
+  const [bowlTareOffsets, setBowlTareOffsets] = useState<
+    Record<string, number>
+  >({});
   const [bowlPendingPlateConfirm, setBowlPendingPlateConfirm] = useState<
     Record<string, boolean>
   >({});
@@ -631,6 +816,12 @@ export default function TodayPage() {
   const [deviceAuditEvents, setDeviceAuditEvents] = useState<
     Record<string, AuditEvent[]>
   >({});
+  const [d3HoverMarker, setD3HoverMarker] = useState<{
+    marker: D3Marker;
+    anchorX: number;
+    anchorY: number;
+  } | null>(null);
+  const [d3CursorTs, setD3CursorTs] = useState<number | null>(null);
 
   // device_id en formato KPCL (texto) para suscripción MQTT
   const mqttDeviceId = useMemo(
@@ -1117,8 +1308,11 @@ export default function TodayPage() {
   const waterDevice =
     baseWaterDevice ??
     (bowlDevice
-      ? petDevices.find((device) => device.id !== bowlDevice.id) ?? null
+      ? (petDevices.find((device) => device.id !== bowlDevice.id) ?? null)
       : null);
+  const isAuthoritativeFoodDevice = isAuthoritativeFoodDeviceCode(
+    bowlDevice?.device_id,
+  );
   const latestReading = state.readings[0] ?? null;
   const bowlLatestReading = bowlDevice?.id
     ? (deviceLatestReadings[bowlDevice.id] ?? null)
@@ -1185,16 +1379,16 @@ export default function TodayPage() {
         Boolean(value) && arr.indexOf(value) === index,
     );
     if (!targetIds.length) return;
-      let active = true;
-      let inFlight = false;
-      let interval: number | null = null;
-      const loadTargets = async () => {
-        if (inFlight) return;
-        inFlight = true;
-        const entries = await Promise.all(
-          targetIds.map(async (deviceId) => {
-            try {
-              const result = await loadReadings(deviceId, null, 2);
+    let active = true;
+    let inFlight = false;
+    let interval: number | null = null;
+    const loadTargets = async () => {
+      if (inFlight) return;
+      inFlight = true;
+      const entries = await Promise.all(
+        targetIds.map(async (deviceId) => {
+          try {
+            const result = await loadReadings(deviceId, null, 2);
             return [
               deviceId,
               result.data[0] ?? null,
@@ -1205,31 +1399,31 @@ export default function TodayPage() {
           }
         }),
       );
-        if (!active) {
-          inFlight = false;
-          return;
-        }
-        setDeviceLatestReadings((prev) => ({
-          ...prev,
-          ...Object.fromEntries(
-            entries.map(([deviceId, latest]) => [deviceId, latest]),
-          ),
+      if (!active) {
+        inFlight = false;
+        return;
+      }
+      setDeviceLatestReadings((prev) => ({
+        ...prev,
+        ...Object.fromEntries(
+          entries.map(([deviceId, latest]) => [deviceId, latest]),
+        ),
       }));
       setDevicePreviousReadings((prev) => ({
         ...prev,
-          ...Object.fromEntries(
-            entries.map(([deviceId, , previous]) => [deviceId, previous]),
-          ),
-        }));
-        setLastRefreshAt(new Date().toISOString());
-        inFlight = false;
-      };
-      void loadTargets();
-      interval = window.setInterval(loadTargets, 5000);
-      return () => {
-        active = false;
-        if (interval) window.clearInterval(interval);
-      };
+        ...Object.fromEntries(
+          entries.map(([deviceId, , previous]) => [deviceId, previous]),
+        ),
+      }));
+      setLastRefreshAt(new Date().toISOString());
+      inFlight = false;
+    };
+    void loadTargets();
+    interval = window.setInterval(loadTargets, 5000);
+    return () => {
+      active = false;
+      if (interval) window.clearInterval(interval);
+    };
   }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
 
   useEffect(() => {
@@ -1355,8 +1549,11 @@ export default function TodayPage() {
     if (!targetIds.length) return;
     let active = true;
     const loadAuditEvents = async () => {
-      const from = new Date(Date.now() - (dayCycleOffsetDays + 2) * 24 * 60 * 60 * 1000).toISOString();
-      const to = new Date(Date.now() - dayCycleOffsetDays * 24 * 60 * 60 * 1000 + 60 * 60 * 1000).toISOString();
+      const lookbackDays = Math.max(30, dayCycleOffsetDays + 2);
+      const from = new Date(
+        Date.now() - lookbackDays * 24 * 60 * 60 * 1000,
+      ).toISOString();
+      const to = new Date(Date.now() + 60 * 60 * 1000).toISOString();
       const entries = await Promise.all(
         targetIds.map(async (deviceId) => {
           try {
@@ -1590,13 +1787,13 @@ export default function TodayPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             category: choice.key,
-              snapshot: {
-                device_id: bowlDevice.device_id,
-                weight_grams: bowlGrossWeightGrams,
-                plate_weight_grams: bowlPlateWeightEffective,
-                content_weight_grams: bowlContentWeightGrams,
-                sensor_recorded_at: bowlLatestReading?.recorded_at ?? null,
-              },
+            snapshot: {
+              device_id: bowlDevice.device_id,
+              weight_grams: bowlGrossWeightGrams,
+              plate_weight_grams: bowlPlateWeightEffective,
+              content_weight_grams: bowlContentWeightGrams,
+              sensor_recorded_at: bowlLatestReading?.recorded_at ?? null,
+            },
           }),
         });
         if (!res.ok) throw new Error("category-save-failed");
@@ -1623,10 +1820,7 @@ export default function TodayPage() {
               ? bowlLastEmptyWeight[bowlDevice.id]
               : null;
           if (emptyWeight !== null && bowlGrossWeightGrams !== null) {
-            const plateWeight = Math.max(
-              0,
-              bowlGrossWeightGrams - emptyWeight,
-            );
+            const plateWeight = Math.max(0, bowlGrossWeightGrams - emptyWeight);
             setBowlPlateOverrides((prev) => ({
               ...prev,
               [bowlDevice.id]: plateWeight,
@@ -1735,13 +1929,13 @@ export default function TodayPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             category: choice.key,
-              snapshot: {
-                device_id: waterDevice.device_id,
-                weight_grams: waterGrossWeightGrams,
-                plate_weight_grams: waterPlateWeightEffective,
-                content_weight_grams: waterContentWeightGrams,
-                sensor_recorded_at: waterLatestReading?.recorded_at ?? null,
-              },
+            snapshot: {
+              device_id: waterDevice.device_id,
+              weight_grams: waterGrossWeightGrams,
+              plate_weight_grams: waterPlateWeightEffective,
+              content_weight_grams: waterContentWeightGrams,
+              sensor_recorded_at: waterLatestReading?.recorded_at ?? null,
+            },
           }),
         });
         if (!res.ok) throw new Error("category-save-failed");
@@ -1784,7 +1978,9 @@ export default function TodayPage() {
         }
         if (choice.key === "tare_con_plato") {
           const tareBase =
-            waterRawContentWeightGrams !== null ? waterRawContentWeightGrams : 0;
+            waterRawContentWeightGrams !== null
+              ? waterRawContentWeightGrams
+              : 0;
           setWaterTareOffsets((prev) => ({
             ...prev,
             [waterDevice.id]: tareBase,
@@ -1824,10 +2020,6 @@ export default function TodayPage() {
             : bowlPrevGrossWeightGrams,
         )
       : null;
-  const bowlPrevTemp = toNullableNumber(bowlPreviousReading?.temperature);
-  const bowlPrevHumidity = toNullableNumber(bowlPreviousReading?.humidity);
-  const bowlPrevLight = toNullableNumber(bowlPreviousReading?.light_percent);
-
   const waterPrevGrossWeightGrams = toNullableNumber(
     waterPreviousReading?.weight_grams,
   );
@@ -1840,10 +2032,6 @@ export default function TodayPage() {
             : waterPrevGrossWeightGrams,
         )
       : null;
-  const waterPrevTemp = toNullableNumber(waterPreviousReading?.temperature);
-  const waterPrevHumidity = toNullableNumber(waterPreviousReading?.humidity);
-  const waterPrevLight = toNullableNumber(waterPreviousReading?.light_percent);
-
   const renderTrend = (current: number | null, previous: number | null) => {
     if (current === null || previous === null) return null;
     const delta = current - previous;
@@ -1954,7 +2142,12 @@ export default function TodayPage() {
         },
         THREE_DAYS_MS,
       ),
-    [bowlLongReadings, bowlPlateWeightEffective, bowlDevice?.id, bowlTareOffsets],
+    [
+      bowlLongReadings,
+      bowlPlateWeightEffective,
+      bowlDevice?.id,
+      bowlTareOffsets,
+    ],
   );
   const todayTempSeries = useMemo(
     () => buildSeries(bowlLongReadings, (r) => r.temperature, THREE_DAYS_MS),
@@ -2060,27 +2253,27 @@ export default function TodayPage() {
   );
 
   const bowlIntakeSessions = useMemo(() => {
-    const auditSessions = buildAuditSessions(
+    if (!isAuthoritativeFoodDevice) return [];
+    return buildAuditSessions(
       deviceAuditEvents[bowlDevice?.id ?? ""] ?? [],
       bowlDayNightPoints,
-      "inicio_alimentacion",
-      "termino_alimentacion",
+      FOOD_START_CATEGORY,
+      FOOD_END_CATEGORY,
     );
-    return auditSessions.length > 0
-      ? auditSessions
-      : detectIntakeSessions(bowlDayNightPoints);
-  }, [bowlDayNightPoints, deviceAuditEvents, bowlDevice?.id]);
+  }, [
+    bowlDayNightPoints,
+    bowlDevice?.id,
+    deviceAuditEvents,
+    isAuthoritativeFoodDevice,
+  ]);
 
   const waterIntakeSessions = useMemo(() => {
-    const auditSessions = buildAuditSessions(
+    return buildAuditSessions(
       deviceAuditEvents[waterDevice?.id ?? ""] ?? [],
       waterDayNightPoints,
-      "inicio_hidratacion",
-      "termino_hidratacion",
+      WATER_START_CATEGORY,
+      WATER_END_CATEGORY,
     );
-    return auditSessions.length > 0
-      ? auditSessions
-      : detectIntakeSessions(waterDayNightPoints);
   }, [waterDayNightPoints, deviceAuditEvents, waterDevice?.id]);
 
   const foodPointStyle = useMemo(() => {
@@ -2288,19 +2481,35 @@ export default function TodayPage() {
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const isFood = context.datasetIndex === 0;
-              const sessions = isFood ? bowlIntakeSessions : waterIntakeSessions;
+              const sessions = isFood
+                ? bowlIntakeSessions
+                : waterIntakeSessions;
               const session = findSessionForPoint(sessions, context.dataIndex);
-              if (!session) return ["Sin evento registrado"];
-              const deviceId = isFood ? (bowlDevice?.id ?? "") : (waterDevice?.id ?? "");
+              if (!session) {
+                return isFood
+                  ? ["Sin evidencia auditada de alimentación"]
+                  : ["Sin evento registrado"];
+              }
+              const deviceId = isFood
+                ? (bowlDevice?.id ?? "")
+                : (waterDevice?.id ?? "");
               const auditEvents = deviceAuditEvents[deviceId] ?? [];
-              const startCat = isHydration ? "inicio_hidratacion" : "inicio_alimentacion";
+              const startCat = isHydration
+                ? WATER_START_CATEGORY
+                : FOOD_START_CATEGORY;
               const isConfirmed = auditEvents.some(
                 (e) =>
                   e.category === startCat &&
-                  Math.abs(new Date(e.created_at).getTime() - session.startT) < 5 * 60 * 1000,
+                  Math.abs(new Date(e.created_at).getTime() - session.startT) <
+                    5 * 60 * 1000,
               );
+              const statusLabel = isFood
+                ? "✓ Alimentación confirmada (audit_event)"
+                : isConfirmed
+                  ? "✓ Hidratación confirmada"
+                  : "Hidratación detectada";
               return [
-                isConfirmed ? "✓ Alimentación confirmada" : "Proceso detectado",
+                statusLabel,
                 `Inicio: ${formatSessionClock(session.startT)}`,
                 `Fin: ${formatSessionClock(session.endT)}`,
                 `Duración: ${formatSessionDuration(session.durationMinutes)}`,
@@ -2357,6 +2566,362 @@ export default function TodayPage() {
       },
     }),
     [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
+  );
+
+  const d3Canvas = {
+    width: 1200,
+    height: 380,
+    marginTop: 24,
+    marginRight: 28,
+    marginBottom: 30,
+    marginLeft: 28,
+  } as const;
+  const d3InnerWidth =
+    d3Canvas.width - d3Canvas.marginLeft - d3Canvas.marginRight;
+  const d3InnerHeight =
+    d3Canvas.height - d3Canvas.marginTop - d3Canvas.marginBottom;
+  const d3CycleStartMs = dayNightWindow.startMs;
+  const d3CycleEndMs = dayNightWindow.endMs;
+  const d3AllPoints = useMemo(
+    () =>
+      [...bowlDayNightPoints, ...waterDayNightPoints].sort((a, b) => a.t - b.t),
+    [bowlDayNightPoints, waterDayNightPoints],
+  );
+  const d3YDomain = useMemo(() => {
+    if (!d3AllPoints.length) return [0, 100] as const;
+    const min = d3.min(d3AllPoints, (p) => p.y) ?? 0;
+    const max = d3.max(d3AllPoints, (p) => p.y) ?? 100;
+    const padding = Math.max(6, (max - min) * 0.12);
+    return [Math.max(0, min - padding), max + padding] as const;
+  }, [d3AllPoints]);
+  const d3XScale = useMemo(
+    () =>
+      d3
+        .scaleLinear()
+        .domain([d3CycleStartMs, d3CycleEndMs])
+        .range([d3Canvas.marginLeft, d3Canvas.marginLeft + d3InnerWidth]),
+    [d3CycleEndMs, d3CycleStartMs, d3InnerWidth],
+  );
+  const d3YScale = useMemo(
+    () =>
+      d3
+        .scaleLinear()
+        .domain(d3YDomain)
+        .range([d3Canvas.marginTop + d3InnerHeight, d3Canvas.marginTop]),
+    [d3InnerHeight, d3YDomain],
+  );
+  const buildD3Segments = useCallback(
+    (points: DayNightPoint[], prefix: string): D3LineSegment[] => {
+      if (points.length < 2) return [];
+      const segments: D3LineSegment[] = [];
+      for (let index = 1; index < points.length; index += 1) {
+        const prev = points[index - 1];
+        const curr = points[index];
+        const dtHours = Math.max(0.0001, (curr.t - prev.t) / (60 * 60 * 1000));
+        const velocity = Math.abs((curr.y - prev.y) / dtHours);
+        const strokeWidth = Math.max(
+          1.5,
+          Math.min(5.4, 1.8 + velocity * 0.035),
+        );
+        segments.push({
+          id: `${prefix}-${index}-${curr.t}`,
+          x1: d3XScale(prev.t),
+          y1: d3YScale(prev.y),
+          x2: d3XScale(curr.t),
+          y2: d3YScale(curr.y),
+          strokeWidth,
+        });
+      }
+      return segments;
+    },
+    [d3XScale, d3YScale],
+  );
+  const d3LinePathFood = useMemo(() => {
+    if (bowlDayNightPoints.length < 2) return "";
+    const line = d3
+      .line<DayNightPoint>()
+      .x((p) => d3XScale(p.t))
+      .y((p) => d3YScale(p.y))
+      .curve(d3.curveMonotoneX);
+    return line(bowlDayNightPoints) ?? "";
+  }, [bowlDayNightPoints, d3XScale, d3YScale]);
+  const d3LinePathWater = useMemo(() => {
+    if (waterDayNightPoints.length < 2) return "";
+    const line = d3
+      .line<DayNightPoint>()
+      .x((p) => d3XScale(p.t))
+      .y((p) => d3YScale(p.y))
+      .curve(d3.curveMonotoneX);
+    return line(waterDayNightPoints) ?? "";
+  }, [d3XScale, d3YScale, waterDayNightPoints]);
+  const d3FoodSegments = useMemo(
+    () => buildD3Segments(bowlDayNightPoints, "food-seg"),
+    [bowlDayNightPoints, buildD3Segments],
+  );
+  const d3WaterSegments = useMemo(
+    () => buildD3Segments(waterDayNightPoints, "water-seg"),
+    [buildD3Segments, waterDayNightPoints],
+  );
+  const d3NowTs = useMemo(() => {
+    if (dayCycleOffsetDays !== 0) return null;
+    const now = Date.now();
+    if (now < d3CycleStartMs || now > d3CycleEndMs) return null;
+    return now;
+  }, [d3CycleEndMs, d3CycleStartMs, dayCycleOffsetDays]);
+  const d3BackgroundBands = useMemo(
+    () => [
+      {
+        key: "morning",
+        label: "Mañana",
+        from: 0,
+        to: 6,
+        color: "rgba(251,207,232,0.35)",
+      },
+      {
+        key: "day",
+        label: "Día",
+        from: 6,
+        to: 12,
+        color: "rgba(236,253,245,0.35)",
+      },
+      {
+        key: "afternoon",
+        label: "Tarde",
+        from: 12,
+        to: 16,
+        color: "rgba(224,242,254,0.35)",
+      },
+      {
+        key: "night",
+        label: "Noche",
+        from: 16,
+        to: 24,
+        color: "rgba(15,23,42,0.25)",
+      },
+    ],
+    [],
+  );
+  const d3SessionConnectors = useMemo(
+    () =>
+      bowlIntakeSessions.map((session, index) => ({
+        id: `connector-${index}-${session.startT}`,
+        startT: session.startT,
+        endT: session.endT,
+        yValue: (session.startValue + session.endValue) / 2,
+      })),
+    [bowlIntakeSessions],
+  );
+  const d3Markers = useMemo<D3Marker[]>(() => {
+    const plateSize = 42;
+    return bowlIntakeSessions
+      .flatMap((session, index) => {
+        const consumed = Math.max(0, Math.round(session.consumed));
+        const common = {
+          type: "food" as const,
+          startT: session.startT,
+          startValue: session.startValue,
+          endT: session.endT,
+          endValue: session.endValue,
+          avgValue: (session.startValue + session.endValue) / 2,
+          consumed,
+          durationMinutes: session.durationMinutes,
+          confirmed: true,
+          unit: "g" as const,
+          size: plateSize,
+        };
+        return [
+          {
+            id: `food-start-${index}-${session.startT}`,
+            phase: "start" as const,
+            renderT: session.startT,
+            renderValue: session.startValue,
+            icon: "/illustrations/pink_food_full.png",
+            ...common,
+          },
+          {
+            id: `food-end-${index}-${session.endT}`,
+            phase: "end" as const,
+            renderT: session.endT,
+            renderValue: session.endValue,
+            icon: "/illustrations/pink_empty.png",
+            ...common,
+          },
+        ];
+      })
+      .sort((a, b) => a.renderT - b.renderT);
+  }, [bowlIntakeSessions]);
+  const d3FoodHabitBands = useMemo(() => {
+    if (!isAuthoritativeFoodDevice || !bowlDevice?.id)
+      return [] as Array<{ id: string; startHour: number; endHour: number }>;
+    const fromMs = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const hours = analyticsHistorySessions
+      .filter(
+        (session) =>
+          session.device_id === bowlDevice.id &&
+          session.session_type === "food" &&
+          new Date(session.session_start).getTime() >= fromMs,
+      )
+      .map((session) =>
+        toCycleHourOffset(
+          new Date(session.session_start).getTime(),
+          d3CycleStartMs,
+        ),
+      )
+      .filter((hour) => Number.isFinite(hour) && hour >= 0 && hour <= 24);
+    if (!hours.length)
+      return [] as Array<{ id: string; startHour: number; endHour: number }>;
+    const bins = Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      count: hours.filter((value) => value >= hour && value < hour + 1).length,
+    }));
+    const threshold = Math.max(1, Math.ceil(hours.length * 0.18));
+    return bins
+      .filter((bin) => bin.count >= threshold)
+      .map((bin, index) => ({
+        id: `habit-${index}-${bin.hour}`,
+        startHour: bin.hour,
+        endHour: bin.hour + 1,
+      }));
+  }, [
+    analyticsHistorySessions,
+    bowlDevice?.id,
+    d3CycleStartMs,
+    isAuthoritativeFoodDevice,
+  ]);
+  const d3FoodAnomaly = useMemo(() => {
+    if (!isAuthoritativeFoodDevice) {
+      return {
+        state: "no_evidence" as D3AnomalyState,
+        label: "Sin evidencia",
+        detail: `Solo ${AUTHORITATIVE_FOOD_DEVICE_CODE} confirma comida`,
+      };
+    }
+    const daySessions = bowlIntakeSessions
+      .slice()
+      .sort((a, b) => a.startT - b.startT);
+    if (!daySessions.length) {
+      return {
+        state: "pending" as D3AnomalyState,
+        label: "No ha comido aún",
+        detail: "No hay sesión confirmada en este ciclo",
+      };
+    }
+    const fromMs = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const historyHours = analyticsHistorySessions
+      .filter(
+        (session) =>
+          session.device_id === bowlDevice?.id &&
+          session.session_type === "food" &&
+          new Date(session.session_start).getTime() >= fromMs,
+      )
+      .map(
+        (session) =>
+          new Date(session.session_start).getHours() +
+          new Date(session.session_start).getMinutes() / 60,
+      )
+      .filter((value) => Number.isFinite(value));
+    if (!historyHours.length) {
+      return {
+        state: "normal" as D3AnomalyState,
+        label: "Día normal",
+        detail: "Aún sin baseline histórico",
+      };
+    }
+    const mean =
+      historyHours.reduce((acc, value) => acc + value, 0) / historyHours.length;
+    const first = new Date(daySessions[0].startT);
+    const firstHour = first.getHours() + first.getMinutes() / 60;
+    const diff = Math.abs(firstHour - mean);
+    if (diff <= 1.5) {
+      return {
+        state: "normal" as D3AnomalyState,
+        label: "Día normal",
+        detail: "Comida dentro del horario habitual",
+      };
+    }
+    return {
+      state: "off_schedule" as D3AnomalyState,
+      label: "Fuera de horario",
+      detail: "Comida confirmada fuera de patrón",
+    };
+  }, [
+    analyticsHistorySessions,
+    bowlDevice?.id,
+    bowlIntakeSessions,
+    isAuthoritativeFoodDevice,
+  ]);
+  const d3DateInputValue = useMemo(() => {
+    const selected = new Date();
+    selected.setDate(selected.getDate() - dayCycleOffsetDays);
+    return selected.toISOString().slice(0, 10);
+  }, [dayCycleOffsetDays]);
+  const applyD3Date = (value: string) => {
+    if (!value) return;
+    const selected = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(selected.getTime())) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.round(
+      (today.getTime() - selected.getTime()) / (24 * 60 * 60 * 1000),
+    );
+    setDayCycleOffsetDays(Math.max(0, diffDays));
+  };
+  const d3MultiDayRows = useMemo<MultiDayRow[]>(() => {
+    const rows: MultiDayRow[] = [];
+    for (let index = 0; index < 4; index += 1) {
+      const offset = dayCycleOffsetDays + index;
+      const anchor = new Date();
+      anchor.setDate(anchor.getDate() - offset);
+      const window = getDayNightWindow(anchor);
+      const label = offset === 0 ? "Hoy" : formatCycleDate(window.startMs);
+      const foodPoints = toDayNightPoints(
+        bowlDevice?.id ? (deviceHistoryReadings[bowlDevice.id] ?? []) : [],
+        window.startMs,
+        window.endMs,
+        selectBowlSeriesValue,
+      );
+      const waterPoints = toDayNightPoints(
+        waterDevice?.id ? (deviceHistoryReadings[waterDevice.id] ?? []) : [],
+        window.startMs,
+        window.endMs,
+        selectWaterSeriesValue,
+      );
+      rows.push({
+        key: `row-${offset}-${window.startMs}`,
+        label,
+        startMs: window.startMs,
+        foodPoints,
+        waterPoints,
+      });
+    }
+    return rows;
+  }, [
+    bowlDevice?.id,
+    dayCycleOffsetDays,
+    deviceHistoryReadings,
+    selectBowlSeriesValue,
+    selectWaterSeriesValue,
+    waterDevice?.id,
+  ]);
+  const d3MiniPath = useCallback(
+    (
+      points: DayNightPoint[],
+      rowStartMs: number,
+      rowYDomain: readonly [number, number],
+      width: number,
+      height: number,
+    ) => {
+      if (points.length < 2) return "";
+      const x = d3.scaleLinear().domain([0, 24]).range([0, width]);
+      const y = d3.scaleLinear().domain(rowYDomain).range([height, 0]);
+      const line = d3
+        .line<DayNightPoint>()
+        .x((point) => x(toCycleHourOffset(point.t, rowStartMs)))
+        .y((point) => y(point.y))
+        .curve(d3.curveMonotoneX);
+      return line(points) ?? "";
+    },
+    [],
   );
 
   const nowMs = useMemo(() => Date.now(), []);
@@ -2419,14 +2984,48 @@ export default function TodayPage() {
       nowMs,
     ],
   );
-  const bowlHistorySessions = useMemo(
-    () => detectIntakeSessions(bowlHistoryPoints),
-    [bowlHistoryPoints],
+  const d3HeatBins = useMemo(() => {
+    const bins = Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      count: 0,
+    }));
+    const sources = [...bowlHistoryPoints, ...waterHistoryPoints];
+    for (const point of sources) {
+      const offset = toCycleHourOffsetByTimestamp(point.t);
+      if (!Number.isFinite(offset)) continue;
+      const index = Math.floor(offset);
+      if (index >= 0 && index < 24) {
+        bins[index].count += 1;
+      }
+    }
+    return bins;
+  }, [bowlHistoryPoints, waterHistoryPoints]);
+  const d3HeatMax = useMemo(
+    () => d3.max(d3HeatBins, (bin) => bin.count) ?? 0,
+    [d3HeatBins],
   );
-  const waterHistorySessions = useMemo(
-    () => detectIntakeSessions(waterHistoryPoints),
-    [waterHistoryPoints],
-  );
+  const bowlHistorySessions = useMemo(() => {
+    if (!isAuthoritativeFoodDevice) return [];
+    return buildAuditSessions(
+      deviceAuditEvents[bowlDevice?.id ?? ""] ?? [],
+      bowlHistoryPoints,
+      FOOD_START_CATEGORY,
+      FOOD_END_CATEGORY,
+    );
+  }, [
+    bowlDevice?.id,
+    bowlHistoryPoints,
+    deviceAuditEvents,
+    isAuthoritativeFoodDevice,
+  ]);
+  const waterHistorySessions = useMemo(() => {
+    return buildAuditSessions(
+      deviceAuditEvents[waterDevice?.id ?? ""] ?? [],
+      waterHistoryPoints,
+      WATER_START_CATEGORY,
+      WATER_END_CATEGORY,
+    );
+  }, [deviceAuditEvents, waterDevice?.id, waterHistoryPoints]);
   const bowlConsumptionSummary = useMemo(
     () => summarizeSessionsByPeriods(bowlHistorySessions, nowMs),
     [bowlHistorySessions, nowMs],
@@ -2435,20 +3034,6 @@ export default function TodayPage() {
     () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
     [waterHistorySessions, nowMs],
   );
-
-  // Resumen basado en sesiones analíticas (analytics DB) — cubre semanas/meses
-  const bowlAnalyticsSummary = useMemo(() => {
-    if (!bowlDevice?.id) return null;
-    const deviceSessions = analyticsHistorySessions.filter(
-      (s) => s.device_id === bowlDevice.id,
-    );
-    if (!deviceSessions.length) return null;
-    return summarizeAnalyticsSessionsByPeriods(
-      deviceSessions,
-      "grams_consumed",
-      nowMs,
-    );
-  }, [analyticsHistorySessions, bowlDevice?.id, nowMs]);
 
   const waterAnalyticsSummary = useMemo(() => {
     if (!waterDevice?.id) return null;
@@ -2481,6 +3066,55 @@ export default function TodayPage() {
       ),
     [waterHistorySessions, nowMs, detailPeriod],
   );
+  const bowlWellness = useMemo(
+    () =>
+      buildWellnessState({
+        type: "food",
+        sessions: bowlHistorySessions,
+      }),
+    [bowlHistorySessions],
+  );
+  const waterWellness = useMemo(
+    () =>
+      buildWellnessState({
+        type: "water",
+        sessions: waterHistorySessions,
+      }),
+    [waterHistorySessions],
+  );
+
+  const getConnectivityLabel = (timestamp?: string | null) => {
+    if (!timestamp) return "Sin señal";
+    const diffMinutes = Math.round(
+      Math.max(0, Date.now() - new Date(timestamp).getTime()) / 60000,
+    );
+    if (!Number.isFinite(diffMinutes)) return "Sin señal";
+    if (diffMinutes <= 10) return "Estable";
+    if (diffMinutes <= 45) return "Reciente";
+    if (diffMinutes <= 180) return "Atrasada";
+    return "Sin señal";
+  };
+
+  const getOperationalLabel = (powerState: "on" | "off" | "nodata") => {
+    if (powerState === "on") return "Dispositivo encendido";
+    if (powerState === "off") return "Dispositivo apagado";
+    return "Sin telemetría";
+  };
+
+  const getWellnessToneClasses = (
+    stateLabel: string,
+    type: "food" | "water",
+  ) => {
+    if (stateLabel === "Confirmado") {
+      return type === "food"
+        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+        : "border-sky-200 bg-sky-50 text-sky-800";
+    }
+    if (stateLabel === "Sin evidencia real") {
+      return "border-slate-200 bg-slate-50 text-slate-600";
+    }
+    return "border-slate-200 bg-slate-50 text-slate-600";
+  };
   const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
     value === null ? "N/D" : `${value} ${unit}`;
   const periodLabels: Array<{
@@ -2597,7 +3231,7 @@ export default function TodayPage() {
                           <p className="text-[11px] text-slate-600">
                             {consumptionPeriod === "one"
                               ? `${bowlDetailSummary.events} eventos (30d)`
-                              : `${(bowlAnalyticsSummary ?? bowlConsumptionSummary)[summaryPeriod].cycles} veces/${activePeriodLabel}`}
+                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
                           </p>
                           {consumptionPeriod === "one" ? (
                             <p className="text-[11px] text-slate-600">
@@ -2617,9 +3251,7 @@ export default function TodayPage() {
                             <p className="text-[11px] text-slate-600">
                               Consumo:{" "}
                               {formatConsumedValue(
-                                (bowlAnalyticsSummary ??
-                                  bowlConsumptionSummary)[summaryPeriod]
-                                  .consumed,
+                                bowlConsumptionSummary[summaryPeriod].consumed,
                                 "g",
                               )}{" "}
                               /{activePeriodLabel}
@@ -2723,269 +3355,402 @@ export default function TodayPage() {
           </section>
 
           <section
-          id="today-bowls"
-          role="region"
-          aria-label="Estado de platos"
-          className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
-        >
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
-                <div className="relative min-h-[180px]">
-                  <div className="absolute right-2 top-2 flex items-center gap-1">
-                    <span
-                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                      aria-label={
-                        bowlPowerState === "on"
-                          ? "Prendido"
-                          : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                      }
-                      title={
-                        bowlPowerState === "on"
-                          ? "Prendido"
-                          : bowlPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                      }
-                    />
-                    <BatteryStatusIcon
-                      level={bowlDevice?.battery_level ?? null}
-                      className="h-6 w-6 text-slate-700"
-                    />
-                  </div>
-                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
-                    <p className="text-[14px] font-semibold text-slate-700">
-                      {bowlContentWeightText} (contenido)
-                      {renderTrend(
-                        bowlContentWeightGrams,
-                        bowlPrevContentWeightGrams,
-                      )}
-                    </p>
-                    <p className="text-[14px] font-semibold text-slate-700">
-                      {bowlPlateWeightText} (plato)
-                    </p>
-                    <p className="text-[14px] font-semibold text-slate-600">
-                      {bowlSensorWeightText} (sensor)
-                      {renderTrend(
-                        bowlGrossWeightGrams,
-                        bowlPrevGrossWeightGrams,
-                      )}
-                    </p>
-                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                        Ambiente
+            id="today-bowls"
+            role="region"
+            aria-label="Estado de platos"
+            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <article className="today-bowl-card today-wellness-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                  <div className="flex flex-col gap-4">
+                    <header className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                          Alimentación
+                        </p>
+                        <h3 className="mt-1 text-[26px] font-semibold tracking-[0.02em] text-slate-900">
+                          Registro real de alimentación
+                        </h3>
+                      </div>
+                      <div className="today-wellness-status-row flex flex-wrap items-center justify-end gap-2">
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <span
+                            className={`inline-block h-2.5 w-2.5 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                            aria-hidden="true"
+                          />
+                          {getOperationalLabel(bowlPowerState)}
+                        </span>
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <span aria-hidden="true">📶</span>
+                          {getConnectivityLabel(
+                            bowlLatestReading?.recorded_at ??
+                              bowlDevice?.last_seen ??
+                              null,
+                          )}
+                        </span>
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <BatteryStatusIcon
+                            level={bowlDevice?.battery_level ?? null}
+                            className="h-4 w-4 text-slate-700"
+                          />
+                          {bowlDevice?.battery_level !== null &&
+                          bowlDevice?.battery_level !== undefined
+                            ? `${Math.round(bowlDevice.battery_level)}%`
+                            : "Batería N/D"}
+                        </span>
+                      </div>
+                    </header>
+
+                    <div className="rounded-[calc(var(--radius)-10px)] border border-emerald-100 bg-[linear-gradient(180deg,rgba(236,253,245,0.9)_0%,rgba(255,255,255,0.96)_100%)] px-4 py-3">
+                      <p className="text-sm font-medium text-slate-600">
+                        {bowlWellness.lastEventLabel}
                       </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Temp: {bowlTempText}
-                        {renderTrend(
-                          toNullableNumber(bowlLatestReading?.temperature),
-                          bowlPrevTemp,
-                        )}
-                      </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Hum: {bowlHumidityText}
-                        {renderTrend(
-                          toNullableNumber(bowlLatestReading?.humidity),
-                          bowlPrevHumidity,
-                        )}
-                      </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Luz: {bowlLightText}
-                        {renderTrend(
-                          toNullableNumber(bowlLatestReading?.light_percent),
-                          bowlPrevLight,
-                        )}
-                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-3">
+                        <span
+                          className={`rounded-full border px-3 py-1 text-sm font-semibold ${getWellnessToneClasses(
+                            bowlWellness.stateLabel,
+                            "food",
+                          )}`}
+                        >
+                          Estado: {bowlWellness.stateLabel}
+                        </span>
+                        <p className="text-sm text-slate-500">
+                          {bowlWellness.actionLabel}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
-                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
-                        Alimentación
-                      </span>
+
+                    <div className="today-wellness-visual grid items-center gap-4 md:grid-cols-[68px_minmax(0,1fr)]">
+                      <div className="today-wellness-bar-shell flex justify-center">
+                        <div className="today-wellness-bar today-wellness-bar-food">
+                          <div
+                            className={`today-wellness-bar-fill today-wellness-bar-fill-food ${
+                              bowlWellness.hasEvidence
+                                ? "is-confirmed"
+                                : "is-empty"
+                            }`}
+                          />
+                          <div className="today-wellness-bar-guides">
+                            {Array.from({ length: 9 }).map((_, index) => (
+                              <span key={`food-guide-${index}`} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="today-wellness-plate-panel flex flex-col items-center rounded-[calc(var(--radius)-10px)] border border-slate-100 bg-white/90 px-4 py-4 shadow-[0_14px_24px_-22px_rgba(15,23,42,0.5)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                          {bowlWellness.levelLabel}
+                        </p>
+                        <Image
+                          src="/illustrations/pink_food_full.png"
+                          alt="Kittypau comedero"
+                          width={224}
+                          height={164}
+                          className="mx-auto mt-2 h-40 w-auto object-contain object-center"
+                        />
+                        <p className="mt-2 text-sm font-medium text-slate-500">
+                          Evidencia física del plato
+                        </p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-slate-400">
+                          {bowlDevice?.device_id ?? "KPCLXXXX"}
+                        </p>
+                      </div>
                     </div>
-                    <Image
-                      src="/illustrations/pink_food_full.png"
-                      alt="Kittypau comedero"
-                      width={208}
-                      height={150}
-                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
-                    />
-                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                      {bowlDevice?.device_id ?? "KPCLXXXX"}
-                    </p>
+
+                    <details className="today-wellness-detail rounded-[calc(var(--radius)-10px)] border border-slate-200 bg-slate-50/80 px-4 py-3">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-slate-700">
+                        <span className="flex items-center justify-between gap-3">
+                          <span>Ver detalle técnico</span>
+                          <span className="text-slate-400">▼</span>
+                        </span>
+                      </summary>
+                      <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-2">
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Contenido actual:
+                          </span>{" "}
+                          {bowlContentWeightText}
+                          {renderTrend(
+                            bowlContentWeightGrams,
+                            bowlPrevContentWeightGrams,
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Peso del plato:
+                          </span>{" "}
+                          {bowlPlateWeightText}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Lectura del sensor:
+                          </span>{" "}
+                          {bowlSensorWeightText}
+                          {renderTrend(
+                            bowlGrossWeightGrams,
+                            bowlPrevGrossWeightGrams,
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Última lectura:
+                          </span>{" "}
+                          {formatTimestamp(
+                            bowlLatestReading?.recorded_at ?? null,
+                          )}
+                        </p>
+                        <p className="md:col-span-2">
+                          <span className="font-semibold text-slate-900">
+                            Ambiente:
+                          </span>{" "}
+                          {bowlTempText} · {bowlHumidityText} · {bowlLightText}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            ID dispositivo:
+                          </span>{" "}
+                          {bowlDevice?.device_id ?? "KPCLXXXX"}
+                        </p>
+                      </div>
+                    </details>
                   </div>
-                </div>
-              </article>
-              <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                    Categorías
-                  </p>
-                  {bowlCategoryFeedback ? (
-                    <p className="text-[10px] font-semibold text-slate-500">
-                      {bowlCategoryFeedback}
+                </article>
+                <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      Categorías
                     </p>
-                  ) : null}
-                </div>
+                    {bowlCategoryFeedback ? (
+                      <p className="text-[10px] font-semibold text-slate-500">
+                        {bowlCategoryFeedback}
+                      </p>
+                    ) : null}
+                  </div>
                   <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                  {BOWL_CATEGORY_CHOICES.map((choice) => {
-                    const isBusy = bowlCategoryBusy === choice.key;
-                    const isPendingConfirm =
-                      choice.key === "kpcl_con_plato" &&
-                      bowlDevice?.id &&
-                      bowlPendingPlateConfirm[bowlDevice.id];
-                    return (
-                      <button
-                        key={choice.key}
-                        type="button"
-                        onClick={() => void handleBowlCategory(choice)}
-                        disabled={Boolean(bowlCategoryBusy)}
-                        className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                          isBusy || isPendingConfirm
-                            ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
-                            : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                        } disabled:cursor-not-allowed disabled:opacity-60`}
-                        aria-pressed={isBusy}
-                        aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
-                      >
-                        {choice.label}
-                      </button>
-                    );
-                  })}
+                    {BOWL_CATEGORY_CHOICES.map((choice) => {
+                      const isBusy = bowlCategoryBusy === choice.key;
+                      const isPendingConfirm =
+                        choice.key === "kpcl_con_plato" &&
+                        bowlDevice?.id &&
+                        bowlPendingPlateConfirm[bowlDevice.id];
+                      return (
+                        <button
+                          key={choice.key}
+                          type="button"
+                          onClick={() => void handleBowlCategory(choice)}
+                          disabled={Boolean(bowlCategoryBusy)}
+                          className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
+                            isBusy || isPendingConfirm
+                              ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
+                              : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                          } disabled:cursor-not-allowed disabled:opacity-60`}
+                          aria-pressed={isBusy}
+                          aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
+                        >
+                          {choice.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <article className="today-bowl-card rounded-[var(--radius)] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
-                <div className="relative min-h-[180px]">
-                  <div className="absolute right-2 top-2 flex items-center gap-1">
-                    <span
-                      className={`inline-block h-3 w-3 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                      aria-label={
-                        waterPowerState === "on"
-                          ? "Prendido"
-                          : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                      }
-                      title={
-                        waterPowerState === "on"
-                          ? "Prendido"
-                          : waterPowerState === "off"
-                            ? "Apagado"
-                            : "Sin data"
-                      }
-                    />
-                    <BatteryStatusIcon
-                      level={waterDevice?.battery_level ?? null}
-                      className="h-6 w-6 text-slate-700"
-                    />
-                  </div>
-                  <div className="today-bowl-metrics absolute left-0 top-1/2 flex w-[152px] -translate-y-1/2 flex-col items-start gap-2">
-                    <p className="text-[14px] font-semibold text-slate-700">
-                      {waterVolumeMlText} (aprox)
-                      {renderTrend(
-                        waterContentWeightGrams,
-                        waterPrevContentWeightGrams,
-                      )}
-                    </p>
-                    <p className="text-[14px] font-semibold text-slate-700">
-                      {waterPlateWeightText} (plato)
-                    </p>
-                    <p className="text-[14px] font-semibold text-slate-600">
-                      {waterSensorWeightText} (sensor)
-                      {renderTrend(
-                        waterGrossWeightGrams,
-                        waterPrevGrossWeightGrams,
-                      )}
-                    </p>
-                    <div className="today-bowl-ambient mt-0.5 flex flex-col gap-1">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                        Ambiente
+              <div className="flex flex-col gap-2">
+                <article className="today-bowl-card today-wellness-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] transition-transform duration-200 ease-out hover:scale-[1.02] md:p-5">
+                  <div className="flex flex-col gap-4">
+                    <header className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
+                          Hidratación
+                        </p>
+                        <h3 className="mt-1 text-[26px] font-semibold tracking-[0.02em] text-slate-900">
+                          Registro real de hidratación
+                        </h3>
+                      </div>
+                      <div className="today-wellness-status-row flex flex-wrap items-center justify-end gap-2">
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <span
+                            className={`inline-block h-2.5 w-2.5 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                            aria-hidden="true"
+                          />
+                          {getOperationalLabel(waterPowerState)}
+                        </span>
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <span aria-hidden="true">📶</span>
+                          {getConnectivityLabel(
+                            waterLatestReading?.recorded_at ??
+                              waterDevice?.last_seen ??
+                              null,
+                          )}
+                        </span>
+                        <span className="today-wellness-status-chip border border-slate-200 bg-white text-slate-700">
+                          <BatteryStatusIcon
+                            level={waterDevice?.battery_level ?? null}
+                            className="h-4 w-4 text-slate-700"
+                          />
+                          {waterDevice?.battery_level !== null &&
+                          waterDevice?.battery_level !== undefined
+                            ? `${Math.round(waterDevice.battery_level)}%`
+                            : "Batería N/D"}
+                        </span>
+                      </div>
+                    </header>
+
+                    <div className="rounded-[calc(var(--radius)-10px)] border border-sky-100 bg-[linear-gradient(180deg,rgba(239,246,255,0.92)_0%,rgba(255,255,255,0.96)_100%)] px-4 py-3">
+                      <p className="text-sm font-medium text-slate-600">
+                        {waterWellness.lastEventLabel}
                       </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Temp: {waterTempText}
-                        {renderTrend(
-                          toNullableNumber(waterLatestReading?.temperature),
-                          waterPrevTemp,
-                        )}
-                      </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Hum: {waterHumidityText}
-                        {renderTrend(
-                          toNullableNumber(waterLatestReading?.humidity),
-                          waterPrevHumidity,
-                        )}
-                      </p>
-                      <p className="text-[12px] font-semibold text-slate-600">
-                        Luz: {waterLightText}
-                        {renderTrend(
-                          toNullableNumber(waterLatestReading?.light_percent),
-                          waterPrevLight,
-                        )}
-                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-3">
+                        <span
+                          className={`rounded-full border px-3 py-1 text-sm font-semibold ${getWellnessToneClasses(
+                            waterWellness.stateLabel,
+                            "water",
+                          )}`}
+                        >
+                          Estado: {waterWellness.stateLabel}
+                        </span>
+                        <p className="text-sm text-slate-500">
+                          {waterWellness.actionLabel}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="relative mx-auto flex w-full max-w-[260px] flex-col items-center justify-center">
-                    <div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-start justify-center gap-2">
-                      <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-700">
-                        Hidratación
-                      </span>
+
+                    <div className="today-wellness-visual grid items-center gap-4 md:grid-cols-[68px_minmax(0,1fr)]">
+                      <div className="today-wellness-bar-shell flex justify-center">
+                        <div className="today-wellness-bar today-wellness-bar-water">
+                          <div
+                            className={`today-wellness-bar-fill today-wellness-bar-fill-water ${
+                              waterWellness.hasEvidence
+                                ? "is-confirmed"
+                                : "is-empty"
+                            }`}
+                          />
+                          <div className="today-wellness-bar-guides">
+                            {Array.from({ length: 9 }).map((_, index) => (
+                              <span key={`water-guide-${index}`} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="today-wellness-plate-panel flex flex-col items-center rounded-[calc(var(--radius)-10px)] border border-slate-100 bg-white/90 px-4 py-4 shadow-[0_14px_24px_-22px_rgba(15,23,42,0.5)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                          {waterWellness.levelLabel}
+                        </p>
+                        <Image
+                          src="/illustrations/green_water_full.png"
+                          alt="Kittypau bebedero"
+                          width={224}
+                          height={164}
+                          className="mx-auto mt-2 h-40 w-auto object-contain object-center"
+                        />
+                        <p className="mt-2 text-sm font-medium text-slate-500">
+                          Evidencia física del plato
+                        </p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.14em] text-slate-400">
+                          {waterDevice?.device_id ?? "KPCLXXXX"}
+                        </p>
+                      </div>
                     </div>
-                    <Image
-                      src="/illustrations/green_water_full.png"
-                      alt="Kittypau bebedero"
-                      width={208}
-                      height={150}
-                      className="mx-auto mt-3 h-36 w-auto scale-[1.22] object-contain object-center"
-                    />
-                    <p className="mt-0.5 text-center text-[9px] leading-none text-slate-400/80">
-                      {waterDevice?.device_id ?? "KPBWXXXX"}
-                    </p>
+
+                    <details className="today-wellness-detail rounded-[calc(var(--radius)-10px)] border border-slate-200 bg-slate-50/80 px-4 py-3">
+                      <summary className="cursor-pointer list-none text-sm font-semibold text-slate-700">
+                        <span className="flex items-center justify-between gap-3">
+                          <span>Ver detalle técnico</span>
+                          <span className="text-slate-400">▼</span>
+                        </span>
+                      </summary>
+                      <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-2">
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Nivel actual:
+                          </span>{" "}
+                          {waterVolumeMlText}
+                          {renderTrend(
+                            waterContentWeightGrams,
+                            waterPrevContentWeightGrams,
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Peso del plato:
+                          </span>{" "}
+                          {waterPlateWeightText}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Lectura del sensor:
+                          </span>{" "}
+                          {waterSensorWeightText}
+                          {renderTrend(
+                            waterGrossWeightGrams,
+                            waterPrevGrossWeightGrams,
+                          )}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            Última lectura:
+                          </span>{" "}
+                          {formatTimestamp(
+                            waterLatestReading?.recorded_at ?? null,
+                          )}
+                        </p>
+                        <p className="md:col-span-2">
+                          <span className="font-semibold text-slate-900">
+                            Ambiente:
+                          </span>{" "}
+                          {waterTempText} · {waterHumidityText} ·{" "}
+                          {waterLightText}
+                        </p>
+                        <p>
+                          <span className="font-semibold text-slate-900">
+                            ID dispositivo:
+                          </span>{" "}
+                          {waterDevice?.device_id ?? "KPCLXXXX"}
+                        </p>
+                      </div>
+                    </details>
                   </div>
-                </div>
-              </article>
-              <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                    Categorías
-                  </p>
-                  {waterCategoryFeedback ? (
-                    <p className="text-[10px] font-semibold text-slate-500">
-                      {waterCategoryFeedback}
+                </article>
+                <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      Categorías
                     </p>
-                  ) : null}
-                </div>
+                    {waterCategoryFeedback ? (
+                      <p className="text-[10px] font-semibold text-slate-500">
+                        {waterCategoryFeedback}
+                      </p>
+                    ) : null}
+                  </div>
                   <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                  {WATER_CATEGORY_CHOICES.map((choice) => {
-                    const isBusy = waterCategoryBusy === choice.key;
-                    const isPendingConfirm =
-                      choice.key === "kpcl_con_plato" &&
-                      waterDevice?.id &&
-                      waterPendingPlateConfirm[waterDevice.id];
-                    return (
-                      <button
-                        key={choice.key}
-                        type="button"
-                        onClick={() => void handleWaterCategory(choice)}
-                        disabled={Boolean(waterCategoryBusy)}
-                        className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                          isBusy || isPendingConfirm
-                            ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
-                            : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                        } disabled:cursor-not-allowed disabled:opacity-60`}
-                        aria-pressed={isBusy}
-                        aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
-                      >
-                        {choice.label}
-                      </button>
-                    );
-                  })}
-                </div>
+                    {WATER_CATEGORY_CHOICES.map((choice) => {
+                      const isBusy = waterCategoryBusy === choice.key;
+                      const isPendingConfirm =
+                        choice.key === "kpcl_con_plato" &&
+                        waterDevice?.id &&
+                        waterPendingPlateConfirm[waterDevice.id];
+                      return (
+                        <button
+                          key={choice.key}
+                          type="button"
+                          onClick={() => void handleWaterCategory(choice)}
+                          disabled={Boolean(waterCategoryBusy)}
+                          className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
+                            isBusy || isPendingConfirm
+                              ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
+                              : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                          } disabled:cursor-not-allowed disabled:opacity-60`}
+                          aria-pressed={isBusy}
+                          aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
+                        >
+                          {choice.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -3037,6 +3802,527 @@ export default function TodayPage() {
                   {chartLoadError}
                 </p>
               ) : null}
+              {!isAuthoritativeFoodDevice ? (
+                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
+                  Alimentación sin evidencia auditada: solo se confirma comida
+                  desde {AUTHORITATIVE_FOOD_DEVICE_CODE} con categorías
+                  inicio/termino.
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <section
+            id="kpcl-d3-object"
+            role="region"
+            aria-label="Gráfico D3 KPCL mejorado"
+            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+          >
+            <div className="rounded-[calc(var(--radius)-8px)] border border-emerald-100 bg-[linear-gradient(180deg,rgba(236,253,245,0.5)_0%,rgba(240,249,255,0.45)_45%,rgba(255,255,255,0.96)_100%)] p-4 shadow-[0_14px_30px_-24px_rgba(16,185,129,0.7)]">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                    KPCL D3
+                  </p>
+                  <h3 className="mt-1 text-base font-semibold text-slate-900 md:text-lg">
+                    Versión semántica mejorada del gráfico original
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-600">
+                    Fuente real: {KPCL_D3_CHART_OBJECT.data.readingsEndpoint} ·
+                    Zona horaria {KPCL_D3_CHART_OBJECT.timezone}
+                  </p>
+                  <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700">
+                    <span
+                      className={`inline-block h-2.5 w-2.5 rounded-full ${
+                        d3FoodAnomaly.state === "normal"
+                          ? "bg-emerald-500"
+                          : d3FoodAnomaly.state === "off_schedule"
+                            ? "bg-amber-500"
+                            : d3FoodAnomaly.state === "pending"
+                              ? "bg-rose-500"
+                              : "bg-slate-300"
+                      }`}
+                    />
+                    <span>{d3FoodAnomaly.label}</span>
+                    <span className="text-slate-500">
+                      · {d3FoodAnomaly.detail}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={KPCL_D3_CHART_OBJECT.visuals.assets.foodIcon}
+                    alt=""
+                    aria-hidden={true}
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 object-contain opacity-95"
+                  />
+                  <Image
+                    src={KPCL_D3_CHART_OBJECT.visuals.assets.waterIcon}
+                    alt=""
+                    aria-hidden={true}
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 object-contain opacity-95"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
+                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
+                  aria-label="Ciclo anterior D3"
+                  title="Ciclo anterior D3"
+                >
+                  ◀
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDayCycleOffsetDays(0)}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-0.5 text-[12px] font-semibold text-slate-600 hover:bg-slate-50"
+                  aria-label="Volver a hoy D3"
+                  title="Volver a hoy D3"
+                >
+                  {dayNightRangeTitle}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
+                  }
+                  disabled={dayCycleOffsetDays === 0}
+                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Ciclo siguiente D3"
+                  title="Ciclo siguiente D3"
+                >
+                  ▶
+                </button>
+                <input
+                  type="date"
+                  value={d3DateInputValue}
+                  onChange={(event) => applyD3Date(event.target.value)}
+                  className="h-8 rounded-[10px] border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700"
+                  aria-label="Seleccionar fecha D3"
+                />
+              </div>
+
+              <div className="relative mt-3 overflow-hidden rounded-[12px] border border-white/80 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white">
+                <svg
+                  viewBox={`0 0 ${d3Canvas.width} ${d3Canvas.height}`}
+                  className="h-[360px] w-full"
+                  role="img"
+                  aria-label="Gráfico D3 de ciclo diario"
+                  onMouseMove={(event) => {
+                    const [mx] = d3.pointer(event);
+                    const clampedX = Math.min(
+                      d3Canvas.marginLeft + d3InnerWidth,
+                      Math.max(d3Canvas.marginLeft, mx),
+                    );
+                    const ts = d3XScale.invert(clampedX);
+                    setD3CursorTs(ts);
+                  }}
+                  onMouseLeave={() => {
+                    setD3CursorTs(null);
+                    setD3HoverMarker(null);
+                  }}
+                >
+                  <image
+                    href={KPCL_D3_CHART_OBJECT.visuals.assets.fondo}
+                    x={d3Canvas.marginLeft}
+                    y={d3Canvas.marginTop}
+                    width={d3InnerWidth}
+                    height={d3InnerHeight}
+                    preserveAspectRatio="xMidYMid slice"
+                    opacity={1}
+                  />
+                  {d3HeatBins.map((bin) => {
+                    if (d3HeatMax <= 0 || bin.count <= 0) return null;
+                    const from = d3CycleStartMs + bin.hour * 60 * 60 * 1000;
+                    const to = d3CycleStartMs + (bin.hour + 1) * 60 * 60 * 1000;
+                    const x = d3XScale(from);
+                    const width = Math.max(0, d3XScale(to) - x);
+                    const normalized = bin.count / d3HeatMax;
+                    return (
+                      <rect
+                        key={`heat-${bin.hour}`}
+                        x={x}
+                        y={d3Canvas.marginTop}
+                        width={width}
+                        height={d3InnerHeight}
+                        fill="rgba(15,23,42,0.12)"
+                        opacity={Math.min(0.2, 0.02 + normalized * 0.14)}
+                      />
+                    );
+                  })}
+                  {d3BackgroundBands.map((band) => {
+                    const from = d3CycleStartMs + band.from * 60 * 60 * 1000;
+                    const to = d3CycleStartMs + band.to * 60 * 60 * 1000;
+                    const x = d3XScale(from);
+                    const width = Math.max(0, d3XScale(to) - x);
+                    return (
+                      <rect
+                        key={`band-${band.key}`}
+                        x={x}
+                        y={d3Canvas.marginTop}
+                        width={width}
+                        height={d3InnerHeight}
+                        fill={band.color}
+                        opacity={d3HoverMarker ? 0.4 : 1}
+                      />
+                    );
+                  })}
+                  {d3FoodHabitBands.map((band) => {
+                    const from =
+                      d3CycleStartMs + band.startHour * 60 * 60 * 1000;
+                    const to = d3CycleStartMs + band.endHour * 60 * 60 * 1000;
+                    const x = d3XScale(from);
+                    const width = Math.max(0, d3XScale(to) - x);
+                    return (
+                      <rect
+                        key={band.id}
+                        x={x}
+                        y={d3Canvas.marginTop}
+                        width={width}
+                        height={d3InnerHeight}
+                        fill="rgba(16,185,129,0.12)"
+                      />
+                    );
+                  })}
+                  {d3SessionConnectors.map((connector) => (
+                    <line
+                      key={connector.id}
+                      x1={d3XScale(connector.startT)}
+                      x2={d3XScale(connector.endT)}
+                      y1={d3YScale(connector.yValue)}
+                      y2={d3YScale(connector.yValue)}
+                      stroke="#f472b6"
+                      strokeWidth={3}
+                      strokeDasharray="6 6"
+                      opacity={0.7}
+                    />
+                  ))}
+                  {[0, 6, 12, 18, 24].map((offset) => {
+                    const tickTs = d3CycleStartMs + offset * 60 * 60 * 1000;
+                    const x = d3XScale(tickTs);
+                    return (
+                      <g key={`d3-tick-${offset}`}>
+                        <line
+                          x1={x}
+                          y1={d3Canvas.marginTop}
+                          x2={x}
+                          y2={d3Canvas.marginTop + d3InnerHeight}
+                          stroke="rgba(148,163,184,0.34)"
+                          strokeDasharray="3 4"
+                        />
+                        <text
+                          x={x}
+                          y={d3Canvas.marginTop + d3InnerHeight + 16}
+                          textAnchor="middle"
+                          className="fill-slate-500 text-[11px] font-semibold"
+                        >
+                          {formatHourFromOffset(offset)}
+                        </text>
+                      </g>
+                    );
+                  })}
+                  {d3LinePathFood ? (
+                    <path
+                      d={d3LinePathFood}
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth={1.1}
+                      opacity={0.35}
+                    />
+                  ) : null}
+                  {d3FoodSegments.map((segment) => (
+                    <line
+                      key={segment.id}
+                      x1={segment.x1}
+                      y1={segment.y1}
+                      x2={segment.x2}
+                      y2={segment.y2}
+                      stroke="#94a3b8"
+                      strokeWidth={Math.max(
+                        1.2,
+                        Math.min(2.6, segment.strokeWidth * 0.5),
+                      )}
+                      strokeLinecap="round"
+                      opacity={0.42}
+                    />
+                  ))}
+                  {d3LinePathWater ? (
+                    <path
+                      d={d3LinePathWater}
+                      fill="none"
+                      stroke="#cbd5e1"
+                      strokeWidth={1.1}
+                      opacity={0.28}
+                    />
+                  ) : null}
+                  {d3WaterSegments.map((segment) => (
+                    <line
+                      key={segment.id}
+                      x1={segment.x1}
+                      y1={segment.y1}
+                      x2={segment.x2}
+                      y2={segment.y2}
+                      stroke="#cbd5e1"
+                      strokeWidth={Math.max(
+                        1.1,
+                        Math.min(2.2, segment.strokeWidth * 0.45),
+                      )}
+                      strokeLinecap="round"
+                      opacity={0.34}
+                    />
+                  ))}
+                  {d3NowTs !== null ? (
+                    <g>
+                      <line
+                        x1={d3XScale(d3NowTs)}
+                        y1={d3Canvas.marginTop}
+                        x2={d3XScale(d3NowTs)}
+                        y2={d3Canvas.marginTop + d3InnerHeight}
+                        stroke="rgba(15,23,42,0.72)"
+                        strokeDasharray="2 3"
+                      />
+                      <text
+                        x={d3XScale(d3NowTs)}
+                        y={d3Canvas.marginTop - 8}
+                        textAnchor="middle"
+                        className="fill-slate-700 text-[10px] font-bold"
+                      >
+                        Ahora
+                      </text>
+                    </g>
+                  ) : null}
+                  {d3CursorTs !== null ? (
+                    <line
+                      x1={d3XScale(d3CursorTs)}
+                      y1={d3Canvas.marginTop}
+                      x2={d3XScale(d3CursorTs)}
+                      y2={d3Canvas.marginTop + d3InnerHeight}
+                      stroke="rgba(15,23,42,0.55)"
+                      strokeDasharray="5 4"
+                    />
+                  ) : null}
+                  {d3Markers.map((marker) => {
+                    const x = d3XScale(marker.renderT);
+                    const y = d3YScale(marker.renderValue);
+                    return (
+                      <g
+                        key={marker.id}
+                        transform={`translate(${x}, ${y})`}
+                        onMouseEnter={() =>
+                          setD3HoverMarker({
+                            marker,
+                            anchorX: x,
+                            anchorY: y,
+                          })
+                        }
+                        onMouseLeave={() => setD3HoverMarker(null)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <circle
+                          cx={0}
+                          cy={0}
+                          r={22}
+                          fill={
+                            marker.phase === "start"
+                              ? "rgba(34,197,94,0.18)"
+                              : "rgba(239,68,68,0.18)"
+                          }
+                        />
+                        <image
+                          href={marker.icon}
+                          x={-marker.size / 2}
+                          y={-marker.size / 2}
+                          width={marker.size}
+                          height={marker.size}
+                          opacity={0.98}
+                        >
+                          <animateTransform
+                            attributeName="transform"
+                            type="scale"
+                            from="0.2"
+                            to="1"
+                            dur="320ms"
+                            begin="0s"
+                            fill="freeze"
+                          />
+                        </image>
+                      </g>
+                    );
+                  })}
+                </svg>
+                {d3HoverMarker ? (
+                  <div
+                    className="pointer-events-none absolute z-40 rounded-[10px] border border-slate-700/40 bg-slate-900/95 px-3 py-2 text-[11px] text-slate-100 shadow-[0_10px_22px_-14px_rgba(15,23,42,0.8)]"
+                    style={{
+                      left: `calc(${(d3HoverMarker.anchorX / d3Canvas.width) * 100}% + 28px)`,
+                      top: `calc(${(d3HoverMarker.anchorY / d3Canvas.height) * 100}% - 20px)`,
+                    }}
+                  >
+                    <p className="font-semibold">
+                      {d3HoverMarker.marker.phase === "start"
+                        ? "Inicio de sesión"
+                        : "Término de sesión"}
+                    </p>
+                    <p>{formatSessionClock(d3HoverMarker.marker.renderT)}</p>
+                    <p>Comió: {d3HoverMarker.marker.consumed} g</p>
+                    <p>
+                      Duración:{" "}
+                      {formatSessionDurationClock(
+                        d3HoverMarker.marker.durationMinutes,
+                      )}
+                    </p>
+                    <p>Sesión confirmada</p>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mt-4 rounded-[12px] border border-slate-200 bg-white/75 px-3 py-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    Comparación 4 ciclos
+                  </p>
+                  <p className="text-[10px] text-slate-500">
+                    Dominio X compartido 06:00 → 06:00
+                  </p>
+                </div>
+                <div className="grid gap-2">
+                  {d3MultiDayRows.map((row) => {
+                    const combined = [...row.foodPoints, ...row.waterPoints];
+                    const rowDomain: readonly [number, number] = combined.length
+                      ? ([
+                          Math.max(
+                            0,
+                            (d3.min(combined, (point) => point.y) ?? 0) - 6,
+                          ),
+                          (d3.max(combined, (point) => point.y) ?? 100) + 6,
+                        ] as const)
+                      : d3YDomain;
+                    const miniWidth = 960;
+                    const miniHeight = 78;
+                    const miniX = d3
+                      .scaleLinear()
+                      .domain([0, 24])
+                      .range([0, miniWidth]);
+                    const miniY = d3
+                      .scaleLinear()
+                      .domain(rowDomain)
+                      .range([miniHeight, 0]);
+                    const rowFoodSessions = bowlHistorySessions.filter(
+                      (session) =>
+                        session.startT >= row.startMs &&
+                        session.startT < row.startMs + 24 * 60 * 60 * 1000,
+                    );
+                    const foodPath = d3MiniPath(
+                      row.foodPoints,
+                      row.startMs,
+                      rowDomain,
+                      miniWidth,
+                      miniHeight,
+                    );
+                    const waterPath = d3MiniPath(
+                      row.waterPoints,
+                      row.startMs,
+                      rowDomain,
+                      miniWidth,
+                      miniHeight,
+                    );
+                    return (
+                      <div
+                        key={row.key}
+                        className="grid grid-cols-[94px_1fr] items-center gap-2 rounded-[10px] border border-slate-100 bg-white px-2 py-2"
+                      >
+                        <p className="truncate text-[11px] font-semibold text-slate-600">
+                          {row.label}
+                        </p>
+                        <svg
+                          viewBox={`0 0 ${miniWidth} ${miniHeight}`}
+                          className="h-[72px] w-full"
+                          role="img"
+                          aria-label={`Patrón de ${row.label}`}
+                        >
+                          {[0, 6, 12, 18, 24].map((hour) => {
+                            const x = (hour / 24) * miniWidth;
+                            return (
+                              <line
+                                key={`${row.key}-tick-${hour}`}
+                                x1={x}
+                                y1={0}
+                                x2={x}
+                                y2={miniHeight}
+                                stroke="rgba(148,163,184,0.24)"
+                                strokeDasharray="2 4"
+                              />
+                            );
+                          })}
+                          {foodPath ? (
+                            <path
+                              d={foodPath}
+                              fill="none"
+                              stroke={KPCL_D3_CHART_OBJECT.visuals.colors.food}
+                              strokeWidth={2}
+                              opacity={0.88}
+                            />
+                          ) : null}
+                          {waterPath ? (
+                            <path
+                              d={waterPath}
+                              fill="none"
+                              stroke={KPCL_D3_CHART_OBJECT.visuals.colors.water}
+                              strokeWidth={2}
+                              opacity={0.88}
+                            />
+                          ) : null}
+                          {rowFoodSessions.map((session, index) => {
+                            const startX = miniX(
+                              toCycleHourOffset(session.startT, row.startMs),
+                            );
+                            const endX = miniX(
+                              toCycleHourOffset(session.endT, row.startMs),
+                            );
+                            const y = miniY(
+                              (session.startValue + session.endValue) / 2,
+                            );
+                            return (
+                              <g
+                                key={`${row.key}-session-${index}-${session.startT}`}
+                              >
+                                <line
+                                  x1={startX}
+                                  x2={endX}
+                                  y1={y}
+                                  y2={y}
+                                  stroke="#f472b6"
+                                  strokeWidth={1.8}
+                                  strokeDasharray="4 4"
+                                  opacity={0.72}
+                                />
+                                <circle
+                                  cx={startX}
+                                  cy={miniY(session.startValue)}
+                                  r={4.2}
+                                  fill="rgba(34,197,94,0.75)"
+                                />
+                                <circle
+                                  cx={endX}
+                                  cy={miniY(session.endValue)}
+                                  r={4.2}
+                                  fill="rgba(239,68,68,0.75)"
+                                />
+                              </g>
+                            );
+                          })}
+                        </svg>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </section>
         </header>

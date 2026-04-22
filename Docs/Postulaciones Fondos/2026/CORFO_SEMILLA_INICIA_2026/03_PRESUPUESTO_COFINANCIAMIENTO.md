@@ -1,38 +1,39 @@
-# Start-Up Chile 2026 - Checklist operativo (basado en 2025)
+# Semilla Inicia 2026 - Presupuesto y cofinanciamiento (base 2025)
 
-## Referencias 2025 directas
-- `.../03_Start_Up_Chile_Build_2025/Checklist_Postulacion_Build.md`
-- `.../03_Start_Up_Chile_Build_2025/preguntas_formulario_postulacion.md`
-- `.../03_Start_Up_Chile_Build_2025/Registro_Postulacion.md`
+## Nota
+Esta estructura se basa en la lgica de presupuesto usada en 2025.
+Antes de enviar, debe alnearse 1:1 con categorias y topes oficiales 2026.
 
-## 1) Elegibilidad y programa
-- [ ] Confirmar programa 2026: Build / Ignite / Growth.
-- [x] Base 2025 lista: estructura de elegibilidad y rol Team Leader.
-- [ ] Revalidar criterios 2026 (ventas, antiguedad comercial, residencia, dedicacion exclusiva).
+## Tabla base para completar con valores 2026
+| Categoria | Subsidio CLP | Aporte empresa CLP | Justificacion |
+| --- | ---: | ---: | --- |
+| Desarrollo y optimizacion tecnica | 0 | 0 | Mejora de prototipo y robustez operativa |
+| Validacion comercial/pilotos | 0 | 0 | Ejecucion de pilotos y levantamiento de evidencia |
+| Marketing inicial | 0 | 0 | Activacion de canal inicial y adquisicion temprana |
+| Activos y herramientas | 0 | 0 | Equipamiento y herramientas criticas |
+| Operacion/capital de trabajo | 0 | 0 | Soporte operativo del periodo de ejecucion |
+| Total | 0 | 0 | - |
 
-## 2) Formulario principal
-- [x] Texto base problema/solucion cargado desde 2025.
-- [x] Bloques de mercado, impacto Chile y cofinanciamiento cargados desde 2025.
-- [ ] Ajustar limites de caracteres segun formulario 2026.
-- [ ] Actualizar campos personales/legales definitivos (RUT, direccion, IDs vigentes).
+## Cofinanciamiento (narrativa base heredada)
+- Aporte pecuniario: capital fundador para gastos directos.
+- Aporte no pecuniario: horas/dedicacion del equipo.
 
-## 3) Entregables de postulacion
-- [x] Estructura de video pitch heredada de 2025.
-- [x] Lista de anexos legales/equipo/producto heredada de 2025.
-- [ ] Grabar video final 2026.
-- [ ] Consolidar deck final 2026 (10-12 slides).
+## Evidencia minima a adjuntar
+- Cotizaciones por item.
+- Supuestos de costo por categoria.
+- Trazabilidad entre item presupuestario y hito tecnico/comercial.
 
-## 4) Revision final
-- [ ] Revisar consistencia narrativa entre formulario, deck y video.
-- [ ] Revisar que no queden datos 2025 en respuesta final.
-- [ ] Envio y respaldo de comprobante.
+## Controles antes de envio
+- Cada gasto debe ser elegible segn bases 2026.
+- Los montos deben cuadrar con plan de trabajo y cronograma.
+- No usar categorias ambiguas ni sin respaldo documental.
 
-## Marco AIoT / PetTech (Alineacion 2026)
+## Marco AIoT / PetTech (Alneacion 2026)
 
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
@@ -61,17 +62,17 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 - Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
 2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
 3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
 - **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
@@ -79,8 +80,8 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+2. Las decisiones visuales deben reforzar lectura rpida de estado real (alimentacin, hidratacin, ambiente, batera).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 

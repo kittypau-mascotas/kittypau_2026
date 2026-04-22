@@ -2,14 +2,14 @@
 
 ## Regla Canonica
 
-El cuadro del gato es una sola escena reutilizable.
+El cuadro del gato es una sola escena retilizable.
 
 La aplicacion no debe reinterpretar su geometria en cada pagina.
 Cada pantalla puede cambiar:
 
 - el texto;
 - el contexto;
-- las acciones;
+- las accines;
 - el momento en que aparece.
 
 Pero no debe cambiar:
@@ -25,7 +25,7 @@ Pero no debe cambiar:
 ### 1. Contenedor visual del cuadro
 - `kittypau_app/src/chatbot-gato/trial-rpg-dialog.tsx`
 
-Este archivo define el cuadro como objeto visual reutilizable.
+Este archivo define el cuadro como objeto visual retilizable.
 
 ### 2. Posicion compartida
 - `kittypau_app/src/chatbot-gato/trial-rpg-dialog-dock.tsx`
@@ -61,5 +61,5 @@ Mantener una experiencia consistente:
 - mismo objeto visual;
 - misma posicion base;
 - mismo personaje;
-- distinto contexto segun la pagina.
+- distinto contexto segn la pagina.
 

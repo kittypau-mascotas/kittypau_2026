@@ -8,11 +8,11 @@
 ## Regla maestra
 
 > **Una sesión de alimentación** es el intervalo definido por un par canónico
-> `inicio_alimentacion` → `termino_alimentacion` registrado en `public.audit_events`
+> `inicio_alimentacin` -> `termino_alimentacin` registrado en `public.audit_events`
 > con `event_type = 'manual_bowl_category'` para el device correspondiente.
 >
 > **Una sesión de hidratación** es el intervalo análogo con
-> `inicio_hidratacion` → `termino_hidratacion`.
+> `inicio_hidratacin` -> `termino_hidratacin`.
 >
 > Estas etiquetas son la **fuente de verdad** para entrenamiento supervisado,
 > visualización en gráficos y evaluación de cualquier algoritmo de detección automática.
@@ -34,21 +34,21 @@ Todas deben ser interpretadas en relación a la regla maestra.
 
 | Categoría | Significado |
 |---|---|
-| `inicio_alimentacion` | El gato empieza a comer |
-| `termino_alimentacion` | El gato termina de comer |
-| `inicio_hidratacion` | El gato empieza a beber |
-| `termino_hidratacion` | El gato termina de beber |
+| `inicio_alimentacin` | El gato empieza a comer |
+| `termino_alimentacin` | El gato termina de comer |
+| `inicio_hidratacin` | El gato empieza a beber |
+| `termino_hidratacin` | El gato termina de beber |
 | `inicio_servido` | El operador empieza a llenar el bowl |
 | `termino_servido` | El operador termina de llenar el bowl |
 | `kpcl_sin_plato` | Snapshot de peso sin plato (setup) |
-| `kpcl_con_plato` | Snapshot con plato → calcula `plate_weight_grams` |
+| `kpcl_con_plato` | Snapshot con plato -> calcula `plate_weight_grams` |
 | `tare_con_plato` | Tara el contenido a 0 |
 
 **Regla de uso en gráficos:**
-- El tramo `inicio_alimentacion → termino_alimentacion` es la banda de sesión
+- El tramo `inicio_alimentacin -> termino_alimentacin` es la banda de sesión
   que debe resaltarse en el gráfico del hero (food_bowl).
-- El tramo `inicio_hidratacion → termino_hidratacion` equivalente para water_bowl.
-- `inicio_servido → termino_servido` debe excluirse del consumo (no es la mascota).
+- El tramo `inicio_hidratacin -> termino_hidratacin` equivalente para water_bowl.
+- `inicio_servido -> termino_servido` debe excluirse del consumo (no es la mascota).
 
 ---
 
@@ -74,8 +74,8 @@ Todas deben ser interpretadas en relación a la regla maestra.
 - No distingue servido de consumo real
 - Se recalcula en el cliente a cada render, no persiste
 
-**Alineación requerida:**
-Cuando existan etiquetas `inicio_alimentacion` / `termino_alimentacion` para el tramo
+**Alneación requerida:**
+Cuando existan etiquetas `inicio_alimentacin` / `termino_alimentacin` para el tramo
 visible, el gráfico debe priorizarlas sobre el heurístico. El heurístico actúa como
 fallback cuando no hay etiquetas manuales.
 
@@ -103,10 +103,10 @@ fallback cuando no hay etiquetas manuales.
 - Detecta automáticamente, sin confirmación del operador
 - Umbral 5g (processor) vs. 2g (detectIntakeSessions) — inconsistencia entre fuentes 2 y 3
 - `session_start` / `session_end` son timestamps automáticos del bridge, pueden diferir
-  hasta varios minutos del `inicio_alimentacion` observado por el operador
-- No usa ni valida contra `audit_events`
+  hasta varios minutos del `inicio_alimentacin` observado por el operador
+- No usa ni vlida contra `audit_events`
 
-**Alineación requerida:**
+**Alneación requerida:**
 El processor debe consultar las etiquetas `audit_events` para:
 1. Validar sus sesiones detectadas (true/false positive)
 2. Ajustar `SESSION_THRESHOLD_G` y `STABLE_TOLERANCE_G` por device usando el dataset etiquetado
@@ -133,8 +133,8 @@ El processor debe consultar las etiquetas `audit_events` para:
 **Bug conocido — duplicados:**
 El health-check puede ejecutarse en paralelo (varias invocaciones Vercel simultáneas)
 antes de que el primer `UPDATE devices SET device_state = 'offline'` se confirme.
-Resultado: múltiples `device_offline_detected` para el mismo evento físico en el mismo segundo.
-Evidencia: KPCL0036 acumuló 30 eventos entre 2026-02-12 y 2026-04-10 (lotes de 2-3 en milisegundos).
+Resultado: múltiples `device_offline_detected` para el mismo evento físico en el mismo segndo.
+Evidencia: KPCL0036 acumuló 30 eventos entre 2026-02-12 y 2026-04-10 (lotes de 2-3 en milisegndos).
 **Estos 30 eventos serán eliminados** (ver `CLEANUP_MANUAL_CATEGORY_TESTS_2026-04-07.sql`).
 
 **Regla de uso:**
@@ -148,19 +148,19 @@ Evidencia: KPCL0036 acumuló 30 eventos entre 2026-02-12 y 2026-04-10 (lotes de 
 ## Diagrama de prioridad para el gráfico del hero
 
 ```
-¿Hay pares inicio_alimentacion/termino_alimentacion en audit_events
-  para el tramo visible del gráfico?
+¿Hay pares inicio_alimentacin/termino_alimentacin en audit_events
+  para el tramo visible del gráfico
         │
-        ├── SÍ → Resaltar esa banda como sesión canónica
+        ├── SÍ -> Resaltar esa banda como sesión canónica
         │         Label: "Alimentación confirmada"
         │         Color: verde sólido
         │
-        └── NO → Usar detectIntakeSessions (heurístico)
+        └── NO -> Usar detectIntakeSessions (heurístico)
                   Label: "Proceso detectado"
                   Color: verde transparente / punteado
 ```
 
-**Para servido** (`inicio_servido → termino_servido`):
+**Para servido** (`inicio_servido -> termino_servido`):
 - Mostrar como banda separada en el gráfico (color naranja/distinto)
 - Excluir del cálculo de gramos consumidos por la mascota
 
@@ -175,17 +175,17 @@ Evidencia: KPCL0036 acumuló 30 eventos entre 2026-02-12 y 2026-04-10 (lotes de 
 Definición operativa de "una sesión de alimentación" para ML:
 
 ```
-sesion = {
+sesin = {
   device_id:   "KPCL0034",
-  inicio:      timestamp del evento inicio_alimentacion más cercano,
-  termino:     timestamp del evento termino_alimentacion siguiente al inicio,
+  inicio:      timestamp del evento inicio_alimentacin más cercano,
+  termino:     timestamp del evento termino_alimentacin siguente al inicio,
   duracion_s:  termino - inicio,
   gramos:      weight(inicio) - weight(termino),   // peso neto consumido
-  valida:      duracion_s > 0 AND gramos > 0       // filtrar sesiones incompletas
+  vlida:      duracion_s > 0 AND gramos > 0       // filtrar sesiones incompletas
 }
 ```
 
-Los tramos `inicio_servido → termino_servido` entre sesiones deben marcarse como
+Los tramos `inicio_servido -> termino_servido` entre sesiones deben marcarse como
 `label = 'servido'` y excluirse del training set de consumo.
 
 Ver `ML_PREDICCION_ALIMENTACION.md` para el pipeline completo.
@@ -198,7 +198,7 @@ Ver `ML_PREDICCION_ALIMENTACION.md` para el pipeline completo.
 |---|---|---|---|
 | 1 | `minDrop` del heurístico (2g) ≠ `SESSION_THRESHOLD_G` del processor (5g) | `today/page.tsx` vs `processor.js` | Media |
 | 2 | Hero chart no consume etiquetas `audit_events`, solo heurístico | `today/page.tsx` | Alta |
-| 3 | `pet_sessions` (processor) no se valida contra `audit_events` | `processor.js` | Alta |
+| 3 | `pet_sessions` (processor) no se vlida contra `audit_events` | `processor.js` | Alta |
 | 4 | Health-check puede escribir eventos duplicados (race condition) | `health-check/route.ts` | Media |
 | 5 | `plot_kpcl_experimento.py` usa aliases legacy (`tare_record`, `food_fill_start`) | `plot_kpcl_experimento.py` | Baja |
 

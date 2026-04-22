@@ -19,7 +19,7 @@ if (-not $petType) { $petType = "cat" }
 
 # 1) Auth
 $tokenB = (Invoke-RestMethod -Method Post `
-  -Uri "$supabaseUrl/auth/v1/token?grant_type=password" `
+  -Uri "$supabaseUrl/auth/v1/tokengrant_type=password" `
   -Headers @{ apikey=$anonKey; "Content-Type"="application/json" } `
   -Body "{`"email`":`"$emailB`",`"password`":`"$passwordB`"}"
 ).access_token

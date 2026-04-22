@@ -1,6 +1,6 @@
 # KITTYPAU - Modelo Estrategico y Metricas (historico consolidado)
 
-Este documento quedo consolidado en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md).
+Este documento qued consolidado en [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md).
 
 Se conserva como puntero historico para no perder el detalle de:
 - caminos de monetizacion
@@ -9,7 +9,7 @@ Se conserva como puntero historico para no perder el detalle de:
 - valorizacion SaaS
 - estructura de dashboard estrategico
 
-Si necesitas la version viva y actualizada, lee:
+Si necesitas la versin viva y actualizada, lee:
 - [DOC_MAESTRO_DOMINIO.md](DOC_MAESTRO_DOMINIO.md)
 
 

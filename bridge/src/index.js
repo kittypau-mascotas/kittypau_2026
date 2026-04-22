@@ -248,12 +248,7 @@ async function handleSensorData(deviceId, data) {
       light_percent: data.light?.['%'] ?? null,
       light_condition: data.light?.condition ?? null,
       device_timestamp: data.timestamp ?? null,
-      battery_level: battery.battery_level,
-      battery_voltage: battery.battery_voltage,
-      battery_state: battery.battery_state,
-      battery_source: battery.battery_source,
-      battery_is_estimated: battery.battery_is_estimated ?? false,
-      battery_updated_at: battery.battery_updated_at
+      battery_level: battery.battery_level
     });
 
   if (error) {
@@ -283,11 +278,6 @@ async function handleSensorData(deviceId, data) {
 
 async function writeToReadings(deviceId, data) {
   const battery = normalizeBatteryTelemetry(data);
-  const hasBatteryTelemetry =
-    battery.battery_level !== null ||
-    battery.battery_voltage !== null ||
-    battery.battery_state !== null ||
-    battery.battery_source !== null;
   const { data: device, error: lookupError } = await supabase
     .from('devices')
     .select('id, pet_id')
@@ -335,7 +325,6 @@ async function writeToReadings(deviceId, data) {
         battery_state: battery.battery_state,
         battery_source: battery.battery_source,
         battery_is_estimated: battery.battery_is_estimated ?? false,
-        battery_updated_at: battery.battery_updated_at ?? (hasBatteryTelemetry ? new Date().toISOString() : null),
         recorded_at: recordedAt,
         ingested_at: new Date().toISOString(),
         clock_invalid: clockInvalid

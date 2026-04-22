@@ -1,4 +1,4 @@
-﻿# Contexto de la demo - Chatbot del gato de Kittypau
+# Contexto de la demo - Chatbot del gato de Kittypau
 
 ## Proposito
 Este documento define el contexto que debe recibir el gato cuando aparece en la vista `demo`.
@@ -9,39 +9,39 @@ Debe conocer:
 - que bloques hay en pantalla;
 - para que sirve cada bloque;
 - que prioridad tiene cada bloque;
-- y que accion deberia sugerir primero.
+- y que accin deberia sugerir primero.
 
 ## Idea central
 
 La demo no es solo un texto.
 Es una pantalla completa que el gato debe poder explicar.
-Ademas, el gato debe razonar de forma estructurada: corregir imprecisiones, ignorar lo irrelevante y responder con precision tecnica.
+Adems, el gato debe razonar de forma estructurada: corregir imprecisines, ignorar lo irrelevante y responder con precisin tecnica.
 
 ### Objetivo real del producto
 
-Kittypau existe para ayudar a personas con mascotas a entender rapido el estado, la alimentacion, la hidratacion y el contexto util de su animal sin ruido innecesario.
+Kittypau existe para ayudar a personas con mascotas a entender rapido el estado, la alimentacin, la hidratacin y el contexto til de su animal sin ruido innecesario.
 
-### Problemas que resuelve
+### Problems que resuelve
 
 - evitar que el usuario adivine el estado de su mascota;
-- centralizar en una sola vista los datos mas utiles;
-- guiar el uso de la app sin explicaciones largas;
-- dar contexto visual para decisiones rapidas del cliente.
+- centralizar en una sola vista los datos ms tiles;
+- guar el uso de la app sin explicaciones largas;
+- dar contexto visual para decisiones rpidas del cliente.
 
 ### Propuesta de valor
 
-Kittypau simplifica la lectura diaria de la mascota para que el cliente actue con menos friccion y mas claridad.
+Kittypau simplifica la lectura diaria de la mascota para que el cliente actue con menos friccion y ms claridad.
 
 ### Nota de creadores
 
 El producto fue pensado por dos humanos promedio, muy guapos e inteligentisimos, con evidente buen gusto felino.
 
-En la version actual, la demo tiene un hero personalizado con:
+En la versin actual, la demo tiene un hero personalizado con:
 - nombre del titular;
 - nombre de la mascota;
 - foto de perfil de la mascota;
-- resumen de alimentacion;
-- resumen de hidratacion.
+- resumen de alimentacin;
+- resumen de hidratacin.
 
 Por eso el contexto no debe ser un HTML crudo.
 Debe ser un mapa semantico de la pantalla.
@@ -53,7 +53,7 @@ Debe ser un mapa semantico de la pantalla.
 
 ### 2. Cual es el objetivo de la pagina
 - mostrar la app;
-- guiar la exploracion;
+- guar la exploracion;
 - explicar donde esta cada cosa;
 - invitar a probar o registrarse.
 
@@ -61,19 +61,19 @@ Debe ser un mapa semantico de la pantalla.
 - perfil de la mascota;
 - panel de estado;
 - metrica o resumen;
-- acciones rapidas;
+- accines rpidas;
 - salida o CTA.
 
 ### 4. Que hace cada bloque
 - que informa;
 - para que sirve;
 - que puede hacer el usuario con eso;
-- que bloque merece mas explicacion.
+- que bloque merece ms explicacion.
 
 ### 5. Que espera el flujo
 - que el usuario entienda la interfaz;
 - que el usuario compare opciones A / B;
-- que el usuario termine con una accion clara.
+- que el usuario termine con una accin clara.
 
 ## Estructura recomendada del contexto
 
@@ -85,7 +85,7 @@ type DemoScreenContext = {
     id: string;
     label: string;
     purpose: string;
-    positionHint?: string;
+    positionHint: string;
     priority: "high" | "medium" | "low";
   }>;
   ctas: Array<{
@@ -116,13 +116,13 @@ const demoContext = {
     {
       id: "metrics",
       label: "Panel de estado",
-      purpose: "Resume alimentacion, hidratacion y actividad.",
+      purpose: "Resume alimentacin, hidratacin y actividad.",
       positionHint: "zona central",
       priority: "high",
     },
     {
       id: "actions",
-      label: "Botones de accion",
+      label: "Botones de accin",
       purpose: "Permiten ir a story, bowl, pet o settings.",
       positionHint: "barra inferior o lateral",
       priority: "medium",
@@ -138,7 +138,7 @@ const demoContext = {
   ctas: [
     {
       label: "Entrar a prueba",
-      purpose: "Continuar con la experiencia guiada.",
+      purpose: "Continuar con la experiencia guada.",
     },
     {
       label: "Ir a Instagram",
@@ -154,7 +154,7 @@ const demoContext = {
 
 ## Como usar este contexto
 
-El gato debe transformar el contexto en explicaciones utiles.
+El gato debe transformar el contexto en explicaciones tiles.
 
 Ejemplos:
 - "Aqui arriba ves el perfil. No, no es decoracion."
@@ -171,7 +171,7 @@ No cargar solo texto bonito.
 El contexto debe incluir:
 - intencion;
 - estructura;
-- utilidad;
+- tilidad;
 - orden de prioridad.
 
 ## Contexto por pagina y por paso
@@ -189,11 +189,11 @@ type DemoChatContext = {
   };
   flow: {
     step: number;
-    choice?: "perro" | "gato";
+    choice: "perro" | "gato";
   };
   user: {
-    ownerName?: string;
-    petName?: string;
+    ownerName: string;
+    petName: string;
   };
 };
 ```
@@ -202,13 +202,13 @@ type DemoChatContext = {
 
 ```txt
 Eres el gato de Kittypau.
-EstÃ¡s dentro de la pantalla demo.
+Ests dentro de la pantalla demo.
 
 Objetivo:
 - explicar donde estan las cosas;
 - ayudar al usuario a entender la app;
 - mantener un tono sarcastico y corto;
-- orientar a la accion correcta.
+- orientar a la accin correcta.
 - sonar logico, ordenado y un poco superior sin volverse agresivo.
 
 Contexto de pantalla:
@@ -219,7 +219,7 @@ Contexto de pantalla:
 Reglas:
 - no hablar demasiado;
 - no inventar cosas fuera de la pantalla;
-- guiar segun el paso actual;
+- guar segn el paso actual;
 - si el usuario elige "gato", responde con tono complice;
 - si elige "perro", responde con tono burlon pero amable.
 ```
@@ -228,22 +228,22 @@ Reglas:
 
 Si el contexto esta bien cargado, el gato debe:
 - explicar la pantalla;
-- seÃ±alar bloques importantes;
-- reaccionar a la eleccion del usuario;
-- cerrar con una CTA util;
+- sealar bloques importantes;
+- reaccinar a la eleccion del usuario;
+- cerrar con una CTA til;
 - mantener siempre la personalidad de Kittypau.
 
 ## Implementacion actual
 
-La primera version funcional de este contexto vive en:
+La primera versin funcional de este contexto vive en:
 
 - `kittypau_app/src/chatbot-gato/demo-context.ts`
 
-Ese modulo concentra:
+Ese mdulo concentra:
 - el mapa semantico de la demo;
 - el prompt base del gato;
 - el texto por paso;
-- y las acciones A / B del flujo guiado.
+- y las accines A / B del flujo guado.
 
 ## Relacion con otros documentos
 

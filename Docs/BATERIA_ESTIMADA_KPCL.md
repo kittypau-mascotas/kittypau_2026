@@ -1,10 +1,10 @@
 # Funcionamiento de Bateria y Ciclos de Energia en Kittypau
 
 ## Objetivo
-Dejar documentado como Kittypau identifica y guarda el funcionamiento de energia de los dispositivos KPCL:
+Dejar documentado como Kittypau identifica y guarda el funcionamiento de energa de los dispositivos KPCL:
 - cuando estan enchufados o cargando
 - cuando alcanzan carga completa
-- cuando pasan a uso solo con bateria
+- cuando pasan a uso solo con batera
 - cuanto dura el ciclo desde que quedan al 100% hasta que dejan de estar alimentados
 
 El modelo aplica para `KPCL0034` hoy y para cualquier `KPCL...` futuro.
@@ -13,8 +13,8 @@ El modelo aplica para `KPCL0034` hoy y para cualquier `KPCL...` futuro.
 
 ## Estado actual del modelo
 
-### 1) Estimacion de bateria sin fuel gauge dedicado
-Ya existe soporte de bateria estimada en el schema principal:
+### 1) Estimacion de batera sin fuel gauge dedicado
+Ya existe soporte de batera estimada en el schema principal:
 - migration: `supabase/migrations/20260308193000_add_battery_estimation_fields.sql`
 - columnas nuevas en `public.readings`:
   - `battery_voltage`
@@ -48,20 +48,20 @@ Esta tabla guarda:
 - `active_duration_seconds`
 - cantidad de lecturas
 - resumen por device
-- bateria observada si existiera telemetria
+- batera observada si existiera telemetra
 
-### 3) Registro de ciclos de bateria
-Se creo una tabla generica para ciclos de energia:
+### 3) Registro de ciclos de batera
+Se creo una tabla generica para ciclos de energa:
 - migration: `supabase/migrations/20260331153000_add_device_battery_cycles.sql`
 - tabla: `public.device_battery_cycles`
 
 Esta tabla sirve para todos los devices y separa:
 - enchufado / cargando
 - carga completa
-- uso solo con bateria
-- cierre del ciclo cuando vuelve energia
+- uso solo con batera
+- cierre del ciclo cuando vuelve energa
 
-Ademas, la tabla quedo coordinada con el BOM financiero de Kittypau para que cada ciclo pueda quedar ligado a las piezas reales de energia:
+Adems, la tabla qued coordinada con el BOM financiero de Kittypau para que cada ciclo pueda quedar ligado a las piezas reales de energa:
 - migration de enlace: `supabase/migrations/20260331162000_add_device_battery_bom_context.sql`
 - columnas nuevas en `public.device_battery_cycles`:
   - `battery_component_code`
@@ -72,11 +72,11 @@ Ademas, la tabla quedo coordinada con el BOM financiero de Kittypau para que cad
   - `estimated_full_charge_hours`
   - `battery_bom_context`
 
-Piezas relacionadas con la bateria en el BOM:
-- `BATT_LIPO_602025` = bateria LiPo 250mAh 3.7V
-- `BATT_LIPO_502030` = bateria LiPo 250mAh 3.7V
-- `CHG_TP4056_TYPEC` = modulo cargador LiPo Type-C
-- `CHG_LIPO_TYPEC` = cargador bateria LiPo 3.7V Type-C
+Piezas relacionadas con la batera en el BOM:
+- `BATT_LIPO_602025` = batera LiPo 250mAh 3.7V
+- `BATT_LIPO_502030` = batera LiPo 250mAh 3.7V
+- `CHG_TP4056_TYPEC` = mdulo cargador LiPo Type-C
+- `CHG_LIPO_TYPEC` = cargador batera LiPo 3.7V Type-C
 
 Nota operativa:
 - la capacidad nominal si esta identificada en la tabla
@@ -88,7 +88,7 @@ Para estimar la duracion de carga mientras no tengamos la corriente real del TP4
 - migration: `supabase/migrations/20260331163000_add_device_battery_charge_assumptions.sql`
 - tabla: `public.device_battery_charge_assumptions`
 
-Esta tabla guarda escenarios por device y por combinacion bateria/cargador:
+Esta tabla guarda escenarios por device y por combinacion batera/cargador:
 - `battery_component_code`
 - `charger_component_code`
 - `battery_capacity_mah`
@@ -105,7 +105,7 @@ Para `KPCL0034` se cargaron tres supuestos iniciales con `BATT_LIPO_602025` + `C
 La formula usada es:
 `estimated_full_charge_hours = (battery_capacity_mah / charge_current_ma) * efficiency_factor`
 
-Esto no reemplaza una medicion real, pero nos da una base de trabajo mientras el hardware no reporte energia.
+Esto no reemplaza una medicion real, pero nos da una base de trabajo mientras el hardware no reporte energa.
 
 ### 4) Automatizacion
 Se creo el trigger automatico:
@@ -116,18 +116,18 @@ Se creo el trigger automatico:
 Este trigger observa nuevas lecturas y actualiza `public.device_battery_cycles` cuando detecta:
 - `battery_state = 'charging'`
 - `battery_source = 'external_power'`
-- transicion a uso con bateria
-- retorno a energia externa
+- transicion a uso con batera
+- retorno a energa externa
 
-### 5) Sesiones de energia ON/OFF por actividad
-Como hoy no tenemos telemetria de bateria real, se agrego una tabla mas util para la operacion diaria:
+### 5) Sesiones de energa ON/OFF por actividad
+Como hoy no tenemos telemetra de batera real, se agrego una tabla ms til para la operacin diaria:
 - migration: `supabase/migrations/20260331155000_add_device_power_sessions.sql`
 - tabla: `public.device_power_sessions`
 
 Esta tabla si se puede automatizar con los recursos actuales:
-- abre una sesion `on` cuando llegan lecturas
+- abre una sesin `on` cuando llegan lecturas
 - mantiene `last_seen_at` mientras el device sigue emitiendo datos
-- cierra la sesion como `off` cuando pasa demasiado tiempo sin lecturas
+- cierra la sesin como `off` cuando pasa demasiado tiempo sin lecturas
 - permite reconstruir sesiones historicas desde `readings`
 
 La funcion de cierre manual o por job es:
@@ -138,10 +138,10 @@ La funcion de reconstruccion historica es:
 
 ---
 
-## Como interpreta Kittypau los estados de energia
+## Como interpreta Kittypau los estados de energa
 
 ### Enchufado o cargando
-Se considera que el dispositivo esta en energia externa cuando:
+Se considera que el dispositivo esta en energa externa cuando:
 - `battery_state = 'charging'`
 - o `battery_source = 'external_power'`
 
@@ -149,8 +149,8 @@ Se considera que el dispositivo esta en energia externa cuando:
 Se marca cuando:
 - `battery_level = 100`
 
-### Uso solo con bateria
-Se considera uso con bateria cuando:
+### Uso solo con batera
+Se considera uso con batera cuando:
 - no esta en `charging`
 - no esta en `external_power`
 - y la lectura aun representa actividad del dispositivo
@@ -162,22 +162,22 @@ Con los recursos actuales, esto se puede inferir por actividad:
 
 Esto se guarda en `public.device_power_sessions`.
 
-### Duracion de bateria
-La duracion que interesa para analisis es:
+### Duracion de batera
+La duracion que interesa para anlisis es:
 - desde `full_charge_at`
 - hasta `battery_only_end_at`
 
-Si todavia no existe telemetria de bateria en las lecturas, no se puede calcular ese ciclo con precision historica.
+Si todavia no existe telemetra de batera en las lecturas, no se puede calcular ese ciclo con precisin historica.
 
 ### Relacion con BOM
-La tabla `public.device_battery_cycles` ahora tambien guarda la referencia al hardware de energia:
-- bateria primaria
+La tabla `public.device_battery_cycles` ahora tambien guarda la referencia al hardware de energa:
+- batera primaria
 - cargador
 - capacidad nominal
 - voltaje nominal
 - contexto BOM en JSONB
 
-Esto permite que el historial de energia y el costo de componentes queden coordinados en el mismo modelo.
+Esto permite que el historial de energa y el costo de componentes queden coordinados en el mismo modelo.
 
 ---
 
@@ -191,17 +191,17 @@ Esto permite que el historial de energia y el costo de componentes queden coordi
 - `device_state`: `offline`
 
 ### Lecturas observadas
-En el analisis realizado sobre `KPCL0034` se observaron:
+En el anlisis realizado sobre `KPCL0034` se observaron:
 - lecturas de peso, temperatura, humedad y luz
 - `battery_level` sin datos historicos en esas lecturas
 
 Conclusion:
 - para el historial previo, el sistema puede guardar intervalo de funcionamiento observado
-- para ciclos reales de bateria, hace falta que el bridge o la ingesta empiece a reportar `battery_state`, `battery_source` o `battery_voltage`
+- para ciclos reales de batera, hace falta que el bridge o la ingesta empiece a reportar `battery_state`, `battery_source` o `battery_voltage`
 - para ON/OFF por actividad, ya se puede reconstruir desde `readings`
 
 ### Registro manual actual
-El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no perder el contexto del analisis:
+El corte de carga de `KPCL0034` qued registrado manualmente en la base para no perder el contexto del anlisis:
 - momento registrado: `2026-04-01 04:36:28Z` (`2026-04-01 01:36:28` hora local `-03`)
 - estado inicial: `battery_only`
 - tabla actualizada:
@@ -209,13 +209,13 @@ El corte de carga de `KPCL0034` quedo registrado manualmente en la base para no 
   - `public.device_battery_cycles`
 - observacion:
   - se desconecto el cargador
-  - el dispositivo quedo funcionando sin enchufe
-  - no hay telemetria real de bateria aun, por lo que este registro es manual y sirve como marcador inicial para el analisis posterior
+  - el dispositivo qued funcionando sin enchufe
+  - no hay telemetra real de batera aun, por lo que este registro es manual y sirve como marcador inicial para el anlisis posterior
 - cierre manual del tramo `battery_only`:
   - `2026-04-06 12:50:00-03`
   - desde ahi comienza el nuevo tramo de carga
 
-La fila de `device_battery_cycles` quedo cerrada como `battery_only` y la nueva carga manual se abre desde `2026-04-06 12:50:00-03`.
+La fila de `device_battery_cycles` qued cerrada como `battery_only` y la nueva carga manual se abre desde `2026-04-06 12:50:00-03`.
 
 ---
 
@@ -226,11 +226,11 @@ La fila de `device_battery_cycles` quedo cerrada como `battery_only` y la nueva 
 - `device_type`: `comedero`
 
 ### Registro manual de carga completa
-El ciclo de carga de `KPCL0036` quedo registrado manualmente para analisis y calculos futuros:
+El ciclo de carga de `KPCL0036` qued registrado manualmente para anlisis y calculos futuros:
 - momento de inicio de carga: `2026-04-01 08:36:00-03`
 - momento de carga completa: `2026-04-01 12:42:00-03`
 - duracion total observada: `04:06:00`
-- duracion en segundos: `14760`
+- duracion en segndos: `14760`
 - tabla actualizada:
   - `public.device_battery_cycles`
 - estado del ciclo:
@@ -238,12 +238,12 @@ El ciclo de carga de `KPCL0036` quedo registrado manualmente para analisis y cal
 
 Observacion:
 - este tramo se guarda como la base real de tiempo de carga del dispositivo
-- el dato sirve para calculos posteriores de autonomia, carga y comparacion entre KPCL
-- no reemplaza telemetria real de energia, pero ya queda como referencia operativa canonica
+- el dato sirve para calculos posteriores de autonoma, carga y comparacion entre KPCL
+- no reemplaza telemetra real de energa, pero ya queda como referencia operativa canonica
 
-### Inicio manual de autonomia de KPCL0036
-El dispositivo fue desconectado del cargador y quedo en bateria sola para medir autonomia total:
-- momento de desconexion e inicio de autonomia: `2026-04-06 15:55:23-04:00`
+### Inicio manual de autonoma de KPCL0036
+El dispositivo fue desconectado del cargador y qued en batera sola para medir autonoma total:
+- momento de desconexin e inicio de autonoma: `2026-04-06 15:55:23-04:00`
 - indicador visual al salir del cargador: `azul`
 - estado registrado:
   - `battery_only`
@@ -253,12 +253,12 @@ El dispositivo fue desconectado del cargador y quedo en bateria sola para medir 
   - `public.device_battery_cycles`
 
 Observacion:
-- este tramo marca el inicio canonico de autonomia de `KPCL0036`
-- se guarda como referencia para calcular cuanto dura la bateria completa desde carga total
+- este tramo marca el inicio canonico de autonoma de `KPCL0036`
+- se guarda como referencia para calcular cuanto dura la batera completa desde carga total
 - el dato queda listo para cerrar el tramo cuando el dispositivo se descargue o vuelva a cargarse
 
 ### Inicio manual de carga de KPCL0034
-El tramo de `KPCL0034` paso de bateria a carga manual y quedo guardado para analisis:
+El tramo de `KPCL0034` paso de batera a carga manual y qued guardado para anlisis:
 - fin del tramo `battery_only`: `2026-04-06 12:50:00-03`
 - inicio de carga: `2026-04-06 12:50:00-03`
 - estado del nuevo ciclo: `charging`
@@ -268,7 +268,7 @@ El tramo de `KPCL0034` paso de bateria a carga manual y quedo guardado para anal
 Observacion:
 - el ciclo anterior se cierra como referencia historica
 - desde ese horario se puede medir el nuevo tramo de carga
-- este dato sirve para calculos posteriores de autonomia y comparacion entre KPCL
+- este dato sirve para calculos posteriores de autonoma y comparacion entre KPCL
 
 ### Prueba controlada compartida pendiente para KPCL0034 y KPCL0036
 Para comparar comportamiento real de peso con la misma escena fisica y la misma secuencia de tare, se deja pendiente una prueba controlada comun para:
@@ -297,8 +297,8 @@ Secuencia a registrar para el grafico 2:
 Objetivo:
 
 - comparar estabilidad de peso entre `KPCL0034` y `KPCL0036`;
-- verificar si la fuente de energia cambia el patron observado;
-- dejar una referencia comun para futuras auditorias de bateria y de peso neto.
+- verificar si la fuente de energa cambia el patrn observado;
+- dejar una referencia comun para futuras auditorias de batera y de peso neto.
 
 ### Estado actual de la prueba compartida
 Observacion de estado al `2026-04-06 17:40:13-04:00`:
@@ -318,7 +318,7 @@ Inicio de tare registrado al `2026-04-06 21:42:34+00:00` para `KPCL0034` y al `2
 Estado:
 
 - tare iniciado desde la app;
-- en espera del resultado final de la tare y del siguiente valor neto para cerrar la fase;
+- en espera del resultado final de la tare y del siguente valor neto para cerrar la fase;
 - sin modificar aun la referencia canonica de comparacion.
 
 Este tramo queda abierto hasta que llegue la lectura final posterior al tare.
@@ -357,24 +357,24 @@ Este tramo cierra la fase de servido del grafico compartido.
 
 ### Si llega una lectura nueva
 1. Se guarda en `public.readings`.
-2. Si hay metadata de bateria:
+2. Si hay metadata de batera:
    - se actualiza `battery_state`
    - se actualiza `battery_source`
    - se actualiza `battery_voltage`
 3. El trigger automatico revisa si:
    - arranca carga
    - se completa carga
-   - el device pasa a bateria
+   - el device pasa a batera
    - se cierra el ciclo y se abre uno nuevo
 
 ### Reglas simples de negocio
 - `charging` / `external_power` abre o mantiene un ciclo de carga
 - `battery_level = 100` marca carga completa
-- transicion a bateria cierra la fase enchufada y abre la fase `battery_only`
+- transicion a batera cierra la fase enchufada y abre la fase `battery_only`
 
 ---
 
-## Consultas utiles
+## Consultas tiles
 
 ### Ver ciclos guardados
 ```sql
@@ -406,7 +406,7 @@ where device_code = 'KPCL0034'
 order by cycle_start_at desc;
 ```
 
-### Ver ultimas lecturas con datos de bateria
+### Ver ltimas lecturas con datos de batera
 ```sql
 select
   d.device_id,
@@ -430,17 +430,17 @@ limit 50;
 ## Recomendacion operativa
 
 Para que el sistema empiece a medir duracion real desde 100%:
-- el bridge debe reportar estados de energia de forma consistente
+- el bridge debe reportar estados de energa de forma consistente
 - idealmente cada lectura deberia incluir:
   - `battery_state`
   - `battery_source`
   - `battery_voltage`
   - y cuando se pueda `battery_level`
 
-Sin esos campos, Kittypau solo puede guardar el periodo de funcionamiento observado, pero no la duracion exacta de la bateria desde carga completa.
+Sin esos campos, Kittypau solo puede guardar el periodo de funcionamiento observado, pero no la duracion exacta de la batera desde carga completa.
 
 ### Contrato de firmware / ingesta
-El bridge ya quedo preparado para almacenar estos campos si el firmware los manda.
+El bridge ya qued preparado para almacenar estos campos si el firmware los manda.
 
 El payload ideal de `SENSORS` o `STATUS` deberia incluir:
 ```json
@@ -454,9 +454,9 @@ El payload ideal de `SENSORS` o `STATUS` deberia incluir:
 }
 ```
 
-Si el hardware no puede medir la bateria, el firmware puede omitir esos campos y el sistema seguira funcionando con:
+Si el hardware no puede medir la batera, el firmware puede omitir esos campos y el sistema seguira funcionando con:
 - `device_power_sessions` para actividad `on/off`
-- `device_battery_cycles` para ciclos reales cuando existan lecturas de energia
+- `device_battery_cycles` para ciclos reales cuando existan lecturas de energa
 - `device_battery_charge_assumptions` para escenarios estimados de carga
 
 ---
@@ -466,18 +466,18 @@ Si el hardware no puede medir la bateria, el firmware puede omitir esos campos y
 Con este modelo, Kittypau podra responder:
 - cuando se enchufa un device
 - cuando termina la carga
-- cuanto dura funcionando sin energia externa
-- cuantos ciclos de bateria lleva cada device
+- cuanto dura funcionando sin energa externa
+- cuantos ciclos de batera lleva cada device
 - comparacion entre `KPCL0034` y los devices futuros
 - cuando estuvo prendido o apagado por actividad
 
 ### Nota importante
-Hoy no podemos detectar con precision automatica:
+Hoy no podemos detectar con precisin automtica:
 - el fin real de la carga
-- el momento exacto en que una bateria queda al 100%
+- el momento exacto en que una batera queda al 100%
 
-Eso requiere telemetria de bateria en `readings`. Mientras tanto, lo correcto es usar:
+Eso requiere telemetra de batera en `readings`. Mientras tanto, lo correcto es usar:
 - `device_power_sessions` para `on/off`
 - `device_operation_records` para intervalos observados
-- `device_battery_cycles` para ciclos de energia y contexto de bateria/BOM
+- `device_battery_cycles` para ciclos de energa y contexto de batera/BOM
 - `device_battery_charge_assumptions` para escenarios estimados de carga

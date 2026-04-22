@@ -1,12 +1,12 @@
 ﻿# Indice de Documentacion (Kittypau)
 
-> Entrada rapida:
+> Entrada rpida:
 > - [README.md](README.md) - puerta de entrada para humanos y agentes
 > - [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado del proyecto
 
 > Fuentes maestras:
 > - [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md) - mapa canonico de activos, legacy, tablas y flujos
-> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia
+> - [PLAN_MAESTRO.md](PLAN_MAESTRO.md) - gua maestra viva de producto, arquitectura y estrategia
 > - [SQL_MAESTRO.md](SQL_MAESTRO.md) - base de datos (orden de ejecucion)
 > - [GITHUB_MAESTRO.md](GITHUB_MAESTRO.md) - flujo de trabajo y colaboracion
 
@@ -22,7 +22,7 @@
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql)
 - [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md)
 - [investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md](investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara
-- [investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql](investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado
+- [investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql](investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de vlidacion tare/plato/llenado
 - [investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql](investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device
 - [investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md](investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de prueba sin cargador y de los hitos por device
 - [investigacion/README.md](investigacion/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados
@@ -44,27 +44,14 @@
 - [VERCEL_CLI.md](VERCEL_CLI.md)
 - [SUPABASE_CLI.md](SUPABASE_CLI.md)
 - [CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - chatbot del gato
-- [chatbot/README.md](chatbot/README.md) - indice canonico del chatbot
-- [chatbot/CHATBOT_GATO_KITTYPAU.md](chatbot/CHATBOT_GATO_KITTYPAU.md) - documento maestro del chatbot del gato
-- [chatbot/CHATBOT_ADMIN_KITTYPAU.md](chatbot/CHATBOT_ADMIN_KITTYPAU.md) - documento maestro del chatbot de admin
-- [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso del chatbot
-- [chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md](chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md) - plan paso a paso del chatbot de admin
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot
-- [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo
-- [chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real total del producto
-- [chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md](chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica del gato
-- [chatbot/CHATBOT_GATO_BLOQUES_DEMO.md](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - bloques visuales reales de la demo
-- [chatbot/CHATBOT_GATO_PROMPTS_DEMO.md](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque de la demo
-- [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio
-- [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque de inicio
-- [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato
+- [chatbot/README.md](chatbot/README.md) - archivo unico del chatbot con indicaciones de contenido al comienzo
 - [HIVEMQ_MQTT_CLI.md](HIVEMQ_MQTT_CLI.md)
 - [RASPBERRY_CLI.md](RASPBERRY_CLI.md)
 - [KITTYPAU_DEV_TOOLKIT.md](KITTYPAU_DEV_TOOLKIT.md)
 
 ## Plan y estado
 - [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md) - estado vivo y resumido del proyecto
-- [PLAN_MEJORA_PRIORIZADO.md](PLAN_MEJORA_PRIORIZADO.md) - plan de mejora corto y accionable
+- [PLAN_MEJORA_PRIORIZADO.md](PLAN_MEJORA_PRIORIZADO.md) - plan de mejora corto y accinable
 - [TAREAS_PENDIENTES_ACTUALES.md](TAREAS_PENDIENTES_ACTUALES.md) - backlog operativo vivo por area
 - [FONDOS_RASTREADOS_ACTUALES.md](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de fondos y postulaciones
 - [FINANZAS/README.md](FINANZAS/README.md) - entrada al registro financiero operativo
@@ -72,7 +59,7 @@
 - [contexto.md](contexto.md)
 - [AUDITORIA_COHERENCIA_ECOSISTEMA.md](AUDITORIA_COHERENCIA_ECOSISTEMA.md)
 - [GUIA_DECISION.md](GUIA_DECISION.md)
-- [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md) - puntero historico consolidado en la guia de decision
+- [EJECUCION_GUIA_DECISION_2026-03-09.md](EJECUCION_GUIA_DECISION_2026-03-09.md) - puntero historico consolidado en la gua de decision
 - [PLAN_PENDIENTES_APP_WEB_KITTYPAU.md](PLAN_PENDIENTES_APP_WEB_KITTYPAU.md)
 - [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md) - puntero historico consolidado en el plan maestro
 - [PLAN_IMPLEMENTACION.md](PLAN_IMPLEMENTACION.md)
@@ -88,18 +75,36 @@
 - [Contexto_Mercado_KittyPaw/README.md](Contexto_Mercado_KittyPaw/README.md) - contexto de mercado y posicionamiento
 - [PMO/00_PMO_INDEX.md](PMO/00_PMO_INDEX.md) - indice PMO y gestion de proyecto
 - [Postulaciones Fondos/2026/README.md](Postulaciones Fondos/2026/README.md) - indice de la carpeta de postulaciones 2026
+- [Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md](Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md) - sistema maestro para coordinar fondos 2026 en equipo
+- [Postulaciones Fondos/2026/01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md](Postulaciones Fondos/2026/01_GUIA_FONDOS_CHILE_LATAM_GLOBAL.md) - punto de partida para armar la ruta de postulacion 2026
+- [Postulaciones Fondos/2026/02_CHECKLIST_ELEGIBILIDAD_2026.md](Postulaciones Fondos/2026/02_CHECKLIST_ELEGIBILIDAD_2026.md) - checklist maestro de requisitos por fondo para 2026
 - [Postulaciones Fondos/2026/documento_2026/README.md](Postulaciones Fondos/2026/documento_2026/README.md) - indice del paquete maestro 2026
-- [Postulaciones Fondos/2026/semilla_inicia/README.md](Postulaciones Fondos/2026/semilla_inicia/README.md) - indice propio del paquete Semilla Inicia 2026
+- [Postulaciones Fondos/2026/CORFO_SEMILLA_INICIA_2026/README.md](Postulaciones Fondos/2026/CORFO_SEMILLA_INICIA_2026/README.md) - indice propio del paquete Semilla Inicia 2026
+
+## Carpetas (decision)
+- Mantener activas:
+  - `chatbot/` - documentacin funcional viva del chatbot.
+  - `Contexto_Mercado_KittyPaw/` - base estrategica para postulaciones y mercado.
+  - `FINANZAS/` - trazabilidad financiera y comprobantes.
+  - `investigacion/` - pruebas KPCL y auditorias tecnicas.
+  - `PMO/` - gestion de proyecto y control.
+  - `Postulaciones Fondos/` - operacin de fondos y postulaciones 2026.
+  - `assets/` - recursos visuales de apoyo para docs.
+- Mantener como historico (solo lectura):
+  - `archive/` - historial no canonico.
+  - `kittypau_1a_docs_legacy/` - legado de etapas anteriores.
+- Eliminar o mover fuera del repo si reaparecen:
+  - carpetas experimentales no versinadas (ej. `Samsung Tizen Experiment`, `Android TV Plan`) cuando no esten conectadas al roadmap activo.
 
 ## UI / UX
 - [IMAGENES_LOGIN.md](IMAGENES_LOGIN.md)
-- [estilos y diseÃƒÂ±os.md](estilos y diseños.md)
+- [estilos y diseños.md](estilos y diseños.md)
 - [CATALOGO_GRAFICOS.md](CATALOGO_GRAFICOS.md)
 - [VISTAS_APP.md](VISTAS_APP.md)
 - [APK_ANDROID_STUDIO_KITTYPAU.md](APK_ANDROID_STUDIO_KITTYPAU.md)
 - [CHECKLIST_UX_UI_APK.md](CHECKLIST_UX_UI_APK.md)
 
-## Admin / operacion
+## Admin / operacin
 - [ADMIN_PORTAL_PLAN.md](ADMIN_PORTAL_PLAN.md)
 - [ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md](ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md) - puntero historico consolidado en el portal admin
 - [VALIDACION_ADMIN_DASHBOARD.md](VALIDACION_ADMIN_DASHBOARD.md) - puntero historico consolidado en el portal admin
@@ -114,8 +119,8 @@
 - [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/)
 - [kittypau_1a_docs_legacy/](kittypau_1a_docs_legacy/)
 - [Postulaciones Fondos/2026/](Postulaciones Fondos/2026/)
-- `Samsung Tizen Experiment` (no versionado en este repo)
-- `Android TV Plan` (no versionado en este repo)
+
+
 
 
 

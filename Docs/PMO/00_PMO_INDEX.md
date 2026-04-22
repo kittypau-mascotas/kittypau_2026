@@ -49,10 +49,10 @@ Todos son adaptables a distintos fondos concursables — ver seccion de adaptaci
 
 1. **Administracion responsable** — decisiones tecnicas documentadas y auditables
 2. **Equipo colaborativo** — roles definidos, trabajo asincronico remoto
-3. **Enfoque en valor** — cada entregable apunta a traccion o reduccion de riesgo
+3. **Enfoque en valor** — cada entregable apunta a traccin o reduccion de riesgo
 4. **Pensamiento sistemico** — IoT + SaaS + datos como sistema integrado
 5. **Adaptabilidad** — arquitectura disenable para escalar sin refactoring mayor
-6. **Calidad** — CI/CD, tests automatizados, migraciones versionadas
+6. **Calidad** — CI/CD, tests automatizados, migraciones versinadas
 7. **Riesgo** — registro activo, mitigaciones concretas
 
 ---
@@ -64,7 +64,7 @@ Todos son adaptables a distintos fondos concursables — ver seccion de adaptaci
 | KPCL | Kittypau Connected Layer — codigo de dispositivo (ej: KPCL0036) |
 | Bridge | Raspberry Pi Zero 2W que conecta MQTT con Supabase |
 | Plato inteligente | Dispositivo IoT con sensor de peso, temp, humedad y camara opcional |
-| MVP | Producto minimo viable actualmente funcional y deployado |
+| MVP | Producto mnimo viable actualmente funcional y deployado |
 | BOM | Bill of Materials — lista de componentes por dispositivo |
 | MRR | Monthly Recurring Revenue — ingreso recurrente mensual |
 | LTV | Lifetime Value — valor del cliente en su ciclo de vida |
@@ -72,6 +72,6 @@ Todos son adaptables a distintos fondos concursables — ver seccion de adaptaci
 
 ---
 
-_Documento maestro PMO. Actualizar version al modificar cualquier documento hijo._
+_Documento maestro PMO. Actualizar versin al modificar cualquier documento hijo._
 
 

@@ -1,4 +1,4 @@
-﻿# Plan paso a paso - Chatbot de Admin de Kittypau
+# Plan paso a paso - Chatbot de Admin de Kittypau
 
 ## Objetivo
 
@@ -8,7 +8,7 @@ Este plan parte desde el estado actual:
 
 - existe un chatbot del gato visible para `login`, `demo` e `inicio`;
 - existe una separacion formal entre experiencia cliente y alcance interno;
-- la documentacion viva ya esta organizada en `INDEX.md` y `README.md`;
+- la documentacin viva ya esta organizada en `INDEX.md` y `README.md`;
 - el chatbot de admin ya tiene su especificacion canonica en `chatbot/CHATBOT_ADMIN_KITTYPAU.md`.
 
 ## Estado del plan
@@ -16,16 +16,16 @@ Este plan parte desde el estado actual:
 - Paso 1: especificacion integral del chatbot de admin creada.
 - Paso 2: separacion de alcance entre gato visible y chatbot interno documentada.
 - Paso 3: chatbot de admin reducido a un hero interno simple.
-- Siguiente paso real: definir un primer cuadro de preguntas y respuestas internas para el hero de admin.
+- Siguente paso real: definir un primer cuadro de preguntas y respuestas internas para el hero de admin.
 
 ## Principios del plan
 
 1. El chatbot de admin tiene alcance total del proyecto.
 2. El chatbot de admin no reemplaza al gato visible.
-3. La documentacion viva es la fuente principal.
+3. La documentacin viva es la fuente principal.
 4. Los archivos historicos solo sirven de apoyo.
 5. Las respuestas deben ser claras, verificables y estructuradas.
-6. No exponer secretos, tokens ni configuraciones sensibles.
+6. No exponer secretos, tokens ni configuracines sensibles.
 7. La experiencia debe sentirse simple y ligera dentro del hero de admin.
 
 ## Fase 0 - Base documental del admin
@@ -37,10 +37,10 @@ Dejar completamente estable la base documental que el chatbot de admin va a cons
 ### Tareas
 
 1. Confirmar que `chatbot/CHATBOT_ADMIN_KITTYPAU.md` define el alcance total del chatbot.
-2. Mantener `INDEX.md` como entrada principal a la documentacion.
+2. Mantener `INDEX.md` como entrada principal a la documentacin.
 3. Mantener `README.md` como puerta de entrada humana.
 4. Asegurar que el chatbot de admin distinga documentos vivos de historicos.
-5. Marcar explicitamente los docs canonicos por area.
+5. Marcar explcitamente los docs canonicos por area.
 
 ### Criterio de salida
 
@@ -62,7 +62,7 @@ Definir el hero de admin como superficie simple de consulta interna.
 
 ### Tareas
 
-1. DiseÃ±ar un bloque visual pequeÃ±o y claro dentro del admin.
+1. Disear un bloque visual pequeo y claro dentro del admin.
 2. Preparar una entrada de preguntas internas.
 3. Mantener la interfaz ligera y no invasiva.
 4. Mostrar respuestas breves con posibilidad de ampliar.
@@ -77,11 +77,11 @@ Definir el hero de admin como superficie simple de consulta interna.
 
 ### Objetivo
 
-Definir como el chatbot de admin va a leer y resumir la documentacion del proyecto.
+Definir como el chatbot de admin va a leer y resumir la documentacin del proyecto.
 
 ### Tareas
 
-1. Definir un esquema de temas:
+1. Definir un esquema de tems:
    - producto;
    - arquitectura;
    - UI;
@@ -93,7 +93,7 @@ Definir como el chatbot de admin va a leer y resumir la documentacion del proyec
    - roadmap.
 2. Asociar cada tema a sus documentos fuente.
 3. Definir prioridad entre docs vivos y docs historicos.
-4. DiseÃ±ar un indice de contexto para respuestas rapidas.
+4. Disear un indice de contexto para respuestas rpidas.
 
 ### Criterio de salida
 
@@ -104,17 +104,17 @@ Definir como el chatbot de admin va a leer y resumir la documentacion del proyec
 ### Entregable de este paso
 
 - `src/lib/chatbot-admin/` como capa de contexto futura.
-- mapa documental de temas y fuentes.
+- mapa documental de tems y fuentes.
 
 ## Fase 3 - Recuperacion de conocimiento
 
 ### Objetivo
 
-Permitir que el chatbot de admin consulte fragmentos relevantes de la documentacion segun la pregunta.
+Permitir que el chatbot de admin consulte fragmentos relevantes de la documentacin segn la pregunta.
 
 ### Tareas
 
-1. DiseÃ±ar una estrategia de busqueda por tema.
+1. Disear una estrategia de busqueda por tema.
 2. Definir como priorizar coincidencias.
 3. Resumir documentos largos sin perder contexto.
 4. Preparar salida estructurada para respuestas internas.
@@ -122,7 +122,7 @@ Permitir que el chatbot de admin consulte fragmentos relevantes de la documentac
 ### Criterio de salida
 
 - El chatbot no necesita leer todo el proyecto cada vez.
-- La respuesta se arma con fragmentos utiles.
+- La respuesta se arma con fragmentos tiles.
 - El proceso es rapido y consistente.
 
 ## Fase 4 - Modelo de respuesta del admin
@@ -137,17 +137,17 @@ Definir el formato de respuesta del chatbot de admin.
    - estado actual;
    - doc(s) relevantes;
    - riesgos o vacios;
-   - siguiente paso recomendado.
+   - siguente paso recomendado.
 2. Establecer tono:
    - claro;
    - directo;
-   - util;
+   - til;
    - tecnico cuando haga falta.
-3. Permitir respuestas cortas o largas segun la consulta.
+3. Permitir respuestas cortas o largas segn la consulta.
 
 ### Criterio de salida
 
-- La respuesta es accionable.
+- La respuesta es accinable.
 - El usuario entiende el estado real del proyecto.
 - La estructura se mantiene estable.
 
@@ -162,12 +162,12 @@ Evitar que el chatbot de admin exponga informacion sensible o invente contexto.
 1. No mostrar tokens.
 2. No mostrar secretos de infraestructura.
 3. No mezclar datos de cliente con datos internos.
-4. No inventar decisiones que no existan en la documentacion.
+4. No inventar decisiones que no existan en la documentacin.
 5. Registrar solo trazas seguras.
 
 ### Criterio de salida
 
-- El chatbot es util pero seguro.
+- El chatbot es til pero seguro.
 - La informacion sensible queda protegida.
 
 ## Fase 6 - Integracion tecnica
@@ -180,7 +180,7 @@ Conectar el chatbot de admin a una implementacion real dentro del proyecto.
 
 1. Elegir el backend donde vivira.
 2. Conectar el runtime de contexto.
-3. AÃ±adir soporte para respuestas estructuradas.
+3. Aadir soporte para respuestas estructuradas.
 4. Preparar el canal de consulta interna.
 
 ### Criterio de salida
@@ -230,29 +230,29 @@ Activar el chatbot de admin sin afectar el resto del ecosistema.
 1. Cerrar base documental.
 2. Definir el hero interno simple.
 3. Construir capa de contexto.
-4. DiseÃ±ar recuperacion de conocimiento.
+4. Disear recuperacion de conocimiento.
 5. Definir formato de respuesta.
 6. Blindar seguridad.
 7. Integrar tecnicamente.
 8. Validar.
 9. Desplegar de forma gradual.
 
-## Relacion con la documentacion existente
+## Relacion con la documentacin existente
 
 - [chatbot/CHATBOT_ADMIN_KITTYPAU.md\](CHATBOT_ADMIN_KITTYPAU.md) -> especificacion integral del chatbot de admin.
 - [chatbot/CHATBOT_GATO_KITTYPAU.md\](CHATBOT_GATO_KITTYPAU.md) -> especificacion integral del gato visible para cliente.
-- [INDEX.md\](../INDEX.md) -> mapa global de la documentacion.
-- [README.md](README.md) -> entrada principal a la documentacion.
+- [INDEX.md\](../INDEX.md) -> mapa global de la documentacin.
+- [README.md](README.md) -> entrada principal a la documentacin.
 
 ## Resultado esperado
 
 Al terminar este plan, Kittypau tendra:
 
-- un chatbot de admin capaz de leer toda la documentacion;
+- un chatbot de admin capaz de leer toda la documentacin;
 - respuestas ordenadas por tema;
 - separacion clara entre cliente e interno;
 - base para consultas operativas y estrategicas;
-- y una guia de conocimiento util para el equipo completo.
+- y una gua de conocimiento til para el equipo completo.
 
 
 

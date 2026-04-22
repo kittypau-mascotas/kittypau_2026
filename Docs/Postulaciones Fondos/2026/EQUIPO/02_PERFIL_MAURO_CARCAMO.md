@@ -11,7 +11,7 @@
 
 ## Rol en Kittypau
 - **Cargo:** Co-fundador — Liderazgo general / Negocio y Producto
-- **Participación accionaria:** 50%
+- **Participación accinaria:** 50%
 
 ## Formación académica
 | Año | Título / Diploma | Institución |

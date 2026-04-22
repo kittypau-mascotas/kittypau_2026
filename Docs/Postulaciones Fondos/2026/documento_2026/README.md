@@ -15,7 +15,7 @@ El contenido estrategico compartido ya vive en `00_DOCUMENTO_MAESTRO_2026.md`.
 - `07_CHECKLIST_FINAL_ENVIO_2026.md` - QA final antes de enviar.
 
 ## Regla de uso
-- No repetir aqui el marco AIoT / PetTech ni el contexto de expansion.
+- No repetir aqu el marco AIoT / PetTech ni el contexto de expansin.
 - Si hace falta esa capa, referenciar el documento maestro 2026.
 - Cada archivo debe aportar solo lo que no esta ya centralizado.
 

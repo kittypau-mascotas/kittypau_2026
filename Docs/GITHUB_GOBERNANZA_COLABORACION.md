@@ -31,7 +31,7 @@ Cobertura:
 - Validación básica de SQL (cambios permitidos solo en `supabase/migrations` o `Docs`).
 
 ## 3) Política de migraciones DB
-- Solo migraciones versionadas en `supabase/migrations/`.
+- Solo migraciones versinadas en `supabase/migrations/`.
 - Prohibido SQL manual en producción sin migración en repo.
 - Validar post-migración:
   - `Docs/TEST_DB_API.ps1`
@@ -43,9 +43,9 @@ Cobertura:
 - Rotación inicial y periódica.
 - Si hay sospecha de fuga: rotar de inmediato.
 
-## 5) Convención de ramas
+## 5) Convención de rams
 - Rama común de integración: `main`.
-- Ramas personales:
+- Rams personales:
   - `feat/mauro-curcuma`
   - `feat/javo-mauro`
 - Flujo: branch personal -> PR -> `main`.
@@ -67,7 +67,7 @@ Usar plantilla:
 
 No mergear sin:
 - checklist completo,
-- pruebas mínimas,
+- pruebas mínims,
 - docs actualizadas,
 - rollback definido.
 
@@ -91,7 +91,7 @@ Automatizada por:
 - `.github/workflows/monthly-fusion-review.yml`
 
 Acción:
-- Crea issue mensual para revisar fusión de ramas personales a `main`.
+- Crea issue mensual para revisar fusión de rams personales a `main`.
 
 ## 11) Estado de implementación
 - [x] PR template

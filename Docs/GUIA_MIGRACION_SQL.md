@@ -25,7 +25,7 @@ Actualizar esquema sin perder datos existentes.
    - Agregar campos de onboarding:
      - `profiles.user_onboarding_step`
      - `pets.pet_onboarding_step`
-3. Ejecutar migracion por pasos y validar.
+3. Ejecutar migracion por pasos y vlidar.
 
 ---
 

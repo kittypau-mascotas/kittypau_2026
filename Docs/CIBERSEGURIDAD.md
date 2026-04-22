@@ -1,20 +1,20 @@
 # Ciberseguridad (Kittypau)
 
 ## Objetivo
-Definir controles mínimos para proteger datos, API, MQTT y credenciales.
+Definir controles mÃ­nimos para proteger datos, API, MQTT y credenciales.
 
 ---
 
 ## 1) Superficie de ataque
-- API pública en Vercel (`/api/*`).
+- API pÃºblica en Vercel (`/api/*`).
 - Webhook MQTT expuesto.
 - Tokens de Supabase (anon y service role).
 - Raspberry Bridge 24/7.
-- Datos personales (email, ubicación, hábitos).
+- Datos personales (email, ubicaciÃ³n, hÃ¡bitos).
 
 ---
 
-## 2) Controles mínimos (obligatorios)
+## 2) Controles mÃ­nimos (obligatorios)
 1. **RLS en Supabase**
    - `profiles`, `pets`, `devices`, `readings` con RLS activo.
 2. **Secrets aislados**
@@ -23,9 +23,9 @@ Definir controles mínimos para proteger datos, API, MQTT y credenciales.
 3. **Webhook protegido**
    - Validar `x-webhook-token`.
 4. **Credenciales MQTT**
-   - Usuario y password únicos.
-   - Rotación trimestral.
-5. **Rate limiting (mínimo)**
+   - Usuario y password Ãºnicos.
+   - RotaciÃ³n trimestral.
+5. **Rate limiting (mÃ­nimo)**
    - Limitar requests por IP en `/api/mqtt/webhook`.
 6. **Logs**
    - No loguear tokens ni credenciales.
@@ -37,13 +37,13 @@ Definir controles mínimos para proteger datos, API, MQTT y credenciales.
 
 ## 3) Checklist hardening (Vercel)
 - [ ] Variables en Vercel solo como *Environment Variables*.
-- [ ] Bloquear acceso público a logs sensibles.
+- [ ] Bloquear acceso pÃºblico a logs sensibles.
 - [ ] Deshabilitar previews si exponen data real.
 
 ## 4) Checklist hardening (Supabase)
 - [ ] RLS activo en todas las tablas.
 - [ ] Policies revisadas.
-- [ ] Auth email/password con confirmación.
+- [ ] Auth email/password con confirmaciÃ³n.
 - [ ] Limitar service role solo en backend.
 
 ## 5) Checklist hardening (Raspberry)
@@ -64,7 +64,7 @@ Definir controles mínimos para proteger datos, API, MQTT y credenciales.
 
 ---
 
-## 7) Respuesta a incidentes (básico)
+## 7) Respuesta a incidentes (bÃ¡sico)
 1. Revocar tokens comprometidos.
 2. Rotar secretos.
 3. Revisar logs (Vercel + Supabase).

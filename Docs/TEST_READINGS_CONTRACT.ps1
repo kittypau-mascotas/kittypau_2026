@@ -16,7 +16,7 @@ Write-Host "READINGS CONTRACT TESTS"
 Write-Host "Base URL: $baseUrl"
 Write-Host "Device UUID: $deviceId"
 
-# 1) Falta parametro device_id/device_uuid -> 400
+# 1) Falta parmetro device_id/device_uuid -> 400
 try {
   Invoke-RestMethod -Method Get `
     -Uri "$baseUrl/api/readings" `
@@ -30,7 +30,7 @@ try {
 # 2) from invalido -> 400
 try {
   Invoke-RestMethod -Method Get `
-    -Uri "$baseUrl/api/readings?device_id=$deviceId&from=not-a-date" `
+    -Uri "$baseUrl/api/readingsdevice_id=$deviceId&from=not-a-date" `
     -Headers @{ Authorization = "Bearer $token" } | Out-Null
   throw "Expected invalid from to fail"
 } catch {
@@ -41,7 +41,7 @@ try {
 # 3) rango invalido from > to -> 400
 try {
   Invoke-RestMethod -Method Get `
-    -Uri "$baseUrl/api/readings?device_id=$deviceId&from=2026-03-10T00:00:00Z&to=2026-03-01T00:00:00Z" `
+    -Uri "$baseUrl/api/readingsdevice_id=$deviceId&from=2026-03-10T00:00:00Z&to=2026-03-01T00:00:00Z" `
     -Headers @{ Authorization = "Bearer $token" } | Out-Null
   throw "Expected invalid range to fail"
 } catch {
@@ -49,9 +49,9 @@ try {
   Write-Host "OK: invalid range -> 400"
 }
 
-# 4) consulta valida con device_id -> 200
+# 4) consulta vlida con device_id -> 200
 $resDeviceId = Invoke-RestMethod -Method Get `
-  -Uri "$baseUrl/api/readings?device_id=$deviceId&limit=10" `
+  -Uri "$baseUrl/api/readingsdevice_id=$deviceId&limit=10" `
   -Headers @{ Authorization = "Bearer $token" }
 
 if (-not $resDeviceId) {
@@ -59,9 +59,9 @@ if (-not $resDeviceId) {
 }
 Write-Host "OK: valid device_id query -> 200"
 
-# 5) consulta valida con alias device_uuid -> 200
+# 5) consulta vlida con alias device_uuid -> 200
 $resDeviceUuid = Invoke-RestMethod -Method Get `
-  -Uri "$baseUrl/api/readings?device_uuid=$deviceId&limit=10" `
+  -Uri "$baseUrl/api/readingsdevice_uuid=$deviceId&limit=10" `
   -Headers @{ Authorization = "Bearer $token" }
 
 if (-not $resDeviceUuid) {

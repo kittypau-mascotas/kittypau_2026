@@ -20,7 +20,7 @@ Si `recorded_at` llega fuera de un rango razonable (ej. ±10 min del servidor):
 ## Por qué esto importa
 - Evita que datos “viajen en el tiempo”.
 - Hace que dashboards y alertas sean confiables.
-- Protege el pipeline ante hardware con reloj dañado (30–40% de dispositivos falla alguna vez).
+- Protege el pipeline ante hardware con reloj dañado (30–40% de dispositivos falla algna vez).
 
 ## Uso práctico
 - Consultas: ordenar por `ingested_at` para “último dato real”.

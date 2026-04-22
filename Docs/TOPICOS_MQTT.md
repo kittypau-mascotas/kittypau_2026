@@ -1,4 +1,4 @@
-# T髉icos MQTT - Kittypau IoT (referencia)
+# T贸picos MQTT - Kittypau IoT (referencia)
 
 ## Broker (HiveMQ Cloud)
 - **Servicio**: HiveMQ Cloud
@@ -9,8 +9,8 @@
 
 ---
 
-## Convenci髇 de topics
-Patr髇 general:
+## Convenci贸n de topics
+Patr贸n general:
 - `{DEVICE_ID}/SENSORS`
 - `{DEVICE_ID}/STATUS`
 - `{DEVICE_ID}/cmd`
@@ -41,11 +41,11 @@ El bridge se suscribe con wildcard para todos los dispositivos:
 }
 ```
 
-| Campo | Tipo | Descripci髇 |
+| Campo | Tipo | Descripci贸n |
 |---|---|---|
 | `timestamp` | string | Hora NTP `MM-dd-aaaa HH:mm:ss` |
 | `weight` | float | Peso en gramos |
-| `temp` | float/null | Temperatura 癈 |
+| `temp` | float/null | Temperatura 掳C |
 | `hum` | float/null | Humedad % |
 | `ldr` | int | ADC 0-1023 (luz) |
 

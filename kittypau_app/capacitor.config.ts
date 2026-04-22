@@ -1,7 +1,6 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
-const appServerUrl =
-  process.env.CAPACITOR_SERVER_URL || "https://kittypau-app.vercel.app";
+const appServerUrl = process.env.CAPACITOR_SERVER_URL || "http://10.0.2.2:3000";
 
 const allowedHosts = [
   "kittypau-app.vercel.app",
@@ -23,9 +22,9 @@ const config: CapacitorConfig = {
   webDir: "capacitor_www",
   server: {
     url: appServerUrl,
-    cleartext: false,
-    androidScheme: "https",
-    allowNavigation,
+    cleartext: true,
+    androidScheme: "http",
+    allowNavigation: [...allowedHosts, "localhost", "127.0.0.1", "10.0.2.2"],
   },
   android: {
     allowMixedContent: false,

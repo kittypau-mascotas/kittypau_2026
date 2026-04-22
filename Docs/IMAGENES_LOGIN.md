@@ -8,7 +8,7 @@ Las imagenes generadas por el sistema de imagen (DALL-E / image_gen) usan format
 - Perfil de color: RGB (sRGB)
 - Peso aproximado: 1-2 MB por imagen
 
-Aunque visualmente algunas parecen "horizontales", internamente siguen siendo 1:1 con composicion centrada.
+Aunque visualmente algnas parecen "horizontales", internamente siguen siendo 1:1 con composicion centrada.
 
 ---
 
@@ -31,15 +31,15 @@ Aunque visualmente algunas parecen "horizontales", internamente siguen siendo 1:
 - Pelaje
 - Bordes del plato
 - Croquetas
-- Grano muy sutil (look fotografico real)
+- Grano muy stil (look fotografico real)
 
 ---
 
 ## Tratamiento del animal
 - Postura estable (sin motion blur)
-- Pelaje mas definido y ordenado
+- Pelaje ms definido y ordenado
 - Volumen natural (no "plastico")
-- Enfoque claro en la accion: comer
+- Enfoque claro en la accin: comer
 
 ---
 
@@ -52,7 +52,7 @@ Aunque visualmente algunas parecen "horizontales", internamente siguen siendo 1:
 
 ---
 
-## Fondo (segun version)
+## Fondo (segn versin)
 - Fondo interior, no jardin:
   - Estudio / home office
   - Cocina moderna
@@ -65,7 +65,7 @@ Aunque visualmente algunas parecen "horizontales", internamente siguen siendo 1:
 ## Uso recomendado
 Estas imagenes funcionan muy bien para:
 - Landing page de producto
-- Pitch deck / presentacion a inversionistas
+- Pitch deck / presentacin a inversionistas
 - Instagram / redes
 - Mockups de e-commerce
 - Branding de Kittypau / Equitipau
@@ -98,7 +98,7 @@ Assets versionados actuales:
 Notas:
 - `food.png` y `water.png` quedaron deprecados y removidos del flujo actual.
 - Login hero usa `pink_food_full.png`.
-- Interaccion del plato hero en login:
+- Interaccin del plato hero en login:
   - ciclo visual infinito por click:
     `full -> medium -> empty -> medium -> full -> ...`
   - audio por click:
@@ -108,11 +108,11 @@ Notas:
 
 ## Uso para parallax (orden de capas recomendado)
 De fondo a frente:
-1. `gato_1.png` (capa profunda, movimiento sutil)
+1. `gato_1.png` (capa profunda, movimiento stil)
 2. `perro.png` (capa media)
 3. `plato_cental.png` (capa protagonista, menor movimiento que animales)
 4. `gato_2.png` (capa cercana)
-5. `perro_2.png` (capa mas cercana, mayor parallax)
+5. `perro_2.png` (capa ms cercana, mayor parallax)
 
 Notas:
 - Mantener el plato como punto de anclaje visual.
@@ -141,20 +141,20 @@ Valores pensados para scroll suave o movimiento leve en mouse:
 
 ### Posicionamiento sugerido (mobile)
 - Reducir a 3 capas: `gato_1.png`, `plato_cental.png`, `perro_2.png`.
-- Velocidades mas bajas (0.08x, 0.12x, 0.18x).
+- Velocidades ms bajas (0.08x, 0.12x, 0.18x).
 - Evitar recortes grandes para no tapar el formulario.
 
 ### Dimensiones esperadas APK nativa (mobile real)
 - Objetivo de jerarquia visual: `plato -> titulo principal -> bloque marca -> card login`.
-- Hero bowl (`login-hero-asset-img`): ancho recomendado `73vw` a `80vw` segun dispositivo.
+- Hero bowl (`login-hero-asset-img`): ancho recomendado `73vw` a `80vw` segn dispositivo.
 - Titulo principal (`login-hero-title`): visible y dominante.
-- Copy secundaria (`login-hero-copy`): oculta en APK nativa para liberar alto util.
+- Copy secundaria (`login-hero-copy`): oculta en APK nativa para liberar alto til.
 - Bloque marca (`logo + Kittypau + PetTech AIoT + redes`): espaciado compacto.
-- Card login: debe iniciar mas arriba que en web mobile, sin cortar campos.
+- Card login: debe iniciar ms arriba que en web mobile, sin cortar campos.
 
 ### Reglas de legibilidad
 - El formulario siempre sobre un fondo limpio (overlay o blur suave).
-- Contraste minimo AA para textos.
+- Contraste mnimo AA para textos.
 - Limitar movimiento a +/- 16px si es parallax por mouse.
 
 ### Recomendacion tecnica
@@ -193,10 +193,10 @@ Objetivo: composicion balanceada entre contenido y fondo.
 
 ### Desktop (>= 1024px)
 - Layout 12 columnas.
-- Formulario ocupa 4-5 columnas, alineado a la derecha.
+- Formulario ocupa 4-5 columnas, alneado a la derecha.
 - Fondo parallax ocupa el resto (7-8 columnas).
 - Ancho maximo del card: `420px`.
-- Margen lateral minimo: `64px`.
+- Margen lateral mnimo: `64px`.
 
 ### Tablet (>= 768px y < 1024px)
 - Layout 8 columnas.
@@ -222,18 +222,18 @@ Objetivo: onboarding claro, rapido y confiable.
 ### Estructura (orden)
 1. Logo pequeño + nombre: `Kittypau`
 2. Titulo: `Bienvenido a Kittypau`
-3. Subtitulo: `Monitorea la alimentacion y salud de tu mascota`
+3. Subttulo: `Monitorea la alimentacin y salud de tu mascota`
 4. Campo email (placeholder: `tu@correo.com`)
 5. Campo password (placeholder: `••••••••`)
-6. Link secundario: `Olvidaste tu contraseña?`
-7. Boton principal: `Iniciar sesion`
+6. Link secundario: `Olvidaste tu contraseña`
+7. Boton principal: `Iniciar sesin`
 8. Separador: `o`
 9. Boton alterno (si aplica): `Continuar con Google`
-10. Link secundario inferior: `No tienes cuenta? Crear cuenta`
+10. Link secundario inferior: `No tienes cuenta Crear cuenta`
 
 ### Jerarquia visual
 - Titulo: `text-2xl` / `font-semibold`
-- Subtitulo: `text-sm` / `text-muted-foreground`
+- Subttulo: `text-sm` / `text-muted-foreground`
 - Inputs: altura `h-11` (tactiles)
 - CTA: altura `h-12` con `font-medium`
 
@@ -244,6 +244,6 @@ Objetivo: onboarding claro, rapido y confiable.
 
 ### Accesibilidad
 - Labels visibles o `aria-label` consistente.
-- Contraste AA minimo.
+- Contraste AA mnimo.
 
 

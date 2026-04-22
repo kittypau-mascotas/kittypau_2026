@@ -14,7 +14,7 @@ Este documento debe ser la referencia base para cualquier asistente/IA.
 Nadie trabaja directo en `main`.
 Todo cambio pasa por rama personal + Pull Request.
 
-## Configuracion de identidad
+## Configuracin de identidad
 Mauro:
 ```bash
 git config user.name "Mauro Curcuma"
@@ -88,7 +88,7 @@ git push origin <rama-personal>
 
 ## Que no hacer
 - No hacer push a `main`.
-- No borrar ramas activas del otro.
+- No borrar rams activas del otro.
 - No commitear claves, tokens o contraseñas.
 - No mezclar cambios no relacionados en un mismo PR.
 
@@ -104,10 +104,10 @@ Despues de cada `git push` (Mauro o Javo), actualizar:
 ## Revision mensual obligatoria (cada 1 mes)
 Objetivo:
 - evaluar fusion de trabajo de Mauro y Javo a `main`,
-- validar coherencia tecnica, funcional y documental.
+- vlidar coherencia tecnica, funcional y documental.
 
 Checklist mensual:
-1. Revisar bitacoras:
+1. Revisar bitcoras:
    - `Docs/GITHUB_MAURO.md`
    - `Docs/GITHUB_JAVO.md`
 2. Comparar cambios contra `main`:
@@ -119,7 +119,7 @@ git diff --name-only origin/main...origin/feat/mauro-curcuma
 git diff --name-only origin/main...origin/feat/javo-mauro
 ```
 3. Definir lista de PRs de fusion del mes.
-4. Ejecutar pruebas minimas antes de merge.
-5. Registrar resultado de la revision mensual en ambas bitacoras.
+4. Ejecutar pruebas minims antes de merge.
+5. Registrar resultado de la revision mensual en ambas bitcoras.
 
 

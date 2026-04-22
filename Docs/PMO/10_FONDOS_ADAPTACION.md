@@ -1,15 +1,15 @@
 # Guia de Adaptacion por Fondo Concursable — Kittypau IoT
 **Version**: 1.0 | Fecha: 2026-03-05
-**Uso**: Checklist rapido para adaptar la documentacion PMO a cada fondo
+**Uso**: Checklist rapido para adaptar la documentacin PMO a cada fondo
 
 > Fecha de corte actual: 2026-04-01.
-> CORFO Semilla Inicia O'Higgins ya vencio; usar esta guia para replanificar otra region o la siguiente convocatoria.
+> CORFO Semilla Inicia O'Higgins ya vencio; usar esta gua para replanificar otra region o la siguente convocatoria.
 
 ---
 
-## Como usar esta guia
+## Como usar esta gua
 
-Cada fondo tiene enfasis distintos. Esta guia indica que documentos del PMO priorizar,
+Cada fondo tiene enfasis distintos. Esta gua indica que documentos del PMO priorizar,
 que secciones personalizar y que requisitos administrativos preparar.
 Los documentos base (01-09) ya contienen el contenido; solo hay que copiar/adaptar las secciones senaladas.
 
@@ -55,7 +55,7 @@ CORFO Semilla Inicia busca **emprendimientos innovadores en etapa muy temprana**
 - [ ] CV del emprendedor principal (max 2 paginas)
 - [ ] CV del co-emprendedor (si aplica)
 
-**Formulario en linea (plataforma CORFO)**
+**Formulario en lnea (plataforma CORFO)**
 
 - [ ] Nombre del proyecto: "Kittypau IoT — Plataforma de Monitoreo Inteligente de Mascotas"
 - [ ] Descripcion breve del problema (max 500 caracteres)
@@ -74,7 +74,7 @@ CORFO Semilla Inicia busca **emprendimientos innovadores en etapa muy temprana**
 ### Puntos diferenciadores para destacar en CORFO
 
 1. **Prototipo funcional**: no es una idea, es un sistema IoT operativo con 8 dispositivos enviando datos en tiempo real
-2. **TRL 6**: nivel de madurez tecnologica demostrada
+2. **TRL 6**: nivel de madurez tecnolgica demostrada
 3. **Costo competitivo**: COGS de $21,50 USD frente a $80-200 USD de competidores importados
 4. **Equipo tecnico completo**: cubre 100% del stack sin dependencia externa
 5. **Mercado local**: fabricacion en Chile, para mercado chileno
@@ -99,13 +99,13 @@ CORFO Semilla Inicia busca **emprendimientos innovadores en etapa muy temprana**
 | Monto maximo | Build $15M / Ignite $30M / BIG $75M CLP |
 | Convocatoria esperada | ~Jun 2026 (BIG 12) |
 | Cierre estimado | ~Oct 2026 |
-| Etapa objetivo Kittypau | **IGNITE** (prototipo validado, primeros usuarios) |
+| Etapa objetivo Kittypau | **IGNITE** (prototipo vlidado, primeros usuarios) |
 | Requiere empresa | Si (empresa constituida) |
 | URL | https://startupchile.org/apply |
 
 ### Perfil del fondo
 
-StartUp Chile busca startups con **traccion demostrada y potencial de escala global**. IGNITE es para proyectos con MVP funcional y primeros usuarios/clientes. El pitch deck y el video son fundamentales.
+StartUp Chile busca startups con **traccin demostrada y potencial de escala global**. IGNITE es para proyectos con MVP funcional y primeros usuarios/clientes. El pitch deck y el video son fundamentales.
 
 ### Documentos PMO a priorizar
 
@@ -113,15 +113,15 @@ StartUp Chile busca startups con **traccion demostrada y potencial de escala glo
 |-----------|-----------|----------------|
 | CRITICO | [04_BUSINESS_CASE.md](04_BUSINESS_CASE.md) | Secciones 3 (mercado), 4 (modelo negocio), 5 (estado actual) |
 | CRITICO | [01_PROJECT_CHARTER.md](01_PROJECT_CHARTER.md) | Seccion 3 (objetivos), 5 (entregables), 10 (criterios exito) |
-| ALTO | [03_SCHEDULE.md](03_SCHEDULE.md) | Fases 2 y 3, traccion acumulada |
+| ALTO | [03_SCHEDULE.md](03_SCHEDULE.md) | Fases 2 y 3, traccin acumulada |
 | ALTO | [05_COST_BUDGET.md](05_COST_BUDGET.md) | Seccion 6 (proyeccion ingresos), ROI |
 | MEDIO | [07_STAKEHOLDERS.md](07_STAKEHOLDERS.md) | Equipo y advisors |
 
 ### Checklist adicional StartUp Chile
 
 - [ ] Video pitch 2-3 minutos (en ingles si es posible)
-- [ ] Deck de presentacion (10-15 slides en ingles)
-- [ ] Datos de traccion: usuarios activos, datos recolectados, revenue si existe
+- [ ] Deck de presentacin (10-15 slides en ingles)
+- [ ] Datos de traccin: usuarios activos, datos recolectados, revenue si existe
 - [ ] Empresa constituida en Chile
 - [ ] Perfil en plataforma StartUp Chile
 
@@ -130,7 +130,7 @@ StartUp Chile busca startups con **traccion demostrada y potencial de escala glo
 - **Idioma**: ingles (o al menos deck en ingles)
 - Enfatizar **potencial de escala regional** (Latinoamerica)
 - Destacar **datos como activo** (valor de los datos de comportamiento animal)
-- Mostrar **traccion**: X usuarios, Y lecturas/dia, Z dias de operacion continua
+- Mostrar **traccin**: X usuarios, Y lecturas/dia, Z das de operacin continua
 - Mencionar **potencial B2B** (veterinarias, seguros, pet hotels)
 
 ---
@@ -154,7 +154,7 @@ StartUp Chile busca startups con **traccion demostrada y potencial de escala glo
 
 ### Perfil del fondo
 
-ANID busca proyectos con **base tecnico-cientifica solida y equipo dedicado**. Se valora la innovacion tecnologica demostrable, la metodologia de desarrollo y el impacto potencial. Requiere documentacion tecnica detallada.
+ANID busca proyectos con **base tecnico-cientifica solida y equipo dedicado**. Se valora la innovacion tecnolgica demostrable, la metodologia de desarrollo y el impacto potencial. Requiere documentacin tecnica detallada.
 
 ### Documentos PMO a priorizar
 
@@ -165,7 +165,7 @@ ANID busca proyectos con **base tecnico-cientifica solida y equipo dedicado**. S
 | CRITICO | [03_SCHEDULE.md](03_SCHEDULE.md) | Carta Gantt formal 12 meses post-adjudicacion |
 | CRITICO | [05_COST_BUDGET.md](05_COST_BUDGET.md) | Presupuesto adaptado a $134M, por categoria ANID |
 | ALTO | [08_QUALITY_PLAN.md](08_QUALITY_PLAN.md) | Metodologia, testing, CI/CD |
-| ALTO | [06_RISK_REGISTER.md](06_RISK_REGISTER.md) | Registro completo con planes de accion |
+| ALTO | [06_RISK_REGISTER.md](06_RISK_REGISTER.md) | Registro completo con planes de accin |
 
 ### Requisitos criticos ANID (verificar antes de postular)
 
@@ -179,10 +179,10 @@ ANID busca proyectos con **base tecnico-cientifica solida y equipo dedicado**. S
 
 ### Adaptaciones especificas para ANID
 
-- **Agregar base cientifica**: metodologia IoT, referencias a literatura sobre sensores, precision de medicion, validacion estadistica de datos
-- **Enfatizar innovacion tecnologica**: no solo un producto, sino un sistema de medicion objetiva de habitos de mascotas con valor cientifico
+- **Agregar base cientifica**: metodologia IoT, referencias a literatura sobre sensores, precisin de medicion, vlidacion estadistica de datos
+- **Enfatizar innovacion tecnolgica**: no solo un producto, sino un sistema de medicion objetiva de habitos de mascotas con valor cientifico
 - **Carta Gantt ANID**: 12 meses detallados con hitos cada 3 meses y entregables formales
-- **Presupuesto ANID**: reformatear en categorias ANID (personal, equipamiento, operacion, viajes, difusion)
+- **Presupuesto ANID**: reformatear en categorias ANID (personal, equipamiento, operacin, viajes, difusion)
 - **CVs formales**: con publicaciones, grados, experiencia tecnica documentada
 
 ---
@@ -231,10 +231,10 @@ Feb  28 -----> Postular Semilla Expande (si hubo ventas)
 | Documento | Uso en todos los fondos |
 |-----------|------------------------|
 | Project Charter | Base de toda postulacion — adaptar resumen ejecutivo |
-| Business Case | Copiar y adaptar secciones segun enfasis del fondo |
+| Business Case | Copiar y adaptar secciones segn enfasis del fondo |
 | Registro de Riesgos | Incluir siempre — muestra madurez del equipo |
 | Cronograma | Adaptar Carta Gantt al periodo que pide el fondo |
-| Presupuesto | Reformatear categorias segun estructura del fondo |
+| Presupuesto | Reformatear categorias segn estructura del fondo |
 
 ---
 
@@ -245,8 +245,8 @@ Feb  28 -----> Postular Semilla Expande (si hubo ventas)
 3. **Mostrar evidencia concreta**: fotos del prototipo, screenshots de la app, numeros reales
 4. **No inflar proyecciones**: ser conservador pero convincente
 5. **Destacar el equipo**: los fondos invierten en personas, no solo en ideas
-6. **Tener el presupuesto bien justificado**: cada item debe poder explicarse en 2 lineas
-7. **Preparar todo con 1 semana de antelacion**: los sistemas online siempre fallan el ultimo dia
+6. **Tener el presupuesto bien justificado**: cada item debe poder explicarse en 2 lneas
+7. **Preparar todo con 1 semana de antelacion**: los sistems online siempre fallan el ultimo dia
 
 ---
 

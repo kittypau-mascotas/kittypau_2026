@@ -1,13 +1,13 @@
 # Reglas de Interpretacion IoT -> UX (Kittypau)
 
 ## Objetivo
-Convertir lecturas crudas en eventos e interpretaciones utiles para el usuario.
+Convertir lecturas crudas en eventos e interpretaciones tiles para el usuario.
 
 ---
 
 ## Fuente de datos
 - `readings` (peso comida, agua, timestamps)
-- Estados de `devices` (bateria, last_seen)
+- Estados de `devices` (batera, last_seen)
 
 ---
 
@@ -30,7 +30,7 @@ Si falta `device_id` en el payload, el Bridge debe inyectarlo.
 |---|---|
 | muchas micro ingestas | ansiedad |
 | ingesta nocturna | estres o aburrimiento |
-| baja hidratacion | alerta salud |
+| baja hidratacin | alerta salud |
 | cambio horario | cambio rutina casa |
 | comer al irte | apego |
 | comer al volver | confianza |
@@ -55,11 +55,11 @@ Si falta `device_id` en el payload, el Bridge debe inyectarlo.
 ---
 
 ## Nota
-Estas reglas no cambian el backend. Solo transforman la capa de presentacion.
+Estas reglas no cambian el backend. Solo transforman la capa de presentacin.
 
-## Transformaciones analíticas (log10 + Fourier) - contexto
-- Para reducir skew/outliers sin perder trazabilidad, aplicar `log10(x + 1)` en ingestión server-side y persistir raw + transformado.
-- Fourier/FFT se ejecuta en capa analítica/ML (worker/batch), no en el bridge/webhook.
+## Transformaciones analÃ­ticas (log10 + Fourier) - contexto
+- Para reducir skew/outliers sin perder trazabilidad, aplicar `log10(x + 1)` en ingestiÃ³n server-side y persistir raw + transformado.
+- Fourier/FFT se ejecuta en capa analÃ­tica/ML (worker/batch), no en el bridge/webhook.
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 

@@ -9,7 +9,7 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 - Navegación inferior
 - Estados de carga, vacío y error
 
-## Resoluciones objetivo (mínimas)
+## Resoluciones objetivo (mínims)
 - 360x800
 - 393x852
 - 412x915
@@ -50,7 +50,7 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 - [ ] Estados `N/D` consistentes (mismo copy en toda la vista).
 
 ## 7) Estados vacíos y error (P1)
-- [ ] Mensajes de vacío claros y accionables.
+- [ ] Mensajes de vacío claros y accinables.
 - [ ] Error de API muestra acción de recuperación (reintentar).
 - [ ] No quedan paneles “muertos” sin feedback.
 
@@ -63,7 +63,7 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 
 ## Definition of Done UX/UI APK
 - [ ] Checklist P0 completo en las 3 resoluciones objetivo.
-- [ ] Al menos 1 ronda de validación en dispositivo real.
+- [ ] Al menos 1 ronda de vlidación en dispositivo real.
 - [ ] Registro de evidencias (capturas antes/después) en PR o documento de avance.
 - [ ] Sin regresiones visibles en web desktop/mobile web.
 
@@ -77,7 +77,7 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 
 ## Ejecucion reciente (2026-03-09)
 - Commit aplicado: `daff54f` (main).
-- Deploy validado:
+- Deploy vlidado:
   - `https://kittypau-app.vercel.app`
   - `https://kittypau-88jx7gso2-kittypaus-projects.vercel.app`
 - Cambios cerrados en APK (solo flavor nativo):
@@ -86,6 +86,6 @@ Estandarizar calidad visual y de interacción en la APK Android (vista nativa), 
 - Verificacion tecnica:
   - `npm run type-check` OK.
 - Pendiente para cierre DoD completo:
-  - validar visualmente en 360x800, 393x852, 412x915 con evidencia adjunta.
+  - vlidar visualmente en 360x800, 393x852, 412x915 con evidencia adjunta.
 
 

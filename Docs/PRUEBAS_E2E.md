@@ -13,7 +13,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 ---
 
 ## 0) Prueba API directa (sin Bridge) - OK
-**Objetivo:** validar Auth + API + Supabase sin depender de IoT.
+**Objetivo:** vlidar Auth + API + Supabase sin depender de IoT.
 
 **Pasos**
 1. Obtener `access_token` desde Supabase Auth.
@@ -23,7 +23,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 5. `PATCH /api/pets/:id` (actualizar mascota).
 6. `POST /api/devices` (crear dispositivo).
 7. `POST /api/mqtt/webhook` (insertar lectura de prueba).
-8. `GET /api/readings?device_id=<UUID>` (leer lecturas).
+8. `GET /api/readingsdevice_id=<UUID>` (leer lecturas).
 
 **Esperado**
 - `devices` contiene el `device_id` creado.
@@ -65,7 +65,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 
 ---
 
-## 1) Prueba de conexion MQTT (HiveMQ)
+## 1) Prueba de conexin MQTT (HiveMQ)
 **Objetivo:** confirmar que el dispositivo publica.
 
 **Pasos**
@@ -136,7 +136,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 ---
 
 ## 6) Prueba de integridad de device_id
-**Objetivo:** validar que el `device_id` llegue en el payload (lo inyecta el Bridge).
+**Objetivo:** vlidar que el `device_id` llegue en el payload (lo inyecta el Bridge).
 
 **Pasos**
 1. Publicar mensaje con topic `KPCLXXXX/SENSORS`
@@ -172,11 +172,11 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 3. Con token B ejecutar:
    - `GET /api/devices` (debe devolver array vacio o 403).
    - `GET /api/pets` (debe devolver array vacio o 403).
-4. Intentar `GET /api/readings?device_id=<UUID de usuario A>`.
+4. Intentar `GET /api/readingsdevice_id=<UUID de usuario A>`.
 
 **Esperado**
 - No hay datos de usuario A.
-- No se filtra ningun `device_id` ajeno.
+- No se filtra ningn `device_id` ajeno.
 
 **Resultado (2026-02-07)**
 - Usuario A: `c0926551-11e9-48cd-b24f-23d009f85cb6`
@@ -186,7 +186,7 @@ Validar el flujo completo: IoT -> HiveMQ -> Bridge -> Vercel API -> Supabase -> 
 - `GET /api/pets` con token A -> OK (solo mascotas de A)
 - `GET /api/pets` con token B -> OK (solo mascotas de B)
 - `PATCH /api/devices/:id` sobre device de B con token A -> `404` (row no visible, RLS ok)
-- `GET /api/readings?device_id=<device B>` con token A -> `404` (row no visible, RLS ok)
+- `GET /api/readingsdevice_id=<device B>` con token A -> `404` (row no visible, RLS ok)
 
 ---
 
@@ -222,7 +222,7 @@ Ver `Docs/TEST_READINGS_CONTRACT.ps1` (contrato de `/api/readings`: casos OK + e
 - pet_state -> `device_linked`
 
 **Resultado (2026-02-07, webhook device_id + strings OK)**
-- POST /api/mqtt/webhook con `device_id` (KPCL) y valores numéricos como string: OK
+- POST /api/mqtt/webhook con `device_id` (KPCL) y valores numÃ©ricos como string: OK
 - Reading creado: `dcb9e265-c825-4acb-9516-e1a77187d9f0`
 - device UUID (`devices.id`): `db4ab517-ba80-43dd-865f-3207354d4b18`
 - recorded_at: `2026-02-07T23:45:14.002+00:00`

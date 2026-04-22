@@ -10,7 +10,7 @@ Crear bucket **`kittypau-photos`** en Supabase Storage.
 - Si prefieres privado, usa las politicas de abajo.
 
 **Pasos (UI)**
-1. Supabase ? Storage ? Create bucket.
+1. Supabase  Storage  Create bucket.
 2. Nombre: `kittypau-photos`.
 3. Public bucket: ON (o OFF si quieres firmar URLs).
 
@@ -45,6 +45,6 @@ add column if not exists photo_url text;
 
 ## Notas
 - Onboarding usa `photo_url` en `profiles` y `pets`.
-- Tamaño max recomendado: 5MB por imagen.
+- TamaÃ±o max recomendado: 5MB por imagen.
 
 

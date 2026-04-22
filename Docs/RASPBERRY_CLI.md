@@ -82,10 +82,10 @@ mqtt pub -h <HOST> -p 8883 -t "KPCL0001/SENSORS" \
 ## 7) Health-check remoto
 ```bash
 curl -H "x-bridge-token: <BRIDGE_HEARTBEAT_SECRET>" \
-  "https://kittypau-app.vercel.app/api/bridge/health-check?stale_min=10&device_stale_min=10"
+  "https://kittypau-app.vercel.app/api/bridge/health-checkstale_min=10&device_stale_min=10"
 ```
 
-## 8) Problemas comunes
+## 8) Problems comunes
 - Servicio caido: revisar `journalctl` y `.env`.
 - Sin conexión MQTT: revisar host/credenciales/TLS.
 - Webhook 401: `WEBHOOK_TOKEN` no coincide con secreto Vercel.

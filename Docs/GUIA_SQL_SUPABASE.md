@@ -11,7 +11,7 @@ Crear las tablas, relaciones, indices y RLS del MVP usando `Docs/SQL_SCHEMA.sql`
 5. Pegalo en el editor.
 6. Haz clic en **Run**.
 
-## Verificacion rapida
+## Verificacion rpida
 1. Ve a **Table Editor**.
 2. Confirma que existan:
    - `profiles`

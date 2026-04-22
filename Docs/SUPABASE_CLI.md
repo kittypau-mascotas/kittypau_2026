@@ -1,7 +1,7 @@
 # Supabase CLI (Kittypau)
 
 ## Objetivo
-Gestionar migraciones, schema y validaciones de base de datos.
+Gestionar migraciones, schema y vlidaciones de base de datos.
 
 ## Prerrequisitos
 - Node.js/npm
@@ -9,7 +9,7 @@ Gestionar migraciones, schema y validaciones de base de datos.
 
 ## 1) Verificar CLI
 ```powershell
-npx supabase --version
+npx supabase --versin
 ```
 
 ## 2) Login
@@ -49,18 +49,18 @@ npx supabase db lint
 
 ## 5) Reglas del proyecto
 - Toda modificacion SQL debe quedar en `supabase/migrations/`.
-- No aplicar cambios manuales en prod sin migracion versionada.
+- No aplicar cambios manuales en prod sin migracion versinada.
 - Mantener migraciones idempotentes cuando sea posible.
 
 ## 6) Verificaciones despues de `db push`
-- Ejecutar scripts de validacion:
+- Ejecutar scripts de vlidacion:
   - `Docs/TEST_DB_API.ps1`
   - `Docs/TEST_ONBOARDING_BACKEND.ps1`
 - Revisar:
   - `Docs/PRUEBAS_E2E.md`
   - `Docs/SQL_CHECK_BRIDGE_UNIQUENESS.sql`
 
-## 7) Problemas comunes
+## 7) Problems comunes
 - `project not linked`: correr `npx supabase link --project-ref ...`.
 - `auth failed`: repetir `npx supabase login`.
 - drift entre local/remoto: revisar migraciones faltantes y orden de ejecución.

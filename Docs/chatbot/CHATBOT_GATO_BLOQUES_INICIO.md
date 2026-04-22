@@ -1,4 +1,4 @@
-﻿# Bloques visuales de inicio - Chatbot del gato de Kittypau
+# Bloques visuales de inicio - Chatbot del gato de Kittypau
 
 ## Proposito
 
@@ -6,24 +6,24 @@ Este documento traduce la vista `inicio` en bloques concretos para que el gato l
 
 ## Regla base
 
-`inicio` es una guia rapida.
+`inicio` es una gua rpida.
 
 No debe hablar como demo ni como onboarding largo.
-Debe ser breve, util y suave.
+Debe ser breve, til y suave.
 
 ## Bloques reales de inicio
 
 | Bloque | Que muestra | Para que sirve | Que puede decir el gato | Que no debe decir |
 | --- | --- | --- | --- | --- |
 | Bienvenida | Primera frase del gato | Abrir la experiencia | "Bienvenido a Kittypau." | Hacer un discurso largo |
-| Pregunta de guia | Si quiere que el gato lo guie | Definir si sigue el flujo | "Â¿Quieres que sea tu guia?" | Insistir demasiado |
-| Opciones | Si / No | Elegir el nivel de guia | "Si eliges si, te oriento. Si eliges no, cierro rapido." | Mostrar muchas opciones |
-| Cierre | Fin de la guia | Dejar al usuario seguir | "Listo, puedes seguir tu camino." | Alargar el cierre |
+| Pregunta de guía | Si quiere que el gato lo guíe | Definir si sigue el flujo | "¿Quieres que sea tu guía?" | Insistir demasiado |
+| Opciones | Si / No | Elegir el nivel de gua | "Si eliges si, te oriento. Si eliges no, cierro rapido." | Mostrar muchas opciones |
+| Cierre | Fin de la gua | Dejar al usuario seguir | "Listo, puedes seguir tu camino." | Alargar el cierre |
 
 ## Orden recomendado
 
 1. Bienvenida.
-2. Pregunta de guia.
+2. Pregunta de guía.
 3. Eleccion.
 4. Cierre.
 
@@ -58,9 +58,9 @@ La capa de prompts por bloque vive en:
 
 Con esta tabla, el gato de `inicio` puede:
 - saludar;
-- preguntar si quiere guia;
+- preguntar si quiere gua;
 - responder rapido;
-- y cerrar sin ocupar mas espacio del necesario.
+- y cerrar sin ocupar ms espacio del necesario.
 
 
 

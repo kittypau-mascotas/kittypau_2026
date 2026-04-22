@@ -2,7 +2,7 @@
 
 ## Objetivo
 Concentrar en un solo documento el avance real de trabajo de ambos colaboradores
-segun los `push` en GitHub, para reducir errores de coordinación.
+segn los `push` en GitHub, para reducir errores de coordinación.
 
 ## Regla operativa
 Cada vez que Mauro o Javo haga `git push` a su rama personal:
@@ -12,7 +12,7 @@ Cada vez que Mauro o Javo haga `git push` a su rama personal:
    - `Docs/GITHUB_JAVO.md`
 3. Si corresponde, agregar enlace de PR.
 
-## Ramas oficiales monitoreadas
+## Rams oficiales monitoreadas
 - `origin/feat/mauro-curcuma`
 - `origin/feat/javo-mauro`
 - Rama común de integración: `origin/main`

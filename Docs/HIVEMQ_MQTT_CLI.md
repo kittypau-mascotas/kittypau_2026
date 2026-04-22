@@ -1,7 +1,7 @@
 # HiveMQ MQTT CLI (mqtt-cli)
 
 ## Objetivo
-Probar conectividad MQTT, publicar/suscribir payloads y validar topicos KPCL/KPBR.
+Probar conectividad MQTT, publicar/suscribir payloads y vlidar topicos KPCL/KPBR.
 
 ## Referencia oficial
 - `hivemq/mqtt-cli`
@@ -19,9 +19,9 @@ brew install mqtt-cli
 
 Linux:
 ```bash
-sudo dpkg -i mqtt-cli-<version>.deb
+sudo dpkg -i mqtt-cli-<versin>.deb
 # o
-sudo yum install -y mqtt-cli-<version>.rpm
+sudo yum install -y mqtt-cli-<versin>.rpm
 ```
 
 ## 2) Verificar CLI
@@ -64,7 +64,7 @@ Revisar:
 - `Docs/TOPICOS_MQTT.md`
 - `Docs/RASPBERRY_BRIDGE.md`
 
-## 9) Problemas comunes
+## 9) Problems comunes
 - Timeout TLS: revisar `--ssl`, host y puerto 8883.
 - Sin mensajes en bridge: revisar topic exacto y wildcard.
 - 400/404 en webhook: revisar formato `device_id` (`KPCL0000`) y registro del dispositivo.

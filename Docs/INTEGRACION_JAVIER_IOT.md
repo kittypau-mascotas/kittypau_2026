@@ -25,14 +25,14 @@ Se hizo **fusion por contenido** (no merge de historias git) para evitar conflic
 - el repo de Javier trae estructura distinta (`kittypau-app/` + bridge directo a Supabase).
 
 ## Restricciones antes de promover a produccion
-1. No reemplazar `bridge/src/index.js` actual sin validar contrato `/api/mqtt/webhook` y `/api/bridge/heartbeat`.
+1. No reemplazar `bridge/src/index.js` actual sin vlidar contrato `/api/mqtt/webhook` y `/api/bridge/heartbeat`.
 2. No aplicar `supabase_schema.sql` de Javier directo en prod sin convertirlo a migracion idempotente en `supabase/migrations`.
 3. Validar payload MQTT y reglas de `device_id` con:
    - `Docs/TOPICOS_MQTT.md`
    - `Docs/SQL_CHECK_BRIDGE_UNIQUENESS.sql`
    - `Docs/PRUEBAS_E2E.md`
 
-## Siguiente paso recomendado
+## Siguente paso recomendado
 Crear PR tecnico para revisar diferencias entre:
 - `iot_firmware/javier_1a/bridge_v2_4/bridge.js`
 - `bridge/src/index.js`

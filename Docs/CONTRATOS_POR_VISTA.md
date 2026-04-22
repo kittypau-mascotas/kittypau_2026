@@ -18,7 +18,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 **Errores**
 - email no existe
 - password incorrecta
-- sesion expirada
+- sesin expirada
 
 ---
 
@@ -105,7 +105,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - device_state = linked
 - pet_state = device_linked
 - user_onboarding_step = completed
-  - si habia un device activo para esa mascota, pasa a inactive
+  - si haba un device activo para esa mascota, pasa a inactive
 
 **Errores**
 - device_id ya vinculado
@@ -126,7 +126,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Errores**
 - sin data
-- sesion expirada
+- sesin expirada
 
 ---
 
@@ -140,7 +140,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 
 **Errores**
 - sin data
-- sesion expirada
+- sesin expirada
 
 ---
 
@@ -152,7 +152,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - lista de mascotas
 
 **Errores**
-- sesion expirada
+- sesin expirada
 
 ---
 
@@ -164,7 +164,7 @@ Definir inputs, outputs y errores por pantalla antes de implementar UI.
 - lista de dispositivos
 
 **Errores**
-- sesion expirada
+- sesin expirada
 
 ---
 

@@ -1,7 +1,7 @@
 # Pipeline CI/CD (Kittypau)
 
 ## Objetivo
-Documentar el flujo completo de despliegue y validación del proyecto.
+Documentar el flujo completo de despliegue y vlidación del proyecto.
 
 ## Diagrama (pipeline)
 ```mermaid
@@ -49,11 +49,11 @@ flowchart LR
 - Checklist: `Docs/VERCEL_UPSTASH_CHECKLIST.md`.
 
 ## 5. MQTT / Raspberry Bridge
-- Dispositivos → HiveMQ → Bridge (Raspberry) → `/api/mqtt/webhook`.
+- Dispositivos -> HiveMQ -> Bridge (Raspberry) -> `/api/mqtt/webhook`.
 - Topics: `+/SENSORS` (ver `Docs/TOPICOS_MQTT.md`).
 - Guía: `Docs/RASPBERRY_BRIDGE.md`.
 
-## 6. Pruebas mínimas antes de release
+## 6. Pruebas mínims antes de release
 - `Docs/TEST_DB_API.ps1`
 - `Docs/TEST_ONBOARDING_BACKEND.ps1`
 - POST webhook + GET readings

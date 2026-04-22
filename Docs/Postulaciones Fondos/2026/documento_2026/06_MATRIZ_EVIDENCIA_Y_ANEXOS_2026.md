@@ -10,7 +10,7 @@
 | Estrategia de negocio | Caminos A/B/C y KPI | Docs/KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md | listo |
 | Experiencia de postulacion previa | Checklists y borradores 2025 | Docs/kittypau_1a_docs_legacy/.../04_Postulaciones_y_Fondos | listo |
 
-## Anexos minimos por preparar
+## Anexos mnimos por preparar
 1. Carpeta legal actualizada 2026.
 2. Carpeta tecnica (arquitectura, API, SQL, evidencia funcional).
 3. Carpeta financiera (presupuesto y supuestos).
@@ -20,12 +20,12 @@
 ## Regla de calidad
 Cada claim relevante debe tener respaldo en una ruta concreta del repo o anexo formal.
 
-## Marco AIoT / PetTech (Alineacion 2026)
+## Marco AIoT / PetTech (Alneacion 2026)
 
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
@@ -54,17 +54,17 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 - Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
 2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
 3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
 - **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
@@ -72,8 +72,8 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+2. Las decisiones visuales deben reforzar lectura rpida de estado real (alimentacin, hidratacin, ambiente, batera).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 

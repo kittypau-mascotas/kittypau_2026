@@ -18,11 +18,11 @@ Kittypau no tiene varios bots.
 
 Tiene un solo gato conversacional que:
 
-- cambia el texto segun la pagina;
+- cambia el texto segn la pagina;
 - mantiene la misma UI;
 - mantiene la misma personalidad;
 - usa el mismo componente;
-- y conduce al usuario mediante conversacion guiada.
+- y conduce al usuario mediante conversacion guada.
 
 ## 3. Donde vive el gato
 
@@ -59,7 +59,7 @@ Regla: el texto nunca modifica la geometria.
 ### Dock de posicion compartido
 - `src/chatbot-gato/trial-rpg-dialog-dock.tsx`
 
-Este componente fija el cuadro en una unica escena reutilizable.
+Este componente fija el cuadro en una unica escena retilizable.
 Las paginas no deben reconstruir ni reubicar el cuadro por su cuenta.
 Solo le entregan contexto, contenido y estado.
 
@@ -89,7 +89,7 @@ El gato siempre habla con:
 - sarcasmo suave;
 - humor felino;
 - leve mal humor;
-- claridad cuando guia;
+- claridad cuando gua;
 - brevedad.
 
 Esto no cambia entre paginas.
@@ -98,12 +98,12 @@ Esto no cambia entre paginas.
 
 No es chat libre.
 
-Es un chat guiado por estado.
+Es un chat guado por estado.
 
 El usuario no escribe texto.
 El usuario elige opciones A / B.
 
-El gato responde segun esa eleccion.
+El gato responde segn esa eleccion.
 
 Esto produce:
 
@@ -149,14 +149,14 @@ Acciones:
 
 Texto:
 
-> Dime. ?Tienes perro o gato?
+> Dime. Tienes perro o gato
 
 Acciones:
 
 - `Perro`
 - `Gato`
 
-#### Step 2 - respuesta segun eleccion
+#### Step 2 - respuesta segn eleccion
 
 ```tsx
 if (choice === "perro") {
@@ -202,7 +202,7 @@ function DemoDialog() {
 
     if (step === 1) {
       return {
-        text: "Dime. ?Tienes perro o gato?",
+        text: "Dime. Tienes perro o gato",
         actions: [
           { label: "Perro", next: 2, value: "perro" },
           { label: "Gato", next: 2, value: "gato" },
@@ -213,7 +213,7 @@ function DemoDialog() {
     if (step === 2) {
       const text =
         choice === "perro"
-          ? "Perro... ruidosos, pero aceptables."
+           "Perro... ruidosos, pero aceptables."
           : "Gato. Excelente decision.";
 
       return {
@@ -239,11 +239,11 @@ function DemoDialog() {
 | Pagina | Tipo de conversacion |
 | --- | --- |
 | `login` | onboarding ligero |
-| `demo` | conversacion guiada A / B obligatoria |
-| `inicio` | orientacion rapida |
+| `demo` | conversacion guada A / B obligatoria |
+| `inicio` | orientacin rpida |
 
 ### Login
-Puede abrir automaticamente.
+Puede abrir automticamente.
 La musica activa mientras el dialogo vive.
 El texto aparece typed.
 El gato puede dormir o despertar.
@@ -254,7 +254,7 @@ Cuando el flujo de prueba se abre en login, hoy la experiencia visible sigue est
 
 1. `Modo prueba`
 2. `Personaliza tu demo`
-3. `Te mostraremos Kittypau con tus datos para una sesion de prueba.`
+3. `Te mostraremos Kittypau con tus datos para una sesin de prueba.`
 4. Boton `Cerrar`
 5. Campos:
    - `Tu nombre`
@@ -280,10 +280,10 @@ Mantiene exactamente la misma UI.
 ### Inicio
 Bienvenida.
 Orientacion.
-Acciones rapidas.
+Acciones rpidas.
 Mismo componente, mismas reglas.
 
-## 11. Flujo de interaccion estandar
+## 11. Flujo de interaccin estandar
 
 1. La pagina activa el dialogo.
 2. El texto se renderiza en `trial-rpg-line`.
@@ -306,7 +306,7 @@ Solo cambia la fuente del texto.
 ### Objetivo
 El cuadro actua como interfaz estable:
 
-- hoy puede usar estado guiado;
+- hoy puede usar estado guado;
 - luego puede usar Hugging Face;
 - siempre conserva la misma caja, tono y estructura.
 
@@ -329,8 +329,8 @@ Si un cambio afecta al gato o al dialogo:
 El usuario siente que:
 
 - el gato le habla;
-- el gato reacciona a lo que elige;
-- el gato guia el recorrido;
+- el gato reaccina a lo que elige;
+- el gato gua el recorrido;
 - la app tiene personalidad real.
 
 Sin IA al inicio.
@@ -348,9 +348,9 @@ El gato que aparece en `login`, `demo` e `inicio` debe hablar solo de:
 
 - el funcionamiento real de KittyPau para el usuario;
 - lo que la mascota necesita;
-- las soluciones y acciones que la app puede ofrecer;
+- las soluciones y accines que la app puede ofrecer;
 - lo que se ve en la interfaz;
-- la orientacion para avanzar dentro del flujo.
+- la orientacin para avanzar dentro del flujo.
 
 El gato de cliente no debe salir a explicar arquitectura interna, estrategia de producto, estructura administrativa o decisiones del proyecto completo.
 
@@ -374,7 +374,7 @@ Cuando el usuario este en la experiencia del gato visible:
 
 - responde desde el rol de asistente de producto para mascotas;
 - enfocate en problemas concretos del cliente;
-- da soluciones y orientacion sobre la mascota y la app;
+- da soluciones y orientacin sobre la mascota y la app;
 - no mezcles la vista cliente con la vista admin.
 
 ## 16. Documentos complementarios
@@ -388,7 +388,7 @@ Cuando el usuario este en la experiencia del gato visible:
 - [chatbot/CHATBOT_GATO_BLOQUES_INICIO.md\](CHATBOT_GATO_BLOQUES_INICIO.md) - bloques visuales reales de inicio.
 - [chatbot/CHATBOT_GATO_PROMPTS_INICIO.md\](CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque visual de inicio.
 - [chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md\](CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato en la experiencia.
-- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot.
+- [chatbot/CHATBOT_GATO_STATE_MACHINE.md\](CHATBOT_GATO_STATE_MACHINE.md) - maquna de estados del chatbot.
 - [chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md\](CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
 - [chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md\](PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso para construir el chatbot.
 - [POPUP_REGISTRO_SPEC.md\](../POPUP_REGISTRO_SPEC.md) - flujo del registro y su modal principal.

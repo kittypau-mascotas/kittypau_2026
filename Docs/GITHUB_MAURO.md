@@ -37,7 +37,7 @@ Actualizar en cada jornada y en cada PR relevante.
 - Rama: feat/mauro-curcuma
 - Objetivo: Estructurar flujo colaborativo Mauro/Javo y base de integracion IoT.
 - Cambios realizados:
-  - Creacion de ramas personales remotas.
+  - Creacion de rams personales remotas.
   - Integracion inicial de artefactos IoT/Firmware de Javier en ruta segura.
   - Creacion de docs de onboarding y flujo oficial de GitHub.
 - Archivos principales:
@@ -45,7 +45,7 @@ Actualizar en cada jornada y en cada PR relevante.
   - Docs/ONBOARDING_JAVIER.md
   - Docs/INTEGRACION_JAVIER_IOT.md
 - PR/Commit: Pendiente de consolidacion en PR.
-- Pruebas ejecutadas: Verificacion de ramas y referencias documentales.
+- Pruebas ejecutadas: Verificacion de rams y referencias documentales.
 - Riesgos/Pendientes:
   - Consolidar merge mensual controlado hacia `main`.
   - Mantener bitacora actualizada por cada PR.
@@ -85,7 +85,7 @@ Actualizar en cada jornada y en cada PR relevante.
   - Merge de `origin/feat/javo-mauro` (sin cambios adicionales).
   - Merge de `origin/feat/mauro-curcuma` (guardrails y docs integradas).
   - Publicación de rama test en remoto.
-  - Verificación de retorno a ramas `feat/javo-mauro` y `feat/mauro-curcuma`.
+  - Verificación de retorno a rams `feat/javo-mauro` y `feat/mauro-curcuma`.
 - Archivos principales:
   - `Docs/REGISTRO_PRUEBA_FUSION_MAIN_JAVO_MAURO_2026-03-02.md`
   - `Docs/AVANCE_PUSHES_GITHUB.md`
@@ -94,7 +94,7 @@ Actualizar en cada jornada y en cada PR relevante.
   - Rama remota: `origin/test/fusion-main-javo-mauro-2026-03-02`
 - Pruebas ejecutadas:
   - Simulación de merge conjunta en rama de test: OK
-  - Retorno a ramas personales: OK
+  - Retorno a rams personales: OK
 - Riesgos/Pendientes:
   - Repetir prueba cuando Javo tenga cambios nuevos sobre `feat/javo-mauro`.
 
@@ -104,7 +104,7 @@ Actualizar en cada jornada y en cada PR relevante.
 - Cambios realizados:
   - Merge de origin/main en feat/mauro-curcuma (incluye UI today/nav y toolkit dev).
   - Soporte operativo para destrabar PR #14 de Javo (seguimiento de checks y CI).
-  - Registro documental consolidado en avance maestro y bitacoras.
+  - Registro documental consolidado en avance maestro y bitcoras.
 - Archivos principales:
   - Docs/AVANCE_PUSHES_GITHUB.md
   - Docs/GITHUB_MAURO.md

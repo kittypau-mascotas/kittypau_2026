@@ -1,41 +1,25 @@
 # Docs de Kittypau
 
-Esta carpeta es la entrada principal a toda la documentacion del proyecto.
+Esta carpeta es la puerta de entrada a la documentacin viva del proyecto.
 
 ## Leer primero
-1. [`INDEX.md`](INDEX.md) - mapa completo de la documentacion.
-2. [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado del proyecto.
-3. [`FUENTE_DE_VERDAD.md`](FUENTE_DE_VERDAD.md) - reglas canonicas de activos, legacy, tablas y flujos.
-4. [`PLAN_MAESTRO.md`](PLAN_MAESTRO.md) - guia maestra viva de producto, arquitectura y estrategia.
-5. [`PLAN_MEJORA_PRIORIZADO.md`](PLAN_MEJORA_PRIORIZADO.md) - siguiente paso real y ordenado.
-6. [`FONDOS_RASTREADOS_ACTUALES.md`](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de postulaciones y fondos.
-7. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para la base de datos.
-8. [`CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md`](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - guia del chatbot del gato con CLI y backend IA.
-9. [`chatbot/README.md`](chatbot/README.md) - indice canonico del chatbot.
-10. [`chatbot/CHATBOT_GATO_KITTYPAU.md`](chatbot/CHATBOT_GATO_KITTYPAU.md) - documento maestro del chatbot del gato.
-11. [`chatbot/CHATBOT_ADMIN_KITTYPAU.md`](chatbot/CHATBOT_ADMIN_KITTYPAU.md) - documento maestro del chatbot de admin.
-12. [`chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md`](chatbot/PLAN_CHATBOT_GATO_KITTYPAU.md) - plan paso a paso para construir el chatbot.
-13. [`chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md`](chatbot/PLAN_CHATBOT_ADMIN_KITTYPAU.md) - plan paso a paso para construir el chatbot de admin.
-14. [`chatbot/CHATBOT_GATO_STATE_MACHINE.md`](chatbot/CHATBOT_GATO_STATE_MACHINE.md) - maquina de estados del chatbot.
-15. [`chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md`](chatbot/CHATBOT_GATO_CONTEXTO_DEMO.md) - contexto semantico de la demo.
-16. [`chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md`](chatbot/CHATBOT_GATO_CONTEXTO_REAL_KITTYPAU.md) - contexto real y total del producto para el gato.
-17. [`chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md`](chatbot/CHATBOT_GATO_PERSONALIDAD_CANONICA.md) - personalidad canonica, ejemplos y reglas duras.
-18. [`chatbot/CHATBOT_GATO_BLOQUES_DEMO.md`](chatbot/CHATBOT_GATO_BLOQUES_DEMO.md) - tabla operativa de bloques visibles en la demo.
-19. [`chatbot/CHATBOT_GATO_PROMPTS_DEMO.md`](chatbot/CHATBOT_GATO_PROMPTS_DEMO.md) - prompts concretos por bloque visual de la demo.
-20. [`chatbot/CHATBOT_GATO_BLOQUES_INICIO.md`](chatbot/CHATBOT_GATO_BLOQUES_INICIO.md) - tabla operativa de bloques visibles en inicio.
-21. [`chatbot/CHATBOT_GATO_PROMPTS_INICIO.md`](chatbot/CHATBOT_GATO_PROMPTS_INICIO.md) - prompts concretos por bloque visual de inicio.
-22. [`chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md`](chatbot/CHATBOT_GATO_FLUJO_REAL_KITTYPAU.md) - flujo real y futuro del gato en la experiencia.
-23. [`investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`](investigacion/AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) - auditoria canonica del CSV de peso sin tara aplicada.
-24. [`investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql`](investigacion/SQL_VALIDACION_KPCL0036_TARE_FILL.sql) - consulta canonica de validacion tare/plato/llenado.
-25. [`investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql`](investigacion/SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql) - export canonico del experimento compartido de ambos KPCL con salida separada por device.
-26. [`investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md`](investigacion/AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md) - auditoria canonica del CSV de la prueba sin cargador de ambos KPCL y de los hitos por device.
-27. [`investigacion/README.md`](investigacion/README.md) - indice de la carpeta de pruebas KPCL con exports por device y graficos separados.
+1. [`INDEX.md`](INDEX.md) - mapa general de carpetas, documentos activos y piezas historicas.
+2. [`ESTADO_PROYECTO_ACTUAL.md`](ESTADO_PROYECTO_ACTUAL.md) - foto viva del estado actual del producto.
+3. [`FUENTE_DE_VERDAD.md`](FUENTE_DE_VERDAD.md) - reglas canonicas de activos, flujos y referencias.
+4. [`PLAN_MAESTRO.md`](PLAN_MAESTRO.md) - documento maestro de producto, arquitectura y estrategia.
+5. [`PLAN_MEJORA_PRIORIZADO.md`](PLAN_MEJORA_PRIORIZADO.md) - siguente paso ordenado del proyecto.
+6. [`FONDOS_RASTREADOS_ACTUALES.md`](FONDOS_RASTREADOS_ACTUALES.md) - radar vivo de fondos y postulaciones.
+7. [`Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md`](Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md) - sistema maestro para coordinar fondos 2026.
+8. [`SQL_MAESTRO.md`](SQL_MAESTRO.md) - orden sugerido para base de datos y SQL.
+9. [`CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md`](CLI_ORQUESTACION_HF_SUPABASE_VERCEL.md) - gua de orquestacion tecnica del chatbot y backend IA.
+10. [`chatbot/README.md`](chatbot/README.md) - archivo unico de entrada para la documentacin del chatbot.
+11. [`investigacion/README.md`](investigacion/README.md) - indice vivo de pruebas KPCL y auditorias tecnicas.
 
 ## Capas de lectura
 - Producto y arquitectura: `PLAN_MAESTRO.md`, `ARQUITECTURA_PROYECTO.md`, `DOC_MAESTRO_DOMINIO.md`
 - Operacion y calidad: `ESTADO_PROYECTO_ACTUAL.md`, `ESTADO_AVANCE.md` (historico), `PRUEBAS_E2E.md`, `GUIA_DECISION.md`
 - Empresa y finanzas: `FINANZAS/README.md`, `FINANZAS/COMPROBANTES/README.md`, `FONDOS_RASTREADOS_ACTUALES.md`
-- Empresa y postulaciones: `TAREAS_PENDIENTES_ACTUALES.md`, `Postulaciones Fondos/2026/README.md`
+- Empresa y postulaciones: `TAREAS_PENDIENTES_ACTUALES.md`, `Postulaciones Fondos/2026/README.md`, `Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md`
 - Backlog operativo vivo: `TAREAS_PENDIENTES_ACTUALES.md`
 - Base de datos y bridge: `SQL_MAESTRO.md`, `SQL_SCHEMA.sql`, `RASPBERRY_BRIDGE.md`
 - Postulaciones 2026: `Postulaciones Fondos/2026/README.md`
@@ -43,7 +27,15 @@ Esta carpeta es la entrada principal a toda la documentacion del proyecto.
 
 ## Regla de uso
 - Si un doc compite con otro, primero identifica cual es la pieza viva.
-- Si un doc ya quedo consolidado, debe apuntar al vivo y no repetir bloque completo.
+- Si un doc ya qued consolidado, debe apuntar al vivo y no repetir el contenido completo.
 - Si haces una busqueda nueva, empieza por `INDEX.md` o por el README del subpaquete correspondiente.
 
-
+## Guardrail de encoding
+- El repo ya tiene un chequeo activo contra mojibake y archivos no UTF-8.
+- Script canonico: `scripts/check_encoding.py`
+- Validacion local rapida:
+  - `python scripts/check_encoding.py`
+  - `npm --prefix kittypau_app run encoding-check`
+- Validacion automatica:
+  - `.husky/pre-commit` corre el check antes de `lint-staged`
+  - `.github/workflows/pr-quality.yml` falla la PR si vuelve a entrar mojibake

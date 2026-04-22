@@ -1,4 +1,4 @@
-# Archive
+# Archivo Historico (Solo Referencia)
 
 Esta carpeta agrupa documentos historicos que ya no son la fuente canonica del proyecto.
 

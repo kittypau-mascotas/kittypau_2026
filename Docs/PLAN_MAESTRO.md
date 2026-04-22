@@ -3,10 +3,10 @@
 Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 
 ## Como leer este documento
-- Si quieres contexto estrategico y de producto, empieza aqui.
+- Si quieres contexto estrategico y de producto, empieza aqu.
 - Si necesitas la foto viva del proyecto, lee [ESTADO_PROYECTO_ACTUAL.md](ESTADO_PROYECTO_ACTUAL.md).
 - Si necesitas la fuente oficial de nombres, carpetas y tablas, lee [FUENTE_DE_VERDAD.md](FUENTE_DE_VERDAD.md).
-- Si buscas el detalle de implementacion o SQL, sigue los enlaces de secciones mas abajo.
+- Si buscas el detalle de implementacion o SQL, sigue los enlaces de secciones ms abajo.
 
 ## 1) Vision y estado actual
 - Objetivo MVP: usuario se registra, agrega mascota, registra dispositivo y ve datos en vivo desde la app web.
@@ -59,8 +59,8 @@ Guia maestra viva para orientar el trabajo del ecosistema Kittypau.
 - Bateria y sesiones: [BATERIA_ESTIMADA_KPCL.md](BATERIA_ESTIMADA_KPCL.md).
 
 ## 8) Documento legado consolidado
-- El antiguo [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md) quedo como puntero historico.
-- Su contenido util ya vive aqui y en la arquitectura, DB y docs de operacion.
+- El antiguo [PLAN_PROYECTO_KITTYPAU.md](PLAN_PROYECTO_KITTYPAU.md) qued como puntero historico.
+- Su contenido til ya vive aqu y en la arquitectura, DB y docs de operacin.
 
 ## 9) Regla de coherencia
 - Si algo entra en conflicto con la fuente de verdad o con este plan maestro, primero actualiza la fuente y luego replica el cambio en los docs dependientes.

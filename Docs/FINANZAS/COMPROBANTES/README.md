@@ -1,4 +1,4 @@
-# Comprobantes financieros
+# Comprobantes Financieros - Registro Operativo
 
 Carpeta canonica para guardar respaldos de:
 - transferencias
@@ -9,7 +9,7 @@ Carpeta canonica para guardar respaldos de:
 
 ## Estructura sugerida
 - `adjuntos/` - imagenes o PDFs del comprobante.
-- `registros/` - notas Markdown con el resumen del movimiento.
+- `*.md` en esta carpeta - notas Markdown con el resumen del movimiento.
 
 ## Convencion de nombres
 - `YYYY-MM-DD_transferencia_destinatario_monto`

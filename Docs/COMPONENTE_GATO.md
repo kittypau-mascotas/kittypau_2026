@@ -1,9 +1,9 @@
-﻿# Componente "Gato" (Kittypau) - Detalle Extremo
+# Componente "Gato" (Kittypau) - Detalle Extremo
 
 Este documento describe el gato estilo cartoon usado en el login (y su variante del cuadro de dialogo tipo RPG) con detalle de:
 - estructura HTML/DOM,
 - CSS (variables, selectores, estados, animaciones),
-- logica JS/TS (interacciones, seguimiento del mouse, timers),
+- lgica JS/TS (interaccines, seguimiento del mouse, timers),
 - SVG (partes, IDs, grupos, colores y como se "re-skinea").
 
 ## Archivos fuente (canon)
@@ -27,7 +27,7 @@ El comportamiento se arma asi:
 - Estado "despierto": el wrapper agrega clase `.is-awake`. Esa clase:
   - oculta los parpados,
   - muestra `#eyesdown` (ojos abiertos),
-  - habilita el movimiento sutil de pupila y brillo usando CSS vars `--cat-eye-x` / `--cat-eye-y`.
+  - habilita el movimiento stil de pupila y brillo usando CSS vars `--cat-eye-x` / `--cat-eye-y`.
 - El seguimiento del mouse se hace en TS, escuchando `pointermove` y calculando un offset clamped. Luego se inyecta como inline style:
   - `style={{ "--cat-eye-x": "...px", "--cat-eye-y": "...px" }}`
 - "Respiracion" (mientras duerme): se anima el cuerpo (`svg`) + barriga (`#path5`) + cabeza (`#head`) + cola (`#tail` y `#longtail`) con keyframes de baja amplitud.
@@ -36,7 +36,7 @@ El comportamiento se arma asi:
 
 Esta seccion documenta las medidas "reales" que usamos hoy en CSS/TS. Hay 3 niveles:
 - Geometria del SVG (coordenadas internas por `viewBox`)
-- TamaÃƒÂ±os renderizados del wrapper (pixeles en el layout)
+- Tamaos renderizados del wrapper (pixeles en el layout)
 - Offsets animados (respiracion, ojos) y sus rangos
 
 ### 1) Geometria del SVG (interno)
@@ -52,15 +52,15 @@ Relaciones:
 - Alto interno: `35.678726`
 - Aspect ratio: `alto/ancho = 0.7764308692`
 
-Traduccion aproximada a pixeles (segun ancho CSS del wrapper):
+Traduccion aproximada a pixeles (segn ancho CSS del wrapper):
 - Si `width: 78px` => alto aproximado `78px * 0.7764 = 60.56px`
 - Si `width: 74px` => alto aproximado `57.46px`
 - Si `width: 72px` => alto aproximado `55.90px`
 
 Nota:
-- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamaÃƒÂ±o final lo domina el contenedor en px.
+- El SVG declara dimensiones en `mm` (`width="45.952225mm"`), pero en el DOM lo mandamos a `width: 100%` y el tamao final lo domina el contenedor en px.
 
-### 2) Medidas del gato en Login (sobre el card de iniciar sesion)
+### 2) Medidas del gato en Login (sobre el card de iniciar sesin)
 
 Fuente: `globals.css` (bloque `.kp-trial-cat` + `.login-panel-cat`).
 
@@ -100,7 +100,7 @@ Caja del gato dentro del dialogo:
 - Selector: `.trial-rpg-cat`
   - `flex: 0 0 74px` (base width)
   - `margin-top: 14px` (baja el gato para tocar su sombra)
-  - `margin-right: -2px` (pequeÃƒÂ±o solape hacia el borde)
+  - `margin-right: -2px` (pequeo solape hacia el borde)
   - `position: relative`
 
 SVG wrapper (RPG):
@@ -152,8 +152,8 @@ Rangos actuales (demo dialog):
 - `y = clamp(dy/68 - 0.1, -0.74, 0.44)` => `[-0.74px, 0.44px]`
 
 Nota importante:
-- Los valores son intencionalmente pequenos (< 1px) para que el movimiento sea "sutil".
-- Si quieres que el movimiento se note mas SIN romper el ojo, el camino seguro es multiplicar por ~1.4 en CSS:
+- Los valores son intencionalmente pequenos (< 1px) para que el movimiento sea "stil".
+- Si quieres que el movimiento se note ms SIN romper el ojo, el camino seguro es multiplicar por ~1.4 en CSS:
   - `translate: calc(var(--cat-eye-x) * 1.4) calc(var(--cat-eye-y) * 1.4);`
 
 ### 6) Rangos de movimiento (respiracion)
@@ -164,7 +164,7 @@ La respiracion se hace en CSS y afecta 4 piezas:
 - `#head` (cabeza)
 - `#tail`/`#longtail` (cola)
 
-Las amplitudes son de 1 a 3px max (segun keyframes):
+Las amplitudes son de 1 a 3px max (segn keyframes):
 - cuerpo: sube ~2.2px y escala ~1.01 (pico)
 - panza: escala/translate local (muy leve)
 - cabeza: micro oscilacion (para "vida")
@@ -174,19 +174,19 @@ Las amplitudes son de 1 a 3px max (segun keyframes):
 
 1. Medir la caja del wrapper:
 ```js
-document.querySelector(".kp-trial-cat .thecat")?.getBoundingClientRect()
+document.querySelector(".kp-trial-cat .thecat").getBoundingClientRect()
 ```
 
 2. Medir caja del SVG (render):
 ```js
-document.querySelector(".kp-trial-cat .thecat svg")?.getBoundingClientRect()
+document.querySelector(".kp-trial-cat .thecat svg").getBoundingClientRect()
 ```
 
 3. Medir geometria interna (SVG):
 ```js
 const svg = document.querySelector(".kp-trial-cat .thecat svg");
-svg?.viewBox?.baseVal; // {x,y,width,height}
-svg?.getBBox();        // bounding box del contenido
+svg.viewBox.baseVal; // {x,y,width,height}
+svg.getBBox();        // bounding box del contenido
 ```
 
 ## Paleta/variables (CSS)
@@ -224,7 +224,7 @@ Estructura (simplificada, pero real):
 
 ```tsx
 <div
-  className={`kp-trial-cat login-panel-cat mouse-detector ...${isTrialCatAwake ? " is-awake" : ""}`}
+  className={`kp-trial-cat login-panel-cat mouse-detector ...${isTrialCatAwake  " is-awake" : ""}`}
   ref={trialCatRef}
   onMouseEnter={wakeTrialCat}
   onMouseLeave={sleepTrialCat}
@@ -255,7 +255,7 @@ Clases clave:
 
 ## HTML/DOM: gato del cuadro RPG (login y demo)
 
-En login, cuando se abre Demo App, existe un segundo gato dentro del dialogo RPG:
+En login, cuando se abre Demo App, existe un segndo gato dentro del dialogo RPG:
 - usa la misma clase base `kp-trial-cat`,
 - se monta como `trial-rpg-cat kp-trial-cat ...`,
 - se controla con `isDialogCatAwake` + `dialogCatEyeOffset`.
@@ -283,9 +283,9 @@ Partes principales (IDs):
   - `#tail` (cola corta / modo base)
   - `#longtail` (cola larga / usada como variante; en este proyecto se mantiene oculta para evitar recortes)
 
-Ojos (capas logicas):
+Ojos (capas lgicas):
 - Ojos cerrados: grupos `#lefteyelid`, `#righteyelid`
-  - Dentro hay `ellipse` (parpado) + `path` (linea del ojo); el `path` trae `stroke:#ffffff` en el SVG original y se fuerza a negro via CSS.
+  - Dentro hay `ellipse` (parpado) + `path` (lnea del ojo); el `path` trae `stroke:#ffffff` en el SVG original y se fuerza a negro via CSS.
 - Ojos abiertos: grupo `#eyesdown`
   - `ellipse` 1 y 4: base/iris (se fuerza a dorado)
   - `ellipse` 2 y 5: pupilas (se fuerza a negro)
@@ -300,7 +300,7 @@ En [cat_awake_copy.svg](../kittypau_app/public/illustrations/cat_awake_copy.svg)
 
 Implicancia:
 - Los estilos que dependen de IDs semanticos (`#head`, `#paw-front-right`, etc.) NO aplican a este archivo.
-- Aun asi, el skin funciona porque `globals.css` tiene reglas estructurales (por ejemplo: `.kp-trial-cat .thecat svg > g > path { fill: var(--fur-dark) }`).
+- An asi, el skin funciona porque `globals.css` tiene reglas estructurales (por ejemplo: `.kp-trial-cat .thecat svg > g > path { fill: var(--fur-dark) }`).
 
 Recomendacion si queremos consistencia total:
 - Migrar `cat_awake_copy.svg` al mismo set de IDs semanticos que `trialCatSvg`, o
@@ -397,7 +397,7 @@ Notas:
 - Solo pupila y brillo se mueven; el iris queda fijo para que no "se salga" del ojo.
 - `translate` (no `transform`) simplifica el override por elemento y evita afectar respiracion del `svg` completo.
 
-## CSS: bigotes y linea del ojo cerrado
+## CSS: bigotes y lnea del ojo cerrado
 
 Bigotes:
 - Se fuerzan negros con selectores estructurales sobre los primeros `<g>` del SVG:
@@ -409,7 +409,7 @@ Bigotes:
 ```
 
 Linea del ojo cerrado:
-- El SVG trae lineas con `stroke:#ffffff` (por herencia del arte original).
+- El SVG trae lneas con `stroke:#ffffff` (por herencia del arte original).
 - Se reemplaza a negro:
 ```css
 .kp-trial-cat .thecat svg > g > g:nth-of-type(3) path[style*="stroke:#ffffff"],
@@ -431,7 +431,7 @@ Si se quiere "respira solo dormido", se puede condicionar con `.kp-trial-cat:not
 
 ## TS/JS (React): estados y eventos
 
-Nota: no hay "Java". La logica es TypeScript dentro de componentes React.
+Nota: no hay "Java". La lgica es TypeScript dentro de componentes React.
 
 ### 1) Estados del gato (login)
 En `../kittypau_app/src/app/(public)/login/page.tsx`:
@@ -466,11 +466,11 @@ Estados equivalentes:
 - `dialogCatEyeOffset`
 - `trialDialogCatRef`
 
-El tracking es el mismo patron: `pointermove` + clamp + setState.
+El tracking es el mismo patrn: `pointermove` + clamp + setState.
 
 ### 4) Gato del cuadro RPG en `/demo`
 En `../kittypau_app/src/app/(public)/demo/page.tsx`:
-- `isGuideCatAwake`: el gato se mantiene despierto siguiendo el mouse, pero "duerme 1s" aleatoriamente
+- `isGuideCatAwake`: el gato se mantiene despierto siguendo el mouse, pero "duerme 1s" aleatoriamente
 - Timers:
   - cada ~`5200..8800ms` se duerme (`setIsGuideCatAwake(false)`)
   - luego de `1000ms` vuelve a `true`
@@ -505,13 +505,13 @@ El dialogo RPG debe editarse siempre con la misma estructura para no romper la e
 - una sola geometria base para login, demo e inicio
 - altura y ancho fijos en CSS
 - el texto nunca debe modificar el alto del cuadro
-- el espacio de acciones debe reservarse aunque no haya botones visibles
+- el espacio de accines debe reservarse aunque no haya botones visibles
 - no agregar barras, cursores o animaciones que alteren el tamano del cuadro
 
 Reglas de edicion:
 1. Si el texto cambia, solo cambia el contenido, no el contenedor.
 2. Si una pagina necesita texto distinto, debe pasarlo al mismo componente.
-3. Si un caso necesita acciones distintas, debe usar el slot `actions`.
+3. Si un caso necesita accines distintas, debe usar el slot `actions`.
 4. Si el cuadro no aparece en `/demo`, revisar primero el estado de apertura en la pagina, no crear otro componente paralelo.
 
 Checklist rapido antes de tocar el cuadro:
@@ -545,7 +545,7 @@ Hoy el gato vive como:
 - SVG string dentro de `login/page.tsx`
 - CSS en `globals.css`
 
-Si queremos ordenarlo, el siguiente refactor "limpio" seria:
+Si queremos ordenarlo, el siguente refactor "limpio" seria:
 1. mover el SVG a `kittypau_app/src/app/_assets/cat_sleeping.svg.ts` (export string)
 2. crear componente `kittypau_app/src/app/_components/cat-sleepy.tsx`
 3. dejar en `globals.css` solo variables/animaciones, y el resto en un css module del componente
@@ -553,7 +553,7 @@ Si queremos ordenarlo, el siguiente refactor "limpio" seria:
 ## Estado del demo
 
 - `/demo` debe abrir el mismo `TrialRpgDialog` aunque el usuario entre directo a la ruta.
-- Si no existe una sesion demo previa, la pagina debe autosembrar valores por defecto y mostrar el cuadro.
+- Si no existe una sesin demo previa, la pagina debe autosembrar valores por defecto y mostrar el cuadro.
 - `kittypau_demo_show_rpg` ya no es la unica llave de apertura; sirve como marcador historico, pero el dialogo debe aparecer igual.
 - Si el cuadro no aparece, el primer paso de debug es revisar `isGuideVisible` y el montaje del componente, no crear otra variante.
 

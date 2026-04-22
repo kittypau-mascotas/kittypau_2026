@@ -2,16 +2,16 @@
 
 ## Objetivo
 Tener un MVP funcional donde el usuario:
-1. Se registra e inicia sesi�n.
+1. Se registra e inicia sesión.
 2. Agrega una mascota.
 3. Registra un dispositivo (plato comida/agua).
 4. Ve datos en vivo desde la app web.
 
-Documentaci�n can�nica relacionada:
+Documentación canónica relacionada:
 - Fuente de verdad del ecosistema: `Docs/FUENTE_DE_VERDAD.md`
-- Arquitectura de datos/anal�tica/ML archivada: `archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
-- Inventario r�pido de variables por capa archivado: `archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md`
-- Transformaciones anal�ticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
+- Arquitectura de datos/analítica/ML archivada: `archive/analitica/KittyPau_Arquitectura_Datos_v3.md`
+- Inventario rápido de variables por capa archivado: `archive/analitica/CAPAS_DATOS_ANALITICA_ML_IA.md`
+- Transformaciones analíticas (`log10` + FFT): `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
 ---
 
@@ -20,8 +20,8 @@ Documentaci�n can�nica relacionada:
 2. **DB/Auth/Realtime**: Supabase.
 3. **MQTT**: HiveMQ Cloud.
 4. **Bridge 24/7**: Raspberry Pi Zero 2 W (MQTT -> API).
-   - El código fuente vive en el repo (`/bridge`).
-   - El runtime real está fuera del repo (Raspberry).
+   - El c?digo fuente vive en el repo (`/bridge`).
+   - El runtime real est? fuera del repo (Raspberry).
 
 ---
 
@@ -38,25 +38,25 @@ ESP32 -> HiveMQ -> Raspberry Bridge -> /api/mqtt/webhook -> Supabase (DB)
 
 ---
 
-## Regla de conexion (importante)
+## Regla de conexin (importante)
 - **La app web NO se conecta a HiveMQ**.
-- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenvía a Vercel.
+- **La Raspberry (bridge) SI se conecta a HiveMQ** y reenv?a a Vercel.
 - **La app web solo consume Supabase** (Auth + DB + Realtime).
 
 Esto evita exponer credenciales MQTT en frontend y mantiene el flujo seguro.
 
 ---
 
-## Flujo de datos (telemetr�a)
+## Flujo de datos (telemetría)
 1. ESP32 publica MQTT en HiveMQ.
-2. Raspberry Bridge escucha MQTT y reenv�a a Vercel.
-3. API valida el token y guarda lectura en Supabase.
+2. Raspberry Bridge escucha MQTT y reenvía a Vercel.
+3. API vlida el token y guarda lectura en Supabase.
 4. Supabase Realtime actualiza el dashboard.
 
-### Transformaciones anal�ticas (recomendado)
-- En ingesta server-side (despu�s de validar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
-- Persistencia `raw + transformado`: es **recomendaci�n**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
-- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio anal�tico (batch o microservicio).
+### Transformaciones analíticas (recomendado)
+- En ingesta server-side (después de vlidar y antes de persistir): aplicar `log10(x + 1)` a variables skewed (ej. `weight_grams`, `water_ml`, intervalos).
+- Persistencia `raw + transformado`: es **recomendación**, pero depende del schema (hoy `public.readings` no incluye `*_log` en `Docs/SQL_SCHEMA.sql`).
+- Fourier/FFT **no va** en el bridge/webhook: va en un worker/servicio analítico (batch o microservicio).
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
@@ -99,26 +99,26 @@ ESP32 -> HiveMQ Cloud
   /src
     /app
       /(app)
-        /layout.tsx          ? wrappea con AppDataProvider
+        /layout.tsx           wrappea con AppDataProvider
         /_components
-          /app-nav.tsx       ? consume useAppData(), sin fetches propios
+          /app-nav.tsx        consume useAppData(), sin fetches propios
         /today /bowl /pet /story /settings
       /api
         /profiles /pets /devices /account /readings
-                             ? runtime="edge" + Cache-Control en GETs
+                              runtime="edge" + Cache-Control en GETs
     /lib
-      /auth                  ? token.ts, auth-fetch.ts
+      /auth                   token.ts, auth-fetch.ts
       /charts
-        /index.tsx           ? ChartJS.register + buildSeries<T> + ChartCard (shared)
+        /index.tsx            ChartJS.register + buildSeries<T> + ChartCard (shared)
       /context
-        /app-context.tsx     ? AppDataProvider + useAppData()
-      /supabase              ? browser.ts, server.ts
+        /app-context.tsx      AppDataProvider + useAppData()
+      /supabase               browser.ts, server.ts
       /ui
     /components
   /scripts
   /public
-    /illustrations           ? pink_food_full.png, green_water_full.png, etc.
-    /audio                   ? sonido_marca.mp3, comer_*.mp3
+    /illustrations            pink_food_full.png, green_water_full.png, etc.
+    /audio                    sonido_marca.mp3, comer_*.mp3
 ```
 
 ---
@@ -175,7 +175,7 @@ ESP32 -> HiveMQ Cloud
 ```
 **Notas**
 - La API acepta `device_id` (KPCL) o `deviceId` (camelCase) y opcional `device_uuid` (UUID).
-- El `device_id` es el código humano (KPCLxxxx) y se busca en `devices`.
+- El `device_id` es el c?digo humano (KPCLxxxx) y se busca en `devices`.
 
 **Response**
 ```json
@@ -228,7 +228,7 @@ ESP32 -> HiveMQ Cloud
 
 ---
 
-### 6) `GET /api/readings?device_uuid=uuid` (uuid = devices.id)
+### 6) `GET /api/readingsdevice_uuid=uuid` (uuid = devices.id)
 **Response**
 ```json
 [
@@ -281,12 +281,12 @@ El deploy incluye:
 
 
 
-## Marco AIoT / PetTech (Alineacion 2026)
+## Marco AIoT / PetTech (Alneacion 2026)
 
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del analisis corre en dispositivo.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
@@ -315,17 +315,17 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 - Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratacion por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
 2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
 3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacion e hidratacion de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
 - **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
@@ -333,9 +333,9 @@ Esto posiciona a Kittypau no como "solo hardware", sino como:
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rapida de estado real (alimentacion, hidratacion, ambiente, bateria).
+2. Las decisiones visuales deben reforzar lectura rpida de estado real (alimentacin, hidratacin, ambiente, batera).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansion de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 
 

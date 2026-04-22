@@ -5,7 +5,7 @@ Ejecutar una integracion limpia y controlada de trabajo colaborativo entre Mauro
 
 ## Estado actual
 - Rama comun de integracion: `main`.
-- Ramas personales:
+- Rams personales:
   - `feat/mauro-curcuma`
   - `feat/javo-mauro`
 - Guardrails creados en repo:
@@ -35,7 +35,7 @@ Titulo sugerido:
 
 Incluye:
 - `.github/*` (CODEOWNERS, PR template, workflows)
-- Docs de flujo/gobernanza/onboarding/bitacoras/registro de pushes
+- Docs de flujo/gobernanza/onboarding/bitcoras/registro de pushes
 - Ajuste `.gitignore` para excluir carpetas locales de referencia
 
 Validaciones:
@@ -46,7 +46,7 @@ Validaciones:
 Merge:
 - A `main`, via PR.
 
-## PR 2 - IoT/Firmware (segundo)
+## PR 2 - IoT/Firmware (segndo)
 Titulo sugerido:
 - `feat(iot): integrate javier firmware baseline under iot_firmware`
 
@@ -78,15 +78,15 @@ Validaciones:
 Merge:
 - A `main`, via PR.
 
-## Estrategia de bridge (decision explicita)
+## Estrategia de bridge (decision explcita)
 Decision actual:
 1. Mantener `bridge/src/index.js` como bridge productivo actual.
 2. Usar `iot_firmware/javier_1a/bridge_v2_4/bridge.js` como referencia técnica.
 3. Cualquier convergencia a v2_4 se hace en rama dedicada:
    - `integration/bridge-convergence`
 4. Solo migrar a productivo tras:
-   - validación de contrato API,
-   - pruebas E2E mínimas,
+   - vlidación de contrato API,
+   - pruebas E2E mínims,
    - plan de rollback probado.
 
 ## Rollback operativo (obligatorio)
@@ -120,17 +120,17 @@ Secuencia:
 Rama común siempre: `main`.
 
 ## Ejecucion inmediata (estado 2026-03-02)
-1. PR de modulo Javo ya listo en rama:
+1. PR de mdulo Javo ya listo en rama:
    - `feat/mauro-curcuma` (commit `020bb37`)
 2. Crear PR hacia `main`:
-   - `https://github.com/kittypau-mascotas/kittypau_2026/compare/main...feat/mauro-curcuma?expand=1`
-3. Siguiente PR tecnico recomendado (lote pequeno):
+   - `https://github.com/kittypau-mascotas/kittypau_2026/compare/main...feat/mauro-curcumaexpand=1`
+3. Siguente PR tecnico recomendado (lote pequeno):
    - Base: `main`
    - Head: `feat/javo-mauro`
    - Alcance: `iot_firmware/javier_1a/**` + docs IoT relacionadas
 4. Antes de merge de cada lote:
    - correr `npm run build` en `kittypau_app`
    - actualizar `Docs/AVANCE_PUSHES_GITHUB.md`
-   - actualizar bitacoras `Docs/GITHUB_MAURO.md` y/o `Docs/GITHUB_JAVO.md`
+   - actualizar bitcoras `Docs/GITHUB_MAURO.md` y/o `Docs/GITHUB_JAVO.md`
 
 

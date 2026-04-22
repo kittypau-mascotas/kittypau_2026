@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 
-function isNativeCapacitorApp() {
+function isNativeCapacitorApp(): boolean {
   if (typeof window === "undefined") return false;
   const cap = (window as Window & { Capacitor?: unknown }).Capacitor as
     | {
@@ -16,20 +15,25 @@ function isNativeCapacitorApp() {
     return cap.isNativePlatform();
   }
   if (typeof cap.getPlatform === "function") {
-    return cap.getPlatform() !== "web";
+    const platform = cap.getPlatform();
+    return platform === "android" || platform === "ios";
   }
   return false;
 }
 
 export default function NativeApkMode() {
   useEffect(() => {
-    const nativeMode = isNativeCapacitorApp() || isNativeFlavorEnabled();
-    if (!nativeMode) return;
-    document.documentElement.classList.add("kp-native-apk");
-    document.documentElement.classList.add("kp-flavor-native");
-    document.documentElement.setAttribute("data-app-flavor", "native");
-    document.body.classList.add("kp-native-apk");
-    document.body.classList.add("app-flavor-native");
+    const isNative = isNativeCapacitorApp();
+    if (!isNative) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.classList.add("kp-native-apk");
+    root.classList.add("kp-flavor-native");
+    root.setAttribute("data-app-flavor", "native");
+    body.classList.add("kp-native-apk");
+    body.classList.add("app-flavor-native");
   }, []);
 
   return null;

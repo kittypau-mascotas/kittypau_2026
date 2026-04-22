@@ -1,7 +1,7 @@
 ﻿# Test inmediato DB/API (Auth -> Pets -> Device -> Webhook -> Readings)
 # Requiere: PowerShell 5+ y variables debajo definidas.
 
-# === Configuracion ===
+# === Configuracin ===
 $supabaseUrl = "https://zgwqtzazvkjkfocxnxsh.supabase.co"
 $anonKey = $env:SUPABASE_ANON_KEY
 $apiBase = "https://kittypau-app.vercel.app"
@@ -22,7 +22,7 @@ if (-not $petIdB) { throw "Falta PET_ID en entorno." }
 
 # === Auth ===
 $tokenB = (Invoke-RestMethod -Method Post `
-  -Uri "$supabaseUrl/auth/v1/token?grant_type=password" `
+  -Uri "$supabaseUrl/auth/v1/tokengrant_type=password" `
   -Headers @{ apikey=$anonKey; "Content-Type"="application/json" } `
   -Body "{`"email`":`"$emailB`",`"password`":`"$passwordB`"}"
 ).access_token
@@ -79,12 +79,12 @@ Write-Host "POST /api/mqtt/webhook drift OK"
 
 # === Readings ===
 Invoke-RestMethod -Method Get `
-  -Uri "$apiBase/api/readings?device_id=$($device.id)&limit=200" `
+  -Uri "$apiBase/api/readingsdevice_id=$($device.id)&limit=200" `
   -Headers @{Authorization="Bearer $tokenB"} | Out-Null
 
 # === Verificar clock_invalid ===
 $latestReadings = Invoke-RestMethod -Method Get `
-  -Uri "$apiBase/api/readings?device_id=$($device.id)&limit=200" `
+  -Uri "$apiBase/api/readingsdevice_id=$($device.id)&limit=200" `
   -Headers @{Authorization="Bearer $tokenB"}
 
 $clockInvalid = $false
@@ -105,7 +105,7 @@ Write-Host "GET /api/readings OK"
 if ($clockInvalid) {
   Write-Host "clock_invalid OK"
 } else {
-  Write-Host "clock_invalid no encontrado (toma mas lecturas o valida en DB)"
+  Write-Host "clock_invalid no encontrado (toma ms lecturas o vlida en DB)"
   if ($items) {
     $items | Select-Object -First 3 id, recorded_at, ingested_at, clock_invalid | Format-Table | Out-String | Write-Host
   }

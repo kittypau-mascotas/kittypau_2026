@@ -2,7 +2,7 @@
 
 ## Objetivo
 Usar la Raspberry Pi Zero 2 W como puente 24/7 entre HiveMQ y la API en Vercel.
-Esta documentación integra la construcción IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
+Esta documentaciÃ³n integra la construcciÃ³n IoT actual (MQTT/HiveMQ) y deja preparado el flujo para cambios futuros sin romper el contrato hacia la API.
 
 ---
 
@@ -14,9 +14,9 @@ Esta documentación integra la construcción IoT actual (MQTT/HiveMQ) y deja prepa
 
 **No hace**
 - No consulta datos (no hace `GET`).
-- No almacena datos finales (solo reenvía).
+- No almacena datos finales (solo reenvÃ­a).
 - No reemplaza la API ni la DB.
-- No se conecta directamente a Supabase en producción (el backend en Vercel es el unico que escribe en DB).
+- No se conecta directamente a Supabase en producciÃ³n (el backend en Vercel es el unico que escribe en DB).
 
 ---
 
@@ -52,9 +52,9 @@ HEARTBEAT_INTERVAL_SEC=30
 **Regla**: `WEBHOOK_TOKEN` debe ser igual a `MQTT_WEBHOOK_SECRET` en Vercel.
 **Regla**: `BRIDGE_HEARTBEAT_TOKEN` debe ser igual a `BRIDGE_HEARTBEAT_SECRET` en Vercel.
 
-**Nota**: si el firmware publica en otro patron (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
+**Nota**: si el firmware publica en otro patrn (ej. `kittypau/+/telemetry`), ajustar `MQTT_TOPIC` en el bridge.
 
-**Nota de seguridad**: las credenciales reales (WiFi, HiveMQ, Supabase) se guardan en `.env` local del bridge y no se documentan aqui.
+**Nota de seguridad**: las credenciales reales (WiFi, HiveMQ, Supabase) se guardan en `.env` local del bridge y no se documentan aqu.
 
 ---
 
@@ -88,21 +88,21 @@ HEARTBEAT_TOKEN=<TU_BRIDGE_TOKEN>
 
 ### 4) Reglas de no exposicion
 - Nunca versionar `.env` ni claves.
-- No copiar credenciales en documentación.
+- No copiar credenciales en documentaciÃ³n.
 - Si se comparte el repo, usar placeholders.
 
 ### 5) Rotacion y cambios
 - Cambiar credenciales HiveMQ y `WEBHOOK_TOKEN` si se sospecha fuga.
 - Al rotar, actualizar `.env` en la Pi y variables en Vercel.
 
-### 6) Validaciones mínimas en runtime
+### 6) Validaciones mÃ­nimas en runtime
 - Verificar que envs existan al iniciar (fail fast).
-- Loggear error claro si falta alguna variable.
+- Loggear error claro si falta algna variable.
 
 ---
 
-## Checklist de conexion (cuando haya acceso a la Raspberry)
-Este bloque sirve para validar que la Raspberry esta operativa como bridge.
+## Checklist de conexin (cuando haya acceso a la Raspberry)
+Este bloque sirve para vlidar que la Raspberry esta operativa como bridge.
 
 ### 1) Conectividad basica
 ```bash
@@ -172,7 +172,7 @@ Headers:
 Notas:
 - `device_id` es obligatorio. Si el payload del IoT no lo trae, el Bridge debe inferirlo del topic y agregarlo.
 - `timestamp` es opcional. Si no se envia, la API usa hora actual.
-- La API acepta `device_id`/`deviceId` (KPCL) y opcional `device_uuid` (UUID). Recomendación oficial: enviar `device_id`.
+- La API acepta `device_id`/`deviceId` (KPCL) y opcional `device_uuid` (UUID). RecomendaciÃ³n oficial: enviar `device_id`.
 
 **Validaciones de rango (API)**
 - `temperature`: -10 a 60
@@ -185,10 +185,10 @@ Notas:
 
 ---
 
-## Transformaciones analíticas (log10 + Fourier) - criterio operativo
-- `log10(x + 1)` es un paso de **ingestión**: se aplica server-side **después de validar** (ej. Zod) y **antes de persistir** en DB, para reducir skew/outliers sin eliminar eventos.
-- Guardar **raw + transformado** (ej. `weight_grams` + `weight_grams_log`, `water_ml` + `water_ml_log`) para mantener trazabilidad y estabilidad analítica.
-- Fourier/FFT **no** se ejecuta en el Bridge: va en un worker/servicio analítico (batch) sobre series temporales por mascota.
+## Transformaciones analÃ­ticas (log10 + Fourier) - criterio operativo
+- `log10(x + 1)` es un paso de **ingestiÃ³n**: se aplica server-side **despuÃ©s de vlidar** (ej. Zod) y **antes de persistir** en DB, para reducir skew/outliers sin eliminar eventos.
+- Guardar **raw + transformado** (ej. `weight_grams` + `weight_grams_log`, `water_ml` + `water_ml_log`) para mantener trazabilidad y estabilidad analÃ­tica.
+- Fourier/FFT **no** se ejecuta en el Bridge: va en un worker/servicio analÃ­tico (batch) sobre series temporales por mascota.
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
@@ -259,7 +259,7 @@ Body:
 
 **Health check (read)**
 ```
-GET /api/bridge/health-check?bridge_id=raspi-kitty-01
+GET /api/bridge/health-checkbridge_id=raspi-kitty-01
 Headers:
   x-bridge-token: <BRIDGE_HEARTBEAT_TOKEN>
 ```
@@ -272,7 +272,7 @@ Headers:
 - Recomendado: 3 intentos (1s, 3s, 7s) y luego log + alerta.
 - Errores 4xx (payload/credenciales): **no reintentar**.
 
-### 3.3) Logs minimos (formato sugerido)
+### 3.3) Logs mnimos (formato sugerido)
 - `mqtt_connected`, `mqtt_disconnected`
 - `webhook_ok` (status, latency_ms)
 - `webhook_retry` (attempt, status)
@@ -281,7 +281,7 @@ Headers:
 ### 4) Supabase (relacion indirecta)
 - El bridge **no** escribe en Supabase directamente.
 - Toda escritura pasa por `/api/mqtt/webhook`.
-- Esto permite mantener RLS/validaciones centralizadas.
+- Esto permite mantener RLS/vlidaciones centralizadas.
 
 ### 5) Observabilidad minima
 - Logs para: conecto MQTT, recibio mensaje, envio webhook, respuesta.
@@ -317,8 +317,8 @@ Headers:
 
 ---
 
-## Prueba end-to-end (sin dispositivo físico)
-> Usa MQTT CLI para simular el dispositivo y validar el flujo completo.
+## Prueba end-to-end (sin dispositivo fÃ­sico)
+> Usa MQTT CLI para simular el dispositivo y vlidar el flujo completo.
 
 ### 1) Publicar mensaje en HiveMQ
 Ejemplo (TLS/8883):
@@ -331,7 +331,7 @@ mqtt pub \
 ```
 Esperado:
 - El bridge recibe el mensaje.
-- El bridge envía `POST` a `/api/mqtt/webhook`.
+- El bridge envÃ­a `POST` a `/api/mqtt/webhook`.
 
 ### 2) Verificar en Vercel
 ```bash
@@ -377,7 +377,7 @@ Logs:
 journalctl -u kittypau-bridge -f
 ```
 
-### 3) Validación rápida (operativa)
+### 3) ValidaciÃ³n rÃ¡pida (operativa)
 - Debe verse `MQTT connected` y `Subscribed to: ...`
 - Debe verse `Heartbeat ok` cada ~`HEARTBEAT_INTERVAL_SEC`
 - En Supabase:
@@ -386,7 +386,7 @@ journalctl -u kittypau-bridge -f
 
 ---
 
-## Pruebas de funcionamiento (mínimas)
+## Pruebas de funcionamiento (mÃ­nimas)
 1. Enviar mensaje MQTT desde un simulador.
 2. Ver log de POST exitoso.
 3. Ver nueva fila en `readings`.

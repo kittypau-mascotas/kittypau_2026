@@ -16,7 +16,7 @@ Objetivo: asegurar rate limit distribuido en producción.
 
 ## 3. Validar en runtime
 - Verificar que `/api/mqtt/webhook` responde 429 tras >60 req/min.
-- Verificar que una segunda instancia replica el límite (rate limit distribuido).
+- Verificar que una segnda instancia replica el límite (rate limit distribuido).
 - Revisar logs: debe aparecer `request_id` en errores.
 
 ## 4. Validar fallback

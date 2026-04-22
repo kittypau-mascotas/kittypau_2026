@@ -1,5 +1,13 @@
 # APK Android Studio (Kittypau)
 
+## Current local state
+- Local web server: `http://localhost:3000`
+- App project: `kittypau_app`
+- Android emulator used: `Pixel_7`
+- ADB target: `emulator-5554`
+- Current debug APK:
+  `kittypau_app/android/app/build/outputs/apk/debug/app-debug.apk`
+
 ## Objective
 Generate a Kittypau APK that uses real data from `https://kittypau-app.vercel.app` without exposing server secrets inside the mobile app.
 
@@ -12,6 +20,11 @@ Generate a Kittypau APK that uses real data from `https://kittypau-app.vercel.ap
 - `kittypau_app/capacitor.config.ts` reads `CAPACITOR_SERVER_URL`.
   - Default: `https://app.kittypau-app.vercel.app` (frontend exclusivo APK).
   - Web publica se mantiene en `https://kittypau-app.vercel.app`.
+- Auth persistence:
+  - Supabase browser client uses `persistSession: true`.
+  - Token refresh is enabled with `autoRefreshToken: true`.
+  - The app should keep the session open on the same device until the user explicitly uses `Cerrar sesin`.
+  - Root `/` and `/login` now resolve authenticated users back to `/today` (or `/admin` if applicable) instead of forcing a new login.
 - Android hardening:
   - `android:allowBackup="false"`
   - `android:usesCleartextTraffic="false"`
@@ -42,8 +55,8 @@ Generate a Kittypau APK that uses real data from `https://kittypau-app.vercel.ap
 
 Quick checks:
 ```powershell
-"C:\Program Files\Android\Android Studio\bin\studio64.exe" --version
-"C:\Users\Usuario\AppData\Local\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools\adb.exe" --version
+"C:\Program Files\Android\Android Studio\bin\studio64.exe" --versin
+"C:\Users\Usuario\AppData\Local\Microsoft\WinGet\Packages\Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe\platform-tools\adb.exe" --versin
 ```
 
 ## Build flow (this repo)
@@ -68,7 +81,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 - Release APK (unsigned):  
   `kittypau_app/android/app/build/outputs/apk/release/app-release-unsigned.apk`
 
-## Current Android version
+## Current Android versin
 - `versionCode`: `3`
 - `versionName`: `1.2.0`
 
@@ -85,9 +98,10 @@ Use Android Studio:
 
 ## Validate real-data behavior
 1. Login works with real Kittypau account.
-2. `today` view loads real readings.
-3. `pet`, `bowl`, and `story` load linked device data.
-4. If API fails, check Vercel env vars and Supabase status.
+2. Reopening the APK on the same device should keep the session active.
+3. `today` view loads real readings.
+4. `pet`, `bowl`, and `story` load linked device data.
+5. If API fails, check Vercel env vars and Supabase status.
 
 ## UI notes for APK native distribution (2026-03-09)
 - Mobile login in native flavor (`kp-native-apk` / `kp-flavor-native`) is tuned to:
@@ -97,6 +111,24 @@ Use Android Studio:
 - `/today` native mobile is tuned to:
   - compact hero summary cards and period selector,
   - reduce metric typography inside bowl cards for better first-screen fit.
+
+## Latest APK-only login adjustments
+- Parallax removed for APK runtime.
+- Hero column hidden (`login-hero-column`).
+- Auth column expanded to full width.
+- Login panel cat hidden (`kp-trial-cat.login-panel-cat`).
+- Login inputs reduced to `44px`.
+- Submit button adjusted to `46px`.
+
+Files touched for this APK-only tuning:
+- `kittypau_app/src/app/_components/native-apk-mode.tsx`
+- `kittypau_app/src/app/globals.css`
+- `Docs/android-emulator-setup.md`
+
+Visual tokens currently used:
+- Primary: `hsl(12 62% 79%)`
+- Background: `hsl(25 70% 98%)`
+- Radius: `18px`
 
 ## Latest production deployment
 - Main URL: `https://kittypau-app.vercel.app`

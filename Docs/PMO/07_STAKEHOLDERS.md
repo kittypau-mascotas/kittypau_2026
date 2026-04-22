@@ -15,11 +15,11 @@
 | 4 — Alto | Aprueba o bloquea entregables | Seguimiento continuo |
 | 5 — Muy alto | Control total o veto | Comprometido profundamente |
 
-**Estrategia segun cuadrante**:
-- Poder alto / Interes alto → **Gestionar activamente**
-- Poder alto / Interes bajo → **Mantener satisfecho**
-- Poder bajo / Interes alto → **Mantener informado**
-- Poder bajo / Interes bajo → **Monitorear**
+**Estrategia segn cuadrante**:
+- Poder alto / Interes alto -> **Gestionar activamente**
+- Poder alto / Interes bajo -> **Mantener satisfecho**
+- Poder bajo / Interes alto -> **Mantener informado**
+- Poder bajo / Interes bajo -> **Monitorear**
 
 ---
 
@@ -38,7 +38,7 @@
 | Expectativas | Excelencia tecnica, arquitectura solida, firmware confiable en campo |
 | Preocupaciones | Tiempo limitado (part-time), deuda tecnica acumulada |
 | Influencia | Toma decision final sobre stack IoT, firmware y hardware |
-| Estrategia | Sincronizacion semanal, documentacion continua compartida |
+| Estrategia | Sincronizacion semanal, documentacin continua compartida |
 
 ---
 
@@ -52,7 +52,7 @@
 | Interes | 5 |
 | Cuadrante | Gestionar activamente |
 | Contacto | Por definir |
-| Expectativas | App robusta, buen UX, modelo de negocio validado, fondos adjudicados |
+| Expectativas | App robusta, buen UX, modelo de negocio vlidado, fondos adjudicados |
 | Preocupaciones | Deuda tecnica en frontend, lint errors, tiempo para desarrollar features premium |
 | Influencia | Toma decision final sobre producto, UX y estrategia comercial |
 | Estrategia | Co-revision de PRs, roadmap compartido, reuniones de priorizacion |
@@ -70,7 +70,7 @@
 | Cuadrante | Mantener satisfecho |
 | Contacto | corfo.cl / Ejecutivos regionales |
 | Expectativas | Proyecto innovador con potencial de mercado, equipo ejecutable, presupuesto justificado |
-| Preocupaciones | Riesgo de ejecucion, falta de empresa formal, mercado no validado |
+| Preocupaciones | Riesgo de ejecucion, falta de empresa formal, mercado no vlidado |
 | Indicadores que valora | Prototipo funcional, potencial de empleo, impacto economico regional |
 | Estrategia | Dossier completo + evidencia tecnica (fotos, datos, TRL). Usar lenguaje de impacto social. |
 
@@ -88,7 +88,7 @@
 | Contacto | anid.cl |
 | Expectativas | Base tecnico-cientifica solida, empresa constituida, equipo de 3+ personas dedicado |
 | Preocupaciones | Falta de empresa, equipo part-time, sin publicaciones academicas |
-| Indicadores que valora | Innovacion tecnologica, metodologia rigurosa, impacto cientifico potencial |
+| Indicadores que valora | Innovacion tecnolgica, metodologia rigurosa, impacto cientifico potencial |
 | Estrategia | Preparar 6+ meses antes. Priorizar constitucion empresa y ampliar equipo. |
 | Condicion bloqueante | Empresa constituida (actualmente no existe) |
 
@@ -104,9 +104,9 @@
 | Interes | 2 |
 | Cuadrante | Mantener satisfecho |
 | Contacto | startupchile.org |
-| Expectativas | Traccion demostrada, potencial global, equipo con ejecucion |
+| Expectativas | Traccin demostrada, potencial global, equipo con ejecucion |
 | Indicadores que valora | Usuarios activos, revenue (si existe), potencial de escala regional |
-| Condicion bloqueante | Empresa constituida, traccion real (piloto completado) |
+| Condicion bloqueante | Empresa constituida, traccin real (piloto completado) |
 | Estrategia | Postular con datos del piloto (Fase 2). Preparar pitch en ingles. |
 
 ---
@@ -120,7 +120,7 @@
 | Interes | 5 |
 | Cuadrante | Gestionar activamente |
 | Numero objetivo | 10 usuarios en Fase 2 |
-| Expectativas | Producto facil de instalar, datos utiles, no que interrumpa rutina del animal |
+| Expectativas | Producto facil de instalar, datos tiles, no que interrumpa rutina del animal |
 | Preocupaciones | Privacidad, complejidad de instalacion, precio |
 | Lo que necesitan del equipo | Onboarding asistido, soporte rapido, feedback loop visible |
 | Estrategia | Contacto directo y personal. Entrevistas pre-piloto. Iteracion semanal. |
@@ -150,7 +150,7 @@
 | Interes | 1 |
 | Cuadrante | Monitorear |
 | Riesgo principal | Alza de precios, stock agotado, tiempos de envio internacionales (3-6 semanas) |
-| Estrategia | Mantener stock minimo de componentes criticos (20 unidades). Identificar proveedor alternativo para cada componente critico. |
+| Estrategia | Mantener stock mnimo de componentes criticos (20 unidades). Identificar proveedor alternativo para cada componente critico. |
 
 ---
 
@@ -221,6 +221,6 @@ Monitorear:            S08, S10
 ---
 
 _Referencias: PMBOK 6ta Ed. Cap. 13 (Gestion de Interesados) | PMBOK 7ma Ed. Dominio de Stakeholders_
-_Documento anterior: [06_RISK_REGISTER.md](06_RISK_REGISTER.md) | Siguiente: [08_QUALITY_PLAN.md](08_QUALITY_PLAN.md)_
+_Documento anterior: [06_RISK_REGISTER.md](06_RISK_REGISTER.md) | Siguente: [08_QUALITY_PLAN.md](08_QUALITY_PLAN.md)_
 
 

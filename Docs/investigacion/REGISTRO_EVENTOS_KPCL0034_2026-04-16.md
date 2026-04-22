@@ -8,7 +8,7 @@ Este documento deja trazabilidad de todo el proceso aplicado sobre `KPCL0034` pa
 - Fuente de escritura: `public.audit_events` con `event_type = manual_bowl_category`.
 - Lote manual consolidado: `49` eventos unicos.
 - Ajuste posterior aplicado: inicio de comida cambiado de `2026-04-12 11:50:06` a `2026-04-12 11:45:43`.
-- Regla de visualizacion en grafico: markers por `evento` para evitar ruido por lecturas masivas.
+- Regla de visualizacion en grafico: markers por `evento` para evitar ruido por lecturas msivas.
 
 ## Proceso realizado (end-to-end)
 
@@ -20,13 +20,13 @@ Este documento deja trazabilidad de todo el proceso aplicado sobre `KPCL0034` pa
 5. Se limpio la duplicidad residual del primer intento de carga.
 6. Se verifico que el lote quedara asociado solo a `KPCL0034` (no `KPCL0036`).
 7. Se aplico correccion de horario solicitada:
-   - `inicio_alimentacion` de `2026-04-12 11:50:06` -> `2026-04-12 11:45:43`.
+   - `inicio_alimentacin` de `2026-04-12 11:50:06` -> `2026-04-12 11:45:43`.
 8. Se refresco dataset historico para consumo de scripts/graficos.
 
 ## Mapeo de categorias usado
 
-- `inicio comida` -> `inicio_alimentacion`
-- `termino comida` -> `termino_alimentacion`
+- `inicio comida` -> `inicio_alimentacin`
+- `termino comida` -> `termino_alimentacin`
 - `inicio servido` -> `inicio_servido`
 - `termino servido` -> `termino_servido`
 
@@ -38,57 +38,57 @@ Formato: `timestamp UTC -> categoria`
 2026-04-08 03:18:43 -> inicio_servido
 2026-04-08 03:19:13 -> termino_servido
 
-2026-04-11 00:14:24 -> inicio_alimentacion
-2026-04-11 00:15:54 -> termino_alimentacion
-2026-04-11 12:49:38 -> inicio_alimentacion
-2026-04-11 12:53:58 -> termino_alimentacion
-2026-04-11 18:02:30 -> inicio_alimentacion
-2026-04-11 18:08:00 -> termino_alimentacion
-2026-04-11 21:48:31 -> inicio_alimentacion
-2026-04-11 21:53:31 -> termino_alimentacion
+2026-04-11 00:14:24 -> inicio_alimentacin
+2026-04-11 00:15:54 -> termino_alimentacin
+2026-04-11 12:49:38 -> inicio_alimentacin
+2026-04-11 12:53:58 -> termino_alimentacin
+2026-04-11 18:02:30 -> inicio_alimentacin
+2026-04-11 18:08:00 -> termino_alimentacin
+2026-04-11 21:48:31 -> inicio_alimentacin
+2026-04-11 21:53:31 -> termino_alimentacin
 
-2026-04-12 01:35:09 -> inicio_alimentacion
-2026-04-12 01:38:41 -> termino_alimentacion
-2026-04-12 04:05:40 -> inicio_alimentacion
-2026-04-12 04:10:41 -> termino_alimentacion
-2026-04-12 11:45:43 -> inicio_alimentacion
-2026-04-12 11:55:36 -> termino_alimentacion
-2026-04-12 14:24:38 -> termino_alimentacion
-2026-04-12 21:27:10 -> inicio_alimentacion
-2026-04-12 21:31:10 -> termino_alimentacion
-2026-04-12 21:52:40 -> inicio_alimentacion
-2026-04-12 21:56:40 -> termino_alimentacion
+2026-04-12 01:35:09 -> inicio_alimentacin
+2026-04-12 01:38:41 -> termino_alimentacin
+2026-04-12 04:05:40 -> inicio_alimentacin
+2026-04-12 04:10:41 -> termino_alimentacin
+2026-04-12 11:45:43 -> inicio_alimentacin
+2026-04-12 11:55:36 -> termino_alimentacin
+2026-04-12 14:24:38 -> termino_alimentacin
+2026-04-12 21:27:10 -> inicio_alimentacin
+2026-04-12 21:31:10 -> termino_alimentacin
+2026-04-12 21:52:40 -> inicio_alimentacin
+2026-04-12 21:56:40 -> termino_alimentacin
 
-2026-04-13 10:22:47 -> inicio_alimentacion
-2026-04-13 10:28:47 -> termino_alimentacion
+2026-04-13 10:22:47 -> inicio_alimentacin
+2026-04-13 10:28:47 -> termino_alimentacin
 2026-04-13 12:21:17 -> inicio_servido
-2026-04-13 13:27:18 -> inicio_alimentacion
-2026-04-13 13:31:48 -> termino_alimentacion
-2026-04-13 19:05:27 -> inicio_alimentacion
-2026-04-13 19:12:59 -> termino_alimentacion
+2026-04-13 13:27:18 -> inicio_alimentacin
+2026-04-13 13:31:48 -> termino_alimentacin
+2026-04-13 19:05:27 -> inicio_alimentacin
+2026-04-13 19:12:59 -> termino_alimentacin
 
-2026-04-14 00:05:59 -> inicio_alimentacion
-2026-04-14 00:09:59 -> termino_alimentacion
-2026-04-14 06:26:52 -> inicio_alimentacion
-2026-04-14 06:32:12 -> termino_alimentacion
-2026-04-14 11:52:43 -> inicio_alimentacion
-2026-04-14 11:57:44 -> termino_alimentacion
+2026-04-14 00:05:59 -> inicio_alimentacin
+2026-04-14 00:09:59 -> termino_alimentacin
+2026-04-14 06:26:52 -> inicio_alimentacin
+2026-04-14 06:32:12 -> termino_alimentacin
+2026-04-14 11:52:43 -> inicio_alimentacin
+2026-04-14 11:57:44 -> termino_alimentacin
 2026-04-14 12:07:43 -> inicio_servido
 2026-04-14 12:08:14 -> termino_servido
 2026-04-14 12:25:17 -> termino_servido
-2026-04-14 17:15:15 -> inicio_alimentacion
-2026-04-14 17:18:15 -> termino_alimentacion
-2026-04-14 21:44:47 -> inicio_alimentacion
-2026-04-14 21:50:47 -> termino_alimentacion
+2026-04-14 17:15:15 -> inicio_alimentacin
+2026-04-14 17:18:15 -> termino_alimentacin
+2026-04-14 21:44:47 -> inicio_alimentacin
+2026-04-14 21:50:47 -> termino_alimentacin
 
-2026-04-15 00:49:28 -> inicio_alimentacion
-2026-04-15 00:53:28 -> termino_alimentacion
-2026-04-15 10:45:39 -> inicio_alimentacion
-2026-04-15 10:49:09 -> termino_alimentacion
-2026-04-15 13:58:10 -> inicio_alimentacion
-2026-04-15 14:01:40 -> termino_alimentacion
-2026-04-15 21:27:44 -> inicio_alimentacion
-2026-04-15 21:31:44 -> termino_alimentacion
+2026-04-15 00:49:28 -> inicio_alimentacin
+2026-04-15 00:53:28 -> termino_alimentacin
+2026-04-15 10:45:39 -> inicio_alimentacin
+2026-04-15 10:49:09 -> termino_alimentacin
+2026-04-15 13:58:10 -> inicio_alimentacin
+2026-04-15 14:01:40 -> termino_alimentacin
+2026-04-15 21:27:44 -> inicio_alimentacin
+2026-04-15 21:31:44 -> termino_alimentacin
 ```
 
 ## Notas de consistencia

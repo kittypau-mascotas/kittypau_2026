@@ -65,7 +65,13 @@ async function getSupabaseSessionToken(): Promise<string | null> {
 
   try {
     const { data, error } = await supabase.auth.getSession();
-    if (error || !data.session?.access_token) return null;
+    if (error) {
+      if (isInvalidRefreshTokenError(error)) {
+        resetBrokenAuthState();
+      }
+      return null;
+    }
+    if (!data.session?.access_token) return null;
 
     setTokens({
       accessToken: data.session.access_token,
@@ -87,7 +93,13 @@ export async function getSupabaseSessionSafely() {
 
   try {
     const { data, error } = await supabase.auth.getSession();
-    if (error || !data.session) return null;
+    if (error) {
+      if (isInvalidRefreshTokenError(error)) {
+        resetBrokenAuthState();
+      }
+      return null;
+    }
+    if (!data.session) return null;
     return data.session;
   } catch (error) {
     if (isInvalidRefreshTokenError(error)) {
@@ -134,7 +146,13 @@ async function refreshWithSupabase(refreshToken: string) {
       refresh_token: refreshToken,
     });
 
-    if (error || !data.session?.access_token) return null;
+    if (error) {
+      if (isInvalidRefreshTokenError(error)) {
+        resetBrokenAuthState();
+      }
+      return null;
+    }
+    if (!data.session?.access_token) return null;
 
     setTokens({
       accessToken: data.session.access_token,
@@ -170,6 +188,29 @@ export async function forceRefreshAccessToken(): Promise<string | null> {
   return await getSupabaseSessionToken();
 }
 
+export async function resolveAuthenticatedPath(): Promise<string | null> {
+  const token = await getValidAccessToken();
+  if (!token) return null;
+
+  try {
+    const response = await fetch("/api/account/type", {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+
+    if (response.ok) {
+      const payload = await response.json().catch(() => null);
+      if (payload?.account_type === "admin") {
+        return "/admin";
+      }
+    }
+  } catch {
+    // Fallback to the main authenticated route below.
+  }
+
+  return "/today";
+}
+
 export async function signOutSession() {
   const supabase = getSupabaseBrowser();
   try {
@@ -177,6 +218,6 @@ export async function signOutSession() {
       await supabase.auth.signOut();
     }
   } finally {
-    clearTokens();
+    resetBrokenAuthState();
   }
 }

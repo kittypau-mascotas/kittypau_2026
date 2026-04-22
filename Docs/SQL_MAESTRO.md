@@ -8,7 +8,7 @@
 - [SQL_SCHEMA.sql](SQL_SCHEMA.sql) — Schema oficial completo (ejecutar primero en Supabase)
 - [GUIA_SQL_SUPABASE.md](GUIA_SQL_SUPABASE.md) — Cómo ejecutar el schema en Supabase
 
-## Paso 2 — Schemas adicionales
+## Paso 2 — Schems adicionales
 - [SQL_FINANZAS_KITTYPAU.sql](SQL_FINANZAS_KITTYPAU.sql) — Tablas de finanzas
 - [SQL_STORAGE_POLICIES_kittypau_photos.sql](SQL_STORAGE_POLICIES_kittypau_photos.sql) — Políticas de Storage
 
@@ -23,7 +23,7 @@
 - [RASPBERRY_INTEGRATION_PLAN.md](RASPBERRY_INTEGRATION_PLAN.md) — Columnas y vistas requeridas por el bridge (wifi_status, ip_history, etc.)
 
 ## Paso 5 — Validación y limpieza
-- [SQL_ASSERTS.md](SQL_ASSERTS.md) — Queries de validación del schema
+- [SQL_ASSERTS.md](SQL_ASSERTS.md) — Queries de vlidación del schema
 - [SQL_CHECK_BRIDGE_UNIQUENESS.sql](SQL_CHECK_BRIDGE_UNIQUENESS.sql) — Check de unicidad del bridge
 - [CLEANUP_SQL.sql](CLEANUP_SQL.sql) — Queries de limpieza de datos
 

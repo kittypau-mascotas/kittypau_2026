@@ -10,13 +10,13 @@ Hardware + suscripcion (HaaS).
 
 ## Estrategia de entrada
 - Inicio en segmento urbano digital (Chile).
-- Pilotos controlados para validar uso, retencion y willingness-to-pay.
+- Pilotos controlados para vlidar uso, retencion y willingness-to-pay.
 - Expansion por alianzas con clinicas veterinarias y canal pet especializado.
 
 ## KPIs comerciales sugeridos
 - Activacion de dispositivo.
-- Retencion 30/90 dias.
-- Conversion a premium.
+- Retencion 30/90 das.
+- Conversin a premium.
 - Churn mensual.
 - LTV/CAC.
 

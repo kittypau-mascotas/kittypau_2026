@@ -1,7 +1,7 @@
 # Modelo de Datos, Formulas y Logica IA (Kittypau)
 
 ## 1) Objetivo
-Definir un marco unico para transformar lecturas IoT en informacion util de comportamiento:
+Definir un marco unico para transformar lecturas IoT en informacion til de comportamiento:
 - Cuando empieza una ingesta (comida o agua).
 - Cuando termina.
 - Cuanto dura.
@@ -53,13 +53,13 @@ Para variables altamente skewed (consumo, intervalos, deltas), usar:
 - `x_log = log10(x + 1)`
 
 Regla:
-- Aplicar en ingestión server-side después de validar (ej. Zod) y antes de persistir, guardando raw + transformado.
+- Aplicar en ingestión server-side después de vlidar (ej. Zod) y antes de persistir, guardando raw + transformado.
 
 Fourier/FFT no va en ingestión: se aplica en capa analítica/ML sobre series temporales por mascota.
 
 Referencia: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`
 
-## 3.1 Vinculo explicito con SQL (variables y campos)
+## 3.1 Vinculo explcito con SQL (variables y campos)
 Matriz minima de mapeo:
 
 | Variable analitica | Campo SQL origen | Tabla | Nota |
@@ -87,7 +87,7 @@ Si hay tara:
 - `food_content_i = max(0, w_gross_i - w_plate)`
 
 Si no hay tara:
-- `food_content_i = w_gross_i` (modo degradado con menor precision)
+- `food_content_i = w_gross_i` (modo degradado con menor precisin)
 
 ### 4.2 Hidratacion
 Prioridad 1 (si existe sensor directo):
@@ -96,7 +96,7 @@ Prioridad 1 (si existe sensor directo):
 Prioridad 2 (sin `water_ml`, por peso):
 - `water_content_i = max(0, w_gross_i - w_plate)`
 
-Conversion aproximada:
+Conversin aproximada:
 - `1 g de agua ~ 1 cm3`
 
 ### 4.3 Formula SQL de contenido (referencia)
@@ -248,7 +248,7 @@ HAVING SUM(CASE WHEN delta_content_g < 0 THEN -delta_content_g ELSE 0 END) > 0;
 ### 7.2 Semanal
 - Promedios diarios.
 - Desviacion estandar de horarios de ingesta.
-- Tendencia de consumo (`slope` por regresion lineal simple).
+- Tendencia de consumo (`slope` por regresion lneal simple).
 
 ## 8) Features para IA / Ciencia de datos
 Por dia y por mascota:
@@ -282,9 +282,9 @@ Features de secuencia (modelo temporal):
 ### Fase 3: Modelos temporales
 - Forecast de consumo por hora.
 - Deteccion anticipada de alteraciones.
-- Modelos: Prophet/LSTM/Temporal CNN (segun volumen de datos).
+- Modelos: Prophet/LSTM/Temporal CNN (segn volumen de datos).
 
-## 10) Calidad de datos y validaciones minimas
+## 10) Calidad de datos y vlidaciones minims
 Checks obligatorios:
 - Monotonia temporal por dispositivo.
 - Porcentaje de datos faltantes por variable.
@@ -330,10 +330,10 @@ Para cada punto:
 - mostrar valor actual + "sin evento detectado".
 
 ## 12) Recomendaciones de implementacion
-- Versionar parametros (`min_drop`, `max_gap`, etc.) por mascota.
+- Versionar parmetros (`min_drop`, `max_gap`, etc.) por mascota.
 - Guardar eventos detectados en tabla derivada (`intake_events`).
 - Mantener recalculo batch diario + actualizacion incremental en tiempo real.
-- Registrar trazabilidad: formula aplicada, version de regla/modelo y timestamp.
+- Registrar trazabilidad: formula aplicada, versin de regla/modelo y timestamp.
 
 ## 13) Esquema sugerido de tabla derivada
 Tabla: `intake_events`
@@ -348,7 +348,7 @@ Tabla: `intake_events`
 - `unit` (`g` | `cm3`)
 - `start_content`
 - `end_content`
-- `algorithm_version`
+- `algorithm_versin`
 - `created_at`
 
 DDL de referencia:
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS intake_events (
   unit text NOT NULL CHECK (unit IN ('g','cm3')),
   start_content numeric,
   end_content numeric,
-  algorithm_version text NOT NULL DEFAULT 'v1',
+  algorithm_versin text NOT NULL DEFAULT 'v1',
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ```
@@ -377,10 +377,10 @@ CREATE TABLE IF NOT EXISTS intake_events (
 - El tooltip y vistas resumen explican claramente "que paso y cuando paso".
 
 ## 15) Proximos pasos al tener datos reales
-1. Calibrar parametros por mascota con 2-4 semanas de datos.
+1. Calibrar parmetros por mascota con 2-4 semanas de datos.
 2. Etiquetar casos reales (normal/anomalo) con apoyo experto.
 3. Entrenar baseline ML y comparar contra reglas.
-4. Implementar versionado de features y modelos.
+4. Implementar versinado de features y modelos.
 5. Medir impacto de recomendaciones en salud/habitos.
 
 

@@ -4,7 +4,7 @@
 > Este catalogo cubre los perfiles de hardware del **comedero automatico Kittypau** (KPCL).
 
 ## Objetivo
-Estandarizar la cuantificacion absoluta de cada KPCL para construccion, mantenimiento y operacion.
+Estandarizar la cuantificacion absoluta de cada KPCL para construccion, mantenimiento y operacin.
 
 ## Fuentes base
 - `public.devices` (`device_id`, `device_type`, `device_model`, `last_seen`, `sensor_health`, `wifi_status`)
@@ -12,7 +12,7 @@ Estandarizar la cuantificacion absoluta de cada KPCL para construccion, mantenim
 - compra filamento PLA+ (CLP 16.000 / 1kg con envio)
 - tipo de cambio operativo: `1 USD = 950 CLP`
 
-## Perfiles de hardware — Kittypau
+## Perfiles de hardware â€” Kittypau
 ### A) KPCL Comedero (NodeMCU v3 CP2102)
 Uso tipico: Kittypau sin camara.
 
@@ -20,7 +20,7 @@ Uso tipico: Kittypau sin camara.
 Uso tipico: Kittypau con camara.
 
 ### C) KPCL Generico
-Fallback para unidades Kittypau sin modelo explicitado.
+Fallback para unidades Kittypau sin modelo explcitado.
 
 ## Diccionario base (USD por unidad)
 
@@ -71,7 +71,7 @@ Fallback para unidades Kittypau sin modelo explicitado.
 }
 ```
 
-## Reglas de mapeo — Kittypau
+## Reglas de mapeo â€” Kittypau
 1. Si `device_model` contiene `ESP32-CAM` o `device_type` contiene `cam` -> `esp32-cam`.
 2. Si `device_model` contiene `NodeMCU` o `CP2102` -> `nodemcu-v3`.
 3. Si falta modelo -> `generic-kpcl`.
@@ -132,7 +132,7 @@ Control administrativo:
 - costo operativo mensual por KPCL.
 
 Test recomendado en suite admin:
-- `kpcl_catalog`: valida perfiles, componentes activos y mapeo de hardware.
+- `kpcl_catalog`: vlida perfiles, componentes activos y mapeo de hardware.
 
 
 

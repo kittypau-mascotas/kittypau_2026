@@ -14,7 +14,7 @@ Operar el proyecto en Vercel desde terminal:
 ## 1) Verificar CLI
 Usar por `npx`:
 ```powershell
-npx vercel --version
+npx vercel --versin
 ```
 
 ## 2) Login
@@ -96,7 +96,7 @@ Invoke-RestMethod -Method Post `
   -Body "{`"device_id`":`"KPCL0001`",`"temperature`":23.5,`"humidity`":65,`"weight_grams`":3500,`"battery_level`":85,`"flow_rate`":120}"
 ```
 
-## 8) Problemas comunes
+## 8) Problems comunes
 - `401/403`: permisos o token de cuenta.
 - Proyecto equivocado: relink con `npx vercel link --yes`.
 - Cambio no visible: revisar entorno (`preview` vs `production`).

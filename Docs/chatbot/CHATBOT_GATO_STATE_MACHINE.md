@@ -1,18 +1,18 @@
-﻿# Maquina de estados - Chatbot del gato de Kittypau
+﻿# Maquna de estados - Chatbot del gato de Kittypau
 
 ## Proposito
-Definir el comportamiento conversacional del gato como una maquina de estados guiada.
+Definir el comportamiento conversacional del gato como una maquna de estados guada.
 
 Esta capa describe:
 - que estados existen;
 - que texto muestra cada estado;
-- que acciones permite;
+- que accines permite;
 - que pagina los usa;
 - y como se encadena todo sin romper la UI fija del dialogo.
 
 ## Alcance
 
-La maquina de estados aplica sobre el componente compartido:
+La maquna de estados aplica sobre el componente compartido:
 - `src/chatbot-gato/trial-rpg-dialog.tsx`
 
 Y se integra con estas paginas:
@@ -24,8 +24,8 @@ Y se integra con estas paginas:
 
 El usuario no escribe texto libre en esta capa.
 
-El usuario elige una accion.
-Esa accion cambia el estado.
+El usuario elige una accin.
+Esa accin cambia el estado.
 El estado cambia el texto.
 La geometria del cuadro no cambia.
 
@@ -36,7 +36,7 @@ Mensaje inicial.
 
 Propiedades:
 - texto breve de apertura;
-- una sola accion principal o una accion muy clara;
+- una sola accin principal o una accin muy clara;
 - el gato establece tono.
 
 ### `step = 1`
@@ -51,7 +51,7 @@ Propiedades:
 Respuesta condicionada.
 
 Propiedades:
-- el gato responde segun la eleccion anterior;
+- el gato responde segn la eleccion anterior;
 - puede variar el texto sin cambiar la caja;
 - puede ofrecer una nueva CTA.
 
@@ -60,10 +60,10 @@ Cierre o salida.
 
 Propiedades:
 - CTA final;
-- enlace externo o accion de siguiente paso;
-- fin del recorrido guiado.
+- enlace externo o accin de siguente paso;
+- fin del recorrido guado.
 
-## Estado minimo de UI
+## Estado mnimo de UI
 
 ```tsx
 const [step, setStep] = useState(0);
@@ -78,7 +78,7 @@ Opcionalmente:
 
 ## Flujo canonico de `demo`
 
-La vista `demo` es el caso principal de la maquina de estados.
+La vista `demo` es el caso principal de la maquna de estados.
 
 ### Step 0 - apertura
 Texto ejemplo:
@@ -91,13 +91,13 @@ Accion:
 ### Step 1 - eleccion A / B
 Texto ejemplo:
 
-> Dime. ?Tienes perro o gato?
+> Dime. Tienes perro o gato
 
 Acciones:
 - `Perro`
 - `Gato`
 
-### Step 2 - respuesta segun eleccion
+### Step 2 - respuesta segn eleccion
 
 Si `choice === "perro"`:
 
@@ -136,7 +136,7 @@ Responsable de:
 Responsable de:
 - reforzar tono;
 - dar bienvenida;
-- guiar la demo;
+- guar la demo;
 - mostrar CTA narrativo;
 - cerrar con referencia a Instagram cuando corresponda.
 
@@ -147,18 +147,18 @@ Estados recomendados:
 
 ## Flujo canonico de `inicio`
 
-`inicio` puede usar una version mas corta de la maquina de estados.
+`inicio` puede usar una versin ms corta de la maquna de estados.
 
 Estados recomendados:
 - `inicio_step_0`: bienvenida;
 - `inicio_step_1`: resumen de estado;
-- `inicio_step_2`: accion rapida hacia la vista operativa.
+- `inicio_step_2`: accin rpida hacia la vista operativa.
 
 ## Mapa de transiciones
 
-| Estado | Texto | Acciones | Siguiente |
+| Estado | Texto | Acciones | Siguente |
 | --- | --- | --- | --- |
-| `step 0` | apertura | 1 accion principal | `step 1` |
+| `step 0` | apertura | 1 accin principal | `step 1` |
 | `step 1` | pregunta | A / B | `step 2` |
 | `step 2` | respuesta condicionada | CTA | `step 3` |
 | `step 3` | cierre | salida | fin |
@@ -166,9 +166,9 @@ Estados recomendados:
 ## Reglas de implementacion
 
 1. El texto nunca debe alterar la geometria del cuadro.
-2. Las acciones viven en `trial-rpg-actions`.
+2. Las accines viven en `trial-rpg-actions`.
 3. El mismo componente debe servir para `login`, `demo` e `inicio`.
-4. La maquina de estados debe ser predecible.
+4. La maquna de estados debe ser predecible.
 5. La UI no debe depender de texto libre del usuario.
 6. Si luego llega IA real, la IA solo reemplaza la fuente del texto, no la caja.
 
@@ -182,8 +182,8 @@ Cuando el chatbot se conecte a Hugging Face:
 
 ## Entregable esperado
 
-Al implementar esta maquina de estados, Kittypau tendra:
-- un dialogo guiado y consistente;
+Al implementar esta maquna de estados, Kittypau tendra:
+- un dialogo guado y consistente;
 - respuestas controladas por estado;
 - una base real para IA futura;
 - cero riesgo de romper el layout.
