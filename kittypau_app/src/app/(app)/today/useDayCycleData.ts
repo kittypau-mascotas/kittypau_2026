@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { getChileDayNightWindow } from '@/lib/time/chile';
 
 export interface Session {
   id: string;
@@ -21,18 +22,12 @@ export interface RawReading {
 
 export const useDayCycleData = (readings: RawReading[], auditEvents: any[], offsetDays: number) => {
   return useMemo(() => {
-    // 1. Calcular ventana del ciclo (06:00 a 06:00)
+    // 1. Calcular ventana del ciclo (06:00-06:00 hora Chile Continental)
     const now = new Date();
-    const cycleStart = new Date(now);
-    cycleStart.setHours(6, 0, 0, 0);
-    if (now.getHours() < 6) cycleStart.setDate(cycleStart.getDate() - 1);
-    cycleStart.setDate(cycleStart.getDate() - offsetDays);
-
-    const cycleEnd = new Date(cycleStart);
-    cycleEnd.setDate(cycleEnd.getDate() + 1);
-
-    const startMs = cycleStart.getTime();
-    const endMs = cycleEnd.getTime();
+    const baseWindow = getChileDayNightWindow(now);
+    // Retroceder N días completos para el offset
+    const startMs = baseWindow.startMs - offsetDays * 24 * 60 * 60 * 1000;
+    const endMs = startMs + 24 * 60 * 60 * 1000;
 
     // 2. Filtrar y transformar puntos
     const points = readings
@@ -107,7 +102,7 @@ export const useDayCycleData = (readings: RawReading[], auditEvents: any[], offs
     return {
       points,
       sessions,
-      domain: [cycleStart, cycleEnd] as [Date, Date]
+      domain: [new Date(startMs), new Date(endMs)] as [Date, Date]
     };
   }, [readings, auditEvents, offsetDays]);
 };

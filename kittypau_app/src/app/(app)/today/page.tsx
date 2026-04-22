@@ -17,6 +17,14 @@ import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { buildSeries } from "@/lib/charts";
+import {
+  getChileDayNightWindow,
+  chileCompactDatetime,
+  chileShortTime,
+  chileLongDate,
+  CHILE_TZ,
+  CHILE_LOCALE,
+} from "@/lib/time/chile";
 
 type ApiPet = {
   id: string;
@@ -219,14 +227,7 @@ const defaultState: LoadState = {
 
 function formatTimestamp(value?: string | null) {
   if (!value) return "Sin datos";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Sin datos";
-  return new Intl.DateTimeFormat("es-ES", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return chileCompactDatetime(value);
 }
 
 function getFreshnessLabelByTimestamp(value?: string | null) {
@@ -317,16 +318,7 @@ function parseProfile(payload: unknown): ApiProfile | null {
 }
 
 function getDayNightWindow(now = new Date()) {
-  const start = new Date(now);
-  start.setHours(6, 0, 0, 0);
-  if (now.getTime() < start.getTime()) {
-    start.setDate(start.getDate() - 1);
-  }
-  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-  return {
-    startMs: start.getTime(),
-    endMs: end.getTime(),
-  };
+  return getChileDayNightWindow(now);
 }
 
 function formatHourFromOffset(offsetHours: number) {
@@ -336,11 +328,7 @@ function formatHourFromOffset(offsetHours: number) {
 }
 
 function formatSessionClock(ts: number) {
-  return new Date(ts).toLocaleTimeString("es-CL", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return chileShortTime(ts);
 }
 
 function formatSessionDuration(minutes: number) {
@@ -360,12 +348,7 @@ function formatSessionDurationClock(minutes: number) {
 }
 
 function formatCycleDate(ts: number) {
-  return new Date(ts).toLocaleDateString("es-CL", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  return chileLongDate(ts);
 }
 
 function isBoundaryHour(value: number) {
@@ -690,7 +673,7 @@ type KpclD3ChartObject = {
 
 const KPCL_D3_CHART_OBJECT: KpclD3ChartObject = {
   library: "d3",
-  timezone: "America/Santiago",
+  timezone: CHILE_TZ,
   cycle: {
     startHour: 6,
     durationHours: 24,
@@ -4396,11 +4379,7 @@ export default function TodayPage() {
               <Line
                 data={{
                   labels: orderedToday3d.map((p) =>
-                    new Date(p.timestamp).toLocaleTimeString("es-CL", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    }),
+                    chileShortTime(p.timestamp),
                   ),
                   datasets: [
                     {

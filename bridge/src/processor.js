@@ -100,7 +100,14 @@ function classify(zScore) {
 }
 
 function todayDateString() {
-  return new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  // Fecha en hora Chile Continental (America/Santiago), no UTC.
+  // Un día en Santiago puede ser diferente al día UTC (e.g. las 23:00 CLT = 03:00 UTC siguiente día).
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date()); // 'YYYY-MM-DD'
 }
 
 // ── Core: procesar una lectura ────────────────────────────────

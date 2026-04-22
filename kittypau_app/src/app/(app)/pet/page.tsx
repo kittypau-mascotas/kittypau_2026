@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
@@ -60,16 +61,7 @@ const defaultState: LoadState = {
   readings: [],
 };
 
-const formatTimestamp = (value: string) => {
-  const ts = new Date(value);
-  if (Number.isNaN(ts.getTime())) return value;
-  return ts.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+const formatTimestamp = (value: string) => chileCompactDatetime(value);
 
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
@@ -152,7 +144,7 @@ export default function PetPage() {
     const run = async () => {
       const token = await getValidAccessToken();
       if (!token) {
-        clearTokens();
+        await signOutSession();
         if (mounted) {
           setState((prev) => ({
             ...prev,

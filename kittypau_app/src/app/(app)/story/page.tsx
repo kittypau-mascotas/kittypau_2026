@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -70,16 +71,7 @@ const defaultState: LoadState = {
   analyticsAvailable: true,
 };
 
-const formatTimestamp = (value: string) => {
-  const ts = new Date(value);
-  if (Number.isNaN(ts.getTime())) return value;
-  return ts.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+const formatTimestamp = (value: string) => chileCompactDatetime(value);
 
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
