@@ -1372,13 +1372,14 @@ export default function TodayPage() {
         targetIds.map(async (deviceId) => {
           try {
             const result = await loadReadings(deviceId, null, 2);
-            return [
+            return {
               deviceId,
-              result.data[0] ?? null,
-              result.data[1] ?? null,
-            ] as const;
+              latest: result.data[0] ?? null,
+              previous: result.data[1] ?? null,
+              ok: true,
+            } as const;
           } catch {
-            return [deviceId, null, null] as const;
+            return { deviceId, latest: null, previous: null, ok: false } as const;
           }
         }),
       );
@@ -1386,19 +1387,20 @@ export default function TodayPage() {
         inFlight = false;
         return;
       }
-      setDeviceLatestReadings((prev) => ({
-        ...prev,
-        ...Object.fromEntries(
-          entries.map(([deviceId, latest]) => [deviceId, latest]),
-        ),
-      }));
-      setDevicePreviousReadings((prev) => ({
-        ...prev,
-        ...Object.fromEntries(
-          entries.map(([deviceId, , previous]) => [deviceId, previous]),
-        ),
-      }));
-      setLastRefreshAt(new Date().toISOString());
+      const successful = entries.filter((e) => e.ok);
+      if (successful.length > 0) {
+        setDeviceLatestReadings((prev) => ({
+          ...prev,
+          ...Object.fromEntries(successful.map((e) => [e.deviceId, e.latest])),
+        }));
+        setDevicePreviousReadings((prev) => ({
+          ...prev,
+          ...Object.fromEntries(
+            successful.map((e) => [e.deviceId, e.previous]),
+          ),
+        }));
+        setLastRefreshAt(new Date().toISOString());
+      }
       inFlight = false;
     };
     void loadTargets();
@@ -1462,18 +1464,21 @@ export default function TodayPage() {
               from: cycleFrom,
               to: cycleTo,
             });
-            return [deviceId, result.data] as const;
+            return { deviceId, data: result.data, ok: true } as const;
           } catch {
-            return [deviceId, []] as const;
+            return { deviceId, data: [] as ApiReading[], ok: false } as const;
           }
         }),
       );
       if (!active) return;
-      setDeviceChartReadings((prev) => ({
-        ...prev,
-        ...Object.fromEntries(entries),
-      }));
-      const hasAnyData = entries.some(([, values]) => values.length > 0);
+      const successfulChart = entries.filter((e) => e.ok);
+      if (successfulChart.length > 0) {
+        setDeviceChartReadings((prev) => ({
+          ...prev,
+          ...Object.fromEntries(successfulChart.map((e) => [e.deviceId, e.data])),
+        }));
+      }
+      const hasAnyData = entries.some((e) => e.data.length > 0);
       setChartLoadError(
         hasAnyData
           ? null
@@ -3066,23 +3071,31 @@ export default function TodayPage() {
     [waterHistorySessions],
   );
 
-  // 100% = mayor startValue entre todas las sesiones de hoy
-  // (= peso del bowl al inicio del episodio de mayor carga del día)
+  // 100% = startValue máximo de sesiones confirmadas hoy.
+  // Fallback: máximo de readings del ciclo si no hay sesiones categorizadas.
   const bowlFillPct = useMemo(() => {
-    if (bowlContentWeightGrams === null || bowlIntakeSessions.length === 0)
-      return null;
-    const maxStart = Math.max(...bowlIntakeSessions.map((s) => s.startValue));
+    if (bowlContentWeightGrams === null) return null;
+    const maxStart =
+      bowlIntakeSessions.length > 0
+        ? Math.max(...bowlIntakeSessions.map((s) => s.startValue))
+        : bowlDayNightPoints.length > 0
+          ? Math.max(...bowlDayNightPoints.map((p) => p.y))
+          : 0;
     if (maxStart <= 0) return null;
     return Math.min(1, Math.max(0, bowlContentWeightGrams / maxStart));
-  }, [bowlContentWeightGrams, bowlIntakeSessions]);
+  }, [bowlContentWeightGrams, bowlIntakeSessions, bowlDayNightPoints]);
 
   const waterFillPct = useMemo(() => {
-    if (waterContentWeightGrams === null || waterIntakeSessions.length === 0)
-      return null;
-    const maxStart = Math.max(...waterIntakeSessions.map((s) => s.startValue));
+    if (waterContentWeightGrams === null) return null;
+    const maxStart =
+      waterIntakeSessions.length > 0
+        ? Math.max(...waterIntakeSessions.map((s) => s.startValue))
+        : waterDayNightPoints.length > 0
+          ? Math.max(...waterDayNightPoints.map((p) => p.y))
+          : 0;
     if (maxStart <= 0) return null;
     return Math.min(1, Math.max(0, waterContentWeightGrams / maxStart));
-  }, [waterContentWeightGrams, waterIntakeSessions]);
+  }, [waterContentWeightGrams, waterIntakeSessions, waterDayNightPoints]);
 
   const getConnectivityLabel = (timestamp?: string | null) => {
     if (!timestamp) return "Sin señal";
