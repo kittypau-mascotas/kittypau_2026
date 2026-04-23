@@ -12,6 +12,7 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { chileShortTime } from "@/lib/time/chile";
 
 ChartJS.register(
   CategoryScale,
@@ -112,7 +113,7 @@ export const ChartCard = ({
   const labels = ordered.map((item) => {
     const ts = new Date(item.timestamp);
     if (Number.isNaN(ts.getTime())) return "";
-    return ts.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false });
+    return chileShortTime(ts);
   });
   const dataPoints = ordered.map((item) => item.value);
 

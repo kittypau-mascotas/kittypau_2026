@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
@@ -152,14 +153,7 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
 
 const formatTimestamp = (value: string | null) => {
   if (!value) return "Sin datos";
-  const ts = new Date(value);
-  if (Number.isNaN(ts.getTime())) return value;
-  return ts.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return chileCompactDatetime(value);
 };
 
 const batteryLabel = (battery: number | null) => {
@@ -308,7 +302,7 @@ export default function BowlPage() {
     const run = async () => {
       const token = await getValidAccessToken();
       if (!token) {
-        clearTokens();
+        await signOutSession();
         if (mounted) {
           setState((prev) => ({
             ...prev,

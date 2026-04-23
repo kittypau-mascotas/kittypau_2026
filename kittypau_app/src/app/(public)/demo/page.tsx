@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import AppNav from "@/app/(app)/_components/app-nav";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import { AppDataProvider } from "@/lib/context/app-context";
 import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";
 import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
@@ -83,12 +84,7 @@ export default function DemoPage() {
 
   const updatedAtLabel = useMemo(
     () =>
-      new Intl.DateTimeFormat("es-CL", {
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date()),
+      chileCompactDatetime(new Date()),
     [],
   );
 

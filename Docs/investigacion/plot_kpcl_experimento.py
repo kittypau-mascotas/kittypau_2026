@@ -20,6 +20,8 @@ import os
 from pathlib import Path
 import sys
 from typing import Iterable
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import webbrowser
 
@@ -30,6 +32,7 @@ from plotly.subplots import make_subplots
 
 ROOT = Path(__file__).resolve().parent
 COMBINED_CSV = ROOT / "kpcl0034_kpcl0036_prueba_sincargador.csv"
+HTTP_PORT = 8765
 OUTPUT_HTML = ROOT / "kpcl_pruebas_eventos.html"
 EXPERIMENT_LABEL = "sin_batera"
 DEVICE_ORDER = ("KPCL0034",)
@@ -70,10 +73,10 @@ EVENT_LABELS: dict[str, str] = {
     "tare_con_plato": "Tare con plato",
     "inicio_servido": "Inicio servido",
     "termino_servido": "Termino servido",
-    "inicio_alimentacin": "Inicio alimentacin",
-    "termino_alimentacin": "Termino alimentacin",
-    "inicio_hidratacin": "Inicio hidratacin",
-    "termino_hidratacin": "Termino hidratacin",
+    "inicio_alimentacion": "Inicio alimentación",
+    "termino_alimentacion": "Termino alimentación",
+    "inicio_hidratacion": "Inicio hidratación",
+    "termino_hidratacion": "Termino hidratación",
     "plate_observation": "Plato observado",
     "manual_food_amount": "Cantidad manual",
     "otro_evento": "Otro evento",
@@ -93,10 +96,10 @@ EVENT_COLORS: dict[str, str] = {
     "tare_con_plato": "#c56e57",
     "inicio_servido": "#f97316",
     "termino_servido": "#ea580c",
-    "inicio_alimentacin": "#16a34a",
-    "termino_alimentacin": "#15803d",
-    "inicio_hidratacin": "#0284c7",
-    "termino_hidratacin": "#0369a1",
+    "inicio_alimentacion": "#16a34a",
+    "termino_alimentacion": "#15803d",
+    "inicio_hidratacion": "#0284c7",
+    "termino_hidratacion": "#0369a1",
     "plate_observation": "#7a7a7a",
     "manual_food_amount": "#d97706",
     "otro_evento": "#444444",
@@ -104,12 +107,12 @@ EVENT_COLORS: dict[str, str] = {
 
 # Band style per interval type: fillcolor, border color, label
 BAND_STYLES: dict[str, dict[str, str]] = {
-    "alimentacin": {
+    "alimentacion": {
         "fillcolor": "rgba(34,197,94,0.18)",
         "line_color": "#16a34a",
         "label": "Alimentación",
     },
-    "hidratacin": {
+    "hidratacion": {
         "fillcolor": "rgba(14,165,233,0.18)",
         "line_color": "#0284c7",
         "label": "Hidratación",
@@ -366,7 +369,7 @@ def _rest_get_all(
     while True:
         params = [("select", select), *filters, ("order", order),
                   ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urlencode(params, quote_via=quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urlencode(params, quote_via=quote)}"
         req = _urllib_request.Request(url, headers=headers, method="GET")
         with _urllib_request.urlopen(req, timeout=60) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
@@ -700,14 +703,14 @@ def build_event_intervals(points: list[SeriesPoint]) -> list[tuple[datetime, dat
     start_events: dict[str, tuple[str, str]] = {
         "food_fill_start": ("servido", "servido"),
         "inicio_servido":  ("servido", "servido"),
-        "inicio_alimentacin": ("alimentacin", "alimentacin"),
-        "inicio_hidratacin":  ("hidratacin", "hidratacin"),
+        "inicio_alimentacion": ("alimentacion", "alimentacion"),
+        "inicio_hidratacion":  ("hidratacion", "hidratacion"),
     }
     end_events: dict[str, str] = {
         "food_fill_end":      "servido",
         "termino_servido":    "servido",
-        "termino_alimentacin": "alimentacin",
-        "termino_hidratacin":  "hidratacin",
+        "termino_alimentacion": "alimentacion",
+        "termino_hidratacion":  "hidratacion",
     }
 
     open_intervals: dict[str, datetime] = {}
@@ -809,8 +812,8 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
         "tare_record", "plate_weight",
         "food_fill_start", "food_fill_end",
         "inicio_servido", "termino_servido",
-        "inicio_alimentacin", "termino_alimentacin",
-        "inicio_hidratacin", "termino_hidratacin",
+        "inicio_alimentacion", "termino_alimentacion",
+        "inicio_hidratacion", "termino_hidratacion",
     }
     marker_points = [p for p in points if p.is_audit and p.evento in key_events]
 
@@ -1252,8 +1255,8 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
         intervals = build_event_intervals(points)
         n_readings = sum(1 for p in points if not p.is_audit and p.weight is not None)
 
-        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacin"]
-        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacin"]
+        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacion"]
+        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacion"]
         serv_ivs = [(s, e) for s, e, k in intervals if k == "servido"]
 
         alim_st = _interval_stats(alim_ivs)
@@ -1371,6 +1374,7 @@ def write_and_open(
     sb_url = supabase_url.rstrip("/")
     device_codes_js = "var codes = " + _json.dumps(list(DEVICE_ORDER)) + ";"
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    now_utc = datetime.now(timezone.utc)
 
     # First figure carries plotly.js; rest reference it.
     device_htmls: dict[str, str] = {}
@@ -1387,10 +1391,23 @@ def write_and_open(
     )
     box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
 
+    def _stale_badge(fin_dt: datetime) -> str:
+        days = (now_utc.date() - fin_dt.date()).days
+        if days <= 0:
+            return ""
+        color = "#dc2626" if days >= 3 else "#f59e0b"
+        tip = f"{days}d sin datos nuevos — último: {fin_dt:%Y-%m-%d}"
+        return (
+            f' <span title="{tip}" style="cursor:help;background:{color};color:#fff;'
+            f'border-radius:50%;width:18px;height:18px;display:inline-flex;'
+            f'align-items:center;justify-content:center;font-size:11px;font-weight:bold'
+            f';vertical-align:middle;margin-left:4px">?</span>'
+        )
+
     window_rows = "".join(
         f"<tr><td><b>{device}</b></td>"
         f"<td>{window_map[device][0]:%Y-%m-%d %H:%M} UTC</td>"
-        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC</td>"
+        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC{_stale_badge(window_map[device][1])}</td>"
         f"<td>{'Q3: ' + f'{q3_map[device]:.1f}g' if q3_map.get(device) is not None else '—'}</td></tr>"
         for device in DEVICE_ORDER if device in window_map
     )
@@ -1493,8 +1510,8 @@ def write_and_open(
     <button id="refresh-btn" class="theme-btn" style="background:#16a34a;color:#fff;border-color:#15803d" onclick="refreshDataAndCsv()">Actualizar CSV + vista</button>
     <button class="theme-btn" onclick="
       const h=document.documentElement;
-      h.dataset.theme=h.dataset.theme==='dark''light':'dark';
-      this.textContent=h.dataset.theme==='dark''☀ Claro':'☾ Oscuro';
+      h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+      this.textContent=h.dataset.theme==='dark'?'☀ Claro':'☾ Oscuro';
     ">☾ Oscuro</button>
   </header>
   <main>
@@ -1564,15 +1581,15 @@ def write_and_open(
       <div class="cat-group">
         <div class="cat-group-label" style="color:#16a34a">Alimentación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacin','Inicio alimentación')">▶ Inicio alimentación</button>
-          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacin','Término alimentación')">■ Término alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacion','Inicio alimentacion')">&#9654; Inicio alimentacion</button>
+          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacion','Termino alimentacion')">&#9632; Termino alimentacion</button>
         </div>
       </div>
       <div class="cat-group">
         <div class="cat-group-label" style="color:#0284c7">Hidratación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacin','Inicio hidratación')">▶ Inicio hidratación</button>
-          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacin','Término hidratación')">■ Término hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacion','Inicio hidratacion')">&#9654; Inicio hidratacion</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacion','Termino hidratacion')">&#9632; Termino hidratacion</button>
         </div>
       </div>
       <div class="cat-group">
@@ -1654,7 +1671,7 @@ def write_and_open(
     _ev = {{ deviceCode: deviceCode, ts: ts, weight: weight, category: null, label: null }};
     document.getElementById('m-device').textContent = deviceCode;
     document.getElementById('m-ts').textContent = ts.replace('T',' ').slice(0,19);
-    document.getElementById('m-weight').textContent = (weight != null  weight.toFixed(1) + ' g' : '—');
+    document.getElementById('m-weight').textContent = (weight != null ? weight.toFixed(1) + ' g' : '-');
     document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
     document.getElementById('m-save').disabled = true;
     document.getElementById('cat-modal').classList.add('open');
@@ -1681,7 +1698,7 @@ def write_and_open(
       var raw = localStorage.getItem(KPCL_PENDING_KEY);
       if (!raw) return [];
       var parsed = JSON.parse(raw);
-      return Array.isArray(parsed)  parsed : [];
+      return Array.isArray(parsed) ? parsed : [];
     }} catch (e) {{
       return [];
     }}
@@ -1805,7 +1822,7 @@ def write_and_open(
     var pct = 6;
     bar.style.width = pct + '%';
     var timer = setInterval(function() {{
-      pct = Math.min(92, pct + (pct < 40  9 : pct < 70  5 : 2));
+      pct = Math.min(92, pct + (pct < 40 ? 9 : pct < 70 ? 5 : 2));
       bar.style.width = pct + '%';
     }}, 450);
     try {{
@@ -1930,8 +1947,64 @@ def generate_dashboard(*, open_browser: bool = True) -> Path:
     return output
 
 
+_refresh_lock = threading.Lock()
+
+
+class _DashboardHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):  # noqa: A002
+        pass  # silenciar logs HTTP por defecto
+
+    def do_GET(self):
+        if self.path == "/" or self.path.startswith("/?"):
+            try:
+                content = OUTPUT_HTML.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+            except Exception as exc:
+                self.send_error(500, str(exc))
+        else:
+            self.send_error(404)
+
+    def do_POST(self):
+        if self.path == "/refresh":
+            if not _refresh_lock.acquire(blocking=False):
+                self.send_error(503, "Refresh ya en curso")
+                return
+            try:
+                generate_dashboard(open_browser=False)
+                body = b'{"ok":true}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as exc:
+                self.send_error(500, str(exc))
+            finally:
+                _refresh_lock.release()
+        else:
+            self.send_error(404)
+
+
 def main() -> None:
-    generate_dashboard(open_browser=True)
+    generate_dashboard(open_browser=False)
+    try:
+        server = HTTPServer(("127.0.0.1", HTTP_PORT), _DashboardHandler)
+    except OSError:
+        # Puerto ocupado — abre directo como file:// (fallback)
+        print(f"[warn] Puerto {HTTP_PORT} ocupado — abriendo como file://")
+        webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
+        return
+    url = f"http://127.0.0.1:{HTTP_PORT}/"
+    print(f"[server] Dashboard en {url}  (Ctrl+C para salir)")
+    webbrowser.open_new_tab(url)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\n[server] Servidor detenido.")
 
 
 if __name__ == "__main__":
