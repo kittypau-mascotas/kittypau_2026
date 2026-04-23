@@ -3066,23 +3066,31 @@ export default function TodayPage() {
     [waterHistorySessions],
   );
 
-  // 100% = mayor startValue entre todas las sesiones de hoy
-  // (= peso del bowl al inicio del episodio de mayor carga del día)
+  // 100% = startValue máximo de sesiones confirmadas hoy.
+  // Fallback: máximo de readings del ciclo si no hay sesiones categorizadas.
   const bowlFillPct = useMemo(() => {
-    if (bowlContentWeightGrams === null || bowlIntakeSessions.length === 0)
-      return null;
-    const maxStart = Math.max(...bowlIntakeSessions.map((s) => s.startValue));
+    if (bowlContentWeightGrams === null) return null;
+    const maxStart =
+      bowlIntakeSessions.length > 0
+        ? Math.max(...bowlIntakeSessions.map((s) => s.startValue))
+        : bowlDayNightPoints.length > 0
+          ? Math.max(...bowlDayNightPoints.map((p) => p.y))
+          : 0;
     if (maxStart <= 0) return null;
     return Math.min(1, Math.max(0, bowlContentWeightGrams / maxStart));
-  }, [bowlContentWeightGrams, bowlIntakeSessions]);
+  }, [bowlContentWeightGrams, bowlIntakeSessions, bowlDayNightPoints]);
 
   const waterFillPct = useMemo(() => {
-    if (waterContentWeightGrams === null || waterIntakeSessions.length === 0)
-      return null;
-    const maxStart = Math.max(...waterIntakeSessions.map((s) => s.startValue));
+    if (waterContentWeightGrams === null) return null;
+    const maxStart =
+      waterIntakeSessions.length > 0
+        ? Math.max(...waterIntakeSessions.map((s) => s.startValue))
+        : waterDayNightPoints.length > 0
+          ? Math.max(...waterDayNightPoints.map((p) => p.y))
+          : 0;
     if (maxStart <= 0) return null;
     return Math.min(1, Math.max(0, waterContentWeightGrams / maxStart));
-  }, [waterContentWeightGrams, waterIntakeSessions]);
+  }, [waterContentWeightGrams, waterIntakeSessions, waterDayNightPoints]);
 
   const getConnectivityLabel = (timestamp?: string | null) => {
     if (!timestamp) return "Sin señal";
