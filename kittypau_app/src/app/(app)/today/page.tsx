@@ -3451,61 +3451,24 @@ export default function TodayPage() {
                       </div>
                     </div>
 
-                    <details className="rounded-[calc(var(--radius)-10px)] border border-slate-100 bg-slate-50/60 px-3 py-2">
-                      <summary className="cursor-pointer list-none text-xs font-semibold text-slate-500">
-                        <span className="flex items-center justify-between gap-2">
-                          <span>Detalle técnico</span>
-                          <span className="text-slate-300">▼</span>
-                        </span>
-                      </summary>
-                      <div className="mt-3 grid gap-2 text-sm text-slate-600 md:grid-cols-2">
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Contenido actual:
-                          </span>{" "}
-                          {bowlContentWeightText}
-                          {renderTrend(
-                            bowlContentWeightGrams,
-                            bowlPrevContentWeightGrams,
-                          )}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Peso del plato:
-                          </span>{" "}
-                          {bowlPlateWeightText}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Lectura del sensor:
-                          </span>{" "}
-                          {bowlSensorWeightText}
-                          {renderTrend(
-                            bowlGrossWeightGrams,
-                            bowlPrevGrossWeightGrams,
-                          )}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Última lectura:
-                          </span>{" "}
-                          {formatTimestamp(
-                            bowlLatestReading?.recorded_at ?? null,
-                          )}
-                        </p>
-                        <p className="md:col-span-2">
-                          <span className="font-semibold text-slate-900">
-                            Ambiente:
-                          </span>{" "}
-                          {bowlTempText} · {bowlHumidityText} · {bowlLightText}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            {bowlDevice?.device_id ?? "KPCLXXXX"}
-                          </span>
-                        </p>
-                      </div>
-                    </details>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700" title="Contenido actual">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                        {bowlContentWeightText}{renderTrend(bowlContentWeightGrams, bowlPrevContentWeightGrams)}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600" title="Temperatura">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                        {bowlTempText}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-600" title="Humedad">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                        {bowlHumidityText}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500" title="Última lectura">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {formatTimestamp(bowlLatestReading?.recorded_at ?? null)}
+                      </span>
+                    </div>
                   </div>
                 </article>
                 <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
@@ -3637,62 +3600,24 @@ export default function TodayPage() {
                       </div>
                     </div>
 
-                    <details className="rounded-[calc(var(--radius)-10px)] border border-slate-100 bg-slate-50/60 px-3 py-2">
-                      <summary className="cursor-pointer list-none text-xs font-semibold text-slate-500">
-                        <span className="flex items-center justify-between gap-2">
-                          <span>Detalle técnico</span>
-                          <span className="text-slate-300">▼</span>
-                        </span>
-                      </summary>
-                      <div className="mt-3 grid gap-2 text-sm text-slate-600 md:grid-cols-2">
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Nivel actual:
-                          </span>{" "}
-                          {waterVolumeMlText}
-                          {renderTrend(
-                            waterContentWeightGrams,
-                            waterPrevContentWeightGrams,
-                          )}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Peso del plato:
-                          </span>{" "}
-                          {waterPlateWeightText}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Lectura del sensor:
-                          </span>{" "}
-                          {waterSensorWeightText}
-                          {renderTrend(
-                            waterGrossWeightGrams,
-                            waterPrevGrossWeightGrams,
-                          )}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            Última lectura:
-                          </span>{" "}
-                          {formatTimestamp(
-                            waterLatestReading?.recorded_at ?? null,
-                          )}
-                        </p>
-                        <p className="md:col-span-2">
-                          <span className="font-semibold text-slate-900">
-                            Ambiente:
-                          </span>{" "}
-                          {waterTempText} · {waterHumidityText} ·{" "}
-                          {waterLightText}
-                        </p>
-                        <p>
-                          <span className="font-semibold text-slate-900">
-                            {waterDevice?.device_id ?? "KPCLXXXX"}
-                          </span>
-                        </p>
-                      </div>
-                    </details>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <span className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-700" title="Nivel actual">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                        {waterVolumeMlText}{renderTrend(waterContentWeightGrams, waterPrevContentWeightGrams)}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600" title="Temperatura">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+                        {waterTempText}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-600" title="Humedad">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                        {waterHumidityText}
+                      </span>
+                      <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500" title="Última lectura">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {formatTimestamp(waterLatestReading?.recorded_at ?? null)}
+                      </span>
+                    </div>
                   </div>
                 </article>
                 <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
