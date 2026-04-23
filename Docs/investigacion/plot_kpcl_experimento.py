@@ -369,7 +369,7 @@ def _rest_get_all(
     while True:
         params = [("select", select), *filters, ("order", order),
                   ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urlencode(params, quote_via=quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urlencode(params, quote_via=quote)}"
         req = _urllib_request.Request(url, headers=headers, method="GET")
         with _urllib_request.urlopen(req, timeout=60) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
@@ -1374,6 +1374,7 @@ def write_and_open(
     sb_url = supabase_url.rstrip("/")
     device_codes_js = "var codes = " + _json.dumps(list(DEVICE_ORDER)) + ";"
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    now_utc = datetime.now(timezone.utc)
 
     # First figure carries plotly.js; rest reference it.
     device_htmls: dict[str, str] = {}
@@ -1390,10 +1391,23 @@ def write_and_open(
     )
     box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
 
+    def _stale_badge(fin_dt: datetime) -> str:
+        days = (now_utc.date() - fin_dt.date()).days
+        if days <= 0:
+            return ""
+        color = "#dc2626" if days >= 3 else "#f59e0b"
+        tip = f"{days}d sin datos nuevos — último: {fin_dt:%Y-%m-%d}"
+        return (
+            f' <span title="{tip}" style="cursor:help;background:{color};color:#fff;'
+            f'border-radius:50%;width:18px;height:18px;display:inline-flex;'
+            f'align-items:center;justify-content:center;font-size:11px;font-weight:bold'
+            f';vertical-align:middle;margin-left:4px">?</span>'
+        )
+
     window_rows = "".join(
         f"<tr><td><b>{device}</b></td>"
         f"<td>{window_map[device][0]:%Y-%m-%d %H:%M} UTC</td>"
-        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC</td>"
+        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC{_stale_badge(window_map[device][1])}</td>"
         f"<td>{'Q3: ' + f'{q3_map[device]:.1f}g' if q3_map.get(device) is not None else '—'}</td></tr>"
         for device in DEVICE_ORDER if device in window_map
     )
@@ -1496,8 +1510,8 @@ def write_and_open(
     <button id="refresh-btn" class="theme-btn" style="background:#16a34a;color:#fff;border-color:#15803d" onclick="refreshDataAndCsv()">Actualizar CSV + vista</button>
     <button class="theme-btn" onclick="
       const h=document.documentElement;
-      h.dataset.theme=h.dataset.theme==='dark''light':'dark';
-      this.textContent=h.dataset.theme==='dark''☀ Claro':'☾ Oscuro';
+      h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+      this.textContent=h.dataset.theme==='dark'?'☀ Claro':'☾ Oscuro';
     ">☾ Oscuro</button>
   </header>
   <main>
