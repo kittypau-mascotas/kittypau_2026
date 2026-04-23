@@ -3066,6 +3066,23 @@ export default function TodayPage() {
     [waterHistorySessions],
   );
 
+  // Porcentaje de llenado basado en el máximo del ciclo actual (100% = mayor peso registrado hoy)
+  const bowlFillPct = useMemo(() => {
+    if (bowlContentWeightGrams === null || bowlDayNightPoints.length === 0)
+      return null;
+    const maxY = Math.max(...bowlDayNightPoints.map((p) => p.y));
+    if (maxY <= 0) return null;
+    return Math.min(1, Math.max(0, bowlContentWeightGrams / maxY));
+  }, [bowlContentWeightGrams, bowlDayNightPoints]);
+
+  const waterFillPct = useMemo(() => {
+    if (waterContentWeightGrams === null || waterDayNightPoints.length === 0)
+      return null;
+    const maxY = Math.max(...waterDayNightPoints.map((p) => p.y));
+    if (maxY <= 0) return null;
+    return Math.min(1, Math.max(0, waterContentWeightGrams / maxY));
+  }, [waterContentWeightGrams, waterDayNightPoints]);
+
   const getConnectivityLabel = (timestamp?: string | null) => {
     if (!timestamp) return "Sin señal";
     const diffMinutes = Math.round(
@@ -3396,11 +3413,17 @@ export default function TodayPage() {
                       <div className="today-wellness-bar-shell flex justify-center">
                         <div className="today-wellness-bar today-wellness-bar-food">
                           <div
-                            className={`today-wellness-bar-fill today-wellness-bar-fill-food ${
-                              bowlWellness.hasEvidence
-                                ? "is-confirmed"
-                                : "is-empty"
-                            }`}
+                            className="today-wellness-bar-fill today-wellness-bar-fill-food"
+                            style={{
+                              height:
+                                bowlFillPct !== null
+                                  ? `calc(18px + (100% - 34px) * ${bowlFillPct.toFixed(3)})`
+                                  : "18px",
+                              opacity:
+                                bowlFillPct !== null && bowlFillPct > 0.01
+                                  ? 1
+                                  : 0.18,
+                            }}
                           />
                           <div className="today-wellness-bar-guides">
                             {Array.from({ length: 9 }).map((_, index) => (
@@ -3573,11 +3596,17 @@ export default function TodayPage() {
                       <div className="today-wellness-bar-shell flex justify-center">
                         <div className="today-wellness-bar today-wellness-bar-water">
                           <div
-                            className={`today-wellness-bar-fill today-wellness-bar-fill-water ${
-                              waterWellness.hasEvidence
-                                ? "is-confirmed"
-                                : "is-empty"
-                            }`}
+                            className="today-wellness-bar-fill today-wellness-bar-fill-water"
+                            style={{
+                              height:
+                                waterFillPct !== null
+                                  ? `calc(18px + (100% - 34px) * ${waterFillPct.toFixed(3)})`
+                                  : "18px",
+                              opacity:
+                                waterFillPct !== null && waterFillPct > 0.01
+                                  ? 1
+                                  : 0.18,
+                            }}
                           />
                           <div className="today-wellness-bar-guides">
                             {Array.from({ length: 9 }).map((_, index) => (
