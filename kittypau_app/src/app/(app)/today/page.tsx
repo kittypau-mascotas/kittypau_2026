@@ -3440,10 +3440,13 @@ export default function TodayPage() {
                           alt="Kittypau comedero"
                           width={224}
                           height={164}
-                          className="mx-auto h-32 w-auto object-contain object-center"
+                          className="mx-auto h-48 w-auto object-contain object-center"
                         />
                         <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
                           {bowlWellness.levelLabel}
+                        </p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+                          {bowlDevice?.device_id ?? "KPCLXXXX"}
                         </p>
                       </div>
                     </div>
@@ -3623,10 +3626,13 @@ export default function TodayPage() {
                           alt="Kittypau bebedero"
                           width={224}
                           height={164}
-                          className="mx-auto h-32 w-auto object-contain object-center"
+                          className="mx-auto h-48 w-auto object-contain object-center"
                         />
                         <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
                           {waterWellness.levelLabel}
+                        </p>
+                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+                          {waterDevice?.device_id ?? "KPCLXXXX"}
                         </p>
                       </div>
                     </div>
