@@ -33,6 +33,8 @@ export const DayCycleChart: React.FC<Props> = ({
     if (!svgRef.current || !data) return;
 
     const svg = d3.select(svgRef.current);
+    // Cancela transiciones en vuelo antes de limpiar para evitar solapamiento
+    svg.interrupt().selectAll("*").interrupt();
     svg.selectAll("*").remove();
 
     const width = svgRef.current.clientWidth;
@@ -148,14 +150,13 @@ export const DayCycleChart: React.FC<Props> = ({
       .attr("y", (d) => y(d.startValue) - 35) // Posición final
       .attr("opacity", 1);
 
-    // Área de captura para el cursor
+    // Área de captura para el cursor (namespace .chart evita acumulación de listeners)
     svg
-      .on("mousemove", (event) => {
+      .on("mousemove.chart", (event) => {
         const [mx] = d3.pointer(event, g.node());
         if (mx >= 0 && mx <= innerWidth) {
           cursor.attr("x1", mx).attr("x2", mx).style("opacity", 1);
 
-          // Encontrar punto más cercano para el círculo de enfoque
           const bisect = d3.bisector((d: ChartPoint) => d.time).left;
           const date = x.invert(mx);
           const index = bisect(data.points, date, 1);
@@ -168,7 +169,7 @@ export const DayCycleChart: React.FC<Props> = ({
           }
         }
       })
-      .on("mouseleave", () => {
+      .on("mouseleave.chart", () => {
         cursor.style("opacity", 0);
         focusCircle.style("opacity", 0);
       });

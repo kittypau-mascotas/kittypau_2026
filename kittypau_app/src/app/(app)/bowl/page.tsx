@@ -427,7 +427,13 @@ export default function BowlPage() {
           selectedConfig.maxPages,
         );
         if (!active) return;
-        setReadings(readingData);
+        // Merge con lecturas existentes para no pisar las que llegaron por WebSocket
+        setReadings((prev) => {
+          const existingIds = new Set(prev.map((r) => r.id));
+          const incoming = readingData.filter((r) => !existingIds.has(r.id));
+          if (!incoming.length) return prev;
+          return [...incoming, ...prev].slice(0, READINGS_BUFFER_MAX);
+        });
       } catch {
         // Realtime is primary; polling is fallback.
       }

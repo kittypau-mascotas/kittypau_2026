@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -777,6 +777,8 @@ export default function TodayPage() {
   const [waterCategoryFeedback, setWaterCategoryFeedback] = useState<
     string | null
   >(null);
+  const bowlFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const waterFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [waterPlateOverrides, setWaterPlateOverrides] = useState<
     Record<string, number>
   >({});
@@ -1838,7 +1840,8 @@ export default function TodayPage() {
         setBowlCategoryFeedback("No se pudo guardar la categoría.");
       } finally {
         setBowlCategoryBusy(null);
-        window.setTimeout(() => setBowlCategoryFeedback(null), 3000);
+        if (bowlFeedbackTimerRef.current) clearTimeout(bowlFeedbackTimerRef.current);
+        bowlFeedbackTimerRef.current = setTimeout(() => setBowlCategoryFeedback(null), 3000);
       }
     },
     [
@@ -1985,7 +1988,8 @@ export default function TodayPage() {
         setWaterCategoryFeedback("No se pudo guardar la categoría.");
       } finally {
         setWaterCategoryBusy(null);
-        window.setTimeout(() => setWaterCategoryFeedback(null), 3000);
+        if (waterFeedbackTimerRef.current) clearTimeout(waterFeedbackTimerRef.current);
+        waterFeedbackTimerRef.current = setTimeout(() => setWaterCategoryFeedback(null), 3000);
       }
     },
     [
