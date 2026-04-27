@@ -11,20 +11,20 @@ Data Science/
 ├── README.md                          ← este archivo
 ├── requirements.txt                   ← dependencias Python
 ├── colab_fase1_fase2_pipeline.py      ← pipeline completo para Google Colab
-├── REFERENCIAS_DATA_SCIENCE.md        ← referencias y links utiles
+├── REFERENCIAS.md                     ← referencias y links utiles
+├── resumen_fase3.svg                  ← grafico comparativo visual
 │
 ├── experiments/                       ← reportes individuales por experimento
-│   ├── Experimento_01_*.md
-│   ├── Experimento_02_*.md
-│   ├── Experimento_03_*.md  ← MEJOR BASE
-│   ├── Experimento_04_*.md
-│   └── Experimento_05_*.md
+│   ├── exp_01_linea_base.md
+│   ├── exp_02_threshold_rebalanceo.md
+│   ├── exp_03_mejor_base.md           ← MEJOR BASE ★
+│   ├── exp_04_smote_calibracion.md
+│   └── exp_05_nueva_ingesta.md
 │
 ├── Reporte_Experimentos_Fase3.md      ← reporte maestro comparativo
 ├── Resumen_Experimentos_Fase3.md      ← resumen ejecutivo
-├── Reporte_26_04_2026.md              ← reporte de sesion 26/04
-├── Preparacion_Nueva_Ingesta_Fase3.md ← guia para nueva ingesta
-├── Experimentos_Fase3_Resumen.svg     ← grafico comparativo visual
+├── Reporte_Sesion_2026-04-26.md       ← reporte de sesion 26/04
+├── Preparacion_Nueva_Ingesta.md       ← guia para nueva ingesta
 │
 ├── fase_1_extraccion/
 │   ├── INSTRUCCIONES_FASE1_CLAUDE_CODE.docx
@@ -92,8 +92,8 @@ Fallback tecnico:
 ## Resumen de experimentos
 - [Reporte maestro de Fase 3](./Reporte_Experimentos_Fase3.md)
 - [Resumen ejecutivo de Fase 3](./Resumen_Experimentos_Fase3.md)
-- [Preparacion para nueva ingesta](./Preparacion_Nueva_Ingesta_Fase3.md)
-- [Experimentos individuales](./experiments/) — 5 reportes detallados
+- [Preparacion para nueva ingesta](./Preparacion_Nueva_Ingesta.md)
+- [Experimentos individuales](./experiments/) — exp_01 a exp_05
 
 ## Estado actual
 
