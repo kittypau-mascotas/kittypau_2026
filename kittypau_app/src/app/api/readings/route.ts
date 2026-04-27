@@ -138,9 +138,11 @@ export async function handleReadingsGet(
 
   const readingsRows = (data ?? []) as Array<{ recorded_at?: string | null }>;
 
+  const cacheHeaders = { "Cache-Control": "private, max-age=5, stale-while-revalidate=20" };
+
   if (!paginate) {
     logRequestEnd(req, startedAt, 200, { count: readingsRows.length });
-    return NextResponse.json(data ?? []);
+    return NextResponse.json(data ?? [], { headers: cacheHeaders });
   }
 
   const nextCursor =
@@ -152,7 +154,7 @@ export async function handleReadingsGet(
     count: readingsRows.length,
     next_cursor: nextCursor,
   });
-  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor });
+  return NextResponse.json({ data: data ?? [], next_cursor: nextCursor }, { headers: cacheHeaders });
 }
 
 export async function GET(req: NextRequest) {

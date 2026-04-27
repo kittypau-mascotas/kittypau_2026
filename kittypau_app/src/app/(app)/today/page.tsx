@@ -1409,7 +1409,7 @@ export default function TodayPage() {
       inFlight = false;
     };
     void loadTargets();
-    interval = window.setInterval(loadTargets, 5000);
+    interval = window.setInterval(loadTargets, 15_000);
     return () => {
       active = false;
       if (interval) window.clearInterval(interval);
