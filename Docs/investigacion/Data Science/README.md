@@ -5,9 +5,47 @@ El alcance vigente de esta carpeta es investigacion supervisada sobre alimento;
 `KPCL0036` e hidratacion quedan fuera del modelo activo por ahora.
 
 ## Estructura
-- `fase_1_extraccion/` - Extraccion y validacion de datos de Supabase
-- `fase_2_dataset/` - Construccion del dataset supervisado para entrenamiento
-- `fase_3_modelos/` - Entrenamiento y comparacion de modelos LightGBM
+
+```
+Data Science/
+├── README.md                          ← este archivo
+├── requirements.txt                   ← dependencias Python
+├── colab_fase1_fase2_pipeline.py      ← pipeline completo para Google Colab
+├── REFERENCIAS_DATA_SCIENCE.md        ← referencias y links utiles
+│
+├── experiments/                       ← reportes individuales por experimento
+│   ├── Experimento_01_*.md
+│   ├── Experimento_02_*.md
+│   ├── Experimento_03_*.md  ← MEJOR BASE
+│   ├── Experimento_04_*.md
+│   └── Experimento_05_*.md
+│
+├── Reporte_Experimentos_Fase3.md      ← reporte maestro comparativo
+├── Resumen_Experimentos_Fase3.md      ← resumen ejecutivo
+├── Reporte_26_04_2026.md              ← reporte de sesion 26/04
+├── Preparacion_Nueva_Ingesta_Fase3.md ← guia para nueva ingesta
+├── Experimentos_Fase3_Resumen.svg     ← grafico comparativo visual
+│
+├── fase_1_extraccion/
+│   ├── INSTRUCCIONES_FASE1_CLAUDE_CODE.docx
+│   ├── scripts/   01_setup_env → 06_quality_report
+│   ├── notebooks/ exploracion_fase1.ipynb
+│   └── outputs/   quality_report.txt
+│
+├── fase_2_dataset/
+│   ├── INSTRUCCIONES_FASE2_CLAUDE_CODE.docx
+│   ├── README.md
+│   └── scripts/   01_build_labels → 04_dataset_report
+│
+└── fase_3_modelos/
+    ├── INSTRUCCIONES_FASE3_CLAUDE_CODE.docx
+    ├── README.md
+    ├── scripts/   01_prepare_datasets → 04_training_report
+    ├── models/
+    │   ├── modelo_a/  ← binario: activo vs reposo
+    │   └── modelo_b/  ← multiclase: alimentacion / servido / reposo
+    └── outputs/   training_report.txt
+```
 
 ## Fuente oficial de etiquetas
 - La fuente oficial operativa de eventos manuales vive en `public.audit_events`.
@@ -55,6 +93,7 @@ Fallback tecnico:
 - [Reporte maestro de Fase 3](./Reporte_Experimentos_Fase3.md)
 - [Resumen ejecutivo de Fase 3](./Resumen_Experimentos_Fase3.md)
 - [Preparacion para nueva ingesta](./Preparacion_Nueva_Ingesta_Fase3.md)
+- [Experimentos individuales](./experiments/) — 5 reportes detallados
 
 ## Estado actual
 
