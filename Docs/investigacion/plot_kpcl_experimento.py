@@ -21,6 +21,8 @@ import os
 from pathlib import Path
 import sys
 from typing import Iterable
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import webbrowser
 
@@ -31,6 +33,7 @@ from plotly.subplots import make_subplots
 
 ROOT = Path(__file__).resolve().parent
 COMBINED_CSV = ROOT / "kpcl0034_kpcl0036_prueba_sincargador.csv"
+HTTP_PORT = 8765
 OUTPUT_HTML = ROOT / "kpcl_pruebas_eventos.html"
 EXPERIMENT_LABEL = "sin_batera"
 DEVICE_ORDER = ("KPCL0034",)
@@ -78,15 +81,15 @@ EVENT_LABELS: dict[str, str] = {
     "tare_con_plato": "Tare con plato",
     "inicio_servido": "Inicio servido",
     "termino_servido": "Termino servido",
-    "inicio_alimentacion": "Inicio alimentacion",
-    "termino_alimentacion": "Termino alimentacion",
-    "inicio_hidratacion": "Inicio hidratacion",
-    "termino_hidratacion": "Termino hidratacion",
+    "inicio_alimentacion": "Inicio alimentación",
+    "termino_alimentacion": "Termino alimentación",
+    "inicio_hidratacion": "Inicio hidratación",
+    "termino_hidratacion": "Termino hidratación",
     # Legacy aliases kept so older exports still render correctly.
-    "inicio_alimentacin": "Inicio alimentacion",
-    "termino_alimentacin": "Termino alimentacion",
-    "inicio_hidratacin": "Inicio hidratacion",
-    "termino_hidratacin": "Termino hidratacion",
+    "inicio_alimentacin": "Inicio alimentación",
+    "termino_alimentacin": "Termino alimentación",
+    "inicio_hidratacin": "Inicio hidratación",
+    "termino_hidratacin": "Termino hidratación",
     "plate_observation": "Plato observado",
     "manual_food_amount": "Cantidad manual",
     "otro_evento": "Otro evento",
@@ -1451,6 +1454,7 @@ def write_and_open(
     sb_url = supabase_url.rstrip("/")
     device_codes_js = "var codes = " + _json.dumps(list(DEVICE_ORDER)) + ";"
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    now_utc = datetime.now(timezone.utc)
 
     # First figure carries plotly.js; rest reference it.
     device_htmls: dict[str, str] = {}
@@ -1467,10 +1471,23 @@ def write_and_open(
     )
     box_html = boxplot.to_html(full_html=False, include_plotlyjs=False, config=_PLOT_CONFIG)
 
+    def _stale_badge(fin_dt: datetime) -> str:
+        days = (now_utc.date() - fin_dt.date()).days
+        if days <= 0:
+            return ""
+        color = "#dc2626" if days >= 3 else "#f59e0b"
+        tip = f"{days}d sin datos nuevos — último: {fin_dt:%Y-%m-%d}"
+        return (
+            f' <span title="{tip}" style="cursor:help;background:{color};color:#fff;'
+            f'border-radius:50%;width:18px;height:18px;display:inline-flex;'
+            f'align-items:center;justify-content:center;font-size:11px;font-weight:bold'
+            f';vertical-align:middle;margin-left:4px">?</span>'
+        )
+
     window_rows = "".join(
         f"<tr><td><b>{device}</b></td>"
         f"<td>{window_map[device][0]:%Y-%m-%d %H:%M} UTC</td>"
-        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC</td>"
+        f"<td>{window_map[device][1]:%Y-%m-%d %H:%M} UTC{_stale_badge(window_map[device][1])}</td>"
         f"<td>{'Q3: ' + f'{q3_map[device]:.1f}g' if q3_map.get(device) is not None else '—'}</td></tr>"
         for device in DEVICE_ORDER if device in window_map
     )
@@ -1577,8 +1594,8 @@ def write_and_open(
     <button id="refresh-btn" class="theme-btn" style="background:#16a34a;color:#fff;border-color:#15803d" onclick="refreshDataAndCsv()">Actualizar CSV + vista</button>
     <button class="theme-btn" onclick="
       const h=document.documentElement;
-      h.dataset.theme=h.dataset.theme==='dark''light':'dark';
-      this.textContent=h.dataset.theme==='dark''☀ Claro':'☾ Oscuro';
+      h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+      this.textContent=h.dataset.theme==='dark'?'☀ Claro':'☾ Oscuro';
     ">☾ Oscuro</button>
   </header>
   <main>
@@ -1639,6 +1656,27 @@ def write_and_open(
       <h2>Distribución de peso — boxplot (≤ Q3)</h2>
       {box_html}
     </div>
+
+    <div class="card" id="ml-section">
+      <h2>Predicción ML — Curvas de alimentación</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        Entrena un modelo supervisado para detectar automáticamente <b>inicio</b> y <b>término</b>
+        de sesiones de alimentación y servido a partir de la curva de peso — sin necesidad de
+        etiquetas manuales.<br>
+        Dataset: lecturas KPCL0034 (53 eventos etiquetados disponibles). Split temporal: 70% train / 30% test.
+      </p>
+      <div style="margin-bottom:14px;font-size:12px;color:var(--muted)">
+        <b>Features:</b> peso bruto, delta·1/3/10, pendiente·3/10, aceleración, std·5/20, hora cíclica.<br>
+        <b>Modelos:</b> RandomForest (n=200) y GradientBoosting (n=150) — reporta el mejor por macro-F1.<br>
+        <b>Clases:</b> 0=Fondo, 1=Alimentación (en sesión), 2=Servido (en sesión).
+      </div>
+      <button id="ml-train-btn" class="theme-btn" style="background:#6366f1;color:#fff;border-color:#4f46e5" onclick="runMlTrain()">
+        Entrenar modelo
+      </button>
+      <span id="ml-status" style="margin-left:12px;font-size:12px;color:var(--muted)"></span>
+      <div id="ml-results" style="margin-top:16px"></div>
+    </div>
+
   </main>
 
   <!-- ── Modal de categorización ── -->
@@ -1800,6 +1838,60 @@ def write_and_open(
     return Object.prototype.hasOwnProperty.call(PAIR_START_TO_END, category);
   }}
 
+  function getPendingEvents() {{
+    try {{
+      var raw = localStorage.getItem(KPCL_PENDING_KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    }} catch (e) {{
+      return [];
+    }}
+  }}
+
+  function setPendingEvents(items) {{
+    localStorage.setItem(KPCL_PENDING_KEY, JSON.stringify(items));
+  }}
+
+  function enqueuePendingEvent(item) {{
+    var queue = getPendingEvents();
+    var key = [item.device_uuid, item.created_at, item.category].join('|');
+    var exists = queue.some(function(x) {{
+      return [x.device_uuid, x.created_at, x.category].join('|') === key;
+    }});
+    if (!exists) {{
+      queue.push(item);
+      setPendingEvents(queue);
+    }}
+    return queue.length;
+  }}
+
+  function downloadPendingEvents() {{
+    var queue = getPendingEvents();
+    if (!queue.length) {{
+      showToast('No hay eventos pendientes para exportar.');
+      return;
+    }}
+    var payload = {{
+      exported_at: new Date().toISOString(),
+      source: 'kpcl_plot_local_queue',
+      count: queue.length,
+      events: queue
+    }};
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
+    var a = document.createElement('a');
+    var stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'kpcl_eventos_pendientes_' + stamp + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {{
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }}, 0);
+    showToast('Pendientes exportados: ' + queue.length);
+  }}
+
   async function saveEvent() {{
     if (!_ev || !_ev.category) return;
     if (_pairState && _pairState.expectedEndCategory && _ev.category !== _pairState.expectedEndCategory) {{
@@ -1863,6 +1955,89 @@ def write_and_open(
     t.textContent = msg;
     t.style.opacity = '1'; t.style.transform = 'translateY(0)';
     setTimeout(function() {{ t.style.opacity='0'; t.style.transform='translateY(16px)'; }}, 4500);
+  }}
+
+  async function refreshDataAndCsv(options) {{
+  /* ── ML Training ── */
+  async function runMlTrain() {{
+    if (window.location.protocol === 'file:') {{
+      showToast('Abre el dashboard en http://127.0.0.1:8765/ para entrenar el modelo.');
+      return;
+    }}
+    var btn = document.getElementById('ml-train-btn');
+    var statusEl = document.getElementById('ml-status');
+    var resultsEl = document.getElementById('ml-results');
+    btn.disabled = true;
+    btn.textContent = 'Entrenando... (puede tomar hasta 60s)';
+    statusEl.textContent = '';
+    resultsEl.innerHTML = '<p style="color:#64748b;font-size:13px">Procesando 49k lecturas...</p>';
+    try {{
+      var resp = await fetch('/ml-train', {{ method: 'POST' }});
+      var data = await resp.json();
+      if (data.error) {{
+        statusEl.textContent = 'Error: ' + data.error;
+        resultsEl.innerHTML = '';
+        return;
+      }}
+      renderMlResults(data);
+      statusEl.textContent = 'Listo — modelo guardado en ml_food_curve_model.pkl';
+    }} catch(e) {{
+      statusEl.textContent = 'Error: ' + e.message;
+      resultsEl.innerHTML = '';
+    }} finally {{
+      btn.disabled = false;
+      btn.textContent = 'Entrenar modelo';
+    }}
+  }}
+
+  function renderMlResults(d) {{
+    var best = d.best_model || '?';
+    var train = d.train_samples || 0;
+    var test = d.test_samples || 0;
+    var dist = d.label_distribution || {{}};
+    var models = d.models || [];
+    var fi = d.feature_importance || [];
+
+    var distHtml = Object.entries(dist).map(function(kv) {{
+      return '<span style="margin-right:12px"><b>' + kv[0] + ':</b> ' + kv[1] + ' lecturas</span>';
+    }}).join('');
+
+    var modelsHtml = models.map(function(m) {{
+      var rows = Object.entries(m.per_class || {{}}).map(function(kv) {{
+        var cls = kv[0]; var cm = kv[1];
+        var f1Color = cm.f1 >= 0.7 ? '#16a34a' : cm.f1 >= 0.4 ? '#d97706' : '#dc2626';
+        return '<tr><td>' + cls + '</td><td>' + cm.precision + '</td><td>' + cm.recall + '</td>' +
+               '<td style="color:' + f1Color + ';font-weight:600">' + cm.f1 + '</td><td>' + cm.support + '</td></tr>';
+      }}).join('');
+      var f1Color = m.macro_f1 >= 0.7 ? '#16a34a' : m.macro_f1 >= 0.4 ? '#d97706' : '#dc2626';
+      return '<div style="margin-bottom:16px">' +
+             '<p style="font-weight:600;margin-bottom:6px">' + m.model + ' — macro-F1: <span style="color:' + f1Color + '">' + m.macro_f1 + '</span></p>' +
+             '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+             '<thead><tr style="background:#f1f5f9"><th>Clase</th><th>Precision</th><th>Recall</th><th>F1</th><th>Soporte</th></tr></thead>' +
+             '<tbody>' + rows + '</tbody></table></div>';
+    }}).join('');
+
+    var maxFi = fi.length > 0 ? fi[0].importance : 1;
+    var fiHtml = fi.slice(0, 8).map(function(f) {{
+      var pct = Math.round(f.importance / maxFi * 100);
+      return '<div style="margin-bottom:5px;display:flex;align-items:center;gap:8px">' +
+             '<span style="width:130px;font-size:12px;color:#334155">' + f.feature + '</span>' +
+             '<div style="flex:1;background:#e2e8f0;border-radius:4px;height:10px">' +
+             '<div style="background:#6366f1;height:100%;border-radius:4px;width:' + pct + '%"></div></div>' +
+             '<span style="font-size:11px;color:#64748b;width:40px;text-align:right">' + f.importance + '</span></div>';
+    }}).join('');
+
+    document.getElementById('ml-results').innerHTML =
+      '<div style="margin-bottom:12px">' +
+      '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600">Mejor: ' + best + '</span>' +
+      '&nbsp;<span style="font-size:12px;color:#64748b">Train: ' + train + ' | Test: ' + test + '</span>' +
+      '</div>' +
+      '<p style="font-size:12px;color:#64748b;margin-bottom:8px">Distribución de etiquetas: ' + distHtml + '</p>' +
+      '<h4 style="font-size:13px;margin-bottom:8px">Métricas por modelo</h4>' +
+      modelsHtml +
+      '<h4 style="font-size:13px;margin-bottom:8px;margin-top:16px">Importancia de features</h4>' +
+      fiHtml +
+      '<p style="font-size:11px;color:#94a3b8;margin-top:12px">F1 &ge; 0.7: bueno · &ge; 0.4: mejorable · &lt; 0.4: insuficiente</p>';
   }}
 
   async function refreshDataAndCsv(options) {{
@@ -2047,8 +2222,83 @@ def generate_dashboard(*, open_browser: bool = True) -> Path:
     return output
 
 
+_refresh_lock = threading.Lock()
+
+
+class _DashboardHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):  # noqa: A002
+        pass  # silenciar logs HTTP por defecto
+
+    def do_GET(self):
+        if self.path == "/" or self.path.startswith("/?"):
+            try:
+                content = OUTPUT_HTML.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+            except Exception as exc:
+                self.send_error(500, str(exc))
+        else:
+            self.send_error(404)
+
+    def do_POST(self):
+        if self.path == "/refresh":
+            if not _refresh_lock.acquire(blocking=False):
+                self.send_error(503, "Refresh ya en curso")
+                return
+            try:
+                generate_dashboard(open_browser=False)
+                body = b'{"ok":true}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception as exc:
+                self.send_error(500, str(exc))
+            finally:
+                _refresh_lock.release()
+        elif self.path == "/ml-train":
+            import subprocess
+            try:
+                ml_script = ROOT / "ml_food_curve.py"
+                proc = subprocess.run(
+                    [sys.executable, str(ml_script), "--json"],
+                    capture_output=True, text=True, timeout=300,
+                )
+                raw = proc.stdout.strip() if proc.stdout.strip() else '{"error":"Sin salida del script ML"}'
+                body = raw.encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except subprocess.TimeoutExpired:
+                self.send_error(504, "Timeout: entrenamiento tardó más de 5 min")
+            except Exception as exc:
+                self.send_error(500, str(exc))
+        else:
+            self.send_error(404)
+
+
 def main() -> None:
-    generate_dashboard(open_browser=True)
+    generate_dashboard(open_browser=False)
+    try:
+        server = HTTPServer(("127.0.0.1", HTTP_PORT), _DashboardHandler)
+    except OSError:
+        # Puerto ocupado — abre directo como file:// (fallback)
+        print(f"[warn] Puerto {HTTP_PORT} ocupado — abriendo como file://")
+        webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
+        return
+    url = f"http://127.0.0.1:{HTTP_PORT}/"
+    print(f"[server] Dashboard en {url}  (Ctrl+C para salir)")
+    webbrowser.open_new_tab(url)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\n[server] Servidor detenido.")
 
 
 if __name__ == "__main__":

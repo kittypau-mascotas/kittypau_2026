@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -27,6 +28,21 @@ type ApiDevice = {
   device_type: string;
   status: string;
   device_state: string | null;
+};
+
+type AuditEvent = {
+  id: string;
+  created_at: string;
+  category: string;
+  category_label: string;
+};
+
+type CategoryPair = {
+  id: string;
+  start: AuditEvent;
+  end: AuditEvent | null;
+  category_type: "alimentacion" | "servido" | "hidratacion";
+  durationSec: number | null;
 };
 
 // Sesión procesada por el analytics processor
@@ -70,16 +86,7 @@ const defaultState: LoadState = {
   analyticsAvailable: true,
 };
 
-const formatTimestamp = (value: string) => {
-  const ts = new Date(value);
-  if (Number.isNaN(ts.getTime())) return value;
-  return ts.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+const formatTimestamp = (value: string) => chileCompactDatetime(value);
 
 const parseListResponse = <T,>(payload: unknown): T[] => {
   if (Array.isArray(payload)) return payload as T[];
@@ -187,6 +194,7 @@ export default function StoryPage() {
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
   const [dayOffset, setDayOffset] = useState(0);
+  const [auditEvents, setAuditEvents] = useState<AuditEvent[]>([]);
 
   const loadPets = async (token: string) => {
     const res = await fetch(`/api/pets`, {
@@ -236,7 +244,7 @@ export default function StoryPage() {
     const run = async () => {
       const token = await getValidAccessToken();
       if (!token) {
-        clearTokens();
+        await signOutSession();
         if (mounted) {
           setState((prev) => ({
             ...prev,
@@ -321,6 +329,47 @@ export default function StoryPage() {
   const selectedPet = state.pets.find((p) => p.id === selectedPetId);
   const petLabel = selectedPet?.name ?? "tu mascota";
 
+  const authoritativeDevice = state.devices.find(
+    (d) => (d.device_id ?? "").toUpperCase() === AUTHORITATIVE_FOOD_DEVICE_CODE,
+  );
+
+  useEffect(() => {
+    const deviceId = authoritativeDevice?.id;
+    if (!deviceId) return;
+    let mounted = true;
+    const run = async () => {
+      const token = await getValidAccessToken();
+      if (!token || !mounted) return;
+      try {
+        const from = new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000,
+        ).toISOString();
+        const to = new Date(Date.now() + 3600 * 1000).toISOString();
+        const cats = [
+          "inicio_alimentacion",
+          "termino_alimentacion",
+          "inicio_servido",
+          "termino_servido",
+          "inicio_hidratacion",
+          "termino_hidratacion",
+        ].join(",");
+        const res = await fetch(
+          `/api/devices/${deviceId}/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&categories=${encodeURIComponent(cats)}`,
+          { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
+        );
+        if (!res.ok || !mounted) return;
+        const payload = (await res.json()) as { data: AuditEvent[] };
+        setAuditEvents(payload.data ?? []);
+      } catch {
+        // keep empty — heuristic sessions still show
+      }
+    };
+    void run();
+    return () => {
+      mounted = false;
+    };
+  }, [authoritativeDevice?.id]);
+
   // Días disponibles según plan
   const maxDayOffset = state.isPremium ? 364 : 6;
   const dayOptions = Array.from({ length: maxDayOffset + 1 }, (_, i) => i);
@@ -352,6 +401,76 @@ export default function StoryPage() {
     const good = filteredTimeline.filter((i) => i.story.tone === "good").length;
     return { total, warn, good };
   }, [filteredTimeline]);
+
+  const categoryPairs = useMemo((): CategoryPair[] => {
+    if (!auditEvents.length) return [];
+    const START_MAP: Record<
+      string,
+      "alimentacion" | "servido" | "hidratacion"
+    > = {
+      inicio_alimentacion: "alimentacion",
+      inicio_servido: "servido",
+      inicio_hidratacion: "hidratacion",
+    };
+    const END_TO_START: Record<string, string> = {
+      termino_alimentacion: "inicio_alimentacion",
+      termino_servido: "inicio_servido",
+      termino_hidratacion: "inicio_hidratacion",
+    };
+    const sorted = [...auditEvents].sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    );
+    const open = new Map<string, AuditEvent>();
+    const pairs: CategoryPair[] = [];
+    for (const ev of sorted) {
+      if (START_MAP[ev.category]) {
+        open.set(ev.category, ev);
+      } else if (END_TO_START[ev.category]) {
+        const startKey = END_TO_START[ev.category];
+        const startEv = open.get(startKey);
+        if (startEv) {
+          pairs.push({
+            id: startEv.id,
+            start: startEv,
+            end: ev,
+            category_type: START_MAP[startKey]!,
+            durationSec: Math.round(
+              (new Date(ev.created_at).getTime() -
+                new Date(startEv.created_at).getTime()) /
+                1000,
+            ),
+          });
+          open.delete(startKey);
+        }
+      }
+    }
+    for (const [startKey, startEv] of open.entries()) {
+      pairs.push({
+        id: startEv.id,
+        start: startEv,
+        end: null,
+        category_type: START_MAP[startKey]!,
+        durationSec: null,
+      });
+    }
+    const dayStart = new Date();
+    dayStart.setHours(0, 0, 0, 0);
+    dayStart.setDate(dayStart.getDate() - dayOffset);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayStart.getDate() + 1);
+    return pairs
+      .filter((p) => {
+        if (dayOffset === 0) return true;
+        const ts = new Date(p.start.created_at).getTime();
+        return ts >= dayStart.getTime() && ts < dayEnd.getTime();
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.start.created_at).getTime() -
+          new Date(a.start.created_at).getTime(),
+      );
+  }, [auditEvents, dayOffset]);
 
   const handlePetChange = async (petId: string) => {
     setSelectedPetId(petId);
@@ -619,6 +738,83 @@ export default function StoryPage() {
             </p>
           </section>
 
+          {categoryPairs.length > 0 && (
+            <section className="surface-card freeform-rise px-4 py-4 sm:px-6">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-widest text-emerald-600">
+                  Actividad verificada
+                </span>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                  {AUTHORITATIVE_FOOD_DEVICE_CODE}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {categoryPairs.map((pair) => {
+                  const colors = {
+                    alimentacion: {
+                      border: "border-emerald-200",
+                      bg: "bg-emerald-50",
+                      dot: "bg-emerald-500",
+                      label: "Alimentación",
+                      badge: "border-emerald-300 text-emerald-700",
+                    },
+                    servido: {
+                      border: "border-orange-200",
+                      bg: "bg-orange-50",
+                      dot: "bg-orange-500",
+                      label: "Servido",
+                      badge: "border-orange-300 text-orange-700",
+                    },
+                    hidratacion: {
+                      border: "border-sky-200",
+                      bg: "bg-sky-50",
+                      dot: "bg-sky-500",
+                      label: "Hidratación",
+                      badge: "border-sky-300 text-sky-700",
+                    },
+                  }[pair.category_type];
+                  const durMin =
+                    pair.durationSec !== null
+                      ? Math.round(pair.durationSec / 60)
+                      : null;
+                  return (
+                    <div
+                      key={pair.id}
+                      className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${colors.border} ${colors.bg}`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={`h-2 w-2 shrink-0 rounded-full ${colors.dot}`}
+                        />
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-slate-800">
+                            {colors.label}
+                            {durMin !== null && (
+                              <span className="ml-1.5 text-xs font-normal text-slate-500">
+                                {durMin} min
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {formatTimestamp(pair.start.created_at)}
+                            {pair.end
+                              ? ` → ${formatTimestamp(pair.end.created_at)}`
+                              : " · en curso"}
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full border bg-white px-2 py-0.5 text-[10px] font-semibold ${colors.badge}`}
+                      >
+                        ✓ Verificado
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           <section className="story-list">
             {filteredTimeline.length === 0 ? (
               <EmptyState
@@ -627,12 +823,7 @@ export default function StoryPage() {
                     ? "Aún no hay sesiones para mostrar."
                     : "La historia histórica todavía no está disponible."
                 }
-              >
-                {state.analyticsAvailable
-                  ? "Cuando el plato detecte actividad, verás la historia aquí."
-                  : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
-                actions=
-                {
+                actions={
                   <div className="flex flex-wrap gap-2">
                     <Link
                       href="/today"
@@ -654,6 +845,10 @@ export default function StoryPage() {
                     </Link>
                   </div>
                 }
+              >
+                {state.analyticsAvailable
+                  ? "Cuando el plato detecte actividad, verás la historia aquí."
+                  : "La vista sigue funcionando, pero la base analítica histórica está desactivada. Puedes revisar el resumen en vivo mientras tanto."}
               </EmptyState>
             ) : (
               filteredTimeline.map((item, index) => (

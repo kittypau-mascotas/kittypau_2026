@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { clearTokens, getValidAccessToken } from "@/lib/auth/token";
+import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
@@ -152,14 +153,7 @@ const parseListResponse = <T,>(payload: unknown): T[] => {
 
 const formatTimestamp = (value: string | null) => {
   if (!value) return "Sin datos";
-  const ts = new Date(value);
-  if (Number.isNaN(ts.getTime())) return value;
-  return ts.toLocaleString("es-CL", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return chileCompactDatetime(value);
 };
 
 const batteryLabel = (battery: number | null) => {
@@ -231,7 +225,9 @@ export default function BowlPage() {
   const [knownWifiSsids, setKnownWifiSsids] = useState<string[]>([]);
   const [selectedInterval, setSelectedInterval] = useState<number>(30_000);
   const [isSettingInterval, setIsSettingInterval] = useState(false);
-  const [intervalStatus, setIntervalStatus] = useState<"ok" | "error" | null>(null);
+  const [intervalStatus, setIntervalStatus] = useState<"ok" | "error" | null>(
+    null,
+  );
   const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
 
   const loadDevices = async (token: string) => {
@@ -308,7 +304,7 @@ export default function BowlPage() {
     const run = async () => {
       const token = await getValidAccessToken();
       if (!token) {
-        clearTokens();
+        await signOutSession();
         if (mounted) {
           setState((prev) => ({
             ...prev,
@@ -550,7 +546,10 @@ export default function BowlPage() {
       if (!token) throw new Error("No autenticado");
       const res = await fetch(`/api/devices/${selectedDevice.id}/interval`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ value_ms: selectedInterval }),
       });
       setIntervalStatus(res.ok ? "ok" : "error");
@@ -967,7 +966,9 @@ export default function BowlPage() {
                 <div className="flex items-center gap-1">
                   <select
                     value={selectedInterval}
-                    onChange={(e) => setSelectedInterval(Number(e.target.value))}
+                    onChange={(e) =>
+                      setSelectedInterval(Number(e.target.value))
+                    }
                     disabled={!selectedDevice}
                     className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 focus:outline-none disabled:opacity-40"
                   >
@@ -1500,7 +1501,8 @@ export default function BowlPage() {
                 )}
               </button>
               <p className="mt-2 text-[11px] text-slate-400">
-                El dispositivo recibirá el nuevo intervalo y lo guardará en memoria.
+                El dispositivo recibirá el nuevo intervalo y lo guardará en
+                memoria.
               </p>
             </div>
           </div>

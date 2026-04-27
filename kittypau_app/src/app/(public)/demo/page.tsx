@@ -11,6 +11,7 @@ import {
   type FormEvent,
 } from "react";
 import AppNav from "@/app/(app)/_components/app-nav";
+import { chileCompactDatetime } from "@/lib/time/chile";
 import { AppDataProvider } from "@/lib/context/app-context";
 import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";
 import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
@@ -81,16 +82,7 @@ export default function DemoPage() {
     };
   }, [router]);
 
-  const updatedAtLabel = useMemo(
-    () =>
-      new Intl.DateTimeFormat("es-CL", {
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date()),
-    [],
-  );
+  const updatedAtLabel = useMemo(() => chileCompactDatetime(new Date()), []);
 
   const stopGuideAudio = useCallback(() => {
     const audio = guideAudioRef.current;
@@ -254,7 +246,9 @@ export default function DemoPage() {
           setGuideReplyText(reply.text);
           guideReplyHistoryRef.current = [
             reply.text,
-            ...guideReplyHistoryRef.current.filter((line) => line !== reply.text),
+            ...guideReplyHistoryRef.current.filter(
+              (line) => line !== reply.text,
+            ),
           ].slice(0, 3);
         } else {
           setGuideReplyText("No voy a perder mi tiempo en responder eso.");
@@ -303,9 +297,7 @@ export default function DemoPage() {
           type="submit"
           className="trial-rpg-composer-button"
           disabled={
-            isGuideSubmitting ||
-            isGuideTyping ||
-            guideDraft.trim().length === 0
+            isGuideSubmitting || isGuideTyping || guideDraft.trim().length === 0
           }
         >
           {isGuideSubmitting ? "..." : "Enviar"}
@@ -335,9 +327,7 @@ export default function DemoPage() {
     | "pet"
     | "bowl";
   const renderedGuideCatEyeOffset =
-    isGuideVisible && isGuideCatAwake
-      ? guideCatEyeOffset
-      : { x: 0, y: 0 };
+    isGuideVisible && isGuideCatAwake ? guideCatEyeOffset : { x: 0, y: 0 };
   const isPendingSection = selectedMenu !== "today";
   const pendingLabel =
     selectedMenu === "story"
@@ -486,9 +476,7 @@ export default function DemoPage() {
               </p>
               <p className="text-xs text-slate-400">
                 Guia del gato:{" "}
-                {guideSections
-                  .map((section) => section.label)
-                  .join(" · ")}
+                {guideSections.map((section) => section.label).join(" · ")}
               </p>
               <button
                 type="button"
@@ -504,5 +492,3 @@ export default function DemoPage() {
     </AppDataProvider>
   );
 }
-
-

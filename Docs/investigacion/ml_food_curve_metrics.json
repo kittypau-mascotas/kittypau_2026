@@ -1,0 +1,154 @@
+{
+  "best_model": "RandomForest",
+  "train_samples": 34497,
+  "test_samples": 14784,
+  "label_distribution": {
+    "Fondo": 48882,
+    "Alimentacion": 394,
+    "Servido": 5
+  },
+  "models": [
+    {
+      "model": "RandomForest",
+      "macro_f1": 0.495,
+      "per_class": {
+        "Fondo": {
+          "precision": 0.996,
+          "recall": 0.991,
+          "f1": 0.994,
+          "support": 14645
+        },
+        "Alimentacion": {
+          "precision": 0.396,
+          "recall": 0.647,
+          "f1": 0.492,
+          "support": 136
+        },
+        "Servido": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "confusion_matrix": [
+        [
+          14511,
+          134,
+          0
+        ],
+        [
+          48,
+          88,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ],
+      "confusion_labels": [
+        "Fondo",
+        "Alimentacion",
+        "Servido"
+      ]
+    },
+    {
+      "model": "GradientBoosting",
+      "macro_f1": 0.482,
+      "per_class": {
+        "Fondo": {
+          "precision": 0.994,
+          "recall": 0.996,
+          "f1": 0.995,
+          "support": 14645
+        },
+        "Alimentacion": {
+          "precision": 0.487,
+          "recall": 0.419,
+          "f1": 0.451,
+          "support": 136
+        },
+        "Servido": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "confusion_matrix": [
+        [
+          14585,
+          60,
+          0
+        ],
+        [
+          79,
+          57,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ]
+      ],
+      "confusion_labels": [
+        "Fondo",
+        "Alimentacion",
+        "Servido"
+      ]
+    }
+  ],
+  "feature_importance": [
+    {
+      "feature": "rolling_std_20",
+      "importance": 0.2515
+    },
+    {
+      "feature": "slope_10",
+      "importance": 0.1585
+    },
+    {
+      "feature": "delta_10",
+      "importance": 0.1466
+    },
+    {
+      "feature": "rolling_std_5",
+      "importance": 0.1117
+    },
+    {
+      "feature": "weight_raw",
+      "importance": 0.0995
+    },
+    {
+      "feature": "hour_sin",
+      "importance": 0.0806
+    },
+    {
+      "feature": "minute_of_day",
+      "importance": 0.0598
+    },
+    {
+      "feature": "hour_cos",
+      "importance": 0.054
+    },
+    {
+      "feature": "delta_3",
+      "importance": 0.0229
+    },
+    {
+      "feature": "slope_3",
+      "importance": 0.0115
+    },
+    {
+      "feature": "accel_3",
+      "importance": 0.0018
+    },
+    {
+      "feature": "delta_1",
+      "importance": 0.0016
+    }
+  ]
+}

@@ -148,7 +148,7 @@ mqttClient.on('connect', () => {
 });
 
 mqttClient.on('message', async (topic, message) => {
-  const timestamp = new Date().toLocaleTimeString();
+  const timestamp = new Date().toLocaleTimeString('es-CL', { timeZone: 'America/Santiago', hour12: false });
 
   try {
     const [deviceId, type] = topic.split('/');
