@@ -1,0 +1,10 @@
+{
+  "classes": [
+    "reposo",
+    "activo"
+  ],
+  "encoding": {
+    "reposo": 0,
+    "activo": 1
+  }
+}

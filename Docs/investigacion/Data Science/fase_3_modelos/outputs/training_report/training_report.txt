@@ -1,0 +1,77 @@
+============================================================
+REPORTE DE ENTRENAMIENTO - KPCL0034 - FASE 3
+============================================================
+
+MODELO A - BINARIO: activo vs reposo
+----------------------------------------
+  Features removidas     : delta_w_3, rate_gs
+  Features activas       : 12
+  Iteraciones entrenadas : 105
+  Mejor val loss         : 0.105953
+  Threshold por defecto  : 0.50
+  Threshold calibrado    : 0.22
+  F1 @ threshold default : 0.5440
+  F1 @ threshold 0.50 cal : 0.5593
+  Accuracy               : 0.9737
+  Precision              : 0.6608
+  Recall                 : 0.5000
+  F1 activo              : 0.5693
+  AUC-ROC                : 0.8802
+  Confusion matrix:
+    TP=113 TN=6226 FP=58 FN=113
+
+  Feature importance top 10:
+  rolling_std_10          :  1133364.284
+  plateau_duration        :   416315.642
+  hour_cos                :   234851.715
+  weight_grams            :   177963.914
+  hour_sin                :   156629.240
+  rolling_mean_5          :    33845.457
+  rolling_std_5           :    28098.333
+  net_weight              :    14022.470
+  delta_w_10              :     6388.917
+  delta_w                 :     1951.732
+
+MODELO B - MULTICLASE: alimentacion / servido / reposo
+----------------------------------------
+  Servido SMOTE          : 84 sinteticas
+  Servido target count   : 126
+  Iteraciones entrenadas : 105
+  Mejor val loss         : 0.109012
+  Weight power           : 0.4
+  Accuracy               : 0.9762
+  Macro F1               : 0.6456
+  Weighted F1            : 0.9725
+  F1 alimentacion    : 0.5488
+  F1 servido         : 0.4000
+  F1 reposo          : 0.9879
+
+  Feature importance top 10:
+  rolling_std_10          :   119374.340
+  rolling_std_5           :   111329.385
+  hour_sin                :    31167.029
+  hour_cos                :    30994.702
+  plateau_duration        :    29197.143
+  weight_grams            :    25201.399
+  rolling_mean_5          :    15305.049
+  net_weight              :    10853.811
+  delta_w_10              :     8944.547
+  delta_w                 :     4576.300
+
+============================================================
+COMPARACION Y RECOMENDACION PARA FASE 4
+============================================================
+  Modelo A - AUC-ROC : 0.8802   F1 activo : 0.5693
+  Modelo B - F1 macro: 0.6456   F1 alimentacion: 0.5488
+
+  [AVISO] Modelo A no supera umbrales -> revisar features o hiperparametros
+  [AVISO] Modelo B no supera umbrales -> normal con pocos datos de servido
+
+UMBRALES MINIMOS PARA PASAR A FASE 4
+  Modelo A: AUC-ROC >= 0.85  y  F1 activo >= 0.70
+  Modelo B: F1 macro >= 0.60 y  F1 alimentacion >= 0.65
+
+IMPLICACION PARA EL PRODUCTO
+  Modelo A no listo -> revisar umbral, features o estrategia de balance
+  Modelo B no listo -> revisar clase servido y desbalance extremo
+============================================================

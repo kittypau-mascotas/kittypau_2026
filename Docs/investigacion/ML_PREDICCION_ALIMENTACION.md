@@ -55,7 +55,8 @@ para timestamps exactos.
 ### Lote KPCL0034 (canónico al 2026-04-16)
 - **49 eventos** manuales, rango `2026-04-08` a `2026-04-15`
 - Trazabilidad completa en `REGISTRO_EVENTOS_KPCL0034_2026-04-16.md`
-- Script de carga: `backfill_kpcl_categories_batch_2026_04_16.py`
+- Fuente oficial de etiquetas: `public.audit_events`
+- No se conserva una lista local paralela de eventos; la fuente oficial es solo `public.audit_events`.
 
 ### Distribución de sesiones de alimentación etiquetadas
 - ~4-6 sesiones por día
@@ -68,6 +69,10 @@ tiene `termino_alimentacin` sin `inicio` previo). Estos deben ser filtrados o im
 antes del entrenamiento.
 
 ---
+
+Nota operativa: la fuente oficial de etiquetas para entrenamiento y dashboard es
+`public.audit_events`. Cualquier archivo local de eventos se considera solo
+respaldo historico o insumo de migracion.
 
 ## 4. Features disponibles
 

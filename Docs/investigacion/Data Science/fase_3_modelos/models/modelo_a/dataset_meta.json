@@ -1,0 +1,32 @@
+{
+  "source_train_dir": "D:\\Escritorio\\Proyectos\\KittyPaw\\kittypau_2026_hivemq\\Docs\\investigacion\\Data Science\\fase_2_dataset\\data\\train",
+  "source_classes": [
+    "alimentacion",
+    "servido",
+    "reposo"
+  ],
+  "target_classes": [
+    "reposo",
+    "activo"
+  ],
+  "feature_cols": [
+    "weight_grams",
+    "delta_w",
+    "delta_w_10",
+    "rolling_std_5",
+    "rolling_std_10",
+    "rolling_mean_5",
+    "net_weight",
+    "is_plateau",
+    "plateau_duration",
+    "hour_sin",
+    "hour_cos",
+    "clock_invalid"
+  ],
+  "removed_features": [
+    "delta_w_3",
+    "rate_gs"
+  ],
+  "n_train": 30377,
+  "n_val": 6510
+}

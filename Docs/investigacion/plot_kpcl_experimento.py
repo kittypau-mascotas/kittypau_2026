@@ -1,4 +1,4 @@
-"""Vista interactiva y exportador canonico de las pruebas KPCL.
+﻿"""Vista interactiva y exportador canonico de las pruebas KPCL.
 
 Abre una pestaña del navegador con tres paneles:
 
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 import glob
 import os
@@ -33,10 +34,17 @@ COMBINED_CSV = ROOT / "kpcl0034_kpcl0036_prueba_sincargador.csv"
 OUTPUT_HTML = ROOT / "kpcl_pruebas_eventos.html"
 EXPERIMENT_LABEL = "sin_batera"
 DEVICE_ORDER = ("KPCL0034",)
-WINDOW_START_UTC = datetime(2020, 1, 1, tzinfo=timezone.utc)
+# La vista operativa del experimento KPCL0034 arranca en el encendido del 8 de abril.
+WINDOW_START_UTC = datetime(2026, 4, 8, tzinfo=timezone.utc)
 ENV_FILE = ROOT.parent.parent / ".env.local"
 SUPABASE_DB_URL = "SUPABASE_DB_URL"
 SUPABASE_DB_POOLER_URL = "SUPABASE_DB_POOLER_URL"
+HIDDEN_FREQUENCY_EVENTS = {
+    "kpcl_apagado",
+    "kpcl_con_plato",
+    "kpcl_sin_plato",
+    "tare_con_plato",
+}
 
 # plotly subplot axis names: row -> (xaxis_name, yaxis_name)
 ROW_AXES: dict[int, tuple[str, str]] = {
@@ -70,10 +78,15 @@ EVENT_LABELS: dict[str, str] = {
     "tare_con_plato": "Tare con plato",
     "inicio_servido": "Inicio servido",
     "termino_servido": "Termino servido",
-    "inicio_alimentacin": "Inicio alimentacin",
-    "termino_alimentacin": "Termino alimentacin",
-    "inicio_hidratacin": "Inicio hidratacin",
-    "termino_hidratacin": "Termino hidratacin",
+    "inicio_alimentacion": "Inicio alimentacion",
+    "termino_alimentacion": "Termino alimentacion",
+    "inicio_hidratacion": "Inicio hidratacion",
+    "termino_hidratacion": "Termino hidratacion",
+    # Legacy aliases kept so older exports still render correctly.
+    "inicio_alimentacin": "Inicio alimentacion",
+    "termino_alimentacin": "Termino alimentacion",
+    "inicio_hidratacin": "Inicio hidratacion",
+    "termino_hidratacin": "Termino hidratacion",
     "plate_observation": "Plato observado",
     "manual_food_amount": "Cantidad manual",
     "otro_evento": "Otro evento",
@@ -93,6 +106,10 @@ EVENT_COLORS: dict[str, str] = {
     "tare_con_plato": "#c56e57",
     "inicio_servido": "#f97316",
     "termino_servido": "#ea580c",
+    "inicio_alimentacion": "#16a34a",
+    "termino_alimentacion": "#15803d",
+    "inicio_hidratacion": "#0284c7",
+    "termino_hidratacion": "#0369a1",
     "inicio_alimentacin": "#16a34a",
     "termino_alimentacin": "#15803d",
     "inicio_hidratacin": "#0284c7",
@@ -104,6 +121,22 @@ EVENT_COLORS: dict[str, str] = {
 
 # Band style per interval type: fillcolor, border color, label
 BAND_STYLES: dict[str, dict[str, str]] = {
+    "alimentacion": {
+        "fillcolor": "rgba(34,197,94,0.18)",
+        "line_color": "#16a34a",
+        "label": "Alimentación",
+    },
+    "hidratacion": {
+        "fillcolor": "rgba(14,165,233,0.18)",
+        "line_color": "#0284c7",
+        "label": "Hidratación",
+    },
+    "servido": {
+        "fillcolor": "rgba(249,115,22,0.16)",
+        "line_color": "#ea580c",
+        "label": "Servido",
+    },
+    # Legacy aliases kept for older exports and partially migrated HTML.
     "alimentacin": {
         "fillcolor": "rgba(34,197,94,0.18)",
         "line_color": "#16a34a",
@@ -113,11 +146,6 @@ BAND_STYLES: dict[str, dict[str, str]] = {
         "fillcolor": "rgba(14,165,233,0.18)",
         "line_color": "#0284c7",
         "label": "Hidratación",
-    },
-    "servido": {
-        "fillcolor": "rgba(249,115,22,0.16)",
-        "line_color": "#ea580c",
-        "label": "Servido",
     },
 }
 
@@ -366,7 +394,7 @@ def _rest_get_all(
     while True:
         params = [("select", select), *filters, ("order", order),
                   ("limit", str(page_size)), ("offset", str(offset))]
-        url = f"{base_url.rstrip('/')}/rest/v1/{table}{urlencode(params, quote_via=quote)}"
+        url = f"{base_url.rstrip('/')}/rest/v1/{table}?{urlencode(params, quote_via=quote)}"
         req = _urllib_request.Request(url, headers=headers, method="GET")
         with _urllib_request.urlopen(req, timeout=60) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
@@ -645,7 +673,9 @@ def add_power_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
 
     off_events = sorted(
         p.timestamp for p in points
-        if p.is_audit and p.evento in ("kpcl_apagado", "device_offline_detected")
+        if p.is_audit
+        and p.evento in ("kpcl_apagado", "device_offline_detected")
+        and p.evento not in HIDDEN_FREQUENCY_EVENTS
     )
     for ts in off_events:
         fig.add_vline(
@@ -700,14 +730,18 @@ def build_event_intervals(points: list[SeriesPoint]) -> list[tuple[datetime, dat
     start_events: dict[str, tuple[str, str]] = {
         "food_fill_start": ("servido", "servido"),
         "inicio_servido":  ("servido", "servido"),
-        "inicio_alimentacin": ("alimentacin", "alimentacin"),
-        "inicio_hidratacin":  ("hidratacin", "hidratacin"),
+        "inicio_alimentacion": ("alimentacion", "alimentacion"),
+        "inicio_hidratacion":  ("hidratacion", "hidratacion"),
+        "inicio_alimentacin": ("alimentacion", "alimentacion"),
+        "inicio_hidratacin":  ("hidratacion", "hidratacion"),
     }
     end_events: dict[str, str] = {
         "food_fill_end":      "servido",
         "termino_servido":    "servido",
-        "termino_alimentacin": "alimentacin",
-        "termino_hidratacin":  "hidratacin",
+        "termino_alimentacion": "alimentacion",
+        "termino_hidratacion":  "hidratacion",
+        "termino_alimentacin": "alimentacion",
+        "termino_hidratacin":  "hidratacion",
     }
 
     open_intervals: dict[str, datetime] = {}
@@ -805,14 +839,18 @@ def add_event_bands(
 def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None:
     xref, yref = _annotation_refs(row)
     key_events = {
-        "kpcl_sin_plato", "kpcl_con_plato", "tare_con_plato",
         "tare_record", "plate_weight",
         "food_fill_start", "food_fill_end",
         "inicio_servido", "termino_servido",
+        "inicio_alimentacion", "termino_alimentacion",
+        "inicio_hidratacion", "termino_hidratacion",
         "inicio_alimentacin", "termino_alimentacin",
         "inicio_hidratacin", "termino_hidratacin",
     }
-    marker_points = [p for p in points if p.is_audit and p.evento in key_events]
+    marker_points = [
+        p for p in points
+        if p.is_audit and p.evento in key_events and p.evento not in HIDDEN_FREQUENCY_EVENTS
+    ]
 
     deduped: list[SeriesPoint] = []
     last_seen: dict[str, datetime] = {}
@@ -899,7 +937,7 @@ def add_series_traces(
             go.Scatter(
                 x=xs, y=ys,
                 mode="lines",
-                name=f"{device_code} — Peso bruto",
+                name=f"{device_code} — Peso total",
                 line=dict(color=color, width=2, shape="hv"),
                 fill="tozeroy",
                 fillcolor=fill_color.get(device_code, "rgba(100,116,139,0.07)"),
@@ -922,12 +960,12 @@ def add_series_traces(
                 go.Scatter(
                     x=fc_xs, y=fc_ys,
                     mode="lines",
-                    name=f"{device_code} — Contenido neto",
+                    name=f"{device_code} — Comida neta",
                     line=dict(color="#a78bfa", width=1.5, shape="hv"),
                     fill="tozeroy",
                     fillcolor="rgba(167,139,250,0.12)",
                     hovertemplate=(
-                        "Contenido neto<br>"
+                        "Comida neta<br>"
                         "%{x|%d %b %H:%M:%S}<br>"
                         "<b>%{y:.1f} g</b><extra></extra>"
                     ),
@@ -1010,7 +1048,8 @@ def build_fixed_window(
 def build_full_history_window(points: list[SeriesPoint], end_cap: datetime) -> tuple[datetime, datetime]:
     if not points:
         raise ValueError("No hay puntos para calcular ventana")
-    start = min(p.timestamp for p in points)
+    # La vista operativa de KPCL0034 siempre arranca en el encendido del 8 de abril.
+    start = WINDOW_START_UTC
     end = min(max(p.timestamp for p in points), end_cap)
     return start, max(start, end)
 
@@ -1040,8 +1079,8 @@ def build_device_figure(
     end_cap: datetime,
 ) -> tuple[go.Figure, float | None, tuple[datetime, datetime]]:
     titles = {
-        "KPCL0034": "KPCL0034 · Comedero — Peso bruto / Contenido neto / Eventos",
-        "KPCL0036": "KPCL0036 · Bebedero — Peso bruto / Eventos",
+        "KPCL0034": "KPCL0034 · Comedero — Peso total / Comida neta / Eventos",
+        "KPCL0036": "KPCL0036 · Bebedero — Peso total / Eventos",
     }
     fig = make_subplots(rows=1, cols=1, subplot_titles=(titles.get(device_code, device_code),))
 
@@ -1087,7 +1126,7 @@ def build_device_figure(
     fig.update_layout(
         template="plotly_white",
         height=540,
-        width=1920,
+        autosize=True,
         legend=dict(
             orientation="h",
             yanchor="bottom", y=1.02,
@@ -1126,7 +1165,7 @@ def build_battery_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.F
     fig.update_layout(
         template="plotly_white",
         height=300,
-        width=1920,
+        autosize=True,
         title=dict(text="Nivel de batería (%)", font=dict(size=14, color="#0f172a"), x=0.02),
         legend=dict(
             orientation="h",
@@ -1211,7 +1250,7 @@ def build_boxplot_figure(points_by_device: dict[str, list[SeriesPoint]]) -> go.F
     fig.update_layout(
         template="plotly_white",
         height=600,
-        width=1400,
+        autosize=True,
         title_text="KPCL — distribución de peso (boxplot, ≤ Q3)",
         margin=dict(l=80, r=40, t=90, b=60),
         font=dict(size=14),
@@ -1252,13 +1291,18 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
         intervals = build_event_intervals(points)
         n_readings = sum(1 for p in points if not p.is_audit and p.weight is not None)
 
-        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacin"]
-        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacin"]
+        alim_ivs = [(s, e) for s, e, k in intervals if k == "alimentacion"]
+        hidr_ivs = [(s, e) for s, e, k in intervals if k == "hidratacion"]
         serv_ivs = [(s, e) for s, e, k in intervals if k == "servido"]
 
         alim_st = _interval_stats(alim_ivs)
         hidr_st = _interval_stats(hidr_ivs)
         serv_st = _interval_stats(serv_ivs)
+        event_counts = Counter(
+            p.evento for p in audit_pts
+            if p.evento and p.evento not in HIDDEN_FREQUENCY_EVENTS
+        )
+        visible_audit = sum(1 for p in audit_pts if p.evento and p.evento not in HIDDEN_FREQUENCY_EVENTS)
 
         # Per-session alimentacin table rows
         session_rows_html = ""
@@ -1295,6 +1339,40 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
                 f"(min {min(consumed_values):.0f}g · max {max(consumed_values):.0f}g · "
                 f"total {sum(consumed_values):.0f}g)"
             )
+
+        frequency_rows_html = ""
+        if event_counts:
+            for event_name, count in event_counts.most_common():
+                pct = (count / visible_audit * 100) if visible_audit else 0.0
+                label = EVENT_LABELS.get(event_name, event_name)
+                frequency_rows_html += (
+                    f"<tr>"
+                    f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{label}</td>"
+                    f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0'>{event_name}</td>"
+                    f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0;text-align:right'>{count}</td>"
+                    f"<td style='padding:5px 10px;border-bottom:1px solid #e2e8f0;text-align:right'>{pct:.1f}%</td>"
+                    f"</tr>"
+                )
+
+        frequency_table = ""
+        if frequency_rows_html:
+            frequency_table = f"""
+          <details open style="margin-top:14px">
+            <summary style="cursor:pointer;font-size:13px;font-weight:500;color:#334155;padding:4px 0;user-select:none">
+              Frecuencia de eventos audit ({visible_audit})
+            </summary>
+            <table style="border-collapse:collapse;font-size:13px;width:100%;max-width:760px;margin-top:8px">
+              <thead>
+                <tr style="background:#f8fafc;text-align:left">
+                  <th style="padding:5px 10px;border-bottom:1px solid #cbd5e1">Etiqueta</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #cbd5e1">Evento</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #cbd5e1;text-align:right">Frecuencia</th>
+                  <th style="padding:5px 10px;border-bottom:1px solid #cbd5e1;text-align:right">% audit</th>
+                </tr>
+              </thead>
+              <tbody>{frequency_rows_html}</tbody>
+            </table>
+          </details>"""
 
         session_table = ""
         if alim_ivs:
@@ -1339,6 +1417,7 @@ def build_stats_html(points_by_device: dict[str, list[SeriesPoint]]) -> str:
               <div style="font-size:13px;color:#0f172a;margin-top:6px">{_fmt_interval_stats(serv_st)}</div>
             </div>
           </div>
+          {frequency_table}
           {session_table}
         </div>"""
         sections.append(section)
@@ -1362,6 +1441,7 @@ def write_and_open(
     window_map: dict[str, tuple[datetime, datetime]],
     q3_map: dict[str, float | None],
     stats_html: str,
+    data_status_html: str = "",
     supabase_url: str = "",
     device_uuid_map: dict[str, str] | None = None,
     open_browser: bool = True,
@@ -1431,9 +1511,13 @@ def write_and_open(
     .theme-btn {{ cursor: pointer; border: 1px solid var(--border); border-radius: 6px;
                   padding: 4px 10px; background: var(--surface); color: var(--text);
                   font-size: 12px; white-space: nowrap; }}
-    main {{ padding: 24px 28px; max-width: 2000px; }}
+    main {{ padding: 24px 28px; max-width: 100%; overflow-x: hidden; }}
     .card {{ background: var(--surface); border: 1px solid var(--border);
-             border-radius: 10px; padding: 18px 22px; margin-bottom: 28px; }}
+             border-radius: 10px; padding: 18px 22px; margin-bottom: 28px;
+             overflow-x: auto; }}
+    .js-plotly-plot, .plotly, .plot-container, .svg-container {{
+      max-width: 100% !important;
+    }}
     .card h2 {{ font-size: 13px; font-weight: 600; color: var(--muted);
                 text-transform: uppercase; letter-spacing: .05em; margin-bottom: 14px; }}
     table {{ border-collapse: collapse; width: 100%; font-size: 13px; }}
@@ -1498,6 +1582,11 @@ def write_and_open(
     ">☾ Oscuro</button>
   </header>
   <main>
+    <div class="card" style="margin-bottom:20px;border-left:5px solid #3b82f6">
+      <h2>Estado de fuente</h2>
+      {data_status_html}
+    </div>
+
     <div class="card">
       <h2>Ventana de datos</h2>
       <div id="refresh-wrap" style="display:none;margin-bottom:10px;max-width:560px">
@@ -1534,7 +1623,7 @@ def write_and_open(
         </div>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">
-        Línea continua = peso bruto · Área morada = contenido neto ·
+        Línea continua = peso total · Área morada = comida neta ·
         ◆ = evento manual · Cada gráfico tiene su propio selector de rango independiente.
       </p>
     </div>
@@ -1564,15 +1653,15 @@ def write_and_open(
       <div class="cat-group">
         <div class="cat-group-label" style="color:#16a34a">Alimentación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacin','Inicio alimentación')">▶ Inicio alimentación</button>
-          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacin','Término alimentación')">■ Término alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'inicio_alimentacion','Inicio alimentación')">▶ Inicio alimentación</button>
+          <button class="cat-btn" onclick="selectCat(this,'termino_alimentacion','Término alimentación')">■ Término alimentación</button>
         </div>
       </div>
       <div class="cat-group">
         <div class="cat-group-label" style="color:#0284c7">Hidratación</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacin','Inicio hidratación')">▶ Inicio hidratación</button>
-          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacin','Término hidratación')">■ Término hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacion','Inicio hidratación')">▶ Inicio hidratación</button>
+          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacion','Término hidratación')">■ Término hidratación</button>
         </div>
       </div>
       <div class="cat-group">
@@ -1587,11 +1676,10 @@ def write_and_open(
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-        <button class="btn-cancel" onclick="downloadPendingEvents()">Descargar pendientes</button>
         <button class="btn-save" id="m-save" disabled onclick="saveEvent()">Guardar evento</button>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:10px">
-        Sin credenciales en este HTML: se guarda localmente y luego se sincroniza en lote.
+        El guardado es directo en Supabase y la vista se refresca al instante.
       </p>
     </div>
   </div>
@@ -1604,8 +1692,26 @@ def write_and_open(
     supabaseKey: "",
     deviceUuids: {device_uuid_json}
   }};
-  var KPCL_PENDING_KEY = 'kpcl_manual_events_pending_v1';
   var _ev = null;
+  var _pairState = null;
+  function dashboardUrl(includeAutoload) {{
+    var u = new URL('http://127.0.0.1:8765/');
+    if (includeAutoload !== false) {{
+      u.searchParams.set('autoload', '1');
+    }}
+    u.searchParams.set('v', Date.now().toString());
+    return u.toString();
+  }}
+  var PAIR_START_TO_END = {{
+    'inicio_alimentacion': 'termino_alimentacion',
+    'inicio_hidratacion': 'termino_hidratacion',
+    'inicio_servido': 'termino_servido'
+  }};
+  var PAIR_END_TO_START = {{
+    'termino_alimentacion': 'inicio_alimentacion',
+    'termino_hidratacion': 'inicio_hidratacion',
+    'termino_servido': 'inicio_servido'
+  }};
 
   /* ── Zoom desde tabla de sesiones ── */
   function zoomToEvent(row) {{
@@ -1640,6 +1746,11 @@ def write_and_open(
           ts = String(raw).replace(' ','T');
           if (!ts.endsWith('Z') && ts.indexOf('+') === -1) ts += 'Z';
         }}
+        if (_pairState && _pairState.deviceCode === code) {{
+          _ev = {{ deviceCode: code, ts: ts, weight: pt.y, category: null, label: null }};
+          openModal(code, ts, pt.y, {{ expectedEndCategory: _pairState.expectedEndCategory, pairLabel: _pairState.startLabel }});
+          return;
+        }}
         openModal(code, ts, pt.y);
       }});
     }});
@@ -1647,17 +1758,22 @@ def write_and_open(
   document.addEventListener('DOMContentLoaded', function() {{
     /* Plotly divs se renderizan síncronamente, pero esperamos un tick */
     setTimeout(attachClicks, 500);
+    setTimeout(bootstrapDashboard, 350);
   }});
 
   /* ── Modal ── */
-  function openModal(deviceCode, ts, weight) {{
+  function openModal(deviceCode, ts, weight, opts) {{
+    opts = opts || {{}};
     _ev = {{ deviceCode: deviceCode, ts: ts, weight: weight, category: null, label: null }};
     document.getElementById('m-device').textContent = deviceCode;
     document.getElementById('m-ts').textContent = ts.replace('T',' ').slice(0,19);
-    document.getElementById('m-weight').textContent = (weight != null  weight.toFixed(1) + ' g' : '—');
+    document.getElementById('m-weight').textContent = (weight != null ? weight.toFixed(1) + ' g' : '—');
     document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
     document.getElementById('m-save').disabled = true;
     document.getElementById('cat-modal').classList.add('open');
+    if (opts.expectedEndCategory) {{
+      showToast('Intervalo abierto: falta guardar el término correspondiente.');
+    }}
   }}
   function closeModal() {{
     document.getElementById('cat-modal').classList.remove('open');
@@ -1669,6 +1785,10 @@ def write_and_open(
   }});
 
   function selectCat(btn, category, label) {{
+    if (_pairState && _pairState.expectedEndCategory && category !== _pairState.expectedEndCategory) {{
+      showToast('Debes cerrar primero el intervalo con: ' + _pairState.expectedEndCategory);
+      return;
+    }}
     document.querySelectorAll('.cat-btn').forEach(function(b) {{ b.classList.remove('active'); }});
     btn.classList.add('active');
     _ev.category = category;
@@ -1676,73 +1796,31 @@ def write_and_open(
     document.getElementById('m-save').disabled = false;
   }}
 
-  function getPendingEvents() {{
-    try {{
-      var raw = localStorage.getItem(KPCL_PENDING_KEY);
-      if (!raw) return [];
-      var parsed = JSON.parse(raw);
-      return Array.isArray(parsed)  parsed : [];
-    }} catch (e) {{
-      return [];
-    }}
-  }}
-
-  function setPendingEvents(items) {{
-    localStorage.setItem(KPCL_PENDING_KEY, JSON.stringify(items));
-  }}
-
-  function enqueuePendingEvent(item) {{
-    var queue = getPendingEvents();
-    var key = [item.device_uuid, item.created_at, item.category].join('|');
-    var exists = queue.some(function(x) {{
-      return [x.device_uuid, x.created_at, x.category].join('|') === key;
-    }});
-    if (!exists) {{
-      queue.push(item);
-      setPendingEvents(queue);
-    }}
-    return queue.length;
-  }}
-
-  function downloadPendingEvents() {{
-    var queue = getPendingEvents();
-    if (!queue.length) {{
-      showToast('No hay eventos pendientes para exportar.');
-      return;
-    }}
-    var payload = {{
-      exported_at: new Date().toISOString(),
-      source: 'kpcl_plot_local_queue',
-      count: queue.length,
-      events: queue
-    }};
-    var blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
-    var a = document.createElement('a');
-    var stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'kpcl_eventos_pendientes_' + stamp + '.json';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {{
-      URL.revokeObjectURL(a.href);
-      a.remove();
-    }}, 0);
-    showToast('Pendientes exportados: ' + queue.length);
+  function isPairedStart(category) {{
+    return Object.prototype.hasOwnProperty.call(PAIR_START_TO_END, category);
   }}
 
   async function saveEvent() {{
     if (!_ev || !_ev.category) return;
-    var uuid = KPCL.deviceUuids[_ev.deviceCode];
+    if (_pairState && _pairState.expectedEndCategory && _ev.category !== _pairState.expectedEndCategory) {{
+      showToast('Solo puedes guardar el término pendiente: ' + _pairState.expectedEndCategory);
+      return;
+    }}
+    var deviceCode = _ev.deviceCode;
+    var eventCategory = _ev.category;
+    var uuid = KPCL.deviceUuids[deviceCode];
     if (!uuid) {{ alert('UUID de device no disponible — recarga tras cargar desde Supabase.'); return; }}
+    var deviceLabel = _ev.label;
+    var eventTs = _ev.ts;
     var btn = document.getElementById('m-save');
     btn.disabled = true; btn.textContent = 'Guardando…';
     var body = JSON.stringify({{
       event_type: 'manual_bowl_category',
       entity_type: 'device',
       entity_id: uuid,
-      payload: {{ category: _ev.category, category_label: _ev.label, source: 'kpcl_plot_manual',
+      payload: {{ category: _ev.category, category_label: deviceLabel, source: 'kpcl_plot_manual',
                   weight_at_event: _ev.weight }},
-      created_at: _ev.ts
+      created_at: eventTs
     }});
     try {{
       if (!KPCL.supabaseKey) throw new Error('NO_KEY');
@@ -1758,23 +1836,22 @@ def write_and_open(
       }});
       if (!resp.ok) {{ var txt = await resp.text(); throw new Error(resp.status + ': ' + txt); }}
       closeModal();
-      showToast('✓ Guardado en Supabase: "' + _ev.label + '" en ' + _ev.ts.slice(0,16) + ' UTC');
+      showToast('✓ Guardado en Supabase: "' + deviceLabel + '" en ' + eventTs.slice(0,16) + ' UTC');
+      if (isPairedStart(eventCategory)) {{
+        _pairState = {{
+          deviceCode: deviceCode,
+          startCategory: eventCategory,
+          startLabel: deviceLabel,
+          expectedEndCategory: PAIR_START_TO_END[eventCategory]
+        }};
+        showToast('Inicio guardado. Falta el término: ' + _pairState.expectedEndCategory);
+      }} else if (_pairState && _pairState.expectedEndCategory === eventCategory) {{
+        _pairState = null;
+        showToast('Intervalo cerrado correctamente.');
+      }}
+      await refreshDataAndCsv({{ skipBootstrap: true }});
     }} catch(e) {{
-      var pendingCount = enqueuePendingEvent({{
-        device_code: _ev.deviceCode,
-        device_uuid: uuid,
-        category: _ev.category,
-        category_label: _ev.label,
-        created_at: _ev.ts,
-        payload: {{
-          category: _ev.category,
-          category_label: _ev.label,
-          source: 'kpcl_plot_manual_local_queue',
-          weight_at_event: _ev.weight
-        }}
-      }});
-      closeModal();
-      showToast('Guardado local (pendiente sync): ' + _ev.label + ' · pendientes ' + pendingCount);
+      showToast('No se pudo guardar en Supabase: ' + e.message);
     }} finally {{
       btn.disabled = false; btn.textContent = 'Guardar evento';
     }}
@@ -1788,10 +1865,9 @@ def write_and_open(
     setTimeout(function() {{ t.style.opacity='0'; t.style.transform='translateY(16px)'; }}, 4500);
   }}
 
-  async function refreshDataAndCsv() {{
+  async function refreshDataAndCsv(options) {{
     if (window.location.protocol === 'file:') {{
-      showToast('Abre el dashboard en http://127.0.0.1:8765/ para actualizar.');
-      window.open('http://127.0.0.1:8765/', '_blank');
+      window.location.replace(dashboardUrl());
       return;
     }}
     var btn = document.getElementById('refresh-btn');
@@ -1805,7 +1881,7 @@ def write_and_open(
     var pct = 6;
     bar.style.width = pct + '%';
     var timer = setInterval(function() {{
-      pct = Math.min(92, pct + (pct < 40  9 : pct < 70  5 : 2));
+      pct = Math.min(92, pct + (pct < 40 ? 9 : pct < 70 ? 5 : 2));
       bar.style.width = pct + '%';
     }}, 450);
     try {{
@@ -1817,9 +1893,7 @@ def write_and_open(
       bar.style.width = '100%';
       status.textContent = 'Actualizado';
       setTimeout(function() {{
-        var u = new URL(window.location.href);
-        u.searchParams.set('v', Date.now().toString());
-        window.location.href = u.toString();
+        window.location.replace(dashboardUrl(false));
       }}, 700);
     }} catch (e) {{
       status.textContent = 'No se pudo actualizar automáticamente. Ejecuta: python Docs/investigacion/plot_kpcl_experimento.py';
@@ -1829,6 +1903,17 @@ def write_and_open(
       btn.disabled = false;
       btn.textContent = 'Actualizar CSV + vista';
     }}
+  }}
+
+  async function bootstrapDashboard() {{
+    if (window.location.protocol === 'file:') {{
+      window.location.replace(dashboardUrl());
+      return;
+    }}
+    var params = new URL(window.location.href).searchParams;
+    var autoload = params.get('autoload') === '1';
+    if (!autoload) return;
+    await refreshDataAndCsv({{ skipBootstrap: true }});
   }}
   </script>
 </body>
@@ -1869,6 +1954,37 @@ def generate_dashboard(*, open_browser: bool = True) -> Path:
     print(f"[info] Fuente de datos: {data_source} — {len(raw_rows)} filas")
 
     raw_points = rows_to_points(raw_rows, combined_spec)
+    latest_ts = max((p.timestamp for p in raw_points), default=None)
+    now_utc = datetime.now(timezone.utc)
+    if latest_ts is None:
+        freshness_html = (
+            "<div style='font-size:13px;color:#b91c1c'>"
+            "No se encontraron puntos para construir el gráfico."
+            "</div>"
+        )
+    else:
+        age_hours = max(0.0, (now_utc - latest_ts).total_seconds() / 3600.0)
+        age_days = age_hours / 24.0
+        if data_source.startswith("supabase") and age_hours <= 24:
+            tone = "#166534"
+            label = "OK"
+            detail = "Los datos están frescos y vienen desde Supabase."
+        elif data_source.startswith("supabase"):
+            tone = "#9a3412"
+            label = "ALERTA"
+            detail = "Los datos vienen desde Supabase, pero el último punto está atrasado."
+        else:
+            tone = "#b91c1c"
+            label = "FALLBACK"
+            detail = "El gráfico cayó a CSV local; revisa la conexión a Supabase."
+        freshness_html = f"""
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;color:#0f172a">
+          <span style="padding:4px 10px;border-radius:999px;background:{tone}15;color:{tone};border:1px solid {tone}40;font-weight:700">{label}</span>
+          <span><b>Fuente:</b> {data_source}</span>
+          <span><b>Último dato:</b> {latest_ts:%Y-%m-%d %H:%M UTC}</span>
+          <span><b>Antigüedad:</b> {age_days:.1f} días</span>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:{tone}">{detail}</div>"""
     window_start, window_end = utc_window_from_points(raw_points)
 
     filtered_rows = {
@@ -1920,6 +2036,7 @@ def generate_dashboard(*, open_browser: bool = True) -> Path:
     output = write_and_open(
         device_figs, battery_fig, boxplot_fig,
         window_map=window_map, q3_map=device_q3, stats_html=stats,
+        data_status_html=freshness_html,
         supabase_url=os.environ.get(SUPABASE_URL_KEY, ""),
         device_uuid_map=device_uuid_map,
         open_browser=open_browser,

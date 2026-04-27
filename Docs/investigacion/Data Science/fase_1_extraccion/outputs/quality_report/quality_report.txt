@@ -1,0 +1,38 @@
+============================================================
+REPORTE DE CALIDAD - KPCL0034 - FASE 1
+============================================================
+
+READINGS
+  Total filas          : 96,807
+  Rango temporal       : 2026-04-08 02:34:40.188776+00:00 -> 2026-04-27 03:29:47.297000+00:00
+  clock_invalid=True   : 48,396 (50.0%)
+  Cadencia mediana     : 14.6s
+  Cadencia media       : 17.0s
+  Delta max (gaps)     : 177441s (2957.3 min)
+  Gaps > 5 min         : 9
+  NaN por columna:
+    weight_grams        : 0.09%
+    temperature         : 0.00%
+    humidity            : 0.00%
+    battery_level       : 100.00%
+
+ETIQUETAS
+  Total etiquetas      : 202
+    inicio_alimentacion           : 81
+    termino_alimentacion          : 81
+    inicio_servido                : 14
+    termino_servido               : 14
+    kpcl_con_plato                : 5
+    kpcl_sin_plato                : 4
+    tare_con_plato                : 3
+
+SESIONES RECONSTRUIDAS
+  Total sesiones       : 95
+  alimentacion:
+    N=81  dur_media=473s  dur_max=2100s
+  servido:
+    N=14  dur_media=167s  dur_max=510s
+
+============================================================
+Fase 1 completada. Puedes continuar con la Fase 2.
+============================================================

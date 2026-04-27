@@ -41,7 +41,7 @@ Se probaron todos los botones de categorias para KPCL0034 y KPCL0036 desde la vi
 ## Archivos involucrados
 - `kittypau_app/src/app/api/devices/[id]/category/route.ts`
 - `kittypau_app/src/app/(app)/today/page.tsx`
-- `Docs/investigacion/CLEANUP_MANUAL_CATEGORY_TESTS_2026-04-07.sql`
+- cleanup histórico inicial retirado del flujo vigente
 
 ## Siguente paso recomendado
 - Confirmar en UI que el campo `plato` deje de estar en `N/D` tras registrar

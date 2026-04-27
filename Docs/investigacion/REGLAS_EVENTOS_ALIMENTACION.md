@@ -135,7 +135,7 @@ El health-check puede ejecutarse en paralelo (varias invocaciones Vercel simult�
 antes de que el primer `UPDATE devices SET device_state = 'offline'` se confirme.
 Resultado: múltiples `device_offline_detected` para el mismo evento físico en el mismo segndo.
 Evidencia: KPCL0036 acumuló 30 eventos entre 2026-02-12 y 2026-04-10 (lotes de 2-3 en milisegndos).
-**Estos 30 eventos serán eliminados** (ver `CLEANUP_MANUAL_CATEGORY_TESTS_2026-04-07.sql`).
+**Estos 30 eventos eran parte del cleanup histórico inicial** y ya no forman parte del flujo canónico actual.
 
 **Regla de uso:**
 - Los eventos de conectividad (`device_offline_detected` etc.) son de infraestructura.

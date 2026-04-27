@@ -14,8 +14,7 @@ Este documento deja trazabilidad de todo el proceso aplicado sobre `KPCL0034` pa
 
 1. Se consolidaron timestamps manuales entregados para `KPCL0034`.
 2. Se normalizo anio del lote (`2024` -> `2026`) para que coincida con el experimento real.
-3. Se insertaron categorias manuales en `audit_events` via:
-   - `Docs/investigacion/backfill_kpcl_categories_batch_2026_04_16.py`
+3. Se insertaron categorias manuales en `audit_events` como persistencia oficial en Supabase.
 4. Se corrigio deduplicacion por normalizacion de timestamp (`Z` vs `+00:00`) en el script.
 5. Se limpio la duplicidad residual del primer intento de carga.
 6. Se verifico que el lote quedara asociado solo a `KPCL0034` (no `KPCL0036`).
@@ -99,7 +98,10 @@ Formato: `timestamp UTC -> categoria`
 
 ## Scripts/archivos relacionados
 
-- `Docs/investigacion/backfill_kpcl_categories_batch_2026_04_16.py`
 - `Docs/investigacion/refresh_kpcl_experimento.py`
 - `Docs/investigacion/plot_kpcl_experimento.py`
-- `Docs/investigacion/kpcl0034_historico_completo_20260416_005117.csv`
+
+Nota operativa: la verdad actual del proyecto para estos eventos es
+`public.audit_events`. Los archivos locales de apoyo ya no deben usarse como
+fuente primaria para el dashboard ni para el pipeline de Data Science.
+- Archivo historico consolidado ya retirado del arbol actual; la verdad operativa vive en `public.audit_events` y la evidencia local queda en `events_labeled.parquet`.

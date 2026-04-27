@@ -1,0 +1,39 @@
+{
+  "objective": "multiclass",
+  "num_class": 3,
+  "metric": "multi_logloss",
+  "boosting_type": "gbdt",
+  "learning_rate": 0.02,
+  "num_leaves": 127,
+  "max_depth": 10,
+  "min_child_samples": 1,
+  "feature_fraction": 0.85,
+  "bagging_fraction": 0.85,
+  "bagging_freq": 5,
+  "lambda_l2": 2.0,
+  "verbose": -1,
+  "seed": 42,
+  "best_iteration": 105,
+  "best_val_loss": 0.10901233312079678,
+  "weight_power": 0.4,
+  "served_target_count": 126,
+  "smote_strategy": {
+    "minority_label": 1,
+    "original_count": 42,
+    "target_count": 126,
+    "synthetic_count": 84,
+    "k_neighbors": 3,
+    "seed": 42,
+    "method": "custom_smote"
+  },
+  "val_metrics": {
+    "per_class_f1": {
+      "0": 0.548780487804878,
+      "1": 0.39999999999999997,
+      "2": 0.9879308984775578
+    },
+    "macro_f1": 0.6455704620941453,
+    "weighted_f1": 0.9725025979069796,
+    "accuracy": 0.9761904761904762
+  }
+}

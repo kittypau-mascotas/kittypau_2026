@@ -1,0 +1,28 @@
+{
+  "original_train_rows": 30377,
+  "augmented_train_rows": 30461,
+  "served_target_count": 126,
+  "smote_strategy": {
+    "minority_label": 1,
+    "original_count": 42,
+    "target_count": 126,
+    "synthetic_count": 84,
+    "k_neighbors": 3,
+    "seed": 42,
+    "method": "custom_smote"
+  },
+  "feature_cols": [
+    "weight_grams",
+    "delta_w",
+    "delta_w_10",
+    "rolling_std_5",
+    "rolling_std_10",
+    "rolling_mean_5",
+    "net_weight",
+    "is_plateau",
+    "plateau_duration",
+    "hour_sin",
+    "hour_cos",
+    "clock_invalid"
+  ]
+}

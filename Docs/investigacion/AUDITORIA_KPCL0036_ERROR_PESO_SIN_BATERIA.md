@@ -1,13 +1,13 @@
 # Auditoria KPCL0036 - error de peso sin batera
 
-> Documento canonico de auditoria tecnica para el archivo `Docs/investigacion/kpcl0036_error_peso_sinbatera.csv`.
+> Documento canonico de auditoria tecnica para el historial bruto de peso sin bateria de KPCL0036. El CSV original ya fue retirado del flujo vigente.
 > Este informe se conserva como evidencia operativa del comportamiento de peso del dispositivo `KPCL0036`.
 
 ## 1) Alcance
 
 Se reviso el archivo:
 
-- `Docs/investigacion/kpcl0036_error_peso_sinbatera.csv`
+- Historial bruto retirado del flujo vigente
 
 Objetivo de la auditoria:
 
