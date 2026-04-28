@@ -21,6 +21,15 @@ const ALLOWED_CATEGORIES = new Set([
   "kpcl_con_plato",
 ]);
 
+function toNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 // GET /api/devices/[id]/events?from=ISO&to=ISO&categories=inicio_alimentacion,termino_alimentacion
 export async function GET(
   req: NextRequest,
@@ -86,12 +95,41 @@ export async function GET(
     return apiError(req, 500, "SUPABASE_ERROR", error.message);
   }
 
-  const rows = (data ?? []).map((row) => ({
-    id: row.id,
-    created_at: row.created_at,
-    category: (row.payload as Record<string, string>)?.category ?? "",
-    category_label: (row.payload as Record<string, string>)?.category_label ?? "",
-  }));
+  const rows = (data ?? []).map((row) => {
+    const payload = (row.payload ?? {}) as Record<string, unknown>;
+    const category = (payload.category as string) ?? "";
+    const snapshot =
+      payload.snapshot && typeof payload.snapshot === "object"
+        ? (payload.snapshot as Record<string, unknown>)
+        : null;
+
+    const categoryType = category.includes("hidratacion")
+      ? "hidratacion"
+      : category.includes("servido")
+        ? "servido"
+        : category.includes("alimentacion")
+          ? "alimentacion"
+          : null;
+
+    return {
+      id: row.id,
+      created_at: row.created_at,
+      category,
+      category_label: (payload.category_label as string) ?? "",
+      category_type: categoryType,
+      snapshot: snapshot
+        ? {
+            weight_grams: toNumber(snapshot.weight_grams),
+            plate_weight_grams: toNumber(snapshot.plate_weight_grams),
+            content_weight_grams: toNumber(snapshot.content_weight_grams),
+            sensor_recorded_at:
+              typeof snapshot.sensor_recorded_at === "string"
+                ? snapshot.sensor_recorded_at
+                : null,
+          }
+        : null,
+    };
+  });
 
   logRequestEnd(req, startedAt, 200, { count: rows.length, device_id: deviceId });
 

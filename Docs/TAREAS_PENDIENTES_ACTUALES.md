@@ -1,6 +1,6 @@
 ﻿# Tareas Pendientes Actuales - Kittypau
 
-Fecha de corte: 2026-04-01
+Fecha de corte: 2026-04-27
 
 > Esta lista es el backlog operativo vivo derivado de `ESTADO_PROYECTO_ACTUAL.md`.
 > Usa esta hoja para ejecutar trabajo. Si hay conflicto, manda el snapshot vivo.
@@ -16,6 +16,12 @@ Fecha de corte: 2026-04-01
 
 ### P0
 - [x] Corregir la coherencia de `/today` entre `hero`, `navbar`, selector de mascota y cards.
+- [x] Estabilizar suscripcion a eventos de ventana en `/today` — patron handler-ref elimina re-suscripcion en cada lectura MQTT (`useEffect` dep `[]`).
+- [x] Eliminar acumulacion de timers de feedback visual en `/today` (bowlFeedbackTimerRef, waterFeedbackTimerRef).
+- [x] Reducir polling de `/today` de 5 s a 15 s.
+- [x] Corregir solapamiento de transiciones D3 en `DayCycleChart` con `svg.interrupt()` antes de limpiar.
+- [x] Corregir acumulacion de listeners de mouse en `DayCycleChart` con namespace `.chart`.
+- [x] Merge incremental de lecturas en `/bowl` (polling no reemplaza el array completo).
 - [ ] Asegurar que los estados vacios y loading expliquen si faltan datos o si no hay dispositivo vinculado.
 - [ ] Eliminar fallbacks visuales que oculten el estado real de comida, agua y ambiente.
 - [ ] Mantener estable el contrato de UI con `readings` aunque no exista telemetra de batera.
@@ -42,6 +48,8 @@ Fecha de corte: 2026-04-01
   - `device_battery_cycles`
 - [ ] Mantener observabilidad minima del bridge: health-check, timeout y recovery.
 - [x] Migrar `middleware` a `proxy` para eliminar la advertencia de Next 16.
+- [x] Agregar `Cache-Control` a `/api/readings`, `/api/analytics/sessions` y `/api/analytics/daily`.
+- [x] Paralelizar consultas de perfil + datos en `/api/analytics/sessions` y `/api/analytics/daily` con `Promise.all` (elimina ~80ms de latencia secuencial).
 
 ### P1
 - [ ] Homologar entornos local, staging y prod para migraciones de `readings`.

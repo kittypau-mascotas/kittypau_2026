@@ -16,6 +16,14 @@ import {
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
+import {
+  Clock3,
+  Scale,
+  Timer,
+  UtensilsCrossed,
+  ShieldCheck,
+  HandPlatter,
+} from "lucide-react";
 import { buildSeries } from "@/lib/charts";
 import {
   getChileDayNightWindow,
@@ -55,6 +63,7 @@ type ApiDevice = {
   status: string;
   device_state: string | null;
   battery_level: number | null;
+  battery_state: string | null;
   last_seen: string | null;
 };
 
@@ -78,6 +87,13 @@ type AuditEvent = {
   created_at: string;
   category: string;
   category_label: string;
+  category_type?: "alimentacion" | "servido" | "hidratacion" | null;
+  snapshot?: {
+    weight_grams?: number | null;
+    plate_weight_grams?: number | null;
+    content_weight_grams?: number | null;
+    sensor_recorded_at?: string | null;
+  } | null;
 };
 
 type IntakeSession = {
@@ -99,6 +115,51 @@ type StatCard = {
   label: string;
   value: string;
   icon?: string;
+};
+
+type FeedCard = {
+  title: string;
+  description: string;
+  tone: "ok" | "warning" | "info";
+  icon?: string;
+  insights?: InsightItem[];
+  sectionTitle?: string;
+  sectionRows?: Array<{ label: string; value: string; icon?: InsightIconKey }>;
+  footer?: string;
+};
+
+type InsightIconKey =
+  | "meals"
+  | "clock"
+  | "consumed"
+  | "duration"
+  | "served"
+  | "audit";
+
+type InsightItem = {
+  label: string;
+  value: string;
+  icon: InsightIconKey;
+};
+
+type FoodRealitySnapshot = {
+  deviceCode: string;
+  generatedAt: string;
+  questions: {
+    mealsPerDay: number;
+    mealTimes: string[];
+    totalConsumedGrams: number;
+    avgConsumedGrams: number | null;
+    avgDurationMinutes: number | null;
+  };
+  audit: {
+    servedStarts: number;
+    servedEnds: number;
+    servedClosedCycles: number;
+    feedingStarts: number;
+    feedingEnds: number;
+    feedingClosedCycles: number;
+  };
 };
 
 type PeriodStats = {
@@ -440,6 +501,76 @@ function buildAuditSessions(
   return sessions;
 }
 
+function buildAuditEventPairs(
+  events: AuditEvent[],
+  startCategory: string,
+  endCategory: string,
+) {
+  const sorted = [...events].sort(
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+  );
+  const open: AuditEvent[] = [];
+  const closed: Array<{ start: AuditEvent; end: AuditEvent }> = [];
+
+  for (const event of sorted) {
+    if (event.category === startCategory) {
+      open.push(event);
+      continue;
+    }
+    if (event.category !== endCategory) continue;
+    const start = open.shift();
+    if (!start) continue;
+    if (new Date(event.created_at).getTime() <= new Date(start.created_at).getTime()) {
+      continue;
+    }
+    closed.push({ start, end: event });
+  }
+
+  return { closed, open };
+}
+
+function getSnapshotContentWeight(event: AuditEvent): number | null {
+  const snapshot = event.snapshot;
+  if (!snapshot) return null;
+  const content = toNullableNumber(snapshot.content_weight_grams);
+  if (content !== null) return Math.max(0, content);
+  const weight = toNullableNumber(snapshot.weight_grams);
+  if (weight === null) return null;
+  const plate = toNullableNumber(snapshot.plate_weight_grams) ?? 0;
+  return Math.max(0, weight - plate);
+}
+
+function getEventContentWeightWithFallback(
+  event: AuditEvent,
+  readings: ApiReading[],
+  valueSelector: (reading: ApiReading) => number | null,
+): number | null {
+  const snapshotValue = getSnapshotContentWeight(event);
+  if (snapshotValue !== null) return snapshotValue;
+  if (!readings.length) return null;
+
+  const eventTs = new Date(event.created_at).getTime();
+  if (Number.isNaN(eventTs)) return null;
+
+  const MAX_DELTA_MS = 20 * 60 * 1000; // 20 min
+  let bestValue: number | null = null;
+  let bestDelta = Number.POSITIVE_INFINITY;
+
+  for (const reading of readings) {
+    const ts = new Date(reading.recorded_at).getTime();
+    if (Number.isNaN(ts)) continue;
+    const delta = Math.abs(ts - eventTs);
+    if (delta > MAX_DELTA_MS || delta >= bestDelta) continue;
+    const value = valueSelector(reading);
+    if (value === null) continue;
+    bestDelta = delta;
+    bestValue = Math.max(0, value);
+  }
+
+  return bestValue;
+}
+
 function findSessionForPoint(
   sessions: IntakeSession[],
   pointIndex: number,
@@ -581,11 +712,29 @@ function buildWellnessState(params: {
 }
 
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+const WELLNESS_BLOCKS = 20;
 const AUTHORITATIVE_FOOD_DEVICE_CODE = "KPCL0034";
 const FOOD_START_CATEGORY = "inicio_alimentacion";
 const FOOD_END_CATEGORY = "termino_alimentacion";
 const WATER_START_CATEGORY = "inicio_hidratacion";
 const WATER_END_CATEGORY = "termino_hidratacion";
+const TODAY_AUDIT_CATEGORIES = [
+  "inicio_servido",
+  "termino_servido",
+  "inicio_alimentacion",
+  "termino_alimentacion",
+  "inicio_hidratacion",
+  "termino_hidratacion",
+] as const;
+const BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX = "kittypau_bar_max_termino_servido_";
+
+// Regla UX/UI: mostrar hallazgos importantes en formato simple con iconos,
+// evitando listas enumeradas para lectura rápida.
+const FOOD_AUDIT_UX_RULE = {
+  avoidEnumeratedList: true,
+  emphasizeImportantInsights: true,
+  keepLanguageSimple: true,
+} as const;
 
 function isAuthoritativeFoodDeviceCode(value?: string | null): boolean {
   return (value ?? "").toUpperCase() === AUTHORITATIVE_FOOD_DEVICE_CODE;
@@ -747,6 +896,9 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
     useState<DeviceReadingsMap>({});
+  const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] = useState<
+    number | null
+  >(null);
   const [bowlLongReadings, setBowlLongReadings] = useState<ApiReading[]>([]);
   const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
     PetAnalyticsSession[]
@@ -779,6 +931,8 @@ export default function TodayPage() {
   >(null);
   const bowlFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waterFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onPetChangeRef = useRef<((e: Event) => void) | null>(null);
+  const onDeviceChangeRef = useRef<((e: Event) => void) | null>(null);
   const [waterPlateOverrides, setWaterPlateOverrides] = useState<
     Record<string, number>
   >({});
@@ -1041,134 +1195,121 @@ export default function TodayPage() {
 
   // Live readings manejados por useMqttLive + useEffect arriba
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onPetChange = async (event: Event) => {
-      const custom = event as CustomEvent<{ petId?: string; petName?: string }>;
-      const nextPetId = custom.detail?.petId ?? null;
-      if (!nextPetId || nextPetId === selectedPetId) return;
+  // Handlers asignados en cada render para que el effect de mount siempre use closures frescas
+  onPetChangeRef.current = async (event: Event) => {
+    const custom = event as CustomEvent<{ petId?: string; petName?: string }>;
+    const nextPetId = custom.detail?.petId ?? null;
+    if (!nextPetId || nextPetId === selectedPetId) return;
 
-      const nextPet =
-        state.pets.find((pet) => pet.id === nextPetId) ??
-        (custom.detail?.petName
-          ? { id: nextPetId, name: custom.detail.petName }
-          : null);
-      if (!nextPet) return;
+    const nextPet =
+      state.pets.find((pet) => pet.id === nextPetId) ??
+      (custom.detail?.petName
+        ? { id: nextPetId, name: custom.detail.petName }
+        : null);
+    if (!nextPet) return;
 
-      const storedDeviceId =
-        window.localStorage.getItem("kittypau_device_id") ?? null;
-      const petSuffix = parsePetNumberSuffix(nextPet.name);
-      const expectedFoodDeviceId = petSuffix
-        ? kpclLabelFromNumber(petSuffix)
-        : null;
-      const devicesByPet = state.devices.filter(
-        (device) => device.pet_id === nextPet.id,
-      );
-      const nextDevice =
-        devicesByPet.find((device) => device.id === storedDeviceId) ??
-        devicesByPet.find(
-          (device) =>
-            (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
-        ) ??
-        devicesByPet[0] ??
-        state.devices.find((device) => device.id === storedDeviceId) ??
-        state.devices.find(
-          (device) =>
-            (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
-        ) ??
-        null;
+    const storedDeviceId =
+      window.localStorage.getItem("kittypau_device_id") ?? null;
+    const petSuffix = parsePetNumberSuffix(nextPet.name);
+    const expectedFoodDeviceId = petSuffix
+      ? kpclLabelFromNumber(petSuffix)
+      : null;
+    const devicesByPet = state.devices.filter(
+      (device) => device.pet_id === nextPet.id,
+    );
+    const nextDevice =
+      devicesByPet.find((device) => device.id === storedDeviceId) ??
+      devicesByPet.find(
+        (device) =>
+          (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+      ) ??
+      devicesByPet[0] ??
+      state.devices.find((device) => device.id === storedDeviceId) ??
+      state.devices.find(
+        (device) =>
+          (device.device_id ?? "").toUpperCase() === expectedFoodDeviceId,
+      ) ??
+      null;
 
+    setSelectedPetId(nextPet.id);
+    syncSelectedPet(nextPet.id, nextPet.name ?? "");
+    setSelectedDeviceId(nextDevice?.id ?? null);
+    syncSelectedDevice(nextDevice?.id ?? null);
+
+    if (!nextDevice?.id) {
+      setState((prev) => ({
+        ...prev,
+        readings: [],
+        readingsCursor: null,
+      }));
+      return;
+    }
+
+    try {
+      const result = await loadReadings(nextDevice.id);
+      setState((prev) => ({
+        ...prev,
+        readings: result.data,
+        readingsCursor: result.nextCursor,
+      }));
+      setLastRefreshAt(new Date().toISOString());
+      setRefreshError(null);
+    } catch (err) {
+      setState((prev) => ({
+        ...prev,
+        error:
+          err instanceof Error
+            ? err.message
+            : "No se pudieron cargar las lecturas.",
+      }));
+    }
+  };
+
+  onDeviceChangeRef.current = async (event: Event) => {
+    const custom = event as CustomEvent<{ deviceId?: string }>;
+    const nextId = custom.detail?.deviceId ?? null;
+    if (!nextId || nextId === selectedDeviceId) return;
+    const nextDevice = state.devices.find((device) => device.id === nextId);
+    const nextPet = nextDevice?.pet_id
+      ? (state.pets.find((pet) => pet.id === nextDevice.pet_id) ?? null)
+      : null;
+    if (nextPet?.id && nextPet.id !== selectedPetId) {
       setSelectedPetId(nextPet.id);
       syncSelectedPet(nextPet.id, nextPet.name ?? "");
-      setSelectedDeviceId(nextDevice?.id ?? null);
-      syncSelectedDevice(nextDevice?.id ?? null);
+    }
+    setSelectedDeviceId(nextId);
+    syncSelectedDevice(nextId);
+    try {
+      const result = await loadReadings(nextId);
+      setState((prev) => ({
+        ...prev,
+        readings: result.data,
+        readingsCursor: result.nextCursor,
+      }));
+      setLastRefreshAt(new Date().toISOString());
+      setRefreshError(null);
+    } catch (err) {
+      setState((prev) => ({
+        ...prev,
+        error:
+          err instanceof Error
+            ? err.message
+            : "No se pudieron cargar las lecturas.",
+      }));
+    }
+  };
 
-      if (!nextDevice?.id) {
-        setState((prev) => ({
-          ...prev,
-          readings: [],
-          readingsCursor: null,
-        }));
-        return;
-      }
-
-      try {
-        const result = await loadReadings(nextDevice.id);
-        setState((prev) => ({
-          ...prev,
-          readings: result.data,
-          readingsCursor: result.nextCursor,
-        }));
-        setLastRefreshAt(new Date().toISOString());
-        setRefreshError(null);
-      } catch (err) {
-        setState((prev) => ({
-          ...prev,
-          error:
-            err instanceof Error
-              ? err.message
-              : "No se pudieron cargar las lecturas.",
-        }));
-      }
-    };
-    const onDeviceChange = async (event: Event) => {
-      const custom = event as CustomEvent<{ deviceId?: string }>;
-      const nextId = custom.detail?.deviceId ?? null;
-      if (!nextId || nextId === selectedDeviceId) return;
-      const nextDevice = state.devices.find((device) => device.id === nextId);
-      const nextPet = nextDevice?.pet_id
-        ? (state.pets.find((pet) => pet.id === nextDevice.pet_id) ?? null)
-        : null;
-      if (nextPet?.id && nextPet.id !== selectedPetId) {
-        setSelectedPetId(nextPet.id);
-        syncSelectedPet(nextPet.id, nextPet.name ?? "");
-      }
-      setSelectedDeviceId(nextId);
-      syncSelectedDevice(nextId);
-      try {
-        const result = await loadReadings(nextId);
-        setState((prev) => ({
-          ...prev,
-          readings: result.data,
-          readingsCursor: result.nextCursor,
-        }));
-        setLastRefreshAt(new Date().toISOString());
-        setRefreshError(null);
-      } catch (err) {
-        setState((prev) => ({
-          ...prev,
-          error:
-            err instanceof Error
-              ? err.message
-              : "No se pudieron cargar las lecturas.",
-        }));
-      }
-    };
-    window.addEventListener(
-      "kittypau-pet-change",
-      onPetChange as EventListener,
-    );
-    window.addEventListener(
-      "kittypau-device-change",
-      onDeviceChange as EventListener,
-    );
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const petH = (e: Event) => onPetChangeRef.current?.(e);
+    const devH = (e: Event) => onDeviceChangeRef.current?.(e);
+    window.addEventListener("kittypau-pet-change", petH);
+    window.addEventListener("kittypau-device-change", devH);
     return () => {
-      window.removeEventListener(
-        "kittypau-pet-change",
-        onPetChange as EventListener,
-      );
-      window.removeEventListener(
-        "kittypau-device-change",
-        onDeviceChange as EventListener,
-      );
+      window.removeEventListener("kittypau-pet-change", petH);
+      window.removeEventListener("kittypau-device-change", devH);
     };
-  }, [
-    selectedDeviceId,
-    selectedPetId,
-    state.devices,
-    state.pets,
-    loadReadings,
-  ]);
+  }, []);
 
   const loadMoreReadings = async () => {
     const deviceId = selectedDeviceId;
@@ -1546,7 +1687,7 @@ export default function TodayPage() {
     if (!targetIds.length) return;
     let active = true;
     const loadAuditEvents = async () => {
-      const lookbackDays = Math.max(30, dayCycleOffsetDays + 2);
+      const lookbackDays = Math.max(180, dayCycleOffsetDays + 2);
       const from = new Date(
         Date.now() - lookbackDays * 24 * 60 * 60 * 1000,
       ).toISOString();
@@ -1555,7 +1696,7 @@ export default function TodayPage() {
         targetIds.map(async (deviceId) => {
           try {
             const res = await authFetch(
-              `/api/devices/${deviceId}/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+              `/api/devices/${deviceId}/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&categories=${encodeURIComponent(TODAY_AUDIT_CATEGORIES.join(","))}`,
             );
             if (!res.ok) return [deviceId, []] as const;
             const payload = await res.json();
@@ -1625,46 +1766,6 @@ export default function TodayPage() {
     return "Ritmo dentro de lo esperado.";
   }, [latestReading, petLabel]);
 
-  const feedCards = useMemo(() => {
-    if (!latestReading) return [];
-    const items = [];
-    if (latestReading.water_ml !== null || latestReading.flow_rate !== null) {
-      items.push({
-        title: "Hidratación",
-        description:
-          latestReading.flow_rate !== null
-            ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
-            : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
-        tone: "info",
-        icon: "/illustrations/green_water_full.png",
-      });
-    }
-    if (latestReading.weight_grams !== null) {
-      items.push({
-        title: "Consumo de alimento",
-        description: `Peso detectado: ${latestReading.weight_grams} g.`,
-        tone: "ok",
-        icon: "/illustrations/pink_food_full.png",
-      });
-    }
-    if (latestReading.temperature !== null || latestReading.humidity !== null) {
-      const temperatureText =
-        latestReading.temperature !== null
-          ? String(toRoundedSensorValue(latestReading.temperature))
-          : "-";
-      const humidityText =
-        latestReading.humidity !== null
-          ? String(toRoundedSensorValue(latestReading.humidity))
-          : "-";
-      items.push({
-        title: "Ambiente",
-        description: `Temp ${temperatureText}° · Humedad ${humidityText}%.`,
-        tone: "warning",
-      });
-    }
-    return items.slice(0, 3);
-  }, [latestReading]);
-
   const quickStats = useMemo(() => {
     if (!latestReading) {
       return [
@@ -1716,6 +1817,25 @@ export default function TodayPage() {
     ok: "border-emerald-200/60 bg-emerald-50/60 text-emerald-800",
     warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
     info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
+  };
+  const renderInsightIcon = (icon: InsightIconKey) => {
+    const classes = "h-3.5 w-3.5 shrink-0 text-slate-600";
+    switch (icon) {
+      case "meals":
+        return <UtensilsCrossed className={classes} aria-hidden={true} />;
+      case "clock":
+        return <Clock3 className={classes} aria-hidden={true} />;
+      case "consumed":
+        return <Scale className={classes} aria-hidden={true} />;
+      case "duration":
+        return <Timer className={classes} aria-hidden={true} />;
+      case "served":
+        return <HandPlatter className={classes} aria-hidden={true} />;
+      case "audit":
+        return <ShieldCheck className={classes} aria-hidden={true} />;
+      default:
+        return <ShieldCheck className={classes} aria-hidden={true} />;
+    }
   };
   const bowlTempText =
     bowlLatestReading?.temperature !== null &&
@@ -2219,6 +2339,23 @@ export default function TodayPage() {
     [waterPlateWeightEffective, waterDevice?.id, waterTareOffsets],
   );
 
+  useEffect(() => {
+    if (!bowlDevice?.id || typeof window === "undefined") {
+      setBowlStoredMaxTerminoServido(null);
+      return;
+    }
+    const key = `${BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX}${bowlDevice.id}`;
+    const raw = window.localStorage.getItem(key);
+    if (!raw) {
+      setBowlStoredMaxTerminoServido(null);
+      return;
+    }
+    const parsed = Number(raw);
+    setBowlStoredMaxTerminoServido(
+      Number.isFinite(parsed) && parsed > 0 ? parsed : null,
+    );
+  }, [bowlDevice?.id]);
+
   const bowlDayNightPoints = useMemo(
     () =>
       toDayNightPoints(
@@ -2251,6 +2388,22 @@ export default function TodayPage() {
     ],
   );
 
+  const bowlReferenceReadings = useMemo(
+    () => [
+      ...bowlChartReadings,
+      ...(bowlDevice?.id ? (deviceHistoryReadings[bowlDevice.id] ?? []) : []),
+    ],
+    [bowlChartReadings, bowlDevice?.id, deviceHistoryReadings],
+  );
+
+  const waterReferenceReadings = useMemo(
+    () => [
+      ...waterChartReadings,
+      ...(waterDevice?.id ? (deviceHistoryReadings[waterDevice.id] ?? []) : []),
+    ],
+    [deviceHistoryReadings, waterChartReadings, waterDevice?.id],
+  );
+
   const bowlIntakeSessions = useMemo(() => {
     if (!isAuthoritativeFoodDevice) return [];
     return buildAuditSessions(
@@ -2274,6 +2427,189 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [waterDayNightPoints, deviceAuditEvents, waterDevice?.id]);
+
+  const bowlDayAuditEvents = useMemo(() => {
+    const events = deviceAuditEvents[bowlDevice?.id ?? ""] ?? [];
+    return events.filter((event) => {
+      const ts = new Date(event.created_at).getTime();
+      return (
+        Number.isFinite(ts) &&
+        ts >= dayNightWindow.startMs &&
+        ts <= dayNightWindow.endMs
+      );
+    });
+  }, [bowlDevice?.id, dayNightWindow.endMs, dayNightWindow.startMs, deviceAuditEvents]);
+
+  const bowlDayServedEvents = useMemo(
+    () =>
+      bowlDayAuditEvents.filter(
+        (event) =>
+          event.category === "inicio_servido" ||
+          event.category === "termino_servido",
+      ),
+    [bowlDayAuditEvents],
+  );
+
+  const bowlDayFoodEvents = useMemo(
+    () =>
+      bowlDayAuditEvents.filter(
+        (event) =>
+          event.category === FOOD_START_CATEGORY ||
+          event.category === FOOD_END_CATEGORY,
+      ),
+    [bowlDayAuditEvents],
+  );
+
+  const bowlServedPairs = useMemo(
+    () => buildAuditEventPairs(bowlDayServedEvents, "inicio_servido", "termino_servido"),
+    [bowlDayServedEvents],
+  );
+
+  const bowlFoodPairs = useMemo(
+    () => buildAuditEventPairs(bowlDayFoodEvents, FOOD_START_CATEGORY, FOOD_END_CATEGORY),
+    [bowlDayFoodEvents],
+  );
+
+  const foodRealitySnapshot = useMemo<FoodRealitySnapshot | null>(() => {
+    if (!isAuthoritativeFoodDevice) return null;
+    const sessions = bowlIntakeSessions.slice().sort((a, b) => a.startT - b.startT);
+    const mealsPerDay = sessions.length;
+    const mealTimes = sessions.map((session) => formatSessionClock(session.startT));
+    const totalConsumedGrams = Math.round(
+      sessions.reduce((acc, session) => acc + Math.max(0, session.consumed), 0),
+    );
+    const avgConsumedGrams =
+      mealsPerDay > 0 ? Math.round(totalConsumedGrams / mealsPerDay) : null;
+    const totalDuration = sessions.reduce(
+      (acc, session) => acc + Math.max(0, session.durationMinutes),
+      0,
+    );
+    const avgDurationMinutes =
+      mealsPerDay > 0 ? Math.round(totalDuration / mealsPerDay) : null;
+    const servedStarts = bowlDayServedEvents.filter(
+      (event) => event.category === "inicio_servido",
+    ).length;
+    const servedEnds = bowlDayServedEvents.filter(
+      (event) => event.category === "termino_servido",
+    ).length;
+    const feedingStarts = bowlDayFoodEvents.filter(
+      (event) => event.category === FOOD_START_CATEGORY,
+    ).length;
+    const feedingEnds = bowlDayFoodEvents.filter(
+      (event) => event.category === FOOD_END_CATEGORY,
+    ).length;
+    return {
+      deviceCode: bowlDevice?.device_id ?? AUTHORITATIVE_FOOD_DEVICE_CODE,
+      generatedAt: new Date().toISOString(),
+      questions: {
+        mealsPerDay,
+        mealTimes,
+        totalConsumedGrams,
+        avgConsumedGrams,
+        avgDurationMinutes,
+      },
+      audit: {
+        servedStarts,
+        servedEnds,
+        servedClosedCycles: bowlServedPairs.closed.length,
+        feedingStarts,
+        feedingEnds,
+        feedingClosedCycles: bowlFoodPairs.closed.length,
+      },
+    };
+  }, [
+    bowlDayFoodEvents,
+    bowlDayServedEvents,
+    bowlDevice?.device_id,
+    bowlFoodPairs.closed.length,
+    bowlIntakeSessions,
+    bowlServedPairs.closed.length,
+    isAuthoritativeFoodDevice,
+  ]);
+
+  const feedCards = useMemo<FeedCard[]>(() => {
+    if (!latestReading) return [];
+    const items: FeedCard[] = [];
+    if (latestReading.water_ml !== null || latestReading.flow_rate !== null) {
+      items.push({
+        title: "Hidratación",
+        description:
+          latestReading.flow_rate !== null
+            ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
+            : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
+        tone: "info",
+        icon: "/illustrations/green_water_full.png",
+      });
+    }
+    if (latestReading.weight_grams !== null) {
+      const meals = foodRealitySnapshot?.questions.mealsPerDay ?? 0;
+      const mealTimes =
+        foodRealitySnapshot?.questions.mealTimes.length
+          ? foodRealitySnapshot.questions.mealTimes.join(", ")
+          : "Sin eventos de inicio confirmados";
+      const totalConsumed = foodRealitySnapshot
+        ? `${foodRealitySnapshot.questions.totalConsumedGrams} g`
+        : "N/D";
+      const avgDuration = foodRealitySnapshot?.questions.avgDurationMinutes;
+      const durationText =
+        avgDuration !== null && avgDuration !== undefined
+          ? `${avgDuration} min (promedio)`
+          : "N/D";
+      items.push({
+        title: "Consumo de alimento (hoy)",
+        description: FOOD_AUDIT_UX_RULE.keepLanguageSimple
+          ? `Comidas auditadas en ${AUTHORITATIVE_FOOD_DEVICE_CODE}: ${meals} confirmadas hoy.`
+          : `KPCL0034 auditado: ${meals} comidas confirmadas en el día.`,
+        tone: "ok",
+        icon: "/illustrations/pink_food_full.png",
+        insights: [
+          { label: "Frecuencia de comida", value: `${meals} veces hoy`, icon: "meals" },
+          { label: "Horarios detectados", value: mealTimes, icon: "clock" },
+          { label: "Consumo total", value: totalConsumed, icon: "consumed" },
+          { label: "Duración al comer", value: durationText, icon: "duration" },
+        ],
+        sectionTitle: "Realidad auditada (servido vs alimentación)",
+        sectionRows: [
+          {
+            label: "Servido",
+            value: `${foodRealitySnapshot?.audit.servedClosedCycles ?? 0} ciclos cerrados · ${foodRealitySnapshot?.audit.servedStarts ?? 0} inicios · ${foodRealitySnapshot?.audit.servedEnds ?? 0} términos`,
+            icon: "served",
+          },
+          {
+            label: "Alimentación",
+            value: `${foodRealitySnapshot?.audit.feedingClosedCycles ?? 0} ciclos cerrados · ${foodRealitySnapshot?.audit.feedingStarts ?? 0} inicios · ${foodRealitySnapshot?.audit.feedingEnds ?? 0} términos`,
+            icon: "meals",
+          },
+          {
+            label: "Fuente",
+            value: foodRealitySnapshot
+              ? `${foodRealitySnapshot.deviceCode} · events_audit real`
+              : "Sin evidencia auditada",
+            icon: "audit",
+          },
+        ],
+        footer: foodRealitySnapshot
+          ? `Snapshot generado: ${formatTimestamp(foodRealitySnapshot.generatedAt)}`
+          : "Sin snapshot diario disponible.",
+      });
+    }
+    if (latestReading.temperature !== null || latestReading.humidity !== null) {
+      const temperatureText =
+        latestReading.temperature !== null
+          ? String(toRoundedSensorValue(latestReading.temperature))
+          : "-";
+      const humidityText =
+        latestReading.humidity !== null
+          ? String(toRoundedSensorValue(latestReading.humidity))
+          : "-";
+      items.push({
+        title: "Ambiente",
+        description: `Temp ${temperatureText}° · Humedad ${humidityText}%.`,
+        tone: "warning",
+      });
+    }
+    return items.slice(0, 3);
+  }, [foodRealitySnapshot, latestReading]);
 
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
@@ -3082,31 +3418,185 @@ export default function TodayPage() {
     [waterHistorySessions],
   );
 
-  // 100% = startValue máximo de sesiones confirmadas hoy.
-  // Fallback: máximo de readings del ciclo si no hay sesiones categorizadas.
-  const bowlFillPct = useMemo(() => {
-    if (bowlContentWeightGrams === null) return null;
-    const maxStart =
-      bowlIntakeSessions.length > 0
-        ? Math.max(...bowlIntakeSessions.map((s) => s.startValue))
-        : bowlDayNightPoints.length > 0
-          ? Math.max(...bowlDayNightPoints.map((p) => p.y))
-          : 0;
-    if (maxStart <= 0) return null;
-    return Math.min(1, Math.max(0, bowlContentWeightGrams / maxStart));
-  }, [bowlContentWeightGrams, bowlIntakeSessions, bowlDayNightPoints]);
+  // 100% = máximo peso de contenido registrado en eventos auditados de "termino_servido".
+  const bowlMaxServedContentGrams = useMemo(() => {
+    const events = deviceAuditEvents[bowlDevice?.id ?? ""] ?? [];
+    const values = events
+      .filter((event) => event.category === "termino_servido")
+      .map((event) =>
+        getEventContentWeightWithFallback(
+          event,
+          bowlReferenceReadings,
+          selectBowlSeriesValue,
+        ),
+      )
+      .filter((value): value is number => value !== null && value > 0);
+    if (!values.length) return null;
+    return Math.max(...values);
+  }, [
+    bowlDevice?.id,
+    bowlReferenceReadings,
+    deviceAuditEvents,
+    selectBowlSeriesValue,
+  ]);
 
-  const waterFillPct = useMemo(() => {
-    if (waterContentWeightGrams === null) return null;
-    const maxStart =
-      waterIntakeSessions.length > 0
-        ? Math.max(...waterIntakeSessions.map((s) => s.startValue))
-        : waterDayNightPoints.length > 0
-          ? Math.max(...waterDayNightPoints.map((p) => p.y))
-          : 0;
-    if (maxStart <= 0) return null;
-    return Math.min(1, Math.max(0, waterContentWeightGrams / maxStart));
-  }, [waterContentWeightGrams, waterIntakeSessions, waterDayNightPoints]);
+  useEffect(() => {
+    if (
+      !bowlDevice?.id ||
+      bowlMaxServedContentGrams !== null ||
+      bowlStoredMaxTerminoServido !== null
+    ) {
+      return;
+    }
+    const terminoEvents = (deviceAuditEvents[bowlDevice.id] ?? [])
+      .filter((event) => event.category === "termino_servido")
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+      .slice(0, 60);
+    if (!terminoEvents.length) return;
+
+    let active = true;
+    const resolveMaxFromTerminoEvents = async () => {
+      let maxValue = 0;
+      for (const event of terminoEvents) {
+        if (!active) return;
+        let content = getEventContentWeightWithFallback(
+          event,
+          bowlReferenceReadings,
+          selectBowlSeriesValue,
+        );
+        if (content === null) {
+          const ts = new Date(event.created_at).getTime();
+          if (Number.isFinite(ts)) {
+            const from = new Date(ts - 20 * 60 * 1000).toISOString();
+            const to = new Date(ts + 20 * 60 * 1000).toISOString();
+            try {
+              const nearby = await loadReadings(bowlDevice.id, null, 300, {
+                from,
+                to,
+              });
+              let bestDelta = Number.POSITIVE_INFINITY;
+              for (const reading of nearby.data) {
+                const rts = new Date(reading.recorded_at).getTime();
+                if (!Number.isFinite(rts)) continue;
+                const delta = Math.abs(rts - ts);
+                if (delta >= bestDelta) continue;
+                const value = selectBowlSeriesValue(reading);
+                if (value === null) continue;
+                bestDelta = delta;
+                content = value;
+              }
+            } catch {
+              // keep unresolved for this event
+            }
+          }
+        }
+        if (content !== null && content > maxValue) {
+          maxValue = content;
+        }
+      }
+
+      if (!active || maxValue <= 0) return;
+      setBowlStoredMaxTerminoServido(maxValue);
+      if (typeof window !== "undefined") {
+        const key = `${BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX}${bowlDevice.id}`;
+        window.localStorage.setItem(key, String(maxValue));
+      }
+    };
+
+    void resolveMaxFromTerminoEvents();
+    return () => {
+      active = false;
+    };
+  }, [
+    bowlDevice?.id,
+    bowlMaxServedContentGrams,
+    bowlReferenceReadings,
+    bowlStoredMaxTerminoServido,
+    deviceAuditEvents,
+    loadReadings,
+    selectBowlSeriesValue,
+  ]);
+
+  useEffect(() => {
+    if (
+      !bowlDevice?.id ||
+      bowlMaxServedContentGrams === null ||
+      bowlMaxServedContentGrams <= 0
+    ) {
+      return;
+    }
+    setBowlStoredMaxTerminoServido((prev) => {
+      const next = prev !== null ? Math.max(prev, bowlMaxServedContentGrams) : bowlMaxServedContentGrams;
+      if (typeof window !== "undefined") {
+        const key = `${BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX}${bowlDevice.id}`;
+        window.localStorage.setItem(key, String(next));
+      }
+      return next;
+    });
+  }, [bowlDevice?.id, bowlMaxServedContentGrams]);
+
+  const waterMaxServedContentMl = useMemo(() => {
+    const events = deviceAuditEvents[waterDevice?.id ?? ""] ?? [];
+    const values = events
+      .filter((event) => event.category === "termino_servido")
+      .map((event) =>
+        getEventContentWeightWithFallback(
+          event,
+          waterReferenceReadings,
+          selectWaterSeriesValue,
+        ),
+      )
+      .filter((value): value is number => value !== null && value > 0);
+    if (!values.length) return null;
+    return Math.max(...values);
+  }, [
+    deviceAuditEvents,
+    selectWaterSeriesValue,
+    waterDevice?.id,
+    waterReferenceReadings,
+  ]);
+
+  const bowlMaxReferenceContentGrams = useMemo(() => {
+    const values = [bowlMaxServedContentGrams, bowlStoredMaxTerminoServido]
+      .filter((value): value is number => value !== null && value > 0);
+    if (!values.length) return null;
+    return Math.max(...values);
+  }, [bowlMaxServedContentGrams, bowlStoredMaxTerminoServido]);
+
+  const bowlBlockLevelPct = useMemo(() => {
+    if (
+      bowlContentWeightGrams === null ||
+      bowlMaxReferenceContentGrams === null
+    ) {
+      return null;
+    }
+    if (bowlMaxReferenceContentGrams <= 0) return null;
+    return Math.min(
+      1,
+      Math.max(0, bowlContentWeightGrams / bowlMaxReferenceContentGrams),
+    );
+  }, [bowlContentWeightGrams, bowlMaxReferenceContentGrams]);
+
+  const waterBlockLevelPct = useMemo(() => {
+    if (waterContentWeightGrams === null || waterMaxServedContentMl === null) {
+      return null;
+    }
+    if (waterMaxServedContentMl <= 0) return null;
+    return Math.min(1, Math.max(0, waterContentWeightGrams / waterMaxServedContentMl));
+  }, [waterContentWeightGrams, waterMaxServedContentMl]);
+
+  const bowlFilledBlocks = useMemo(() => {
+    if (bowlBlockLevelPct === null) return 0;
+    return Math.max(0, Math.min(WELLNESS_BLOCKS, Math.round(bowlBlockLevelPct * WELLNESS_BLOCKS)));
+  }, [bowlBlockLevelPct]);
+
+  const waterFilledBlocks = useMemo(() => {
+    if (waterBlockLevelPct === null) return 0;
+    return Math.max(0, Math.min(WELLNESS_BLOCKS, Math.round(waterBlockLevelPct * WELLNESS_BLOCKS)));
+  }, [waterBlockLevelPct]);
 
   const getConnectivityLabel = (timestamp?: string | null) => {
     if (!timestamp) return "Sin señal";
@@ -3118,6 +3608,19 @@ export default function TodayPage() {
     if (diffMinutes <= 45) return "Reciente";
     if (diffMinutes <= 180) return "Atrasada";
     return "Sin señal";
+  };
+
+  const getBatteryStateLabel = (
+    state: string | null | undefined,
+    level: number | null | undefined,
+  ): { text: string; className: string } => {
+    if (state === "charging")
+      return { text: "Cargando", className: "text-emerald-600 font-medium" };
+    if (state === "charged")
+      return { text: "Cargado", className: "text-emerald-500 font-medium" };
+    if (level != null)
+      return { text: `${Math.round(level)}%`, className: "text-slate-500" };
+    return { text: "N/D", className: "text-slate-400" };
   };
 
   const getOperationalLabel = (powerState: "on" | "off" | "nodata") => {
@@ -3410,13 +3913,14 @@ export default function TodayPage() {
                         <span aria-hidden="true">·</span>
                         <BatteryStatusIcon
                           level={bowlDevice?.battery_level ?? null}
+                          charging={bowlDevice?.battery_state === "charging"}
+                          charged={bowlDevice?.battery_state === "charged"}
                           className="h-3.5 w-3.5 text-slate-400"
                         />
-                        <span>
-                          {bowlDevice?.battery_level != null
-                            ? `${Math.round(bowlDevice.battery_level)}%`
-                            : "N/D"}
-                        </span>
+                        {(() => {
+                          const s = getBatteryStateLabel(bowlDevice?.battery_state, bowlDevice?.battery_level);
+                          return <span className={s.className}>{s.text}</span>;
+                        })()}
                       </div>
                     </div>
 
@@ -3434,30 +3938,7 @@ export default function TodayPage() {
                       </p>
                     </div>
 
-                    <div className="grid items-center gap-3 md:grid-cols-[52px_minmax(0,1fr)]">
-                      <div className="today-wellness-bar-shell flex justify-center">
-                        <div className="today-wellness-bar today-wellness-bar-food">
-                          <div
-                            className="today-wellness-bar-fill today-wellness-bar-fill-food"
-                            style={{
-                              height:
-                                bowlFillPct !== null
-                                  ? `calc(18px + (100% - 34px) * ${bowlFillPct.toFixed(3)})`
-                                  : "18px",
-                              opacity:
-                                bowlFillPct !== null && bowlFillPct > 0.01
-                                  ? 1
-                                  : 0.18,
-                            }}
-                          />
-                          <div className="today-wellness-bar-guides">
-                            {Array.from({ length: 9 }).map((_, index) => (
-                              <span key={`food-guide-${index}`} />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
+                    <div className="grid items-center gap-3">
                       <div className="flex flex-col items-center py-1">
                         <Image
                           src="/illustrations/pink_food_full.png"
@@ -3466,9 +3947,11 @@ export default function TodayPage() {
                           height={164}
                           className="mx-auto h-48 w-auto object-contain object-center"
                         />
-                        <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                          {bowlWellness.levelLabel}
-                        </p>
+                        {bowlWellness.levelLabel !== "Sin confirmación" ? (
+                          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+                            {bowlWellness.levelLabel}
+                          </p>
+                        ) : null}
                         <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
                           {bowlDevice?.device_id ?? "KPCLXXXX"}
                         </p>
@@ -3626,13 +4109,14 @@ export default function TodayPage() {
                         <span aria-hidden="true">·</span>
                         <BatteryStatusIcon
                           level={waterDevice?.battery_level ?? null}
+                          charging={waterDevice?.battery_state === "charging"}
+                          charged={waterDevice?.battery_state === "charged"}
                           className="h-3.5 w-3.5 text-slate-400"
                         />
-                        <span>
-                          {waterDevice?.battery_level != null
-                            ? `${Math.round(waterDevice.battery_level)}%`
-                            : "N/D"}
-                        </span>
+                        {(() => {
+                          const s = getBatteryStateLabel(waterDevice?.battery_state, waterDevice?.battery_level);
+                          return <span className={s.className}>{s.text}</span>;
+                        })()}
                       </div>
                     </div>
 
@@ -3650,30 +4134,7 @@ export default function TodayPage() {
                       </p>
                     </div>
 
-                    <div className="grid items-center gap-3 md:grid-cols-[52px_minmax(0,1fr)]">
-                      <div className="today-wellness-bar-shell flex justify-center">
-                        <div className="today-wellness-bar today-wellness-bar-water">
-                          <div
-                            className="today-wellness-bar-fill today-wellness-bar-fill-water"
-                            style={{
-                              height:
-                                waterFillPct !== null
-                                  ? `calc(18px + (100% - 34px) * ${waterFillPct.toFixed(3)})`
-                                  : "18px",
-                              opacity:
-                                waterFillPct !== null && waterFillPct > 0.01
-                                  ? 1
-                                  : 0.18,
-                            }}
-                          />
-                          <div className="today-wellness-bar-guides">
-                            {Array.from({ length: 9 }).map((_, index) => (
-                              <span key={`water-guide-${index}`} />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
+                    <div className="grid items-center gap-3">
                       <div className="flex flex-col items-center py-1">
                         <Image
                           src="/illustrations/green_water_full.png"
@@ -3682,9 +4143,11 @@ export default function TodayPage() {
                           height={164}
                           className="mx-auto h-48 w-auto object-contain object-center"
                         />
-                        <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                          {waterWellness.levelLabel}
-                        </p>
+                        {waterWellness.levelLabel !== "Sin confirmación" ? (
+                          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+                            {waterWellness.levelLabel}
+                          </p>
+                        ) : null}
                         <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
                           {waterDevice?.device_id ?? "KPCLXXXX"}
                         </p>
@@ -4834,6 +5297,54 @@ export default function TodayPage() {
                     </span>
                   </div>
                   <p className="text-sm text-slate-600">{card.description}</p>
+                  {card.insights?.length ? (
+                    <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs text-slate-700">
+                      <div className="space-y-1">
+                        {card.insights.map((item) => (
+                          <p
+                            key={`${item.label}-${item.value}`}
+                            className="flex items-center gap-2"
+                          >
+                            {renderInsightIcon(item.icon)}
+                            <span>
+                              <span className="font-semibold text-slate-900">
+                                {item.label}:
+                              </span>{" "}
+                              {item.value}
+                            </span>
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  {card.sectionRows?.length ? (
+                    <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-700">
+                      {card.sectionTitle ? (
+                        <p className="mb-2 font-semibold text-slate-900">
+                          {card.sectionTitle}
+                        </p>
+                      ) : null}
+                      <div className="space-y-1.5">
+                        {card.sectionRows.map((row) => (
+                          <p
+                            key={`${row.label}-${row.value}`}
+                            className="flex items-center gap-2"
+                          >
+                            {renderInsightIcon(row.icon ?? "audit")}
+                            <span>
+                              <span className="font-semibold text-slate-900">
+                                {row.label}:
+                              </span>{" "}
+                              {row.value}
+                            </span>
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  {card.footer ? (
+                    <p className="text-xs text-slate-500">{card.footer}</p>
+                  ) : null}
                 </article>
               ))
             ) : (

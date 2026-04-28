@@ -27,4 +27,7 @@
 - [SQL_CHECK_BRIDGE_UNIQUENESS.sql](SQL_CHECK_BRIDGE_UNIQUENESS.sql) — Check de unicidad del bridge
 - [CLEANUP_SQL.sql](CLEANUP_SQL.sql) — Queries de limpieza de datos
 
+## Paso 6 — Auditoria de tablas
+- [AUDITORIA_DB_TABLAS.md](AUDITORIA_DB_TABLAS.md) — Inventario de todas las tablas: estado (activa/dormida/infraestructura/compat), quien las usa y pendientes de limpieza
+
 

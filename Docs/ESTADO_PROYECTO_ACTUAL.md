@@ -1,6 +1,6 @@
 ﻿# Estado Proyecto Actual - Kittypau
 
-Fecha de corte: 2026-04-01
+Fecha de corte: 2026-04-27
 
 Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cronogramas o bitcoras, este resumen manda para lectura rpida.
 
@@ -119,6 +119,35 @@ Este documento es la foto viva del proyecto. Si hay conflicto entre planes, cron
   - `battery_source`
 - Asegurar timestamps y frecuencia consistentes para no romper la inferencia de actividad.
 - Prioridad de firmware hoy: confiabilidad de lectura antes que nuevas variables.
+
+### Auditoria y limpieza de DB (sesion 2026-04-27)
+
+- **Bridge v3.2**: eliminada la escritura redundante a `sensor_readings`. El bridge ahora solo escribe en `readings` (UUID FK), que es la unica tabla de telemetria leida por la app. Ahorro: 1 roundtrip DB por cada lectura MQTT recibida (~cada 5-10 s por dispositivo activo).
+- **`sensor_readings`**: tabla marcada como retirada en `SQL_SCHEMA.sql` y en `AUDITORIA_DB_TABLAS.md`. Candidata a DROP TABLE en una migration futura.
+- **`breeds` y `pet_breeds`**: documentadas como dormidas (existe el schema, ningun endpoint las usa). No se borran — infraestructura lista para cuando se active la seleccion de raza desde DB.
+- **`device_operation_records`, `device_battery_cycles`, `device_power_sessions`**: documentadas como infraestructura pendiente de firmware (no tienen uso en runtime, esperan telemetria real de bateria del firmware).
+- Creado `Docs/AUDITORIA_DB_TABLAS.md`: inventario completo de todas las tablas con su estado, quien las usa y pendientes de limpieza.
+- Actualizado `Docs/SQL_MAESTRO.md` con enlace al nuevo documento de auditoria.
+
+### Optimizaciones de rendimiento (sesion 2026-04-27)
+
+Las siguientes mejoras quedaron aplicadas y funcionando en `main_sanitized`:
+
+**API — Latencia y cache:**
+- `/api/analytics/sessions` y `/api/analytics/daily`: las consultas de plan de usuario y datos analiticos ahora corren en paralelo con `Promise.all` (eliminando ~80ms de latencia secuencial). El plan se obtiene usando el cutoff maximo (365 dias) y el filtro real se aplica en memoria segun el plan del usuario.
+- `/api/readings`, `/api/analytics/sessions`, `/api/analytics/daily`: se agregaron headers `Cache-Control: private, max-age=N, stale-while-revalidate=M` para evitar roundtrips innecesarios al servidor.
+
+**today/page.tsx — React hooks:**
+- Polling de datos reducido de 5 s a 15 s (ratio de actualizacion mas razonable sin perder reactividad dado MQTT en tiempo real).
+- `bowlFeedbackTimerRef` y `waterFeedbackTimerRef`: los timers de feedback visual ahora usan refs con `clearTimeout` antes de cada `setTimeout`, eliminando acumulacion de timers en clicks rapidos.
+- `onPetChangeRef` / `onDeviceChangeRef`: el `useEffect` de suscripcion a eventos de ventana (`kittypau-pet-change`, `kittypau-device-change`) ahora usa el patron de handler-ref. Los handlers se asignan a los refs en cada render (closure fresca) y el `useEffect` corre solo una vez al montar con deps `[]`. Esto elimina la re-suscripcion que ocurria cada vez que `state.devices`, `state.pets`, `selectedPetId` o `selectedDeviceId` cambiaban de referencia (incluyendo cada lectura MQTT en tiempo real).
+
+**DayCycleChart.tsx — D3:**
+- `svg.interrupt().selectAll("*").interrupt()` antes de limpiar el SVG, para cancelar transiciones en vuelo y evitar solapamiento de animaciones.
+- Listeners de mouse ahora usan namespace `.chart` (`.on("mousemove.chart", ...)`) para evitar acumulacion de handlers en cada redibujado.
+
+**bowl/page.tsx — polling:**
+- El polling de lecturas ahora hace merge (union incremental) en lugar de reemplazar el array completo, evitando parpadeo visual al recibir datos en el fondo.
 
 ### App web / mobile / APK
 - Mantener una sola experiencia coherente entre web, mobile y APK.
