@@ -9,16 +9,21 @@ import {
 type BatteryStatusIconProps = {
   level: number | null | undefined;
   charging?: boolean;
+  charged?: boolean;
   className?: string;
 };
 
 export default function BatteryStatusIcon({
   level,
   charging = false,
+  charged = false,
   className = "h-4 w-4",
 }: BatteryStatusIconProps) {
   if (charging) {
     return <BatteryCharging className={`${className} text-emerald-600`} aria-hidden="true" />;
+  }
+  if (charged) {
+    return <BatteryFull className={`${className} text-emerald-500`} aria-hidden="true" />;
   }
   if (level === null || level === undefined || Number.isNaN(level)) {
     return <BatteryWarning className={`${className} text-slate-400`} aria-hidden="true" />;

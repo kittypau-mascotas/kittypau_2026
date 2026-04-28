@@ -1,6 +1,6 @@
 # Plan de Mejora Priorizado - Kittypau
 
-Fecha de corte: 2026-04-01
+Fecha de corte: 2026-04-27
 
 Este documento resume el siguente paso real del proyecto despues de la auditoria tecnica y documental.
 No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta de mejora ms corta y ejecutable.
@@ -14,6 +14,17 @@ No reemplaza a `ESTADO_PROYECTO_ACTUAL.md`; solo traduce ese estado en una ruta 
 - `KPCL0034` y `KPCL0036` quedaron registrados para anlisis de batera.
 - `KPCL0036` ya tiene una observacion manual de carga completa entre `08:36` y `12:42` hora local, y ahora tambien qued registrado el inicio de autonoma en `battery_only` al desconectar el cargador a las `15:55:23` hora local, til para futuros calculos.
 - La documentacin canonica ya distingue entre vivo, seguimiento e historico.
+
+## 1.1. Resuelto en sesion 2026-04-27
+
+- Latencia de APIs de analytics eliminada con `Promise.all` (perfil + datos en paralelo).
+- `Cache-Control` agregado a `/api/readings`, `/api/analytics/sessions` y `/api/analytics/daily`.
+- Polling de `/today` reducido de 5 s a 15 s.
+- Acumulacion de timers de feedback visual eliminada con refs + `clearTimeout`.
+- Re-suscripcion innecesaria a eventos de ventana en `/today` eliminada con patron handler-ref (`useEffect` dep `[]`). La re-suscripcion ocurria en cada lectura MQTT en tiempo real porque `state.devices` y `state.pets` generaban nuevas referencias de array.
+- Transiciones D3 en vuelo ya no se solapan: `svg.interrupt()` antes de limpiar el SVG.
+- Listeners de mouse D3 usan namespace `.chart` para evitar acumulacion en cada redibujado.
+- Polling de lecturas en `/bowl` ahora hace merge incremental en lugar de reemplazar el array.
 
 ## 2. Prioridades inmediatas
 

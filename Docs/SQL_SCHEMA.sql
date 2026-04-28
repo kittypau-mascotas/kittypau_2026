@@ -46,7 +46,8 @@ create table if not exists public.pets (
   created_at timestamptz not null default now()
 );
 
--- Breeds
+-- Breeds (DORMIDA — no usada en runtime. Frontend usa lista hardcodeada.
+-- Infraestructura lista para activarse si el flujo de raza migra a DB.)
 create table if not exists public.breeds (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -55,7 +56,7 @@ create table if not exists public.breeds (
   is_unknown boolean default false
 );
 
--- Pet Breeds (max 3 por mascota, enforce en app)
+-- Pet Breeds (max 3 por mascota, enforce en app) (DORMIDA — ver breeds arriba)
 create table if not exists public.pet_breeds (
   pet_id uuid not null references public.pets(id) on delete cascade,
   breed_id uuid not null references public.breeds(id) on delete cascade,
@@ -132,9 +133,10 @@ create table if not exists public.bridge_heartbeats (
   cpu_temp numeric
 );
 
--- Sensor readings v2.4 (bridge escribe aqui con device_id TEXT)
--- Creada en migration 20260302 para compatibilidad con bridge v2.4.
--- No usa device_uuid (UUID FK) sino device_id (TEXT) para escritura directa del bridge.
+-- Sensor readings v2.4 (RETIRADA en bridge v3.2 — 2026-04-27)
+-- El bridge ya no escribe aqui. La tabla readings (UUID FK) es la unica activa.
+-- Candidata a DROP TABLE cuando se confirme que el historial no es necesario.
+-- Ver AUDITORIA_DB_TABLAS.md para contexto completo.
 create table if not exists public.sensor_readings (
   id bigserial primary key,
   device_id text not null,

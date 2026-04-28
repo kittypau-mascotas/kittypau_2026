@@ -54,6 +54,16 @@ static unsigned long lastOnlineTime = 0;
 #define OFFLINE_GRACE_PERIOD 15000  // 15s de gracia antes de declarar Offline
 
 static void appendBatteryTelemetry(JsonDocument& doc) {
+  BatteryReading battery = sensorsGetLastBattery();
+  if (battery.level >= 0 && battery.voltage > 0.0f) {
+    doc["battery_state"] = battery.state;
+    doc["battery_source"] = "battery";
+    doc["battery_level"] = battery.level;
+    doc["battery_voltage"] = battery.voltage;
+    doc["battery_is_estimated"] = false;
+    return;
+  }
+
   if (strlen(BATTERY_STATE_DEFAULT) > 0) {
     doc["battery_state"] = BATTERY_STATE_DEFAULT;
   }

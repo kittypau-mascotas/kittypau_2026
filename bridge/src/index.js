@@ -1,14 +1,14 @@
 /**
- * Kittypau Bridge v3.1 - MQTT to Supabase + Analytics Processor
+ * Kittypau Bridge v3.2 - MQTT to Supabase + Analytics Processor
  * Escucha mensajes MQTT de los dispositivos y los almacena en Supabase
  *
+ * v3.2: Retira escritura a sensor_readings (tabla compat v2.4 que nadie leía)
  * v3.1: Registra kpcl_prendido / kpcl_apagado en audit_events (device_power_event)
  * v3.0: Integra processor.js — detección de sesiones + analytics DB (doble escritura)
  * v2.6: Schema unificado
  * v2.4: Upsert bridge_heartbeats y bridge_status_live con cada STATUS de KPBR0001
  * v2.3: Publica status de la RPi (KPBR0001) cada 60s via MQTT
  * v2.2: Registra cambios de IP en ip_history (JSONB) de devices
- * v2.1: sensor_readings usa device_id (TEXT) directamente como FK
  * v2.0: Mapeo de campos: weight→weight_grams, temp→temperature, hum→humidity
  */
 
@@ -236,28 +236,8 @@ async function ensureDeviceExists(deviceId) {
 // ============ HANDLERS ============
 
 async function handleSensorData(deviceId, data) {
-  const battery = normalizeBatteryTelemetry(data);
-  const { error } = await supabase
-    .from('sensor_readings')
-    .insert({
-      device_id: deviceId,
-      weight_grams: data.weight ?? null,
-      temperature: data.temp ?? null,
-      humidity: data.hum ?? null,
-      light_lux: data.light?.lux ?? null,
-      light_percent: data.light?.['%'] ?? null,
-      light_condition: data.light?.condition ?? null,
-      device_timestamp: data.timestamp ?? null,
-      battery_level: battery.battery_level
-    });
-
-  if (error) {
-    console.error(`[SUPABASE] Error insertando sensor: ${error.message}`);
-  } else {
-    console.log(`[SUPABASE] ✓ Sensor data guardado para ${deviceId}`);
-  }
-
-  // Escribir en tabla readings (UUID-based, leída por la app — se mantiene durante transición)
+  // readings (UUID-based) es la tabla canónica leída por la app.
+  // sensor_readings (TEXT device_id, compat v2.4) fue retirada en v3.1: nadie la lee.
   await writeToReadings(deviceId, data);
 
   // Enviar al analytics processor (best-effort, no bloquea el flujo principal)
