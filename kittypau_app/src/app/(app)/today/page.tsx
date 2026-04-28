@@ -3618,6 +3618,8 @@ export default function TodayPage() {
       return { text: "Cargando", className: "text-emerald-600 font-medium" };
     if (state === "charged")
       return { text: "Cargado", className: "text-emerald-500 font-medium" };
+    if (state === "battery_only" && level != null)
+      return { text: `Batería ${Math.round(level)}%`, className: "text-slate-500" };
     if (level != null)
       return { text: `${Math.round(level)}%`, className: "text-slate-500" };
     return { text: "N/D", className: "text-slate-400" };
