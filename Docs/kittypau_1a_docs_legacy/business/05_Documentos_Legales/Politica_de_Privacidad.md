@@ -1,8 +1,8 @@
-# Política de Privacidad de KittyPaw
+# Política de Privacidad de Kittypau
 
 Fecha de última actualización: 20 de octubre de 2025
 
-Bienvenido a KittyPaw. Tu privacidad y la de tu mascota son de suma importancia para nosotros. Esta Política de Privacidad explica qué información recopilamos, cómo la usamos y protegemos.
+Bienvenido a Kittypau. Tu privacidad y la de tu mascota son de suma importancia para nosotros. Esta Política de Privacidad explica qué información recopilamos, cómo la usamos y protegemos.
 
 ---
 
@@ -45,5 +45,6 @@ Si realizamos cambios importantes en esta política, te notificaremos a través 
 ### 7. Contacto
 
 Si tienes preguntas sobre esta Política de Privacidad, por favor contáctanos en javomauro.contacto@gmail.com.
+
 
 

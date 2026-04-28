@@ -55,11 +55,12 @@ Con el RUT y la escritura de la empresa, se puede abrir una cuenta corriente par
 
 ## Otros Aspectos Legales Clave
 
-- **Registro de Marca:** Es crucial registrar el nombre "KittyPaw" y el logo en el **Instituto Nacional de Propiedad Industrial (INAPI)** para proteger la marca. (`www.inapi.cl`).
+- **Registro de Marca:** Es crucial registrar el nombre "Kittypau" y el logo en el **Instituto Nacional de Propiedad Industrial (INAPI)** para proteger la marca. (`www.inapi.cl`).
 - **Financiamiento:** Se menciona la intención de usar fondos de capital semilla para cubrir estos costos legales iniciales.
 
 ## Alternativa Simplificada: "Tu Empresa en un Día"
 
 Existe un régimen simplificado del gobierno de Chile que permite constituir empresas de forma electrónica a través del portal `www.registrodeempresasysociedades.cl`. Este método puede ser más rápido y económico para la constitución inicial.
+
 
 

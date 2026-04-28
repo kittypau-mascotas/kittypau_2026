@@ -3,7 +3,7 @@
 > Estado: **LEGACY**. Complemento conceptual; no necesariamente refleja el pipeline/tabla actual.
 > Referencias vigentes: `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md` (datos/ML) y `Docs/ADMIN_DASHBOARD_INFORMATION_ARCHITECTURE.md` (KPIs admin).
 
-Este documento centraliza la estrategia para la recolección, análisis y utilización de datos en el proyecto KittyPaw. Incluye métricas de negocio (externas), métricas de producto (internas) y la planificación para los modelos de Machine Learning.
+Este documento centraliza la estrategia para la recolección, análisis y utilización de datos en el proyecto Kittypau. Incluye métricas de negocio (externas), métricas de producto (internas) y la planificación para los modelos de Machine Learning.
 
 ---
 
@@ -49,6 +49,7 @@ El objetivo a largo plazo es utilizar los datos para ofrecer insights predictivo
 1.  **Fase Actual:** Implementar la lógica del "dispositivo inteligente" para registrar eventos de comida/bebida con alta precisión (timestamp, duración, cantidad).
 2.  **Lanzamiento Beta:** Invitar a un grupo de dueños de mascotas para que usen el sistema, idealmente con un diario de salud para correlacionar los datos con eventos reales.
 3.  **Colaboración Veterinaria:** En una fase más madura, buscar colaboraciones con clínicas veterinarias para obtener datos etiquetados profesionalmente.
+
 
 
 

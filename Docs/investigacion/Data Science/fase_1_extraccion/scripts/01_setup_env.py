@@ -10,7 +10,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-ENV_PATH = Path(r"D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\.env.local")
+ENV_PATH = Path(r"D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\.env.local")
 REQUIRED_PACKAGES = ["supabase", "pandas", "numpy", "pyarrow", "dotenv"]
 REQUIRED_VARS = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
 
@@ -54,3 +54,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

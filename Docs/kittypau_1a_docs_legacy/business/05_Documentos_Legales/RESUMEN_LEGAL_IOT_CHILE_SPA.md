@@ -22,7 +22,7 @@ Este documento consolida la información legal clave de la empresa IOT CHILE SpA
 
 ---
 
-## 2. Política de Privacidad de KittyPaw
+## 2. Política de Privacidad de Kittypau
 
 *   **Fecha de última actualización:** 20 de octubre de 2025
 *   **Contacto:** javomauro.contacto@gmail.com
@@ -35,11 +35,12 @@ Este documento consolida la información legal clave de la empresa IOT CHILE SpA
 
 ---
 
-## 3. Términos y Condiciones de Uso de KittyPaw
+## 3. Términos y Condiciones de Uso de Kittypau
 
 *   **Fecha de última actualización:** 20 de octubre de 2025
-*   **Descripción del Servicio:** KittyPaw es un servicio de monitoreo de mascotas que consiste en un Dispositivo inteligente y un Software para visualizar y analizar datos. **Importante: No es un dispositivo médico.**
+*   **Descripción del Servicio:** Kittypau es un servicio de monitoreo de mascotas que consiste en un Dispositivo inteligente y un Software para visualizar y analizar datos. **Importante: No es un dispositivo médico.**
 *   **Propiedad Intelectual:** El Servicio, incluyendo software, hardware, diseño, branding y contenido, es propiedad exclusiva de IoT Chile SpA y sus licenciantes.
 *   **Ley Aplicable:** Los Términos se rigen por las leyes de Chile.
+
 
 

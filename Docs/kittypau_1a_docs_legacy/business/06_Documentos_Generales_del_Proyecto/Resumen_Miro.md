@@ -1,6 +1,6 @@
-# Resumen del Tablero de Miro: KittyPaw
+# Resumen del Tablero de Miro: Kittypau
 
-Este documento resume el contenido exportado del tablero de Miro relacionado con el proyecto KittyPaw.
+Este documento resume el contenido exportado del tablero de Miro relacionado con el proyecto Kittypau.
 
 ## 1. Modelo de Negocio (Business Model Canvas)
 
@@ -92,7 +92,7 @@ Este documento resume el contenido exportado del tablero de Miro relacionado con
 
 ### Estado de Tareas
 - **Pendientes:** Mis redes Sociales.
-- **En Progreso:** PPT DIPLOMADO KITTYPAW.
+- **En Progreso:** PPT DIPLOMADO Kittypau.
 - **Terminado:** No se listan tareas específicas.
 
 ### Constitución de Empresa
@@ -114,10 +114,11 @@ Este documento resume el contenido exportado del tablero de Miro relacionado con
 
 - **Google Drive:** Varios enlaces a carpetas con documentos de constitución, bases de concursos, etc.
 - **Google Colab:** Notebooks para reconocimiento de imágenes.
-- **Hugging Face:** Dataset `Javomauro/kittypaw_replit_ddbb`.
+- **Hugging Face:** Dataset `Javomauro/Kittypau_replit_ddbb`.
 - **Plataformas de Cloud/DB:** Render, Supabase, Neon.
 - **APIs de imágenes:** Unsplash, The Cat API, Dog API, Pixabay.
 - **Instituciones:** CORFO, ProChile, Chiletec, Startup Chile, SERCOTEC.
 - **Legales:** registrodemarcaschile.cl, inapi.cl, registrodeempresasysociedades.cl.
+
 
 

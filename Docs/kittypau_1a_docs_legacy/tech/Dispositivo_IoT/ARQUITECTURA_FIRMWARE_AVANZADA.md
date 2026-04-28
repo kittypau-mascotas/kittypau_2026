@@ -2,7 +2,7 @@
 
 ## 1. Objetivo
 
-Definir una arquitectura de firmware para el dispositivo KittyPaw que sea robusta, escalable, mantenible y fácil de testear, utilizando herramientas y patrones de diseño modernos para sistemas embebidos.
+Definir una arquitectura de firmware para el dispositivo Kittypau que sea robusta, escalable, mantenible y fácil de testear, utilizando herramientas y patrones de diseño modernos para sistemas embebidos.
 
 ## 2. Tecnologías Propuestas
 
@@ -87,5 +87,6 @@ La clase `DeviceManager` se encargará de:
 ---
 
 Esta arquitectura nos proporciona una base sólida y profesional, mucho más fácil de mantener y expandir que un único archivo `.ino`.
+
 
 

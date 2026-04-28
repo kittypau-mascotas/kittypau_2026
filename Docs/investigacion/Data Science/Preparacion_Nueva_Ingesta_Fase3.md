@@ -1,6 +1,6 @@
 # Preparacion para Nueva Ingesta - Fase 3
 
-- Proyecto: `KittyPaw`
+- Proyecto: `Kittypau`
 - Fase: `Fase 3 - Modelos`
 - Fecha: `2026-04-26`
 
@@ -86,3 +86,4 @@ Antes de dar por buena cualquier nueva corrida, verificar siempre:
 - total de etiquetas y sesiones reconstruidas,
 - total de filas en Fase 2,
 - y metricas finales de Fase 3.
+

@@ -1,4 +1,4 @@
-﻿# Indice de Documentacion (Kittypau)
+# Indice de Documentacion (Kittypau)
 
 > Entrada rpida:
 > - [README.md](README.md) - puerta de entrada para humanos y agentes
@@ -72,7 +72,7 @@
 - [PLAN_FRONTEND_SEPARADO_APP.md](PLAN_FRONTEND_SEPARADO_APP.md) - puntero historico consolidado en arquitectura y plan maestro
 - [ANALISIS_ECONOMICO_KITTYPAU.md](ANALISIS_ECONOMICO_KITTYPAU.md) - puntero historico consolidado en el documento maestro
 - [KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md](KITTYPAU_MODELO_ESTRATEGICO_Y_METRICAS.md) - puntero historico consolidado en el documento maestro
-- [Contexto_Mercado_KittyPaw/README.md](Contexto_Mercado_KittyPaw/README.md) - contexto de mercado y posicionamiento
+- [Contexto_Mercado_Kittypau/README.md](Contexto_Mercado_Kittypau/README.md) - contexto de mercado y posicionamiento
 - [PMO/00_PMO_INDEX.md](PMO/00_PMO_INDEX.md) - indice PMO y gestion de proyecto
 - [Postulaciones Fondos/2026/README.md](Postulaciones Fondos/2026/README.md) - indice de la carpeta de postulaciones 2026
 - [Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md](Postulaciones Fondos/2026/00_SISTEMA_TRABAJO.md) - sistema maestro para coordinar fondos 2026 en equipo
@@ -84,7 +84,7 @@
 ## Carpetas (decision)
 - Mantener activas:
   - `chatbot/` - documentacin funcional viva del chatbot.
-  - `Contexto_Mercado_KittyPaw/` - base estrategica para postulaciones y mercado.
+  - `Contexto_Mercado_Kittypau/` - base estrategica para postulaciones y mercado.
   - `FINANZAS/` - trazabilidad financiera y comprobantes.
   - `investigacion/` - pruebas KPCL y auditorias tecnicas.
   - `PMO/` - gestion de proyecto y control.
@@ -119,6 +119,7 @@
 - [Analisis_Estadistico_ML_IA/INDEX.md](../Analisis_Estadistico_ML_IA/)
 - [kittypau_1a_docs_legacy/](kittypau_1a_docs_legacy/)
 - [Postulaciones Fondos/2026/](Postulaciones Fondos/2026/)
+
 
 
 

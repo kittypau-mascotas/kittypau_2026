@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -1422,7 +1422,7 @@ export default function TodayPage() {
     const load3Days = async () => {
       const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
       try {
-        // Usar endpoint bucketed (bucket 15 min → 288 pts para 3 días)
+        // Usar endpoint bucketed (bucket 15 min ? 288 pts para 3 días)
         // para evitar el límite de 5000 rows crudas
         const params = new URLSearchParams({
           device_id: bowlDevice.id,
@@ -2037,7 +2037,7 @@ export default function TodayPage() {
         aria-hidden="true"
         className="ml-1 inline-flex text-[9px] leading-none opacity-80 text-sky-600"
       >
-        {up ? "▲" : "▼"}
+        {up ? "?" : "?"}
       </span>
     );
   };
@@ -2499,9 +2499,9 @@ export default function TodayPage() {
                     5 * 60 * 1000,
               );
               const statusLabel = isFood
-                ? "✓ Alimentación confirmada (audit_event)"
+                ? "? Alimentación confirmada (audit_event)"
                 : isConfirmed
-                  ? "✓ Hidratación confirmada"
+                  ? "? Hidratación confirmada"
                   : "Hidratación detectada";
               return [
                 statusLabel,
@@ -2511,7 +2511,7 @@ export default function TodayPage() {
                 `Consumo: ${Math.round(session.consumed)} ${unit}`,
               ];
             },
-            footer: () => "KittyPaw · Ciclo diario",
+            footer: () => "Kittypau · Ciclo diario",
           },
         },
       },
@@ -3214,7 +3214,7 @@ export default function TodayPage() {
                       aria-label="Mascota anterior"
                       title="Mascota anterior"
                     >
-                      ◀
+                      ?
                     </button>
                     <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
                       {petLabel}
@@ -3226,7 +3226,7 @@ export default function TodayPage() {
                       aria-label="Siguiente mascota"
                       title="Siguiente mascota"
                     >
-                      ▶
+                      ?
                     </button>
                   </div>
                   <p className="truncate text-xs text-slate-500 md:text-sm">
@@ -3826,7 +3826,7 @@ export default function TodayPage() {
                   aria-label="Ciclo anterior"
                   title="Ciclo anterior"
                 >
-                  ◀
+                  ?
                 </button>
                 <button
                   type="button"
@@ -3847,7 +3847,7 @@ export default function TodayPage() {
                   aria-label="Ciclo siguiente"
                   title="Ciclo siguiente"
                 >
-                  ▶
+                  ?
                 </button>
               </div>
               <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
@@ -3937,7 +3937,7 @@ export default function TodayPage() {
                   aria-label="Ciclo anterior D3"
                   title="Ciclo anterior D3"
                 >
-                  ◀
+                  ?
                 </button>
                 <button
                   type="button"
@@ -3958,7 +3958,7 @@ export default function TodayPage() {
                   aria-label="Ciclo siguiente D3"
                   title="Ciclo siguiente D3"
                 >
-                  ▶
+                  ?
                 </button>
                 <input
                   type="date"
@@ -4248,7 +4248,7 @@ export default function TodayPage() {
                     Comparación 4 ciclos
                   </p>
                   <p className="text-[10px] text-slate-500">
-                    Dominio X compartido 06:00 → 06:00
+                    Dominio X compartido 06:00 ? 06:00
                   </p>
                 </div>
                 <div className="grid gap-2">

@@ -1,4 +1,4 @@
-# Como ejecutar KittyPaw en emulador Android
+# Como ejecutar Kittypau en emulador Android
 
 ## Estado operativo actual
 - Servidor web local: `http://localhost:3000`
@@ -6,7 +6,7 @@
 - Emulador activo esperado: `Pixel_7`
 - ADB esperado: `emulator-5554`
 - APK debug actual:
-  `D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk`
+  `D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk`
 
 ## Cambios recientes aplicados al login APK
 Estos ajustes son solo para la distribucion nativa APK:
@@ -45,11 +45,11 @@ kittypau_2026_hivemq/
 
 ## Rutas importantes
 - Proyecto:
-  `D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq`
+  `D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq`
 - App:
-  `D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app`
+  `D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app`
 - APK debug:
-  `D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk`
+  `D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk`
 - SDK Android:
   `C:\Users\Usuario\AppData\Local\Android\Sdk`
 - Emulator:
@@ -63,7 +63,7 @@ kittypau_2026_hivemq/
 
 ### 1. Iniciar servidor web
 ```powershell
-cd D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app
+cd D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app
 npm run dev
 ```
 
@@ -86,15 +86,15 @@ Debe mostrar:
 ### 4. Sincronizar Capacitor y construir APK
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-cd D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app
+cd D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app
 npx capacitor sync android
-cd D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app\android
+cd D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app\android
 .\gradlew.bat assembleDebug
 ```
 
 ### 5. Instalar APK
 ```powershell
-& "C:\Users\Usuario\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s emulator-5554 install -r "D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk"
+& "C:\Users\Usuario\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s emulator-5554 install -r "D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk"
 ```
 
 Si aparece error por firma o paquete previo:
@@ -137,7 +137,7 @@ Si aparece error por firma o paquete previo:
 ## Resumen corto para repetir el flujo
 ```powershell
 # Terminal 1
-cd D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app
+cd D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app
 npm run dev
 
 # Terminal 2
@@ -145,10 +145,11 @@ npm run dev
 
 # Terminal 3
 $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
-cd D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app
+cd D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app
 npx capacitor sync android
 cd android
 .\gradlew.bat assembleDebug
-& "C:\Users\Usuario\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s emulator-5554 install -r "D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk"
+& "C:\Users\Usuario\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s emulator-5554 install -r "D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\kittypau_app\android\app\build\outputs\apk\debug\app-debug.apk"
 & "C:\Users\Usuario\AppData\Local\Android\Sdk\platform-tools\adb.exe" -s emulator-5554 shell am start -n com.kittypau.app/com.kittypau.app.MainActivity
 ```
+

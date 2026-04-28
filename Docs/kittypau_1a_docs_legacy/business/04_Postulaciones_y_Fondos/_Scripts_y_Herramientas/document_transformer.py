@@ -54,5 +54,6 @@ def transform_documents(root_dir):
             #     pass
 
 if __name__ == "__main__":
-    root_directory_to_scan = "D:\\Escritorio\\Proyectos\\KittyPaw\\Kittypaw_1a\\docs\\business\\04_Postulaciones_y_Fondos"
+    root_directory_to_scan = "D:\\Escritorio\\Proyectos\\Kittypau\\Kittypau_1a\\docs\\business\\04_Postulaciones_y_Fondos"
     transform_documents(root_directory_to_scan)
+

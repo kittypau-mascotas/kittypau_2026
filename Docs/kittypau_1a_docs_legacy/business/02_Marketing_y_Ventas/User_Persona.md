@@ -28,7 +28,7 @@ Ana es una profesional creativa y ocupada. Adoptó a Milo hace dos años y él s
 
 ---
 
-### Metas y Objetivos (en relación a KittyPaw)
+### Metas y Objetivos (en relación a Kittypau)
 
 *   **Principal:** Tener la certeza de que Milo sigue una dieta saludable y mantiene un peso ideal.
 *   Poder detectar de forma temprana cualquier cambio en sus hábitos alimenticios que pueda indicar un problema de salud.
@@ -43,5 +43,6 @@ Ana es una profesional creativa y ocupada. Adoptó a Milo hace dos años y él s
 *   **Ansiedad:** Preocuparse por si el plato de comida o agua se vacía si tiene un imprevisto y no puede volver a casa a tiempo.
 *   **Falta de Datos:** Sentir que las decisiones sobre la salud de su mascota se basan en suposiciones y no en datos reales.
 *   **Soluciones Incompletas:** Los comederos automáticos actuales son "tontos", solo dispensan comida pero no ofrecen información ni monitoreo.
+
 
 

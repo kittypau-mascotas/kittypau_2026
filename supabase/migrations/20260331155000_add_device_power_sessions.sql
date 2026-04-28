@@ -1,5 +1,5 @@
 -- ============================================================
--- Device power sessions for KittyPaw
+-- Device power sessions for Kittypau
 -- ============================================================
 -- This table tracks ON/OFF operational sessions using telemetry activity.
 -- It does NOT require battery telemetry.
@@ -280,4 +280,5 @@ after insert or update of recorded_at, ingested_at, clock_invalid
 on public.readings
 for each row
 execute function public.sync_device_power_session();
+
 

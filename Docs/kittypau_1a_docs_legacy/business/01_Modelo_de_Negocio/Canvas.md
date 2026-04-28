@@ -1,4 +1,4 @@
-# Business Model Canvas: KittyPaw
+# Business Model Canvas: Kittypau
 
 ---
 
@@ -13,7 +13,7 @@
     *   Historial de datos limitado a los últimos 15 días.
     *   Alertas básicas (ej. "Plato vacío").
 
-**2. Suscripción "KittyPaw Premium" (Servicio de pago mensual/anual):**
+**2. Suscripción "Kittypau Premium" (Servicio de pago mensual/anual):**
 *   **Cuidado Proactivo de la Salud:** Transforma los datos en insights para anticipar problemas de salud y compartir información útil con tu veterinario.
 *   **Control Total para Familias con Múltiples Mascotas:** Gestiona todos tus dispositivos y mascotas desde una sola cuenta con perfiles detallados.
 *   **Funcionalidades Adicionales:**
@@ -32,7 +32,7 @@
 *   Margen de ganancia por cada unidad vendida del dispositivo físico (comedero/bebedero inteligente).
 
 **2. Suscripción Mensual/Anual (Ingreso Recurrente):**
-*   Cuota recurrente por el acceso a las funcionalidades "KittyPaw Premium".
+*   Cuota recurrente por el acceso a las funcionalidades "Kittypau Premium".
 *   Se pueden ofrecer descuentos por suscripciones anuales para incentivar el compromiso a largo plazo.
 
 ---
@@ -44,4 +44,5 @@
 *   Dueños de mascotas con condiciones de salud que requieren seguimiento de su dieta.
 
 *Este documento debe ser revisado y completado con las otras secciones del Business Model Canvas.*
+
 

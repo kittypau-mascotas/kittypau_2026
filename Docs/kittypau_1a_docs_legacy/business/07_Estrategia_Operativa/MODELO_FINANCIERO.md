@@ -1,4 +1,4 @@
-# Modelo Financiero y de Suscripciones de KittyPaw
+# Modelo Financiero y de Suscripciones de Kittypau
 
 Este documento contiene un bosquejo de la estructura de costos, el modelo de negocio basado en suscripciones y otras oportunidades de monetización.
 
@@ -32,9 +32,9 @@ Se propone un esquema de tres niveles para capturar diferentes segmentos de merc
 
 | Nivel | Nombre Sugerido | Precio Mensual (Ej.) | Qué Incluye | Beneficios / Extras |
 | :-- | :--- | :--- | :--- | :--- |
-| 1 | **KittyPaw Básico** | USD 5-10 | Visualización de datos básicos (peso, temperatura, historiales) + alertas simples. | Acceso web/app, soporte básico, límite de almacenamiento / retención de datos moderado. |
-| 2 | **KittyPaw Plus** | USD 15-20 | Todo lo del nivel Básico + alertas avanzadas (umbrales personalizados), análisis de tendencias, exportación de datos. | Integraciones con veterinarias, dashboard más completo, retención de datos más larga. |
-| 3 | **KittyPaw Pro** | USD 30-40+ | Todo lo del nivel Plus + reconocimiento por cámara, pronósticos de salud (IA), API abierta para terceros. | Soporte premium, colaboración con clínicas, alertas predictivas, acceso anticipado a nuevas funciones. |
+| 1 | **Kittypau Básico** | USD 5-10 | Visualización de datos básicos (peso, temperatura, historiales) + alertas simples. | Acceso web/app, soporte básico, límite de almacenamiento / retención de datos moderado. |
+| 2 | **Kittypau Plus** | USD 15-20 | Todo lo del nivel Básico + alertas avanzadas (umbrales personalizados), análisis de tendencias, exportación de datos. | Integraciones con veterinarias, dashboard más completo, retención de datos más larga. |
+| 3 | **Kittypau Pro** | USD 30-40+ | Todo lo del nivel Plus + reconocimiento por cámara, pronósticos de salud (IA), API abierta para terceros. | Soporte premium, colaboración con clínicas, alertas predictivas, acceso anticipado a nuevas funciones. |
 
 **Notas Adicionales:**
 
@@ -77,4 +77,5 @@ Para diversificar ingresos y aumentar el valor de vida del cliente (LTV):
 *   **Venta de Datos Agregados:** Ofrecer datos anonimizados y agregados para investigación de mercado, estudios científicos o farmacéuticas veterinarias.
 *   **Marketplace e Integraciones:** Crear un marketplace de servicios o integrarse con plataformas de registro veterinario, generando comisiones.
 *   **Versiones Enterprise:** Licencias por volumen y soporte dedicado para negocios grandes como cadenas de clínicas o criaderos.
+
 

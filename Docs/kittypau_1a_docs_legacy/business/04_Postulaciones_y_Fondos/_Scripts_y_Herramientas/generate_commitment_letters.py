@@ -74,10 +74,11 @@ def generate_commitment_letters(template_md_path, data_xlsx_path, output_dir):
 
 if __name__ == "__main__":
     # Define paths
-    template_md_path = "D:\\Escritorio\\Proyectos\\KittyPaw\\Kittypaw_1a\\docs\\business\\04_Postulaciones_y_Fondos\\01_Capital_Semilla_2025\\Anexos\\Carta_Compromiso_Piloto_KittyPaw_Template.md"
+    template_md_path = "D:\\Escritorio\\Proyectos\\Kittypau\\Kittypau_1a\\docs\\business\\04_Postulaciones_y_Fondos\\01_Capital_Semilla_2025\\Anexos\\Carta_Compromiso_Piloto_Kittypau_Template.md"
     # IMPORTANT: Replace with the actual path to your XLSX data file
-    data_xlsx_path = "D:\\Escritorio\\Proyectos\\KittyPaw\\Kittypaw_1a\\docs\\business\\04_Postulaciones_y_Fondos\\datos_participantes_piloto.xlsx" # Example path
-    output_letters_dir = "D:\\Escritorio\\Proyectos\\KittyPaw\\Kittypaw_1a\\docs\\business\\04_Postulaciones_y_Fondos\\01_Capital_Semilla_2025\\Cartas_Generadas"
+    data_xlsx_path = "D:\\Escritorio\\Proyectos\\Kittypau\\Kittypau_1a\\docs\\business\\04_Postulaciones_y_Fondos\\datos_participantes_piloto.xlsx" # Example path
+    output_letters_dir = "D:\\Escritorio\\Proyectos\\Kittypau\\Kittypau_1a\\docs\\business\\04_Postulaciones_y_Fondos\\01_Capital_Semilla_2025\\Cartas_Generadas"
 
     print("Iniciando la generación de cartas de compromiso...")
     generate_commitment_letters(template_md_path, data_xlsx_path, output_letters_dir)
+

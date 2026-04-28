@@ -1,5 +1,5 @@
 -- ============================================================
--- Battery BOM context for KittyPaw battery cycles
+-- Battery BOM context for Kittypau battery cycles
 -- ============================================================
 -- Extends device_battery_cycles with the hardware references
 -- needed to relate each cycle to the battery and charger parts
@@ -64,4 +64,5 @@ set
     ),
   updated_at = now()
 where device_code = 'KPCL0034';
+
 

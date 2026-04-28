@@ -1,8 +1,8 @@
-# Estrategia de Pruebas del Ecosistema KittyPaw
+# Estrategia de Pruebas del Ecosistema Kittypau
 
 ## 1. Introducción
 
-El propósito de este documento es definir la estrategia y los tipos de pruebas que se aplicarán al proyecto KittyPaw para garantizar su calidad, fiabilidad y correcto funcionamiento. Una estrategia de pruebas sólida es fundamental para un desarrollo ágil y para la confianza del usuario final.
+El propósito de este documento es definir la estrategia y los tipos de pruebas que se aplicarán al proyecto Kittypau para garantizar su calidad, fiabilidad y correcto funcionamiento. Una estrategia de pruebas sólida es fundamental para un desarrollo ágil y para la confianza del usuario final.
 
 La estrategia se basa en la pirámide de testing, dando prioridad a las pruebas más rápidas y baratas (unitarias) y complementándolas con pruebas más complejas e integrales.
 
@@ -66,5 +66,6 @@ La estrategia se basa en la pirámide de testing, dando prioridad a las pruebas 
 1.  **Configuración Inicial:** Antes de comenzar el desarrollo de una nueva funcionalidad, se debe configurar el entorno de pruebas correspondiente (ej. Jest para un nuevo servicio del backend).
 2.  **Desarrollo Guiado por Pruebas (TDD - Opcional pero Recomendado):** Para lógica de negocio crítica, se recomienda escribir la prueba primero (que fallará) y luego el código que la haga pasar.
 3.  **Integración Continua (CI):** En el futuro, se configurará un pipeline (ej. GitHub Actions) que ejecute automáticamente todas las pruebas unitarias y de integración cada vez que se suba nuevo código. Una rama no se podrá fusionar a la principal si las pruebas fallan.
+
 
 

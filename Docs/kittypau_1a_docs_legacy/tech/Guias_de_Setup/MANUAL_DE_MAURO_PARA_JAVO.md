@@ -1,6 +1,6 @@
 # Manual de Setup del Entorno de Desarrollo (de Mauro para Javo)
 
-¡Bienvenido al proyecto KittyPaw, Javo! Este manual te guiará para que puedas levantar todo el entorno de desarrollo en tu PC de forma rápida y sencilla usando Docker.
+¡Bienvenido al proyecto Kittypau, Javo! Este manual te guiará para que puedas levantar todo el entorno de desarrollo en tu PC de forma rápida y sencilla usando Docker.
 
 ---
 
@@ -15,7 +15,7 @@ Imagina que en lugar de instalar una base de datos PostgreSQL y un entorno de No
 
 1.  **Consistencia:** Tú, yo, y cualquier futuro desarrollador correremos la **misma versión exacta** de la base de datos y del backend. Se acabaron los problemas de "en mi máquina sí funciona".
 2.  **Simplicidad:** En lugar de seguir 10 pasos para instalar todo, solo necesitarás ejecutar **un comando** para levantar todos los servicios.
-3.  **Aislamiento:** Mantiene tu PC limpio. Todo lo relacionado con KittyPaw vive dentro de estas "cajas", no se mezcla con el resto de tus programas.
+3.  **Aislamiento:** Mantiene tu PC limpio. Todo lo relacionado con Kittypau vive dentro de estas "cajas", no se mezcla con el resto de tus programas.
 
 ---
 
@@ -51,7 +51,7 @@ Este archivo se encarga de configurar las redes internas para que el `backend` p
 
 Esta es la mejor parte. Una vez que Docker Desktop esté corriendo, solo necesitas hacer una cosa:
 
-1.  Abre una terminal (PowerShell, CMD, o la terminal de VSCode) en la raíz del proyecto KittyPaw.
+1.  Abre una terminal (PowerShell, CMD, o la terminal de VSCode) en la raíz del proyecto Kittypau.
 2.  Ejecuta el siguiente comando:
 
     ```bash
@@ -111,7 +111,7 @@ Aquí tienes un mapa de las carpetas más importantes:
     *   `tech/`: Documentación técnica, como este manual, los diseños de arquitectura, etc.
 
 *   **Archivos importantes en la raíz (`/`):**
-    *   `PLAN_MAESTRO_KITTYPAW.md`: **El documento más importante.** Es el índice y la guía estratégica de todo el proyecto.
+    *   `PLAN_MAESTRO_Kittypau.md`: **El documento más importante.** Es el índice y la guía estratégica de todo el proyecto.
     *   `TASK_BOARD.md`: Nuestro tablero de tareas del día a día.
     *   `GEMINI.md`: Las instrucciones que yo, Gemini, sigo para ayudarte.
     *   `PROJECT_LOG.md`: El diario donde registramos todos los avances.
@@ -148,7 +148,7 @@ Estos comandos se deben ejecutar en una **nueva terminal**, separada de la que u
     >
     > `  ➜  Local:   http://localhost:5173/`
 
-    Abre tu navegador web y ve a la dirección que aparece en **Local** (generalmente `http://localhost:5173/`) para ver y interactuar con la aplicación KittyPaw.
+    Abre tu navegador web y ve a la dirección que aparece en **Local** (generalmente `http://localhost:5173/`) para ver y interactuar con la aplicación Kittypau.
 
 ---
 
@@ -205,10 +205,10 @@ Olvídate del antiguo archivo `.ino`. El firmware ahora está organizado en **"M
 ### 2. Lógica de Publicación Híbrida
 El dispositivo es ahora mucho más inteligente en cómo y cuándo envía datos:
 *   **Telemetría Periódica:** Cada 5 segundos, publica un reporte completo con los datos de todos los sensores (temperatura, humedad, luz y peso actual) en el tópico `KPCL0022/pub`. Esto nos da una visión constante del estado del dispositivo.
-*   **Eventos de Consumo:** De forma paralela, el `ScaleManager` detecta activamente cuándo la mascota está comiendo o bebiendo. Cuando esto ocurre, envía un evento especial al tópico `kittypaw/events` con detalles clave como la duración y la cantidad consumida en gramos.
+*   **Eventos de Consumo:** De forma paralela, el `ScaleManager` detecta activamente cuándo la mascota está comiendo o bebiendo. Cuando esto ocurre, envía un evento especial al tópico `Kittypau/events` con detalles clave como la duración y la cantidad consumida en gramos.
 
 ### 3. Auto-Diagnóstico en Arranque (POST)
-El `SelfTestManager` que implementaste ahora es una parte crucial del arranque. Cada vez que el dispositivo se enciende, realiza una serie de chequeos internos (sensores, memoria, etc.) y publica un **reporte de salud** en el tópico `kittypaw/reports/health`. El backend ya está preparado para recibir y almacenar estos reportes, lo que nos permitirá monitorear la salud de toda nuestra flota de dispositivos.
+El `SelfTestManager` que implementaste ahora es una parte crucial del arranque. Cada vez que el dispositivo se enciende, realiza una serie de chequeos internos (sensores, memoria, etc.) y publica un **reporte de salud** en el tópico `Kittypau/reports/health`. El backend ya está preparado para recibir y almacenar estos reportes, lo que nos permitirá monitorear la salud de toda nuestra flota de dispositivos.
 
 ---
 
@@ -235,7 +235,7 @@ Para poder ver los datos que envía el dispositivo en tu PC, necesitas montar un
     *   Con el broker Mosquitto corriendo, abre una **nueva terminal**.
     *   Navega a la carpeta del proyecto de firmware:
       ```sh
-      cd D:\Escritorio\Proyectos\KittyPaw\Kittypaw_1a\apps\iot_firmware\proyecto_platformio
+      cd D:\Escritorio\Proyectos\Kittypau\Kittypau_1a\apps\iot_firmware\proyecto_platformio
       ```
     *   Ejecuta el script receptor que hemos preparado:
       ```sh
@@ -252,5 +252,6 @@ Para poder ver los datos que envía el dispositivo en tu PC, necesitas montar un
 **CON MUUUCHO AMOR DE MAURO PARA JAVO**
 
 - Mauro
+
 
 

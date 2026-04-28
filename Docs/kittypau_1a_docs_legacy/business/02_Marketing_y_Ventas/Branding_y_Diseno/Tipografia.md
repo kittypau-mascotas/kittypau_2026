@@ -1,6 +1,6 @@
-# Tipografía del Proyecto - KittyPaw
+# Tipografía del Proyecto - Kittypau
 
-Este documento define las familias tipográficas, tamaños y pesos de fuente para la marca y aplicación KittyPaw.
+Este documento define las familias tipográficas, tamaños y pesos de fuente para la marca y aplicación Kittypau.
 
 ---
 
@@ -53,5 +53,6 @@ Se han seleccionado dos fuentes principales para crear una jerarquía visual cla
 ## Implementación
 
 Estas fuentes se importan desde Google Fonts en el archivo `index.html` y se aplican globalmente a través de `index.css` utilizando las utilidades de Tailwind CSS.
+
 
 

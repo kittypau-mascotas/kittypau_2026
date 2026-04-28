@@ -1,4 +1,4 @@
-# KittyPaw Sensors - IoT Pet Monitoring System
+# Kittypau Sensors - IoT Pet Monitoring System
 
 ## Overview
 
@@ -26,7 +26,7 @@ The system supports two main deployment modes:
 
 ### Backend Services
 
-**Django Application (`kittypaw_app/`)**
+**Django Application (`Kittypau_app/`)**
 - User authentication and authorization with custom User model
 - Device and pet management through Django ORM
 - Admin interface for system administration
@@ -140,4 +140,5 @@ The system is designed to run on platforms like Replit with automatic environmen
   - API Base: `https://workspace--javomaurocontac.repl.app/api`
 - **Environment Detection**: Created `client/src/lib/environment.ts` for robust mobile/web detection
 - **Mobile Connectivity**: WebSocket and API clients automatically detect Capacitor environment
+
 

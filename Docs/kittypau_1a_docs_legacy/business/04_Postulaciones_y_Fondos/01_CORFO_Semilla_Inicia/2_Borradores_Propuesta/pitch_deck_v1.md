@@ -1,4 +1,4 @@
-# Pitch Deck KittyPaw v1
+# Pitch Deck Kittypau v1
 
 ## 0. Contexto del Mercado: Una Oportunidad Creciente
 
@@ -22,7 +22,7 @@ La creciente "humanización" de las mascotas genera una profunda ansiedad en los
 
 ## 2. Solución: Monitoreo Inteligente para una Tranquilidad Real
 
-KittyPaw es un ecosistema de bienestar para mascotas que traduce los comportamientos diarios en datos claros y accionables, entregando tranquilidad al dueño y cuidado proactivo al animal.
+Kittypau es un ecosistema de bienestar para mascotas que traduce los comportamientos diarios en datos claros y accionables, entregando tranquilidad al dueño y cuidado proactivo al animal.
 
 Nuestra solución ataca el problema desde cuatro ángulos clave:
 
@@ -34,7 +34,7 @@ Nuestra solución ataca el problema desde cuatro ángulos clave:
 
 *   **Predicción de Enfermedades con Machine Learning:** A futuro, al analizar los datos agregados de miles de mascotas, nuestro sistema de Machine Learning podrá identificar patrones predictivos de enfermedades comunes. Esto nos permitirá alertar a los dueños sobre posibles riesgos de salud de forma aún más temprana, pasando de un cuidado proactivo a uno **predictivo**.
 
-**En resumen, KittyPaw reemplaza la ansiedad y la incertidumbre con datos y control, permitiendo a los dueños cuidar de sus mascotas como si estuvieran siempre a su lado.**
+**En resumen, Kittypau reemplaza la ansiedad y la incertidumbre con datos y control, permitiendo a los dueños cuidar de sus mascotas como si estuvieran siempre a su lado.**
 
 ## 3. Mercado: Apuntando a los "Dueños Proactivos"
 
@@ -60,14 +60,14 @@ Adoptamos un modelo de negocio híbrido que nos genera ingresos tanto en la vent
 *   El acceso a las funcionalidades básicas de monitoreo en tiempo real y un historial limitado de datos estará incluido de por vida con la compra del dispositivo.
 
 **2. Suscripción Premium (Ingreso Recurrente):**
-*   Ofrecemos un plan "KittyPaw Premium" opcional bajo una cuota mensual o anual. Este plan desbloquea el verdadero potencial de la plataforma, incluyendo:
+*   Ofrecemos un plan "Kittypau Premium" opcional bajo una cuota mensual o anual. Este plan desbloquea el verdadero potencial de la plataforma, incluyendo:
     *   Historial de datos ilimitado.
     *   Soporte para múltiples mascotas.
     *   Informes de salud exportables para compartir con el veterinario.
     *   Alertas avanzadas y, a futuro, los insights de nuestro modelo de Machine Learning.
 
 **Estrategia de Adquisición y Conversión:**
-*   Para asegurar que los usuarios experimenten todo el valor de KittyPaw, **con la compra de cada dispositivo regalaremos una prueba gratuita de 3 meses del plan Premium**.
+*   Para asegurar que los usuarios experimenten todo el valor de Kittypau, **con la compra de cada dispositivo regalaremos una prueba gratuita de 3 meses del plan Premium**.
 *   Esta estrategia nos permite educar al usuario sobre los beneficios del cuidado proactivo y predictivo, maximizando la probabilidad de que se conviertan en suscriptores de pago al finalizar el periodo de prueba.
 
 Este modelo nos permite capturar un amplio mercado con la venta del hardware, mientras construimos una base de ingresos recurrentes y predecibles a través de los usuarios más comprometidos, como "Ana".
@@ -96,17 +96,17 @@ Nuestra solución se basa en una arquitectura de tres capas, diseñada para ser 
 
 *(Aquí presentaremos al equipo fundador)*
 
-## 7. Tracción: Validando el Valor de KittyPaw
+## 7. Tracción: Validando el Valor de Kittypau
 
-A pesar de ser un proyecto en fase temprana, KittyPaw ya ha logrado hitos significativos que demuestran la viabilidad y el interés del mercado:
+A pesar de ser un proyecto en fase temprana, Kittypau ya ha logrado hitos significativos que demuestran la viabilidad y el interés del mercado:
 
-*   **Prototipo Funcional Desarrollado:** Contamos con un prototipo funcional del ecosistema KittyPaw (plato y bebedero inteligentes) que ha sido validado internamente y con un usuario inicial, demostrando la capacidad de monitoreo de datos clave.
+*   **Prototipo Funcional Desarrollado:** Contamos con un prototipo funcional del ecosistema Kittypau (plato y bebedero inteligentes) que ha sido validado internamente y con un usuario inicial, demostrando la capacidad de monitoreo de datos clave.
 *   **Interés de Mercado Confirmado:** Hemos asegurado la participación de **20 `early adopters`** que han confirmado su interés en formar parte de nuestro programa piloto de 12 meses. Esto valida la demanda por una solución de monitoreo inteligente de mascotas.
 *   **Alianza Veterinaria Estratégica:** Contamos con el apoyo de una veterinaria con experiencia quien colaborará en la verificación de la salud de las mascotas participantes en el piloto (grupos de test y control) antes y después del proyecto. Su expertise es fundamental para la rigurosidad científica de nuestra validación.
 
 ## 8. Proyecciones Financieras: Un Camino Hacia la Sostenibilidad y el Crecimiento
 
-Nuestras proyecciones financieras demuestran el potencial de rentabilidad y escalabilidad de KittyPaw, con un modelo de negocio que combina ventas de hardware con ingresos recurrentes por suscripción. Consideramos dos escenarios para el costo de producción, reflejando estrategias de abastecimiento en Chile y con proveedores internacionales, eligiendo el más favorable para la proyección base.
+Nuestras proyecciones financieras demuestran el potencial de rentabilidad y escalabilidad de Kittypau, con un modelo de negocio que combina ventas de hardware con ingresos recurrentes por suscripción. Consideramos dos escenarios para el costo de producción, reflejando estrategias de abastecimiento en Chile y con proveedores internacionales, eligiendo el más favorable para la proyección base.
 
 **8.1. Premisas Clave**
 
@@ -150,7 +150,7 @@ Nuestras proyecciones financieras demuestran el potencial de rentabilidad y esca
 Solicitamos los fondos del Capital Semilla para escalar nuestra validación de mercado a través de un programa piloto de 12 meses con nuestros 20 `early adopters` ya confirmados.
 
 Los fondos se destinarán principalmente a:
-*   **Producción a Pequeña Escala:** Adquisición de componentes y materiales para la fabricación de las 20 unidades del ecosistema KittyPaw necesarias para el programa piloto.
+*   **Producción a Pequeña Escala:** Adquisición de componentes y materiales para la fabricación de las 20 unidades del ecosistema Kittypau necesarias para el programa piloto.
 *   **Ejecución del Piloto:** Cubrir los costos operativos del piloto de 12 meses, incluyendo logística de entrega, soporte a los participantes, y los costos de nuestra infraestructura en la nube (cloud hosting).
 *   **Análisis y Desarrollo:** Financiar al equipo técnico para el análisis de los datos recopilados durante el piloto, lo que será crucial para el refinamiento del producto y el desarrollo de nuestros modelos de Machine Learning.
 
@@ -164,5 +164,6 @@ Este plan nos permitirá validar la funcionalidad básica del hardware, la exper
 2.  **Tendencia de Humanización:** La Tercera, "Humanización de las mascotas: más del 90% de los hogares con animales los consideran parte de su familia".
 3.  **Enfermedades Comunes en Gatos:** Gabrica, "Las 10 enfermedades más comunes en los gatos".
 4.  **Enfermedades Comunes en Perros:** BioBioChile, "Las 5 enfermedades más comunes en perros y cómo prevenirlas".
+
 
 

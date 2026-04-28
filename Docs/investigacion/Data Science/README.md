@@ -27,7 +27,7 @@ python 01_setup_env.py
 
 ## Credenciales
 Se leen desde:
-`D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\.env.local`
+`D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\.env.local`
 
 Variables requeridas:
 - `NEXT_PUBLIC_SUPABASE_URL`
@@ -69,3 +69,4 @@ Fallback tecnico:
 - La Fase 3 entrena dos variantes: un modelo binario `activo` vs `reposo` y un modelo multiclase `alimentacion` / `servido` / `reposo`.
 - Las sesiones de hidratacion pueden existir en artefactos historicos, pero no forman parte del modelo activo actual.
 - Si mas adelante se extiende a agua o multi-device, esta carpeta debe versionarse o documentarse como una nueva fase.
+

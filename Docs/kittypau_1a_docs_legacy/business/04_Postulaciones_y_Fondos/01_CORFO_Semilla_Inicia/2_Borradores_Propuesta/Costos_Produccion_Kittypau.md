@@ -1,6 +1,6 @@
-# Costos de Producción Estimados para KittyPaw
+# Costos de Producción Estimados para Kittypau
 
-Este documento detalla las estimaciones de costos de producción por unidad de KittyPaw, considerando dos escenarios de abastecimiento: componentes y fabricación en Chile, y componentes y fabricación en China.
+Este documento detalla las estimaciones de costos de producción por unidad de Kittypau, considerando dos escenarios de abastecimiento: componentes y fabricación en Chile, y componentes y fabricación en China.
 
 ## 1. Escenario de Producción en Chile
 
@@ -93,5 +93,6 @@ Este documento detalla las estimaciones de costos de producción por unidad de K
 *   **Con 40% de Ganancia sobre Venta:**
     *   Precio de Venta: $74.825 CLP
     *   **Gross Profit (GP): $29.930 CLP** ($74.825 - $44.895)
+
 
 

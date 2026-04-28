@@ -1,5 +1,5 @@
 -- ============================================================
--- Device battery cycle history for KittyPaw
+-- Device battery cycle history for Kittypau
 -- ============================================================
 -- Generic table for any KPCL device.
 -- Stores one row per observed battery cycle / power transition window.
@@ -109,4 +109,5 @@ alter table public.device_battery_cycles enable row level security;
 
 -- No anon/authenticated policies are created.
 -- This table is intended for service_role / server-side ingestion only.
+
 

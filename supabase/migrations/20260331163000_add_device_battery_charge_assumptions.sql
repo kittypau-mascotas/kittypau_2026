@@ -1,5 +1,5 @@
 -- ============================================================
--- Battery charge assumptions for KittyPaw
+-- Battery charge assumptions for Kittypau
 -- ============================================================
 -- Stores estimated charge-time scenarios per device using the
 -- battery + charger BOM context.
@@ -116,4 +116,5 @@ on conflict (device_code, scenario_label) do update set
   assumption_status = excluded.assumption_status,
   notes = excluded.notes,
   updated_at = now();
+
 

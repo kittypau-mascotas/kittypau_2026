@@ -1,5 +1,5 @@
 // main.cpp
-// KittyPaw - ESP32-CAM with sensors, camera streaming, and OTA
+// Kittypau - ESP32-CAM with sensors, camera streaming, and OTA
 // v1.1: ArduinoOTA, Online/Offline debounce, STATUS completo, event handler
 
 #include <Arduino.h>
@@ -216,3 +216,4 @@ void loop() {
         }
     }
 }
+

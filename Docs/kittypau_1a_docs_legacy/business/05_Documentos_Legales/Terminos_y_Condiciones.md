@@ -1,16 +1,16 @@
-# Términos y Condiciones de Uso de KittyPaw
+# Términos y Condiciones de Uso de Kittypau
 
 Fecha de última actualización: 20 de octubre de 2025
 
-Estos Términos y Condiciones ("Términos") rigen tu acceso y uso del servicio KittyPaw, incluyendo el dispositivo de hardware ("Dispositivo") y el software de la aplicación ("Software"). Al usar nuestro Servicio, aceptas estos Términos en su totalidad.
+Estos Términos y Condiciones ("Términos") rigen tu acceso y uso del servicio Kittypau, incluyendo el dispositivo de hardware ("Dispositivo") y el software de la aplicación ("Software"). Al usar nuestro Servicio, aceptas estos Términos en su totalidad.
 
 ---
 
 ### 1. Descripción del Servicio
 
-KittyPaw es un servicio de monitoreo de mascotas que consiste en un Dispositivo inteligente que registra los hábitos de alimentación y bebida de tu mascota, y un Software que te permite visualizar y analizar estos datos.
+Kittypau es un servicio de monitoreo de mascotas que consiste en un Dispositivo inteligente que registra los hábitos de alimentación y bebida de tu mascota, y un Software que te permite visualizar y analizar estos datos.
 
-**AVISO IMPORTANTE:** KittyPaw es una herramienta de monitoreo y bienestar. **No es un dispositivo médico** y no debe ser utilizado para diagnosticar, tratar, curar o prevenir ninguna enfermedad. Las decisiones sobre la salud de tu mascota deben ser tomadas siempre en consulta con un veterinario cualificado.
+**AVISO IMPORTANTE:** Kittypau es una herramienta de monitoreo y bienestar. **No es un dispositivo médico** y no debe ser utilizado para diagnosticar, tratar, curar o prevenir ninguna enfermedad. Las decisiones sobre la salud de tu mascota deben ser tomadas siempre en consulta con un veterinario cualificado.
 
 ### 2. Cuentas de Usuario
 
@@ -21,7 +21,7 @@ KittyPaw es un servicio de monitoreo de mascotas que consiste en un Dispositivo 
 
 *   **Compra del Dispositivo:** La compra del Dispositivo es un pago único.
 *   **Servicio Básico:** La compra del Dispositivo te da acceso a las funcionalidades básicas del Software, como se describe en nuestro Modelo de Negocio.
-*   **Suscripción Premium:** Ofrecemos una suscripción opcional ("KittyPaw Premium") que desbloquea funcionalidades avanzadas. Las tarifas, ciclos de facturación (mensual/anual) y políticas de cancelación se detallarán en la sección de suscripción de nuestra aplicación y sitio web.
+*   **Suscripción Premium:** Ofrecemos una suscripción opcional ("Kittypau Premium") que desbloquea funcionalidades avanzadas. Las tarifas, ciclos de facturación (mensual/anual) y políticas de cancelación se detallarán en la sección de suscripción de nuestra aplicación y sitio web.
 
 ### 4. Uso Aceptable del Servicio
 
@@ -42,5 +42,6 @@ Nos reservamos el derecho de modificar estos Términos en cualquier momento. Te 
 ### 8. Ley Aplicable
 
 Estos Términos se regirán por las leyes de Chile.
+
 
 

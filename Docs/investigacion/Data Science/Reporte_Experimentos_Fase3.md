@@ -1,6 +1,6 @@
 # Reporte maestro - Experimentos Fase 3
 
-- Proyecto: `KittyPaw`
+- Proyecto: `Kittypau`
 - Fase: `Fase 3 - Modelos`
 - Fecha de referencia: `2026-04-26`
 
@@ -113,3 +113,4 @@ El siguiente paso operativo ya queda listo para una nueva ingesta:
 - recolectar mas eventos de `alimentacion` y `servido`,
 - ejecutar Fase 1 y Fase 2 otra vez,
 - y reabrir Fase 3 desde la mejor base disponible.
+

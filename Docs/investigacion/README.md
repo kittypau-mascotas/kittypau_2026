@@ -1,4 +1,4 @@
-# Investigacion KittyPaw
+# Investigacion Kittypau
 
 Carpeta canonica para consolidar dos lineas de trabajo:
 
@@ -177,3 +177,4 @@ Estos nombres aparecen en auditorias y CSVs anteriores a 2026-04-07. No usar en 
 | `plate_weight` | campo `devices.plate_weight_grams` (no es categoria) |
 | `manual_food_amount` | no implementado |
 | `plate_observation` | no implementado |
+

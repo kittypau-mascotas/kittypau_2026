@@ -1,9 +1,9 @@
-# Arquitectura General del Ecosistema KittyPaw
+# Arquitectura General del Ecosistema Kittypau
 
 > Estado: **LEGACY**. Este documento puede no reflejar el estado actual del repo (Next.js en `kittypau_app`, Supabase, HiveMQ Cloud y Raspberry Bridge).
 > Ver arquitectura vigente: `Docs/ARQUITECTURA_PROYECTO.md` y arquitectura de datos/ML: `Docs/archive/analitica/KittyPau_Arquitectura_Datos_v3.md`.
 
-Este documento describe la arquitectura de alto nivel del proyecto KittyPaw, explicando cómo sus diferentes componentes se interrelacionan para formar un ecosistema completo.
+Este documento describe la arquitectura de alto nivel del proyecto Kittypau, explicando cómo sus diferentes componentes se interrelacionan para formar un ecosistema completo.
 
 El proyecto está diseñado de forma modular y se encuentra organizado en un monorepo con las siguientes aplicaciones principales en la carpeta `apps/`:
 
@@ -85,6 +85,7 @@ El siguiente diagrama de texto ilustra cómo fluye la información entre los com
 - **Proyecto de Cámara (`app_camara`):**
   - **Framework:** HTML, CSS, JavaScript
   - **Librerías:** TensorFlow.js
+
 
 
 

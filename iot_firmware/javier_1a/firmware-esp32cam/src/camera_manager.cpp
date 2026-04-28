@@ -68,7 +68,7 @@ void handleRoot() {
     html = "<!DOCTYPE html><html><head>";
     html += "<meta charset='UTF-8'>";
     html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-    html += "<title>KittyPaw KPCL0040 - Camera</title>";
+    html += "<title>Kittypau KPCL0040 - Camera</title>";
     html += "<style>";
     html += "body{font-family:Arial;text-align:center;background:#1a1a2e;color:#eee;margin:0;padding:20px}";
     html += "h1{color:#00d4ff}h2{color:#00d4ff;font-size:1.2em}";
@@ -83,7 +83,7 @@ void handleRoot() {
     html += ".status{padding:5px 10px;border-radius:3px;font-size:0.9em}";
     html += ".status-ok{background:#2ed573}.status-err{background:#ff4757}";
     html += "</style></head><body>";
-    html += "<h1>KittyPaw KPCL0040</h1>";
+    html += "<h1>Kittypau KPCL0040</h1>";
 
     // Stream
     html += "<div class='info'>";
@@ -692,3 +692,4 @@ String getCameraStreamUrl() {
     }
     return "";
 }
+

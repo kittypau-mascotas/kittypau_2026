@@ -1,6 +1,6 @@
 # Análisis de Riesgos y Mitigaciones
 
-Este documento identifica los riesgos clave para el éxito del proyecto KittyPaw y propone estrategias para mitigarlos.
+Este documento identifica los riesgos clave para el éxito del proyecto Kittypau y propone estrategias para mitigarlos.
 
 ---
 
@@ -29,7 +29,7 @@ Este documento identifica los riesgos clave para el éxito del proyecto KittyPaw
 *   **Riesgo:** La competencia lanza un producto similar a un precio más bajo.
     *   **Mitigación:**
         *   **Diferenciación:** Enfocarse en la calidad del servicio, la experiencia de usuario, y el valor agregado de la IA y el análisis de datos, no solo en el hardware.
-        *   **Construir una Comunidad:** Crear una comunidad fiel alrededor de la marca KittyPaw (foros, redes sociales, eventos).
+        *   **Construir una Comunidad:** Crear una comunidad fiel alrededor de la marca Kittypau (foros, redes sociales, eventos).
         *   **Efecto de Red (Network Effect):** Integrarse con veterinarios para que recomienden el producto, creando una barrera de entrada basada en la confianza profesional.
 
 ### 3. Riesgos Operativos y Financieros
@@ -51,4 +51,5 @@ Este documento identifica los riesgos clave para el éxito del proyecto KittyPaw
     *   **Mitigación:**
         *   Consultar con un experto legal para redactar una Política de Privacidad y Términos y Condiciones que cumplan con la ley local (ej. GDPR en Europa, o leyes equivalentes).
         *   Anonimizar todos los datos que se usen para análisis agregados o para venta a terceros.
+
 

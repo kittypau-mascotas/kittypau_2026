@@ -140,8 +140,9 @@ def process_incompatible_files(root_source_dir, root_destination_dir):
 if __name__ == "__main__":
     # Define el directorio raíz donde se encuentra la carpeta 'Formato_no_Compatible'
     # y donde se deben colocar los archivos convertidos (la carpeta principal de docs)
-    root_docs_path = "D:\\Escritorio\\Proyectos\\KittyPaw\\Kittypaw_1a\\docs\\business\\04_Postulaciones_y_Fondos"
+    root_docs_path = "D:\\Escritorio\\Proyectos\\Kittypau\\Kittypau_1a\\docs\\business\\04_Postulaciones_y_Fondos"
     
     print("Iniciando el proceso de transformación de documentos...")
     process_incompatible_files(root_docs_path, root_docs_path)
     print("Proceso de transformación de documentos finalizado.")
+

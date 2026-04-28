@@ -1,6 +1,6 @@
 # Resumen de Experimentos Fase 3
 
-- Proyecto: `KittyPaw`
+- Proyecto: `Kittypau`
 - Fase: `Fase 3 - Modelos`
 - Fecha de referencia: `2026-04-26`
 
@@ -66,3 +66,4 @@ El `Experimento 4` y el `Experimento 5` son valiosos como comparacion porque con
 3. Volver a ejecutar Fase 1 con la nueva ingesta.
 4. Reconstruir Fase 2 con el nuevo dataset.
 5. Repetir Fase 3 a partir de la mejor base actual.
+

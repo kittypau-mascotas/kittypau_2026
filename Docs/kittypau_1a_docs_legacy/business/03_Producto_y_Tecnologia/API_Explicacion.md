@@ -1,8 +1,8 @@
-# ¿Qué es una API y cómo funciona en KittyPaw?
+# ¿Qué es una API y cómo funciona en Kittypau?
 
 ## Una Analogía Simple: El Restaurante
 
-Imagina que la base de datos de KittyPaw (con toda la información de usuarios, mascotas y sensores) es la **cocina** de un restaurante. Tú, desde la aplicación (el frontend), eres el **cliente** sentado en la mesa. 
+Imagina que la base de datos de Kittypau (con toda la información de usuarios, mascotas y sensores) es la **cocina** de un restaurante. Tú, desde la aplicación (el frontend), eres el **cliente** sentado en la mesa. 
 
 No puedes entrar directamente a la cocina a prepararte la comida. Necesitas a alguien que tome tu pedido y te lo traiga. Ese intermediario es el **camarero**.
 
@@ -19,7 +19,7 @@ Si la API es el camarero, un **endpoint** es una **orden específica del menú**
 
 No le dices al camarero "tráeme comida", sino que le pides un plato concreto. Cada plato del menú tiene un nombre único. En una API, cada "plato" es un endpoint.
 
-### Ejemplo en KittyPaw:
+### Ejemplo en Kittypau:
 
 Nuestro servidor tiene varios endpoints ya definidos. Por ejemplo:
 
@@ -46,10 +46,11 @@ Casi siempre, las interacciones con una API se resumen en cuatro acciones básic
 
 1.  **Organización:** Separa la lógica del frontend (lo que ves) del backend (donde se guardan y procesan los datos). Esto hace que el código sea más limpio y fácil de mantener.
 
-2.  **Conexión entre Proyectos:** Es la clave para lo que quieres hacer. El proyecto `KittyPaw_CAM` no necesitará su propia base de datos. Simplemente usará la **API** del proyecto principal (`KittyPaw_Unified`) para pedirle los datos que necesite. La API actúa como un puente seguro y controlado entre ambos.
+2.  **Conexión entre Proyectos:** Es la clave para lo que quieres hacer. El proyecto `Kittypau_CAM` no necesitará su propia base de datos. Simplemente usará la **API** del proyecto principal (`Kittypau_Unified`) para pedirle los datos que necesite. La API actúa como un puente seguro y controlado entre ambos.
 
 3.  **Flexibilidad:** El día de mañana, si queremos crear una nueva app o un panel de control diferente, no necesitamos empezar de cero. Simplemente consumimos la misma API que ya existe.
 
-En resumen, la API es el corazón que conecta todas las partes de nuestro ecosistema KittyPaw, permitiéndoles hablar entre sí de manera ordenada y eficiente.
+En resumen, la API es el corazón que conecta todas las partes de nuestro ecosistema Kittypau, permitiéndoles hablar entre sí de manera ordenada y eficiente.
+
 
 

@@ -1,6 +1,6 @@
-# Estrategia de Financiamiento KittyPaw 2025-2026
+# Estrategia de Financiamiento Kittypau 2025-2026
 
-Este documento describe las oportunidades de financiamiento público y privado más relevantes para KittyPaw, y establece un plan de acción para asegurar capital en los próximos 12-24 meses.
+Este documento describe las oportunidades de financiamiento público y privado más relevantes para Kittypau, y establece un plan de acción para asegurar capital en los próximos 12-24 meses.
 
 ---
 
@@ -10,7 +10,7 @@ Los fondos públicos en Chile, principalmente a través de CORFO, son una excele
 
 ### A. CORFO - Semilla Inicia
 
-*   **Descripción:** Es el programa de entrada de CORFO para startups innovadoras. Busca proyectos que tengan un prototipo funcional y un plan de negocio claro. KittyPaw es un candidato ideal.
+*   **Descripción:** Es el programa de entrada de CORFO para startups innovadoras. Busca proyectos que tengan un prototipo funcional y un plan de negocio claro. Kittypau es un candidato ideal.
 *   **Financiamiento Típico:** Entre \$15.000.000 y \$25.000.000 CLP.
 *   **Cuándo Postular:** Las convocatorias abren varias veces al año. Debemos estar atentos al sitio de CORFO a partir de finales de 2024 para las primeras ventanas de 2025.
 *   **Acción Requerida:** Tener un pitch deck sólido, un prototipo funcional demostrable (nuestra Fase 1 del Roadmap) y proyecciones financieras iniciales.
@@ -63,9 +63,10 @@ El capital privado busca un alto retorno de la inversión. Aquí, la narrativa s
 
 ## Parte 3: Próximos Pasos Recomendados
 
-1.  **Preparar un Pitch Deck:** Crear una presentación estándar de 10-12 diapositivas que resuma el problema, la solución (KittyPaw), el modelo de negocio, el equipo y las proyecciones.
+1.  **Preparar un Pitch Deck:** Crear una presentación estándar de 10-12 diapositivas que resuma el problema, la solución (Kittypau), el modelo de negocio, el equipo y las proyecciones.
 2.  **Alinear el Roadmap:** Revisar nuestro `ROADMAP.md` y asignar fechas tentativas para tener el prototipo listo para las primeras ventanas de postulación de CORFO en 2025.
 3.  **Networking:** Empezar a participar (incluso como oyente) en eventos del ecosistema startup en Chile para entender qué buscan los inversionistas.
 4.  **Actualizar Carpeta:** Mover los documentos antiguos de `Historico_Postulaciones` y crear carpetas para `Postulaciones_2025` con este plan como guía.
+
 
 

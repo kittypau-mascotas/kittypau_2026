@@ -19,7 +19,7 @@ try:
 except Exception:  # pragma: no cover
     psycopg2 = None
 
-ENV_PATH = Path(r"D:\Escritorio\Proyectos\KittyPaw\kittypau_2026_hivemq\.env.local")
+ENV_PATH = Path(r"D:\Escritorio\Proyectos\Kittypau\kittypau_2026_hivemq\.env.local")
 
 
 def load_project_env() -> None:
@@ -96,3 +96,4 @@ def get_supabase_client():
     if create_client is None:
         raise SystemExit("[ERROR] El paquete supabase no esta disponible")
     return create_client(base_url, key)
+

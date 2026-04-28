@@ -1,5 +1,5 @@
 -- ============================================================
--- Automatic battery cycle tracking for KittyPaw
+-- Automatic battery cycle tracking for Kittypau
 -- ============================================================
 -- This trigger watches readings and opens/closes rows in
 -- public.device_battery_cycles whenever battery telemetry indicates:
@@ -295,3 +295,4 @@ after insert or update of battery_level, battery_voltage, battery_state, battery
 on public.readings
 for each row
 execute function public.sync_device_battery_cycle();
+

@@ -2,7 +2,7 @@
 
 ## 1. Introducción
 
-El objetivo de este documento es definir la estrategia operativa y el marco de análisis financiero para KittyPaw. La meta no es solo crecer, sino crecer de manera rentable y sostenible. Adoptaremos una metodología **Lean Startup** en las fases iniciales para maximizar la eficiencia del capital y la velocidad de aprendizaje.
+El objetivo de este documento es definir la estrategia operativa y el marco de análisis financiero para Kittypau. La meta no es solo crecer, sino crecer de manera rentable y sostenible. Adoptaremos una metodología **Lean Startup** en las fases iniciales para maximizar la eficiencia del capital y la velocidad de aprendizaje.
 
 ---
 
@@ -56,5 +56,6 @@ Para analizar "dineros, entregas y gastos" de forma efectiva, debemos medir obse
 ### Herramientas de Análisis
 
 Para empezar, no se necesita un software complejo. Se debe crear una **Hoja de Cálculo (Google Sheets o Excel)** que funcione como un "Panel Financiero". Este panel debe ser actualizado religiosamente cada mes con estas métricas para tener un pulso constante de la salud del negocio.
+
 
 

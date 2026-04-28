@@ -1,6 +1,6 @@
-# Roadmap de Desarrollo del Proyecto KittyPaw (Versión Corregida)
+# Roadmap de Desarrollo del Proyecto Kittypau (Versión Corregida)
 
-Este documento describe la hoja de ruta propuesta para el desarrollo continuo del proyecto KittyPaw, ajustada para centrarse en las funcionalidades core de monitoreo de mascotas.
+Este documento describe la hoja de ruta propuesta para el desarrollo continuo del proyecto Kittypau, ajustada para centrarse en las funcionalidades core de monitoreo de mascotas.
 
 ---
 
@@ -97,4 +97,5 @@ Este anexo complementa el roadmap técnico con una visión de negocio.
 4.  **Fase de Ecosistema:**
     *   Desarrollar la API pública.
     *   Fomentar integraciones con terceros y explorar el modelo de marketplace.
+
 

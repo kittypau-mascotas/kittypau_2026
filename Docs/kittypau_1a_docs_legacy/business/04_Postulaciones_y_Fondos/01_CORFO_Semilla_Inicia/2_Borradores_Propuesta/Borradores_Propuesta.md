@@ -1,7 +1,7 @@
-# Borradores de Propuesta - Guía para Postulación a Capital Semilla KittyPaw
+# Borradores de Propuesta - Guía para Postulación a Capital Semilla Kittypau
 
 ## Objetivo de esta Carpeta
-Esta carpeta es el **espacio de trabajo dinámico** para el desarrollo de la propuesta de valor, el pitch deck, el video-pitch y cualquier otro material creativo o estratégico que se requiera para la postulación a los fondos Capital Semilla. Aquí se gesta la narrativa de KittyPaw.
+Esta carpeta es el **espacio de trabajo dinámico** para el desarrollo de la propuesta de valor, el pitch deck, el video-pitch y cualquier otro material creativo o estratégico que se requiera para la postulación a los fondos Capital Semilla. Aquí se gesta la narrativa de Kittypau.
 
 ## Importancia de los Borradores de Propuesta en el Capital Semilla
 La propuesta es la historia que se cuenta sobre el proyecto. Un borrador bien trabajado permite:
@@ -12,27 +12,28 @@ La propuesta es la historia que se cuenta sobre el proyecto. Un borrador bien tr
 
 La calidad de la propuesta es directamente proporcional a las posibilidades de éxito.
 
-## Enfoque para KittyPaw
-Para KittyPaw, esta carpeta será crucial para desarrollar y pulir los elementos clave de la postulación:
+## Enfoque para Kittypau
+Para Kittypau, esta carpeta será crucial para desarrollar y pulir los elementos clave de la postulación:
 
 ### Materiales Clave a Desarrollar:
 - **Pitch Deck (Presentación Ejecutiva):**
-    - **Contenido:** Problema, solución (KittyPaw), mercado, modelo de negocio, tecnología (IoT, IA), equipo, tracción (si aplica), proyecciones financieras, solicitud de fondos.
+    - **Contenido:** Problema, solución (Kittypau), mercado, modelo de negocio, tecnología (IoT, IA), equipo, tracción (si aplica), proyecciones financieras, solicitud de fondos.
     - **Adaptación:** Crear versiones específicas para CORFO (más foco en innovación y escalabilidad, potencial de crecimiento ambicioso) y SERCOTEC (más foco en viabilidad comercial y plan de negocio).
     - **Consejo:** El modelo de negocios debe resolver un problema real, mostrar crecimiento y ambición.
 - **Guion y Storyboard para Video-Pitch:**
     - **Contenido:** Mensaje clave de 40 segundos (para Semilla Inicia), demostración del prototipo, problema/solución, llamado a la acción.
-    - **Enfoque:** Ser visualmente atractivo, claro y memorable. Destacar la propuesta de valor de KittyPaw de forma concisa. La "buena puesta en escena" es fundamental.
+    - **Enfoque:** Ser visualmente atractivo, claro y memorable. Destacar la propuesta de valor de Kittypau de forma concisa. La "buena puesta en escena" es fundamental.
 - **Resumen Ejecutivo:**
     - **Contenido:** Versión condensada del pitch deck, ideal para adjuntar o usar en comunicaciones rápidas.
 - **Descripción Detallada del Proyecto:**
-    - **Contenido:** Un documento más extenso que el formulario, donde se profundiza en la tecnología, el desarrollo, la estrategia de mercado y el impacto de KittyPaw.
+    - **Contenido:** Un documento más extenso que el formulario, donde se profundiza en la tecnología, el desarrollo, la estrategia de mercado y el impacto de Kittypau.
 
-### Acciones Clave para KittyPaw:
+### Acciones Clave para Kittypau:
 - **Inicio Temprano:** Comenzar a trabajar en estos borradores con suficiente antelación.
 - **Feedback Constante:** Buscar retroalimentación de mentores, asesores o incluso de personas ajenas al proyecto para asegurar la claridad del mensaje.
 - **Pruebas:** Practicar el pitch y el video-pitch para asegurar que el tiempo y el mensaje sean los adecuados.
 - **Versiones:** Utilizar un sistema de versionado claro (ej. `pitch_deck_corfo_v1.pptx`, `video_script_sercotec_v2.docx`) para no perder el progreso.
 
-Esta carpeta es el corazón de la preparación de la postulación, donde la visión de KittyPaw se transforma en una propuesta ganadora.
+Esta carpeta es el corazón de la preparación de la postulación, donde la visión de Kittypau se transforma en una propuesta ganadora.
+
 

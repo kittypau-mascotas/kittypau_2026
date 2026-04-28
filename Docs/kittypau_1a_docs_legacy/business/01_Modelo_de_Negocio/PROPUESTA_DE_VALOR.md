@@ -1,10 +1,10 @@
-# Propuesta de Valor de KittyPaw
+# Propuesta de Valor de Kittypau
 
-Este documento detalla la propuesta de valor central del ecosistema KittyPaw.
+Este documento detalla la propuesta de valor central del ecosistema Kittypau.
 
 ---
 
-## Qué es KittyPaw
+## Qué es Kittypau
 
 Es un sistema integral compuesto por:
 
@@ -25,4 +25,5 @@ El cliente (dueños de mascotas, veterinarias, criadores, etc.) paga por una sol
 *   **Valor Agregado:** Funcionalidades premium como alertas inteligentes, análisis de tendencias, reconocimiento por cámara, etc.
 
 Para que este modelo sea escalable y sostenible, la estrategia es que el hardware tenga un costo razonable (potencialmente amortizable) y el servicio de suscripción mensual genere los ingresos recurrentes (MRR) que den rentabilidad al negocio.
+
 

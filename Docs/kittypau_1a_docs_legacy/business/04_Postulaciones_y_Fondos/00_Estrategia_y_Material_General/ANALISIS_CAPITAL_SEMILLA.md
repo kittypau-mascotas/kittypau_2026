@@ -1,6 +1,6 @@
-# Análisis Comparativo: Fondos Semilla para KittyPaw (2025)
+# Análisis Comparativo: Fondos Semilla para Kittypau (2025)
 
-Este documento resume y compara las dos principales oportunidades de "Capital Semilla" identificadas para KittyPaw, con el objetivo de maximizar las probabilidades de obtener financiamiento.
+Este documento resume y compara las dos principales oportunidades de "Capital Semilla" identificadas para Kittypau, con el objetivo de maximizar las probabilidades de obtener financiamiento.
 
 ---
 
@@ -8,7 +8,7 @@ Este documento resume y compara las dos principales oportunidades de "Capital Se
 
 - **Institución:** CORFO (Corporación de Fomento de la Producción).
 - **Enfoque:** Startups innovadoras, de rápida implementación y con alto potencial de crecimiento dinámico. Busca emprendimientos que puedan alcanzar ventas de un millón de dólares en dos años y crecer a tasas superiores al 20% en los siguientes tres años.
-- **Ideal para:** Proyectos de base tecnológica como KittyPaw.
+- **Ideal para:** Proyectos de base tecnológica como Kittypau.
 
 ### Financiamiento
 - **Monto General:** Hasta **$25.000.000 CLP** para implementar el negocio, y **$500.000 CLP adicionales** para servicios de mentoría. Cubre hasta el 75% del costo total del proyecto, y el beneficiario debe aportar el 25% restante en dinero.
@@ -30,8 +30,8 @@ Este documento resume y compara las dos principales oportunidades de "Capital Se
 ### Fechas y Plazos
 - **Estado Actual:** Las convocatorias se abren y cierran varias veces al año. **No hay una fecha fija**, por lo que es crucial monitorear constantemente el [sitio de CORFO](https://www.corfo.cl/sites/cpp/convocatorias).
 
-### Estrategia para KittyPaw
-- **Prioridad:** **Alta**. Este fondo es el más adecuado para la naturaleza tecnológica e innovadora de KittyPaw, dado su alto potencial de crecimiento.
+### Estrategia para Kittypau
+- **Prioridad:** **Alta**. Este fondo es el más adecuado para la naturaleza tecnológica e innovadora de Kittypau, dado su alto potencial de crecimiento.
 - **Acciones Inmediatas:**
     1.  **Pitch Deck y Video:** Preparar un pitch deck sólido y un guion para el video-pitch de 3 minutos para el "Demo Day". El mensaje debe centrarse en la innovación (IoT, IA), el potencial del mercado "Pet Tech" global y la proyección de ventas.
     2.  **Prototipo Demostrable:** Asegurarse de que el prototipo actual sea fácilmente demostrable en el video y en el pitch.
@@ -61,7 +61,7 @@ Este documento resume y compara las dos principales oportunidades de "Capital Se
 - **Estado Actual:** La convocatoria para la Región Metropolitana tiene fecha de publicación el **18 de marzo de 2025**.
 - **Acción:** Estar atentos a esa fecha para descargar las bases y conocer los plazos de postulación.
 
-### Estrategia para KittyPaw
+### Estrategia para Kittypau
 - **Prioridad:** **Media-Alta**. Aunque el monto es menor, es un fondo menos competitivo que el de CORFO y puede financiar gastos operativos iniciales que CORFO no cubre.
 - **Acciones Inmediatas:**
     1.  **Plan de Negocio:** Adaptar el plan de negocio a un formato más tradicional, como lo suelen requerir las bases de Sercotec.
@@ -74,5 +74,6 @@ Este documento resume y compara las dos principales oportunidades de "Capital Se
 
 1.  **Postular a Ambos:** Son compatibles. Se debe postular a Semilla Inicia (CORFO) por su alto monto y calce tecnológico, y en paralelo a Capital Semilla Emprende (Sercotec) como una segunda opción muy viable para asegurar capital operativo.
 2.  **Preparar Material Base:** Desarrollar un "Kit de Postulación" que incluya el modelo de negocio, descripción del problema/solución, presupuesto base y el video pitch. Este kit se adaptará luego a las bases específicas de cada fondo.
+
 
 

@@ -1,5 +1,5 @@
 {
-  "source_train_dir": "D:\\Escritorio\\Proyectos\\KittyPaw\\kittypau_2026_hivemq\\Docs\\investigacion\\Data Science\\fase_2_dataset\\data\\train",
+  "source_train_dir": "D:\\Escritorio\\Proyectos\\Kittypau\\kittypau_2026_hivemq\\Docs\\investigacion\\Data Science\\fase_2_dataset\\data\\train",
   "source_classes": [
     "alimentacion",
     "servido",

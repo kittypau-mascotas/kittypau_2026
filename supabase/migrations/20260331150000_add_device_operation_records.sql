@@ -1,5 +1,5 @@
 -- ============================================================
--- Device operation history for KittyPaw
+-- Device operation history for Kittypau
 -- ============================================================
 -- Stores observed runtime intervals per device, derived from readings.
 -- First seed row captures the initial KPCL0034 operating window.
@@ -208,3 +208,4 @@ do update set
   summary = excluded.summary,
   notes = excluded.notes,
   updated_at = now();
+

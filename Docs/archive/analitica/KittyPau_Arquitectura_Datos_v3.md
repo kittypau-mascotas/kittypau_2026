@@ -1,4 +1,4 @@
-# KittyPaw - Arquitectura de Datos, Analitica/ML e IA (v3)
+# Kittypau - Arquitectura de Datos, Analitica/ML e IA (v3)
 
 > Estado actual: referencia tecnica profunda; la fuente canonica de activos/legacy/tablas/flujos es [FUENTE_DE_VERDAD.md](../../FUENTE_DE_VERDAD.md).
 
@@ -1034,6 +1034,7 @@ Usar antes de cada deploy o cambio de schema.
 
 *Versión 3 — Mejorada con diagramas Mermaid, pruebas estadísticas visualizadas, y especificaciones completas del ML pipeline.*
 *Complemento: `Docs/TRANSFORMACIONES_ANALITICAS_LOG10_FOURIER.md`*
+
 
 
 

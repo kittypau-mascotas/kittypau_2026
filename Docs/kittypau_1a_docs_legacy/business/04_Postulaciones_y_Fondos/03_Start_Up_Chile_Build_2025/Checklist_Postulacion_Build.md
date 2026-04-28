@@ -15,7 +15,7 @@ Este es el listado de requisitos y documentos necesarios según las bases.
     -   **[x] Rol y Participación Activa:** Declaración de rol y participación. (Cubierto en `Compromiso_Dedicacion_Javier_Ejecutor.md`)
     -   **[ ] Fotocopia Cédula de Identidad o Pasaporte Vigente.**
 -   **[x] Equipo Fundador:**
-    -   **[x] Individualización de todo el equipo:** Roles y responsabilidades. (Cubierto en `Equipo_Fundador_KittyPaw.md`)
+    -   **[x] Individualización de todo el equipo:** Roles y responsabilidades. (Cubierto en `Equipo_Fundador_Kittypau.md`)
     -   **[ ] Antecedentes del equipo:** Nacionalidad, educación, experiencia técnica y laboral de todos los miembros. (Necesitamos un documento que detalle esto para cada miembro).
 
 #### Sección 2: Contenido del Proyecto (Formulario de Postulación)
@@ -23,7 +23,7 @@ Este es el listado de requisitos y documentos necesarios según las bases.
 -   **[x] Registro de Detalles de Postulación:** Documento para registrar información del formulario. (Documento: `Registro_Postulacion.md`)
 
 -   **[ ] Producto y/o Servicio:**
-    -   **[ ] Descripción detallada:** ¿Qué es KittyPaw? ¿Qué problema soluciona?
+    -   **[ ] Descripción detallada:** ¿Qué es Kittypau? ¿Qué problema soluciona?
     -   **[ ] Innovación y Diferenciación:** ¿Por qué es innovador? ¿Qué lo diferencia de la competencia?
     -   **[ ] Competencia:** Análisis de competidores directos e indirectos.
 -   **[ ] Video Pitch (90 segundos):**
@@ -45,4 +45,5 @@ Este es el listado de requisitos y documentos necesarios según las bases.
 -   **[ ] Anexo N°2 - Declaración Jurada de Libre Competencia:** A completar y firmar.
 
 ---
+
 

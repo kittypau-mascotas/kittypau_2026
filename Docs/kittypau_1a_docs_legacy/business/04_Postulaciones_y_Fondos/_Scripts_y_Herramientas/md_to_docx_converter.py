@@ -38,7 +38,7 @@ def convert_md_to_docx(md_file_path, docx_output_path):
 
 if __name__ == "__main__":
     # Define la ruta al archivo Markdown de la plantilla
-    md_template_path = r"D:\Escritorio\Proyectos\KittyPaw\Kittypaw_1a\docs\business\04_Postulaciones_y_Fondos\01_Capital_Semilla_2025\Anexos\Carta_Compromiso_Ignacio_Farias.md"
+    md_template_path = r"D:\Escritorio\Proyectos\Kittypau\Kittypau_1a\docs\business\04_Postulaciones_y_Fondos\01_Capital_Semilla_2025\Anexos\Carta_Compromiso_Ignacio_Farias.md"
     
     # Define la ruta de salida para el archivo DOCX
     # Se colocará en el mismo directorio que la plantilla Markdown

@@ -6,9 +6,9 @@ Este documento resume los hallazgos y acciones relacionadas con la "Revisión y 
 
 ## 1. Antigüedad de la Empresa
 
-- **Fecha de Constitución de KittyPaw:** 10 de julio de 2025 (según "CERTIFICADO DE ESTATUTO ACTUALIZADO" de IOT CHILE SpA).
-- **Análisis:** A la fecha de este análisis (20 de octubre de 2025), KittyPaw tiene aproximadamente 3 meses y 10 días de antigüedad. Esto cumple con el requisito de "menos de 18 meses" para postular a fondos como Semilla Inicia de CORFO.
-- **Conclusión:** KittyPaw cumple con el criterio de antigüedad para fondos de etapa temprana.
+- **Fecha de Constitución de Kittypau:** 10 de julio de 2025 (según "CERTIFICADO DE ESTATUTO ACTUALIZADO" de IOT CHILE SpA).
+- **Análisis:** A la fecha de este análisis (20 de octubre de 2025), Kittypau tiene aproximadamente 3 meses y 10 días de antigüedad. Esto cumple con el requisito de "menos de 18 meses" para postular a fondos como Semilla Inicia de CORFO.
+- **Conclusión:** Kittypau cumple con el criterio de antigüedad para fondos de etapa temprana.
 
 ## 2. Revisión de Términos y Políticas
 
@@ -18,7 +18,7 @@ Se han revisado los documentos `Politica_de_Privacidad.md` y `Terminos_y_Condici
 - **Advertencia Legal:** Ambos documentos contienen la siguiente advertencia:
     > "[IMPORTANTE: Este es un borrador y debe ser revisado por un profesional legal para asegurar el cumplimiento con todas las leyes y regulaciones aplicables en tu jurisdicción.]"
 - **Análisis:** Si bien los documentos están redactados, la advertencia indica que son borradores y requieren una revisión legal profesional. Esto es crucial para evitar posibles puntos débiles o incumplimientos que puedan ser identificados por los evaluadores de los fondos.
-- **Recomendación:** Es imperativo que un profesional legal revise y valide estos documentos para asegurar su cumplimiento normativo y robustez. Esto fortalecerá la imagen de seriedad y profesionalismo de KittyPaw ante los evaluadores.
+- **Recomendación:** Es imperativo que un profesional legal revise y valide estos documentos para asegurar su cumplimiento normativo y robustez. Esto fortalecerá la imagen de seriedad y profesionalismo de Kittypau ante los evaluadores.
 
 ## Acciones Pendientes y Recomendaciones
 
@@ -28,4 +28,5 @@ Se han revisado los documentos `Politica_de_Privacidad.md` y `Terminos_y_Condici
 ---
 
 **Estado del Punto 1 del Roadmap:** Completado en cuanto a la revisión inicial y la identificación de la fecha de constitución. Pendiente la validación legal profesional de los documentos de políticas.
+
 

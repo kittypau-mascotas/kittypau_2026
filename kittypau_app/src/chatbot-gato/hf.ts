@@ -48,7 +48,7 @@ const HF_ROUTER_URL = "https://router.huggingface.co/v1/chat/completions";
 const OFF_TOPIC_REPLIES = [...GATO_REJECTION_LINES];
 const DEMO_TOPIC_KEYWORDS = [
   "kittypau",
-  "kittypaw",
+  "Kittypau",
   "demo",
   "login",
   "inicio",
@@ -234,7 +234,10 @@ function buildPagePrompt(request: ChatbotGatoAiRequest) {
       request.petName?.trim() || "no informada"
     }`,
     `- Secciones visibles: ${DEMO_SCREEN_CONTEXT.sections
-      .map((section) => `${section.label} (${section.positionHint ?? "sin posicion"})`)
+      .map(
+        (section) =>
+          `${section.label} (${section.positionHint ?? "sin posicion"})`,
+      )
       .join(" | ")}`,
     `- Tono esperado: ${DEMO_SCREEN_CONTEXT.tone.style}, ${DEMO_SCREEN_CONTEXT.tone.length}`,
     `- Eleccion actual: ${request.demoChoice ?? "ninguna"}`,

@@ -1,4 +1,4 @@
-# Estrategia de Mercado de KittyPaw
+# Estrategia de Mercado de Kittypau
 
 Este documento describe los segmentos de cliente objetivo y la estrategia para llegar a ellos.
 
@@ -12,7 +12,7 @@ Identificamos varios segmentos de cliente potenciales, cada uno con diferentes n
 
 *   **Criaderos o Criadores Profesionales:** Requieren datos más precisos y la capacidad de monitorear a múltiples animales de forma individual y comparativa.
 
-*   **Clínicas Veterinarias:** Pueden ofrecer el sistema KittyPaw como un servicio de valor añadido (plus) a sus clientes para monitoreo post-operatorio o de enfermedades crónicas.
+*   **Clínicas Veterinarias:** Pueden ofrecer el sistema Kittypau como un servicio de valor añadido (plus) a sus clientes para monitoreo post-operatorio o de enfermedades crónicas.
 
 *   **Hoteles / Guarderías para Mascotas:** Pueden usarlo para ofrecer tranquilidad a sus clientes, demostrando que sus mascotas están comiendo y bebiendo bien durante su estadía.
 
@@ -32,12 +32,13 @@ Para que el modelo de suscripción funcione, necesitamos un crecimiento de usuar
 
 *   **Presencia en Eventos:** Participar en ferias de mascotas, exposiciones y eventos del sector para dar a conocer el producto directamente al público objetivo.
 
-*   **Marketing de Contenido:** Crear contenido de valor que eduque al usuario sobre la salud de las mascotas y posicione a KittyPaw como una autoridad en el tema. Formatos:
+*   **Marketing de Contenido:** Crear contenido de valor que eduque al usuario sobre la salud de las mascotas y posicione a Kittypau como una autoridad en el tema. Formatos:
     *   Artículos de blog (SEO).
     *   Videos cortos y tutoriales.
-    *   Casos de éxito (reales o simulados) que muestren cómo los datos de KittyPaw ayudaron a detectar o prevenir un problema de salud.
+    *   Casos de éxito (reales o simulados) que muestren cómo los datos de Kittypau ayudaron a detectar o prevenir un problema de salud.
 
 *   **Programa de Referidos:** Incentivar el boca a boca. Los usuarios que refieran a amigos y estos se suscriban, obtienen descuentos o meses gratis.
 
 *   **Fidelización a través del Servicio:** Un soporte y atención al cliente excelente es clave para reducir la tasa de cancelación (churn) y mantener a los clientes suscritos a largo plazo.
+
 

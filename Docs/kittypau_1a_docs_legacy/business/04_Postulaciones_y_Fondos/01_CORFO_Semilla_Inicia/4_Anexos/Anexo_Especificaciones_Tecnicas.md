@@ -1,9 +1,9 @@
 
-# Anexo: Especificaciones Técnicas del Ecosistema KittyPaw
+# Anexo: Especificaciones Técnicas del Ecosistema Kittypau
 
 ## 1. Resumen de la Arquitectura
 
-El ecosistema KittyPaw se basa en una arquitectura de tres componentes principales: el dispositivo físico (IoT), un backend en la nube y una aplicación de usuario (frontend). La comunicación se realiza en tiempo real a través del protocolo MQTT, un estándar de la industria para IoT, garantizando una comunicación eficiente y segura.
+El ecosistema Kittypau se basa en una arquitectura de tres componentes principales: el dispositivo físico (IoT), un backend en la nube y una aplicación de usuario (frontend). La comunicación se realiza en tiempo real a través del protocolo MQTT, un estándar de la industria para IoT, garantizando una comunicación eficiente y segura.
 
 - **Dispositivo IoT:** Captura datos de los sensores (peso, temperatura, humedad) y los publica en un canal seguro de MQTT.
 - **Backend:** Se suscribe a los datos del dispositivo, los procesa, los almacena en una base de datos y los retransmite a la aplicación del usuario.
@@ -81,5 +81,6 @@ El ecosistema KittyPaw se basa en una arquitectura de tres componentes principal
 - **Modularidad y Facilidad de Limpieza:** El plato se diseñará de forma modular, permitiendo que la parte que contiene el alimento se separe fácilmente de la base electrónica para poder lavarla sin riesgo de dañar los componentes.
 - **Integración de Sensores:** La base del dispositivo alojará la celda de carga y la electrónica de forma discreta y protegida de derrames. El sensor de ambiente estará posicionado para medir las condiciones del entorno inmediato sin ser afectado por el contenido del plato.
 - **Estética y Experiencia de Usuario:** El diseño será minimalista y moderno, buscando integrarse de forma armónica en el hogar del usuario. Un indicador LED sutil informará sobre el estado de la conexión del dispositivo.
+
 
 

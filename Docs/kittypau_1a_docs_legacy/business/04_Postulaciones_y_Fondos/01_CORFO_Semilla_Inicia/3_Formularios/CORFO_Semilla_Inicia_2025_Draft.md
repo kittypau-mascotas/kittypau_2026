@@ -1,18 +1,18 @@
 # Borrador de Postulación - CORFO Semilla Inicia 2025
 
-Este documento es un borrador para la postulación de KittyPaw al fondo CORFO Semilla Inicia 2025, estructurado para abordar los criterios clave de evaluación.
+Este documento es un borrador para la postulación de Kittypau al fondo CORFO Semilla Inicia 2025, estructurado para abordar los criterios clave de evaluación.
 
 ---
 
 ## 1. Título del Proyecto
 
-**KittyPaw: Monitoreo Inteligente y Predictivo de Salud para Mascotas con IoT e IA**
+**Kittypau: Monitoreo Inteligente y Predictivo de Salud para Mascotas con IoT e IA**
 
 ---
 
 ## 2. Resumen Ejecutivo (Elevator Pitch - Enfoque CORFO)
 
-"En un mercado global de 'Pet Tech' en auge, KittyPaw emerge como una solución disruptiva. Hemos desarrollado un innovador dispositivo IoT con IA integrada que, discretamente en el collar de tu mascota, no solo monitorea datos vitales en tiempo real, sino que predice proactivamente problemas de salud. Esto no solo ofrece tranquilidad a los dueños, sino que posiciona a KittyPaw para escalar globalmente, transformando el cuidado preventivo animal y generando un impacto significativo en la industria."
+"En un mercado global de 'Pet Tech' en auge, Kittypau emerge como una solución disruptiva. Hemos desarrollado un innovador dispositivo IoT con IA integrada que, discretamente en el collar de tu mascota, no solo monitorea datos vitales en tiempo real, sino que predice proactivamente problemas de salud. Esto no solo ofrece tranquilidad a los dueños, sino que posiciona a Kittypau para escalar globalmente, transformando el cuidado preventivo animal y generando un impacto significativo en la industria."
 
 ---
 
@@ -24,21 +24,21 @@ Según el Boletín Técnico de Estimación de Población Canina y Felina del 202
 
 ---
 
-## 4. Solución Propuesta (KittyPaw)
+## 4. Solución Propuesta (Kittypau)
 
-KittyPaw es una **plataforma disruptiva e integral** de monitoreo de salud para mascotas que va **más allá de los dispensadores automáticos**. Combina un dispositivo IoT no invasivo (plato inteligente) con algoritmos avanzados de Inteligencia Artificial. El dispositivo, integrado en el collar, recopila datos vitales como actividad, temperatura, y patrones de alimentación. Nuestra plataforma analiza esta información en tiempo real, **prediciendo** y detectando anomalías que sugieren problemas de salud antes de que sean evidentes, alertando a los dueños y ofreciendo insights valiosos para la prevención y el cuidado proactivo. Esto empodera a los dueños para tomar decisiones informadas y mejorar significativamente la calidad de vida de sus mascotas.
+Kittypau es una **plataforma disruptiva e integral** de monitoreo de salud para mascotas que va **más allá de los dispensadores automáticos**. Combina un dispositivo IoT no invasivo (plato inteligente) con algoritmos avanzados de Inteligencia Artificial. El dispositivo, integrado en el collar, recopila datos vitales como actividad, temperatura, y patrones de alimentación. Nuestra plataforma analiza esta información en tiempo real, **prediciendo** y detectando anomalías que sugieren problemas de salud antes de que sean evidentes, alertando a los dueños y ofreciendo insights valiosos para la prevención y el cuidado proactivo. Esto empodera a los dueños para tomar decisiones informadas y mejorar significativamente la calidad de vida de sus mascotas.
 
 ---
 
 ## 5. Innovación y Tecnología
 
-La innovación de KittyPaw radica en la integración de:
+La innovación de Kittypau radica en la integración de:
 -   **Dispositivo IoT Avanzado:** Sensores miniaturizados y de bajo consumo para una recolección de datos continua y no invasiva.
 -   **Inteligencia Artificial y Machine Learning:** Algoritmos propietarios que analizan grandes volúmenes de datos para identificar patrones de comportamiento y fisiológicos, permitiendo la detección temprana de enfermedades y la predicción de riesgos.
 -   **Plataforma de Datos en la Nube:** Infraestructura robusta para el procesamiento, almacenamiento y visualización de datos en tiempo real, accesible vía web y móvil.
 -   **Enfoque Predictivo:** Más allá del monitoreo, nuestra IA busca anticipar problemas, diferenciándonos de soluciones reactivas.
 
-Actualmente, el prototipo funcional de KittyPaw se encuentra en un **Nivel de Madurez Tecnológica (TRL) 4-5** (Tecnología validada en laboratorio y en un entorno relevante). Buscamos avanzar hacia un TRL 6-7 con el financiamiento, demostrando la tecnología en un entorno relevante y un prototipo completo en un entorno operacional.
+Actualmente, el prototipo funcional de Kittypau se encuentra en un **Nivel de Madurez Tecnológica (TRL) 4-5** (Tecnología validada en laboratorio y en un entorno relevante). Buscamos avanzar hacia un TRL 6-7 con el financiamiento, demostrando la tecnología en un entorno relevante y un prototipo completo en un entorno operacional.
 
 ---
 
@@ -52,7 +52,7 @@ Actualmente, el prototipo funcional de KittyPaw se encuentra en un **Nivel de Ma
 
 ## 7. Equipo Emprendedor
 
-El equipo emprendedor está conformado por **Javier Dayne (ingeniero)** y **Mauricio Cárcamo (sociólogo)**, una asociación chilena que combina experiencia técnica y comprensión social. Esta combinación de perfiles es clave para el desarrollo integral de KittyPaw, desde la concepción tecnológica hasta la estrategia de mercado y el impacto social. (Esta sección se completará con los CVs y roles del equipo, destacando experiencia relevante en IoT, IA, desarrollo de software, veterinaria y negocios. Se hará referencia a los anexos de CVs).
+El equipo emprendedor está conformado por **Javier Dayne (ingeniero)** y **Mauricio Cárcamo (sociólogo)**, una asociación chilena que combina experiencia técnica y comprensión social. Esta combinación de perfiles es clave para el desarrollo integral de Kittypau, desde la concepción tecnológica hasta la estrategia de mercado y el impacto social. (Esta sección se completará con los CVs y roles del equipo, destacando experiencia relevante en IoT, IA, desarrollo de software, veterinaria y negocios. Se hará referencia a los anexos de CVs).
 
 ---
 
@@ -64,7 +64,7 @@ Contamos con un prototipo funcional de nuestro dispositivo IoT (un plato intelig
 
 ## 9. Solicitud de Fondos y Uso
 
-Solicitamos **$25.000.000 CLP** para cofinanciar las siguientes actividades críticas de **validación técnica y comercial**, esenciales para el desarrollo y escalamiento de KittyPaw:
+Solicitamos **$25.000.000 CLP** para cofinanciar las siguientes actividades críticas de **validación técnica y comercial**, esenciales para el desarrollo y escalamiento de Kittypau:
 
 -   **Desarrollo y Optimización del Producto (Validación Técnica):** Mejora de sensores, miniaturización del dispositivo, y desarrollo de nuevas funcionalidades de IA. Esto incluye asistencia técnica especializada en networking y conectividad de la placa electrónica, asegurando la continuidad operacional y el flujo de datos, así como la selección de protocolos óptimos para la integración de cámaras con IA. Estas actividades son fundamentales para llevar el prototipo a un TRL superior y validar su funcionalidad en condiciones reales.
 -   **Capacitación (Fortalecimiento de Capacidades):** Realización de cursos especializados en Internet de las Cosas (IoT) y formación en StartApp, para fortalecer las capacidades técnicas y de gestión del equipo, directamente aplicables al desarrollo y comercialización del producto.
@@ -74,16 +74,16 @@ Solicitamos **$25.000.000 CLP** para cofinanciar las siguientes actividades crí
 -   **Habilitación de Infraestructura (Soporte Operacional):** Adecuación mínima de espacios de trabajo para el desarrollo y pruebas del prototipo.
 -   **Capital de Trabajo (Operación de Validación):** Para cubrir costos esenciales como materias primas para prototipos, mercadería inicial para pruebas de mercado y posibles nuevas contrataciones temporales ligadas a la validación.
 -   **Costo de Cloud (Infraestructura Tecnológica):** Inversión en servicios de almacenamiento y gestión de datos en la nube, crucial para la operación de la plataforma y el análisis de datos de la IA.
--   **Protección de Propiedad Intelectual (Valor Estratégico):** Registro de patentes y marcas, asegurando la protección de la innovación de KittyPaw y su valor a largo plazo.
+-   **Protección de Propiedad Intelectual (Valor Estratégico):** Registro de patentes y marcas, asegurando la protección de la innovación de Kittypau y su valor a largo plazo.
 
 ---
 
 ## 10. Impacto y Sostenibilidad
 
-KittyPaw se compromete con un modelo de negocio que genera valor no solo económico, sino también social y ambiental, alineándose con los principios de sostenibilidad que CORFO valora:
+Kittypau se compromete con un modelo de negocio que genera valor no solo económico, sino también social y ambiental, alineándose con los principios de sostenibilidad que CORFO valora:
 
 *   **Impacto Social:**
-    *   **Fomento de la Tenencia Responsable:** Al proporcionar datos precisos y alertas tempranas, KittyPaw empodera a los dueños para un cuidado más informado y proactivo, promoviendo la tenencia responsable de mascotas.
+    *   **Fomento de la Tenencia Responsable:** Al proporcionar datos precisos y alertas tempranas, Kittypau empodera a los dueños para un cuidado más informado y proactivo, promoviendo la tenencia responsable de mascotas.
     *   **Mejora del Bienestar Animal:** La detección temprana de problemas de salud contribuye directamente a una mejor calidad de vida y mayor longevidad para las mascotas.
     *   **Tranquilidad para los Dueños:** Reduce el estrés y la incertidumbre asociados con la salud de las mascotas, fortaleciendo el vínculo humano-animal.
 
@@ -114,7 +114,7 @@ KittyPaw se compromete con un modelo de negocio que genera valor no solo económ
 ### Canales
 
 *   **Venta del Dispositivo (Presencial):** Pet shops, clínicas veterinarias, establecimientos especializados en productos para mascotas.
-*   **Venta del Dispositivo (Online):** Plataforma web propia de KittyPaw, comunicación por Instagram (con costo de envío).
+*   **Venta del Dispositivo (Online):** Plataforma web propia de Kittypau, comunicación por Instagram (con costo de envío).
 *   **Venta del Servicio (Suscripción App):** Aplicación móvil (análisis personalizado, datos históricos, alertas).
 *   **Marketing y Publicidad:** Redes sociales (reels, publicaciones en Instagram), shorts, videos, compra de espacios publicitarios en YouTube, Twitch. Comunicación directa con áreas de ventas de empresas, reuniones y negociaciones.
 
@@ -149,7 +149,7 @@ KittyPaw se compromete con un modelo de negocio que genera valor no solo económ
 *   **ONG's:** Campañas conjuntas de concientización y tenencia responsable, fomento de adopciones.
 *   **Marcas Reconocidas:** Alianzas de co-marketing para visibilidad y confianza.
 *   **Empresas de Tecnología y Servicios Digitales:** Optimizar y mejorar continuamente la aplicación, incorporar funcionalidades avanzadas.
-*   **Usuarios Piloto:** Compromiso formal de al menos 10 personas para probar KittyPaw con sus mascotas. Este compromiso se validará mediante **Cartas de Compromiso de Participación en Programa Piloto** o **Acuerdos de Prueba de Producto y Confidencialidad** firmados, que se adjuntarán como anexos.
+*   **Usuarios Piloto:** Compromiso formal de al menos 10 personas para probar Kittypau con sus mascotas. Este compromiso se validará mediante **Cartas de Compromiso de Participación en Programa Piloto** o **Acuerdos de Prueba de Producto y Confidencialidad** firmados, que se adjuntarán como anexos.
 
 ### Estructura de Costos
 
@@ -191,7 +191,7 @@ Para ser recomendado para aprobación, el proyecto deberá alcanzar una nota mí
 
 
 
-Se adjuntará un video-pitch de 3 minutos, siguiendo las directrices de CORFO, demostrando el prototipo y explicando la propuesta de valor de KittyPaw. El guion base para este video es el siguiente:
+Se adjuntará un video-pitch de 3 minutos, siguiendo las directrices de CORFO, demostrando el prototipo y explicando la propuesta de valor de Kittypau. El guion base para este video es el siguiente:
 
 
 
@@ -228,5 +228,6 @@ Se adjuntará un video-pitch de 3 minutos, siguiendo las directrices de CORFO, d
 
 
 (Se identificará y contactará a una Entidad Patrocinadora una vez que el proyecto sea pre-seleccionado, según los requisitos de CORFO).
+
 
 

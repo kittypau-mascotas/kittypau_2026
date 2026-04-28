@@ -25,7 +25,7 @@ Hacer un backup consiste en guardar una copia de estos archivos. Restaurar consi
     En la raíz del proyecto, crea una carpeta llamada `backups` si no existe. Dentro de ella, crea una carpeta con un nombre descriptivo para tu backup, por ejemplo: `filesystem_2025-10-13_config_burgosa`.
 
 2.  **Copiar los Archivos:**
-    Copia **todo el contenido** de la carpeta `d:\Escritorio\Proyectos\KittyPaw\Kittypaw_1a\apps\iot_firmware\data\` a tu nueva carpeta de backup (ej. `backups/filesystem_2025-10-13_config_burgosa/`).
+    Copia **todo el contenido** de la carpeta `d:\Escritorio\Proyectos\Kittypau\Kittypau_1a\apps\iot_firmware\data\` a tu nueva carpeta de backup (ej. `backups/filesystem_2025-10-13_config_burgosa/`).
 
 ¡Listo! Ya tienes una copia segura de la configuración.
 
@@ -34,14 +34,15 @@ Hacer un backup consiste en guardar una copia de estos archivos. Restaurar consi
 ## Procedimiento de Restauración (Sobrescribir en el Dispositivo)
 
 1.  **Preparar la Carpeta `data`:**
-    Borra el contenido actual de la carpeta `d:\Escritorio\Proyectos\KittyPaw\Kittypaw_1a\apps\iot_firmware\data\`.
+    Borra el contenido actual de la carpeta `d:\Escritorio\Proyectos\Kittypau\Kittypau_1a\apps\iot_firmware\data\`.
 
 2.  **Copiar desde el Backup:**
-    Copia los archivos desde la carpeta del backup que quieres restaurar (ej. `backups/filesystem_2025-10-13_config_burgosa/`) hacia la carpeta `d:\Escritorio\Proyectos\KittyPaw\Kittypaw_1a\apps\iot_firmware\data\`.
+    Copia los archivos desde la carpeta del backup que quieres restaurar (ej. `backups/filesystem_2025-10-13_config_burgosa/`) hacia la carpeta `d:\Escritorio\Proyectos\Kittypau\Kittypau_1a\apps\iot_firmware\data\`.
 
 3.  **Subir al Dispositivo:**
     En VSCode, abre PlatformIO y ejecuta la tarea **"Upload Filesystem Image"**. Esto borrará la memoria del dispositivo y escribirá la nueva configuración que copiaste desde tu backup.
 
 4.  **Reiniciar:**
     Reinicia el dispositivo ESP32 para que cargue la configuración restaurada.
+
 

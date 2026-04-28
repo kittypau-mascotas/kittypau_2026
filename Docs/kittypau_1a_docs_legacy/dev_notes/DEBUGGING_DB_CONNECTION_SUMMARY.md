@@ -4,7 +4,7 @@
 
 ## Problema
 
-El servidor de backend de Node.js no puede iniciarse correctamente porque falla al conectarse a la base de datos PostgreSQL, resultando en un error de `autentificación password falló para el usuario kittypaw_user`.
+El servidor de backend de Node.js no puede iniciarse correctamente porque falla al conectarse a la base de datos PostgreSQL, resultando en un error de `autentificación password falló para el usuario Kittypau_user`.
 
 Este error impide que la aplicación funcione, ya que las operaciones iniciales, las peticiones de API y las conexiones WebSocket dependen de la base de datos.
 
@@ -15,8 +15,8 @@ Se llevó a cabo una larga sesión de depuración para intentar resolver el prob
 1.  **Verificación Inicial:** Se confirmó que el error ocurría al intentar conectar desde la aplicación Node.js al contenedor Docker de PostgreSQL.
 
 2.  **Contraseña de la Base de Datos:**
-    *   Se sospechó que la contraseña en el archivo `.env.local` (`kittypaw_password`) no coincidía con la de la base de datos.
-    *   Se guió al usuario para conectarse a la base de datos y ejecutar `ALTER USER kittypaw_user WITH PASSWORD 'kittypaw_password';` para asegurar que las contraseñas estuvieran sincronizadas.
+    *   Se sospechó que la contraseña en el archivo `.env.local` (`Kittypau_password`) no coincidía con la de la base de datos.
+    *   Se guió al usuario para conectarse a la base de datos y ejecutar `ALTER USER Kittypau_user WITH PASSWORD 'Kittypau_password';` para asegurar que las contraseñas estuvieran sincronizadas.
     *   A pesar de esto, el error persistió.
 
 3.  **Configuración de Autenticación de PostgreSQL (`pg_hba.conf`):**
@@ -41,5 +41,6 @@ Se ha llegado a un punto muerto y no es posible continuar con la depuración sin
 ## Tarea Pendiente
 
 Se ha creado una tarea en `TASK_BOARD.md` para que un desarrollador con acceso local investigue y resuelva este problema.
+
 
 

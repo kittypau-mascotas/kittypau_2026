@@ -1,6 +1,6 @@
-# Paleta de Colores - KittyPaw
+# Paleta de Colores - Kittypau
 
-Este documento define la paleta de colores oficial para la marca y la aplicación KittyPaw.
+Este documento define la paleta de colores oficial para la marca y la aplicación Kittypau.
 
 ---
 
@@ -46,5 +46,6 @@ Estos son los colores que definen la identidad visual de la marca.
 
 - **Texto en Contraste:** `#ffffff` (Blanco)
   - **Uso:** Texto sobre botones con color de fondo oscuro (ej. Coral Principal).
+
 
 

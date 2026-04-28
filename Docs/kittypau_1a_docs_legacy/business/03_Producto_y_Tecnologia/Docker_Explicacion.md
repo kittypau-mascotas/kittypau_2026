@@ -1,8 +1,8 @@
-# ¿Qué es Docker y por qué es útil para KittyPaw?
+# ¿Qué es Docker y por qué es útil para Kittypau?
 
 ## Una Analogía Simple: Una Caja de Herramientas Mágica
 
-Imagina que nuestra aplicación KittyPaw (el servidor de Node.js) es un motor complejo que necesita herramientas y piezas muy específicas para funcionar: una versión concreta de Node.js, ciertas librerías, etc.
+Imagina que nuestra aplicación Kittypau (el servidor de Node.js) es un motor complejo que necesita herramientas y piezas muy específicas para funcionar: una versión concreta de Node.js, ciertas librerías, etc.
 
 - **Sin Docker:** Para que el motor funcione en otro lugar (en tu PC, en mi PC, en un servidor en la nube), tienes que llevar el motor y, por separado, conseguir exactamente las mismas herramientas y piezas en ese nuevo lugar. Si una sola herramienta es diferente, el motor podría no funcionar. Este es el clásico problema de "en mi máquina sí funciona".
 
@@ -15,7 +15,7 @@ Ahora, en lugar de mover el motor y buscar las herramientas, simplemente movemos
 1.  **`Dockerfile` (La Receta):**
     Es un archivo de texto que contiene las **instrucciones paso a paso** para construir nuestra caja de herramientas. Es como la receta de cocina.
 
-    Para nuestra aplicación `KittyPaw_Unified`, la receta diría algo así:
+    Para nuestra aplicación `Kittypau_Unified`, la receta diría algo así:
     1.  Empieza con una base que ya tenga **Node.js**.
     2.  Crea una carpeta de trabajo dentro de la caja.
     3.  Copia el archivo `package.json` (la lista de ingredientes/dependencias).
@@ -42,8 +42,9 @@ Aquí es donde se vuelve poderoso para nosotros:
 ## Próximos Pasos
 
 El siguiente paso lógico en nuestra Fase 2 será:
-1.  **Escribir el `Dockerfile`** para nuestra aplicación `KittyPaw_Unified`.
+1.  **Escribir el `Dockerfile`** para nuestra aplicación `Kittypau_Unified`.
 2.  **Construir la Imagen** a partir de ese archivo.
 3.  **Ejecutar un Contenedor** para ver nuestra aplicación funcionando dentro de su propia "caja mágica".
+
 
 
