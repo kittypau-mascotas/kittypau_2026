@@ -897,6 +897,22 @@ export default function BowlPage() {
       ),
     [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
+  const batterySeries = useMemo(
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.battery_level,
+        selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
+      ),
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
+  );
+  const latestBatteryChartValue = useMemo(
+    () =>
+      readings.find((item) => typeof item.battery_level === "number")
+        ?.battery_level ?? null,
+    [readings],
+  );
 
   return (
     <main className="page-shell">
@@ -1132,6 +1148,16 @@ export default function BowlPage() {
                   maxPoints={selectedRangeConfig.maxPoints}
                   integerDisplay
                   className="lg:col-start-2"
+                />
+                <ChartCard
+                  title="Batería"
+                  unit="%"
+                  series={batterySeries}
+                  accent="hsl(142 72% 38%)"
+                  latestValue={latestBatteryChartValue}
+                  rangeStartLabel={selectedRangeConfig.fromLabel}
+                  maxPoints={selectedRangeConfig.maxPoints}
+                  integerDisplay
                 />
               </div>
             )}
