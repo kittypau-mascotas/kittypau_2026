@@ -2513,6 +2513,59 @@ body {
   }
 }
 
+/* ==============================
+   LOGIN — MÓVIL WEB < 640px
+   Pantalla chica: solo card centrada
+   ============================== */
+@media (max-width: 639px) {
+  /* Ocultar hero (plato + texto animado) — deja solo la card de login centrada */
+  .login-hero-column {
+    display: none;
+  }
+
+  /* Ocultar gato decorativo para reducir ruido visual */
+  .login-login-stack .login-panel-cat {
+    display: none;
+  }
+
+  /* Badge de logo más compacto */
+  .login-auth-column .brand-logo-badge {
+    width: 96px;
+    height: 96px;
+  }
+
+  /* Card más compacta */
+  .login-panel-wrap .glass-panel {
+    padding: 18px 16px;
+  }
+
+  /* Reducir espaciado del stack */
+  .login-login-stack {
+    gap: 11px;
+  }
+
+  /* Inputs con altura táctil adecuada y font-size 16px (evita zoom iOS) */
+  .login-login-form input {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  /* Botón de submit con altura táctil */
+  .login-submit-button {
+    height: 44px;
+  }
+
+  /* Redes sociales más cerca del card */
+  .login-auth-social {
+    margin-top: 8px;
+  }
+
+  /* Brand block encima del card: reducir gap y margen */
+  .login-auth-column > .login-card-brand {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+}
 
 .login-card-brand:not(.login-fold-box-brand) {
   display: flex;
@@ -2762,10 +2815,10 @@ body {
 }
 
 .login-trial-modal {
-  width: min(94vw, 420px);
-  max-height: min(78dvh, 640px);
+  width: min(96vw, 460px);
+  max-height: min(82dvh, 680px);
   overflow-y: auto;
-  padding: 12px !important;
+  padding: 20px !important;
   border: 1px solid color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
   background: linear-gradient(
     180deg,

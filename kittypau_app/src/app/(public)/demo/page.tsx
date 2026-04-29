@@ -461,10 +461,10 @@ export default function DemoPage() {
                       width={128}
                       height={128}
                       unoptimized
-                      className="h-24 w-24 rounded-full border border-slate-200 object-cover"
+                      className="h-16 w-16 rounded-full border border-slate-200 object-cover sm:h-24 sm:w-24"
                     />
                     <div>
-                      <h1 className="text-3xl font-semibold text-slate-900">
+                      <h1 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
                         {petName}
                       </h1>
                       <p className="mt-1 text-sm text-slate-500">
@@ -533,13 +533,11 @@ export default function DemoPage() {
               </section>
             )}
 
-            <section className="mx-auto mt-4 flex w-full max-w-6xl items-center justify-between rounded-[var(--radius)] border border-slate-200/80 bg-white px-4 py-3 md:px-6">
+            <section className="mx-auto mt-4 flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border border-slate-200/80 bg-white px-4 py-3 md:px-6">
               <p className="text-sm text-slate-600">
-                Esta es una vista de demostracion personalizada para explorar
-                Kittypau.
+                Vista de demostración — explora Kittypau sin registrarte.
               </p>
-              <p className="text-xs text-slate-400">
-                Guia del gato:{" "}
+              <p className="hidden text-xs text-slate-400 sm:block">
                 {guideSections.map((section) => section.label).join(" · ")}
               </p>
               <button
@@ -547,7 +545,7 @@ export default function DemoPage() {
                 onClick={exitDemo}
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
               >
-                Salir de prueba
+                Salir
               </button>
             </section>
           </main>
