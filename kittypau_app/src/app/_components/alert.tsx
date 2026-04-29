@@ -15,14 +15,14 @@ export default function Alert({
   actions?: ReactNode;
   variant?: AlertVariant;
 }) {
-  const variantClass =
-    variant === "error"
-      ? "alert-error"
-      : variant === "warning"
-      ? "alert-warning"
-      : variant === "success"
-      ? "alert-success"
-      : "alert-info";
+  const variantClasses: Record<AlertVariant, string> = {
+    error: "alert-error",
+    warning: "alert-warning",
+    success: "alert-success",
+    info: "alert-info",
+  };
+
+  const variantClass = variantClasses[variant];
 
   return (
     <div
@@ -38,4 +38,3 @@ export default function Alert({
     </div>
   );
 }
-

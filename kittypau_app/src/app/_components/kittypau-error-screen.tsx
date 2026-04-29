@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import {
   getKittypauErrorContent,
@@ -79,12 +80,12 @@ export default function KittypauErrorScreen({
                 Reintentar
               </button>
             ) : null}
-            <a
+            <Link
               href={primaryCtaHref}
               className="login-submit-button inline-flex h-9 w-full items-center justify-center rounded-[var(--radius)] bg-primary text-xs font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] sm:h-10 sm:text-sm"
             >
               {primaryCtaLabel}
-            </a>
+            </Link>
             {secondaryCta}
           </div>
         </div>

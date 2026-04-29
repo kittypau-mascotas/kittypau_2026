@@ -49,7 +49,7 @@ export default function SocialLinks({
           key={link.label}
           href={link.href}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           aria-label={link.label}
           className={`social-link ${sizeClass}`}
           onMouseEnter={onInteractionStart}

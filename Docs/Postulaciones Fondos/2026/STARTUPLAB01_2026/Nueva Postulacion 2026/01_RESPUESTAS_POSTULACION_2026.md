@@ -14,7 +14,10 @@ Este documento responde el formulario de postulación tomando como referencia la
 - **Razón social:** IOT CHILE SpA
 - **País de origen:** Chile
 - **Sitio web:** https://kittypau-app.vercel.app
+- **Estado legal:** Persona Jurídica (SpA)
+- **Nombre completo del contacto principal:** Mauricio Cristian Cárcamo Díaz
 - **Correo postulante:** mauro.carcamo89@gmail.com
+- **Rut del contacto principal:** 17402237-2
 - **Teléfono postulante:** +56 9 9038 1919
 
 ---
@@ -117,6 +120,22 @@ Segmento principal B2C: dueño de mascotas urbano, especialmente de gatos y perr
 
 Segmento secundario B2B2C: clínicas veterinarias y comercios pet pequeños y medianos que pueden usar Kittypau como herramienta de fidelización, monitoreo complementario y diferenciación de servicio frente a competidores sin tecnología.
 
+### ¿Cuál es tu estrategia go-to-market para llegar a este cliente?
+
+Nuestra estrategia go-to-market se enfoca en un modelo híbrido B2C y B2B2C.
+
+Para el segmento B2C (dueños de mascotas):
+- **Venta del dispositivo:** Inicialmente online a través de nuestra plataforma web y redes sociales (Instagram, TikTok), con opción de envío. A futuro, expansión a puntos de venta físicos en pet shops y clínicas veterinarias.
+- **Suscripción a la aplicación:** Modelo freemium, con una versión básica gratuita de monitoreo y una versión de pago para análisis personalizado, datos históricos y alertas avanzadas.
+- **Marketing digital:** Campañas en redes sociales, contenido en video (reels, shorts, YouTube, Twitch) y colaboraciones con influencers del sector pet para generar visibilidad y engagement.
+
+Para el segmento B2B2C (clínicas veterinarias y comercios pet):
+- **Venta del dispositivo al por mayor:** Contacto directo con empresas del sector a través de correo electrónico, llamadas y reuniones presenciales para establecer acuerdos de distribución.
+- **Alianzas estratégicas:** Colaboración con clínicas veterinarias para integrar Kittypau como herramienta de fidelización y monitoreo complementario.
+- **Marketing empresarial:** Participación en ferias comerciales del sector pet y presentaciones comerciales para destacar el valor añadido de Kittypau.
+
+La principal fuente de ingresos provendrá de las suscripciones a la aplicación, complementada con la venta de hardware y acuerdos de publicidad/colaboración con marcas relacionadas.
+
 ### Validación del problema
 
 El problema ha sido validado con:
@@ -127,7 +146,6 @@ El problema ha sido validado con:
 - Proceso de obtención de cartas de intención con potenciales clientes del segmento B2C y B2B2C.
 
 ### Por qué ahora
-
 El cuidado de mascotas se está digitalizando. El mercado busca soluciones preventivas, no solo conveniencia. La infraestructura IoT/cloud actual permite desplegar telemetría y analítica con costos iniciales razonables. Kittypau ya tiene prototipo funcional, base técnica operativa y un usuario real generando datos. El momento de escalar desde validación interna a piloto controlado es ahora.
 
 ### Principal ventaja técnica diferenciadora
@@ -145,10 +163,15 @@ Kittypau puede reducir el gasto veterinario de emergencia en hogares de ingresos
 ---
 
 ## 7) Condiciones operativas
-
+- **Tipo de Residencia solicitada:** Residencia Plus
 - **Número de puestos de cowork requeridos:** 2
+- **Número de puestos de laboratorio requeridos:** 1-2
 - **Pueden estar en Santiago durante la residencia:** Sí, sin restricciones
 - **Requerimiento de infraestructura:** Dry Lab
+- **Fecha estimada de inicio:** 01/07/2026
+- **Frecuencia estimada de uso (días por mes):** 15-20
+- **Tipo de laboratorio:** Dry Lab
+- **Interés en programas de aceleración:** Sí
 
 ---
 
@@ -156,6 +179,8 @@ Kittypau puede reducir el gasto veterinario de emergencia en hogares de ingresos
 
 - **Veracidad:** Sí
 - **Consentimiento:** Autorizo
+- **Entiendo que startuplab.01 no toma equity de las startups participantes:** Sí
+- **Acepto ser contactado/a para comunicaciones relacionadas con startuplab.01:** Sí
 - **Declaraciones:** Acepto
 
 ---
@@ -272,9 +297,8 @@ Los competidores resuelven la conveniencia. Kittypau resuelve la visibilidad: ge
 ### Contexto del capital
 
 USD 304 en capital externo, con trabajo técnico de los fundadores equivalente a más de 600 horas de desarrollo. El modelo ha sido bootstrapped intencionalmente: el objetivo fue llegar a la residencia con validación técnica real, sin deuda y sin dilución prematura. Lo que se ha construido con ese capital —hardware funcional, firmware estable, bridge local, backend cloud, app web y base de datos con datos reales— es el activo concreto que Kittypau presenta como evidencia de ejecución.
-
+**Fuentes de financiamiento:** Recursos propios (inversión de fundadores).
 ### Modelo económico
-
 - Ingreso inicial por hardware (venta del dispositivo KPCL).
 - Suscripción para alertas avanzadas y analítica longitudinal.
 - Opción futura de data insights anonimizados para veterinarias y sector pet.
@@ -298,6 +322,9 @@ La ventaja de Kittypau es acumulativa: datos longitudinales, reglas de interpret
 - **Número total de empleados excluyendo cofundadores:** 0
 - **Búsqueda de financiamiento:** Planificada dentro de los próximos 6 meses
 
+### ¿Como te enteraste de la Residencia?
+Redes sociales (LinkedIn), Referencia de terceros
+
 ---
 
 ## 15) Alineación con startuplab.01
@@ -311,6 +338,7 @@ La ventaja de Kittypau es acumulativa: datos longitudinales, reglas de interpret
 - Estrategia de propiedad intelectual
 - Navegación regulatoria para hardware de consumo
 - Mentoría en escalamiento comercial
+- **¿Como te enteraste de la Residencia?:** Redes sociales (LinkedIn), Referencia de terceros
 
 ### Ajuste con la residencia
 
