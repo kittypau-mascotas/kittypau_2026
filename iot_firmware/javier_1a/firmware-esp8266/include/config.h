@@ -10,9 +10,11 @@
 #define PIN_HX711_SCK   13           // D7 (GPIO13)
 // D5 (GPIO14) libre en hardware AHT10; DHT11 en builds USE_DHT11 (KPCL0035)
 #define PIN_DHT         14           // D5 (GPIO14) — solo usado si USE_DHT11
-// Controlador de carga TP4056 — pines de estado
-#define PIN_CHRG        16           // D0 (GPIO16) — CHRG LOW=cargando (pullup 10k externo a 3V3)
-#define PIN_STDBY        0           // D3 (GPIO0)  — STDBY LOW=cargado (pullup interno)
+// Controlador de carga TP4056 — pines de estado (catodo LED via divisor 10k+10k a GND)
+// El modulo HW-373 usa 5V en los LEDs — divisor baja a 2.5V para proteger el GPIO
+// GPIO16 (D0) tiene 10k interno a RST — NO usar para CHRG, no detecta LOW correctamente
+#define PIN_CHRG         0           // D3 (GPIO0)  — catodo LED1 (CHRG): LOW=cargando
+#define PIN_STDBY       16           // D0 (GPIO16) — catodo LED2 (STDBY): LOW=cargado
 // Bus I2C compartido: SDA=D2(GPIO4), SCL=D1(GPIO5)
 //   AHT10  → 0x38  (temperatura + humedad)
 //   BH1750 → 0x23  (luz, ADDR pin a GND)
@@ -62,7 +64,8 @@
 #define BATT_MIN_V      3.0f      // Voltaje =   0 % (LiPo agotada / apagar)
 #define ADC_RESOLUTION  1023.0f   // ADC 10-bit (ESP8266)
 #define ADC_VREF        3.3f      // Tension de referencia del ADC en NodeMCU (V)
-#define BATT_SAMPLES    8         // Muestras promediadas por lectura (anti-ruido)
+#define BATT_SAMPLES    32        // Muestras promediadas por lectura (anti-ruido WiFi ADC ESP8266)
+#define BATT_EMA_ALPHA  0.15f     // Factor EMA entre lecturas consecutivas (menor = más suave)
 
 // Calibracion HX711
 // Factor de partida — calibrar con objeto de peso conocido via env:calibration.
