@@ -26,6 +26,8 @@ static bool         bh1750Ready  = false;
 
 // Cache de la ultima lectura de bateria — leida por main.cpp via sensorsGetLastBattery()
 static BatteryReading s_lastBattery = { -1, -1.0f, "battery_only" };
+// EMA sobre voltaje — suaviza interferencia del radio WiFi en el ADC del ESP8266
+static float s_emaVoltage = -1.0f;
 
 // ── Clasificacion de luz ─────────────────────────────────────────────────────
 static const char* classifyLight(float lux) {
@@ -35,9 +37,8 @@ static const char* classifyLight(float lux) {
     return "bright";
 }
 
-// ── Lectura de bateria (A0 + divisor de tension + pines TP4056) ──────────────
-// BATT_SAMPLES lecturas promediadas para reducir ruido del ADC.
-// Estado de carga leido de PIN_CHRG (D0/GPIO16) y PIN_STDBY (D3/GPIO0).
+// ── Lectura de bateria (A0 + divisor de tension) ─────────────────────────────
+// BATT_SAMPLES lecturas promediadas + EMA entre ciclos para reducir ruido ADC/WiFi.
 BatteryReading sensorsReadBattery() {
     long raw_sum = 0;
     for (int i = 0; i < BATT_SAMPLES; i++) {
@@ -47,10 +48,14 @@ BatteryReading sensorsReadBattery() {
     }
     float adc_avg = (float)raw_sum / (float)BATT_SAMPLES;
     float v_pin   = (adc_avg / ADC_RESOLUTION) * ADC_VREF;
-    float v_batt  = v_pin * ((float)(BATT_R1_KOHM + BATT_R2_KOHM) / (float)BATT_R2_KOHM);
-    v_batt        = roundf(v_batt * 100.0f) / 100.0f;
+    float v_raw   = v_pin * ((float)(BATT_R1_KOHM + BATT_R2_KOHM) / (float)BATT_R2_KOHM);
 
-    int level = (int)(((v_batt - BATT_MIN_V) / (BATT_MAX_V - BATT_MIN_V)) * 100.0f);
+    // EMA: primer arranque inicializa directo; luego suaviza
+    if (s_emaVoltage < 0.0f) s_emaVoltage = v_raw;
+    else s_emaVoltage = BATT_EMA_ALPHA * v_raw + (1.0f - BATT_EMA_ALPHA) * s_emaVoltage;
+
+    float v_batt = roundf(s_emaVoltage * 100.0f) / 100.0f;
+    int level = (int)(((s_emaVoltage - BATT_MIN_V) / (BATT_MAX_V - BATT_MIN_V)) * 100.0f);
     level = constrain(level, 0, 100);
 
     // TODO: deteccion de estado de carga requiere comparador externo (LM393)

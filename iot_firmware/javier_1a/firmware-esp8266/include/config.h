@@ -64,7 +64,8 @@
 #define BATT_MIN_V      3.0f      // Voltaje =   0 % (LiPo agotada / apagar)
 #define ADC_RESOLUTION  1023.0f   // ADC 10-bit (ESP8266)
 #define ADC_VREF        3.3f      // Tension de referencia del ADC en NodeMCU (V)
-#define BATT_SAMPLES    8         // Muestras promediadas por lectura (anti-ruido)
+#define BATT_SAMPLES    32        // Muestras promediadas por lectura (anti-ruido WiFi ADC ESP8266)
+#define BATT_EMA_ALPHA  0.15f     // Factor EMA entre lecturas consecutivas (menor = más suave)
 
 // Calibracion HX711
 // Factor de partida — calibrar con objeto de peso conocido via env:calibration.
