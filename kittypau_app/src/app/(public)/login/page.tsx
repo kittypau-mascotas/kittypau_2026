@@ -1683,7 +1683,7 @@ export default function LoginPage() {
           }}
         >
           <div
-            className={`login-trial-modal-host relative w-full max-w-md${
+            className={`login-trial-modal-host relative w-full max-w-lg${
               isTrialDialogVisible ? " login-trial-modal-host--dialog-open" : ""
             }`}
             onClick={(event) => event.stopPropagation()}
@@ -1740,7 +1740,7 @@ export default function LoginPage() {
                             }
                             onMouseLeave={() => setHoveredTrialPetType(null)}
                             aria-label={option.label}
-                            className={`group relative z-10 mx-auto flex h-[3.8rem] w-[3.8rem] items-center justify-center overflow-hidden rounded-full border-2 bg-white transition sm:h-[4.35rem] sm:w-[4.35rem] ${
+                            className={`group relative z-10 mx-auto flex h-[5.5rem] w-[5.5rem] items-center justify-center overflow-hidden rounded-full border-2 bg-white transition sm:h-[6.2rem] sm:w-[6.2rem] ${
                               isSelected
                                 ? "border-emerald-500 shadow-[0_12px_30px_-16px_rgba(34,197,94,0.4)]"
                                 : isHovered
@@ -1786,18 +1786,6 @@ export default function LoginPage() {
                     className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
                   />
                 </label>
-                <label className="block space-y-1">
-                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
-                    Correo (opcional)
-                  </span>
-                  <input
-                    type="email"
-                    value={trialEmail}
-                    onChange={(event) => setTrialEmail(event.target.value)}
-                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
-                    autoComplete="email"
-                  />
-                </label>
               </div>
 
               {trialError ? (
@@ -1821,6 +1809,25 @@ export default function LoginPage() {
                 >
                   {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
                 </button>
+              </div>
+
+              <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-center">
+                <a
+                  href="https://www.instagram.com/kittypau.mascotas/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-[#E1306C]"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5 text-[#E1306C]"
+                    fill="currentColor"
+                  >
+                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                  </svg>
+                  <span>Síguenos en Instagram</span>
+                </a>
               </div>
             </div>
           </div>
