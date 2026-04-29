@@ -84,6 +84,10 @@ export const ChartCard = ({
   maxPoints = 30,
   canvasClassName = "h-32 sm:h-56",
   className,
+  secondarySeries,
+  secondaryUnit,
+  secondaryAccent = "hsl(215 20% 65%)",
+  secondaryDecimals = 2,
 }: {
   title: string;
   unit: string;
@@ -95,9 +99,14 @@ export const ChartCard = ({
   maxPoints?: number;
   canvasClassName?: string;
   className?: string;
+  secondarySeries?: { value: number; timestamp: string }[];
+  secondaryUnit?: string;
+  secondaryAccent?: string;
+  secondaryDecimals?: number;
 }) => {
   const values = series.map((item) => item.value);
   const ordered = series.slice(0, maxPoints).reverse();
+  const orderedSecondary = secondarySeries?.slice(0, maxPoints).reverse() ?? [];
 
   const formatTooltipTime = (timestamp: string): string => {
     const ts = new Date(timestamp);
@@ -120,6 +129,8 @@ export const ChartCard = ({
   const min = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
   const max = dataPoints.length > 0 ? Math.max(...dataPoints) : 1;
 
+  const secondaryPoints = orderedSecondary.map((item) => item.value);
+
   const data = {
     labels,
     datasets: [
@@ -133,7 +144,24 @@ export const ChartCard = ({
         pointHoverRadius: 4,
         tension: 0.3,
         fill: false,
+        yAxisID: secondarySeries ? "yLeft" : "y",
       },
+      ...(secondarySeries && secondaryUnit
+        ? [
+            {
+              label: secondaryUnit,
+              data: secondaryPoints,
+              borderColor: secondaryAccent,
+              backgroundColor: secondaryAccent,
+              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              tension: 0.3,
+              fill: false,
+              yAxisID: "yRight",
+            },
+          ]
+        : []),
     ],
   };
 
@@ -163,9 +191,14 @@ export const ChartCard = ({
           },
           label: (ctx) => {
             const raw = typeof ctx.parsed.y === "number" ? ctx.parsed.y : null;
-            const value =
-              integerDisplay && raw !== null ? Math.round(raw) : raw;
-            return `${value ?? "-"} ${unit}`;
+            if (ctx.datasetIndex === 0) {
+              const value =
+                integerDisplay && raw !== null ? Math.round(raw) : raw;
+              return `${value ?? "-"} ${unit}`;
+            }
+            return raw !== null
+              ? `${raw.toFixed(secondaryDecimals)} ${secondaryUnit}`
+              : `- ${secondaryUnit}`;
           },
         },
       },
@@ -198,30 +231,79 @@ export const ChartCard = ({
           },
         },
       },
-      y: {
-        beginAtZero: false,
-        suggestedMin: min,
-        suggestedMax: max,
-        grid: { drawOnChartArea: false },
-        border: {
-          display: true,
-          color:
-            "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-        },
-        ticks: {
-          color: "hsl(var(--muted-foreground))",
-          font: { size: 11 },
-          maxTicksLimit: 3,
-          callback: (value) => {
-            const numeric = Number(value);
-            const rendered =
-              integerDisplay && Number.isFinite(numeric)
-                ? Math.round(numeric)
-                : value;
-            return `${rendered} ${unit}`;
-          },
-        },
-      },
+      ...(secondarySeries
+        ? {
+            yLeft: {
+              type: "linear" as const,
+              position: "left" as const,
+              beginAtZero: false,
+              suggestedMin: min,
+              suggestedMax: max,
+              grid: { drawOnChartArea: false },
+              border: {
+                display: true,
+                color:
+                  "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+              },
+              ticks: {
+                color: accent,
+                font: { size: 11 },
+                maxTicksLimit: 3,
+                callback: (value: number | string) => {
+                  const numeric = Number(value);
+                  const rendered =
+                    integerDisplay && Number.isFinite(numeric)
+                      ? Math.round(numeric)
+                      : value;
+                  return `${rendered}${unit}`;
+                },
+              },
+            },
+            yRight: {
+              type: "linear" as const,
+              position: "right" as const,
+              beginAtZero: false,
+              grid: { drawOnChartArea: false },
+              border: {
+                display: true,
+                color:
+                  "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+              },
+              ticks: {
+                color: secondaryAccent,
+                font: { size: 11 },
+                maxTicksLimit: 3,
+                callback: (value: number | string) =>
+                  `${Number(value).toFixed(secondaryDecimals)}${secondaryUnit}`,
+              },
+            },
+          }
+        : {
+            y: {
+              beginAtZero: false,
+              suggestedMin: min,
+              suggestedMax: max,
+              grid: { drawOnChartArea: false },
+              border: {
+                display: true,
+                color:
+                  "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
+              },
+              ticks: {
+                color: "hsl(var(--muted-foreground))",
+                font: { size: 11 },
+                maxTicksLimit: 3,
+                callback: (value: number | string) => {
+                  const numeric = Number(value);
+                  const rendered =
+                    integerDisplay && Number.isFinite(numeric)
+                      ? Math.round(numeric)
+                      : value;
+                  return `${rendered} ${unit}`;
+                },
+              },
+            },
+          }),
     },
   };
 
