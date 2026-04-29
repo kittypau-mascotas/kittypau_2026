@@ -1,4 +1,4 @@
-﻿"""Vista interactiva y exportador canonico de las pruebas KPCL.
+"""Vista interactiva y exportador canonico de las pruebas KPCL.
 
 Abre una pestaña del navegador con tres paneles:
 
@@ -120,6 +120,36 @@ EVENT_COLORS: dict[str, str] = {
     "plate_observation": "#7a7a7a",
     "manual_food_amount": "#d97706",
     "otro_evento": "#444444",
+}
+
+EVENT_FAMILY_LABELS: dict[str, str] = {
+    "food_fill_start": "Servido",
+    "food_fill_end": "Servido",
+    "inicio_servido": "Servido",
+    "termino_servido": "Servido",
+    "inicio_alimentacion": "Alimentacion",
+    "termino_alimentacion": "Alimentacion",
+    "inicio_alimentacin": "Alimentacion",
+    "termino_alimentacin": "Alimentacion",
+    "inicio_hidratacion": "Hidratacion",
+    "termino_hidratacion": "Hidratacion",
+    "inicio_hidratacin": "Hidratacion",
+    "termino_hidratacin": "Hidratacion",
+}
+
+EVENT_LINE_GROUPS: dict[str, tuple[str, str]] = {
+    "inicio_alimentacion": ("inicio_alim", "Inicio alimentacion"),
+    "termino_alimentacion": ("termino_alim", "Termino alimentacion"),
+    "inicio_alimentacin": ("inicio_alim", "Inicio alimentacion"),
+    "termino_alimentacin": ("termino_alim", "Termino alimentacion"),
+    "inicio_servido": ("inicio_serv", "Inicio servido"),
+    "termino_servido": ("termino_serv", "Termino servido"),
+    "food_fill_start": ("inicio_serv", "Inicio servido"),
+    "food_fill_end": ("termino_serv", "Termino servido"),
+    "inicio_hidratacion": ("inicio_hidra", "Inicio hidratacion"),
+    "termino_hidratacion": ("termino_hidra", "Termino hidratacion"),
+    "inicio_hidratacin": ("inicio_hidra", "Inicio hidratacion"),
+    "termino_hidratacin": ("termino_hidra", "Termino hidratacion"),
 }
 
 # Band style per interval type: fillcolor, border color, label
@@ -839,7 +869,15 @@ def add_event_bands(
         )
 
 
-def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> None:
+def add_event_markers(
+    fig: go.Figure,
+    row: int,
+    points: list[SeriesPoint],
+    *,
+    y_lo: float,
+    y_hi: float,
+    seen_marker_lines: set[str],
+) -> None:
     xref, yref = _annotation_refs(row)
     key_events = {
         "tare_record", "plate_weight",
@@ -867,15 +905,33 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
     for idx, point in enumerate(deduped):
         event_name = point.evento
         ts = point.timestamp
-        label = EVENT_LABELS.get(event_name, event_name)
+        detail_label = EVENT_LABELS.get(event_name, event_name)
+        label = EVENT_FAMILY_LABELS.get(event_name, detail_label)
         color = EVENT_COLORS.get(event_name, "#666666")
+        line_group, line_name = EVENT_LINE_GROUPS.get(event_name, (event_name, detail_label))
+        show_line_legend = line_group not in seen_marker_lines
+        if show_line_legend:
+            seen_marker_lines.add(line_group)
 
         # Find the actual weight at this timestamp to place the marker on the curve.
         y_data = _weight_at(points, ts, window_s=120)
 
-        fig.add_vline(
-            x=ts, line_width=1, line_dash="dash",
-            line_color=color, row=row, col=1,
+        fig.add_trace(
+            go.Scatter(
+                x=[ts, ts],
+                y=[y_lo, y_hi],
+                mode="lines",
+                name=line_name,
+                legendgroup=f"line_{line_group}",
+                showlegend=show_line_legend,
+                legendrank=260 + len(seen_marker_lines),
+                line=dict(color=color, width=1.2, dash="dash"),
+                hovertemplate=(
+                    f"<b>{detail_label}</b><br>"
+                    "%{x|%Y-%m-%d %H:%M:%S}<extra></extra>"
+                ),
+            ),
+            row=row, col=1,
         )
 
         if y_data is not None:
@@ -887,10 +943,12 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
                     marker=dict(size=10, color=color, symbol="diamond",
                                 line=dict(color="white", width=1.5)),
                     hovertemplate=(
-                        f"<b>{label}</b><br>"
+                        f"<b>{detail_label}</b><br>"
                         "%{x|%Y-%m-%d %H:%M:%S}<br>"
                         "Peso: %{y:.1f} g<extra></extra>"
                     ),
+                    name=f"Puntos {label.lower()}",
+                    legendgroup=f"marker_{line_group}",
                     showlegend=False,
                 ),
                 row=row, col=1,
@@ -899,7 +957,7 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
             fig.add_annotation(
                 x=ts, y=y_data,
                 xref=xref.replace("domain", ""), yref=ROW_AXES.get(row, ("x", "y"))[1],
-                text=f"<b>{label}</b>",
+                text=f"<b>{detail_label}</b>",
                 showarrow=True, arrowhead=2, arrowsize=0.8,
                 arrowcolor=color, arrowwidth=1.2,
                 ax=28, ay=-32 - (idx % 4) * 18,
@@ -913,7 +971,7 @@ def add_event_markers(fig: go.Figure, row: int, points: list[SeriesPoint]) -> No
             fig.add_annotation(
                 x=ts, y=y_pos,
                 xref=xref, yref=yref,
-                text=label,
+                text=detail_label,
                 showarrow=False, xanchor="left", yanchor="bottom",
                 font=dict(size=10, color=color),
                 bgcolor="rgba(255,255,255,0.88)",
@@ -1099,12 +1157,13 @@ def build_device_figure(
     device_q3 = quantile(raw_weights, 0.75) if raw_weights else None
 
     seen_bands: set[str] = set()
+    seen_marker_lines: set[str] = set()
     y_lo, y_hi = _auto_yrange(points)
 
     add_series_traces(fig, 1, points, show_legend=True, device_code=device_code)
     add_power_markers(fig, 1, points)
     add_event_bands(fig, 1, points, y_lo=y_lo, y_hi=y_hi, seen_bands=seen_bands)
-    add_event_markers(fig, 1, points)
+    add_event_markers(fig, 1, points, y_lo=y_lo, y_hi=y_hi, seen_marker_lines=seen_marker_lines)
 
     fig.update_xaxes(
         range=[window_start, window_end],
@@ -1131,15 +1190,17 @@ def build_device_figure(
         height=540,
         autosize=True,
         legend=dict(
-            orientation="h",
-            yanchor="bottom", y=1.02,
-            xanchor="right", x=1,
-            bgcolor="rgba(255,255,255,0.85)",
+            orientation="v",
+            yanchor="top", y=1,
+            xanchor="left", x=1.02,
+            bgcolor="rgba(255,255,255,0.92)",
             bordercolor="#e2e8f0",
             borderwidth=1,
             font=dict(size=12),
+            itemclick="toggle",
+            itemdoubleclick="toggleothers",
         ),
-        margin=dict(l=80, r=50, t=80, b=60),
+        margin=dict(l=80, r=230, t=72, b=60),
         font=dict(size=13, family="Inter, Arial, sans-serif"),
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
@@ -1498,7 +1559,64 @@ def write_and_open(
         device_cards += f"""
     <div class="card">
       <h2>{device_code} · {label}</h2>
-      {device_htmls[device_code]}
+      <div class="chart-shell">
+        <div class="chart-main">
+          {device_htmls[device_code]}
+        </div>
+        <aside class="chart-controls" aria-label="Selector de etiquetas del gráfico {device_code}">
+          <div class="chart-controls-title">Etiquetas</div>
+          <label class="tag-toggle tag-food">
+            <input type="checkbox" data-device="{device_code}" data-tag="alimentacion" checked onchange="toggleChartTag(this)">
+            <span>Alimentación</span>
+          </label>
+          <label class="tag-toggle tag-served">
+            <input type="checkbox" data-device="{device_code}" data-tag="servido" checked onchange="toggleChartTag(this)">
+            <span>Servido</span>
+          </label>
+          <label class="tag-toggle tag-water">
+            <input type="checkbox" data-device="{device_code}" data-tag="hidratacion" checked onchange="toggleChartTag(this)">
+            <span>Hidratación</span>
+          </label>
+          <label class="tag-toggle tag-setup">
+            <input type="checkbox" data-device="{device_code}" data-tag="setup" checked onchange="toggleChartTag(this)">
+            <span>Setup/plato</span>
+          </label>
+          <div class="tag-divider"></div>
+          <label class="tag-toggle tag-peso">
+            <input type="checkbox" data-device="{device_code}" data-tag="peso" checked onchange="toggleChartTag(this)">
+            <span>Peso total</span>
+          </label>
+          <label class="tag-toggle tag-comida">
+            <input type="checkbox" data-device="{device_code}" data-tag="comida" checked onchange="toggleChartTag(this)">
+            <span>Comida neta</span>
+          </label>
+          <label class="tag-toggle tag-encendido">
+            <input type="checkbox" data-device="{device_code}" data-tag="encendido" checked onchange="toggleChartTag(this)">
+            <span>Encendido/Apagado</span>
+          </label>
+          <div class="tag-divider"></div>
+          <label class="tag-toggle tag-inicio-alim">
+            <input type="checkbox" data-device="{device_code}" data-tag="inicio_alim" checked onchange="toggleChartTag(this)">
+            <span>Inicio alimentación</span>
+          </label>
+          <label class="tag-toggle tag-termino-alim">
+            <input type="checkbox" data-device="{device_code}" data-tag="termino_alim" checked onchange="toggleChartTag(this)">
+            <span>Termino alimentación</span>
+          </label>
+          <label class="tag-toggle tag-inicio-serv">
+            <input type="checkbox" data-device="{device_code}" data-tag="inicio_serv" checked onchange="toggleChartTag(this)">
+            <span>Inicio servido</span>
+          </label>
+          <label class="tag-toggle tag-termino-serv">
+            <input type="checkbox" data-device="{device_code}" data-tag="termino_serv" checked onchange="toggleChartTag(this)">
+            <span>Termino servido</span>
+          </label>
+          <div class="tag-actions">
+            <button type="button" onclick="setAllChartTags('{device_code}', true)">Mostrar todo</button>
+            <button type="button" onclick="setAllChartTags('{device_code}', false)">Ocultar etiquetas</button>
+          </div>
+        </aside>
+      </div>
     </div>"""
 
     html_text = f"""<!DOCTYPE html>
@@ -1532,6 +1650,43 @@ def write_and_open(
     .card {{ background: var(--surface); border: 1px solid var(--border);
              border-radius: 10px; padding: 18px 22px; margin-bottom: 28px;
              overflow-x: auto; }}
+    .chart-shell {{ display:flex; align-items:stretch; gap:16px; width:100%; }}
+    .chart-main {{ flex:1 1 auto; min-width:680px; }}
+    .chart-controls {{ flex:0 0 218px; border-left:1px solid var(--border);
+                       padding-left:16px; display:flex; flex-direction:column;
+                       gap:9px; align-self:stretch; }}
+    .chart-controls-title {{ font-size:11px; font-weight:700; color:var(--muted);
+                             text-transform:uppercase; letter-spacing:.05em; }}
+    .tag-toggle {{ min-height:34px; display:flex; align-items:center; gap:8px;
+                   border:1px solid var(--border); border-radius:7px; padding:7px 9px;
+                   background:var(--bg); color:var(--text); font-size:12px; cursor:pointer; }}
+    .tag-toggle input {{ width:15px; height:15px; flex:0 0 auto; }}
+    .tag-toggle span {{ line-height:1.2; }}
+    .tag-food {{ border-color:#86efac; }}
+    .tag-served {{ border-color:#fdba74; }}
+    .tag-water {{ border-color:#7dd3fc; }}
+    .tag-setup {{ border-color:#cbd5e1; }}
+    .tag-peso {{ border-color:#e05c4a66; }}
+    .tag-comida {{ border-color:#a78bfa88; }}
+    .tag-encendido {{ border-color:#16a34a66; }}
+    .tag-inicio-alim {{ border-color:#16a34a99; }}
+    .tag-termino-alim {{ border-color:#15803d99; }}
+    .tag-inicio-serv {{ border-color:#f9731699; }}
+    .tag-termino-serv {{ border-color:#ea580c99; }}
+    .tag-divider {{ height:1px; background:var(--border); margin:4px 0; }}
+    .tag-actions {{ display:grid; gap:7px; margin-top:4px; }}
+    .tag-actions button {{ border:1px solid var(--border); border-radius:6px;
+                           background:var(--surface); color:var(--text);
+                           padding:6px 8px; font-size:12px; cursor:pointer; }}
+    @media (max-width: 980px) {{
+      .chart-shell {{ flex-direction:column; }}
+      .chart-main {{ min-width:0; }}
+      .chart-controls {{ flex:0 0 auto; border-left:0; border-top:1px solid var(--border);
+                         padding-left:0; padding-top:12px; display:grid;
+                         grid-template-columns:repeat(2,minmax(0,1fr)); }}
+      .chart-controls-title, .tag-actions {{ grid-column:1 / -1; }}
+      .tag-actions {{ grid-template-columns:repeat(2,minmax(0,1fr)); }}
+    }}
     .js-plotly-plot, .plotly, .plot-container, .svg-container {{
       max-width: 100% !important;
     }}
@@ -1641,7 +1796,8 @@ def write_and_open(
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:8px">
         Línea continua = peso total · Área morada = comida neta ·
-        ◆ = evento manual · Cada gráfico tiene su propio selector de rango independiente.
+        ◆ = evento manual · Las bandas y líneas de alimentación/servido se pueden
+        ocultar o mostrar desde la leyenda del gráfico.
       </p>
     </div>
 
@@ -1696,22 +1852,20 @@ def write_and_open(
         </div>
       </div>
       <div class="cat-group">
-        <div class="cat-group-label" style="color:#0284c7">Hidratación</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="cat-btn blue" onclick="selectCat(this,'inicio_hidratacion','Inicio hidratación')">▶ Inicio hidratación</button>
-          <button class="cat-btn blue" onclick="selectCat(this,'termino_hidratacion','Término hidratación')">■ Término hidratación</button>
-        </div>
-      </div>
-      <div class="cat-group">
-        <div class="cat-group-label" style="color:#ea580c">Servido / Plato</div>
+        <div class="cat-group-label" style="color:#ea580c">Servido</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="cat-btn orange" onclick="selectCat(this,'inicio_servido','Inicio servido')">▶ Inicio servido</button>
           <button class="cat-btn orange" onclick="selectCat(this,'termino_servido','Término servido')">■ Término servido</button>
+        </div>
+      </div>
+      <details style="margin-top:4px">
+        <summary style="font-size:12px;color:#64748b;cursor:pointer">Setup de plato</summary>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
           <button class="cat-btn orange" onclick="selectCat(this,'kpcl_sin_plato','KPCL sin plato')">Sin plato</button>
           <button class="cat-btn orange" onclick="selectCat(this,'kpcl_con_plato','KPCL con plato')">Con plato</button>
           <button class="cat-btn orange" onclick="selectCat(this,'tare_con_plato','Tare con plato')">Tare con plato</button>
         </div>
-      </div>
+      </details>
       <div class="modal-footer">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
         <button class="btn-save" id="m-save" disabled onclick="saveEvent()">Guardar evento</button>
@@ -1750,6 +1904,119 @@ def write_and_open(
     'termino_hidratacion': 'inicio_hidratacion',
     'termino_servido': 'inicio_servido'
   }};
+  var CHART_TAG_STATE = {{}};
+  var CHART_ORIGINAL_ANNOTATIONS = {{}};
+  var CHART_ORIGINAL_SHAPES = {{}};
+  var CHART_TAG_RULES = {{
+    alimentacion: ['alimentación', 'band_alimentacion'],
+    servido: ['servido', 'band_servido'],
+    hidratacion: ['hidratacion', 'hidratación', 'band_hidratacion'],
+    setup: ['tare', 'plato', 'kpcl sin plato', 'kpcl con plato'],
+    peso: ['peso total'],
+    comida: ['comida neta'],
+    encendido: ['encendido', 'apagado'],
+    inicio_alim: ['inicio_alim', 'inicio alimentacion', 'inicio alimentación'],
+    termino_alim: ['termino_alim', 'termino alimentacion', 'termino alimentación'],
+    inicio_serv: ['inicio_serv', 'inicio servido'],
+    termino_serv: ['termino_serv', 'termino servido'],
+    inicio_hidra: ['inicio_hidra', 'inicio hidratacion', 'inicio hidratación'],
+    termino_hidra: ['termino_hidra', 'termino hidratacion', 'termino hidratación']
+  }};
+  var POWER_SHAPE_COLORS = ['#16a34a', '#dc2626'];
+
+  function normalizeTagText(value) {{
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\\u0300-\\u036f]/g, '');
+  }}
+
+  function chartTagMatches(value, tag) {{
+    var hay = normalizeTagText(value);
+    var needles = CHART_TAG_RULES[tag] || [tag];
+    return needles.some(function(needle) {{
+      return hay.indexOf(normalizeTagText(needle)) !== -1;
+    }});
+  }}
+
+  function initChartTagState(device) {{
+    var el = document.getElementById('chart_' + device);
+    if (!el) return null;
+    if (!CHART_TAG_STATE[device]) {{
+      CHART_TAG_STATE[device] = {{ alimentacion:true, servido:true, hidratacion:true, setup:true, peso:true, comida:true, encendido:true, inicio_alim:true, termino_alim:true, inicio_serv:true, termino_serv:true, inicio_hidra:true, termino_hidra:true }};
+    }}
+    if (!CHART_ORIGINAL_ANNOTATIONS[device]) {{
+      CHART_ORIGINAL_ANNOTATIONS[device] = JSON.parse(JSON.stringify((el.layout && el.layout.annotations) || []));
+    }}
+    if (!CHART_ORIGINAL_SHAPES[device]) {{
+      CHART_ORIGINAL_SHAPES[device] = JSON.parse(JSON.stringify((el.layout && el.layout.shapes) || []));
+    }}
+    return el;
+  }}
+
+  function traceMatchesTag(trace, tag) {{
+    var fields = [
+      trace.name,
+      trace.legendgroup,
+      trace.hovertemplate,
+      trace.text,
+      trace.mode
+    ].join(' ');
+    return chartTagMatches(fields, tag);
+  }}
+
+  function annotationMatchesHiddenTag(annotation, state) {{
+    var text = (annotation && annotation.text) || '';
+    return Object.keys(state).some(function(tag) {{
+      return state[tag] === false && chartTagMatches(text, tag);
+    }});
+  }}
+
+  function applyChartTagState(device) {{
+    var el = initChartTagState(device);
+    if (!el) return;
+    var state = CHART_TAG_STATE[device];
+    var traces = (el.data || []);
+    traces.forEach(function(trace, idx) {{
+      var visible = true;
+      Object.keys(state).forEach(function(tag) {{
+        if (state[tag] === false && traceMatchesTag(trace, tag)) visible = 'legendonly';
+      }});
+      Plotly.restyle(el, {{ visible: visible }}, [idx]);
+    }});
+    var annotations = (CHART_ORIGINAL_ANNOTATIONS[device] || []).map(function(annotation) {{
+      var cloned = Object.assign({{}}, annotation);
+      cloned.visible = !annotationMatchesHiddenTag(cloned, state);
+      return cloned;
+    }});
+    Plotly.relayout(el, {{ annotations: annotations }});
+    var hideEncendido = state['encendido'] === false;
+    var shapes = (CHART_ORIGINAL_SHAPES[device] || []).filter(function(shape) {{
+      if (!hideEncendido) return true;
+      var c = shape.line && shape.line.color;
+      return POWER_SHAPE_COLORS.indexOf(c) === -1;
+    }});
+    Plotly.relayout(el, {{ shapes: shapes }});
+  }}
+
+  function toggleChartTag(input) {{
+    var device = input.dataset.device;
+    var tag = input.dataset.tag;
+    initChartTagState(device);
+    CHART_TAG_STATE[device][tag] = input.checked;
+    applyChartTagState(device);
+  }}
+
+  function setAllChartTags(device, visible) {{
+    initChartTagState(device);
+    Object.keys(CHART_TAG_STATE[device]).forEach(function(tag) {{
+      CHART_TAG_STATE[device][tag] = visible;
+    }});
+    document.querySelectorAll('input[data-device="' + device + '"][data-tag]').forEach(function(input) {{
+      input.checked = visible;
+    }});
+    applyChartTagState(device);
+  }}
 
   /* ── Zoom desde tabla de sesiones ── */
   function zoomToEvent(row) {{
@@ -1774,7 +2041,12 @@ def write_and_open(
         var pt = data.points[0];
         var name = (pt.data && pt.data.name) || '';
         /* ignorar clics en bandas de eventos */
-        if (name === 'Alimentación' || name === 'Hidratación' || name === 'Servido') return;
+        if (
+          name === 'Alimentación' || name === 'Hidratación' || name === 'Servido' ||
+          name === 'Inicio alimentacion' || name === 'Termino alimentacion' ||
+          name === 'Inicio servido' || name === 'Termino servido' ||
+          name === 'Inicio hidratacion' || name === 'Termino hidratacion'
+        ) return;
         /* normalizar timestamp a ISO UTC */
         var raw = pt.x;
         var ts;
@@ -1796,6 +2068,13 @@ def write_and_open(
   document.addEventListener('DOMContentLoaded', function() {{
     /* Plotly divs se renderizan síncronamente, pero esperamos un tick */
     setTimeout(attachClicks, 500);
+    setTimeout(function() {{
+      {device_codes_js}
+      codes.forEach(function(code) {{
+        initChartTagState(code);
+        applyChartTagState(code);
+      }});
+    }}, 650);
     setTimeout(bootstrapDashboard, 350);
   }});
 
@@ -2230,7 +2509,27 @@ class _DashboardHandler(BaseHTTPRequestHandler):
         pass  # silenciar logs HTTP por defecto
 
     def do_GET(self):
-        if self.path == "/" or self.path.startswith("/?"):
+        if self.path == "/health":
+            body = b'{"ok":true}'
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        elif self.path == "/" or self.path.startswith("/?"):
+            # Redirige a ?autoload=1 si el HTML tiene más de 10 min sin actualizar.
+            from urllib.parse import urlparse, parse_qs
+            qs = parse_qs(urlparse(self.path).query)
+            already_autoload = qs.get("autoload", ["0"])[0] == "1"
+            if not already_autoload and OUTPUT_HTML.exists():
+                import time as _time
+                age_sec = _time.time() - OUTPUT_HTML.stat().st_mtime
+                if age_sec > 600:  # más de 10 minutos
+                    ts = int(_time.time() * 1000)
+                    self.send_response(302)
+                    self.send_header("Location", f"/?autoload=1&v={ts}")
+                    self.end_headers()
+                    return
             try:
                 content = OUTPUT_HTML.read_bytes()
                 self.send_response(200)
@@ -2241,7 +2540,7 @@ class _DashboardHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 self.send_error(500, str(exc))
         else:
-            self.send_error(404)
+            self.send_error(404, "Ruta no encontrada.")
 
     def do_POST(self):
         if self.path == "/refresh":
@@ -2283,17 +2582,50 @@ class _DashboardHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
 
+def _refresh_worker_once() -> None:
+    """Descarga datos frescos de Supabase en segundo plano (una sola vez)."""
+    if not _refresh_lock.acquire(blocking=False):
+        return
+    try:
+        print("[refresh] Actualizando datos desde Supabase...")
+        generate_dashboard(open_browser=False)
+        print("[refresh] Listo.")
+    except Exception as exc:
+        print(f"[refresh] Error: {exc!s:.120}")
+    finally:
+        _refresh_lock.release()
+
+
+def _auto_refresh_worker() -> None:
+    """Refresca datos desde Supabase cada 10 minutos en segundo plano."""
+    import time as _time
+    while True:
+        _time.sleep(600)
+        _refresh_worker_once()
+
+
 def main() -> None:
-    generate_dashboard(open_browser=False)
+    import time as _time
+
+    # Arrancar el servidor de inmediato (sirve HTML viejo si existe, o uno mínimo).
+    if not OUTPUT_HTML.exists():
+        # Generar HTML inicial de forma bloqueante sólo si no hay ninguno en disco.
+        generate_dashboard(open_browser=False)
+
     try:
         server = HTTPServer(("127.0.0.1", HTTP_PORT), _DashboardHandler)
     except OSError:
-        # Puerto ocupado — abre directo como file:// (fallback)
         print(f"[warn] Puerto {HTTP_PORT} ocupado — abriendo como file://")
         webbrowser.open_new_tab(OUTPUT_HTML.resolve().as_uri())
         return
-    url = f"http://127.0.0.1:{HTTP_PORT}/"
-    print(f"[server] Dashboard en {url}  (Ctrl+C para salir)")
+
+    # Refresco inmediato en background + refresco periódico cada 10 minutos.
+    threading.Thread(target=_refresh_worker_once, daemon=True).start()
+    threading.Thread(target=_auto_refresh_worker, daemon=True).start()
+
+    ts = int(_time.time() * 1000)
+    url = f"http://127.0.0.1:{HTTP_PORT}/?autoload=1&v={ts}"
+    print(f"[server] Dashboard en http://127.0.0.1:{HTTP_PORT}/  (Ctrl+C para salir)")
     webbrowser.open_new_tab(url)
     try:
         server.serve_forever()
