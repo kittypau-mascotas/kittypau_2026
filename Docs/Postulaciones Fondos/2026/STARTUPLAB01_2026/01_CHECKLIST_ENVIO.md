@@ -8,19 +8,19 @@
 ## 1) Elegibilidad y programa
 - [ ] Confirmar programa 2026: Build / Ignite / Growth.
 - [x] Base 2025 lista: estructura de elegibilidad y rol Team Leader.
-- [ ] Revalidar criterios 2026 (ventas, antiguedad comercial, residencia, dedicacion exclusiva).
+- [ ] Revlidar criterios 2026 (ventas, antiguedad comercial, residencia, dedicacion exclusiva).
 
 ## 2) Formulario principal
 - [x] Texto base problema/solucion cargado desde 2025.
 - [x] Bloques de mercado, impacto Chile y cofinanciamiento cargados desde 2025.
-- [ ] Ajustar limites de caracteres según formulario 2026.
+- [ ] Ajustar limites de caracteres segn formulario 2026.
 - [ ] Actualizar campos personales/legales definitivos (RUT, direccion, IDs vigentes).
 
 ## 3) Entregables de postulacion
 - [x] Estructura de video pitch heredada de 2025.
 - [x] Lista de anexos legales/equipo/producto heredada de 2025.
 - [ ] Grabar video final 2026.
-- [x] Consolidar deck final 2026 (10-12 slides). ← v1.0 lista en 02_DECK_STARTUPLAB01.md
+- [ ] Consolidar deck final 2026 (10-12 slides).
 
 ## 4) Revision final
 - [ ] Revisar consistencia narrativa entre formulario, deck y video.
@@ -32,7 +32,7 @@
 ### Terminologia oficial recomendada
 - **AIoT (Artificial Intelligence of Things)**: termino principal para Kittypau.
 - **Intelligent IoT**: variante de comunicacion comercial.
-- **Edge AI + IoT**: cuando parte del análisis corre en dispositivo.
+- **Edge AI + IoT**: cuando parte del anlisis corre en dispositivo.
 - **Smart IoT**: termino marketing, menos tecnico.
 
 ### Definicion recomendada de producto
@@ -43,44 +43,44 @@
 
 Esto posiciona a Kittypau no como "solo hardware", sino como:
 - infraestructura de datos longitudinales de salud animal,
-- analítica preventiva,
-- plataforma escalable con suscripción.
+- analitica preventiva,
+- plataforma escalable con suscripcion.
 
 ### Arquitectura actual (ya compatible con AIoT)
 1. Dispositivo IoT (ESP8266/ESP32).
 2. Ingestion por MQTT.
 3. Bridge Node.js.
 4. Persistencia en PostgreSQL/Supabase.
-5. Capa de analítica/IA.
+5. Capa de analitica/IA.
 6. Dashboard web para usuario/admin.
 
 ### Estrategia tipo "Fitbit de mascotas"
 - Hardware = punto de entrada.
 - Datos longitudinales = ventaja competitiva.
 - IA = diferencial de valor.
-- Suscripción = recurrencia (modelo SaaS).
+- Suscripcion = recurrencia (modelo SaaS).
 
 ### Casos de uso preventivos (objetivo)
-- Riesgo de deshidratación por baja de consumo de agua en ventana corta.
+- Riesgo de deshidratacin por baja de consumo de agua en ventana corta.
 - Cambios de conducta alimentaria (horario/frecuencia/cantidad).
-- Riesgo de sobrepeso por patrones de ingesta sostenidos.
+- Riesgo de sobrepeso por patrnes de ingesta sostenidos.
 
 ### Modelo de negocio recomendado (3 capas)
 1. **Hardware**: ingreso inicial por unidad.
-2. **Suscripción**: dashboard avanzado, recomendaciones y alertas.
+2. **Suscripcion**: dashboard avanzado, recomendaciones y alertas.
 3. **Data insights (futuro)**: datos anonimizados para partners (veterinarias, investigacion, marcas).
 ## Contexto de Expansion del Ecosistema (Fuente: Docs/contexto.md)
-- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentación e hidratación de mascotas.
-- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segunda vertical, reutilizando arquitectura y modelo de datos.
+- **Foco actual (core)**: `Kittypau` se mantiene como plataforma PetTech AIoT para alimentacin e hidratacin de mascotas.
+- **Expansion en evaluacion**: `Kitty Plant` (IoT para plantas) como segnda vertical, retilizando arquitectura y modelo de datos.
 - **Vision de largo plazo**: `Senior Kitty` como posible tercera vertical para cuidados en hogar.
-- **Estrategia transversal**: hardware como entrada + datos longitudinales + analítica para insights preventivos.
+- **Estrategia transversal**: hardware como entrada + datos longitudinales + analitica para insights preventivos.
 - **Producto y UX**: interfaz simple, menos friccion en onboarding y vista demo para explicar valor rapido.
 - **Gobernanza tecnica**: conservar una base relacional coherente y contratos API estables entre web, app y dispositivos.
 
 ### Implicancias para App/Web (Kittypau)
 1. `/today` y `navbar` deben mantener consistencia estricta entre mascota activa, `pet_id` y KPCL asociado.
-2. Las decisiones visuales deben reforzar lectura rápida de estado real (alimentación, hidratación, ambiente, batería).
+2. Las decisiones visuales deben reforzar lectura rpida de estado real (alimentacin, hidratacin, ambiente, batera).
 3. El backlog funcional prioriza confiabilidad de datos por sobre efectos visuales.
-4. Cualquier expansión de vertical (plantas/senior) debe montarse sobre componentes reutilizables del core.
+4. Cualquier expansin de vertical (plantas/senior) debe montarse sobre componentes retilizables del core.
 
 

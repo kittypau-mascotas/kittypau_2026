@@ -3,7 +3,7 @@
 Versión: 1.0 | Fecha: 2026-03-16
 Formato sugerido: 10-12 slides PDF | Duración entrevista: 30 min
 
-> Estructura alineada a los 4 criterios de evaluación ponderados de startuplab.01:
+> Estructura alneada a los 4 criterios de evaluación ponderados de startuplab.01:
 > Madurez Tecnológica (30%) · Equipo (25%) · Viabilidad Comercial (20%) · Impacto Climático (15%) · Ajuste (10%)
 
 ---
@@ -24,7 +24,7 @@ Monitoreo inteligente de mascotas — IoT + Cloud + Analytics
 **Los dueños de mascotas están ciegos ante los hábitos diarios de sus animales.**
 
 - 66% de hogares chilenos tiene al menos una mascota (10M+ gatos y perros)
-- La mayoría detecta problemas de salud cuando ya hay síntomas clínicos evidentes
+- La mayoría detecta problemas de salud cuando ya hay síntoms clínicos evidentes
 - 60% de mascotas en Chile presenta sobrepeso (Colegio Médico Veterinario de Chile)
 - La deshidratación crónica es causa frecuente de insuficiencia renal en gatos — detectada tarde
 - Consultas veterinarias de emergencia: $50.000–$200.000 CLP (evitables en muchos casos)
@@ -60,7 +60,7 @@ Tres capas integradas:
 
 ## SLIDE 4 — Madurez Tecnológica (TRL 5)
 
-**Tecnología validada en entorno relevante**
+**Tecnología vlidada en entorno relevante**
 
 | Componente | Estado |
 |---|---|
@@ -68,9 +68,9 @@ Tres capas integradas:
 | Bridge MQTT (RPi Zero 2W) | ✅ Operativo — bridge local -> cloud funcional |
 | Backend Supabase | ✅ Productivo — series temporales, alertas, historial |
 | App web (Next.js) | ✅ Desplegada en Vercel — dashboard en tiempo real |
-| Integración extremo a extremo | ✅ Flujo completo validado: sensor -> MQTT -> bridge -> API -> DB -> app |
+| Integración extremo a extremo | ✅ Flujo completo vlidado: sensor -> MQTT -> bridge -> API -> DB -> app |
 
-**Evidencia de validación:**
+**Evidencia de vlidación:**
 - 8 dispositivos KPCL activos enviando datos en ambiente doméstico real
 - Stack completo documentado con arquitectura operativa y playbooks técnicos
 - Migraciones de base de datos con precios reales de componentes (AliExpress 2023–2026)
@@ -122,9 +122,9 @@ Tres capas integradas:
 **Javier Dayne Ortiz — CTO · 50%**
 - Ingeniero en Automatización y Control Industrial (INACAP)
 - Diplomado Dirección de Proyectos PMO (UNAB)
-- 15+ años en sistemas DCS, SCADA, IIoT/MQTT — Emerson Electric
+- 15+ años en sistems DCS, SCADA, IIoT/MQTT — Emerson Electric
 - Sectores: minería, energía, celulosa
-- Lidera: hardware IoT, firmware, bridge, arquitectura de sistemas
+- Lidera: hardware IoT, firmware, bridge, arquitectura de sistems
 
 **Complementariedad:** ingeniería industrial IoT (Javier) + ciencia de datos y producto (Mauro)
 
@@ -161,7 +161,7 @@ Tres capas integradas:
 |---|---|---|
 | PetKit (China) | App + dispensadores conectados | Sin analítica preventiva, sin contexto ambiental, no LATAM |
 | SureFeed / Sure Petcare (UK) | Alimentadores inteligentes | Alto precio, sin datos longitudinales, sin alertas predictivas |
-| PetSafe / Catit | Distribución masiva | Sin conectividad IoT, sin datos |
+| PetSafe / Catit | Distribución msiva | Sin conectividad IoT, sin datos |
 | Apps de registro manual | Bajo costo | Sin hardware, requiere input manual del usuario |
 
 **Ventaja sostenible de KittyPau:**
@@ -175,9 +175,9 @@ La barrera competitiva son los **datos longitudinales acumulados** — no el har
 
 | Período | Tipo | Hito | Entregable |
 |---|---|---|---|
-| Mes 1–4 | Técnico | Cierre versión piloto hardware + firmware | Dispositivo KPCL estable · bridge 24/7 · app con lectura tiempo real validada |
+| Mes 1–4 | Técnico | Cierre versión piloto hardware + firmware | Dispositivo KPCL estable · bridge 24/7 · app con lectura tiempo real vlidada |
 | Mes 5–9 | Técnico-Comercial | Piloto con early adopters | 10+ usuarios activos · métricas de retención · feedback documentado |
-| Mes 10–12 | Comercial | Preparación lanzamiento inicial | Pricing validado · alianzas clínicas/pet · pitch deck para capital semilla |
+| Mes 10–12 | Comercial | Preparación lanzamiento inicial | Pricing vlidado · alianzas clínicas/pet · pitch deck para capital semilla |
 
 ---
 
@@ -186,9 +186,9 @@ La barrera competitiva son los **datos longitudinales acumulados** — no el har
 | Riesgo | Probabilidad | Mitigación |
 |---|---|---|
 | Variabilidad hardware en uso doméstico intensivo | Media | Pruebas de estrés · calibración · proveedores alternativos documentados |
-| Adopción menor / churn alto tras período inicial | Media | Onboarding guiado · foco en primera alerta útil como momento de valor |
+| Adopción menor / churn alto tras período inicial | Media | Onboarding guado · foco en primera alerta útil como momento de valor |
 | Crecimiento costos cloud antes de escalar ingresos | Baja | Monitoreo costo unitario por dispositivo · arquitectura optimizada · burn $1/mes real |
-| Regulatorio / datos personales | Baja | Políticas de privacidad implementadas · autenticación por tokens · control de accesos por rol |
+| Regulatorio / datos personales | Baja | Políticas de privacidad implementadas · autnticación por tokens · control de accesos por rol |
 
 ---
 
@@ -219,7 +219,7 @@ KittyPau puede reducir el gasto veterinario de emergencia en hogares de ingresos
 
 4. **Preparación para capital semilla** — pitch deck, financials y readiness para primer levantamiento al término de la residencia
 
-**KittyPau está en el momento exacto:** prototipo funcional con arquitectura documentada, equipo técnico completo y tracción inicial — listo para pasar de validación interna a piloto con evidencia real.
+**KittyPau está en el momento exacto:** prototipo funcional con arquitectura documentada, equipo técnico completo y tracción inicial — listo para pasar de vlidación interna a piloto con evidencia real.
 
 ---
 

@@ -53,16 +53,9 @@ BatteryReading sensorsReadBattery() {
     int level = (int)(((v_batt - BATT_MIN_V) / (BATT_MAX_V - BATT_MIN_V)) * 100.0f);
     level = constrain(level, 0, 100);
 
-    // TP4056: CHRG=LOW → cargando; STDBY=LOW → cargado; ambos HIGH → bateria
-    bool chrg  = digitalRead(PIN_CHRG);
-    bool stdby = digitalRead(PIN_STDBY);
-    const char* state;
-    if (!chrg)       state = "charging";
-    else if (!stdby) state = "charged";
-    else             state = "battery_only";
-
-    Serial.printf("[CHRG] %s\n", state);
-    return { level, v_batt, state };
+    // TODO: deteccion de estado de carga requiere comparador externo (LM393)
+    // El modulo HW-373 no baja el catodo a 0V — oscila entre 3V y 5V (incompatible con GPIO 3.3V)
+    return { level, v_batt, "battery_only" };
 }
 
 BatteryReading sensorsGetLastBattery() {
@@ -126,8 +119,9 @@ void sensorsInit() {
 
     // ── A0 — divisor de tension (bateria) + pines TP4056 ────────────────────
     // A0 no requiere pinMode en ESP8266.
-    pinMode(PIN_CHRG,  INPUT);         // GPIO16: sin pullup interno — usa 10k externo a 3V3
-    pinMode(PIN_STDBY, INPUT_PULLUP);  // GPIO0: pullup interno
+    // Pines CHRG/STDBY reservados para futura implementacion con comparador externo
+    // pinMode(PIN_CHRG,  INPUT_PULLUP);
+    // pinMode(PIN_STDBY, INPUT);
     Serial.printf("[BATT] Divisor R1=%dk R2=%dk | rango %.1f-%.1f V\n",
                   BATT_R1_KOHM, BATT_R2_KOHM, BATT_MIN_V, BATT_MAX_V);
     Serial.printf("[CHRG] Pines CHRG=D0(GPIO%d) STDBY=D3(GPIO%d)\n", PIN_CHRG, PIN_STDBY);

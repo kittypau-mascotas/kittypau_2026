@@ -10,9 +10,11 @@
 #define PIN_HX711_SCK   13           // D7 (GPIO13)
 // D5 (GPIO14) libre en hardware AHT10; DHT11 en builds USE_DHT11 (KPCL0035)
 #define PIN_DHT         14           // D5 (GPIO14) — solo usado si USE_DHT11
-// Controlador de carga TP4056 — pines de estado
-#define PIN_CHRG        16           // D0 (GPIO16) — CHRG LOW=cargando (pullup 10k externo a 3V3)
-#define PIN_STDBY        0           // D3 (GPIO0)  — STDBY LOW=cargado (pullup interno)
+// Controlador de carga TP4056 — pines de estado (catodo LED via divisor 10k+10k a GND)
+// El modulo HW-373 usa 5V en los LEDs — divisor baja a 2.5V para proteger el GPIO
+// GPIO16 (D0) tiene 10k interno a RST — NO usar para CHRG, no detecta LOW correctamente
+#define PIN_CHRG         0           // D3 (GPIO0)  — catodo LED1 (CHRG): LOW=cargando
+#define PIN_STDBY       16           // D0 (GPIO16) — catodo LED2 (STDBY): LOW=cargado
 // Bus I2C compartido: SDA=D2(GPIO4), SCL=D1(GPIO5)
 //   AHT10  → 0x38  (temperatura + humedad)
 //   BH1750 → 0x23  (luz, ADDR pin a GND)

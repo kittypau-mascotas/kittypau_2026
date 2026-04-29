@@ -74,6 +74,7 @@ Para ver y marcar las curvas de `alimentacion` y `servido`, usa este flujo:
 
 - [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) - regla maestra cannica: qu es una sesin de alimentacin, mapa de las 4 fuentes de deteccin del proyecto (audit_events, heurstico cliente, processor bridge, health-check) y cmo se unifican con el grfico hero.
 - [`ML_PREDICCION_ALIMENTACION.md`](ML_PREDICCION_ALIMENTACION.md) - especificacin completa para entrenar un modelo supervisado que prediga `inicio_alimentacin` y `termino_alimentacin` desde la curva de peso. Incluye formulacin del problema, features, pipeline SQL, baseline heurstico, arquitecturas sugeridas y mtricas.
+- [`OPERATIVIZACION_SESIONES_SUPABASE.md`](OPERATIVIZACION_SESIONES_SUPABASE.md) - implementacion operativa en Supabase para reconstruir sesiones auditadas (`servido`, `alimentacion`, `hidratacion`) y exponerlas a la app.
 
 ## Estado de Data Science
 
