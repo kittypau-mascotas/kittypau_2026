@@ -907,6 +907,16 @@ export default function BowlPage() {
       ),
     [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
   );
+  const voltageSeriesBatt = useMemo(
+    () =>
+      buildSeries(
+        readings,
+        (r) => r.battery_voltage,
+        selectedRangeConfig.windowMs,
+        selectedRangeConfig.bucketMs,
+      ),
+    [readings, selectedRangeConfig.windowMs, selectedRangeConfig.bucketMs],
+  );
   const latestBatteryChartValue = useMemo(
     () =>
       readings.find((item) => typeof item.battery_level === "number")
@@ -1159,6 +1169,10 @@ export default function BowlPage() {
                   maxPoints={selectedRangeConfig.maxPoints}
                   integerDisplay
                   className="lg:col-span-2"
+                  secondarySeries={voltageSeriesBatt}
+                  secondaryUnit="V"
+                  secondaryAccent="hsl(215 20% 55%)"
+                  secondaryDecimals={2}
                 />
               </div>
             )}
