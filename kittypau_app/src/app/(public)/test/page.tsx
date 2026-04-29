@@ -22,6 +22,10 @@ export default function TestModePage() {
     window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
     window.localStorage.setItem("kittypau_demo_show_rpg", "1");
     window.localStorage.setItem("kittypau_demo_kind", mode);
+    window.localStorage.removeItem("kittypau_demo_pet_type");
+    window.localStorage.removeItem("kittypau_demo_email");
+    window.localStorage.removeItem("kittypau_demo_source");
+    window.localStorage.removeItem("kittypau_demo_recorded_at");
 
     router.replace("/demo?menu=today");
   }, [mode, router]);

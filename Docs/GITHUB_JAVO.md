@@ -27,7 +27,7 @@ Actualizar en cada jornada y en cada PR relevante.
 - Archivos principales:
   - Docs/investigacion/HITO_2026-04-07_PLATOS_BANDIDA.md
   - Docs/investigacion/DIAGNOSTICO_ERRORES_Y_REGISTROS_2026-04-07.md
-- PR/Commit: Pendiente.
+ - PR/Commit: Merged to main (Hito Bandida - Operational)
 - Pruebas ejecutadas:
   - Validacion de cards de platos con datos reales (Today).
 - Riesgos/Pendientes:
@@ -122,5 +122,3 @@ Actualizar en cada jornada y en cada PR relevante.
   - Vercel preview (OK)
 - Riesgos/Pendientes:
   - Mergear PR #14 a main y sincronizar ambos PCs.
-
-

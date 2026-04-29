@@ -23,7 +23,7 @@ export const LOGIN_CHATBOT_CONTEXT = {
   goal: "trial",
   modal: {
     title: "Personaliza tu demo",
-    body: "Guardaremos tus datos para llevarte a la demo y luego seguirnos en Instagram.",
+    body: "",
     primaryCta: "Entrar a prueba",
   },
   trialDialog: {

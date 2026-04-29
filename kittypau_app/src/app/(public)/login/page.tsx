@@ -19,6 +19,7 @@ import SocialLinks from "@/app/_components/social-links";
 export default function LoginPage() {
   const router = useRouter();
   const isNativeApk = isNativeFlavorEnabled();
+  const SHOW_TRIAL_DIALOG = false;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,6 +55,10 @@ export default function LoginPage() {
   const [trialOwnerName, setTrialOwnerName] = useState("");
   const [trialPetName, setTrialPetName] = useState("");
   const [trialEmail, setTrialEmail] = useState("");
+  const [trialPetType, setTrialPetType] = useState<"dog" | "cat" | null>(null);
+  const [hoveredTrialPetType, setHoveredTrialPetType] = useState<
+    "dog" | "cat" | null
+  >(null);
   const [trialError, setTrialError] = useState<string | null>(null);
   const [isTrialDialogVisible, setIsTrialDialogVisible] = useState(false);
   const [trialDialogIndex, setTrialDialogIndex] = useState(0);
@@ -774,7 +779,12 @@ export default function LoginPage() {
       window.localStorage.removeItem("kittypau_demo_mode");
       window.localStorage.removeItem("kittypau_demo_owner_name");
       window.localStorage.removeItem("kittypau_demo_pet_name");
+      window.localStorage.removeItem("kittypau_demo_pet_type");
       window.localStorage.removeItem("kittypau_demo_device_id");
+      window.localStorage.removeItem("kittypau_demo_email");
+      window.localStorage.removeItem("kittypau_demo_kind");
+      window.localStorage.removeItem("kittypau_demo_source");
+      window.localStorage.removeItem("kittypau_demo_recorded_at");
     }
 
     const supabase = getSupabaseBrowser();
@@ -986,16 +996,24 @@ export default function LoginPage() {
   const closeTrial = () => {
     setShowTrialModal(false);
     setTrialError(null);
+    setTrialPetType(null);
+    setHoveredTrialPetType(null);
     stopTrialBackgroundAudio();
   };
 
   const recordDemoIngreso = useCallback(
-    (payload: { owner: string; pet: string; email: string }) => {
+    (payload: {
+      owner: string;
+      pet: string;
+      email: string;
+      petType?: "dog" | "cat" | null;
+    }) => {
       if (typeof window === "undefined") return;
       const body = {
         owner_name: payload.owner,
         pet_name: payload.pet,
         email: payload.email,
+        pet_type: payload.petType ?? null,
         source: "trial_modal",
       };
 
@@ -1025,23 +1043,39 @@ export default function LoginPage() {
     const owner = trialOwnerName.trim();
     const pet = trialPetName.trim();
     const emailValue = trialEmail.trim().toLowerCase();
-    const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
-    if (!owner || !pet || !emailValue) {
-      setTrialError("Ingresa tu nombre, el de tu mascota y tu correo.");
+    const emailLooksValid =
+      !emailValue || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+    if (!owner || !pet) {
+      setTrialError("Ingresa tu nombre y el de tu mascota para continuar.");
+      return;
+    }
+    if (!trialPetType) {
+      setTrialError("Selecciona si tu mascota es perro o gato para continuar.");
       return;
     }
     if (!emailLooksValid) {
-      setTrialError("Ingresa un correo válido para continuar.");
+      setTrialError("Ingresa un correo válido o deja este campo vacío.");
       return;
     }
 
     // Best-effort logging for demo ingress (server-side audit_events).
-    recordDemoIngreso({ owner, pet, email: emailValue });
+    recordDemoIngreso({ owner, pet, email: emailValue, petType: trialPetType });
     if (typeof window !== "undefined") {
       window.localStorage.setItem("kittypau_demo_mode", "1");
+      window.localStorage.setItem("kittypau_demo_kind", "trial");
+      window.localStorage.setItem("kittypau_demo_source", "trial_modal");
+      window.localStorage.setItem(
+        "kittypau_demo_recorded_at",
+        new Date().toISOString(),
+      );
       window.localStorage.setItem("kittypau_demo_owner_name", owner);
       window.localStorage.setItem("kittypau_demo_pet_name", pet);
-      window.localStorage.setItem("kittypau_demo_email", emailValue);
+      if (emailValue) {
+        window.localStorage.setItem("kittypau_demo_email", emailValue);
+      } else {
+        window.localStorage.removeItem("kittypau_demo_email");
+      }
+      window.localStorage.setItem("kittypau_demo_pet_type", trialPetType);
       window.localStorage.setItem("kittypau_demo_show_rpg", "1");
       if (!window.localStorage.getItem("kittypau_demo_device_id")) {
         window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
@@ -1223,7 +1257,7 @@ export default function LoginPage() {
                 onMouseMove={onTrialCatMouseMove}
               >
                 <div className="login-login-head flex items-center justify-center gap-3">
-                  <h2 className="display-title w-full whitespace-nowrap text-center text-[1.7rem] font-semibold leading-[1.05] text-slate-900">
+                  <h2 className="display-title w-full whitespace-nowrap text-center text-[1.35rem] font-semibold leading-[1.05] text-slate-700">
                     Iniciar sesión
                   </h2>
                 </div>
@@ -1262,41 +1296,10 @@ export default function LoginPage() {
                   </div>
                 ) : null}
                 <div className="login-login-intro">
-                  <p className="text-center text-sm text-slate-500">
-                    Accede a la actividad diaria de tu plato.
+                  <p className="text-center text-[0.95rem] font-medium leading-snug text-slate-600">
+                    Accede a la actividad de tu plato.
                   </p>
                 </div>
-                <div className="login-trial-inline">
-                  <button
-                    type="button"
-                    onClick={openTrial}
-                    className="kp-trial-button"
-                    aria-label="Abrir Demo App. No necesitas registrarte."
-                    title="Demo App - No necesitas registrarte"
-                    {...catWakeInteractions}
-                  >
-                    <span className="kp-trial-button-main">Demo App</span>
-                    <span
-                      className={`kp-trial-button-note ${
-                        trialButtonMessageIndex === 0
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                    >
-                      Pruébala ahora
-                    </span>
-                    <span
-                      className={`kp-trial-button-note kp-trial-button-note-accent ${
-                        trialButtonMessageIndex === 1
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                    >
-                      No Necesitas Registrarte !!
-                    </span>
-                  </button>
-                </div>
-
                 <form
                   className="login-login-form login-form-compact"
                   onSubmit={onSubmit}
@@ -1403,6 +1406,39 @@ export default function LoginPage() {
                     </p>
                   ) : null}
                 </form>
+
+                <div className="login-trial-inline mt-4">
+                  <button
+                    type="button"
+                    onClick={openTrial}
+                    className="kp-trial-button"
+                    aria-label="Abrir Demo App. No necesitas registrarte."
+                    title="Demo App - No necesitas registrarte"
+                    {...catWakeInteractions}
+                  >
+                    <span className="kp-trial-button-main brand-title">
+                      Demo App
+                    </span>
+                    <span
+                      className={`kp-trial-button-note ${
+                        trialButtonMessageIndex === 0
+                          ? "is-visible"
+                          : "is-hidden"
+                      }`}
+                    >
+                      Pruébala ahora
+                    </span>
+                    <span
+                      className={`kp-trial-button-note kp-trial-button-note-accent ${
+                        trialButtonMessageIndex === 1
+                          ? "is-visible"
+                          : "is-hidden"
+                      }`}
+                    >
+                      No Necesitas Registrarte !!
+                    </span>
+                  </button>
+                </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <button
@@ -1662,65 +1698,113 @@ export default function LoginPage() {
             }`}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-4 sm:p-6">
-              <div className="mb-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="login-trial-eyebrow text-xs font-semibold uppercase tracking-[0.2em]">
+            <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-3 sm:p-5">
+              <div className="mb-3">
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                    <p className="login-trial-eyebrow brand-title text-[0.88rem] font-semibold uppercase tracking-[0.18em]">
                       Modo prueba
                     </p>
-                    <h2 className="login-trial-title mt-1 text-xl font-semibold">
+                    <h2 className="login-trial-title text-[0.96rem] font-semibold">
                       {trialDialogIntro.title}
                     </h2>
-                    <p className="login-trial-copy mt-1 text-sm">
-                      {trialDialogIntro.body}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={closeTrial}
-                      className="login-trial-close shrink-0 rounded-full border border-border/70 bg-white/80 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white"
-                      aria-label="Cerrar"
-                    >
-                      Cerrar
-                    </button>
+                    {trialDialogIntro.body ? (
+                      <p className="login-trial-copy mt-0.5 text-[0.75rem]">
+                        {trialDialogIntro.body}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
+                <div className="space-y-1.5">
+                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
+                    Cuál es tu mascota?
+                  </span>
+                  <div className="grid w-fit grid-cols-2 gap-1.5 -ml-1 sm:-ml-2">
+                    {[
+                      {
+                        type: "dog" as const,
+                        label: "Perro",
+                        src: "/illustrations/nervous-not.gif",
+                      },
+                      {
+                        type: "cat" as const,
+                        label: "Gato",
+                        src: "/illustrations/giphy.gif",
+                      },
+                    ].map((option) => {
+                      const isSelected = trialPetType === option.type;
+                      const isHovered = hoveredTrialPetType === option.type;
+                      return (
+                        <div
+                          key={option.type}
+                          className="relative flex flex-col items-center gap-1"
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setTrialPetType(option.type)}
+                            onMouseEnter={() =>
+                              setHoveredTrialPetType(option.type)
+                            }
+                            onMouseLeave={() => setHoveredTrialPetType(null)}
+                            aria-label={option.label}
+                            className={`group relative z-10 mx-auto flex h-[3.8rem] w-[3.8rem] items-center justify-center overflow-hidden rounded-full border-2 bg-white transition sm:h-[4.35rem] sm:w-[4.35rem] ${
+                              isSelected
+                                ? "border-emerald-500 shadow-[0_12px_30px_-16px_rgba(34,197,94,0.4)]"
+                                : isHovered
+                                  ? "border-emerald-400 shadow-[0_8px_24px_-20px_rgba(34,197,94,0.24)]"
+                                  : "border-[color-mix(in_oklab,hsl(var(--border))_78%,_#ffffff)] shadow-[0_8px_24px_-20px_rgba(15,23,42,0.18)] hover:border-emerald-300"
+                            }`}
+                            aria-pressed={isSelected}
+                          >
+                            <img
+                              src={option.src}
+                              alt=""
+                              aria-hidden="true"
+                              className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]"
+                            />
+                          </button>
+                          <span className="text-[0.82rem] font-semibold leading-none text-slate-700">
+                            {option.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
                 <label className="block space-y-1">
-                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
                     Tu nombre
                   </span>
                   <input
                     type="text"
                     value={trialOwnerName}
                     onChange={(event) => setTrialOwnerName(event.target.value)}
-                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
                   />
                 </label>
                 <label className="block space-y-1">
-                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
+                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
                     Nombre de tu mascota
                   </span>
                   <input
                     type="text"
                     value={trialPetName}
                     onChange={(event) => setTrialPetName(event.target.value)}
-                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
                   />
                 </label>
                 <label className="block space-y-1">
-                  <span className="login-trial-label text-xs font-medium uppercase tracking-[0.16em]">
-                    Correo
+                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
+                    Correo (opcional)
                   </span>
                   <input
                     type="email"
                     value={trialEmail}
                     onChange={(event) => setTrialEmail(event.target.value)}
-                    className="login-trial-input h-11 w-full rounded-[var(--radius)] border px-4 text-sm outline-none focus:ring-2"
+                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
                     autoComplete="email"
                   />
                 </label>
@@ -1732,7 +1816,7 @@ export default function LoginPage() {
                 </p>
               ) : null}
 
-              <div className="mt-5 flex items-center justify-end gap-2">
+              <div className="mt-4 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={closeTrial}
@@ -1750,7 +1834,7 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
-          {isTrialDialogVisible ? (
+          {SHOW_TRIAL_DIALOG && isTrialDialogVisible ? (
             <TrialRpgDialogDock>
               <div className="login-trial-dialog-scene">
                 <TrialRpgDialog

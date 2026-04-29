@@ -39,6 +39,8 @@ export default function AppNav() {
   const [demoOwnerName, setDemoOwnerName] = useState<string | null>(null);
   const [demoPetName, setDemoPetName] = useState<string | null>(null);
   const [demoDeviceId, setDemoDeviceId] = useState<string | null>(null);
+  const [demoEmail, setDemoEmail] = useState<string | null>(null);
+  const [demoSource, setDemoSource] = useState<string | null>(null);
   const [navPetName, setNavPetName] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState<number>(0);
   const [userSelectedDeviceId, setUserSelectedDeviceId] = useState<
@@ -53,6 +55,12 @@ export default function AppNav() {
         : null;
     return (devices.find((d) => d.id === stored) ?? devices[0])?.id ?? null;
   }, [userSelectedDeviceId, devices]);
+  const demoSourceLabel = useMemo(() => {
+    if (!demoSource) return null;
+    if (demoSource === "trial_modal") return "Login";
+    if (demoSource === "client") return "Cliente demo";
+    return demoSource;
+  }, [demoSource]);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [isNativeApkMode] = useState<boolean>(() => {
@@ -99,6 +107,8 @@ export default function AppNav() {
         setDemoOwnerName(null);
         setDemoPetName(null);
         setDemoDeviceId(null);
+        setDemoEmail(null);
+        setDemoSource(null);
         return;
       }
       setDemoOwnerName(window.localStorage.getItem("kittypau_demo_owner_name"));
@@ -106,6 +116,8 @@ export default function AppNav() {
       setDemoDeviceId(
         window.localStorage.getItem("kittypau_demo_device_id") || "KPCL-DEMO",
       );
+      setDemoEmail(window.localStorage.getItem("kittypau_demo_email"));
+      setDemoSource(window.localStorage.getItem("kittypau_demo_source"));
     };
 
     syncDemo();
@@ -136,8 +148,16 @@ export default function AppNav() {
         const demoPet = window.localStorage.getItem("kittypau_demo_pet_name");
         const demoDevice =
           window.localStorage.getItem("kittypau_demo_device_id") || "KPCL-DEMO";
+        const demoEmailValue = window.localStorage.getItem(
+          "kittypau_demo_email",
+        );
+        const demoSourceValue = window.localStorage.getItem(
+          "kittypau_demo_source",
+        );
         if (demoPet) setNavPetName(demoPet);
         setDemoDeviceId(demoDevice);
+        setDemoEmail(demoEmailValue);
+        setDemoSource(demoSourceValue);
       }
     };
 
@@ -212,7 +232,19 @@ export default function AppNav() {
     return null;
   }
   const userSummary = (
-    <div className="app-nav-user app-nav-user-static">
+    <div
+      className="app-nav-user app-nav-user-static"
+      title={
+        isDemoMode
+          ? [
+              demoEmail ? `Correo: ${demoEmail}` : null,
+              demoSourceLabel ? `Origen: ${demoSourceLabel}` : null,
+            ]
+              .filter(Boolean)
+              .join(" · ") || undefined
+          : undefined
+      }
+    >
       <Image
         src={profile?.photo_url || "/avatar_1.png"}
         alt="Avatar"

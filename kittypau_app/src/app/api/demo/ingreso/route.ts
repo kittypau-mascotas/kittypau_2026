@@ -11,6 +11,7 @@ type DemoIngresoBody = {
   owner_name?: string;
   pet_name?: string;
   email?: string;
+  pet_type?: string;
   source?: string;
 };
 
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
   const ownerName = asTrimmedString(body?.owner_name, 120);
   const petName = asTrimmedString(body?.pet_name, 120);
   const email = asTrimmedString(body?.email, 254)?.toLowerCase() ?? null;
+  const petType = asTrimmedString(body?.pet_type, 32)?.toLowerCase() ?? null;
   const source = asTrimmedString(body?.source, 64) ?? "demo_app";
 
   if (!email) {
@@ -79,6 +81,7 @@ export async function POST(req: NextRequest) {
         owner_name: ownerName,
         pet_name: petName,
         email,
+        pet_type: petType,
         source,
         user_agent: userAgent,
         referer,

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import {
   getKittypauErrorContent,
   type KittypauErrorType,
@@ -39,10 +40,12 @@ export default function KittypauErrorScreen({
         <div className="login-card-brand freeform-rise mb-3 sm:mb-4">
           <div className="login-brand-core">
             <div className="brand-logo-badge" aria-hidden="true">
-              <img
+              <Image
                 src="/logo_carga.jpg"
                 alt=""
                 className="brand-logo-img"
+                width={40}
+                height={40}
                 draggable={false}
               />
             </div>

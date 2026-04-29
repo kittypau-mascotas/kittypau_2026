@@ -27,12 +27,17 @@ const DEMO_QUICK_PROMPTS = [
   "Qué muestra Kittypau",
   "Cómo sigo",
 ] as const;
+const SHOW_GUIDE_DIALOG = false;
 
 export default function DemoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [ownerName, setOwnerName] = useState("Invitado");
   const [petName, setPetName] = useState("Tu mascota");
+  const [petType, setPetType] = useState<string | null>(null);
+  const [demoEmail, setDemoEmail] = useState<string | null>(null);
+  const [demoSource, setDemoSource] = useState<string | null>(null);
+  const [demoRecordedAt, setDemoRecordedAt] = useState<string | null>(null);
   const [isGuideVisible, setIsGuideVisible] = useState(false);
   const [guideStep, setGuideStep] = useState<DemoGuideStep>(0);
   const [guideChoice, setGuideChoice] = useState<DemoChoice | null>(null);
@@ -60,15 +65,27 @@ export default function DemoPage() {
       window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
       window.localStorage.setItem("kittypau_demo_kind", "demo");
       window.localStorage.setItem("kittypau_demo_show_rpg", "1");
+      window.localStorage.removeItem("kittypau_demo_pet_type");
+      window.localStorage.removeItem("kittypau_demo_email");
+      window.localStorage.removeItem("kittypau_demo_source");
+      window.localStorage.removeItem("kittypau_demo_recorded_at");
     }
 
     const owner = window.localStorage.getItem("kittypau_demo_owner_name");
     const pet = window.localStorage.getItem("kittypau_demo_pet_name");
+    const kind = window.localStorage.getItem("kittypau_demo_pet_type");
+    const email = window.localStorage.getItem("kittypau_demo_email");
+    const source = window.localStorage.getItem("kittypau_demo_source");
+    const recordedAt = window.localStorage.getItem("kittypau_demo_recorded_at");
 
     const guideDelayMs = 2800;
     const timer = window.setTimeout(() => {
       if (owner) setOwnerName(owner);
       if (pet) setPetName(pet);
+      setPetType(kind);
+      setDemoEmail(email);
+      setDemoSource(source);
+      setDemoRecordedAt(recordedAt);
       window.localStorage.removeItem("kittypau_demo_show_rpg");
       setIsGuideVisible(true);
       setGuideStep(0);
@@ -83,6 +100,28 @@ export default function DemoPage() {
   }, [router]);
 
   const updatedAtLabel = useMemo(() => chileCompactDatetime(new Date()), []);
+  const petAvatarSrc = useMemo(() => {
+    if (petType === "dog") return "/illustrations/nervous-not.gif";
+    if (petType === "cat") return "/illustrations/giphy.gif";
+    return "/pet_profile.jpeg";
+  }, [petType]);
+  const petAvatarAlt = useMemo(() => {
+    if (petType === "dog") return `Foto de ${petName}`;
+    if (petType === "cat") return `Foto de ${petName}`;
+    return `Foto de ${petName}`;
+  }, [petName, petType]);
+  const demoRecordedAtLabel = useMemo(() => {
+    if (!demoRecordedAt) return null;
+    const parsedAt = Date.parse(demoRecordedAt);
+    if (!Number.isFinite(parsedAt)) return null;
+    return chileCompactDatetime(new Date(parsedAt));
+  }, [demoRecordedAt]);
+  const demoSourceLabel = useMemo(() => {
+    if (!demoSource) return null;
+    if (demoSource === "trial_modal") return "Login";
+    if (demoSource === "client") return "Cliente demo";
+    return demoSource;
+  }, [demoSource]);
 
   const stopGuideAudio = useCallback(() => {
     const audio = guideAudioRef.current;
@@ -343,8 +382,13 @@ export default function DemoPage() {
       window.localStorage.removeItem("kittypau_demo_mode");
       window.localStorage.removeItem("kittypau_demo_owner_name");
       window.localStorage.removeItem("kittypau_demo_pet_name");
+      window.localStorage.removeItem("kittypau_demo_pet_type");
       window.localStorage.removeItem("kittypau_demo_device_id");
       window.localStorage.removeItem("kittypau_demo_show_rpg");
+      window.localStorage.removeItem("kittypau_demo_email");
+      window.localStorage.removeItem("kittypau_demo_kind");
+      window.localStorage.removeItem("kittypau_demo_source");
+      window.localStorage.removeItem("kittypau_demo_recorded_at");
     }
     router.push("/login");
   };
@@ -360,7 +404,7 @@ export default function DemoPage() {
               src="/audio/dialogo_rpg.mp3"
               preload="auto"
             />
-            {isGuideVisible ? (
+            {SHOW_GUIDE_DIALOG && isGuideVisible ? (
               <div
                 className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
                 role="dialog"
@@ -417,10 +461,11 @@ export default function DemoPage() {
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <Image
-                      src="/pet_profile.jpeg"
-                      alt={`Foto de ${petName}`}
+                      src={petAvatarSrc}
+                      alt={petAvatarAlt}
                       width={128}
                       height={128}
+                      unoptimized
                       className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                     />
                     <div>
@@ -433,6 +478,30 @@ export default function DemoPage() {
                       <p className="mt-1 text-xs font-semibold text-slate-400">
                         Titular: {ownerName}
                       </p>
+                      {petType ? (
+                        <p className="mt-1 text-xs font-semibold text-slate-400">
+                          Mascota: {petType === "dog" ? "Perro" : "Gato"}
+                        </p>
+                      ) : null}
+                      {demoEmail || demoSource || demoRecordedAt ? (
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-medium text-slate-500">
+                          {demoEmail ? (
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                              Correo: {demoEmail}
+                            </span>
+                          ) : null}
+                          {demoSourceLabel ? (
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                              Origen: {demoSourceLabel}
+                            </span>
+                          ) : null}
+                          {demoRecordedAtLabel ? (
+                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                              Registro: {demoRecordedAtLabel}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
 

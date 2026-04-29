@@ -16,18 +16,12 @@ export default function RouteLoadingOverlay() {
     let hideTimeout: ReturnType<typeof setTimeout> | null = null;
     let showTimeout: ReturnType<typeof setTimeout> | null = null;
     let maxTimeout: ReturnType<typeof setTimeout> | null = null;
+    let initialSetVisibleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const shouldPlay = window.sessionStorage.getItem(
       "kittypau_play_login_sound",
     );
     const isLoginTransition = Boolean(shouldPlay);
-
-    // Avoid flash on very fast route transitions.
-    showTimeout = setTimeout(() => {
-      if (cancelled) return;
-      showFired = true;
-      setVisible(true);
-    }, 90);
 
     const hideOverlay = (delayMs = 0) => {
       if (hideTimeout) clearTimeout(hideTimeout);
@@ -36,21 +30,10 @@ export default function RouteLoadingOverlay() {
       }, delayMs);
     };
 
-    if (!isLoginTransition) {
-      // Wait for at least one frame after route change before hiding.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (cancelled) return;
-          if (!showFired && showTimeout) {
-            clearTimeout(showTimeout);
-            showTimeout = null;
-            setVisible(false);
-            return;
-          }
-          hideOverlay(280);
-        });
-      });
-    } else {
+    if (isLoginTransition) {
+      initialSetVisibleTimer = setTimeout(() => {
+        if (!cancelled) setVisible(true);
+      }, 0);
       window.sessionStorage.removeItem("kittypau_play_login_sound");
       const audio = audioRef.current;
       const minVisibleMs = 1300;
@@ -75,13 +58,33 @@ export default function RouteLoadingOverlay() {
         return () => {
           cancelled = true;
           audio.removeEventListener("ended", onEnded);
-          if (showTimeout) clearTimeout(showTimeout);
           if (hideTimeout) clearTimeout(hideTimeout);
           if (maxTimeout) clearTimeout(maxTimeout);
         };
       }
 
       maxTimeout = setTimeout(finish, minVisibleMs);
+    } else {
+      // Avoid flash on very fast route transitions.
+      showTimeout = setTimeout(() => {
+        if (cancelled) return;
+        showFired = true;
+        setVisible(true);
+      }, 90);
+
+      // Wait for at least one frame after route change before hiding.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (cancelled) return;
+          if (!showFired && showTimeout) {
+            clearTimeout(showTimeout);
+            showTimeout = null;
+            setVisible(false);
+            return;
+          }
+          hideOverlay(280);
+        });
+      });
     }
 
     return () => {
@@ -89,6 +92,7 @@ export default function RouteLoadingOverlay() {
       if (showTimeout) clearTimeout(showTimeout);
       if (hideTimeout) clearTimeout(hideTimeout);
       if (maxTimeout) clearTimeout(maxTimeout);
+      if (initialSetVisibleTimer) clearTimeout(initialSetVisibleTimer);
     };
   }, [pathname]);
 

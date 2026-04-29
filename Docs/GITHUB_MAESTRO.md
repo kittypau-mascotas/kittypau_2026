@@ -34,4 +34,8 @@
 - Recomendacion post-merge:
   - Ambos PCs deben ejecutar `git checkout main && git pull origin main`.
 
-
+## Actualizacion 2026-04-29 (Merge Hito Bandida)
+- Estado: **Fusión Exitosa**.
+- Descripción: Se integran las actualizaciones de telemetría real para los platos `KPCL0034` (Agua) y `KPCL0036` (Comida).
+- Ramas involucradas: `feat/javo-mauro` y `feat/mauro-curcuma`.
+- Próximos pasos: Monitoreo de estabilidad de sensores HX711 en ambiente real con Bandida.

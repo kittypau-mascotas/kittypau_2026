@@ -1295,31 +1295,58 @@ body {
 
 .kp-trial-button {
   min-width: 100%;
-  min-height: 58px;
-  padding: 10px 14px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 58%, hsl(var(--border)));
-  background: linear-gradient(135deg, color-mix(in oklab, hsl(var(--primary)) 22%, #ffffff) 0%, #ffffff 54%, color-mix(in oklab, hsl(var(--primary)) 12%, #fff7f3) 100%);
-  color: hsl(var(--primary-strong));
+  min-height: 66px;
+  padding: 13px 16px;
+  border-radius: 24px;
+  border: 1px solid color-mix(in oklab, hsl(var(--success)) 82%, hsl(var(--border)));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.78) 100%),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, hsl(var(--success)) 66%, #ffffff) 0%,
+      color-mix(in oklab, hsl(var(--success)) 48%, #eefbf1) 56%,
+      color-mix(in oklab, hsl(var(--success)) 28%, #ffffff) 100%
+    );
+  color: color-mix(in oklab, hsl(var(--success)) 88%, #0f172a);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  box-shadow: 0 10px 30px -18px rgba(232, 116, 86, 0.65);
-  transition: background-color 160ms ease, transform 120ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 14px 30px -18px rgba(15, 23, 42, 0.14),
+    0 12px 30px -18px rgba(34, 197, 94, 0.56);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+  backdrop-filter: blur(10px);
 }
 
 .kp-trial-button:hover {
-  background: linear-gradient(135deg, color-mix(in oklab, hsl(var(--primary)) 30%, #ffffff) 0%, #ffffff 48%, color-mix(in oklab, hsl(var(--primary)) 18%, #fff6f1) 100%);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 72%, hsl(var(--border)));
-  color: hsl(var(--primary-strong));
-  box-shadow: 0 14px 32px -18px rgba(232, 116, 86, 0.75);
+  border-color: color-mix(in oklab, hsl(var(--success)) 96%, hsl(var(--border)));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 100%),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, hsl(var(--success)) 78%, #ffffff) 0%,
+      color-mix(in oklab, hsl(var(--success)) 56%, #eefbf1) 56%,
+      color-mix(in oklab, hsl(var(--success)) 34%, #ffffff) 100%
+    );
+  color: color-mix(in oklab, hsl(var(--success)) 96%, #0f172a);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 20px 38px -22px rgba(15, 23, 42, 0.28),
+    0 18px 38px -24px rgba(34, 197, 94, 0.72);
+  transform: translateY(-2px) scale(1.015);
 }
 
 .kp-trial-button:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.985);
 }
 
 .kp-trial-button-main {
@@ -1339,7 +1366,7 @@ body {
 }
 
 .kp-trial-button-note-accent {
-  color: hsl(var(--primary-strong));
+  color: color-mix(in oklab, hsl(var(--success)) 96%, #0f172a);
 }
 
 .kp-trial-button-note.is-visible {
@@ -1486,14 +1513,14 @@ body {
 }
 
 .login-login-head {
-  min-height: 28px;
+  min-height: 16px;
   width: 100%;
   padding-right: 0;
 }
 
 .login-login-intro p {
-  margin-top: -2px;
-  line-height: 1.2;
+  margin-top: -4px;
+  line-height: 1.08;
 }
 
 .login-login-stack .login-panel-cat {
@@ -2493,7 +2520,8 @@ body {
   align-items: center;
   gap: 10px;
   text-align: center;
-  margin-bottom: 10px;
+  margin-top: 4px;
+  margin-bottom: 20px;
 }
 
 .login-auth-column {
@@ -2502,13 +2530,13 @@ body {
 
 .login-auth-column > .login-card-brand {
   position: relative;
-  margin-bottom: -8px;
+  margin-bottom: 18px;
 }
 
 @media (min-width: 1024px) {
   /* Web only: raise brand block (logo + title + tagline) without affecting native APK flavor */
   .login-bg:not(.kp-native-apk):not(.kp-flavor-native) .login-auth-column > .login-card-brand {
-    top: -54px;
+    top: 4px;
   }
 }
 
@@ -2729,22 +2757,23 @@ body {
 }
 
 .login-trial-overlay {
-  background: color-mix(in oklab, hsl(var(--primary)) 20%, rgba(15, 23, 42, 0.66));
+  background: color-mix(in oklab, hsl(var(--primary)) 24%, rgba(15, 23, 42, 0.64));
   backdrop-filter: blur(6px);
 }
 
 .login-trial-modal {
   width: min(94vw, 420px);
-  max-height: min(66dvh, 560px);
-  overflow: hidden;
-  padding: 16px !important;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
+  max-height: min(78dvh, 640px);
+  overflow-y: auto;
+  padding: 12px !important;
+  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
   background: linear-gradient(
     180deg,
-    color-mix(in oklab, hsl(var(--primary)) 12%, #ffffff) 0%,
-    #ffffff 78%
+    color-mix(in oklab, hsl(var(--primary)) 16%, #fffdfb) 0%,
+    color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 64%,
+    #ffffff 100%
   );
-  box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 45%, rgba(15, 23, 42, 0.5));
+  box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 54%, rgba(15, 23, 42, 0.5));
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
@@ -2805,17 +2834,17 @@ body {
 }
 
 .login-trial-modal .mb-4 {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .login-trial-modal .space-y-3 {
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 
 .login-trial-modal .space-y-1 {
   display: grid;
-  gap: 4px;
+  gap: 2px;
 }
 
 .login-trial-modal .login-trial-label {
@@ -2823,16 +2852,16 @@ body {
 }
 
 .login-trial-modal .login-trial-input {
-  height: 38px;
-  padding-inline: 12px;
+  height: 32px;
+  padding-inline: 10px;
 }
 
 .login-trial-modal .mt-3 {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .login-trial-modal .mt-5 {
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .login-trial-modal .flex.items-center.justify-end.gap-2 {
@@ -2840,11 +2869,11 @@ body {
 }
 
 .login-trial-eyebrow {
-  color: color-mix(in oklab, hsl(var(--primary)) 70%, #64748b);
+  color: hsl(var(--primary-strong));
 }
 
 .login-trial-title {
-  color: #0f172a;
+  color: #1f2937;
 }
 
 .login-trial-copy {
@@ -2856,14 +2885,18 @@ body {
 }
 
 .login-trial-input {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--border)));
-  background: color-mix(in oklab, hsl(var(--primary)) 6%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 34%, hsl(var(--border)));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 0%,
+    #ffffff 100%
+  );
   color: #0f172a;
 }
 
 .login-trial-input:focus {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 62%, hsl(var(--border)));
-  box-shadow: 0 0 0 2px color-mix(in oklab, hsl(var(--primary)) 35%, transparent);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 72%, hsl(var(--border)));
+  box-shadow: 0 0 0 2px color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
 }
 
 .login-trial-error {
@@ -2873,13 +2906,17 @@ body {
 }
 
 .login-trial-cancel {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
-  background: color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff);
+  border-color: color-mix(in oklab, hsl(var(--primary)) 48%, hsl(var(--border)));
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 0%,
+    #ffffff 100%
+  );
   color: hsl(var(--primary-strong));
 }
 
 .login-trial-cancel:hover {
-  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
+  background: color-mix(in oklab, hsl(var(--primary)) 16%, #ffffff);
 }
 
 .login-trial-submit {
@@ -3560,8 +3597,8 @@ body {
 @media (max-width: 640px) {
   .login-trial-modal {
     width: min(94vw, 372px);
-    max-height: min(64dvh, 500px);
-    padding: 12px !important;
+    max-height: min(78dvh, 540px);
+    padding: 10px !important;
   }
 
   .login-trial-modal-host--dialog-open {
@@ -3577,11 +3614,11 @@ body {
   }
 
   .login-trial-modal .mb-4 {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
   .login-trial-modal .mt-1 {
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   .login-trial-modal .space-y-3 > :not([hidden]) ~ :not([hidden]) {
@@ -3589,28 +3626,28 @@ body {
   }
 
   .login-trial-modal .space-y-3 {
-    gap: 6px;
-  }
-
-  .login-trial-modal .space-y-1 {
     gap: 4px;
   }
 
+  .login-trial-modal .space-y-1 {
+    gap: 2px;
+  }
+
   .login-trial-modal .h-11 {
-    height: 2rem;
+    height: 1.8rem;
   }
 
   .login-trial-modal .text-sm {
-    font-size: 0.79rem;
-    line-height: 1.28;
+    font-size: 0.74rem;
+    line-height: 1.22;
   }
 
   .login-trial-modal .text-xs {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
   }
 
   .login-trial-modal .mt-5 {
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .trial-rpg-shell {
@@ -3826,7 +3863,8 @@ body {
 @media (min-width: 1024px) and (max-height: 940px) {
   .login-card-brand {
     gap: 8px;
-    margin-bottom: 8px;
+    margin-top: 8px;
+    margin-bottom: 18px;
   }
 
   .brand-logo-badge {

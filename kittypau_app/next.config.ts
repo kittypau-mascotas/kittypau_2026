@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
     remotePatterns: [
       {
         protocol: "https",
