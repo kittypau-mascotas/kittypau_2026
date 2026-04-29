@@ -1682,16 +1682,6 @@ export default function LoginPage() {
             if (event.target === event.currentTarget) closeTrial();
           }}
         >
-          <audio
-            ref={trialBackgroundAudioRef}
-            src="/audio/cancion_fondo.mp3"
-            preload="auto"
-          />
-          <audio
-            ref={trialDialogAudioRef}
-            src="/audio/dialogo_rpg.mp3"
-            preload="auto"
-          />
           <div
             className={`login-trial-modal-host relative w-full max-w-md${
               isTrialDialogVisible ? " login-trial-modal-host--dialog-open" : ""
@@ -1722,7 +1712,7 @@ export default function LoginPage() {
                   <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
                     Cuál es tu mascota?
                   </span>
-                  <div className="grid w-fit grid-cols-2 gap-1.5 -ml-1 sm:-ml-2">
+                  <div className="flex gap-4">
                     {[
                       {
                         type: "dog" as const,

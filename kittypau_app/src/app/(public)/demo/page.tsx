@@ -399,11 +399,6 @@ export default function DemoPage() {
         <AppNav />
         <div className="app-content">
           <main className="min-h-screen px-4 py-4 md:px-6">
-            <audio
-              ref={guideAudioRef}
-              src="/audio/dialogo_rpg.mp3"
-              preload="auto"
-            />
             {SHOW_GUIDE_DIALOG && isGuideVisible ? (
               <div
                 className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
