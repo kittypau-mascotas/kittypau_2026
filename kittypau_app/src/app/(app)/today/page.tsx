@@ -3723,7 +3723,7 @@ export default function TodayPage() {
                       aria-label="Mascota anterior"
                       title="Mascota anterior"
                     >
-                      ◀
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
                       {petLabel}
@@ -3735,7 +3735,7 @@ export default function TodayPage() {
                       aria-label="Siguiente mascota"
                       title="Siguiente mascota"
                     >
-                      ▶
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   </div>
                   <p className="truncate text-xs text-slate-500 md:text-sm">
@@ -4295,7 +4295,7 @@ export default function TodayPage() {
                   aria-label="Ciclo anterior"
                   title="Ciclo anterior"
                 >
-                  ◀
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <button
                   type="button"
@@ -4316,7 +4316,7 @@ export default function TodayPage() {
                   aria-label="Ciclo siguiente"
                   title="Ciclo siguiente"
                 >
-                  ▶
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               </div>
               <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
@@ -4406,7 +4406,7 @@ export default function TodayPage() {
                   aria-label="Ciclo anterior D3"
                   title="Ciclo anterior D3"
                 >
-                  ◀
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <button
                   type="button"
@@ -4427,7 +4427,7 @@ export default function TodayPage() {
                   aria-label="Ciclo siguiente D3"
                   title="Ciclo siguiente D3"
                 >
-                  ▶
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
                 <input
                   type="date"
