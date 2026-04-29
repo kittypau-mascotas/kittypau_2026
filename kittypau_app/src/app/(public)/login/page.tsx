@@ -1704,6 +1704,24 @@ export default function LoginPage() {
                       </p>
                     ) : null}
                   </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Image
+                      src="/logo_carga.jpg"
+                      alt=""
+                      width={36}
+                      height={36}
+                      className="rounded-full object-cover"
+                      draggable={false}
+                    />
+                    <div className="flex flex-col leading-tight">
+                      <span className="brand-title text-[0.92rem] font-semibold text-primary">
+                        Kittypau
+                      </span>
+                      <span className="text-[0.62rem] font-medium text-slate-400">
+                        PetTech AIoT
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
