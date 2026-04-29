@@ -1158,6 +1158,7 @@ export default function BowlPage() {
                   rangeStartLabel={selectedRangeConfig.fromLabel}
                   maxPoints={selectedRangeConfig.maxPoints}
                   integerDisplay
+                  className="lg:col-span-2"
                 />
               </div>
             )}
