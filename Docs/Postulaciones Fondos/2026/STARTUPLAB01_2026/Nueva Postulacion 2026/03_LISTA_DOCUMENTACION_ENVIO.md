@@ -5,9 +5,10 @@ Carpeta de trabajo: **Nueva Postulacion 2026**
 
 ## 1) Archivos base de esta carpeta
 
-- [ ] `01_RESPUESTAS_POSTULACION_2026.md`
-- [ ] `02_VINCULACION_TERMINOS_Y_CONDICIONES_KITTYPAU.md`
-- [ ] `03_LISTA_DOCUMENTACION_ENVIO.md`
+- [x] `01_RESPUESTAS_POSTULACION_2026.md`
+- [x] `02_VINCULACION_TERMINOS_Y_CONDICIONES_KITTYPAU.md`
+- [x] `03_LISTA_DOCUMENTACION_ENVIO.md`
+- [x] `version_mauro_postulacion_2026.md`
 - [x] `Terminos_condiciones_startuplab.01.pdf`
 - [x] `Postulación Residencia startuplab.01 - Airtable.pdf`
 
@@ -19,17 +20,18 @@ Carpeta de trabajo: **Nueva Postulacion 2026**
 
 ## 3) Documentación legal de la empresa
 
-- [ ] Escritura de constitución completa en PDF
-- [ ] Certificado de vigencia actualizado
-- [ ] RUT de la empresa
+- [x] Escritura de constitución — `Docs/kittypau_1a_docs_legacy/business/05_Documentos_Legales/escritura_iotchile_2025.pdf`
+- [x] Certificado legal empresa — `Docs/kittypau_1a_docs_legacy/business/05_Documentos_Legales/E99551740-K_33_565197.0.pdf`
+- [x] Resumen legal con RUT (78.203.374-3) y datos clave — `Docs/kittypau_1a_docs_legacy/business/05_Documentos_Legales/RESUMEN_LEGAL_IOT_CHILE_SPA.md`
+- [ ] Certificado de vigencia actualizado (verificar fecha)
 - [ ] CI o pasaporte vigente del Team Leader
 - [ ] CI del representante legal
 - [ ] Poder notarial si aplica
 
 ## 4) Documentación del equipo
 
-- [ ] CV actualizado de Mauricio Cristian Cárcamo Díaz
-- [ ] CV actualizado de Javier Dayne Ortiz
+- [x] CV / Perfil Javier Dayne Ortiz — `Docs/Postulaciones Fondos/2026/EQUIPO/01_PERFIL_JAVIER_DAYNE.md`
+- [x] CV / Perfil Mauricio Cárcamo Díaz — `Docs/Postulaciones Fondos/2026/EQUIPO/02_PERFIL_MAURO_CARCAMO.md`
 - [ ] LinkedIn vigente de ambos fundadores
 - [ ] Resumen de roles y dedicaciones
 - [ ] Carta de compromiso o dedicación si el formulario la pide
@@ -45,7 +47,8 @@ Carpeta de trabajo: **Nueva Postulacion 2026**
 
 ## 6) Evidencia comercial y de mercado
 
-- [ ] Cartas de intención o compromisos no vinculantes
+- [x] `ACUERDO_USO_PILOTO_KPCL0051.md` — acuerdo firmado con usuario activo Amanda
+- [ ] Carta de intención adicional (clínica veterinaria u otro usuario)
 - [ ] Resumen de customer discovery
 - [ ] Lista de potenciales clientes o pilotos
 - [ ] Proyección comercial 12 a 24 meses
@@ -53,35 +56,39 @@ Carpeta de trabajo: **Nueva Postulacion 2026**
 
 ## 7) Evidencia financiera
 
-- [ ] Presupuesto de uso de fondos
-- [ ] Cofinanciamiento o aporte propio
-- [ ] Resumen de runway y burn rate
-- [ ] Modelo de ingresos hardware + suscripción
-- [ ] Supuestos financieros principales
+- [x] Modelo de negocio y finanzas — `documento_2026/04_MODELO_NEGOCIO_FINANZAS_2026.md` (KPIs, MRR, LTV, CAC, break-even)
+- [x] Catálogo de componentes y costos unitarios — `Docs/KPCL_CATALOGO_COMPONENTES_Y_COSTOS.md` (BOM, manufactura, OPEX por dispositivo)
+- [x] Presupuesto CORFO (referencia) — `CORFO_SEMILLA_INICIA_2026/03_PRESUPUESTO_COFINANCIAMIENTO.md`
+- [x] Estrategia de financiamiento — `kittypau_1a_docs_legacy/.../Estrategia_Financiamiento_2025-2026.md`
+- [x] Proyección financiera escenario base 12 meses — `PROYECCION_FINANCIERA_BASE_2026.md`
+- [ ] Resumen ejecutivo financiero para startuplab (1 página condensada)
 
-## 8) Recomendación de envío
+## 8) Estado consolidado
 
-### Prioridad alta
-
-- `90_POSTULACION_2026.pdf`
-- `02_DECK_STARTUPLAB01.pdf`
-- `Terminos_condiciones_startuplab.01.pdf`
-- `Postulación Residencia startuplab.01 - Airtable.pdf`
-- video pitch
-
-### Prioridad media
-
-- constitución y vigencia
-- CVs de equipo
-- evidencias del prototipo
-- cartas de intención
-- plan financiero
-
-### Prioridad interna
-
-- este paquete de `.md` de apoyo
-- checklist de consistencia narrativa
-- referencias del `documento_2026`
+| Documento | Estado |
+|---|---|
+| Respuestas postulación | ✅ |
+| Vinculación términos y condiciones | ✅ |
+| Versión Mauro (borrador narrativa) | ✅ |
+| Términos startuplab.01 PDF | ✅ |
+| Formulario Airtable PDF (referencia) | ✅ |
+| Acuerdo piloto KPCL0051 | ✅ |
+| CV / Perfil Javier Dayne | ✅ |
+| CV / Perfil Mauricio Cárcamo | ✅ |
+| Escritura constitución SpA | ✅ |
+| Certificado legal empresa | ✅ |
+| RUT empresa (78.203.374-3) | ✅ |
+| Modelo de negocio y KPIs | ✅ |
+| Catálogo costos unitarios BOM | ✅ |
+| Proyección financiera base 12 meses | ✅ |
+| Deck PDF (10 slides) | ⚠️ Pendiente |
+| Video pitch (≤3 min) | ⚠️ Pendiente |
+| Postulación final PDF exportada | ⚠️ Pendiente |
+| Certificado de vigencia actualizado 2026 | ⚠️ Verificar fecha |
+| CI / pasaporte fundadores | ⚠️ Pendiente confirmar |
+| Carta de intención adicional (clínica/usuario) | ⚠️ Pendiente |
+| Resumen ejecutivo financiero 1 página | ⚠️ Pendiente |
+| Fotos del prototipo | ⚠️ Pendiente |
 
 ## 9) Lista corta para no olvidar
 
