@@ -88,7 +88,7 @@ Carpeta de trabajo: **Nueva Postulacion 2026**
 | CI / pasaporte fundadores | ⚠️ Pendiente confirmar |
 | Carta de intención adicional (clínica/usuario) | ⚠️ Pendiente |
 | Resumen ejecutivo financiero 1 página | ⚠️ Pendiente |
-| Fotos del prototipo | ⚠️ Pendiente |
+| Fotos del prototipo | ✅ 10 fotos en `Imagenes prototipo 3a/` (carcasa rosa 3a + unidad azul con electrónica) |
 
 ## 9) Lista corta para no olvidar
 
