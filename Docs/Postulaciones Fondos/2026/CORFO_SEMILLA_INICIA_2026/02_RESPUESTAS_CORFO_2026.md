@@ -276,3 +276,105 @@
 - [ ] `[CONFIRMAR]` Fecha exacta de inicio del piloto KPCL0051 (para declarar en "inicio desarrollo comercial")
 
 **Fecha límite:** 29 de mayo 2026
+
+---
+
+## ANÁLISIS ESTRATÉGICO — Probabilidad y Mejoras
+
+### Marco de evaluación oficial (Bases Semilla Inicia 2025, vigente 2026)
+
+La evaluación asigna notas de **1,00 a 5,00** en tres grandes criterios. El desempate sigue el orden: Innovación → Equipo → Propuesta de Valor → Capacidad del Equipo.
+
+| Criterio | Subcriterio | Ponderación | Qué evalúa el panel |
+|---|---|---|---|
+| **INNOVACIÓN (40%)** | Relevancia del Problema/Oportunidad | 15% | ¿El problema es real, significativo y está bien caracterizado? ¿Hay evidencia de que existe? |
+| | Propuesta de Valor | 25% | ¿La solución resuelve el problema de forma innovadora? ¿Se diferencia de lo que ya existe? ¿Encaja con el eje ciudades inteligentes? |
+| **ESCALABILIDAD (30%)** | Modelo de Negocios | 5% | ¿Hay un modelo de ingresos claro y sostenible? |
+| | Mercado | 10% | ¿El mercado es suficientemente grande? ¿Hay demanda verificable? |
+| | Plan de Validación | 10% | ¿Las actividades propuestas son concretas, realizables en 10 meses y conducen a la primera venta? |
+| | Sostenibilidad ESG | 5% | ¿Hay una estrategia de impacto social, ambiental y de gobernanza? |
+| **EQUIPO (30%)** | Capacidad del equipo | 20% | ¿El equipo tiene las habilidades para ejecutar? ¿Son complementarios? ¿Tienen experiencia relevante? |
+| | Compromiso en horas | 10% | ¿Cuántas horas semanales dedica cada miembro al proyecto? ¿Es creíble y suficiente? |
+
+**Bonus:** +5% sobre nota final si la empresa implementó reducción de jornada anticipada (Ley 21.561). No aplica a Kittypau en esta etapa.
+
+**Presupuesto total convocatoria RM 2026:** $169.165.000 CLP → máximo ~11 proyectos financiados al tope de $15M CLP. En la práctica, si hay proyectos de menor monto, pueden financiarse más.
+
+---
+
+### Probabilidad estimada actual: 55–65% *(si admisibilidad OK)*
+
+#### Puntaje esperado por criterio
+
+| Criterio | Puntaje estimado | Justificación |
+|---|---|---|
+| Relevancia del Problema (15%) | **4,2 / 5,0** | Problema real, cuantificado en CLP (costo urgencia vs. programada), con estadísticas de mercado verificables. |
+| Propuesta de Valor (25%) | **4,3 / 5,0** | Encaje directo con eje ciudades inteligentes + 2 ejes transversales. Diferenciación genuina: único jugador local con hardware + analítica + IA. |
+| Modelo de Negocios (5%) | **3,8 / 5,0** | Hardware + SaaS es sólido. Hardware complica al evaluador no técnico — hay que explicarlo simple. |
+| Mercado (10%) | **4,0 / 5,0** | TAM/SAM/SOM bien construidos. Chile como plataforma LATAM es argumento conocido en CORFO. |
+| Plan de Validación (10%) | **3,7 / 5,0** | Las 5 actividades son concretas. El riesgo es que 10 meses para hardware + ML + ventas puede verse como ambicioso para 2 personas. |
+| Sostenibilidad ESG (5%) | **3,5 / 5,0** | ESG existe en el documento pero no tiene diagnóstico formal ni indicadores medibles. Es el criterio más débil actualmente. |
+| Capacidad del equipo (20%) | **4,2 / 5,0** | El perfil técnico es fuerte y verificable. 15 años automatización + 7 años data science es inusual para esta etapa. |
+| Compromiso en horas (10%) | **3,5 / 5,0** | Si alguno declara dedicación parcial, baja el puntaje. Si ambos declaran full-time pero tienen otros ingresos, hay riesgo de inconsistencia. |
+
+**Nota ponderada estimada: ~4,0 / 5,0** — suficiente para entrar en el ranking de adjudicación si los ~11 proyectos financiados no están todos sobre 4,2.
+
+---
+
+### El riesgo que no controlan
+
+**Admisibilidad:** Si IOT CHILE SpA inició actividades SII antes del 30-oct-2024, la postulación cae automáticamente en Fase 2. No hay apelación. Esta verificación ocurre ANTES de que el evaluador lea una sola línea del formulario.
+
+---
+
+### Qué hacer para mejorar el porcentaje de éxito
+
+#### Acciones que impactan directamente en el puntaje
+
+| Acción | Criterio que mejora | Impacto | Urgencia |
+|---|---|---|---|
+| **Grabar y subir el video de 40 seg** | BLOQUEANTE — Fase 2 de admisibilidad | Sin video = inadmisible automático | 🔴 Inmediata |
+| **Confirmar fecha SII** y verificar admisibilidad | BLOQUEANTE — Fase 2 | Sin confirmación no tiene sentido avanzar | 🔴 Inmediata |
+| **Fortalecer la estrategia ESG** con indicadores concretos | Sostenibilidad (5%) | Pasa de 3,5 a 4,2 — diferencial en desempate | 🟠 Alta |
+| **Declarar horas semanales reales** de Mauricio y Javier | Compromiso en horas (10%) | Si ambos declaran 40+ hrs/semana con justificación creíble, sube de 3,5 a 4,5 | 🟠 Alta |
+| **Obtener cotizaciones formales** para el presupuesto | Requisito documental | Sin cotizaciones el presupuesto no es válido | 🟠 Alta |
+| **Identificar Entidad Patrocinadora** habilitada CORFO RM | Requisito post-adjudicación | Tener una identificada antes del cierre acelera la formalización | 🟠 Media |
+| **Obtener una carta de intención** de clínica veterinaria o pet shop | Plan de Validación (10%) | Pasa de evidencia teórica a tracción real verificable | 🟠 Media |
+
+#### Cómo mejorar el criterio ESG (el más débil)
+
+La estrategia ESG actual en el documento es narrativa pero no tiene indicadores. El evaluador espera algo medible. Agregar:
+
+- **Social:** meta concreta — ej. "reducir en 20% el gasto en consultas veterinarias de urgencia del usuario promedio en 10 meses"
+- **Ambiental:** ej. "reducir el desperdicio de alimento en X% medido por delta de porciones ajustadas post-alerta"
+- **Gobernanza:** ej. "adoptar política de datos bajo Ley 19.628 documentada y publicada en el sitio web antes del mes 2"
+
+#### Cómo mejorar el criterio Compromiso en horas
+
+El formulario CORFO pregunta las horas semanales de cada fundador. La respuesta óptima es:
+- **Javier: 40 hrs/semana** — si ya trabaja full-time en Kittypau, declararlo así
+- **Mauricio: 40 hrs/semana** — ídem
+
+Si alguno tiene otro trabajo con contrato, se recomienda declarar las horas reales y no exagerar — CORFO puede cruzar con datos previsionales.
+
+#### Qué NO hacer
+
+- **No presentar el presupuesto sin cotizaciones** — el evaluador lo descuenta o lo rechaza en admisibilidad.
+- **No declarar ventas que no existen** — el formulario pregunta por ventas hasta marzo 2026. Si hay alguna factura, la postulación es inadmisible.
+- **No subestimar la Entidad Patrocinadora** — si son adjudicados y no tienen una en 15 días hábiles, pierden el subsidio. Hay que tenerla identificada y contactada antes del cierre.
+
+#### Entidades Patrocinadoras habilitadas RM (orientativo)
+
+Buscar en el listado oficial de corfo.cl. Opciones típicas en RM:
+- Fundación Chile
+- Universidad de Santiago (USACH) — Dirección de Emprendimiento
+- Universidad de Chile — Beauchef Emprende
+- Incubadoras privadas habilitadas por CORFO
+
+Contactar directamente antes del 25 de mayo para asegurar disponibilidad.
+
+---
+
+### Resumen ejecutivo
+
+> Kittypau tiene el perfil técnico y de innovación más fuerte que puede tener un proyecto Semilla Inicia: hardware real funcionando, ML en producción, usuario activo, equipo con experiencia industrial verificable, y alineación directa con el eje estratégico del CDPR RM 2026. Los criterios de mayor peso (Innovación 40%) van a favor. El talón de Aquiles son los criterios operativos: ESG sin indicadores concretos, horas de dedicación que pueden verse inconsistentes, y presupuesto sin cotizaciones. Resolviendo esos tres puntos y confirmando la admisibilidad SII, la probabilidad real sube al rango **65–75%**.

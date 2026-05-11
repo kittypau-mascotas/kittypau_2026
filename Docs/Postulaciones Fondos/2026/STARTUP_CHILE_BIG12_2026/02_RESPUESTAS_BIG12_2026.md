@@ -1,17 +1,18 @@
-# Kittypau — Respuestas Postulación BIG 12 (Ignite)
+# Kittypau — Respuestas Postulación BIG 12 (Build)
 **Application ID:** 947027
 **Última actualización:** 2026-05-11
 **Idioma de postulación:** Español
-**Línea objetivo:** Ignite ($30.000.000 CLP)
+**Línea objetivo:** Build ($15.000.000 CLP)
 
 > ⚠️ Las respuestas marcadas con `[CONFIRMAR]` requieren verificación o acción del equipo antes de enviar.
+> ⚠️ **Build requiere que al menos el 50% de los proyectos seleccionados sean liderados por mujeres.** IOT CHILE SpA tiene Team Leader masculino — compiten por el cupo no-femenino, que es aproximadamente el 50% restante de los lugares disponibles.
 
 ---
 
 ## SECCIÓN 1 — Application Questions
 
 **1. ¿A qué programa(s) estás postulando?**
-→ **Ignite** (objetivo principal). Build como fallback si hay restricción de admisibilidad.
+→ ✅ **Build** — hasta 1 año de desarrollo comercial, $15.000.000 CLP.
 
 **2. ¿En qué idioma estás postulando?**
 → **Español**
@@ -152,7 +153,9 @@ Confirmar email de confirmación = mismo.
 > La capa de ML está basada en LightGBM para la detección de eventos de alimentación e hidratación (clasificación de 3 clases: baseline, consumo activo, nuevo plateau). Hemos completado 3 experimentos de entrenamiento con 49 sesiones etiquetadas manualmente del dispositivo KPCL0034/KPCL0036. La siguiente etapa es extender el dataset con KPCL0051 (usuario real activo) y avanzar hacia modelos secuenciales (LSTM/GRU) para capturar dependencias temporales de largo plazo.
 
 **9. ¿En qué fase de desarrollo se encuentra tu startup?**
-→ **MVP with clients** — Tenemos un MVP funcional con un usuario piloto real activo (KPCL0051, cliente en Santiago), con datos reales capturados y validados desde el hardware hasta el dashboard. Las ventas son esporádicas (piloto sin factura formal); estamos validando el producto en condiciones reales de mercado e iterando basándonos en el feedback del usuario.
+→ **Prototype / Early MVP** — Tenemos un prototipo funcional (hardware KPCL + plataforma cloud) validado en entorno real con un usuario piloto activo (KPCL0051, Santiago). El producto está en fase de validación técnica y primeros pasos de validación comercial. Sin ventas facturadas formalmente; el objetivo del programa es ejecutar las primeras ventas reales y alcanzar product-market fit.
+
+> *Nota: Build permite hasta 1 año de desarrollo comercial. Kittypau inició desarrollo comercial en ene 2026 — menos de 6 meses al momento de postular. Encaja en Build sin forzar la narrativa.*
 
 **10. ¿Qué categoría describe mejor la naturaleza de la innovación de tu startup?**
 → **Hybrid** — Combinamos hardware de consumo (IoT embebido) con R&D en machine learning aplicado a behavioral analytics. El núcleo de valor no es solo tecnología establecida (APIs, cloud) sino la investigación activa en modelos de detección de patrones alimentarios que no existe en el mercado.
@@ -318,21 +321,25 @@ Confirmar email de confirmación = mismo.
 
 **5. ¿Cuáles son los resultados cuantificables esperados al final del programa? (mínimo 3 KPIs)** *(límite: 300 chars)*
 
-**[FORMULARIO — ~280 chars]:**
-> 1. 30 unidades KPCL vendidas (USD 1.500 en revenue de hardware).
-> 2. 15 usuarios premium activos (MRR USD 120).
-> 3. TRL 7 alcanzado (entorno operacional real, >30 días/dispositivo).
-> 4. 2 acuerdos B2B2C firmados con clínicas o pet shops en RM.
-> 5. ML v2 en producción: F1 macro ≥0,75.
+> *Build dura 4 meses (vs 6 de Ignite) — KPIs calibrados a ese plazo.*
+
+**[FORMULARIO — ~270 chars]:**
+> 1. 15 unidades KPCL vendidas (primera venta facturada en mes 1).
+> 2. 8 usuarios activos con datos en producción >30 días.
+> 3. TRL 6 alcanzado (sistema demostrado en entorno relevante con múltiples usuarios).
+> 4. 1 acuerdo B2B2C firmado con clínica veterinaria RM.
+> 5. ML v1 en producción con detección de eventos validada.
 
 **6. ¿Cómo financiarás el porcentaje de cofinanciamiento requerido?** *(límite: 500 chars)*
+
+> *Build no exige cofinanciamiento mínimo obligatorio como porcentaje fijo, pero sí requiere declararlo. Referirse a los T&C del programa para el cálculo exacto.*
 
 **[FORMULARIO — ~470 chars]:**
 > Fondos propios: Javier Dayne y Mauricio Cárcamo han aportado USD 304 en efectivo y +600 hrs de trabajo (valor de mercado USD 30K–50K). Capacidad adicional: CLP 500K–1.000K en efectivo durante el programa.
 >
-> Ingresos del programa: primeras ventas de hardware (desde mes 2) cubrirán costos de manufactura incremental.
+> Ingresos del programa: primeras ventas de hardware (desde mes 1) cubrirán costos de manufactura incremental.
 >
-> Postulación paralela CORFO Semilla Inicia 2026 (cierre 29-may): si adjudicada, hasta $15M CLP adicionales para complementar el cofinanciamiento.
+> Postulación paralela CORFO Semilla Inicia 2026 (cierre 29-may): si adjudicada, hasta $15M CLP adicionales complementan el cofinanciamiento.
 
 **7. ¿Qué beneficios buscas de Start-Up Chile?** *(máximo 3)*
 → ✅ **Equity-free grant** — financiamiento sin dilución para ejecutar el plan de validación
@@ -457,6 +464,7 @@ Confirmar email de confirmación = mismo.
 
 > ✅ Agregar como Team Member: **Sí**
 > ✅ Agregar como Executor: **Sí** (elegible para recibir sueldo en Chile)
+> ⚠️ **Build permite máximo 2 Executors** — Mauricio (Team Leader) + Javier (Team Member 1) = exactamente 2. No agregar un tercero.
 
 | Campo | Valor | Estado |
 |---|---|---|
@@ -551,3 +559,80 @@ Confirmar email de confirmación = mismo.
 - [ ] `[OPCIONAL]` Carta de recomendación (usuario KPCL0051 u otro — requiere nombre, empresa, cargo, email, LinkedIn, carta firmada)
 
 **Fecha límite:** 25 de mayo 2026, 13:00 hrs
+
+---
+
+## ANÁLISIS ESTRATÉGICO — Probabilidad y Mejoras
+
+### Marco de evaluación BIG12 (oficial)
+
+Start-Up Chile no publica puntajes ponderados como CORFO. La evaluación es cualitativa por panel, pero los criterios documentados son:
+
+| Dimensión | Qué evalúan |
+|---|---|
+| **Innovación** | ¿El producto resuelve un problema real de forma novedosa? ¿Hay diferenciación real vs. lo que existe? |
+| **Equipo** | ¿El equipo tiene las capacidades para ejecutar? ¿Hay complementariedad? ¿Dedicación full-time? |
+| **Mercado** | ¿El mercado es suficientemente grande? ¿Hay un camino claro a escala? |
+| **Tracción** | ¿Hay evidencia de validación? (usuarios, pilotos, cartas de intención, revenue) |
+| **Escalabilidad** | ¿El modelo puede crecer sin aumentar costos proporcionalmente? |
+| **Alineación con SUP** | ¿El proyecto se beneficia de estar en Chile y conectado al ecosistema SUP? |
+
+**Para Build específicamente**, el evaluador también pondera:
+- Que el proyecto sea etapa temprana genuina (no un Ignite disfrazado)
+- Que el equipo tenga claridad sobre el problema que está resolviendo
+- Potencial de crecimiento a 3–5 años, no solo el estado actual
+
+---
+
+### Probabilidad estimada actual: 25–35%
+
+**¿Por qué no más alto?**
+
+1. **Cuota de género** — Build reserva ≥50% de los lugares para empresas lideradas por mujeres. IOT CHILE SpA tiene Team Leader masculino, compite por el cupo restante (~50% de plazas). Esto no es un rechazo, pero divide el pool de selección.
+
+2. **Pre-revenue en hardware** — Sin una venta facturada, algunos evaluadores dudan de la tracción real. El piloto KPCL0051 es fuerte pero no tiene contrato ni factura.
+
+3. **Equipo de 2 sin empleados** — Para Build está bien, pero el evaluador puede ver la ejecución de 4 meses como ajustada con solo 2 personas haciendo hardware + software + ventas + onboarding simultáneamente.
+
+**¿Por qué no más bajo?**
+
+1. **MVP funcionando con usuario real** — En Build, la mayoría de los competidores tienen idea o prototipo de laboratorio. Kittypau tiene hardware activo en un hogar real generando datos. Eso es diferenciador fuerte.
+
+2. **Equipo con credenciales técnicas verificables** — 15 años de automatización industrial + 7 años data science es inusual para una startup tan temprana. El evaluador puede verificar que el producto existe.
+
+3. **Mercado global con entrada local clara** — Pet Tech IoT es una categoría real y creciente. El argumento de Chile como plataforma para LATAM es sólido.
+
+---
+
+### Qué hacer para mejorar el porcentaje de éxito
+
+#### Acciones que impactan directamente en la evaluación
+
+| Acción | Impacto | Urgencia | Dificultad |
+|---|---|---|---|
+| **Grabar y subir el video de 90 seg** | BLOQUEANTE — sin esto no hay evaluación | 🔴 Inmediata | Media |
+| **Carta de recomendación del usuario KPCL0051** | +credibilidad en tracción — el evaluador ve un cliente real opinando | 🔴 Alta | Baja |
+| **Primer contrato o factura antes del cierre** | Transforma "piloto" en "primera venta" — cambia la narrativa completamente | 🟠 Alta | Media |
+| **LinkedIn de Mauricio y Javier actualizados** | El evaluador googlea a los fundadores — un LinkedIn vacío o inconsistente genera dudas | 🟠 Alta | Baja |
+| **Declarar dedicación full-time de Mauricio** | Build exige full-time desde inicio del programa — si no está claro en el formulario, se penaliza | 🟠 Alta | Baja |
+| **Completar datos de Javier (Team Member 1)** | Un equipo incompleto en el formulario se ve como falta de preparación | 🟠 Media | Baja |
+
+#### Acciones que refuerzan el perfil sin cambiar respuestas
+
+| Acción | Por qué importa |
+|---|---|
+| **Instalar un segundo dispositivo KPCL** en un nuevo hogar antes del cierre | Pasar de "1 usuario piloto" a "2 usuarios piloto" cambia la percepción de tracción. Mínimo esfuerzo, máximo impacto narrativo. |
+| **Publicar contenido en redes sociales** (Instagram/TikTok) con el producto en uso real | El evaluador puede ver la actividad online. Una cuenta con posts recientes del producto en uso es evidencia de que están operando. |
+| **Contactar a 1–2 clínicas veterinarias** y obtener aunque sea un email de interés | Una carta de intención o email documentado de una clínica veterinaria cuenta como "pipeline B2B" verificable. |
+
+#### Qué NO hacer
+
+- **No cambiar la línea a Ignite** — el fit real es Build. Forzar Ignite con los datos actuales puede ser penalizado por incoherencia.
+- **No exagerar las ventas o el revenue** — el formulario tiene campos cruzados que pueden exponerlo. Consistencia > optimismo.
+- **No dejar campos vacíos** — cada campo sin respuesta es una señal de falta de preparación para el evaluador.
+
+---
+
+### Resumen ejecutivo
+
+> Kittypau tiene un perfil genuinamente fuerte para Build — mejor que el promedio de los aplicantes en tracción técnica y claridad del problema. El principal riesgo no es la calidad del proyecto sino la ejecución de los detalles: el video, los datos de Javier, el LinkedIn, y ojalá una primera venta antes del 25 de mayo. Con esas piezas en su lugar, la probabilidad real sube al rango **35–45%**.
