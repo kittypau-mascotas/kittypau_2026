@@ -26,13 +26,13 @@ Este documento responde el formulario de postulación tomando como referencia la
 
 ### Problema
 
-Los dueños de mascotas no tienen visibilidad sobre los hábitos reales de alimentación e hidratación de su animal. En la práctica, los problemas se detectan tarde: cuando el plato lleva horas sin tocarse, cuando la ingesta cambió de forma visible o cuando ya aparecen síntomas clínicos. Esa falta de datos diarios convierte el cuidado en reactivo, aumenta el riesgo de consultas de urgencia evitables y reduce la calidad de vida de la mascota.
+Los dueños de mascotas tienen poca visibilidad de los hábitos reales de alimentación e hidratación de su mascota. En la práctica y durante la tenencia, los descuidos se detectan tarde: cuando el plato lleva horas sin variacion de peso, cuando la necesidad de comer cambió de forma visible o cuando ya aparecen síntomas necesarios de revisar por un veterinario. Esa falta de datos diarios interrumpe el cuidado preventivo de la mascota, aumenta el riesgo de consultas de urgencia evitables y reduce la calidad de vida de la mascota.
 
 ### Solución
 
-Kittypau es una plataforma AIoT para monitoreo de alimentación e hidratación de mascotas. Integra hardware IoT, bridge local, backend cloud y dashboard web para convertir lecturas de consumo y variables del entorno en métricas accionables, alertas tempranas e historial longitudinal.
+Kittypau es una plataforma AIoT para monitoreo de los habitos alimenticios e hidricos de las mascotas. Integra hardware IoT con IA, bridge local, backend cloud y dashboard web para convertir lecturas de consumo y variables del entorno, datos analizables, alertas tempranas e historial.
 
-La capa de valor no es la dispensación automatizada. Es la inteligencia sobre hábitos reales: cambios en frecuencia, duración, cantidad consumida, patrón horario y contexto ambiental. Esa combinación permite detectar desvíos de conducta y apoyar decisiones preventivas antes de que aparezca el síntoma.
+El valor de Kittypau! no es la dispensación automatizada. El analisis sobre hábitos de las mascotas: cambios de frecuencia, duración de la comida, cantidad, patrónes horarios y ambiente del momento. Esta combinación permite detectar eventos de conducta anomala y apoyar decisiones preventivas antes de que aparezca graves molestias.
 
 ### Base técnica
 

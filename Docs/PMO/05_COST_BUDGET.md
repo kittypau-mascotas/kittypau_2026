@@ -4,7 +4,7 @@
 **Version**: 2.0 | Fecha: 2026-03-16
 **Tipo de cambio operativo**: 1 USD = 950 CLP
 
-> **v2.0 - actualizacion con datos reales:** costos de componentes actualizados con precios reales AliExpress (2023-2026), inversin acumulada real por fundadores, nuevo perfil **KPLANT** (ESP32-C3 SuperMini).
+> **v2.0 - actualizacion con datos reales:** costos de componentes actualizados con precios reales AliExpress (2023-2026), inversin acumulada real por fundadores, nuevo perfil **KPCL-C3** (ESP32-C3 SuperMini).
 
 ---
 
@@ -169,7 +169,7 @@ Supuesto: 50 KB/dispositivo/dia = 1,4 MB/mes por dispositivo
 
 | Concepto | CLP | USD aprox |
 |----------|-----|-----------|
-| Componentes Kittypau + KPLANT (AliExpress) | $242.072 | ~$255 |
+| Componentes Kittypau (AliExpress) | $242.072 | ~$255 |
 | RPi Zero 2W - bridge (estimado) | $19.000 | ~$20 |
 | Filamento PLA+ 2kg (estimado) | $32.000 | ~$34 |
 | **Total inversin Javier conocida** | **$293.072** | **~$308** |

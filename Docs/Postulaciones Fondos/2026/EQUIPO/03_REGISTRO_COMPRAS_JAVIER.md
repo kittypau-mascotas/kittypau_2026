@@ -188,7 +188,7 @@
 
 > **Nota:** Todo pagado por Javier Dayne. Acuerdo 50/50 con Mauro Carcamo.
 > Mauro ha pagado su 50% de compras anteriores a Mar 2026.
-> **Deuda pendiente de Mauro:** 50% del batch Mar 2026 = ~$33.414 CLP (~$35 USD) - "ltima deuda de kplant" reclasificada como Kittypau.
+> **Deuda pendiente de Mauro:** 50% del batch Mar 2026 = ~$33.414 CLP (~$35 USD) - deuda reclasificada como Kittypau.
 
 ---
 
