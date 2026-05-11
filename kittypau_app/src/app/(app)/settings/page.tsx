@@ -280,6 +280,25 @@ export default function SettingsPage() {
             </div>
           </section>
 
+          <section className="surface-card freeform-rise px-6 py-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Dispositivos
+                </h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Registra o gestiona tus dispositivos Kittypau.
+                </p>
+              </div>
+              <Link
+                href="/dispositivos/nuevo"
+                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Agregar dispositivo
+              </Link>
+            </div>
+          </section>
+
           <OperationalActionsCard
             description="Si faltan datos de perfil o quieres revisar el estado operativo, sigue por estas vistas."
             actions={[
