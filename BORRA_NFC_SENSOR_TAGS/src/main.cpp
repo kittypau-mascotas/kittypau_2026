@@ -3,6 +3,17 @@
 
 #define TARGET_URL "https://kittypau.vercel.app"
 
+// ─── Buzzer ──────────────────────────────────────────────────────────────────
+
+void beep(uint16_t freq = 2000, uint16_t ms = 120) {
+    tone(PIN_BUZZ, freq, ms);
+    delay(ms + 20);
+    noTone(PIN_BUZZ);
+}
+void beepOk()    { beep(3000, 120); delay(60);  beep(3000, 80);  }
+void beepWrite() { beep(3000, 80);  delay(40);  beep(3000, 80);  delay(40); beep(3000, 120); }
+void beepError() { beep(400, 300); }
+
 // Comandos recibidos por Serial (desde Python):
 //   w → escribir URL NDEF en el próximo tag
 //   d → modo detección (detecta tag y responde OPEN_URL:...)
@@ -87,6 +98,7 @@ void handleCommand(char cmd) {
 
 void setup() {
     Serial.begin(115200);
+    pinMode(PIN_BUZZ, OUTPUT);
     delay(500);
     rc522_init();
     uint8_t ver = rc522_read(0x37); // VersionReg — espera 0x91 o 0x92
@@ -135,14 +147,17 @@ void loop() {
     if (mode == MODE_WRITE) {
         if (writeNDEFUrl(TARGET_URL)) {
             Serial.println(F("TAG_WRITTEN:OK"));
+            beepWrite();
         } else {
             Serial.println(F("TAG_WRITTEN:ERROR"));
+            beepError();
         }
         mode = MODE_IDLE;
         Serial.println(F("STATE:idle"));
 
     } else if (mode == MODE_DETECT) {
         Serial.println(F("OPEN_URL:" TARGET_URL));
+        beepOk();
         picc_halt();
         delay(2000);
         return;

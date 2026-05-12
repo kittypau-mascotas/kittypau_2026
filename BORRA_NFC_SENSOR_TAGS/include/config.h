@@ -16,6 +16,7 @@
 #define PIN_MOSI   5  // D1  ← soft SPI (D7/GPIO13 roto)
 #define PIN_MISO  12  // D6
 #define PIN_RST    0  // D3
+#define PIN_BUZZ   4  // D2 — speaker 0.25W + R 330Ω
 
 // NTAG215
 #define NTAG215_USER_PAGE_START   4
