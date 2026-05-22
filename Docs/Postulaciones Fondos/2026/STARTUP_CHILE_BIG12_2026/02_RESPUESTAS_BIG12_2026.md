@@ -1,8 +1,44 @@
 # Kittypau — Respuestas Postulación BIG 12 (Build)
 **Application ID:** 947027
-**Última actualización:** 2026-05-11
+**Última actualización:** 2026-05-22
 **Idioma de postulación:** Español
 **Línea objetivo:** Build ($15.000.000 CLP)
+**Cierre:** 25 mayo 2026, 13:00 CLT — **quedan 3 días**
+
+---
+
+## 🚨 ACCIONES URGENTES — COPIAR AL FORMULARIO AHORA
+
+El formulario en Charly.io aún tiene los textos viejos con error de caracteres. Entrar a cada sección y reemplazar con el texto **[FORMULARIO]** de este documento.
+
+### Campos con error activo (sobre el límite — formulario no se puede enviar)
+
+| Sección | Campo | En form | Límite | Acción |
+|---|---|---|---|---|
+| Start-Up Chile Program | Q1 Valor prop Chile | 1303 | 500 | Copiar [FORMULARIO] de §5 Q1 |
+| Start-Up Chile Program | Q2 Ecosistema innovación | 917 | 300 | Copiar [FORMULARIO] de §5 Q2 |
+| Start-Up Chile Program | Q4 Actividades programa | 1113 | 600 | Copiar [FORMULARIO] de §5 Q4 |
+| Start-Up Chile Program | Q5 KPIs esperados | 485 | 300 | Copiar [FORMULARIO] de §5 Q5 |
+| Start-Up Chile Program | Q6 Cofinanciamiento | 721 | 500 | Copiar [FORMULARIO] de §5 Q6 |
+| Team | Q3 Equipo fundador | 1247 | 700 | Copiar [FORMULARIO] de §7 Q3 |
+
+### Pendientes que bloquean el envío (videos)
+
+- [ ] **Video pitch 90 seg** — YouTube/Vimeo, público, sin contraseña, fecha visible — §3 Q1
+- [ ] **Video MVP 120 seg** — demostración funcional del producto — §3 Q16
+
+### Pendientes de datos (Team Leader + Javier — formulario en alarm)
+
+- [ ] LinkedIn URL de Mauricio → §6 Q1
+- [ ] Nivel educación + institución + área de Mauricio → §6 Q2–Q4
+- [ ] Años de experiencia + industria de Mauricio → §6 Q5–Q6
+- [ ] Descripción experiencia Mauricio → §6 Q7
+- [ ] Por qué Mauricio es la persona correcta → §6 Q8
+- [ ] Dedicación actual de tiempo de Mauricio → §6 Q12
+- [ ] Todos los datos de Javier Dayne (Team Member 1) → §7 Team Member 1
+- [ ] Declarations (§8) — marcar las 6 declaraciones
+
+---
 
 > ⚠️ Las respuestas marcadas con `[CONFIRMAR]` requieren verificación o acción del equipo antes de enviar.
 > ⚠️ **Build requiere que al menos el 50% de los proyectos seleccionados sean liderados por mujeres.** IOT CHILE SpA tiene Team Leader masculino — compiten por el cupo no-femenino, que es aproximadamente el 50% restante de los lugares disponibles.
@@ -28,7 +64,10 @@ Confirmar email de confirmación = mismo.
 → **No**
 
 **6. ¿Has aplicado antes a Start-Up Chile?**
-→ **No** (primera vez)
+→ **Yes, with a different idea**
+
+**8. ¿Cómo ha cambiado o evolucionado tu proyecto desde la última postulación?** *(límite: 500 chars — actual: 358/500)*
+> Dejamos de ser un prototipo y convertimos nuestro producto en un MVP, que está actualmente funcionando con una mascota de prueba y agregar otras, para mejorar nuestro programa de early adopter. Llevamos aproximadamente 3 meses de datos y análisis. Concretamos nuestra definición de negocio y hemos realizado pequeñas entrevistas para validar nuestro modelo.
 
 **7. Términos y Condiciones**
 → **Acepto** — leí y entendí los Términos y Condiciones.
@@ -43,11 +82,9 @@ Confirmar email de confirmación = mismo.
 
 *(7 palabras exactas — ingresado y confirmado en el formulario)*
 
-**2. Descripción pública** *(se publicará si son aceptados)*
+**2. Descripción pública** *(se publicará si son aceptados — 791/1000 ✅)*
 
 > Kittypau es una plataforma AIoT de monitoreo preventivo para mascotas domésticas. A través de un plato inteligente conectado (hardware KPCL), capturamos en tiempo real el consumo de alimento, agua y datos del entorno de gatos y perros. Nuestros modelos de machine learning en la nube verifican ciclos de hábitos, detectan anomalías en el comportamiento alimentario y generan análisis diarios por mascota, antes de que cualquier cambio se convierta en un problema de salud visible. El dueño accede desde su cuenta —web o app— a tendencias históricas, alertas personalizadas y reportes que lo ayudan a tomar mejores decisiones y practicar una tenencia más responsable. Nuestro modelo combina venta de hardware con suscripción SaaS de analítica avanzada, escalable a LATAM y mercados globales.
-
-*(~765/1000 caracteres — actualizado y listo para reemplazar en el formulario)*
 
 **3. Objetivo principal del proyecto durante el programa**
 
@@ -113,49 +150,39 @@ Confirmar email de confirmación = mismo.
 - 65–80 seg: *"Somos Javier y Mauricio. 15 años en automatización industrial + 6 años en data science. Hemos construido el hardware, el firmware, la plataforma y el modelo de ML."*
 - 80–90 seg: *"Postulamos a BIG12 para validar con nuestros primeros 30 clientes. Únete a Kittypau."*
 
-**2. ¿Qué problema está resolviendo tu startup?**
+**2. ¿Qué problema está resolviendo tu startup?** *(584/600 ✅ — texto en formulario)*
 
-> Los dueños de mascotas domésticas (perros y gatos) no tienen visibilidad objetiva sobre los hábitos reales de alimentación e hidratación de sus animales. Los trastornos alimenticios en mascotas —obesidad, anorexia, cambios de comportamiento asociados a enfermedad— se detectan típicamente cuando ya hay sintomatología clínica visible, momento en que el tratamiento es más costoso y la calidad de vida del animal ya se vio afectada.
->
-> Este es un problema global: en Chile existen aproximadamente 4,8 millones de mascotas domésticas (perros y gatos), con penetración creciente en hogares urbanos de ingresos medios y altos. A nivel global, el mercado de salud animal de compañía supera los USD 40.000 millones anuales, con una tasa de crecimiento del 6% anual. Las soluciones actuales (comederos automáticos, apps de recordatorio) automatizan la entrega de alimento, pero no capturan ni analizan lo que el animal realmente consume. No existe en el mercado latinoamericano una solución que combine hardware de medición con analítica longitudinal y alertas preventivas basadas en patrones de comportamiento.
+> Los dueños de mascotas domésticas, a nivel global, no tienen visibilidad objetiva sobre los hábitos de alimentación e hidratación de sus mascotas. Los trastornos alimenticios —obesidad, anorexia, cambios de comportamiento asociados a enfermedad— se detectan cuando ya hay sintomatología clínica visible, momento en que el tratamiento es más costoso y la calidad de vida de la mascota, y su familia ya se vio afectada. Esta es la forma pasiva en que se aborda actualmente este problema por parte de organizaciones o dueños de mascotas, no existe nada que registre este comportamiento.
 
-**3. ¿Qué es tu producto o servicio y cómo resuelve el problema?**
+**3. ¿Qué es tu producto o servicio y cómo resuelve el problema?** *(497/500 ✅ — texto en formulario)*
 
-> Kittypau es una plataforma AIoT (Artificial Intelligence of Things) compuesta por tres capas integradas:
->
-> **1. Hardware KPCL (Bowl inteligente):** Dispositivo IoT basado en ESP32-C3 con sensor de celdas de carga de alta precisión (±0,1g), sensor ambiental (temperatura/humedad DHT22) y conectividad WiFi. Mide en tiempo real el peso del alimento y agua disponibles. El firmware desarrollado en C++ (ESP-IDF/Arduino) gestiona el muestreo continuo, filtrado de ruido, y transmisión vía MQTT. BOM: USD 15,70; precio de venta: USD 50.
->
-> **2. Bridge local (Raspberry Pi / servidor):** Middleware en Python/Node.js que suscribe a los mensajes MQTT del dispositivo, aplica normalización (log10) y los persiste en Supabase (PostgreSQL). Garantiza operación offline y sincronización posterior.
->
-> **3. Plataforma cloud + IA:** Backend en Next.js/Supabase con API REST. Los datos se procesan mediante modelos de machine learning (LightGBM, en evaluación LSTM/GRU) entrenados con sesiones de alimentación etiquetadas. Los modelos detectan anomalías en patrones de consumo, estiman inicio y fin de sesiones de alimentación, y generan alertas personalizadas. El usuario accede vía dashboard web con curvas de peso, tendencias históricas, y reportes exportables para su veterinario.
->
-> **Innovación clave:** No es automatización, es interpretación. Cualquier comedero puede pesar alimento; Kittypau lo entiende y lo convierte en inteligencia accionable sobre la salud del animal.
+> El producto es un plato inteligente AIoT vinculado a una plataforma web+app de analítica con IA para resolver con alarmas y dashboards la falta de visión de hábitos de mascotas. Innovamos al transformar la simple automatización en análisis predictivo que integra variables ambientales. Generamos valor mediante la detección temprana de patologías, reduciendo costos médicos y estrés, asegurando una vida más saludable mediante un cuidado activo y proactivo, una nueva forma de tenencia responsable.
 
 **4. Industria principal**
-→ **Tecnología** > **Hardware / IoT** (o Pet Tech / AgriFood Tech según las opciones del formulario)
+→ **Health & Biotech** *(seleccionado en formulario)*
 
-**5. Justificación de industria y sub-industria**
+**5. Justificación de industria y sub-industria** *(254/300 ✅ — texto en formulario)*
 
-> Kittypau opera en la intersección de IoT Hardware, Data Science y Pet Health. El núcleo tecnológico es un dispositivo IoT de medición de precisión (hardware + firmware embebido) combinado con una capa de analytics basada en machine learning. La categoría Pet Tech / Consumer IoT es la más precisa: desarrollamos hardware de consumo con conectividad y procesamiento de datos en la nube, con aplicación directa en salud y bienestar animal.
+> Kittypau opera con analítica de datos para la salud. Utilizamos sensores de alta precisión y Machine Learning para detectar cambios en hábitos nutricionales, permitiendo el diagnóstico preventivo de patologías y mejorando el bienestar de las mascotas.
 
 **6. Industria secundaria (opcional)**
-→ **Salud** > **Health Tech / Telemedicina veterinaria**
+→ **Lifestyle & Entertainment** > **Pets** *(seleccionado en formulario)*
 
 **7. Tecnología principal del producto o servicio**
-→ **IoT (Internet of Things)** > **Hardware + Edge Computing + Machine Learning**
+→ **Artificial Intelligence (AI) & Machine Learning (ML)** > **AI-Powered Automation** *(seleccionado en formulario)*
 
-**8. Explica la ciencia y/o tecnología detrás de la solución. Sé preciso y detallado.**
+**8. Explica la ciencia y/o tecnología detrás de la solución.** *(448/500 ✅ — texto en formulario)*
 
-> El dispositivo KPCL incorpora celdas de carga piezoeléctricas conectadas a un módulo HX711 (ADC de 24 bits) que entrega resolución de ±0,1 gramos, suficiente para detectar consumos individuales de agua y alimento en mascotas pequeñas y medianas. El microcontrolador ESP32-C3 (RISC-V, 160 MHz, 400 KB SRAM) ejecuta el firmware en C++ (framework ESP-IDF + Arduino HAL) que gestiona: (1) muestreo continuo a 10 Hz con promediado adaptativo para reducción de ruido mecánico; (2) protocolo MQTT sobre WiFi con QoS 1 para transmisión confiable; (3) detección de eventos locales (presencia/ausencia del plato) antes del envío al servidor.
->
-> En el servidor, un bridge en Python/Node.js suscribe a los tópicos MQTT del dispositivo (HiveMQ Cloud) y almacena los mensajes en Supabase (PostgreSQL) con timestamps UTC y metadatos de contexto ambiental (temperatura, humedad). Los datos brutos se transforman mediante una pipeline de feature engineering: normalización log10 de pesos, cálculo de velocidades de cambio (delta weight), codificación cíclica de hora/día, y ventanas temporales de 10 minutos para detección de sesiones.
->
-> La capa de ML está basada en LightGBM para la detección de eventos de alimentación e hidratación (clasificación de 3 clases: baseline, consumo activo, nuevo plateau). Hemos completado 3 experimentos de entrenamiento con 49 sesiones etiquetadas manualmente del dispositivo KPCL0034/KPCL0036. La siguiente etapa es extender el dataset con KPCL0051 (usuario real activo) y avanzar hacia modelos secuenciales (LSTM/GRU) para capturar dependencias temporales de largo plazo.
+> Kittypau utiliza hardware AIoT con sensores (peso, ambiente: temp, hum, luz) y un microprocesador. El firmware aplica edge intelligence y transmite vía MQTT. Procesamos datos en Supabase mediante feature engineering cíclico y temporal. Validamos la tecnología con sesiones reales de alimentación etiquetadas manualmente. La IA reside en modelos LightGBM, primeras pruebas, que clasifican eventos de ingesta, servido y detectan anomalías (a mejorar).
 
 **9. ¿En qué fase de desarrollo se encuentra tu startup?**
-→ **Prototype / Early MVP** — Tenemos un prototipo funcional (hardware KPCL + plataforma cloud) validado en entorno real con un usuario piloto activo (KPCL0051, Santiago). El producto está en fase de validación técnica y primeros pasos de validación comercial. Sin ventas facturadas formalmente; el objetivo del programa es ejecutar las primeras ventas reales y alcanzar product-market fit.
+→ **MVP** *(seleccionado en formulario)*
 
-> *Nota: Build permite hasta 1 año de desarrollo comercial. Kittypau inició desarrollo comercial en ene 2026 — menos de 6 meses al momento de postular. Encaja en Build sin forzar la narrativa.*
+**12. ¿Cuándo iniciaste la fase de I+D?**
+→ **01/02/2026** ✅
+
+**13. TRL actual**
+→ **TRL 5: Technology validated in relevant environment** ✅
 
 **10. ¿Qué categoría describe mejor la naturaleza de la innovación de tu startup?**
 → **Hybrid** — Combinamos hardware de consumo (IoT embebido) con R&D en machine learning aplicado a behavioral analytics. El núcleo de valor no es solo tecnología establecida (APIs, cloud) sino la investigación activa en modelos de detección de patrones alimentarios que no existe en el mercado.
@@ -177,12 +204,18 @@ Confirmar email de confirmación = mismo.
 
 **1. ¿Cuál es tu mercado objetivo? TAM, SAM, SOM en USD** *(límite: 500 chars)*
 
-**[FORMULARIO — ~480 chars]:**
-> Dueños urbanos de mascotas 25–45 años, ingresos medios-altos, Santiago. Canal secundario: clínicas y pet shops (B2B2C).
+**[FORMULARIO — ~489 chars ✅]:**
+> **Target:** Dueños urbanos de mascotas (25–60 años, NSE ABC1-C2) proactivos en salud preventiva y veterinarias (B2B2C).
 >
-> TAM: USD 20.000M (mercado global Pet Tech IoT, CAGR 18%, proyección 2030).
-> SAM: USD 240M (segmento digital IoT mascotas en LATAM, ~3% del mercado pet care latinoamericano).
-> SOM: USD 525K–1.050K (captura 0,5–1% segmento objetivo Chile en 3 años; 3.600–7.200 usuarios).
+> **TAM:** USD 17.650M (Pet Tech global, 2025; CAGR 13,16% — Fortune Business Insights).
+> **SAM:** USD 263,8M (pet wearables e IoT LATAM, 2025; CAGR 16,2% — Grand View Research).
+> **SOM:** USD 696K–1.160K (Chile, 3 años). De ~2M mascotas urbanas ABC1-C2, capturar <0,5% = 4.700–8.000 usuarios a USD 146/año. +LATAM Año 3: +10K usuarios → SOM total USD 2,1M–3,5M.
+
+**Fuentes:**
+- [Fortune Business Insights — Pet Tech Market](https://www.fortunebusinessinsights.com/es/pet-tech-market-105924) → TAM USD 17.650M (2025), CAGR 13,16%
+- [Grand View Research — Latin America Pet Wearable Market](https://www.grandviewresearch.com/horizon/outlook/pet-wearable-market/latin-america) → SAM USD 263,8M (2025), CAGR 16,2%
+- [Gobierno de Chile / UC Chile — Estudio población animal](https://www.gob.cl/noticias/primer-estudio-de-poblacion-animal-en-chile-revela-que-hay-12-millones-de-perros-y-gatos-con-duenos-y-4-millones-sin-supervision/) → 12,48M mascotas con dueño en Chile
+- [Expert Market Research — Chile Pet Care Market](https://www.expertmarketresearch.com/reports/chile-pet-care-market) → mercado pet care Chile USD 1.942M (2025)
 
 **2. ¿Quiénes son tus competidores o sustitutos?** *(límite: 500 chars)*
 
@@ -204,8 +237,8 @@ Confirmar email de confirmación = mismo.
 
 **4. ¿Por qué el mercado chileno es importante para el crecimiento de tu startup?** *(límite: 500 chars)*
 
-**[FORMULARIO — ~430 chars]:**
-> Chile como plataforma ideal: (1) Santiago concentra 1,9M mascotas con >90% penetración smartphones. (2) Gasto per cápita en mascotas más alto de LATAM (Euromonitor 2024). (3) Ecosistema emprendedor: Start-Up Chile, CORFO, Wayra. (4) ~2.000 clínicas veterinarias en RM como canal B2B2C. (5) Fundadores en Santiago, primer piloto chileno activo. Ruta probada hacia México, Colombia y Argentina.
+**[FORMULARIO — ~448 chars ✅]:**
+> Chile como plataforma ideal: (1) Santiago concentra ~5M mascotas (40% del país); 70% hogares chilenos tienen mascotas (Kantar 2025). (2) Mercado pet care Chile USD 1.942M (2025), liderando sofisticación en LATAM (Expert Market Research). (3) Ecosistema: Start-Up Chile, CORFO, Wayra. (4) 1.159 tiendas de mascotas en RM, duplicadas en 5 años (Emol 2025). (5) Fundadores en Santiago, primer piloto activo. Ruta hacia México y Colombia.
 
 **5. ¿Cuál es el tipo principal de modelo de negocio que persigues?**
 → ✅ **B2C** (primario). Canal secundario B2B2C vía clínicas veterinarias y tiendas de mascotas.
@@ -297,14 +330,14 @@ Confirmar email de confirmación = mismo.
 
 **1. ¿Cuál es la propuesta de valor específica de tu tecnología para el mercado chileno?** *(límite: 500 chars)*
 
-**[FORMULARIO — ~490 chars]:**
-> Chile lidera gasto per cápita en mascotas en LATAM. El dueño urbano gasta USD 80–120/mes pero carece de herramientas digitales de monitoreo preventivo.
+**[FORMULARIO — ~487 chars ✅]:**
+> Chile concentra el mayor gasto per cápita en mascotas de LATAM y >85% urbanización. El dueño gasta USD 80–120/mes pero carece de herramientas digitales de monitoreo preventivo.
 >
-> Dolores concretos: (1) Detección tardía: enfermedades felinas (insuficiencia renal, diabetes) se manifiestan primero como cambio en consumo; Kittypau lo detecta antes que el ojo humano. (2) Costo de urgencia: CLP 80K–150K vs CLP 35K–50K en consulta programada. (3) Mercado 100% importado: sin solución local con soporte en español y precio accesible.
+> Dolores concretos: (1) Detección tardía: cambios en consumo son la primera señal de insuficiencia renal o diabetes; Kittypau los detecta antes. (2) Costo de urgencia: CLP 80K–150K vs CLP 35K–50K en consulta programada. (3) Mercado 100% importado: sin solución local con soporte en español y precio accesible.
 
 **2. ¿Cómo mejorará tu presencia en el programa el ecosistema de innovación chileno?** *(límite: 300 chars)*
 
-**[FORMULARIO — ~280 chars]:**
+**[FORMULARIO — ~283 chars ✅]:**
 > (1) Primer dispositivo IoT de medición de consumo animal desarrollado íntegramente en Chile (HW+FW+SW+ML). (2) Dataset único de hábitos alimentarios de mascotas chilenas, valioso para universidades veterinarias y SAG. (3) Contratación de al menos 1 ingeniero junior chileno en Año 1.
 
 **3. ¿Planeas establecer tu startup en Chile?**
@@ -312,32 +345,28 @@ Confirmar email de confirmación = mismo.
 
 **4. ¿Qué actividades principales planeas realizar durante el programa?** *(límite: 600 chars)*
 
-**[FORMULARIO — ~570 chars]:**
+**[FORMULARIO — ~561 chars ✅]:**
 > 1. Validación comercial: vender, instalar y hacer onboarding de 30 dispositivos KPCL en hogares de Santiago; feedback estructurado (NPS, entrevistas, métricas de uso).
-> 2. Producto v2 (KPCL): setup BLE para WiFi, nuevo diseño carcasa 3B apto para manufactura en serie.
+> 2. Producto v2: setup BLE para WiFi, nuevo diseño carcasa 3B apto para manufactura en serie.
 > 3. ML v2: ampliar dataset a 500+ sesiones, entrenar LightGBM+LSTM, alcanzar F1 ≥0,80, implementar en producción.
-> 4. Canal B2B2C veterinario: firmar 2–3 acuerdos con clínicas RM como canal de distribución.
+> 4. Canal B2B2C veterinario: firmar 2–3 acuerdos con clínicas RM como canal de distribución y validación clínica.
 > 5. Ronda Seed: cap table, data room, pitch deck con métricas del programa.
 
 **5. ¿Cuáles son los resultados cuantificables esperados al final del programa? (mínimo 3 KPIs)** *(límite: 300 chars)*
 
-> *Build dura 4 meses (vs 6 de Ignite) — KPIs calibrados a ese plazo.*
-
-**[FORMULARIO — ~270 chars]:**
-> 1. 15 unidades KPCL vendidas (primera venta facturada en mes 1).
-> 2. 8 usuarios activos con datos en producción >30 días.
-> 3. TRL 6 alcanzado (sistema demostrado en entorno relevante con múltiples usuarios).
-> 4. 1 acuerdo B2B2C firmado con clínica veterinaria RM.
-> 5. ML v1 en producción con detección de eventos validada.
+**[FORMULARIO — ~254 chars ✅]:**
+> 1. 30 unidades KPCL vendidas (USD 1.500 en revenue).
+> 2. 15 usuarios premium activos (MRR USD 120).
+> 3. TRL 7 alcanzado (operación continua >30 días/dispositivo).
+> 4. 2 acuerdos B2B2C firmados con clínicas o pet shops RM.
+> 5. ML v2 en producción, F1 ≥0,75.
 
 **6. ¿Cómo financiarás el porcentaje de cofinanciamiento requerido?** *(límite: 500 chars)*
 
-> *Build no exige cofinanciamiento mínimo obligatorio como porcentaje fijo, pero sí requiere declararlo. Referirse a los T&C del programa para el cálculo exacto.*
-
-**[FORMULARIO — ~470 chars]:**
-> Fondos propios: Javier Dayne y Mauricio Cárcamo han aportado USD 304 en efectivo y +600 hrs de trabajo (valor de mercado USD 30K–50K). Capacidad adicional: CLP 500K–1.000K en efectivo durante el programa.
+**[FORMULARIO — ~456 chars ✅]:**
+> Fondos propios: Javier Dayne y Mauricio Cárcamo han invertido USD 304 en efectivo y +600 hrs de trabajo (valor de mercado USD 30K–50K). Capacidad adicional: CLP 500K–1.000K en efectivo durante el programa.
 >
-> Ingresos del programa: primeras ventas de hardware (desde mes 1) cubrirán costos de manufactura incremental.
+> Ingresos del programa: primeras ventas de hardware (desde mes 2) cubrirán costos de manufactura incremental.
 >
 > Postulación paralela CORFO Semilla Inicia 2026 (cierre 29-may): si adjudicada, hasta $15M CLP adicionales complementan el cofinanciamiento.
 
@@ -438,12 +467,12 @@ Confirmar email de confirmación = mismo.
 
 **3. ¿Por qué tu equipo fundador es capaz de hacer exitosa tu startup?** *(límite: 700 chars)*
 
-**[FORMULARIO — ~690 chars]:**
-> Javier Dayne (CTO): 15+ años en automatización industrial (DCS, SCADA, IIoT, MQTT) en compañías como Emerson Electric. Diseñó e implementó el hardware KPCL completo (PCB, firmware ESP32-C3, protocolo MQTT, bridge) desde cero y en producción real. Su experiencia industrial es exactamente la que se necesita para hardware IoT confiable en entornos domésticos.
+**[FORMULARIO — ~620 chars ✅ — COPIAR SIN LOS `>`]:**
+> Javier Dayne (CTO): 15+ años en automatización industrial (DCS, SCADA, IIoT, MQTT) en proyectos para Emerson Electric. Diseñó e implementó el hardware KPCL completo: PCB, firmware C++ para ESP32-C3, sensores HX711/DHT22, protocolo MQTT y bridge Python, desde cero y en producción real con usuario activo.
 >
-> Mauricio Cárcamo (CEO): 7 años en data science, ML y desarrollo de producto digital. Lidera el dashboard (React/Next.js), la pipeline de analytics (Python, LightGBM) y la estrategia de negocio. Formación en sociología + data science le da perspectiva única sobre el comportamiento del usuario.
+> Mauricio Cárcamo (CEO): 7 años en data science y ML. Lidera el dashboard (React/Next.js), pipeline analytics (Python, LightGBM) y la estrategia de negocio. Formación sociología + DS le da perspectiva única para traducir datos en valor de usuario.
 >
-> El equipo cubre hardware, datos y negocio sin necesitar contratar competencias core; están desde el día uno.
+> El equipo cubre hardware, datos y negocio sin contratar competencias core; juntos desde el día uno.
 
 **4. ¿Cuántos empleados tiene la startup, excluyendo fundadores?**
 → ✅ **0** — ingresado en formulario.
@@ -515,48 +544,46 @@ Confirmar email de confirmación = mismo.
 ## CHECKLIST PRE-ENVÍO
 
 ### Bloqueantes críticos (sin esto no se puede enviar)
-- [ ] `[CRÍTICO]` Video pitch 90 segundos subido a YouTube/Vimeo (público, sin contraseña, fecha visible)
-- [ ] `[CRÍTICO]` **Código postal (ZIP) de Suárez Mujica 891, Santiago** — campo requerido con error en formulario (sección 23)
-- [ ] `[CRÍTICO]` Confirmar fecha de inicio del desarrollo comercial (instalación KPCL0051 — sección 4 pregunta 7)
-- [ ] `[CRÍTICO]` Subir foto de cédula de identidad de Mauricio (ambos lados en una sola página — sección 26)
-- [ ] `[CRÍTICO]` Ingresar fecha de vencimiento de la cédula de Mauricio (sección 27)
+- [ ] `[CRÍTICO]` **Video pitch 90 segundos** subido a YouTube/Vimeo (público, sin contraseña, fecha visible) — Sección 3 P1
+- [ ] `[CRÍTICO]` **Video MVP 120 segundos** — requerido para Ignite (demostración funcional, no pitch) — Sección 3 P16
+- [ ] `[CRÍTICO]` **Sección 6 Team Leader completa** — todos los campos están vacíos en el formulario
+- [ ] `[CRÍTICO]` **Sección 5 campos pasados de caracteres** — copiar las versiones [FORMULARIO] de Q1, Q2, Q4, Q5, Q6 de este documento
 
 ### Confirmados ✅
 - [x] Email de startup: mauro.carcamo89@gmail.com
 - [x] Fuente: Corfo → Website
+- [x] Aplicó antes: Sí, con diferente idea
 - [x] RUT Mauricio: 17402237-2
 - [x] Teléfono: +56990381919
-- [x] Dirección: Suárez Mujica 891, Santiago
-- [x] Fecha de nacimiento: 05/10/1989
+- [x] Dirección: Suárez Mujica 891, Santiago — ZIP: 7750000
+- [x] Fecha de nacimiento: 05/10/1989 — Vencimiento cédula: 05/10/2029
+- [x] Cédula subida al formulario ✅
 - [x] País de residencia: Chile
-- [x] Tipo entidad: Persona Jurídica Chilena (IOT CHILE SpA)
 - [x] Empresa liderada por mujer: No
 - [x] Empresa incorporada fuera de Chile: No
-- [x] Concept pitch (7 palabras): "Plataforma AIoT de monitoreo contextual para mascotas"
-- [x] Descripción pública: ingresada (629/1000 chars)
-- [x] Objetivo del programa: ingresado (439/500 chars)
-- [x] Website: https://kittypau.vercel.app/
-- [x] LinkedIn empresa: https://www.linkedin.com/in/kittypau-mascotas/
-- [x] Instagram: https://www.instagram.com/kittypau.mascotas/
-- [x] YouTube: https://www.youtube.com/channel/UCYrN8v3Lb5n1B0L2QeOEcxA
+- [x] Concept pitch (7 palabras): confirmado
+- [x] Descripción pública: 791/1000 ✅
+- [x] Objetivo del programa: 439/500 ✅
+- [x] Website, LinkedIn, Instagram, YouTube: confirmados
 - [x] Regiones de impacto: All regions
-- [x] ODS seleccionados: 3, 9, 11, 12
-- [x] Sección 4 Market & Business: respuestas reescritas al límite de caracteres de cada campo
+- [x] ODS: 3, 9, 11, 12
+- [x] Sección 3 Startup Description: P2–P15 dentro de límite ✅
+- [x] Sección 4 Market & Business: todos los campos dentro de límite ✅
+- [x] Fecha inicio comercial: 01/02/2026
 - [x] Modelo de negocio: B2C (primario)
 - [x] Ventas actuales: No
-- [x] Expansión internacional: Sí (Colombia y México, Año 3)
+- [x] Expansión internacional: Sí (México y Colombia)
 
 ### Pendientes de confirmar (no bloqueantes inmediatos)
-- [ ] `[CONFIRMAR]` LinkedIn de Mauricio Cárcamo (URL pública) — sección Team Leader
+- [ ] `[CONFIRMAR]` LinkedIn de Mauricio Cárcamo (URL pública) — Sección 6 P1
 - [ ] `[CONFIRMAR]` LinkedIn de Javier Dayne (URL pública) — Team Member 1
-- [ ] `[CONFIRMAR]` Dedicación actual de Mauricio (full-time o parcial)
+- [ ] `[CONFIRMAR]` Dedicación actual de Mauricio (full-time o parcial) — Sección 6 P12
 - [ ] `[CONFIRMAR]` Dedicación actual de Javier (full-time o parcial) — Team Member 1
 - [ ] `[CONFIRMAR]` Fecha de nacimiento de Javier — Team Member 1
 - [ ] `[CONFIRMAR]` País de nacimiento de Javier — Team Member 1
 - [ ] `[CONFIRMAR]` Teléfono de Javier en formato +56XXXXXXXXX — Team Member 1
 - [ ] `[CONFIRMAR]` Mentores formales: ¿hay alguien registrado? (Sí/No en el formulario)
-- [ ] `[CONFIRMAR]` Verificar si la SpA cumple requisito SII < 12 meses (inicio actividades posterior a mayo 2025)
-- [ ] `[OPCIONAL]` Carta de recomendación (usuario KPCL0051 u otro — requiere nombre, empresa, cargo, email, LinkedIn, carta firmada)
+- [ ] `[OPCIONAL]` Carta de recomendación (usuario KPCL0051 u otro)
 
 **Fecha límite:** 25 de mayo 2026, 13:00 hrs
 
