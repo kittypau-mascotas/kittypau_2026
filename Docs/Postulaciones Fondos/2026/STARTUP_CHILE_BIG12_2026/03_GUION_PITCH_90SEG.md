@@ -44,7 +44,7 @@
 > Nadie los registra objetivamente.
 > Son 500 millones de mascotas en el mundo —
 > un mercado de USD 17 mil millones en pet tech
-> que todavía no tiene esta solución."
+> que sustenta esta solución". 
 
 ---
 
@@ -52,11 +52,9 @@
 
 **Mostrar el bowl KPCL físico + plano del dashboard en pantalla / celular:**
 
-> "Kittypau es un plato inteligente con sensores de precisión.
-> Mide en tiempo real cuánto come y bebe cada mascota.
-> Esos datos llegan a nuestra plataforma,
-> donde la inteligencia artificial detecta cambios en los patrones de consumo
-> y te avisa antes de que aparezcan síntomas.
+> "Somos Kittypau, una plataforma AIoT.
+> Con IA detectamos cambios en los hábitos de consumo
+> y te alertamos antes de que aparezcan síntomas.
 > Tú accedes desde web o app
 > a tendencias históricas, alertas personalizadas
 > y reportes listos para tu veterinario."
@@ -70,10 +68,10 @@
 **A cámara, tono directo:**
 
 > "Somos el único producto en LATAM
-> con medición de precisión, inteligencia artificial
+> con medición precisa, inteligencia artificial
 > y datos ambientales integrados.
 > No dispensamos comida — interpretamos el comportamiento.
-> USD 50 el dispositivo. USD 8 al mes por mascota."
+> El dispositivo cuesta USD 50. La suscripción, USD 8 al mes."
 
 ---
 
@@ -82,13 +80,13 @@
 **Los dos fundadores en cámara, habla cada uno:**
 
 **Javier:**
-> "Soy Javier, CTO.
-> 15 años en automatización industrial —
+> "Soy Javier Dayne, CTO de Kittypau
+> Tengo 15 años en automatización industrial —
 > diseñé el hardware, el firmware y todo el stack de conectividad."
 
 **Mauricio:**
-> "Soy Mauricio, CEO.
-> 7 años en data science y machine learning —
+> "Soy Mauricio Carcamo, CEO.
+> Tengo 7 años en data science y machine learning —
 > lidero la plataforma, los modelos de IA y la estrategia."
 
 **Juntos o uno de los dos:**
