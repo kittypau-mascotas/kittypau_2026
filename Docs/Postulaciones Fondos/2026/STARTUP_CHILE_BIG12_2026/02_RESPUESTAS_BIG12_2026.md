@@ -142,13 +142,15 @@ Confirmar email de confirmación = mismo.
 
 **1. Video pitch online (90 segundos)**
 → `[PENDIENTE]` El video debe subirse a YouTube (no Shorts) o Vimeo con fecha de carga visible, sin contraseña.
+→ **Guión completo con timing:** ver [03_GUION_PITCH_90SEG.md](03_GUION_PITCH_90SEG.md)
 
-**Guión sugerido para el video (90 seg):**
-- 0–15 seg: *"¿Sabes realmente cuánto come y bebe tu gato o perro? La mayoría de los dueños no lo sabe hasta que hay un problema de salud."*
-- 15–40 seg: Mostrar el bowl KPCL físico + app en vivo con datos reales de KPCL0051
-- 40–65 seg: *"Kittypau captura cada gramo consumido, lo analiza con IA y te avisa antes de que sea tarde."* Demo de alerta en dashboard.
-- 65–80 seg: *"Somos Javier y Mauricio. 15 años en automatización industrial + 6 años en data science. Hemos construido el hardware, el firmware, la plataforma y el modelo de ML."*
-- 80–90 seg: *"Postulamos a BIG12 para validar con nuestros primeros 30 clientes. Únete a Kittypau."*
+**Resumen del guión (90 seg, ~208 palabras, 135 pal/min):**
+- 0–10 seg: Hook — *"¿Sabes cuánto comió tu gato hoy? La mayoría no lo sabe hasta que es tarde."*
+- 10–25 seg: Escala — 500M mascotas, USD 17B mercado, nadie registra el comportamiento
+- 25–55 seg: Solución — bowl inteligente + IA + dashboard + alertas (mostrar KPCL0051 en vivo)
+- 55–68 seg: Diferencial — único en LATAM, medición + IA + ambiente, USD 50 + USD 8/mes
+- 68–83 seg: Equipo — Javier (CTO, 15 años automatización) + Mauricio (CEO, 7 años DS/ML), en producción
+- 83–90 seg: CTA — *"Postulamos a BIG12 para llegar a nuestros primeros 30 clientes. Kittypau — cuida lo que no puedes ver."*
 
 **2. ¿Qué problema está resolviendo tu startup?** *(584/600 ✅ — texto en formulario)*
 
