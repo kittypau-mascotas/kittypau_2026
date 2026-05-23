@@ -28,9 +28,8 @@
 
 **Javier o Mauricio a cámara, con el bowl KPCL visible en mano o en mesa:**
 
-> "¿Sabes cuánto comió tu gato hoy? ¿Cuánto bebió?
-> La mayoría de los dueños no lo sabe...
-> hasta que el veterinario les dice que ya es tarde."
+> "¿Sabes cuánto comió tu gato hoy? ¿Cuánto tomó tu perro?
+> Hasta ahora los dueños no lo saben con precisión..."
 
 *Pausa de 1 segundo. Dejar que la pregunta aterrice.*
 
@@ -40,11 +39,11 @@
 
 **Mismo plano o corte a infografía mínima / texto en pantalla:**
 
-> "Los cambios en la alimentación son la primera señal de diabetes, insuficiencia renal, obesidad en mascotas.
-> Nadie los registra objetivamente.
-> Son 500 millones de mascotas en el mundo —
+> "Los cambios en la alimentación son la primera señal de obesidad y otras enfermedades en las mascotas.
+> Nadie los registra objetivamente, no existe producto.
+> Son 500 millones de mascotas en el mundo y
 > un mercado de USD 17 mil millones en pet tech
-> que sustenta esta solución". 
+> que sustenta esta solución".
 
 ---
 
@@ -52,12 +51,9 @@
 
 **Mostrar el bowl KPCL físico + plano del dashboard en pantalla / celular:**
 
-> "Somos Kittypau, una plataforma AIoT.
-> Con IA detectamos cambios en los hábitos de consumo
-> y te alertamos antes de que aparezcan síntomas.
-> Tú accedes desde web o app
-> a tendencias históricas, alertas personalizadas
-> y reportes listos para tu veterinario."
+> "Somos Kittypau, una plataforma AIoT que analiza el comportamiento alimenticio de tu mascota.
+> Detectamos cambios en los hábitos de consumo y te alertamos ante anomalias.
+> Tú accedes desde web o app a tendencias históricas, alertas personalizadas y reportes listos para tu veterinario."
 
 *Mostrar pantalla del dashboard con datos reales de KPCL0051 mientras se habla.*
 
@@ -67,11 +63,9 @@
 
 **A cámara, tono directo:**
 
-> "Somos el único producto en LATAM
-> con medición precisa, inteligencia artificial
-> y datos ambientales integrados.
-> No dispensamos comida — interpretamos el comportamiento.
-> El dispositivo cuesta USD 50. La suscripción, USD 8 al mes."
+> "Somos el único producto en LATAM con medición precisa, inteligencia artificial y datos ambientales integrados.
+> Por ahora no dispensamos comida — interpretamos el comportamiento.
+> El precio del dispositivo va desde USD 50. La suscripción, USD 8 al mes."
 
 ---
 
@@ -81,7 +75,7 @@
 
 **Javier:**
 > "Soy Javier Dayne, CTO de Kittypau
-> Tengo 15 años en automatización industrial —
+> Tengo 15 años de experiencia en automatización industrial —
 > diseñé el hardware, el firmware y todo el stack de conectividad."
 
 **Mauricio:**
@@ -90,7 +84,7 @@
 > lidero la plataforma, los modelos de IA y la estrategia."
 
 **Juntos o uno de los dos:**
-> "Construimos todo desde cero. Está en producción, con un usuario real, en Santiago."
+> "Construimos todo desde cero. Está en producción, con un usuario real en Santiago."
 
 ---
 
@@ -98,7 +92,7 @@
 
 **A cámara, confiados:**
 
-> "Postulamos a BIG12 para llegar a nuestros primeros 30 clientes.
+> "Postulamos a fondo startuplab para llegar a nuestros primeros 30 clientes.
 > Kittypau — cuida lo que no puedes ver."
 
 ---
