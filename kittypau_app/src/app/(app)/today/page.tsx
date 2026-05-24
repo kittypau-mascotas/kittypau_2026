@@ -3682,7 +3682,7 @@ export default function TodayPage() {
     return null;
   }
 
-  if (accountType === "client" || accountType === "admin") {
+  if (accountType === "admin") {
     return null;
   }
 
