@@ -1020,9 +1020,7 @@ export default function TodayPage() {
             ? payload.account_type
             : "client";
         setAccountType(nextType);
-        if (nextType === "client") {
-          router.replace("/inicio");
-        } else if (nextType === "admin") {
+        if (nextType === "admin") {
           router.replace("/admin");
         }
       } catch {
@@ -3691,6 +3689,43 @@ export default function TodayPage() {
   return (
     <div className="min-h-screen px-4 pb-10 pt-4 md:px-6 md:pt-4">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+        {accountType === "client" && (() => {
+          const hasPet = state.pets.length > 0;
+          const hasDevice = state.devices.some((d) => d.pet_id != null);
+          const steps = [
+            !hasPet && {
+              href: "/registro",
+              label: "Agrega tu mascota",
+              desc: "Ve a Registrar para crear el perfil de tu gato.",
+            },
+            hasPet && !hasDevice && {
+              href: "/bowl",
+              label: "Vincula un plato",
+              desc: "En la pestaña Plato puedes conectar tu dispensador.",
+            },
+          ].filter(Boolean) as { href: string; label: string; desc: string }[];
+          if (steps.length === 0) return null;
+          return (
+            <div className="surface-card freeform-rise flex flex-col gap-3 px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wide opacity-50">
+                Completa tu configuración
+              </p>
+              {steps.map((s) => (
+                <a
+                  key={s.href}
+                  href={s.href}
+                  className="flex items-start gap-3 rounded-lg border border-dashed border-current/20 px-4 py-3 hover:bg-white/5"
+                >
+                  <span className="mt-0.5 text-base">→</span>
+                  <span className="flex flex-col gap-0.5">
+                    <span className="text-sm font-semibold">{s.label}</span>
+                    <span className="text-xs opacity-60">{s.desc}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          );
+        })()}
         <header className="flex flex-col gap-4">
           <section
             id="today-hero"
