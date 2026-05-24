@@ -565,6 +565,11 @@ export default function LoginPage() {
         // as soon as Supabase session becomes available (code/token_hash exchange or auth state change).
         setShowRegister(true);
         setFreshRegisterIntent(false);
+      } else if (wantsRegister) {
+        // Logged-in user navigated to /registro — open modal directly (effect at line 610
+        // will skip to step 2+ if they already have a valid session).
+        setShowRegister(true);
+        setFreshRegisterIntent(false);
       } else if (verified) {
         setVerifiedMessage("Cuenta verificada. Ya puedes iniciar sesión.");
       }
