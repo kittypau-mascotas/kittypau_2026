@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@capacitor/local-notifications": "^8.0.2",
-    "@supabase/supabase-js": "^2.93.3",
+    "@supabase/supabase-js": "^2.106.1",
     "chart.js": "^4.5.1",
     "d3": "^7.9.0",
     "lucide-react": "^0.542.0",
