@@ -28,7 +28,7 @@ function preemptiveClearStaleSession() {
     window.localStorage.getItem(KP_REFRESH_TOKEN_KEY),
   );
   if (hasKpToken) return;
-  // Sin token KP no hay sesión válida — limpiar sb-* para evitar el
+  // Sin token KP no hay sesion valida - limpiar sb-* para evitar el
   // "Invalid Refresh Token" del autoRefresh interno de Supabase.
   const toRemove: string[] = [];
   for (let i = 0; i < window.localStorage.length; i++) {
@@ -41,8 +41,13 @@ function preemptiveClearStaleSession() {
 export function getSupabaseBrowser() {
   if (cachedClient) return cachedClient;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Eliminar caracteres no-ASCII que puedan haberse colado en los env vars al pegar desde el dashboard.
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "")
+    .replace(/[^\x20-\x7E]/g, "")
+    .trim();
+  const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "")
+    .replace(/[^\x20-\x7E]/g, "")
+    .trim();
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return null;

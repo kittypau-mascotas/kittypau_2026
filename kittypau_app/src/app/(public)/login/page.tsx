@@ -544,7 +544,7 @@ export default function LoginPage() {
             aria-current={number === modalStep ? "step" : undefined}
           >
             <span className="login-step2-dot" aria-hidden="true">
-              {completedMap[number] ? "?" : number}
+              {completedMap[number] ? "✓" : number}
             </span>
             <span className="login-step2-label">{step.label}</span>
           </button>
@@ -792,37 +792,58 @@ export default function LoginPage() {
       window.localStorage.removeItem("kittypau_demo_recorded_at");
     }
 
+    // Login via API route server-side para evitar restricciones ISO-8859-1 en headers del browser.
+    let accessToken: string;
+    let refreshToken: string;
+    try {
+      const authRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailValue, password: passwordValue }),
+      });
+      const session = await authRes.json() as Record<string, unknown>;
+      if (!authRes.ok) {
+        setError(
+          typeof session.error === "string"
+            ? session.error
+            : "Credenciales incorrectas.",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+      if (typeof session.access_token !== "string" || !session.access_token) {
+        setError("No se pudo iniciar sesión.");
+        setIsSubmitting(false);
+        return;
+      }
+      accessToken = session.access_token;
+      refreshToken = typeof session.refresh_token === "string" ? session.refresh_token : "";
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Error de red al iniciar sesión.",
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    setTokens({ accessToken, refreshToken });
+
+    // Sincronizar la sesión en el cliente Supabase para que las queries funcionen.
     const supabase = getSupabaseBrowser();
-    if (!supabase) {
-      setError("Faltan variables públicas de Supabase en el entorno.");
-      setIsSubmitting(false);
-      return;
+    if (supabase) {
+      try {
+        await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+      } catch {
+        // No bloquear el login si setSession falla.
+      }
     }
-
-    const { data, error: signInError } = await supabase.auth.signInWithPassword(
-      {
-        email: emailValue,
-        password: passwordValue,
-      },
-    );
-
-    if (signInError || !data.session?.access_token) {
-      setError(signInError?.message ?? "No se pudo iniciar sesión.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    setTokens({
-      accessToken: data.session.access_token,
-      refreshToken: data.session.refresh_token,
-    });
 
     let targetPath = "/today";
     try {
       const controller = new AbortController();
       const timeoutId = window.setTimeout(() => controller.abort(), 2500);
       const accountRes = await fetch("/api/account/type", {
-        headers: { Authorization: `Bearer ${data.session.access_token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
         signal: controller.signal,
       });
       window.clearTimeout(timeoutId);

@@ -229,6 +229,16 @@ export default function BowlPage() {
     null,
   );
   const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
+  const [isUnassigning, setIsUnassigning] = useState(false);
+  const [unassignStatus, setUnassignStatus] = useState<"ok" | "error" | null>(null);
+  const [showAddDevice, setShowAddDevice] = useState(false);
+  const [addDeviceCode, setAddDeviceCode] = useState("");
+  const [addDevicePetId, setAddDevicePetId] = useState("");
+  const [addDeviceType, setAddDeviceType] = useState<"food_bowl" | "water_bowl">("water_bowl");
+  const [isAddingDevice, setIsAddingDevice] = useState(false);
+  const [addDeviceStatus, setAddDeviceStatus] = useState<"ok" | "error" | null>(null);
+  const [addDeviceError, setAddDeviceError] = useState<string | null>(null);
+  const [addDevicePets, setAddDevicePets] = useState<ApiPet[]>([]);
 
   const loadDevices = async (token: string) => {
     const res = await fetch(`/api/devices`, {
@@ -513,11 +523,11 @@ export default function BowlPage() {
         : "bg-white border-slate-300";
 
   const cycleDevice = (offset: -1 | 1) => {
-    if (state.devices.length <= 1 || selectedDeviceIndex < 0) return;
-    const nextIndex =
-      (selectedDeviceIndex + offset + state.devices.length) %
-      state.devices.length;
-    const nextDeviceId = state.devices[nextIndex]?.id ?? null;
+    const assignedDevices = state.devices.filter((d) => d.pet_id);
+    if (assignedDevices.length <= 1) return;
+    const currentIdx = assignedDevices.findIndex((d) => d.id === selectedDeviceId);
+    const nextIndex = (currentIdx + offset + assignedDevices.length) % assignedDevices.length;
+    const nextDeviceId = assignedDevices[nextIndex]?.id ?? null;
     if (!nextDeviceId) return;
     setSelectedDeviceId(nextDeviceId);
     syncSelectedDevice(nextDeviceId);
@@ -610,8 +620,8 @@ export default function BowlPage() {
     try {
       const token = await getValidAccessToken();
       if (!token) throw new Error("No autenticado");
-      const body: Record<string, string> = { device_type: configDeviceType };
-      if (configPetId) body.pet_id = configPetId;
+      const body: Record<string, string | null> = { device_type: configDeviceType };
+      body.pet_id = configPetId || null;
       const res = await fetch(`/api/devices/${selectedDevice.id}`, {
         method: "PATCH",
         headers: {
@@ -708,6 +718,89 @@ export default function BowlPage() {
       /* silencioso — el usuario puede reintentar */
     } finally {
       setRemovingWifiSsid(null);
+    }
+  };
+
+  const handleUnassign = async () => {
+    if (!selectedDevice?.id || isUnassigning) return;
+    setIsUnassigning(true);
+    setUnassignStatus(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch(`/api/devices/${selectedDevice.id}`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ pet_id: null }),
+      });
+      if (!res.ok) throw new Error("Error al desasignar");
+      const updated = (await res.json()) as ApiDevice;
+      setState((prev) => ({
+        ...prev,
+        devices: prev.devices.map((d) => (d.id === updated.id ? updated : d)),
+      }));
+      setUnassignStatus("ok");
+      setTimeout(() => {
+        setUnassignStatus(null);
+        setShowConfig(false);
+      }, 1500);
+    } catch {
+      setUnassignStatus("error");
+      setTimeout(() => setUnassignStatus(null), 2500);
+    } finally {
+      setIsUnassigning(false);
+    }
+  };
+
+  const handleOpenAddDevice = async () => {
+    setAddDeviceCode("");
+    setAddDeviceType("water_bowl");
+    setAddDeviceStatus(null);
+    setAddDeviceError(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) return;
+      const res = await fetch("/api/pets?limit=50", { headers: { Authorization: `Bearer ${token}` } });
+      if (res.ok) {
+        const payload = await res.json();
+        const list = Array.isArray(payload) ? payload : (payload.data ?? []);
+        setAddDevicePets(list as ApiPet[]);
+        setAddDevicePetId((list as ApiPet[])[0]?.id ?? "");
+      }
+    } catch { /* mostrar igual */ }
+    setShowAddDevice(true);
+  };
+
+  const handleAddDevice = async () => {
+    if (!addDeviceCode.trim() || !addDevicePetId || isAddingDevice) return;
+    setIsAddingDevice(true);
+    setAddDeviceStatus(null);
+    setAddDeviceError(null);
+    try {
+      const token = await getValidAccessToken();
+      if (!token) throw new Error("No autenticado");
+      const res = await fetch("/api/devices", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          device_id: addDeviceCode.trim().toUpperCase(),
+          pet_id: addDevicePetId,
+          device_type: addDeviceType,
+          status: "active",
+          battery_level: null,
+        }),
+      });
+      const json = (await res.json()) as { id?: string; message?: string };
+      if (!res.ok) throw new Error(json.message ?? "Error al registrar");
+      const newDevice = json as ApiDevice;
+      setState((prev) => ({ ...prev, devices: [...prev.devices, newDevice] }));
+      setAddDeviceStatus("ok");
+      setTimeout(() => { setAddDeviceStatus(null); setShowAddDevice(false); }, 1500);
+    } catch (e) {
+      setAddDeviceError(e instanceof Error ? e.message : "Error desconocido");
+      setAddDeviceStatus("error");
+    } finally {
+      setIsAddingDevice(false);
     }
   };
 
@@ -1039,6 +1132,14 @@ export default function BowlPage() {
                     Escaneo
                   </button>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => void handleOpenAddDevice()}
+                  title="Añadir Bebedero"
+                  className="flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-100"
+                >
+                  + Bebedero
+                </button>
                 <button
                   type="button"
                   onClick={() => void handleOpenConfig()}
@@ -1398,22 +1499,41 @@ export default function BowlPage() {
                   <option value="water_bowl">Bebedero</option>
                 </select>
               </div>
-              <button
-                type="button"
-                onClick={() => void handleSaveConfig()}
-                disabled={isSavingConfig}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
-              >
-                {isSavingConfig ? (
-                  <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                ) : configSaveStatus === "ok" ? (
-                  "✓ Guardado"
-                ) : configSaveStatus === "error" ? (
-                  "✗ Error al guardar"
-                ) : (
-                  "Guardar"
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => void handleSaveConfig()}
+                  disabled={isSavingConfig}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                >
+                  {isSavingConfig ? (
+                    <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                  ) : configSaveStatus === "ok" ? (
+                    "✓ Guardado"
+                  ) : configSaveStatus === "error" ? (
+                    "✗ Error"
+                  ) : (
+                    "Guardar"
+                  )}
+                </button>
+                {selectedDevice?.pet_id && (
+                  <button
+                    type="button"
+                    onClick={() => void handleUnassign()}
+                    disabled={isUnassigning}
+                    className="flex items-center justify-center rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-500 transition hover:bg-red-50 disabled:opacity-50"
+                    title="Desasignar dispositivo de la mascota"
+                  >
+                    {isUnassigning ? (
+                      <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-red-300 border-t-red-500" />
+                    ) : unassignStatus === "ok" ? (
+                      "✓"
+                    ) : (
+                      "Desasignar"
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             </div>
 
             {/* ── Sección 3: WiFi ── */}
@@ -1552,6 +1672,109 @@ export default function BowlPage() {
                 memoria.
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Dispositivos sin asignar ── */}
+      {!state.isLoading && state.devices.some((d) => !d.pet_id) && (
+        <section className="surface-card freeform-rise px-6 py-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-slate-700">Disponibles para asignar</h3>
+            <button
+              type="button"
+              onClick={() => void handleOpenAddDevice()}
+              className="flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 transition hover:bg-violet-100"
+            >
+              + Añadir Bebedero
+            </button>
+          </div>
+          <ul className="space-y-2">
+            {state.devices.filter((d) => !d.pet_id).map((d) => (
+              <li key={d.id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5">
+                <div>
+                  <span className="text-sm font-semibold text-slate-800">{d.device_id}</span>
+                  <span className="ml-2 text-xs text-slate-500">{d.device_type === "water_bowl" ? "Bebedero" : "Comedero"}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedDeviceId(d.id);
+                    void handleOpenConfig();
+                  }}
+                  className="rounded-lg border border-violet-200 px-3 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50"
+                >
+                  Asignar
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ── Modal: Añadir Bebedero ── */}
+      {showAddDevice && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
+          <div className="w-full max-w-sm rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl sm:rounded-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Plato</p>
+                <p className="text-lg font-bold text-slate-900">Añadir dispositivo</p>
+              </div>
+              <button type="button" onClick={() => setShowAddDevice(false)} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100">✕</button>
+            </div>
+
+            <div className="mb-3">
+              <label className="mb-1 block text-xs font-medium text-slate-600">Código del dispositivo</label>
+              <input
+                type="text"
+                value={addDeviceCode}
+                onChange={(e) => setAddDeviceCode(e.target.value.toUpperCase())}
+                placeholder="KPCL0000"
+                autoCapitalize="characters"
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-300 focus:border-violet-400 focus:outline-none"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="mb-1 block text-xs font-medium text-slate-600">Mascota</label>
+              <select
+                value={addDevicePetId}
+                onChange={(e) => setAddDevicePetId(e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
+              >
+                {addDevicePets.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="mb-1 block text-xs font-medium text-slate-600">Tipo</label>
+              <select
+                value={addDeviceType}
+                onChange={(e) => setAddDeviceType(e.target.value as "food_bowl" | "water_bowl")}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
+              >
+                <option value="water_bowl">Bebedero</option>
+                <option value="food_bowl">Comedero</option>
+              </select>
+            </div>
+
+            {addDeviceError && (
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">{addDeviceError}</p>
+            )}
+
+            <button
+              type="button"
+              onClick={() => void handleAddDevice()}
+              disabled={isAddingDevice || !addDeviceCode.trim() || !addDevicePetId}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+            >
+              {isAddingDevice ? (
+                <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              ) : addDeviceStatus === "ok" ? "✓ Registrado" : "Registrar dispositivo"}
+            </button>
           </div>
         </div>
       )}

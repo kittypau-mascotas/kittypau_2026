@@ -1409,8 +1409,14 @@ export default function TodayPage() {
     ) ??
     petDevices.find(
       (device) =>
-        device.device_id?.toUpperCase().includes("KPCL") ||
-        (device.device_type ?? "").toLowerCase().includes("comedero"),
+        (device.device_type ?? "").toLowerCase().includes("comedero") ||
+        (device.device_type ?? "").toLowerCase().includes("food"),
+    ) ??
+    petDevices.find(
+      (device) =>
+        device.device_id?.toUpperCase().includes("KPCL") &&
+        !(device.device_type ?? "").toLowerCase().includes("bebedero") &&
+        !(device.device_type ?? "").toLowerCase().includes("water"),
     ) ??
     primaryDevice;
   const baseWaterDevice =
@@ -1422,10 +1428,10 @@ export default function TodayPage() {
       const id = (device.device_id ?? "").toUpperCase();
       const type = (device.device_type ?? "").toLowerCase();
       return (
-        id.includes("KPBW") ||
-        id.includes("KPW") ||
         type.includes("bebedero") ||
-        type.includes("water")
+        type.includes("water") ||
+        id.includes("KPBW") ||
+        id.includes("KPW")
       );
     }) ??
     null;
@@ -1434,6 +1440,8 @@ export default function TodayPage() {
     (bowlDevice
       ? (petDevices.find((device) => device.id !== bowlDevice.id) ?? null)
       : null);
+  const hasFoodDevice = petDevices.length > 0;
+  const hasWaterDevice = waterDevice !== null;
   const isAuthoritativeFoodDevice = isAuthoritativeFoodDeviceCode(
     bowlDevice?.device_id,
   );
@@ -3746,6 +3754,7 @@ export default function TodayPage() {
                     alt={`Foto de ${petLabel}`}
                     width={128}
                     height={128}
+                    unoptimized
                     className="h-24 w-24 rounded-full border border-slate-200 object-cover"
                   />
                 </Link>
@@ -3927,6 +3936,31 @@ export default function TodayPage() {
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
+                {!hasFoodDevice ? (
+                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-emerald-200 bg-emerald-50/30 p-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                      Alimentación
+                    </p>
+                    <Image
+                      src="/illustrations/pink_food_full.png"
+                      alt="Sin comedero"
+                      width={96}
+                      height={70}
+                      className="h-16 w-auto object-contain opacity-40"
+                    />
+                    <p className="text-center text-sm text-slate-400">
+                      Sin comedero asignado
+                    </p>
+                    <Link
+                      href="/bowl"
+                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-50"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Agregar comedero
+                    </Link>
+                  </article>
+                ) : (
+                <>
                 <article className="today-bowl-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between gap-2">
@@ -4120,9 +4154,36 @@ export default function TodayPage() {
                     })}
                   </div>
                 </div>
+                </>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
+                {!hasWaterDevice ? (
+                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-sky-200 bg-sky-50/30 p-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
+                      Hidratación
+                    </p>
+                    <Image
+                      src="/illustrations/green_water_full.png"
+                      alt="Sin bebedero"
+                      width={96}
+                      height={70}
+                      className="h-16 w-auto object-contain opacity-40"
+                    />
+                    <p className="text-center text-sm text-slate-400">
+                      Sin bebedero asignado
+                    </p>
+                    <Link
+                      href="/bowl"
+                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Agregar bebedero
+                    </Link>
+                  </article>
+                ) : (
+                <>
                 <article className="today-bowl-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center justify-between gap-2">
@@ -4316,6 +4377,8 @@ export default function TodayPage() {
                     })}
                   </div>
                 </div>
+                </>
+                )}
               </div>
             </div>
           </section>

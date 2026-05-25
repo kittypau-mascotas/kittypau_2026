@@ -255,67 +255,78 @@ export default function StoryPage() {
         return;
       }
 
+      let pets: ApiPet[] = [];
+      let devices: ApiDevice[] = [];
       try {
-        const [pets, devices] = await Promise.all([
+        [pets, devices] = await Promise.all([
           loadPets(token),
           loadDevices(token),
         ]);
-
-        const storedDeviceId =
-          typeof window !== "undefined"
-            ? window.localStorage.getItem("kittypau_device_id")
-            : null;
-        const primaryPet = pets[0];
-        const primaryDevice =
-          devices.find((d) => d.id === storedDeviceId) ??
-          devices.find((d) => d.pet_id === primaryPet?.id) ??
-          devices[0];
-
-        const initialDeviceId = primaryDevice?.id ?? null;
-        const initialPetId = primaryDevice?.pet_id ?? primaryPet?.id ?? null;
-
-        if (initialDeviceId) syncSelectedDevice(initialDeviceId);
-        if (initialPetId) {
-          const linkedPet = pets.find((p) => p.id === initialPetId);
-          if (linkedPet) syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
-        }
-
-        setSelectedDeviceId(initialDeviceId);
-        setSelectedPetId(initialPetId);
-
-        const sessionResult = initialPetId
-          ? await loadSessions(token, initialPetId)
-          : {
-              sessions: [],
-              isPremium: false,
-              historyDays: 7,
-              analyticsAvailable: true,
-            };
-
-        if (!mounted) return;
-        const vettedSessions = filterSessionsByEvidence(
-          sessionResult.sessions,
-          devices,
-        );
-        setState({
-          isLoading: false,
-          error: null,
-          pets,
-          devices,
-          sessions: vettedSessions,
-          isPremium: sessionResult.isPremium,
-          historyDays: sessionResult.historyDays,
-          analyticsAvailable: sessionResult.analyticsAvailable,
-        });
       } catch (err) {
         if (!mounted) return;
         setState((prev) => ({
           ...prev,
           isLoading: false,
           error:
-            err instanceof Error
-              ? err.message
-              : "No se pudo cargar la historia.",
+            err instanceof Error ? err.message : "No se pudo cargar la historia.",
+        }));
+        return;
+      }
+
+      const storedDeviceId =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem("kittypau_device_id")
+          : null;
+      const primaryPet = pets[0];
+      const primaryDevice =
+        devices.find((d) => d.id === storedDeviceId) ??
+        devices.find((d) => d.pet_id === primaryPet?.id) ??
+        devices[0];
+
+      const initialDeviceId = primaryDevice?.id ?? null;
+      const initialPetId = primaryDevice?.pet_id ?? primaryPet?.id ?? null;
+
+      if (initialDeviceId) syncSelectedDevice(initialDeviceId);
+      if (initialPetId) {
+        const linkedPet = pets.find((p) => p.id === initialPetId);
+        if (linkedPet) syncSelectedPet(linkedPet.id, linkedPet.name ?? "");
+      }
+
+      setSelectedDeviceId(initialDeviceId);
+      setSelectedPetId(initialPetId);
+
+      // Pets y devices listos — renderizar antes de esperar sessions
+      if (mounted) {
+        setState({
+          isLoading: false,
+          error: null,
+          pets,
+          devices,
+          sessions: [],
+          isPremium: false,
+          historyDays: 7,
+          analyticsAvailable: true,
+        });
+      }
+
+      if (!initialPetId || !mounted) return;
+
+      try {
+        const sessionResult = await loadSessions(token, initialPetId);
+        if (!mounted) return;
+        const vettedSessions = filterSessionsByEvidence(sessionResult.sessions, devices);
+        setState((prev) => ({
+          ...prev,
+          sessions: vettedSessions,
+          isPremium: sessionResult.isPremium,
+          historyDays: sessionResult.historyDays,
+          analyticsAvailable: sessionResult.analyticsAvailable,
+        }));
+      } catch (err) {
+        if (!mounted) return;
+        setState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err.message : "No se pudieron cargar las sesiones.",
         }));
       }
     };
@@ -521,12 +532,14 @@ export default function StoryPage() {
           variant="error"
           title="Error"
           actions={
-            <Link
-              href="/login"
-              className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
-            >
-              Iniciar sesión
-            </Link>
+            state.error.toLowerCase().includes("sesión") ? (
+              <Link
+                href="/login"
+                className="rounded-[var(--radius)] border border-rose-200/70 bg-white px-3 py-2 text-[11px] font-semibold text-rose-700"
+              >
+                Iniciar sesión
+              </Link>
+            ) : undefined
           }
         >
           {state.error}

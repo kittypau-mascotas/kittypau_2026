@@ -10,7 +10,8 @@ function requireEnv(name: string): string {
     }
     throw new Error(`Missing env var: ${name}`);
   }
-  return value;
+  // Strip non-ASCII characters that may have been introduced when pasting keys.
+  return value.replace(/[^\x20-\x7E]/g, "").trim();
 }
 
 const supabaseUrl = requireEnv("SUPABASE_URL");

@@ -8,7 +8,11 @@ type AccountType = "admin" | "tester" | "client";
 
 function isTesterEmail(email: string | null): boolean {
   if (!email) return false;
-  const defaultEmails = ["kittypau.mascotas@gmail.com"];
+  const defaultEmails = [
+    "kittypau.mascotas@gmail.com",
+    "prueba1@gmail.com",
+    "prueba2@gmail.com",
+  ];
   const envEmails = (process.env.TESTER_EMAILS ?? "")
     .split(",")
     .map((v) => v.trim().toLowerCase())

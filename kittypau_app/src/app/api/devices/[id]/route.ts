@@ -51,7 +51,7 @@ export async function PATCH(
   let body: {
     status?: string;
     device_state?: string;
-    pet_id?: string;
+    pet_id?: string | null;
     device_type?: string;
     plate_weight_grams?: number;
   };
@@ -76,9 +76,6 @@ export async function PATCH(
     return apiError(req, 400, "INVALID_DEVICE_STATE", "Invalid device_state");
   }
 
-  if (body.pet_id === null) {
-    return apiError(req, 400, "INVALID_PET_ID", "pet_id cannot be null");
-  }
 
   if (
     body.plate_weight_grams !== undefined &&
@@ -112,7 +109,7 @@ export async function PATCH(
   if (body.status) updatePayload.status = body.status;
   if (body.device_state) updatePayload.device_state = body.device_state;
   if (body.device_type) updatePayload.device_type = body.device_type;
-  if (body.pet_id) updatePayload.pet_id = body.pet_id;
+  if ("pet_id" in body) updatePayload.pet_id = body.pet_id ?? null;
   if (body.plate_weight_grams !== undefined) {
     updatePayload.plate_weight_grams = body.plate_weight_grams;
   }
