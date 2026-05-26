@@ -1,6 +1,6 @@
 # CORFO Semilla Inicia 2026 — Región Metropolitana
 
-**Última actualización:** 2026-05-11
+**Última actualización:** 2026-05-26 (verificado con MarkItDown desde PDFs oficiales)
 **Fuente:** Documentos oficiales CORFO verificados (PDFs en esta carpeta)
 - Resolución Electrónica Exenta N°24, 24-04-2026 (focalización RM)
 - Bases instrumento "Semilla Inicia" — Resolución Electrónica Exenta N°1498, 06-11-2025
@@ -51,10 +51,16 @@ Deben cumplirse **ambas condiciones simultáneamente:**
 - Mayor de 18 años con residencia en Chile
 - NO puede tener participación en una persona jurídica que ya ejecute el mismo proyecto postulado (en ese caso debe postular la persona jurídica)
 
+### Equipo emprendedor (cofundadores)
+- Hasta **3 personas naturales** cofundadoras identificadas en el formulario
+- Si la persona jurídica tiene fines de lucro: **cada cofundador debe tener ≥5% del capital social** — verificar cap table
+- ⚠️ **Alerta Kittypau:** Verificar que Javier y Mauricio tengan ≥5% c/u en IOT Chile SpA
+
 ### Limitaciones adicionales
-- Una persona jurídica **no puede postular si ya recibió Semilla Inicia** en versiones anteriores
+- Una persona jurídica **no puede postular si ya recibió Semilla Inicia** en versiones anteriores ✅ (primera vez)
 - No puede postular quien tenga inscripción vigente en el Registro de Deudores de Pensiones de Alimentos
 - No puede tener deudas laborales, previsionales ni tributarias
+- No puede postular si algún cofundador está ejecutando **como actividad principal** otro proyecto CORFO a más de 2 meses de terminar
 
 ---
 
