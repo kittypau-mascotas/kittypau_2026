@@ -283,66 +283,62 @@ Kittypau es el primer dispositivo AIoT de monitoreo de salud animal desarrollado
 
 ## SECCIÓN 4 — Escalabilidad
 
-### 1. Mercado objetivo, tamaño y barreras ✅
+### 1. Mercado objetivo, tamaño y barreras ✅ (1748/1800)
 ```
-Mercado objetivo primario: dueños de gatos y perros en la Región Metropolitana de Santiago, entre 25–45 años, con ingresos medios-altos (segmentos C1, C2 y C3 alta), acceso a smartphone y sensibilidad hacia la salud preventiva de sus animales.
+Mercado objetivo primario:
 
-Tamaño: Chile tiene aproximadamente 4,8 millones de mascotas domésticas (perros y gatos), con una tasa de penetración de hogares del 68% (INE 2023). La RM concentra el 40% del total (~1,9 millones de mascotas). El mercado pet care en Chile mueve USD 2.600 millones anuales (Euromonitor 2024). El segmento de tecnología para mascotas (pet tech) representa aproximadamente el 3–5% del mercado total, equivalente a USD 78–130 millones en Chile.
+En Chile existen 12,4 millones de perros y gatos con dueño (UC Chile, 2024). Más del 97% de los dueños considera que sus mascotas aportan a su felicidad (SUBDERE, 2021), fenómeno conocido como "Pet Parenting". El gasto promedio mensual en mascotas alcanza $30.157 CLP y continúa creciendo en segmentos urbanos digitalizados.
 
-TAM global pet tech IoT: USD 20.000 millones (CAGR 18%, proyección 2030, Grand View Research 2024).
-SAM LATAM pet tech digital: USD 240 millones estimados.
-SOM Chile Años 1–3: USD 525K–1.050K (0,5–1% del segmento objetivo).
+Nuestro mercado objetivo primario corresponde a dueños de gatos y perros de la Región Metropolitana, entre 25 y 45 años, pertenecientes a segmentos C1, C2 y C3 emergente, con gasto mensual entre USD 30 y USD 120 en alimentación, veterinaria y accesorios. El segmento posee acceso a smartphones iOS/Android y conexión WiFi domiciliaria, presente en más del 96% de los hogares conectados en Chile (CPI/Subtel).
 
-Alcance geográfico: inicio en RM, expansión a regiones urbanas (Valparaíso, Biobío) en Año 2, y LATAM (Colombia, México) en Año 3.
+Tamaño de mercado:
+• TAM: USD 17.650M. Mercado global Pet Tech 2025, CAGR 13,16% (Fortune Business Insights).
+• SAM: USD 263,8M. Mercado LATAM pet wearables e IoT 2025 (Grand View Research).
+• SOM Chile: USD 696K–1,16M en 3 años, capturando menos del 0,5% de aproximadamente 2 millones de mascotas urbanas conectadas, equivalente a 4.700–8.000 usuarios activos.
 
-Barreras y cómo las enfrentamos:
-— Adopción tecnológica: curva de aprendizaje del dueño de mascota. Estrategia: onboarding guiado (<5 min), instalación WiFi simplificada mediante BLE setup en v2 del hardware.
-— Precio: USD 50 hardware es accesible para C1-C2. Para C3 alta, explorar modelo de cuotas o leasing.
-— Conectividad WiFi hogareña: requisito mínimo del sistema. Barreras bajas en RM (penetración WiFi >85% en hogares objetivo).
+Mercado secundario B2B2C:
+Clínicas veterinarias y pet shops de la RM, donde se concentra más del 45% de la infraestructura veterinaria del país.
 
-Fuentes: INE Encuesta de Bienestar Social 2023. Euromonitor International Pet Care in Chile 2024. Grand View Research Pet Tech Market Size 2024.
+Barreras y mitigación:
+• Adopción tecnológica: onboarding guiado y configuración por portal cautivo.
+• Precio: modelo accesible y financiamiento vía canal veterinario.
+• Conectividad: foco inicial en comunas con alta penetración de internet residencial.
+
+Fuentes: UC Chile (2024), SUBDERE (2021), Fortune Business Insights (2025), Grand View Research (2024), Subtel/CPI.
 ```
 
-### 2. Competidores principales y por qué es el momento ✅
+### 2. Competidores principales y por qué es el momento ✅ (1310/1500)
 ```
 Competidores principales:
 
-1. PetKit (China): líder global en comederos inteligentes. Opera en Chile vía Mercado Libre y Amazon. Sin presencia física local, sin soporte en español, sin cumplimiento de ley de datos chilena. No analiza comportamiento, solo dispensa.
+1. PetKit (China): comedero automático con WiFi. Programa horarios y porciones desde una app, tiene cámara y alerta cuando se acaba la comida. Disponible en Mercado Libre y Amazon, sin soporte en español ni presencia local, no analiza ciclos de consumo individual.
 
-2. SureFeed (UK): líder en control de acceso RFID. Sin distribución directa en Chile. Sin analítica de comportamiento ni alertas de salud.
+2. SureFeed (UK): líder en control de acceso RFID para múltiples mascotas. Sin distribución directa en Chile, sin analítica longitudinal, sin alertas preventivas de salud.
 
 Por qué ahora es el momento:
-(1) Madurez tecnológica: ESP32-C3 a USD 1,5/unidad, sensores de precisión a USD 3–5/unidad. En 2019, el BOM de este dispositivo habría costado 4x más. El hardware de calidad industrial es ahora accesible para consumer.
-
-(2) Cambio cultural post-pandemia: la pandemia aceleró la adopción de mascotas en Chile (+18% hogares con mascotas entre 2019–2023, Euromonitor) y la sensibilidad hacia su salud preventiva.
-
-(3) Ecosistema cloud y ML maduro: Supabase, HiveMQ, LightGBM son herramientas de producción, no de investigación. Dos personas pueden operar una plataforma que hace 5 años requería un equipo de 10.
-
-(4) Vacío de mercado local: ningún jugador chileno ha entrado al segmento pet tech IoT. El primero en hacerlo tiene ventaja de marca, datos y distribución difícil de replicar.
+• Madurez tecnológica: ESP8266 a USD 1,50/unidad y sensores a USD 3–5/unidad. En 2019, este BOM habría costado 4x. La calidad industrial es accesible para el segmento consumer.
+• Cambio cultural post-pandemia: aceleró adopción de mascotas en Chile (+18% hogares entre 2019–2023) y mayor disposición a invertir en salud preventiva.
+• Ecosistema cloud y ML democratizado: Supabase, HiveMQ y LightGBM son herramientas estables de bajo costo. Operamos hoy una plataforma que hace cinco años requería un equipo de diez.
+• Vacío de mercado sin competencia local directa: ningún jugador chileno ha entrado al segmento Pet Tech IoT con hardware propio y analítica de IA. El primero en consolidarse tiene ventaja de marca, historial de datos y distribución difícil de replicar.
 ```
 
-### 3. Por qué la región tiene condiciones adecuadas ✅
+### 3. Por qué la región tiene condiciones adecuadas ✅ (622/1000)
 ```
-La Región Metropolitana de Santiago es la condición ideal para lanzar Kittypau por múltiples razones:
+La RM presenta condiciones óptimas para Kittypau:
 
-(1) Concentración de clientes objetivo: el 40% de las mascotas de Chile están en la RM, y el 55% de los hogares C1-C2 (segmento objetivo primario) se concentra en Santiago.
-
-(2) Infraestructura de conectividad: penetración WiFi hogareña >85% en comunas objetivo (Las Condes, Providencia, Ñuñoa, La Florida, Maipú). Requisito mínimo del sistema.
-
-(3) Ecosistema veterinario denso: la RM concentra más del 45% de las clínicas veterinarias del país, facilitando el desarrollo del canal B2B2C y la validación clínica del producto.
-
-(4) Ecosistema de manufactura local: existen proveedores de PCB, impresión 3D y ensamble electrónico en Santiago que permiten manufactura en series pequeñas (30–100 unidades) sin importar de China.
-
-(5) Ecosistema de emprendimiento: acceso a StartUp Chile, Corfo, USACH Emprendimiento, Fundación Chile y mentores especializados en hardware y SaaS, necesarios para la etapa de escalamiento post-subsidio.
-
-No hay competencia local directa en la región: ninguna empresa chilena opera en pet tech IoT.
+• Alta concentración de hogares digitalizados, capacidad de consumo y ecosistema emprendedor.
+• Santiago concentra el 40% de la población nacional y los hogares de ingresos medios y altos (INE).
+• Altos niveles de conectividad residencial, clave para dispositivos AIoT conectados (Subtel).
+• Concentra infraestructura veterinaria y servicios para mascotas, habilitando canal B2B2C.
+• Proveedores de prototipado electrónico, impresión 3D y manufactura de baja escala para validar hardware localmente.
+• Acceso a ecosistema de apoyo: Start-Up Chile, StartupLab01 y Hubs a nivel comunal.
 ```
 
 ### 4. Fabricación del producto ✅
 ```
 El producto o servicio en general será estandarizado, pero requiere de cierta adaptación dependiendo de lo que requiera el cliente.
 ```
-> El hardware KPCL es estandarizado. La adaptación es mínima: configuración WiFi por hogar y calibración de baseline por mascota (automática en los primeros 14 días de uso).
+> La adaptación es mínima: configuración WiFi por hogar vía portal cautivo y calibración de baseline por mascota (automática en los primeros 14 días).
 
 ### 5. Tipo de cliente principal ✅
 ```
@@ -350,15 +346,19 @@ Personas naturales
 ```
 > Primario: dueños de mascotas individuales (B2C). Secundario: clínicas veterinarias y pet shops (B2B2C).
 
-### 6. Descripción del cliente o usuario final ✅
+### 6. Descripción del cliente o usuario final ✅ (<2200)
 ```
-El cliente primario es el dueño de mascota urbano en Santiago: 25–45 años, con al menos un gato o perro en el hogar, smartphone con iOS o Android, conexión WiFi hogareña, ingresos en segmentos C1-C2, y disposición a gastar en salud y bienestar de su mascota (gasta actualmente USD 80–120/mes en alimento, veterinaria y accesorios).
+¿Quién es?
+Dueño de gato o perro, 25–45 años, vive en la RM, segmento C1–C3 emergente. Trabaja fuera de casa en jornada completa, con smartphone y WiFi domiciliario. Usa apps cotidianamente: banco, delivery, redes sociales. Gasta entre USD 30 y USD 120 mensual en su mascota, la considera parte de la familia y decide por bienestar, no solo por precio.
 
-Lo identificamos mediante: (1) entrevistas semi-estructuradas con 12 dueños de mascotas (sept–nov 2025), (2) encuesta digital a 47 dueños en RM (ene 2026), (3) análisis de comunidades de dueños de mascotas en redes sociales chilenas.
+¿Qué problema tiene?
+Se va todo el día y no sabe si su mascota comió, cuánto comió ni cómo estuvo. Quiere detectar a tiempo si algo anda mal, pero no existen herramientas locales que entreguen esa información en español. Los comederos en Mercado Libre llegan sin soporte, sin garantía local y con apps en inglés o chino. Ningún competidor en Chile ofrece analítica de hábitos ni alertas preventivas: el dueño recibe hardware, no información.
 
-Señales de demanda: 91% de encuestados declara interés en alerta temprana de cambios en hábitos; usuario activo KPCL0051 sin abandono en 90+ días; 2 clínicas veterinarias en etapa de conversación/demo para canal B2B2C.
+¿Cómo lo identificamos?
+Pet Parenting documentado en Chile: 97% de dueños declara que su mascota aporta a su bienestar (SUBDERE, 2021), gasto promedio >$30.000 CLP/mes, adopción creció 18% entre 2019–2023. Reseñas negativas de importados se concentran en falta de soporte local e idioma. Validado con entrevistas (n=12, sept–nov 2025) y encuesta propia (n=47, ene 2026): 91% declara interés en alerta temprana.
 
-Segmento prioritario para validación: dueños de gatos adultos (>5 años) en comunas de Providencia, Las Condes y Ñuñoa, por mayor concentración del segmento C1-C2, mayor prevalencia de enfermedades crónicas felinas en mascotas adultas, y mayor disposición de pago verificada en las entrevistas.
+¿Por qué este segmento primero?
+Conectividad y disposición de pago (96,5% hogares RM con internet), dolor claro (trabaja fuera y delega sin información real) y fácil validación digital. Como segundo paso, el canal B2B2C veterinario permite escalar con menor CAC: las clínicas RM concentran el 45% de la infraestructura veterinaria nacional y tienen relación de confianza establecida con el dueño de mascota.
 ```
 
 ### 7. Canal de ventas principal ✅
@@ -370,26 +370,24 @@ Venta por internet
 ```
 La venta directa vía internet se operará en dos frentes:
 
-(1) Tienda propia en el sitio web kittypau.cl: el dueño puede comprar el hardware KPCL directamente, recibir el dispositivo por despacho a domicilio y activar su cuenta en la plataforma en menos de 5 minutos. El checkout incluye la suscripción premium como opción en el flujo de compra.
+(1) Tienda propia en kittypau.vercel.app: el dueño compra el hardware KPCL, recibe el dispositivo por despacho a domicilio y activa su cuenta en menos de 5 minutos. El checkout incluye la suscripción premium como opción en el flujo de compra. Control total del onboarding y margen conservado al eliminar intermediarios.
 
-(2) Redes sociales (Instagram, TikTok): contenido educativo sobre salud preventiva de mascotas, demostraciones del producto en uso real y casos de dueños satisfechos (user-generated content). El contenido dirige tráfico a la tienda web. Estimado: 60% del tráfico web provendrá de redes sociales en los primeros 6 meses.
-
-El canal web permite: (a) control total del onboarding del cliente, (b) recolección de datos de comportamiento de compra, (c) baja fricción para activar la suscripción recurrente post-compra, (d) margen bruto conservado al eliminar intermediarios.
+(2) Redes sociales (Instagram, TikTok): contenido educativo sobre salud preventiva de mascotas, demostraciones del producto en uso real y testimonios de usuarios. El contenido orgánico dirige tráfico a la tienda web. Estimado: 60% del tráfico provendrá de redes sociales en los primeros 6 meses.
 ```
 
 ### 9. Medio principal de adquisición de clientes ✅
 ```
 A través de entidades que reúnen a mis clientes potenciales
 ```
-> Clínicas veterinarias y grupos/comunidades de dueños de mascotas en redes sociales (Facebook groups, Discord, Instagram).
+> Clínicas veterinarias y comunidades de dueños de mascotas en redes sociales (Instagram, TikTok, grupos Facebook).
 
 ### 10. Actividad para comprobar si el canal funciona ✅
 ```
-Durante los primeros 3 meses del proyecto realizaremos una prueba de canal con 30 clientes potenciales identificados: 15 captados mediante redes sociales (Instagram/TikTok ads con presupuesto de $300.000 CLP) y 15 referidos por 2 clínicas veterinarias de la RM con las que ya tenemos contacto.
+Durante los primeros 3 meses realizaremos una prueba de canal con 30 contactos: 15 captados mediante contenido orgánico en Instagram y TikTok (demostraciones del producto y casos de uso reales), y 15 referidos por 2 clínicas veterinarias de la RM con las que ya tenemos contacto.
 
-Métrica de éxito: al menos 15 de los 30 contactos completan la compra del hardware KPCL en un período de 60 días. Indicadores secundarios: tasa de conversión landing page >3%, CAC real vs. estimado (USD 15–25), NPS post-onboarding >50.
+Métrica de éxito: al menos 15 de los 30 contactos completan la compra del hardware KPCL en 60 días. Indicadores secundarios: conversión landing page >3%, CAC real <USD 25, NPS post-onboarding >50.
 
-Si la conversión es <10%, ajustaremos el mensaje y el canal antes del mes 4.
+Si la conversión es <10%, ajustamos el mensaje y el canal antes del mes 4.
 ```
 
 ### 11. Modelo de ingresos principal ✅
@@ -400,54 +398,54 @@ Venta de producto y cobro por servicios complementarios
 
 ### 12. Cómo generarás ingresos ✅
 ```
-El modelo de ingresos tiene dos capas:
+El modelo tiene dos capas:
 
-Capa 1 — Hardware KPCL: venta directa del dispositivo a USD 50 (~$47.000 CLP). Margen bruto: 57% (BOM USD 21,50 incluyendo PCB, sensores, ESP32-C3, carcasa y ensamble). Ingreso inmediato en el momento de compra. Proyección: 30 unidades vendidas en 10 meses = $1.410.000 CLP en revenue hardware.
+Capa 1 — Hardware KPCL (USD 50, ~$47.000 CLP): venta directa con margen bruto del 57% (BOM USD 21,50 incluyendo PCB, sensores ESP8266, carcasa y ensamble). Ingreso inmediato. Proyección: 30 unidades en 10 meses = $1.410.000 CLP.
 
-Capa 2 — Suscripción premium SaaS (USD 8/mes/mascota): acceso al dashboard de analítica avanzada, alertas preventivas personalizadas, reportes exportables y recomendaciones veterinarias. Margen bruto: ~95% marginal (costo incremental cloud: ~USD 0,30/usuario/mes). El usuario activa la suscripción voluntariamente después del período de onboarding (primeras 2 semanas gratuitas). Proyección: 15 usuarios premium activos al cierre del programa = MRR USD 120 (~$112.000 CLP/mes).
+Capa 2 — Suscripción premium SaaS (USD 8/mes/mascota): acceso al dashboard de analítica, alertas preventivas personalizadas y reportes exportables para el veterinario. Margen marginal ~95% (costo cloud ~USD 0,30/usuario/mes). Primeras 2 semanas gratuitas para onboarding. Proyección: 15 usuarios premium al cierre = MRR USD 120 (~$112.000 CLP/mes).
 
-Proyección de ingresos acumulados al cierre del programa (mes 10): $1.410.000 CLP hardware + ~$560.000 CLP suscripciones = ~$1.970.000 CLP en revenue total. El modelo es escalable sin costos fijos adicionales: cada nuevo usuario agrega revenue de hardware + suscripción recurrente con margen alto.
+Revenue acumulado estimado al mes 10: ~$1.970.000 CLP. Escalable sin costos fijos adicionales: cada nuevo usuario agrega revenue de hardware + recurrencia mensual con margen alto.
 ```
 
 ### 13. Qué esperas validar técnica y comercialmente ✅
 ```
 Validación técnica:
-(1) Confiabilidad del hardware KPCL en entornos domésticos reales diversos (variaciones de temperatura, humedad, tipos de comedero, comportamiento del animal). Indicador: uptime >95% en 30 unidades activas durante 30+ días continuos.
-(2) Precisión del modelo ML v2 para detección de anomalías en patrones de consumo. Indicador: F1 macro ≥ 0,75 en dataset de test de 500+ sesiones etiquetadas.
-(3) Facilidad de instalación del hardware v2 con BLE setup (sin configuración técnica por el dueño). Indicador: <5 minutos promedio de instalación en test con 10 usuarios no técnicos.
+(1) Confiabilidad hardware en hogares reales: uptime >95% en 30 unidades activas durante 30+ días.
+(2) Precisión modelo ML v2: F1 macro ≥0,75 en dataset de test de 500+ sesiones etiquetadas.
+(3) Instalación sin fricción: <5 minutos promedio con portal cautivo, test con 10 usuarios no técnicos.
 
 Validación comercial:
-(1) Disposición de pago real a USD 50 hardware + USD 8/mes suscripción en el segmento objetivo. Indicador: 30 unidades vendidas a precio completo, con primeras ventas en los primeros 2 meses.
-(2) Retención del servicio post-onboarding. Indicador: tasa de churn mensual <10% en los primeros 6 meses de suscripción.
-(3) Viabilidad del canal B2B2C veterinario como fuente de derivaciones. Indicador: 2 acuerdos formales firmados con clínicas veterinarias de la RM y al menos 15 leads referidos desde ese canal.
+(1) Disposición de pago: 30 unidades vendidas a precio completo, primera venta en mes 2.
+(2) Retención: churn mensual <10% en primeros 6 meses de suscripción.
+(3) Canal B2B2C: 2 acuerdos formales con clínicas veterinarias y 15+ leads referidos desde ese canal.
 
-Aprendizajes clave esperados: qué funcionalidad del dashboard genera mayor engagement; en qué momento del ciclo de vida de la mascota el dueño percibe más valor; qué mensaje de venta convierte mejor en redes sociales; qué argumento comercial convierte mejor en clínica veterinaria frente a venta directa.
+Aprendizajes esperados: qué funcionalidad del dashboard genera mayor engagement; qué mensaje convierte mejor en redes sociales vs. canal veterinario; en qué momento del ciclo de vida de la mascota el dueño percibe más valor.
 ```
 
-### 14. Principales actividades durante la ejecución ✅
+### 14. Principales actividades durante la ejecución ✅ (<1000)
 ```
-1. Mentoría CORFO habilitada (meses 1–10, obligatoria): sesiones mensuales con mentor de la Red CORFO en áreas de modelo de negocios, estrategia comercial y financiamiento. Mínimo 6 sesiones durante el proyecto.
+1. Mentoría CORFO (meses 1–10): sesiones mensuales en modelo de negocios, estrategia comercial y financiamiento. Mínimo 6 sesiones. Responsable: Mauricio.
 
-2. Desarrollo hardware v2 KPCL (meses 1–3): iteración del hardware basada en feedback del piloto KPCL0051 — implementar configuración WiFi por BLE (elimina fricción de instalación), optimizar consumo energético, diseñar carcasa 3B apta para manufactura en serie local. Resultado: 30 unidades v2 fabricadas.
+2. Hardware KPCL v2 (meses 1–3): carcasa 3B para manufactura en serie, firmware optimizado, portal cautivo simplificado. 30 unidades fabricadas y testeadas en mes 3. Responsable: Javier.
 
-3. Validación comercial con 30 usuarios (meses 2–8): venta, despacho e instalación de 30 unidades KPCL en hogares de la RM. Onboarding estructurado (video tutoriales + soporte WhatsApp). Seguimiento mensual: NPS, métricas de uso (sesiones activas, alertas generadas, retención). Primera venta facturada en el mes 2 y primeras referencias desde usuarios satisfechos.
+3. Primeras 30 ventas (meses 2–8): venta, despacho e instalación en comunas objetivo. Onboarding estructurado, seguimiento mensual NPS y retención. Primera venta facturada en mes 2. Responsable: Mauricio.
 
-4. Desarrollo canal B2B2C veterinario (meses 3–7): visitas a 8–10 clínicas veterinarias de la RM con demo del producto. Objetivo: firmar acuerdos de distribución y co-validación clínica con 2–3 clínicas. Las clínicas recomiendan Kittypau a dueños de mascotas adultas en consultas de rutina.
+4. Canal B2B2C veterinario (meses 3–7): demos en 8–10 clínicas. Meta: 2 acuerdos firmados con comisión por venta. Responsable: Mauricio.
 
-5. Desarrollo y despliegue ML v2 (meses 4–9): expandir el dataset de entrenamiento a 500+ sesiones etiquetadas con datos de los 30 usuarios activos. Entrenar modelo LightGBM v2, evaluar arquitectura LSTM para secuencias largas. Alcanzar F1 macro ≥ 0,75. Desplegar en producción.
+5. Modelo ML v2 (meses 4–9): expandir a 500+ sesiones etiquetadas, alcanzar F1 ≥0,75 en producción. Responsable: Mauricio + profesional junior contratado en mes 3.
 
-6. Estrategia de sostenibilidad ESG (meses 1–4): diagnóstico ESG formal con consultor habilitado. Definir indicadores medibles de impacto social (reducción gasto urgencia veterinaria), ambiental (reducción desperdicio alimento) y gobernanza (política de datos Ley 19.628). Publicar en sitio web.
+6. ESG y privacidad (meses 1–4): diagnóstico ESG formal. Publicar Política de Privacidad bajo Ley 19.628 antes del mes 2.
 
-7. Activación suscripción premium y primer MRR (mes 6): habilitar el cobro recurrente en la plataforma. Activar suscripción con los primeros 15 usuarios con 30+ días de operación continua.
+7. Suscripción premium (mes 6): activar cobro recurrente con primeros 15 usuarios activos.
 ```
 
 ### 15. ¿Requieres certificaciones, permisos o integraciones críticas? ✅
 ```
-No se requieren certificaciones regulatorias para comercializar el dispositivo KPCL como producto de consumo (no es dispositivo médico ni de uso alimentario industrial). 
+No se requieren certificaciones regulatorias para comercializar el KPCL como producto de consumo (no es dispositivo médico ni alimentario industrial).
 
-Integraciones críticas ya implementadas: HiveMQ Cloud (broker MQTT), Supabase (base de datos y autenticación), Vercel (hosting plataforma web). Todas operativas en producción.
+Integraciones cloud ya operativas en producción: HiveMQ Cloud (MQTT), Supabase (base de datos y autenticación), Vercel (hosting). Operativas desde febrero 2026.
 
-Integración pendiente relevante: certificación eléctrica SEC (Superintendencia de Electricidad y Combustibles) para el adaptador USB del dispositivo si se vende con cargador incluido. Plazo estimado: 30–60 días hábiles. Se iniciará en el mes 2 del proyecto.
+Integración pendiente: certificación eléctrica SEC para el adaptador USB si se vende con cargador incluido. Plazo estimado: 30–60 días hábiles. Se iniciará en el mes 2 del proyecto.
 ```
 
 ### 16. Documentos de certificaciones
@@ -455,81 +453,63 @@ Integración pendiente relevante: certificación eléctrica SEC (Superintendenci
 No aplica en esta etapa.
 ```
 
-### 17. Resultados comerciales a lograr ✅
+### 17. Resultados comerciales a lograr ✅ (380/1000)
 ```
-1. 30 unidades KPCL vendidas al precio público ($47.000 CLP c/u = $1.410.000 CLP revenue hardware)
-2. 15 usuarios premium activos con suscripción pagada (MRR $112.000 CLP/mes)
-3. 2 acuerdos B2B2C firmados con clínicas veterinarias de la RM
+1. 30 unidades KPCL vendidas a $47.000 CLP/unidad = $1.410.000 CLP en revenue hardware
+2. 15 usuarios premium activos con suscripción pagada = MRR $112.000 CLP/mes al cierre del programa
+3. 2 acuerdos B2B2C formales firmados con clínicas veterinarias de la RM
 4. Primera venta facturada en el mes 2 del proyecto
-5. Tasa de churn mensual <10% en suscriptores activos
+5. Tasa de churn mensual inferior al 10% en suscriptores activos durante los meses 6–10
 ```
 
-### 18. Cómo los resultados fortalecerán la validación y expansión ✅
+### 18. Cómo los resultados fortalecerán la validación y expansión ✅ (<1000)
 ```
-Los 30 usuarios activos con 30+ días de datos continuos constituyen la base de evidencia para demostrar product-market fit: retención real, disposición de pago verificada y NPS medible. Esta evidencia es el activo más importante para levantar la ronda Seed proyectada (USD 300K–500K) y para acceder a programas de aceleración post-CORFO.
+Los 30 usuarios activos con 30+ días de datos continuos son la evidencia de product-market fit para inversores: retención real, pago verificado y NPS medible. Esta base sustenta la ronda Seed proyectada (USD 300K–500K) al cierre y el acceso a aceleradoras post-CORFO.
 
-El canal B2B2C veterinario, con 2 acuerdos firmados, valida un modelo de distribución escalable sin publicidad pagada: cada clínica actúa como fuente de leads calificados (dueños preocupados por la salud de su mascota, ya en contacto con el ecosistema veterinario).
+El canal B2B2C con 2 acuerdos firmados valida un modelo escalable sin publicidad pagada permanente: cada clínica es fuente de leads calificados con CAC bajo. Replica directamente a otras ciudades chilenas con ecosistema veterinario equivalente.
 
-El ML v2 en producción con F1 ≥ 0,75 transforma el producto de "medición de datos" a "predicción de salud", lo que eleva el precio potencial de la suscripción premium y abre la puerta a acuerdos de datos con actores veterinarios y de seguros de mascotas.
+El ML v2 con F1 ≥0,75 eleva la propuesta de medición a predicción, abriendo alianzas con seguros de mascotas y laboratorios veterinarios.
 
-Con estos resultados validados en RM, la expansión a otras regiones urbanas de Chile (Valparaíso, Concepción) replica el mismo modelo de canal B2B2C veterinario con un producto y propuesta de valor ya probados. La expansión a LATAM (Colombia, México) sigue la misma secuencia: canal veterinario + redes sociales + hardware localizado.
-```
-
-### 19. Alianzas, recursos clave y contactos ✅
-```
-Alianzas y recursos clave actuales:
-
-1. Usuario piloto KPCL0051 (fase: piloto activo >90 días): dueño de gato adulto en Santiago. Relación: acuerdo de uso piloto firmado. Próximo paso: formalizar como caso de referencia para materiales de venta y carta de recomendación para fondos.
-
-2. Clínica veterinaria A en Providencia (fase: conversación / demo agendada): clínica de 3 veterinarios, 150+ clientes activos. Contacto: médico veterinario director. Próximo paso: presentar demo del dashboard y proponer acuerdo de distribución.
-
-3. Clínica veterinaria B en Las Condes (fase: descubrimiento): clínica especializada en felinos. Contacto establecido vía referido. Próximo paso: agendar primera reunión.
-
-4. HiveMQ Cloud (proveedor MQTT): plan startup activo. Relación: contrato de servicio vigente. Contribuye a la infraestructura de datos del proyecto.
-
-5. Supabase (base de datos cloud): plan Pro activo. Relación: plataforma operativa. Contribuye a la persistencia y autenticación del sistema.
-
-Recursos clave no humanos: equipamiento de prototipado (soldadora, osciloscopio, multímetro, impresora 3D K1 Max) disponible en el taller de Javier.
+Ruta: RM en Año 1 → Valparaíso y Concepción en Año 2 → Colombia y México en Año 3 con el mismo modelo probado en Chile.
 ```
 
-### 20. Riesgos principales y cómo enfrentarlos ✅
+### 19. Alianzas, recursos clave y contactos ✅ (1063/1200)
 ```
-1. Riesgo técnico — falla del hardware en campo: el dispositivo KPCL opera en entornos domésticos con variables no controladas (humedad, temperaturas extremas, mascotas que mueven el plato). Mitigación: protocolo de pruebas de estrés antes del envío (48h de operación continua en condiciones simuladas); garantía de reemplazo en los primeros 30 días; firmware actualizable OTA para corrección de bugs sin necesidad de retiro del dispositivo.
-
-2. Riesgo comercial — adopción más lenta de lo proyectado: el segmento pet tech es nuevo en Chile y puede requerir más tiempo de educación del mercado. Mitigación: canal B2B2C veterinario como fuente de leads calificados (el veterinario recomienda, no hay que convencer al dueño desde cero); período de prueba gratuito de 14 días para reducir la barrera de compra.
-
-3. Riesgo de equipo — capacidad de dos personas para ejecutar hardware + ML + ventas simultáneamente: el plan de 10 meses es ambicioso para dos cofundadores. Mitigación: el subsidio CORFO financia la contratación de al menos 1 profesional junior (firmware engineer o data scientist) en el mes 3; priorización estricta — hardware v2 y ventas en los primeros 6 meses; ML v2 en los últimos 4.
-
-4. Riesgo de admisibilidad CORFO — inicio de actividades SII: la SpA debe tener inicio de actividades SII registrado posterior al 30-oct-2024. Mitigación: iniciar el trámite SII con urgencia antes del cierre de postulaciones.
-```
-
-### 21. Principal impacto social y ambiental ✅
-```
-Impacto social: Kittypau democratiza el acceso a tecnología preventiva de salud animal, históricamente disponible solo para hogares de ingresos altos mediante consultas veterinarias frecuentes. Al hacer la detección preventiva accesible a $47.000 CLP de hardware + $7.500 CLP/mes, reducimos la brecha de atención veterinaria en hogares de ingresos medios. Estimamos que cada usuario que evita una consulta de urgencia ahorra $40.000–$60.000 CLP en promedio — un ahorro directo en el bolsillo familiar. El proyecto genera además un empleo tecnológico junior en Chile (ingeniería firmware o data science, mes 3).
-
-Posibles efectos negativos: dependencia tecnológica del dueño (si el dispositivo falla, el dueño puede desestimar la observación directa). Mitigación: diseño UX que siempre complementa — no reemplaza — la observación del dueño y la consulta veterinaria.
-
-Impacto ambiental: el monitoreo de consumo real reduce el desperdicio de alimento. Los dueños ajustan las porciones basándose en datos objetivos en lugar de estimaciones visuales, reduciendo el sobrante de alimento procesado (que tiene huella de carbono significativa en su producción). Los dispositivos KPCL son diseñados para durabilidad (>3 años de vida útil proyectada), sin baterías de litio de descarte (alimentados por USB), con componentes estándar reemplazables sin necesidad de desechar la unidad completa.
-
-Gobernanza: Kittypau publicará una política de privacidad y tratamiento de datos conforme a Ley 19.628 antes del mes 2 del proyecto. Además, el primer contrato formal de trabajo incorporará la reducción de jornada anticipada cuando aplique, y el uso de datos se limitará a finalidades explícitas de monitoreo, soporte y mejora del servicio.
+Usuario piloto KPCL0051 — Fase: PILOTO ACTIVO más de 90 días — Próximo paso: formalizar como caso de referencia y carta de recomendación para fondos y futuros clientes.
+Clínica veterinaria sector Providencia (3 veterinarios, ~150 clientes activos) — Fase: DEMO AGENDADA — Próximo paso: presentar demo del dashboard y proponer acuerdo B2B2C con comisión por venta.
+Clínica veterinaria especializada en felinos, Las Condes — Fase: DESCUBRIMIENTO — Próximo paso: primera reunión presencial semana del 26 de mayo.
+HiveMQ Cloud (proveedor broker MQTT) — Fase: CONTRATO VIGENTE — Contribuye: infraestructura de datos de producción con plan startup activo.
+Supabase (base de datos y autenticación cloud) — Fase: PLAN PRO ACTIVO — Contribuye: persistencia, autenticación y APIs de la plataforma. Operativo en producción.
+Recurso clave propio: equipamiento completo de prototipado en taller de Javier (soldadora, osciloscopio, multímetro de precisión, impresora 3D K1 Max). Permite manufactura de las 30 unidades v2 con componente local sin subcontratar totalmente el ensamble.
 ```
 
-### 22. Estrategias para operación sostenible ✅
+### 20. Riesgos principales y cómo enfrentarlos ✅ (<1000)
 ```
-Social:
-— Meta medible: que el 70% de los usuarios activos al cierre del programa reporten haber evitado al menos una consulta de urgencia veterinaria gracias a una alerta de Kittypau (medido mediante encuesta NPS mensual con pregunta específica).
-— Acción: incorporar en el dashboard una sección de "ahorro estimado vs. consulta de urgencia" que cuantifique el impacto económico para el dueño.
-— Política de inclusión: explorar plan de hardware subsidiado para segmento C3 mediante alianzas con clínicas veterinarias (pago en cuotas integrado al canal B2B2C).
+1. Riesgo técnico — falla hardware en campo: Mitigación: protocolo estrés 48h antes del envío, firmware actualizable OTA, garantía de reemplazo 30 días, stock de repuesto de 5 unidades adicionales.
 
-Ambiental:
-— Meta medible: al cierre del programa, medir la variación promedio de porciones ajustadas post-alerta en los 30 usuarios activos. Proyección: reducción del 15% en desperdicio de alimento por usuario activo.
-— Acción: indicador de "desperdicio evitado" en el dashboard del usuario.
-— Diseño de producto: carcasa 3B fabricada con filamento PLA (biodegradable), sin baterías de litio, componentes de reemplazo disponibles individualmente.
+2. Riesgo comercial — adopción más lenta de lo proyectado: Mitigación: canal B2B2C veterinario como fuente de leads calificados donde el veterinario recomienda; período de prueba gratuito de 14 días.
 
-Gobernanza:
-— Adoptar y publicar Política de Privacidad y Uso de Datos bajo Ley 19.628 antes del mes 2 del proyecto.
-— Política de jornada laboral: aplicar reducción de jornada anticipada (Ley 21.561) al primer contrato formal de empleado.
-— Cap table documentado y actualizado: ambos cofundadores con participación formal en IOT Chile SpA (≥5% cada uno, requisito CORFO).
+3. Riesgo de equipo — capacidad limitada de 2 personas: Mitigación: subsidio financia profesional junior desde mes 3; priorización estricta con hitos secuenciales.
+
+4. Riesgo admisibilidad SII: verificar antes del 29 de mayo que la fecha de inicio de actividades de IOT Chile SpA es posterior al 30 de octubre de 2024.
+```
+
+### 21. Principal impacto social y ambiental ✅ (<1000)
+```
+Impacto social: Kittypau democratiza el acceso a tecnología de salud animal preventiva a precio accesible ($47.000 CLP hardware + $7.500 CLP/mes). Cada urgencia veterinaria evitada representa un ahorro de $40.000–$60.000 CLP para la familia. El proyecto genera al menos 1 empleo tecnológico junior en Chile desde el mes 3.
+
+Impacto ambiental: el monitoreo de consumo real permite ajustar porciones con datos objetivos, reduciendo desperdicio de alimento procesado. Los dispositivos KPCL están diseñados para durabilidad (>3 años), son reparables con componentes estándar y no requieren baterías de litio al operar por USB.
+
+Posibles efectos negativos: riesgo de dependencia excesiva en el dispositivo. Mitigación: el diseño UX siempre complementa y nunca reemplaza la observación del dueño ni la consulta veterinaria; los mensajes del sistema refuerzan que Kittypau es herramienta de apoyo, no sustituto del veterinario.
+```
+
+### 22. Estrategias para operación sostenible ✅ (<1000)
+```
+Social — meta medible: 70% de usuarios reporta haber evitado al menos 1 consulta de urgencia gracias a Kittypau (encuesta NPS mensual). Acción: sección "ahorro estimado vs. urgencia" en el dashboard. Política de inclusión: hardware en cuotas para C3 vía canal veterinario.
+
+Ambiental — meta medible: reducción del 15% en desperdicio de alimento por usuario activo, medido como variación de porciones ajustadas post-alerta. Acción: indicador "alimento no desperdiciado esta semana" en el dashboard. Carcasa 3B en PLA biodegradable, sin baterías, componentes reemplazables.
+
+Gobernanza: publicar Política de Privacidad bajo Ley 19.628 antes del mes 2 con URL pública. Aplicar reducción de jornada anticipada (Ley 21.561) al primer contrato. Cap table documentado con participación ≥5% de cada cofundador en IOT Chile SpA.
 ```
 
 ---
