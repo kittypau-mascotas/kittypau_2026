@@ -54,15 +54,15 @@ mauro.carcamo89@gmail.com
 
 ### 9. Resumen del proyecto ✅
 ```
-Kittypau es una plataforma AIoT (Artificial Intelligence of Things) que resuelve la detección tardía de enfermedades en mascotas domésticas. Los dueños de gatos y perros no tienen acceso a herramientas digitales para monitorear el consumo real de alimento y agua, que son las primeras señales clínicas de enfermedades como insuficiencia renal, diabetes e hipertiroidismo. Sin datos objetivos, el problema se detecta solo cuando hay síntomas visibles, cuando el tratamiento ya es más costoso.
+Kittypau es una plataforma AIoT de monitoreo preventivo para mascotas domésticas. Resuelve un problema simple de explicar y difícil de resolver: los dueños no saben con precisión si su mascota está comiendo o bebiendo menos de lo habitual, y esos cambios suelen aparecer antes de que existan síntomas visibles.
 
-La solución es un plato inteligente conectado (hardware KPCL, basado en ESP32-C3 con celdas de carga de precisión ±0,1g) que captura en tiempo real el consumo de alimento, agua y datos del entorno. Un modelo de Machine Learning (LightGBM) analiza los patrones longitudinales y genera alertas preventivas antes de que el dueño note el problema.
+La solución convierte ese consumo real en una señal temprana de salud. El hardware KPCL, basado en ESP32-C3 y celdas de carga de precisión, registra en tiempo real alimento, agua y variables del entorno; luego, un modelo de Machine Learning analiza el comportamiento longitudinal de cada mascota y genera alertas preventivas.
 
-Va dirigida a dueños de mascotas urbanos en la Región Metropolitana (25–45 años, ingresos medios-altos, con smartphone). Chile concentra el mayor gasto per cápita en mascotas de LATAM (Euromonitor 2024), con ~4,8 millones de mascotas y tasa de urbanización >85%.
+La propuesta apunta a dueños urbanos de mascotas en la Región Metropolitana, un segmento con alta adopción tecnológica y alto gasto en bienestar animal. La oportunidad es clara: Chile tiene un mercado pet care grande, pero las soluciones actuales se enfocan en dispensar alimento o registrar manualmente, no en interpretar el consumo real.
 
-La competencia actual (PetKit, SureFeed) automatiza la dispensación pero no mide ni analiza el consumo real. Kittypau es el único jugador local que combina hardware de medición propio + analítica longitudinal + alertas preventivas basadas en IA, desarrollado íntegramente en Chile.
+La diferenciación de Kittypau está en la combinación de cuatro elementos que hoy no ofrecen los competidores: hardware propio desarrollado localmente, analítica longitudinal individual, alertas preventivas basadas en IA y operación en Chile con soporte y evolución de producto local.
 
-Se comercializa mediante venta directa del hardware KPCL (USD 50) + suscripción premium mensual (USD 8/mascota), con canal B2B2C secundario vía clínicas veterinarias. El sistema ya está en operación real con usuario activo (KPCL0051) y datos capturados en producción desde febrero 2026.
+El modelo comercial combina venta directa del hardware KPCL y suscripción premium mensual, con un canal B2B2C secundario vía clínicas veterinarias. El sistema ya opera con un usuario activo (KPCL0051) y datos capturados en producción desde febrero de 2026, lo que permite pasar de validación técnica a validación comercial real.
 ```
 
 ### 10. Región, provincia y comuna de ejecución ✅
@@ -133,7 +133,9 @@ Emprendimiento orientado a ciudades inteligentes y encadenamientos productivos
 
 ### 4. Cómo abordará el eje estratégico ✅
 ```
-Kittypau desarrolla en Santiago un dispositivo IoT doméstico (hardware KPCL) que convierte hogares urbanos en nodos de monitoreo inteligente de salud animal, contribuyendo directamente a la visión de ciudades inteligentes del CDPR Metropolitano. El hardware, firmware, software y modelos de machine learning son desarrollados íntegramente en Chile, generando un encadenamiento productivo local de alto valor tecnológico. El proyecto fortalece el ecosistema emprendedor regional al crear tecnología propietaria exportable, genera empleo tecnológico local (ingeniería firmware y data science) y construye un dataset único de salud animal que puede ser valioso para la comunidad científica y veterinaria de la región. No somos un revendedor de tecnología importada: somos un emprendimiento dinámico que crea valor tecnológico en Santiago y para Santiago.
+Kittypau desarrolla en Santiago un dispositivo IoT doméstico que transforma hogares urbanos en nodos de monitoreo inteligente de salud animal y se alinea de forma directa con el eje de ciudades inteligentes del CDPR Metropolitano. La innovación no está solo en el hardware: está en convertir datos cotidianos de consumo en información útil para la prevención, con analítica y alertas desarrolladas localmente.
+
+El hardware, firmware, software y modelos de machine learning se desarrollan íntegramente en Chile, lo que genera encadenamiento productivo local, aprendizaje tecnológico y capacidad de exportación futura. En vez de importar una solución genérica, Kittypau crea propiedad tecnológica en Santiago para un problema de alto valor en salud y bienestar animal.
 ```
 
 ### 5. Ejes transversales ✅
@@ -145,9 +147,9 @@ Kittypau desarrolla en Santiago un dispositivo IoT doméstico (hardware KPCL) qu
 
 ### 6. Cómo abordará los ejes transversales ✅
 ```
-Transformación Digital con Tecnologías Disruptivas: Kittypau aplica inteligencia artificial (modelos LightGBM y evaluación LSTM) sobre datos de sensores IoT en tiempo real para generar analítica predictiva de salud animal. Esta combinación AIoT — hardware de precisión + ML en producción + dashboard cloud — es una tecnología disruptiva en el segmento pet care chileno, donde todas las soluciones disponibles son importadas y ninguna combina medición de precisión con analítica longitudinal basada en IA.
+Transformación Digital con Tecnologías Disruptivas: Kittypau usa sensores IoT, analítica en la nube e inteligencia artificial para convertir mediciones de consumo en señales preventivas. La innovación no es solamente técnica; es de negocio y de uso, porque reemplaza la observación manual por datos objetivos y alertas personalizadas. Esa combinación de hardware de precisión, ML en producción y dashboard cloud es lo que diferencia a Kittypau frente a soluciones importadas que solo dispensan alimento.
 
-Desarrollo de Ciudades y Territorios Inteligentes: el dispositivo KPCL transforma cualquier hogar urbano de Santiago en un nodo de monitoreo inteligente. Cada unidad activa contribuye a un dataset colectivo de hábitos de salud animal en contextos urbanos. A medida que escala, Kittypau construye infraestructura de datos de salud animal urbana — información que no existe hoy en Chile — con potencial de uso en investigación veterinaria, políticas de bienestar animal y gestión de ciudades inteligentes.
+Desarrollo de Ciudades y Territorios Inteligentes: el dispositivo KPCL convierte cada hogar urbano en un punto de captura de información útil sobre bienestar animal. A medida que crece la base instalada, se construye una infraestructura de datos de salud animal en contextos urbanos que hoy no existe en Chile y que puede servir para investigación veterinaria, gestión preventiva y alianzas con el ecosistema de clínicas.
 ```
 
 ### 7. Objetivo general `[SELECCIONAR EN DROPDOWN]`
@@ -415,11 +417,11 @@ Validación técnica:
 (3) Facilidad de instalación del hardware v2 con BLE setup (sin configuración técnica por el dueño). Indicador: <5 minutos promedio de instalación en test con 10 usuarios no técnicos.
 
 Validación comercial:
-(1) Disposición de pago real a USD 50 hardware + USD 8/mes suscripción en el segmento objetivo. Indicador: 30 unidades vendidas a precio completo.
+(1) Disposición de pago real a USD 50 hardware + USD 8/mes suscripción en el segmento objetivo. Indicador: 30 unidades vendidas a precio completo, con primeras ventas en los primeros 2 meses.
 (2) Retención del servicio post-onboarding. Indicador: tasa de churn mensual <10% en los primeros 6 meses de suscripción.
-(3) Viabilidad del canal B2B2C veterinario como fuente de derivaciones. Indicador: 2 acuerdos formales firmados con clínicas veterinarias de la RM.
+(3) Viabilidad del canal B2B2C veterinario como fuente de derivaciones. Indicador: 2 acuerdos formales firmados con clínicas veterinarias de la RM y al menos 15 leads referidos desde ese canal.
 
-Aprendizajes clave esperados: qué funcionalidad del dashboard genera mayor engagement; en qué momento del ciclo de vida de la mascota el dueño percibe más valor; qué mensaje de venta convierte mejor en redes sociales.
+Aprendizajes clave esperados: qué funcionalidad del dashboard genera mayor engagement; en qué momento del ciclo de vida de la mascota el dueño percibe más valor; qué mensaje de venta convierte mejor en redes sociales; qué argumento comercial convierte mejor en clínica veterinaria frente a venta directa.
 ```
 
 ### 14. Principales actividades durante la ejecución ✅
@@ -428,7 +430,7 @@ Aprendizajes clave esperados: qué funcionalidad del dashboard genera mayor enga
 
 2. Desarrollo hardware v2 KPCL (meses 1–3): iteración del hardware basada en feedback del piloto KPCL0051 — implementar configuración WiFi por BLE (elimina fricción de instalación), optimizar consumo energético, diseñar carcasa 3B apta para manufactura en serie local. Resultado: 30 unidades v2 fabricadas.
 
-3. Validación comercial con 30 usuarios (meses 2–8): venta, despacho e instalación de 30 unidades KPCL en hogares de la RM. Onboarding estructurado (video tutoriales + soporte WhatsApp). Seguimiento mensual: NPS, métricas de uso (sesiones activas, alertas generadas, retención). Primera venta facturada en el mes 2.
+3. Validación comercial con 30 usuarios (meses 2–8): venta, despacho e instalación de 30 unidades KPCL en hogares de la RM. Onboarding estructurado (video tutoriales + soporte WhatsApp). Seguimiento mensual: NPS, métricas de uso (sesiones activas, alertas generadas, retención). Primera venta facturada en el mes 2 y primeras referencias desde usuarios satisfechos.
 
 4. Desarrollo canal B2B2C veterinario (meses 3–7): visitas a 8–10 clínicas veterinarias de la RM con demo del producto. Objetivo: firmar acuerdos de distribución y co-validación clínica con 2–3 clínicas. Las clínicas recomiendan Kittypau a dueños de mascotas adultas en consultas de rutina.
 
@@ -508,6 +510,8 @@ Impacto social: Kittypau democratiza el acceso a tecnología preventiva de salud
 Posibles efectos negativos: dependencia tecnológica del dueño (si el dispositivo falla, el dueño puede desestimar la observación directa). Mitigación: diseño UX que siempre complementa — no reemplaza — la observación del dueño y la consulta veterinaria.
 
 Impacto ambiental: el monitoreo de consumo real reduce el desperdicio de alimento. Los dueños ajustan las porciones basándose en datos objetivos en lugar de estimaciones visuales, reduciendo el sobrante de alimento procesado (que tiene huella de carbono significativa en su producción). Los dispositivos KPCL son diseñados para durabilidad (>3 años de vida útil proyectada), sin baterías de litio de descarte (alimentados por USB), con componentes estándar reemplazables sin necesidad de desechar la unidad completa.
+
+Gobernanza: Kittypau publicará una política de privacidad y tratamiento de datos conforme a Ley 19.628 antes del mes 2 del proyecto. Además, el primer contrato formal de trabajo incorporará la reducción de jornada anticipada cuando aplique, y el uso de datos se limitará a finalidades explícitas de monitoreo, soporte y mejora del servicio.
 ```
 
 ### 22. Estrategias para operación sostenible ✅
@@ -607,7 +611,7 @@ Habitualmente reviso las convocatorias en el sitio web de Corfo
 | Dirección de ejecución y código postal | `[CONFIRMAR con Mauricio]` |
 | RUT de Mauricio verificado | `[CONFIRMAR]` |
 | Ventas año anterior = $0 confirmado | `[CONFIRMAR]` |
-| Horas de dedicación semanal de cada cofundador | `[CONFIRMAR — declarar en sección Equipo]` |
+| Horas de dedicación semanal de cada cofundador | `[CONFIRMAR — declarar horas reales y coherentes con el plan]` |
 | Entidad Patrocinadora identificada y contactada | `[URGENTE — contactar hoy]` |
 | Declaración jurada sin deudas tributarias/previsionales | `[PENDIENTE]` |
 
