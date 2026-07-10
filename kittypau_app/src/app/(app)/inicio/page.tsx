@@ -10,5 +10,11 @@ export default function InicioClientePage() {
     router.replace("/today");
   }, [router]);
 
-  return null;
+  return (
+    <div className="page-shell">
+      <div className="surface-card freeform-rise px-6 py-6 text-sm text-slate-400">
+        Cargando...
+      </div>
+    </div>
+  );
 }

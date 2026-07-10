@@ -38,24 +38,31 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const clientRef = useRef<MqttClient | null>(null);
+  const broker = process.env.NEXT_PUBLIC_MQTT_BROKER?.trim() ?? "";
+  const port = process.env.NEXT_PUBLIC_MQTT_PORT_WS?.trim() || "8884";
+  const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY?.trim() ?? "";
+  const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY?.trim() ?? "";
+  const missingConfig = [
+    !broker ? "NEXT_PUBLIC_MQTT_BROKER" : null,
+    !process.env.NEXT_PUBLIC_MQTT_PORT_WS?.trim()
+      ? "NEXT_PUBLIC_MQTT_PORT_WS"
+      : null,
+    !username ? "NEXT_PUBLIC_MQTT_USER_READONLY" : null,
+    !password ? "NEXT_PUBLIC_MQTT_PASS_READONLY" : null,
+  ].filter(Boolean) as string[];
   const configError =
-    process.env.NEXT_PUBLIC_MQTT_BROKER?.trim() &&
-    process.env.NEXT_PUBLIC_MQTT_USER_READONLY?.trim() &&
-    process.env.NEXT_PUBLIC_MQTT_PASS_READONLY?.trim()
-      ? null
-      : "MQTT read-only credentials not configured.";
+    missingConfig.length > 0
+      ? `MQTT no configurado: faltan ${missingConfig.join(", ")}.`
+      : null;
 
   useEffect(() => {
     if (!deviceId) return;
 
     if (configError) {
+      setConnected(false);
+      setError(configError);
       return;
     }
-
-    const broker = process.env.NEXT_PUBLIC_MQTT_BROKER!.trim();
-    const port = (process.env.NEXT_PUBLIC_MQTT_PORT_WS ?? "8884").trim();
-    const username = process.env.NEXT_PUBLIC_MQTT_USER_READONLY!.trim();
-    const password = process.env.NEXT_PUBLIC_MQTT_PASS_READONLY!.trim();
 
     const client = mqtt.connect(`wss://${broker}:${port}/mqtt`, {
       username,

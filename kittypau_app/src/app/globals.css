@@ -1508,6 +1508,14 @@ body {
   min-height: 26px;
 }
 
+@keyframes bowl-hint {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+.login-hero-bowl-hint {
+  animation: bowl-hint 0.75s ease-in-out 1.5s 2 both;
+}
+
 .login-login-stack {
   position: relative;
 }
@@ -1661,7 +1669,7 @@ body {
 .kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(5),
 .kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(6) {
   translate: var(--cat-eye-x, 0px) var(--cat-eye-y, 0px);
-  transition: translate 120ms ease-out;
+  transition: translate 20ms linear;
 }
 
 .kp-trial-cat #tail {

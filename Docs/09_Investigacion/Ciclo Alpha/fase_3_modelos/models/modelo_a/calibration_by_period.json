@@ -1,0 +1,9 @@
+{
+  "threshold_abril": 0.26,
+  "threshold_mayo_jun": 0.26,
+  "f1_abril": 0.0,
+  "f1_mayo_jun": 0.6,
+  "n_val_abril": 0,
+  "n_val_mayo_jun": 20238,
+  "criterio": "cadencia_mediana_s < 20 → threshold_abril, >= 20 → threshold_mayo_jun"
+}

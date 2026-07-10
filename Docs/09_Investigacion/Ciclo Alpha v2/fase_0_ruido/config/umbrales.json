@@ -1,0 +1,151 @@
+{
+  "_version": "1.2",
+  "_nota": "Umbrales actualizados empíricamente desde 304 anotaciones (alimentacion=160, ruido=113, servido=31). Fecha: 2026-06-26.",
+  "_fuente": "Ejecutar revisar_anotaciones.py para regenerar estadísticas base.",
+
+  "deteccion": {
+    "_nota": "Parámetros para 01_genera_candidatos.py. Detectar de más es preferible — el operador filtra.",
+    "umbral_std_g": 1.5,
+    "umbral_delta_g": 5.0,
+    "min_rango_g": 4.0,
+    "min_duracion_s": 45,
+    "gap_merge_s": 120,
+    "resample_s": 30,
+    "buffer_context_s": 300,
+    "ventana_std_lecturas": 10,
+    "ventana_delta_lecturas": 20
+  },
+
+  "clasificacion_referencia": {
+    "_nota": "Reglas para clasificar segmentos. Derivadas de 304 anotaciones manuales. Orden: servido → alimentacion → ruido. Las features de forma (sim_*, monotonicity, r2) son el discriminador primario; las métricas clásicas (delta_w, pendiente) actúan como filtro secundario.",
+
+    "servido": {
+      "_n_anotaciones": 31,
+      "_descripcion_empirica": "Subida fuerte y rápida. Alguien agrega comida al bowl. sim_servido muy alto (>0.80 en 90% de casos). Δpeso siempre mayor a +20g.",
+      "direction": "subida",
+      "duracion_min_min": 0.5,
+      "duracion_min_max": 15.0,
+      "delta_w_min_g": 20.0,
+      "rango_min_g": 25.0,
+      "pendiente_min_g_min": 1.0,
+      "sim_servido_min": 0.70,
+      "_stats": {
+        "duracion_media_min": 4.1,
+        "duracion_std_min": 10.83,
+        "duracion_min_obs_min": 1.0,
+        "duracion_max_obs_min": 62.0,
+        "delta_w_media_g": 64.8,
+        "delta_w_std_g": 32.05,
+        "delta_w_min_obs_g": 0.0,
+        "delta_w_max_obs_g": 129.0,
+        "delta_w_p10_g": 26.0,
+        "rango_media_g": 69.6,
+        "pendiente_media_g_min": 39.41,
+        "pendiente_min_obs_g_min": -0.02,
+        "pendiente_max_obs_g_min": 126.0,
+        "monotonicity_media": 0.008,
+        "r2_lineal_media": 0.240,
+        "zcr_media": 0.185,
+        "sim_servido_media": 0.875,
+        "sim_servido_p10": 0.826,
+        "sim_servido_p90": 0.903
+      }
+    },
+
+    "alimentacion": {
+      "_n_anotaciones": 160,
+      "_descripcion_empirica": "Bajada gradual sostenida. La gata come entre comidas. sim_alimentacion muy alto (>0.80 en 90% de casos). Monotonía negativa consistente. R² lineal alto (>0.40).",
+      "direction": "bajada",
+      "duracion_min_min": 1.0,
+      "duracion_min_max": 20.0,
+      "delta_w_max_g": -3.0,
+      "rango_min_g": 5.0,
+      "pendiente_max_g_min": -0.4,
+      "sim_alimentacion_min": 0.70,
+      "monotonicity_max": -0.03,
+      "r2_lineal_min": 0.35,
+      "_stats": {
+        "duracion_media_min": 6.9,
+        "duracion_std_min": 2.91,
+        "duracion_min_obs_min": 1.0,
+        "duracion_max_obs_min": 20.0,
+        "delta_w_media_g": -12.2,
+        "delta_w_std_g": 9.45,
+        "delta_w_min_obs_g": -64.0,
+        "delta_w_max_obs_g": 69.0,
+        "delta_w_p10_g": -20.0,
+        "delta_w_p90_g": -6.0,
+        "rango_media_g": 17.7,
+        "pendiente_media_g_min": -1.61,
+        "pendiente_min_obs_g_min": -5.09,
+        "pendiente_max_obs_g_min": -0.40,
+        "monotonicity_media": -0.090,
+        "monotonicity_std": 0.051,
+        "monotonicity_p10": -0.148,
+        "monotonicity_p90": -0.027,
+        "r2_lineal_media": 0.570,
+        "r2_lineal_std": 0.138,
+        "r2_lineal_p10": 0.391,
+        "r2_lineal_p90": 0.726,
+        "zcr_media": 0.277,
+        "sim_alimentacion_media": 0.881,
+        "sim_alimentacion_p10": 0.800,
+        "sim_alimentacion_p90": 0.959
+      }
+    },
+
+    "ruido": {
+      "_n_anotaciones": 113,
+      "_descripcion_empirica": "Movimiento o error del sensor. No corresponde a actividad real. sim_alimentacion y sim_servido cercanos a 0 (sin forma clara). Pendiente absoluta menor a 5 g/min.",
+      "direction": "mixto",
+      "pendiente_abs_max_g_min": 4.9,
+      "_discriminador_clave": "sim_alim < 0.70 AND sim_serv < 0.70 → RUIDO (regla residual)",
+      "_stats": {
+        "duracion_media_min": 12.0,
+        "duracion_std_min": 5.05,
+        "duracion_min_obs_min": 4.0,
+        "duracion_max_obs_min": 43.0,
+        "delta_w_media_g": 0.81,
+        "delta_w_std_g": 15.72,
+        "delta_w_p10_g": -7.8,
+        "delta_w_p90_g": 8.8,
+        "rango_media_g": 30.3,
+        "pendiente_media_g_min": 0.02,
+        "pendiente_min_obs_g_min": -3.52,
+        "pendiente_max_obs_g_min": 4.87,
+        "monotonicity_media": -0.008,
+        "r2_lineal_media": 0.233,
+        "zcr_media": 0.208,
+        "sim_alimentacion_media": 0.021,
+        "sim_servido_media": -0.021
+      }
+    }
+  },
+
+  "notas_detector": {
+    "orden_evaluacion": [
+      "1. SERVIDO si: sim_servido > 0.70 AND delta_w > +20g AND duracion < 15 min",
+      "   (fallback clásico: Δpeso > +25g AND pendiente > +1 g/min AND duracion < 15 min)",
+      "2. ALIMENTACION si: sim_alimentacion > 0.70 AND monotonicity < -0.03 AND delta_w < -3g AND duracion 1-20 min",
+      "   (fallback clásico: Δpeso < -5g AND pendiente < -0.4 g/min AND r2 > 0.35)",
+      "3. RUIDO en cualquier otro caso"
+    ],
+    "mejores_discriminadores": [
+      "sim_servido:      alim=-0.881 | serv=+0.875 | ruido=-0.021  → mejor feature para SERVIDO",
+      "sim_alimentacion: alim=+0.881 | serv=-0.875 | ruido=+0.021  → mejor feature para ALIMENTACION",
+      "monotonicity:     alim=-0.090 | serv=+0.008 | ruido=-0.008  → complementario (confirma bajada)",
+      "r2_lineal:        alim= 0.570 | serv= 0.240 | ruido= 0.233  → confirma tendencia lineal en alim"
+    ],
+    "outliers_detectados": [
+      "Servido 2026-05-06 20:54 — duración 62 min (mislabel probable — excluir de stats)",
+      "Alimentacion con Δpeso +69g y pendiente +69 g/min (overlap o mislabel — revisar)",
+      "Ruido con rango > 100g (varios casos) — posibles mislabels de servido"
+    ],
+    "proximos_pasos": [
+      "Revisar alimentacion con Δpeso positivo — posibles mislabels",
+      "Revisar ruido con rango > 100g — posibles mislabels de servido",
+      "Meta actual: servido=31/20 (ALCANZADA), ruido=113/30 (ALCANZADA), alimentacion=160/40 (ALCANZADA)",
+      "Siguiente fase: implementar detector en fase_1_extraccion/ usando sim_* como features primarias"
+    ]
+  }
+}

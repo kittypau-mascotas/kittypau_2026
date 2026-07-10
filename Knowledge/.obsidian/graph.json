@@ -1,0 +1,93 @@
+{
+  "collapse-filter": true,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:00_HOME",
+      "color": {
+        "a": 1,
+        "rgb": 16766720
+      }
+    },
+    {
+      "query": "path:01_Proyecto OR path:21_Roadmap OR path:22_Reuniones OR path:23_Decisiones",
+      "color": {
+        "a": 1,
+        "rgb": 15105570
+      }
+    },
+    {
+      "query": "path:02_Arquitectura OR path:19_DevOps OR path:20_Testing",
+      "color": {
+        "a": 1,
+        "rgb": 2719929
+      }
+    },
+    {
+      "query": "path:03_Backend OR path:05_API OR path:06_BaseDatos",
+      "color": {
+        "a": 1,
+        "rgb": 9323693
+      }
+    },
+    {
+      "query": "path:04_Frontend OR path:17_Mocks OR path:18_UI",
+      "color": {
+        "a": 1,
+        "rgb": 48340
+      }
+    },
+    {
+      "query": "path:07_MQTT OR path:08_ESP32 OR path:09_Sensores",
+      "color": {
+        "a": 1,
+        "rgb": 15158332
+      }
+    },
+    {
+      "query": "path:10_Datasets OR path:11_ModelosIA OR path:12_Matematica OR path:13_Features OR path:14_Experimentos OR path:15_Resultados",
+      "color": {
+        "a": 1,
+        "rgb": 2600544
+      }
+    },
+    {
+      "query": "path:16_Papers OR path:24_Glosario",
+      "color": {
+        "a": 1,
+        "rgb": 15965202
+      }
+    },
+    {
+      "query": "path:25_Prompts OR path:26_MCP OR path:27_RAG OR path:28_KnowledgeGraph",
+      "color": {
+        "a": 1,
+        "rgb": 10181046
+      }
+    },
+    {
+      "query": "path:99_Archivado OR path:_Templates",
+      "color": {
+        "a": 1,
+        "rgb": 9807270
+      }
+    }
+  ],
+  "collapse-display": true,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": false,
+  "centerStrength": 0.296875,
+  "repelStrength": 10.2083333333333,
+  "linkStrength": 0.947916666666667,
+  "linkDistance": 204,
+  "scale": 0.18462326225857997,
+  "close": true
+}

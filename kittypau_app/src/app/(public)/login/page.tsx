@@ -4,9 +4,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Parallax } from "react-scroll-parallax";
-import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";
-import TrialRpgDialog from "@/chatbot-gato/trial-rpg-dialog";
 import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
 import { LOGIN_CHATBOT_CONTEXT } from "@/chatbot-gato/login-context";
 import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
@@ -19,7 +18,6 @@ import SocialLinks from "@/app/_components/social-links";
 export default function LoginPage() {
   const router = useRouter();
   const isNativeApk = isNativeFlavorEnabled();
-  const SHOW_TRIAL_DIALOG = false;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -69,7 +67,12 @@ export default function LoginPage() {
   const [dialogCatEyeOffset, setDialogCatEyeOffset] = useState({ x: 0, y: 0 });
   const [isLoginCatHidden, setIsLoginCatHidden] = useState(false);
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
-  const [catEyeOffset, setCatEyeOffset] = useState({ x: 0, y: 0 });
+  const catEyeXRaw = useMotionValue(0);
+  const catEyeYRaw = useMotionValue(0);
+  const catEyeXSpring = useSpring(catEyeXRaw, { stiffness: 180, damping: 22, mass: 0.5 });
+  const catEyeYSpring = useSpring(catEyeYRaw, { stiffness: 180, damping: 22, mass: 0.5 });
+  const catEyeXPx = useTransform(catEyeXSpring, (v) => `${v}px`);
+  const catEyeYPx = useTransform(catEyeYSpring, (v) => `${v}px`);
   const [aiTrialDialogReply, setAiTrialDialogReply] = useState<{
     key: string;
     lines: readonly string[];
@@ -80,6 +83,8 @@ export default function LoginPage() {
   const loginPanelWrapRef = useRef<HTMLDivElement | null>(null);
   const loginAudioRef = useRef<HTMLAudioElement | null>(null);
   const trialDialogAudioRef = useRef<HTMLAudioElement | null>(null);
+  const registerModalRef = useRef<HTMLDivElement | null>(null);
+  const bowlAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
     () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
     [registerStep],
@@ -158,10 +163,12 @@ export default function LoginPage() {
       group === "food"
         ? randomFrom(heroFoodSoundFiles)
         : randomFrom(heroWaterSoundFiles);
-    const instance = new Audio(soundSrc);
-    instance.preload = "auto";
-    instance.currentTime = 0;
-    void instance.play().catch(() => undefined);
+    if (!bowlAudioRef.current) bowlAudioRef.current = new Audio();
+    const audio = bowlAudioRef.current;
+    audio.pause();
+    audio.src = soundSrc;
+    audio.currentTime = 0;
+    void audio.play().catch(() => undefined);
   };
   const stopTrialDialogAudio = useCallback(() => {
     const audio = trialDialogAudioRef.current;
@@ -275,7 +282,8 @@ export default function LoginPage() {
   const wakeTrialCat = () => setIsTrialCatAwake(true);
   const sleepTrialCat = () => {
     setIsTrialCatAwake(false);
-    setCatEyeOffset({ x: 0, y: 0 });
+    catEyeXRaw.set(0);
+    catEyeYRaw.set(0);
   };
   const updateCatEyesFromPoint = useCallback(
     (clientX: number, clientY: number) => {
@@ -291,10 +299,8 @@ export default function LoginPage() {
 
       // Movimiento sutil y centrado, dentro de rangos seguros.
       const subtleY = dy / 70 - 0.12;
-      setCatEyeOffset({
-        x: clamp(dx / 60, -0.95, 0.95),
-        y: clamp(subtleY, -0.75, 0.45),
-      });
+      catEyeXRaw.set(clamp(dx / 60, -0.95, 0.95));
+      catEyeYRaw.set(clamp(subtleY, -0.75, 0.45));
     },
     [isTrialCatAwake],
   );
@@ -841,7 +847,7 @@ export default function LoginPage() {
     let targetPath = "/today";
     try {
       const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), 2500);
+      const timeoutId = window.setTimeout(() => controller.abort(), 6000);
       const accountRes = await fetch("/api/account/type", {
         headers: { Authorization: `Bearer ${accessToken}` },
         signal: controller.signal,
@@ -1000,18 +1006,32 @@ export default function LoginPage() {
   };
 
   const closeRegister = () => {
-    if (registerStep === "registro") {
-      const ok = window.confirm(
-        "¿Quieres cerrar el registro? Se guardará el progreso.",
-      );
-      if (!ok) return;
-    }
     setShowRegister(false);
     setRegisterStep("account");
     setManualRegistroStep(null);
     setFreshRegisterIntent(false);
     setRegisterError(null);
   };
+
+  useEffect(() => {
+    if (!showRegister) return;
+    const modal = registerModalRef.current;
+    if (!modal) return;
+    const sel = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    modal.querySelector<HTMLElement>(sel)?.focus();
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { closeRegister(); return; }
+      if (e.key !== "Tab") return;
+      const focusable = Array.from(modal.querySelectorAll<HTMLElement>(sel));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showRegister]);
 
   const openTrial = () => {
     setTrialError(null);
@@ -1140,8 +1160,6 @@ export default function LoginPage() {
     trialDialogLines,
   ]);
 
-  // Key handling is implemented inside <TrialRpgDialog />.
-
   const trialCatSvg = `<svg width="45.952225mm" height="35.678726mm" viewBox="0 0 45.952225 35.678726" version="1.1" xmlns="http://www.w3.org/2000/svg"><g style="display:inline" transform="translate(-121.80376,-101.90461)"><path id="head" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 144.95859,104.74193 c 6.01466,-2.1201 14.02915,-0.85215 17.62787,2.77812 3.59872,3.63027 2.91927,7.6226 -0.0661,11.80703 -2.98542,4.18443 -9.54667,3.58363 -15.1474,3.43959 -5.60073,-0.14404 -10.30411,-0.0586 -11.67474,-3.9026 7.85671,-2.22341 3.24576,-12.00205 9.26042,-14.12214 z"/><path id="paw-front-right" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 156.30732,121.30486 c 0,0 -3.82398,2.52741 -4.14054,3.7997 -0.31656,1.2723 0.31438,2.18109 0.95701,2.55128 0.64264,0.3702 1.59106,-0.085 2.13559,-0.75306 0.54452,-0.6681 1.5629,-2.25488 2.47945,-3.20579 0.91654,-0.95091 2.96407,-2.74361 2.96407,-2.74361 l 0.73711,-3.60348 z"/><path id="paw-front-left" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 136.93356,123.08347 c 0,0 -3.20149,3.2804 -3.24123,4.59088 -0.0397,1.31049 0.60411,1.83341 1.3106,2.05901 0.7065,0.22559 1.60304,-0.55255 1.99363,-1.32084 0.39056,-0.76832 1.14875,-2.30337 2.04139,-3.29463 0.89264,-0.99126 3.37363,-3.37561 3.37363,-3.37561 l -1.30007,-3.61169 z"/><path id="paw-back" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 130.12859,121.60522 c -2.15849,1.92962 -3.38576,3.23532 -3.61836,4.5256 -0.23257,1.2903 0.0956,1.80324 0.76105,2.13059 0.66549,0.32733 1.66701,-0.31006 2.16665,-1.01233 0.49961,-0.70231 1.04598,-1.14963 2.83575,-3.05671 1.78977,-1.90708 5.91823,-3.27102 5.91823,-3.27102 l -0.75313,-3.99546 c 0,0 -5.15171,2.7497 -7.31019,4.67933 z"/><path style="display:inline;fill:#000000;stroke:none;stroke-width:0.292536;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:0.988235" id="path5" d="m 147.59927,113.85404 c 0.68896,4.40837 -4.04042,7.93759 -10.51533,8.9455 -6.47491,1.00791 -12.24344,-0.88717 -12.9324,-5.29555 -0.68895,-4.40838 3.44199,-9.94186 9.9169,-10.94977 6.47491,-1.0079 12.84186,2.89144 13.53083,7.29982 z"/><path id="ear-left" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 126.36446,111.82609 c 0,0 -2.37067,-6.28072 -0.86724,-7.10855 1.50342,-0.82783 5.87139,3.72617 5.87139,3.72617 z"/><path id="ear-right" style="display:inline;fill:#000000;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 143.50182,108.85407 c 0,0 -0.0544,-6.71302 -1.75519,-6.94283 -1.70081,-0.22982 -4.13211,5.59314 -4.13211,5.59314 z"/><g style="display:inline"><path style="fill:none;stroke:#000000;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 125.27102,116.06007 -2.97783,-1.05373"/><path style="fill:none;stroke:#000000;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 124.91643,116.80991 -2.84808,0.0754"/><path style="fill:none;stroke:#000000;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 124.97798,118.00308 -2.53111,0.5156"/></g><ellipse style="display:inline;fill:#ffffff;stroke:none;stroke-width:0.56967;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="142.61723" cy="108.6707" rx="3.0261719" ry="3.0757811" transform="rotate(1.8105864)"/><ellipse style="display:inline;fill:#000000;stroke:none;stroke-width:0.597086;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="112.57543" cy="138.29808" rx="1.0380507" ry="1.3097118" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="display:inline;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.184905;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="112.70263" cy="137.817" rx="0.32146212" ry="0.40558979" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="display:inline;fill:#ffffff;stroke:none;stroke-width:0.56967;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="135.40735" cy="110.12592" rx="3.0261719" ry="3.0757811" transform="rotate(1.8105864)"/><ellipse style="display:inline;fill:#000000;stroke:none;stroke-width:0.597086;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="105.22613" cy="138.07497" rx="1.0380507" ry="1.3097118" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="display:inline;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.184905;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="105.35332" cy="137.59389" rx="0.32146212" ry="0.40558979" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><path style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 163.77708,109.27292 c 4.36563,2.71198 4.26447,17.63497 3.70417,21.03437 -0.5603,3.3994 -1.86906,4.06275 -4.53099,4.49791 -5.87463,0.96037 -8.39724,-5.87134 -5.7547,-5.72161 2.64254,0.14973 3.15958,3.46446 5.95314,2.05052 2.79356,-1.41394 -1.42214,-13.46068 -1.42214,-13.46068 z" id="tail"/><g id="lefteyelid" style="display:inline"><ellipse style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="131.94429" cy="114.29948" rx="3.1571214" ry="3.2155864"/><path style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 129.32504,114.80228 c 2.54908,-1.14592 4.60706,-0.65481 4.60706,-0.65481"/></g><g id="righteyelid" style="display:inline"><ellipse style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="139.07704" cy="113.0834" rx="3.1571214" ry="3.2155864"/><path style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 136.48089,113.70683 c 2.48528,-1.2784 4.56624,-0.89621 4.56624,-0.89621"/></g><g id="eyesdown"><ellipse style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="139.12122" cy="113.61373" rx="1.8686198" ry="2.0422525"/><ellipse style="fill:#000000;stroke:none;stroke-width:0.597086;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="112.24622" cy="139.77037" rx="1.0380507" ry="1.3097118" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.184905;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="112.37342" cy="139.28929" rx="0.32146212" ry="0.40558979" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="131.994" cy="114.92011" rx="1.8686198" ry="2.0422525"/><ellipse style="fill:#000000;stroke:none;stroke-width:0.597086;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="105.00267" cy="139.64998" rx="1.0380507" ry="1.3097118" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/><ellipse style="fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.184905;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" cx="105.12987" cy="139.1689" rx="0.32146212" ry="0.40558979" transform="matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0)"/></g><path id="longtail" style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:0.988235" d="m 164.24062,110.09354 -2.10788,6.5381 c 0,0 0.84017,12.88397 0.35269,20.95169 h 4.78291 c 0.83489,-8.63528 0.13334,-24.78453 -3.02772,-27.48979 z"/></g></svg>`;
 
   return (
@@ -1178,7 +1196,7 @@ export default function LoginPage() {
                       playBowlClickSound(nextState.soundGroup);
                       setHeroBowlCycleIndex(nextIndex);
                     }}
-                    className="group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
+                    className="login-hero-bowl-hint group mx-auto inline-flex w-full cursor-pointer items-center justify-center appearance-none border-0 bg-transparent p-0"
                     aria-label="Cambiar nivel visual del plato"
                     title="Cambiar nivel visual del plato"
                     {...catWakeInteractions}
@@ -1288,24 +1306,17 @@ export default function LoginPage() {
                   </h2>
                 </div>
                 {!isNativeApk ? (
-                  <div
+                  <motion.div
                     className={`kp-trial-cat login-panel-cat mouse-detector shrink-0${
                       isTrialCatAwake ? " is-awake" : ""
                     }${isLoginCatHidden ? " login-panel-cat-hidden" : ""}`}
                     ref={trialCatRef}
                     onMouseEnter={wakeTrialCat}
                     onMouseLeave={sleepTrialCat}
-                    style={
-                      {
-                        "--cat-eye-x": `${catEyeOffset.x}px`,
-                        "--cat-eye-y": `${catEyeOffset.y}px`,
-                        opacity: isLoginCatHidden ? 0 : 1,
-                        visibility: isLoginCatHidden ? "hidden" : "visible",
-                        transform: isLoginCatHidden
-                          ? "translateY(8px) scale(0.98)"
-                          : "translateY(0) scale(1)",
-                      } as CSSProperties
-                    }
+                    style={{
+                      "--cat-eye-x": catEyeXPx,
+                      "--cat-eye-y": catEyeYPx,
+                    } as unknown as CSSProperties}
                   >
                     <div className="cat">
                       <div className="sleep-symbol" aria-hidden="true">
@@ -1319,7 +1330,7 @@ export default function LoginPage() {
                         dangerouslySetInnerHTML={{ __html: trialCatSvg }}
                       />
                     </div>
-                  </div>
+                  </motion.div>
                 ) : null}
                 <div className="login-login-intro">
                   <p className="text-center text-[0.95rem] font-medium leading-snug text-slate-600">
@@ -1433,7 +1444,27 @@ export default function LoginPage() {
                   ) : null}
                 </form>
 
-                <div className="login-trial-inline mt-4">
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <button
+                    type="button"
+                    className="login-forgot-button hover:text-slate-900"
+                    onClick={() => setShowReset((prev) => !prev)}
+                    disabled={isSubmitting}
+                    {...catWakeInteractions}
+                  >
+                    Olvidé mi clave
+                  </button>
+                  <button
+                    type="button"
+                    className="login-create-button rounded-full px-2 py-1 font-semibold text-slate-700 transition hover:text-slate-900"
+                    onClick={openRegister}
+                    {...catWakeInteractions}
+                  >
+                    Crear cuenta
+                  </button>
+                </div>
+
+                <div className="login-trial-inline mt-3">
                   <button
                     type="button"
                     onClick={openTrial}
@@ -1463,26 +1494,6 @@ export default function LoginPage() {
                     >
                       No Necesitas Registrarte !!
                     </span>
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <button
-                    type="button"
-                    className="login-forgot-button hover:text-slate-900"
-                    onClick={() => setShowReset((prev) => !prev)}
-                    disabled={isSubmitting}
-                    {...catWakeInteractions}
-                  >
-                    Olvidé mi clave
-                  </button>
-                  <button
-                    type="button"
-                    className="login-create-button rounded-full px-2 py-1 transition hover:text-slate-900"
-                    onClick={openRegister}
-                    {...catWakeInteractions}
-                  >
-                    Crear cuenta
                   </button>
                 </div>
                 {showReset ? (
@@ -1529,10 +1540,28 @@ export default function LoginPage() {
         </div>
       </div>
 
+      <AnimatePresence>
       {showRegister ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10">
-          <div className="relative w-full max-w-4xl sm:px-0">
+        <motion.div
+          key="register-backdrop"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+        >
+          <motion.div
+            className="relative w-full max-w-4xl sm:px-0"
+            initial={{ y: 36, opacity: 0, scale: 0.97 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 36, opacity: 0, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.9 }}
+          >
             <div
+              ref={registerModalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="register-modal-title"
               className={`glass-panel login-register-modal w-full overflow-hidden ${
                 registerStep === "registro"
                   ? "login-register-modal-registro"
@@ -1545,7 +1574,7 @@ export default function LoginPage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
                       Registro
                     </p>
-                    <h2 className="display-title text-2xl font-semibold text-slate-900">
+                    <h2 id="register-modal-title" className="display-title text-2xl font-semibold text-slate-900">
                       {registerTitle}
                     </h2>
                   </div>
@@ -1588,10 +1617,11 @@ export default function LoginPage() {
                   >
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
-                        <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                        <label htmlFor="reg-email" className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
                           Email
                         </label>
                         <input
+                          id="reg-email"
                           type="email"
                           placeholder="tu@email.com"
                           value={registerEmail}
@@ -1602,10 +1632,11 @@ export default function LoginPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                        <label htmlFor="reg-password" className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
                           Contraseña
                         </label>
                         <input
+                          id="reg-password"
                           type={registerShowPassword ? "text" : "password"}
                           placeholder="••••••••"
                           value={registerPassword}
@@ -1695,23 +1726,33 @@ export default function LoginPage() {
                 )}
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       ) : null}
+      </AnimatePresence>
 
+      <AnimatePresence>
       {showTrialModal ? (
-        <div
+        <motion.div
+          key="trial-backdrop"
           className="login-trial-overlay fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
           role="dialog"
           aria-modal="true"
+          aria-labelledby="trial-modal-title"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
           onClick={(event) => {
             if (event.target === event.currentTarget) closeTrial();
           }}
         >
-          <div
-            className={`login-trial-modal-host relative w-full max-w-lg${
-              isTrialDialogVisible ? " login-trial-modal-host--dialog-open" : ""
-            }`}
+          <motion.div
+            className="login-trial-modal-host relative w-full max-w-lg"
+            initial={{ y: 28, opacity: 0, scale: 0.97 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 28, opacity: 0, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.9 }}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-3 sm:p-5">
@@ -1721,7 +1762,7 @@ export default function LoginPage() {
                     <p className="login-trial-eyebrow brand-title text-[0.88rem] font-semibold uppercase tracking-[0.18em]">
                       Modo prueba
                     </p>
-                    <h2 className="login-trial-title text-[0.96rem] font-semibold">
+                    <h2 id="trial-modal-title" className="login-trial-title text-[0.96rem] font-semibold">
                       {trialDialogIntro.title}
                     </h2>
                     {trialDialogIntro.body ? (
@@ -1874,52 +1915,10 @@ export default function LoginPage() {
                 </a>
               </div>
             </div>
-          </div>
-          {SHOW_TRIAL_DIALOG && isTrialDialogVisible ? (
-            <TrialRpgDialogDock>
-              <div className="login-trial-dialog-scene">
-                <TrialRpgDialog
-                  dialogMode="login"
-                  typedText={trialDialogTypedText}
-                  isTyping={isTrialDialogTyping}
-                  isMuted={isTrialDialogMuted}
-                  onToggleMute={handleTrialMuteToggle}
-                  onClose={closeTrial}
-                  onAdvance={onTrialDialogAdvance}
-                  catSvg={trialCatSvg}
-                  isCatAwake={isDialogCatAwake}
-                  catEyeOffset={dialogCatEyeOffset}
-                  catRef={trialDialogCatRef}
-                  actions={
-                    <a
-                      href="https://www.instagram.com/kittypau.mascotas/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`inline-flex items-center gap-2 rounded-[var(--radius)] border border-border/70 bg-white/80 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-white trial-rpg-instagram ${
-                        trialDialogIndex === trialDialogLines.length - 1 &&
-                        !isTrialDialogTyping
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-4 w-4 text-[#E1306C]"
-                        fill="currentColor"
-                      >
-                        <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
-                      </svg>
-                      <span>Síguenos en Instagram</span>
-                    </a>
-                  }
-                />
-              </div>
-            </TrialRpgDialogDock>
-          ) : null}
-        </div>
+          </motion.div>
+        </motion.div>
       ) : null}
+      </AnimatePresence>
     </div>
   );
 }

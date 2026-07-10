@@ -1,0 +1,59 @@
+{
+  "exp_id": "G-02",
+  "fecha": "2026-06-17T16:18:31.245758+00:00",
+  "config": {
+    "algoritmos": [
+      "random_forest",
+      "xgboost",
+      "catboost"
+    ],
+    "features": [
+      "weight_grams",
+      "delta_w",
+      "delta_w_10",
+      "rolling_std_5",
+      "rolling_std_10",
+      "rolling_mean_5",
+      "net_weight",
+      "is_plateau",
+      "plateau_duration_s",
+      "hour_sin",
+      "hour_cos",
+      "clock_invalid",
+      "dia_semana_sin"
+    ],
+    "n_features": 13,
+    "n_train": 77676,
+    "n_val": 36632
+  },
+  "metricas": {
+    "lgbm_f1_activo_val": 0.8139,
+    "lgbm_f1_alim_val": 0.7598,
+    "lgbm_f1_serv_val": 0.2656,
+    "lgbm_f1_macro_val": 0.6733,
+    "lgbm_auc_activo_val": 0.996,
+    "random_forest_f1_activo_val": 0.8227,
+    "random_forest_f1_alim_val": 0.758,
+    "random_forest_f1_serv_val": 0.1989,
+    "random_forest_f1_macro_val": 0.6505,
+    "random_forest_auc_activo_val": 0.9965,
+    "xgboost_f1_activo_val": 0.8157,
+    "xgboost_f1_alim_val": 0.757,
+    "xgboost_f1_serv_val": 0.2567,
+    "xgboost_f1_macro_val": 0.6694,
+    "xgboost_auc_activo_val": 0.9967,
+    "catboost_f1_activo_val": 0.6676,
+    "catboost_f1_alim_val": 0.5936,
+    "catboost_f1_serv_val": 0.2648,
+    "catboost_f1_macro_val": 0.6151,
+    "catboost_auc_activo_val": 0.9942,
+    "mejor_algoritmo": "random_forest",
+    "tiempos_s": {
+      "lgbm": 4.0,
+      "random_forest": 3.9,
+      "xgboost": 1.8,
+      "catboost": 2.9
+    }
+  },
+  "notas": "Benchmark 3 algoritmos — mejor: random_forest"
+}

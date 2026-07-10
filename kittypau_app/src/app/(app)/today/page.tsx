@@ -1,14 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import * as d3 from "d3";
 import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
+import {
+  BOWL_CATEGORY_CHOICES,
+  WATER_CATEGORY_CHOICES,
+  type BowlCategoryChoice,
+} from "@/lib/bowl/categories";
+import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
-import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -17,21 +21,10 @@ import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
 import {
-  Clock3,
-  Scale,
-  Timer,
-  UtensilsCrossed,
-  ShieldCheck,
-  HandPlatter,
-} from "lucide-react";
-import { buildSeries } from "@/lib/charts";
-import {
   getChileDayNightWindow,
   chileCompactDatetime,
   chileShortTime,
   chileLongDate,
-  CHILE_TZ,
-  CHILE_LOCALE,
 } from "@/lib/time/chile";
 
 type ApiPet = {
@@ -111,57 +104,6 @@ type IntakeSession = {
 
 type DeviceReadingsMap = Record<string, ApiReading[]>;
 
-type StatCard = {
-  label: string;
-  value: string;
-  icon?: string;
-};
-
-type FeedCard = {
-  title: string;
-  description: string;
-  tone: "ok" | "warning" | "info";
-  icon?: string;
-  insights?: InsightItem[];
-  sectionTitle?: string;
-  sectionRows?: Array<{ label: string; value: string; icon?: InsightIconKey }>;
-  footer?: string;
-};
-
-type InsightIconKey =
-  | "meals"
-  | "clock"
-  | "consumed"
-  | "duration"
-  | "served"
-  | "audit";
-
-type InsightItem = {
-  label: string;
-  value: string;
-  icon: InsightIconKey;
-};
-
-type FoodRealitySnapshot = {
-  deviceCode: string;
-  generatedAt: string;
-  questions: {
-    mealsPerDay: number;
-    mealTimes: string[];
-    totalConsumedGrams: number;
-    avgConsumedGrams: number | null;
-    avgDurationMinutes: number | null;
-  };
-  audit: {
-    servedStarts: number;
-    servedEnds: number;
-    servedClosedCycles: number;
-    feedingStarts: number;
-    feedingEnds: number;
-    feedingClosedCycles: number;
-  };
-};
-
 type PeriodStats = {
   consumed: number | null;
   cycles: number;
@@ -174,29 +116,6 @@ type ConsumptionSummary = {
 };
 type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
 
-type BowlCategoryChoice = {
-  key: string;
-  label: string;
-};
-
-const BOWL_CATEGORY_CHOICES: BowlCategoryChoice[] = [
-  { key: "kpcl_sin_plato", label: "KPCL SIN PLATO" },
-  { key: "kpcl_con_plato", label: "KPCL CON PLATO" },
-  { key: "tare_con_plato", label: "TARE CON PLATO" },
-  { key: "inicio_servido", label: "INICIO SERVIDO" },
-  { key: "termino_servido", label: "TERMINO SERVIDO" },
-  { key: "inicio_alimentacion", label: "INICIO ALIMENTACION" },
-  { key: "termino_alimentacion", label: "TERMINO ALIMENTACION" },
-];
-const WATER_CATEGORY_CHOICES: BowlCategoryChoice[] = [
-  { key: "kpcl_sin_plato", label: "KPCL SIN PLATO" },
-  { key: "kpcl_con_plato", label: "KPCL CON PLATO" },
-  { key: "tare_con_plato", label: "TARE CON PLATO" },
-  { key: "inicio_servido", label: "INICIO SERVIDO" },
-  { key: "termino_servido", label: "TERMINO SERVIDO" },
-  { key: "inicio_hidratacion", label: "INICIO HIDRATACION" },
-  { key: "termino_hidratacion", label: "TERMINO HIDRATACION" },
-];
 
 type PetAnalyticsSession = {
   id: string;
@@ -221,47 +140,6 @@ type WellnessState = {
   levelLabel: string;
   lastEventLabel: string;
   hasEvidence: boolean;
-};
-
-type D3MarkerType = "food" | "water";
-type D3MarkerPhase = "start" | "end";
-
-type D3Marker = {
-  id: string;
-  type: D3MarkerType;
-  phase: D3MarkerPhase;
-  renderT: number;
-  renderValue: number;
-  startT: number;
-  startValue: number;
-  endT: number;
-  endValue: number;
-  avgValue: number;
-  consumed: number;
-  durationMinutes: number;
-  confirmed: boolean;
-  unit: "g" | "mL";
-  icon: string;
-  size: number;
-};
-
-type D3LineSegment = {
-  id: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  strokeWidth: number;
-};
-
-type D3AnomalyState = "normal" | "off_schedule" | "pending" | "no_evidence";
-
-type MultiDayRow = {
-  key: string;
-  label: string;
-  startMs: number;
-  foodPoints: DayNightPoint[];
-  waterPoints: DayNightPoint[];
 };
 
 type LoadState = {
@@ -289,17 +167,6 @@ const defaultState: LoadState = {
 function formatTimestamp(value?: string | null) {
   if (!value) return "Sin datos";
   return chileCompactDatetime(value);
-}
-
-function getFreshnessLabelByTimestamp(value?: string | null) {
-  if (!value) return "Sin datos";
-  const ts = new Date(value).getTime();
-  if (Number.isNaN(ts)) return "Sin datos";
-  const diffMin = Math.round((Date.now() - ts) / 60000);
-  if (diffMin <= 2) return "Muy reciente";
-  if (diffMin <= 10) return "Reciente";
-  if (diffMin <= 30) return "Moderado";
-  return "Desactualizado";
 }
 
 function resolveDevicePowerState(
@@ -728,158 +595,10 @@ const TODAY_AUDIT_CATEGORIES = [
 ] as const;
 const BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX = "kittypau_bar_max_termino_servido_";
 
-// Regla UX/UI: mostrar hallazgos importantes en formato simple con iconos,
-// evitando listas enumeradas para lectura rápida.
-const FOOD_AUDIT_UX_RULE = {
-  avoidEnumeratedList: true,
-  emphasizeImportantInsights: true,
-  keepLanguageSimple: true,
-} as const;
-
 function isAuthoritativeFoodDeviceCode(value?: string | null): boolean {
   return (value ?? "").toUpperCase() === AUTHORITATIVE_FOOD_DEVICE_CODE;
 }
 
-function toCycleHourOffset(ts: number, cycleStartMs: number): number {
-  return (ts - cycleStartMs) / (60 * 60 * 1000);
-}
-
-function getCycleStartAtSix(ts: number): number {
-  const date = new Date(ts);
-  const cycleStart = new Date(date);
-  cycleStart.setHours(6, 0, 0, 0);
-  if (date.getTime() < cycleStart.getTime()) {
-    cycleStart.setDate(cycleStart.getDate() - 1);
-  }
-  return cycleStart.getTime();
-}
-
-function toCycleHourOffsetByTimestamp(ts: number): number {
-  return (ts - getCycleStartAtSix(ts)) / (60 * 60 * 1000);
-}
-
-type KpclD3EventKey =
-  | "inicio_servido"
-  | "termino_servido"
-  | "inicio_alimentacion"
-  | "termino_alimentacion"
-  | "inicio_hidratacion"
-  | "termino_hidratacion";
-
-type KpclD3ChartObject = {
-  library: "d3";
-  timezone: string;
-  cycle: {
-    startHour: number;
-    durationHours: number;
-    navigation: ["prev", "today", "next"];
-  };
-  data: {
-    readingsEndpoint: string;
-    eventsEndpointTemplate: string;
-    readingFields: ["recorded_at", "weight_grams", "water_ml", "battery_level"];
-    eventCategories: KpclD3EventKey[];
-    useOnlyRealData: true;
-  };
-  pipeline: {
-    prioritizeAuditEvents: true;
-    foodEvidence: {
-      authoritativeDeviceCode: string;
-      requiredCategories: ["inicio_alimentacion", "termino_alimentacion"];
-      allowHeuristicInference: false;
-    };
-    hydrationHeuristicFallback: {
-      minDropGrams: number;
-      maxGapMinutes: number;
-    };
-  };
-  visuals: {
-    assets: {
-      fondo: string;
-      foodIcon: string;
-      waterIcon: string;
-    };
-    colors: {
-      food: string;
-      water: string;
-      line: string;
-      servedStart: string;
-      servedEnd: string;
-      foodStart: string;
-      foodEnd: string;
-    };
-    iconSizingByConsumption: {
-      min: number;
-      max: number;
-    };
-  };
-  comparison: {
-    days: number;
-    sharedXDomain: boolean;
-    stacked: boolean;
-  };
-};
-
-const KPCL_D3_CHART_OBJECT: KpclD3ChartObject = {
-  library: "d3",
-  timezone: CHILE_TZ,
-  cycle: {
-    startHour: 6,
-    durationHours: 24,
-    navigation: ["prev", "today", "next"],
-  },
-  data: {
-    readingsEndpoint: "/api/readings",
-    eventsEndpointTemplate: "/api/devices/:deviceId/events",
-    readingFields: ["recorded_at", "weight_grams", "water_ml", "battery_level"],
-    eventCategories: [
-      "inicio_servido",
-      "termino_servido",
-      "inicio_alimentacion",
-      "termino_alimentacion",
-      "inicio_hidratacion",
-      "termino_hidratacion",
-    ],
-    useOnlyRealData: true,
-  },
-  pipeline: {
-    prioritizeAuditEvents: true,
-    foodEvidence: {
-      authoritativeDeviceCode: AUTHORITATIVE_FOOD_DEVICE_CODE,
-      requiredCategories: [FOOD_START_CATEGORY, FOOD_END_CATEGORY],
-      allowHeuristicInference: false,
-    },
-    hydrationHeuristicFallback: {
-      minDropGrams: 2,
-      maxGapMinutes: 180,
-    },
-  },
-  visuals: {
-    assets: {
-      fondo: "/fondo.png",
-      foodIcon: "/illustrations/pink_food_full.png",
-      waterIcon: "/illustrations/green_water_full.png",
-    },
-    colors: {
-      food: "#ec4899",
-      water: "#14b8a6",
-      line: "#64748b",
-      servedStart: "#22c55e",
-      servedEnd: "#ef4444",
-      foodStart: "#3b82f6",
-      foodEnd: "#f97316",
-    },
-    iconSizingByConsumption: {
-      min: 16,
-      max: 42,
-    },
-  },
-  comparison: {
-    days: 4,
-    sharedXDomain: true,
-    stacked: true,
-  },
-};
 
 export default function TodayPage() {
   const router = useRouter();
@@ -899,13 +618,11 @@ export default function TodayPage() {
   const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] = useState<
     number | null
   >(null);
-  const [bowlLongReadings, setBowlLongReadings] = useState<ApiReading[]>([]);
   const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
     PetAnalyticsSession[]
   >([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
-  const [refreshError, setRefreshError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
   const [bowlCategoryBusy, setBowlCategoryBusy] = useState<string | null>(null);
   const [bowlCategoryFeedback, setBowlCategoryFeedback] = useState<
@@ -955,13 +672,6 @@ export default function TodayPage() {
   const [deviceAuditEvents, setDeviceAuditEvents] = useState<
     Record<string, AuditEvent[]>
   >({});
-  const [d3HoverMarker, setD3HoverMarker] = useState<{
-    marker: D3Marker;
-    anchorX: number;
-    anchorY: number;
-  } | null>(null);
-  const [d3CursorTs, setD3CursorTs] = useState<number | null>(null);
-
   // device_id en formato KPCL (texto) para suscripción MQTT
   const mqttDeviceId = useMemo(
     () =>
@@ -970,7 +680,8 @@ export default function TodayPage() {
   );
 
   // Live readings directo desde HiveMQ WebSocket
-  const { reading: liveReading } = useMqttLive(mqttDeviceId);
+  const { reading: liveReading, error: mqttLiveError } =
+    useMqttLive(mqttDeviceId);
 
   useEffect(() => {
     if (!liveReading || !selectedDeviceId) return;
@@ -991,8 +702,6 @@ export default function TodayPage() {
       if (exists) return prev;
       return { ...prev, readings: [asReading, ...prev.readings].slice(0, 120) };
     });
-    setLastRefreshAt(liveReading.receivedAt);
-    setRefreshError(null);
   }, [liveReading, selectedDeviceId]);
 
   useEffect(() => {
@@ -1150,7 +859,6 @@ export default function TodayPage() {
           const result = await loadReadings(initialDeviceId);
           readings = result.data;
           readingsCursor = result.nextCursor;
-          setLastRefreshAt(new Date().toISOString());
         }
 
         setState({
@@ -1250,8 +958,6 @@ export default function TodayPage() {
         readings: result.data,
         readingsCursor: result.nextCursor,
       }));
-      setLastRefreshAt(new Date().toISOString());
-      setRefreshError(null);
     } catch (err) {
       setState((prev) => ({
         ...prev,
@@ -1284,8 +990,6 @@ export default function TodayPage() {
         readings: result.data,
         readingsCursor: result.nextCursor,
       }));
-      setLastRefreshAt(new Date().toISOString());
-      setRefreshError(null);
     } catch (err) {
       setState((prev) => ({
         ...prev,
@@ -1458,10 +1162,6 @@ export default function TodayPage() {
   const waterPreviousReading = waterDevice?.id
     ? (devicePreviousReadings[waterDevice.id] ?? null)
     : null;
-  const freshnessLabel = useMemo(
-    () => getFreshnessLabelByTimestamp(latestReading?.recorded_at),
-    [latestReading?.recorded_at],
-  );
   const heroUpdatedAt = useMemo(() => {
     const candidates = [
       bowlLatestReading?.recorded_at ?? null,
@@ -1494,7 +1194,6 @@ export default function TodayPage() {
           readings: result.data,
           readingsCursor: result.nextCursor,
         }));
-        setLastRefreshAt(new Date().toISOString());
       } catch {
         // Keep current state if sync fetch fails; hero still reads from dedicated device map.
       }
@@ -1553,7 +1252,6 @@ export default function TodayPage() {
             successful.map((e) => [e.deviceId, e.previous]),
           ),
         }));
-        setLastRefreshAt(new Date().toISOString());
       }
       inFlight = false;
     };
@@ -1564,37 +1262,6 @@ export default function TodayPage() {
       if (interval) window.clearInterval(interval);
     };
   }, [bowlDevice?.id, waterDevice?.id, loadReadings]);
-
-  useEffect(() => {
-    if (!bowlDevice?.id) return;
-    let active = true;
-    const load3Days = async () => {
-      const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
-      try {
-        // Usar endpoint bucketed (bucket 15 min → 288 pts para 3 días)
-        // para evitar el límite de 5000 rows crudas
-        const params = new URLSearchParams({
-          device_id: bowlDevice.id,
-          from,
-          bucket_s: "900",
-        });
-        const res = await authFetch(
-          `/api/readings/bucketed?${params.toString()}`,
-        );
-        if (!active) return;
-        if (res.ok) {
-          const payload = (await res.json()) as { data?: ApiReading[] };
-          setBowlLongReadings(payload.data ?? []);
-        }
-      } catch {
-        // keep empty — chart shows "sin lecturas"
-      }
-    };
-    void load3Days();
-    return () => {
-      active = false;
-    };
-  }, [bowlDevice?.id]);
 
   useEffect(() => {
     const targetIds = [bowlDevice?.id, waterDevice?.id].filter(
@@ -1753,96 +1420,6 @@ export default function TodayPage() {
     };
   }, [primaryPet?.id]);
 
-  const summaryText = useMemo(() => {
-    if (!latestReading) {
-      return `Aún no hay lecturas para ${petLabel}. Revisa el plato y vuelve aquí.`;
-    }
-    if (latestReading.flow_rate !== null && latestReading.flow_rate >= 140) {
-      return `Hidratación elevada detectada hoy en ${petLabel}.`;
-    }
-    if (
-      latestReading.weight_grams !== null &&
-      latestReading.weight_grams >= 3500
-    ) {
-      return `Consumo estable en el último registro de ${petLabel}.`;
-    }
-    if (latestReading.temperature !== null && latestReading.temperature >= 26) {
-      return `Ambiente cálido, atento a la hidratación de ${petLabel}.`;
-    }
-    return "Ritmo dentro de lo esperado.";
-  }, [latestReading, petLabel]);
-
-  const quickStats = useMemo(() => {
-    if (!latestReading) {
-      return [
-        {
-          label: "Hidratación",
-          value: "Sin datos",
-          icon: "/illustrations/green_water_full.png",
-        },
-        {
-          label: "Alimento",
-          value: "Sin datos",
-          icon: "/illustrations/pink_food_full.png",
-        },
-        { label: "Ambiente", value: "Sin datos" },
-      ] as StatCard[];
-    }
-    const hydration =
-      latestReading.flow_rate !== null
-        ? `${Math.round(latestReading.flow_rate)} ml/h`
-        : "Sin flujo";
-    const food =
-      latestReading.weight_grams !== null
-        ? `${latestReading.weight_grams} g`
-        : "Sin peso";
-    const ambient =
-      latestReading.temperature !== null && latestReading.humidity !== null
-        ? `${toRoundedSensorValue(latestReading.temperature)}° · ${toRoundedSensorValue(
-            latestReading.humidity,
-          )}%`
-        : "Sin ambiente";
-    return [
-      {
-        label: "Hidratación",
-        value: hydration,
-        icon: "/illustrations/green_water_full.png",
-      },
-      {
-        label: "Alimento",
-        value: food,
-        icon: "/illustrations/pink_food_full.png",
-      },
-      { label: "Ambiente", value: ambient },
-    ] as StatCard[];
-  }, [latestReading]);
-
-  const hasAnalyticsHistory = analyticsHistorySessions.length > 0;
-
-  const toneStyles: Record<string, string> = {
-    ok: "border-emerald-200/60 bg-emerald-50/60 text-emerald-800",
-    warning: "border-amber-200/60 bg-amber-50/70 text-amber-800",
-    info: "border-sky-200/60 bg-sky-50/70 text-sky-800",
-  };
-  const renderInsightIcon = (icon: InsightIconKey) => {
-    const classes = "h-3.5 w-3.5 shrink-0 text-slate-600";
-    switch (icon) {
-      case "meals":
-        return <UtensilsCrossed className={classes} aria-hidden={true} />;
-      case "clock":
-        return <Clock3 className={classes} aria-hidden={true} />;
-      case "consumed":
-        return <Scale className={classes} aria-hidden={true} />;
-      case "duration":
-        return <Timer className={classes} aria-hidden={true} />;
-      case "served":
-        return <HandPlatter className={classes} aria-hidden={true} />;
-      case "audit":
-        return <ShieldCheck className={classes} aria-hidden={true} />;
-      default:
-        return <ShieldCheck className={classes} aria-hidden={true} />;
-    }
-  };
   const bowlTempText =
     bowlLatestReading?.temperature !== null &&
     bowlLatestReading?.temperature !== undefined
@@ -2229,14 +1806,7 @@ export default function TodayPage() {
         readings: result.data,
         readingsCursor: result.nextCursor,
       }));
-      setLastRefreshAt(new Date().toISOString());
-      setRefreshError(null);
     } catch (err) {
-      setRefreshError(
-        err instanceof Error
-          ? err.message
-          : "No se pudieron cargar las lecturas.",
-      );
     }
   };
   const bowlChartReadings = useMemo(
@@ -2247,67 +1817,6 @@ export default function TodayPage() {
     () => (waterDevice?.id ? (deviceChartReadings[waterDevice.id] ?? []) : []),
     [waterDevice?.id, deviceChartReadings],
   );
-
-  const todayWeightSeries = useMemo(
-    () =>
-      buildSeries(
-        bowlLongReadings,
-        (r) => {
-          const gross = r.weight_grams;
-          if (gross === null || gross === undefined) return null;
-          const base =
-            bowlPlateWeightEffective !== null
-              ? Math.max(0, gross - bowlPlateWeightEffective)
-              : gross;
-          const offset =
-            bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
-              ? bowlTareOffsets[bowlDevice.id]
-              : 0;
-          return Math.max(0, base - offset);
-        },
-        THREE_DAYS_MS,
-      ),
-    [
-      bowlLongReadings,
-      bowlPlateWeightEffective,
-      bowlDevice?.id,
-      bowlTareOffsets,
-    ],
-  );
-  const todayTempSeries = useMemo(
-    () => buildSeries(bowlLongReadings, (r) => r.temperature, THREE_DAYS_MS),
-    [bowlLongReadings],
-  );
-  const todayHumiditySeries = useMemo(
-    () => buildSeries(bowlLongReadings, (r) => r.humidity, THREE_DAYS_MS),
-    [bowlLongReadings],
-  );
-  const todayLightSeries = useMemo(
-    () => buildSeries(bowlLongReadings, (r) => r.light_percent, THREE_DAYS_MS),
-    [bowlLongReadings],
-  );
-  const todayLatestWeight = todayWeightSeries[0]?.value ?? null;
-  const todayLatestTemp = todayTempSeries[0]?.value ?? null;
-  const todayLatestHumidity = todayHumiditySeries[0]?.value ?? null;
-  const todayLatestLight = todayLightSeries[0]?.value ?? null;
-
-  // Serie ordenada ascendente para el gráfico 3D — referenciada en tooltip callbacks
-  const orderedToday3d = useMemo(
-    () => todayWeightSeries.slice(0, 288).reverse(),
-    [todayWeightSeries],
-  );
-
-  const formatToday3dTooltipTitle = (idx: number): string => {
-    const ts = orderedToday3d[idx]?.timestamp;
-    if (!ts) return "";
-    const d = new Date(ts);
-    const hh = d.getHours().toString().padStart(2, "0");
-    const mi = d.getMinutes().toString().padStart(2, "0");
-    const dd = d.getDate().toString().padStart(2, "0");
-    const mo = (d.getMonth() + 1).toString().padStart(2, "0");
-    const aa = d.getFullYear().toString().slice(2);
-    return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
-  };
 
   const selectBowlSeriesValue = useCallback(
     (reading: ApiReading) => {
@@ -2433,189 +1942,6 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [waterDayNightPoints, deviceAuditEvents, waterDevice?.id]);
-
-  const bowlDayAuditEvents = useMemo(() => {
-    const events = deviceAuditEvents[bowlDevice?.id ?? ""] ?? [];
-    return events.filter((event) => {
-      const ts = new Date(event.created_at).getTime();
-      return (
-        Number.isFinite(ts) &&
-        ts >= dayNightWindow.startMs &&
-        ts <= dayNightWindow.endMs
-      );
-    });
-  }, [bowlDevice?.id, dayNightWindow.endMs, dayNightWindow.startMs, deviceAuditEvents]);
-
-  const bowlDayServedEvents = useMemo(
-    () =>
-      bowlDayAuditEvents.filter(
-        (event) =>
-          event.category === "inicio_servido" ||
-          event.category === "termino_servido",
-      ),
-    [bowlDayAuditEvents],
-  );
-
-  const bowlDayFoodEvents = useMemo(
-    () =>
-      bowlDayAuditEvents.filter(
-        (event) =>
-          event.category === FOOD_START_CATEGORY ||
-          event.category === FOOD_END_CATEGORY,
-      ),
-    [bowlDayAuditEvents],
-  );
-
-  const bowlServedPairs = useMemo(
-    () => buildAuditEventPairs(bowlDayServedEvents, "inicio_servido", "termino_servido"),
-    [bowlDayServedEvents],
-  );
-
-  const bowlFoodPairs = useMemo(
-    () => buildAuditEventPairs(bowlDayFoodEvents, FOOD_START_CATEGORY, FOOD_END_CATEGORY),
-    [bowlDayFoodEvents],
-  );
-
-  const foodRealitySnapshot = useMemo<FoodRealitySnapshot | null>(() => {
-    if (!isAuthoritativeFoodDevice) return null;
-    const sessions = bowlIntakeSessions.slice().sort((a, b) => a.startT - b.startT);
-    const mealsPerDay = sessions.length;
-    const mealTimes = sessions.map((session) => formatSessionClock(session.startT));
-    const totalConsumedGrams = Math.round(
-      sessions.reduce((acc, session) => acc + Math.max(0, session.consumed), 0),
-    );
-    const avgConsumedGrams =
-      mealsPerDay > 0 ? Math.round(totalConsumedGrams / mealsPerDay) : null;
-    const totalDuration = sessions.reduce(
-      (acc, session) => acc + Math.max(0, session.durationMinutes),
-      0,
-    );
-    const avgDurationMinutes =
-      mealsPerDay > 0 ? Math.round(totalDuration / mealsPerDay) : null;
-    const servedStarts = bowlDayServedEvents.filter(
-      (event) => event.category === "inicio_servido",
-    ).length;
-    const servedEnds = bowlDayServedEvents.filter(
-      (event) => event.category === "termino_servido",
-    ).length;
-    const feedingStarts = bowlDayFoodEvents.filter(
-      (event) => event.category === FOOD_START_CATEGORY,
-    ).length;
-    const feedingEnds = bowlDayFoodEvents.filter(
-      (event) => event.category === FOOD_END_CATEGORY,
-    ).length;
-    return {
-      deviceCode: bowlDevice?.device_id ?? AUTHORITATIVE_FOOD_DEVICE_CODE,
-      generatedAt: new Date().toISOString(),
-      questions: {
-        mealsPerDay,
-        mealTimes,
-        totalConsumedGrams,
-        avgConsumedGrams,
-        avgDurationMinutes,
-      },
-      audit: {
-        servedStarts,
-        servedEnds,
-        servedClosedCycles: bowlServedPairs.closed.length,
-        feedingStarts,
-        feedingEnds,
-        feedingClosedCycles: bowlFoodPairs.closed.length,
-      },
-    };
-  }, [
-    bowlDayFoodEvents,
-    bowlDayServedEvents,
-    bowlDevice?.device_id,
-    bowlFoodPairs.closed.length,
-    bowlIntakeSessions,
-    bowlServedPairs.closed.length,
-    isAuthoritativeFoodDevice,
-  ]);
-
-  const feedCards = useMemo<FeedCard[]>(() => {
-    if (!latestReading) return [];
-    const items: FeedCard[] = [];
-    if (latestReading.water_ml !== null || latestReading.flow_rate !== null) {
-      items.push({
-        title: "Hidratación",
-        description:
-          latestReading.flow_rate !== null
-            ? `Flujo ${latestReading.flow_rate} ml/h en la última lectura.`
-            : `Consumo registrado: ${latestReading.water_ml ?? 0} ml.`,
-        tone: "info",
-        icon: "/illustrations/green_water_full.png",
-      });
-    }
-    if (latestReading.weight_grams !== null) {
-      const meals = foodRealitySnapshot?.questions.mealsPerDay ?? 0;
-      const mealTimes =
-        foodRealitySnapshot?.questions.mealTimes.length
-          ? foodRealitySnapshot.questions.mealTimes.join(", ")
-          : "Sin eventos de inicio confirmados";
-      const totalConsumed = foodRealitySnapshot
-        ? `${foodRealitySnapshot.questions.totalConsumedGrams} g`
-        : "N/D";
-      const avgDuration = foodRealitySnapshot?.questions.avgDurationMinutes;
-      const durationText =
-        avgDuration !== null && avgDuration !== undefined
-          ? `${avgDuration} min (promedio)`
-          : "N/D";
-      items.push({
-        title: "Consumo de alimento (hoy)",
-        description: FOOD_AUDIT_UX_RULE.keepLanguageSimple
-          ? `Comidas auditadas en ${AUTHORITATIVE_FOOD_DEVICE_CODE}: ${meals} confirmadas hoy.`
-          : `KPCL0034 auditado: ${meals} comidas confirmadas en el día.`,
-        tone: "ok",
-        icon: "/illustrations/pink_food_full.png",
-        insights: [
-          { label: "Frecuencia de comida", value: `${meals} veces hoy`, icon: "meals" },
-          { label: "Horarios detectados", value: mealTimes, icon: "clock" },
-          { label: "Consumo total", value: totalConsumed, icon: "consumed" },
-          { label: "Duración al comer", value: durationText, icon: "duration" },
-        ],
-        sectionTitle: "Realidad auditada (servido vs alimentación)",
-        sectionRows: [
-          {
-            label: "Servido",
-            value: `${foodRealitySnapshot?.audit.servedClosedCycles ?? 0} ciclos cerrados · ${foodRealitySnapshot?.audit.servedStarts ?? 0} inicios · ${foodRealitySnapshot?.audit.servedEnds ?? 0} términos`,
-            icon: "served",
-          },
-          {
-            label: "Alimentación",
-            value: `${foodRealitySnapshot?.audit.feedingClosedCycles ?? 0} ciclos cerrados · ${foodRealitySnapshot?.audit.feedingStarts ?? 0} inicios · ${foodRealitySnapshot?.audit.feedingEnds ?? 0} términos`,
-            icon: "meals",
-          },
-          {
-            label: "Fuente",
-            value: foodRealitySnapshot
-              ? `${foodRealitySnapshot.deviceCode} · events_audit real`
-              : "Sin evidencia auditada",
-            icon: "audit",
-          },
-        ],
-        footer: foodRealitySnapshot
-          ? `Snapshot generado: ${formatTimestamp(foodRealitySnapshot.generatedAt)}`
-          : "Sin snapshot diario disponible.",
-      });
-    }
-    if (latestReading.temperature !== null || latestReading.humidity !== null) {
-      const temperatureText =
-        latestReading.temperature !== null
-          ? String(toRoundedSensorValue(latestReading.temperature))
-          : "-";
-      const humidityText =
-        latestReading.humidity !== null
-          ? String(toRoundedSensorValue(latestReading.humidity))
-          : "-";
-      items.push({
-        title: "Ambiente",
-        description: `Temp ${temperatureText}° · Humedad ${humidityText}%.`,
-        tone: "warning",
-      });
-    }
-    return items.slice(0, 3);
-  }, [foodRealitySnapshot, latestReading]);
 
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
@@ -2909,362 +2235,6 @@ export default function TodayPage() {
     [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
   );
 
-  const d3Canvas = {
-    width: 1200,
-    height: 380,
-    marginTop: 24,
-    marginRight: 28,
-    marginBottom: 30,
-    marginLeft: 28,
-  } as const;
-  const d3InnerWidth =
-    d3Canvas.width - d3Canvas.marginLeft - d3Canvas.marginRight;
-  const d3InnerHeight =
-    d3Canvas.height - d3Canvas.marginTop - d3Canvas.marginBottom;
-  const d3CycleStartMs = dayNightWindow.startMs;
-  const d3CycleEndMs = dayNightWindow.endMs;
-  const d3AllPoints = useMemo(
-    () =>
-      [...bowlDayNightPoints, ...waterDayNightPoints].sort((a, b) => a.t - b.t),
-    [bowlDayNightPoints, waterDayNightPoints],
-  );
-  const d3YDomain = useMemo(() => {
-    if (!d3AllPoints.length) return [0, 100] as const;
-    const min = d3.min(d3AllPoints, (p) => p.y) ?? 0;
-    const max = d3.max(d3AllPoints, (p) => p.y) ?? 100;
-    const padding = Math.max(6, (max - min) * 0.12);
-    return [Math.max(0, min - padding), max + padding] as const;
-  }, [d3AllPoints]);
-  const d3XScale = useMemo(
-    () =>
-      d3
-        .scaleLinear()
-        .domain([d3CycleStartMs, d3CycleEndMs])
-        .range([d3Canvas.marginLeft, d3Canvas.marginLeft + d3InnerWidth]),
-    [d3CycleEndMs, d3CycleStartMs, d3InnerWidth],
-  );
-  const d3YScale = useMemo(
-    () =>
-      d3
-        .scaleLinear()
-        .domain(d3YDomain)
-        .range([d3Canvas.marginTop + d3InnerHeight, d3Canvas.marginTop]),
-    [d3InnerHeight, d3YDomain],
-  );
-  const buildD3Segments = useCallback(
-    (points: DayNightPoint[], prefix: string): D3LineSegment[] => {
-      if (points.length < 2) return [];
-      const segments: D3LineSegment[] = [];
-      for (let index = 1; index < points.length; index += 1) {
-        const prev = points[index - 1];
-        const curr = points[index];
-        const dtHours = Math.max(0.0001, (curr.t - prev.t) / (60 * 60 * 1000));
-        const velocity = Math.abs((curr.y - prev.y) / dtHours);
-        const strokeWidth = Math.max(
-          1.5,
-          Math.min(5.4, 1.8 + velocity * 0.035),
-        );
-        segments.push({
-          id: `${prefix}-${index}-${curr.t}`,
-          x1: d3XScale(prev.t),
-          y1: d3YScale(prev.y),
-          x2: d3XScale(curr.t),
-          y2: d3YScale(curr.y),
-          strokeWidth,
-        });
-      }
-      return segments;
-    },
-    [d3XScale, d3YScale],
-  );
-  const d3LinePathFood = useMemo(() => {
-    if (bowlDayNightPoints.length < 2) return "";
-    const line = d3
-      .line<DayNightPoint>()
-      .x((p) => d3XScale(p.t))
-      .y((p) => d3YScale(p.y))
-      .curve(d3.curveMonotoneX);
-    return line(bowlDayNightPoints) ?? "";
-  }, [bowlDayNightPoints, d3XScale, d3YScale]);
-  const d3LinePathWater = useMemo(() => {
-    if (waterDayNightPoints.length < 2) return "";
-    const line = d3
-      .line<DayNightPoint>()
-      .x((p) => d3XScale(p.t))
-      .y((p) => d3YScale(p.y))
-      .curve(d3.curveMonotoneX);
-    return line(waterDayNightPoints) ?? "";
-  }, [d3XScale, d3YScale, waterDayNightPoints]);
-  const d3FoodSegments = useMemo(
-    () => buildD3Segments(bowlDayNightPoints, "food-seg"),
-    [bowlDayNightPoints, buildD3Segments],
-  );
-  const d3WaterSegments = useMemo(
-    () => buildD3Segments(waterDayNightPoints, "water-seg"),
-    [buildD3Segments, waterDayNightPoints],
-  );
-  const d3NowTs = useMemo(() => {
-    if (dayCycleOffsetDays !== 0) return null;
-    const now = Date.now();
-    if (now < d3CycleStartMs || now > d3CycleEndMs) return null;
-    return now;
-  }, [d3CycleEndMs, d3CycleStartMs, dayCycleOffsetDays]);
-  const d3BackgroundBands = useMemo(
-    () => [
-      {
-        key: "morning",
-        label: "Mañana",
-        from: 0,
-        to: 6,
-        color: "rgba(251,207,232,0.35)",
-      },
-      {
-        key: "day",
-        label: "Día",
-        from: 6,
-        to: 12,
-        color: "rgba(236,253,245,0.35)",
-      },
-      {
-        key: "afternoon",
-        label: "Tarde",
-        from: 12,
-        to: 16,
-        color: "rgba(224,242,254,0.35)",
-      },
-      {
-        key: "night",
-        label: "Noche",
-        from: 16,
-        to: 24,
-        color: "rgba(15,23,42,0.25)",
-      },
-    ],
-    [],
-  );
-  const d3SessionConnectors = useMemo(
-    () =>
-      bowlIntakeSessions.map((session, index) => ({
-        id: `connector-${index}-${session.startT}`,
-        startT: session.startT,
-        endT: session.endT,
-        yValue: (session.startValue + session.endValue) / 2,
-      })),
-    [bowlIntakeSessions],
-  );
-  const d3Markers = useMemo<D3Marker[]>(() => {
-    const plateSize = 42;
-    return bowlIntakeSessions
-      .flatMap((session, index) => {
-        const consumed = Math.max(0, Math.round(session.consumed));
-        const common = {
-          type: "food" as const,
-          startT: session.startT,
-          startValue: session.startValue,
-          endT: session.endT,
-          endValue: session.endValue,
-          avgValue: (session.startValue + session.endValue) / 2,
-          consumed,
-          durationMinutes: session.durationMinutes,
-          confirmed: true,
-          unit: "g" as const,
-          size: plateSize,
-        };
-        return [
-          {
-            id: `food-start-${index}-${session.startT}`,
-            phase: "start" as const,
-            renderT: session.startT,
-            renderValue: session.startValue,
-            icon: "/illustrations/pink_food_full.png",
-            ...common,
-          },
-          {
-            id: `food-end-${index}-${session.endT}`,
-            phase: "end" as const,
-            renderT: session.endT,
-            renderValue: session.endValue,
-            icon: "/illustrations/pink_empty.png",
-            ...common,
-          },
-        ];
-      })
-      .sort((a, b) => a.renderT - b.renderT);
-  }, [bowlIntakeSessions]);
-  const d3FoodHabitBands = useMemo(() => {
-    if (!isAuthoritativeFoodDevice || !bowlDevice?.id)
-      return [] as Array<{ id: string; startHour: number; endHour: number }>;
-    const fromMs = Date.now() - 14 * 24 * 60 * 60 * 1000;
-    const hours = analyticsHistorySessions
-      .filter(
-        (session) =>
-          session.device_id === bowlDevice.id &&
-          session.session_type === "food" &&
-          new Date(session.session_start).getTime() >= fromMs,
-      )
-      .map((session) =>
-        toCycleHourOffset(
-          new Date(session.session_start).getTime(),
-          d3CycleStartMs,
-        ),
-      )
-      .filter((hour) => Number.isFinite(hour) && hour >= 0 && hour <= 24);
-    if (!hours.length)
-      return [] as Array<{ id: string; startHour: number; endHour: number }>;
-    const bins = Array.from({ length: 24 }, (_, hour) => ({
-      hour,
-      count: hours.filter((value) => value >= hour && value < hour + 1).length,
-    }));
-    const threshold = Math.max(1, Math.ceil(hours.length * 0.18));
-    return bins
-      .filter((bin) => bin.count >= threshold)
-      .map((bin, index) => ({
-        id: `habit-${index}-${bin.hour}`,
-        startHour: bin.hour,
-        endHour: bin.hour + 1,
-      }));
-  }, [
-    analyticsHistorySessions,
-    bowlDevice?.id,
-    d3CycleStartMs,
-    isAuthoritativeFoodDevice,
-  ]);
-  const d3FoodAnomaly = useMemo(() => {
-    if (!isAuthoritativeFoodDevice) {
-      return {
-        state: "no_evidence" as D3AnomalyState,
-        label: "Sin evidencia",
-        detail: `Solo ${AUTHORITATIVE_FOOD_DEVICE_CODE} confirma comida`,
-      };
-    }
-    const daySessions = bowlIntakeSessions
-      .slice()
-      .sort((a, b) => a.startT - b.startT);
-    if (!daySessions.length) {
-      return {
-        state: "pending" as D3AnomalyState,
-        label: "No ha comido aún",
-        detail: "No hay sesión confirmada en este ciclo",
-      };
-    }
-    const fromMs = Date.now() - 14 * 24 * 60 * 60 * 1000;
-    const historyHours = analyticsHistorySessions
-      .filter(
-        (session) =>
-          session.device_id === bowlDevice?.id &&
-          session.session_type === "food" &&
-          new Date(session.session_start).getTime() >= fromMs,
-      )
-      .map(
-        (session) =>
-          new Date(session.session_start).getHours() +
-          new Date(session.session_start).getMinutes() / 60,
-      )
-      .filter((value) => Number.isFinite(value));
-    if (!historyHours.length) {
-      return {
-        state: "normal" as D3AnomalyState,
-        label: "Día normal",
-        detail: "Aún sin baseline histórico",
-      };
-    }
-    const mean =
-      historyHours.reduce((acc, value) => acc + value, 0) / historyHours.length;
-    const first = new Date(daySessions[0].startT);
-    const firstHour = first.getHours() + first.getMinutes() / 60;
-    const diff = Math.abs(firstHour - mean);
-    if (diff <= 1.5) {
-      return {
-        state: "normal" as D3AnomalyState,
-        label: "Día normal",
-        detail: "Comida dentro del horario habitual",
-      };
-    }
-    return {
-      state: "off_schedule" as D3AnomalyState,
-      label: "Fuera de horario",
-      detail: "Comida confirmada fuera de patrón",
-    };
-  }, [
-    analyticsHistorySessions,
-    bowlDevice?.id,
-    bowlIntakeSessions,
-    isAuthoritativeFoodDevice,
-  ]);
-  const d3DateInputValue = useMemo(() => {
-    const selected = new Date();
-    selected.setDate(selected.getDate() - dayCycleOffsetDays);
-    return selected.toISOString().slice(0, 10);
-  }, [dayCycleOffsetDays]);
-  const applyD3Date = (value: string) => {
-    if (!value) return;
-    const selected = new Date(`${value}T00:00:00`);
-    if (Number.isNaN(selected.getTime())) return;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffDays = Math.round(
-      (today.getTime() - selected.getTime()) / (24 * 60 * 60 * 1000),
-    );
-    setDayCycleOffsetDays(Math.max(0, diffDays));
-  };
-  const d3MultiDayRows = useMemo<MultiDayRow[]>(() => {
-    const rows: MultiDayRow[] = [];
-    for (let index = 0; index < 4; index += 1) {
-      const offset = dayCycleOffsetDays + index;
-      const anchor = new Date();
-      anchor.setDate(anchor.getDate() - offset);
-      const window = getDayNightWindow(anchor);
-      const label = offset === 0 ? "Hoy" : formatCycleDate(window.startMs);
-      const foodPoints = toDayNightPoints(
-        bowlDevice?.id ? (deviceHistoryReadings[bowlDevice.id] ?? []) : [],
-        window.startMs,
-        window.endMs,
-        selectBowlSeriesValue,
-      );
-      const waterPoints = toDayNightPoints(
-        waterDevice?.id ? (deviceHistoryReadings[waterDevice.id] ?? []) : [],
-        window.startMs,
-        window.endMs,
-        selectWaterSeriesValue,
-      );
-      rows.push({
-        key: `row-${offset}-${window.startMs}`,
-        label,
-        startMs: window.startMs,
-        foodPoints,
-        waterPoints,
-      });
-    }
-    return rows;
-  }, [
-    bowlDevice?.id,
-    dayCycleOffsetDays,
-    deviceHistoryReadings,
-    selectBowlSeriesValue,
-    selectWaterSeriesValue,
-    waterDevice?.id,
-  ]);
-  const d3MiniPath = useCallback(
-    (
-      points: DayNightPoint[],
-      rowStartMs: number,
-      rowYDomain: readonly [number, number],
-      width: number,
-      height: number,
-    ) => {
-      if (points.length < 2) return "";
-      const x = d3.scaleLinear().domain([0, 24]).range([0, width]);
-      const y = d3.scaleLinear().domain(rowYDomain).range([height, 0]);
-      const line = d3
-        .line<DayNightPoint>()
-        .x((point) => x(toCycleHourOffset(point.t, rowStartMs)))
-        .y((point) => y(point.y))
-        .curve(d3.curveMonotoneX);
-      return line(points) ?? "";
-    },
-    [],
-  );
-
   const nowMs = useMemo(() => Date.now(), []);
   const monthStartMs = nowMs - 30 * 24 * 60 * 60 * 1000;
   const bowlHistoryPoints = useMemo(
@@ -3324,26 +2294,6 @@ export default function TodayPage() {
       monthStartMs,
       nowMs,
     ],
-  );
-  const d3HeatBins = useMemo(() => {
-    const bins = Array.from({ length: 24 }, (_, hour) => ({
-      hour,
-      count: 0,
-    }));
-    const sources = [...bowlHistoryPoints, ...waterHistoryPoints];
-    for (const point of sources) {
-      const offset = toCycleHourOffsetByTimestamp(point.t);
-      if (!Number.isFinite(offset)) continue;
-      const index = Math.floor(offset);
-      if (index >= 0 && index < 24) {
-        bins[index].count += 1;
-      }
-    }
-    return bins;
-  }, [bowlHistoryPoints, waterHistoryPoints]);
-  const d3HeatMax = useMemo(
-    () => d3.max(d3HeatBins, (bin) => bin.count) ?? 0,
-    [d3HeatBins],
   );
   const bowlHistorySessions = useMemo(() => {
     if (!isAuthoritativeFoodDevice) return [];
@@ -3790,11 +2740,101 @@ export default function TodayPage() {
                 </div>
               </div>
 
-              <aside className="today-hero-aside ml-auto flex w-full flex-col items-center gap-1 sm:w-auto">
+              <aside className="today-hero-aside ml-auto flex w-full flex-col items-stretch gap-1 sm:w-auto sm:min-w-[260px]">
                 <p className="today-hero-updated text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
                   Actualizado el {heroUpdatedLabel}
                 </p>
-                <div className="today-hero-summary inline-flex items-center gap-2">
+                <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Barras Sims
+                    </p>
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                      {bowlDevice?.device_id ?? "KPCLXXXX"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      {
+                        key: "food",
+                        title: "Comida",
+                        iconSrc: "/illustrations/icono_comida.png",
+                        filledBlocks: bowlFilledBlocks,
+                        valueLabel:
+                          bowlContentWeightGrams !== null
+                            ? `${Math.round(bowlContentWeightGrams)} g`
+                            : "N/D",
+                        statusLabel: bowlWellness.stateLabel,
+                        noteLabel: bowlWellness.lastEventLabel,
+                        trackClass: "border-rose-100 bg-rose-50",
+                        fillClass:
+                          "bg-[linear-gradient(180deg,rgba(251,191,36,0.95)_0%,rgba(244,63,94,0.95)_100%)]",
+                        labelClass: "text-rose-700",
+                        badgeClass: "border-rose-100 bg-rose-50 text-rose-700",
+                      },
+                      {
+                        key: "water",
+                        title: "Agua",
+                        iconSrc: "/illustrations/icono_agua.png",
+                        filledBlocks: waterFilledBlocks,
+                        valueLabel:
+                          waterContentWeightGrams !== null
+                            ? `${Math.round(waterContentWeightGrams)} mL`
+                            : "N/D",
+                        statusLabel: waterWellness.stateLabel,
+                        noteLabel: waterWellness.lastEventLabel,
+                        trackClass: "border-emerald-100 bg-emerald-50",
+                        fillClass:
+                          "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
+                        labelClass: "text-emerald-700",
+                        badgeClass: "border-slate-200 bg-slate-50 text-slate-500",
+                      },
+                    ].map(({ key, title, iconSrc, filledBlocks, valueLabel, statusLabel, noteLabel, trackClass, fillClass, labelClass, badgeClass }) => (
+                      <div
+                        key={key}
+                        className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
+                      >
+                        <div className="flex h-8 items-center justify-center">
+                          <Image
+                            src={iconSrc}
+                            alt=""
+                            aria-hidden={true}
+                            width={32}
+                            height={32}
+                            className="h-8 w-8 object-contain opacity-90"
+                          />
+                        </div>
+                        <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
+                          <div
+                            className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
+                            style={{ height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%` }}
+                          />
+                        </div>
+                        <div className="flex flex-col items-center gap-0.5 text-center">
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}>
+                            {statusLabel}
+                          </span>
+                          <p className={`text-[11px] font-semibold ${labelClass}`}>
+                            {title} · {valueLabel}
+                          </p>
+                          <p className="text-[10px] leading-tight text-slate-400">
+                            {noteLabel}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
+                    <span>{getOperationalLabel(bowlPowerState)}</span>
+                    <span>
+                      {getBatteryStateLabel(
+                        bowlDevice?.battery_state,
+                        bowlDevice?.battery_level,
+                      ).text}
+                    </span>
+                  </div>
+                </div>
+                <div className="today-hero-summary inline-flex items-center gap-2 hidden">
                   <div className="today-hero-summary-cards grid grid-cols-1 gap-1.5 md:grid-cols-2">
                     <div className="today-hero-summary-card today-hero-summary-card-food flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
                       <div>
@@ -3891,7 +2931,7 @@ export default function TodayPage() {
                       />
                     </div>
                   </div>
-                  <div className="today-hero-period my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
+                  <div className="today-hero-period hidden my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
                     {periodLabels.map(({ key, label, description }) => {
                       const isActive = key === consumptionPeriod;
                       return (
@@ -4429,6 +3469,11 @@ export default function TodayPage() {
                   {chartLoadError}
                 </p>
               ) : null}
+              {mqttLiveError ? (
+                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
+                  {mqttLiveError}
+                </p>
+              ) : null}
               {!isAuthoritativeFoodDevice ? (
                 <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
                   Alimentación sin evidencia auditada: solo se confirma comida
@@ -4439,859 +3484,7 @@ export default function TodayPage() {
             </div>
           </section>
 
-          <section
-            id="kpcl-d3-object"
-            role="region"
-            aria-label="Gráfico D3 KPCL mejorado"
-            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
-          >
-            <div className="rounded-[calc(var(--radius)-8px)] border border-emerald-100 bg-[linear-gradient(180deg,rgba(236,253,245,0.5)_0%,rgba(240,249,255,0.45)_45%,rgba(255,255,255,0.96)_100%)] p-4 shadow-[0_14px_30px_-24px_rgba(16,185,129,0.7)]">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                    KPCL D3
-                  </p>
-                  <h3 className="mt-1 text-base font-semibold text-slate-900 md:text-lg">
-                    Versión semántica mejorada del gráfico original
-                  </h3>
-                  <p className="mt-1 text-xs text-slate-600">
-                    Fuente real: {KPCL_D3_CHART_OBJECT.data.readingsEndpoint} ·
-                    Zona horaria {KPCL_D3_CHART_OBJECT.timezone}
-                  </p>
-                  <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                    <span
-                      className={`inline-block h-2.5 w-2.5 rounded-full ${
-                        d3FoodAnomaly.state === "normal"
-                          ? "bg-emerald-500"
-                          : d3FoodAnomaly.state === "off_schedule"
-                            ? "bg-amber-500"
-                            : d3FoodAnomaly.state === "pending"
-                              ? "bg-rose-500"
-                              : "bg-slate-300"
-                      }`}
-                    />
-                    <span>{d3FoodAnomaly.label}</span>
-                    <span className="text-slate-500">
-                      · {d3FoodAnomaly.detail}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={KPCL_D3_CHART_OBJECT.visuals.assets.foodIcon}
-                    alt=""
-                    aria-hidden={true}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 object-contain opacity-95"
-                  />
-                  <Image
-                    src={KPCL_D3_CHART_OBJECT.visuals.assets.waterIcon}
-                    alt=""
-                    aria-hidden={true}
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 object-contain opacity-95"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                  aria-label="Ciclo anterior D3"
-                  title="Ciclo anterior D3"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays(0)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-0.5 text-[12px] font-semibold text-slate-600 hover:bg-slate-50"
-                  aria-label="Volver a hoy D3"
-                  title="Volver a hoy D3"
-                >
-                  {dayNightRangeTitle}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
-                  }
-                  disabled={dayCycleOffsetDays === 0}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Ciclo siguiente D3"
-                  title="Ciclo siguiente D3"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-                <input
-                  type="date"
-                  value={d3DateInputValue}
-                  onChange={(event) => applyD3Date(event.target.value)}
-                  className="h-8 rounded-[10px] border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700"
-                  aria-label="Seleccionar fecha D3"
-                />
-              </div>
-
-              <div className="relative mt-3 overflow-hidden rounded-[12px] border border-white/80 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white">
-                <svg
-                  viewBox={`0 0 ${d3Canvas.width} ${d3Canvas.height}`}
-                  className="h-[360px] w-full"
-                  role="img"
-                  aria-label="Gráfico D3 de ciclo diario"
-                  onMouseMove={(event) => {
-                    const [mx] = d3.pointer(event);
-                    const clampedX = Math.min(
-                      d3Canvas.marginLeft + d3InnerWidth,
-                      Math.max(d3Canvas.marginLeft, mx),
-                    );
-                    const ts = d3XScale.invert(clampedX);
-                    setD3CursorTs(ts);
-                  }}
-                  onMouseLeave={() => {
-                    setD3CursorTs(null);
-                    setD3HoverMarker(null);
-                  }}
-                >
-                  <image
-                    href={KPCL_D3_CHART_OBJECT.visuals.assets.fondo}
-                    x={d3Canvas.marginLeft}
-                    y={d3Canvas.marginTop}
-                    width={d3InnerWidth}
-                    height={d3InnerHeight}
-                    preserveAspectRatio="xMidYMid slice"
-                    opacity={1}
-                  />
-                  {d3HeatBins.map((bin) => {
-                    if (d3HeatMax <= 0 || bin.count <= 0) return null;
-                    const from = d3CycleStartMs + bin.hour * 60 * 60 * 1000;
-                    const to = d3CycleStartMs + (bin.hour + 1) * 60 * 60 * 1000;
-                    const x = d3XScale(from);
-                    const width = Math.max(0, d3XScale(to) - x);
-                    const normalized = bin.count / d3HeatMax;
-                    return (
-                      <rect
-                        key={`heat-${bin.hour}`}
-                        x={x}
-                        y={d3Canvas.marginTop}
-                        width={width}
-                        height={d3InnerHeight}
-                        fill="rgba(15,23,42,0.12)"
-                        opacity={Math.min(0.2, 0.02 + normalized * 0.14)}
-                      />
-                    );
-                  })}
-                  {d3BackgroundBands.map((band) => {
-                    const from = d3CycleStartMs + band.from * 60 * 60 * 1000;
-                    const to = d3CycleStartMs + band.to * 60 * 60 * 1000;
-                    const x = d3XScale(from);
-                    const width = Math.max(0, d3XScale(to) - x);
-                    return (
-                      <rect
-                        key={`band-${band.key}`}
-                        x={x}
-                        y={d3Canvas.marginTop}
-                        width={width}
-                        height={d3InnerHeight}
-                        fill={band.color}
-                        opacity={d3HoverMarker ? 0.4 : 1}
-                      />
-                    );
-                  })}
-                  {d3FoodHabitBands.map((band) => {
-                    const from =
-                      d3CycleStartMs + band.startHour * 60 * 60 * 1000;
-                    const to = d3CycleStartMs + band.endHour * 60 * 60 * 1000;
-                    const x = d3XScale(from);
-                    const width = Math.max(0, d3XScale(to) - x);
-                    return (
-                      <rect
-                        key={band.id}
-                        x={x}
-                        y={d3Canvas.marginTop}
-                        width={width}
-                        height={d3InnerHeight}
-                        fill="rgba(16,185,129,0.12)"
-                      />
-                    );
-                  })}
-                  {d3SessionConnectors.map((connector) => (
-                    <line
-                      key={connector.id}
-                      x1={d3XScale(connector.startT)}
-                      x2={d3XScale(connector.endT)}
-                      y1={d3YScale(connector.yValue)}
-                      y2={d3YScale(connector.yValue)}
-                      stroke="#f472b6"
-                      strokeWidth={3}
-                      strokeDasharray="6 6"
-                      opacity={0.7}
-                    />
-                  ))}
-                  {[0, 6, 12, 18, 24].map((offset) => {
-                    const tickTs = d3CycleStartMs + offset * 60 * 60 * 1000;
-                    const x = d3XScale(tickTs);
-                    return (
-                      <g key={`d3-tick-${offset}`}>
-                        <line
-                          x1={x}
-                          y1={d3Canvas.marginTop}
-                          x2={x}
-                          y2={d3Canvas.marginTop + d3InnerHeight}
-                          stroke="rgba(148,163,184,0.34)"
-                          strokeDasharray="3 4"
-                        />
-                        <text
-                          x={x}
-                          y={d3Canvas.marginTop + d3InnerHeight + 16}
-                          textAnchor="middle"
-                          className="fill-slate-500 text-[11px] font-semibold"
-                        >
-                          {formatHourFromOffset(offset)}
-                        </text>
-                      </g>
-                    );
-                  })}
-                  {d3LinePathFood ? (
-                    <path
-                      d={d3LinePathFood}
-                      fill="none"
-                      stroke="#94a3b8"
-                      strokeWidth={1.1}
-                      opacity={0.35}
-                    />
-                  ) : null}
-                  {d3FoodSegments.map((segment) => (
-                    <line
-                      key={segment.id}
-                      x1={segment.x1}
-                      y1={segment.y1}
-                      x2={segment.x2}
-                      y2={segment.y2}
-                      stroke="#94a3b8"
-                      strokeWidth={Math.max(
-                        1.2,
-                        Math.min(2.6, segment.strokeWidth * 0.5),
-                      )}
-                      strokeLinecap="round"
-                      opacity={0.42}
-                    />
-                  ))}
-                  {d3LinePathWater ? (
-                    <path
-                      d={d3LinePathWater}
-                      fill="none"
-                      stroke="#cbd5e1"
-                      strokeWidth={1.1}
-                      opacity={0.28}
-                    />
-                  ) : null}
-                  {d3WaterSegments.map((segment) => (
-                    <line
-                      key={segment.id}
-                      x1={segment.x1}
-                      y1={segment.y1}
-                      x2={segment.x2}
-                      y2={segment.y2}
-                      stroke="#cbd5e1"
-                      strokeWidth={Math.max(
-                        1.1,
-                        Math.min(2.2, segment.strokeWidth * 0.45),
-                      )}
-                      strokeLinecap="round"
-                      opacity={0.34}
-                    />
-                  ))}
-                  {d3NowTs !== null ? (
-                    <g>
-                      <line
-                        x1={d3XScale(d3NowTs)}
-                        y1={d3Canvas.marginTop}
-                        x2={d3XScale(d3NowTs)}
-                        y2={d3Canvas.marginTop + d3InnerHeight}
-                        stroke="rgba(15,23,42,0.72)"
-                        strokeDasharray="2 3"
-                      />
-                      <text
-                        x={d3XScale(d3NowTs)}
-                        y={d3Canvas.marginTop - 8}
-                        textAnchor="middle"
-                        className="fill-slate-700 text-[10px] font-bold"
-                      >
-                        Ahora
-                      </text>
-                    </g>
-                  ) : null}
-                  {d3CursorTs !== null ? (
-                    <line
-                      x1={d3XScale(d3CursorTs)}
-                      y1={d3Canvas.marginTop}
-                      x2={d3XScale(d3CursorTs)}
-                      y2={d3Canvas.marginTop + d3InnerHeight}
-                      stroke="rgba(15,23,42,0.55)"
-                      strokeDasharray="5 4"
-                    />
-                  ) : null}
-                  {d3Markers.map((marker) => {
-                    const x = d3XScale(marker.renderT);
-                    const y = d3YScale(marker.renderValue);
-                    return (
-                      <g
-                        key={marker.id}
-                        transform={`translate(${x}, ${y})`}
-                        onMouseEnter={() =>
-                          setD3HoverMarker({
-                            marker,
-                            anchorX: x,
-                            anchorY: y,
-                          })
-                        }
-                        onMouseLeave={() => setD3HoverMarker(null)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <circle
-                          cx={0}
-                          cy={0}
-                          r={22}
-                          fill={
-                            marker.phase === "start"
-                              ? "rgba(34,197,94,0.18)"
-                              : "rgba(239,68,68,0.18)"
-                          }
-                        />
-                        <image
-                          href={marker.icon}
-                          x={-marker.size / 2}
-                          y={-marker.size / 2}
-                          width={marker.size}
-                          height={marker.size}
-                          opacity={0.98}
-                        >
-                          <animateTransform
-                            attributeName="transform"
-                            type="scale"
-                            from="0.2"
-                            to="1"
-                            dur="320ms"
-                            begin="0s"
-                            fill="freeze"
-                          />
-                        </image>
-                      </g>
-                    );
-                  })}
-                </svg>
-                {d3HoverMarker ? (
-                  <div
-                    className="pointer-events-none absolute z-40 rounded-[10px] border border-slate-700/40 bg-slate-900/95 px-3 py-2 text-[11px] text-slate-100 shadow-[0_10px_22px_-14px_rgba(15,23,42,0.8)]"
-                    style={{
-                      left: `calc(${(d3HoverMarker.anchorX / d3Canvas.width) * 100}% + 28px)`,
-                      top: `calc(${(d3HoverMarker.anchorY / d3Canvas.height) * 100}% - 20px)`,
-                    }}
-                  >
-                    <p className="font-semibold">
-                      {d3HoverMarker.marker.phase === "start"
-                        ? "Inicio de sesión"
-                        : "Término de sesión"}
-                    </p>
-                    <p>{formatSessionClock(d3HoverMarker.marker.renderT)}</p>
-                    <p>Comió: {d3HoverMarker.marker.consumed} g</p>
-                    <p>
-                      Duración:{" "}
-                      {formatSessionDurationClock(
-                        d3HoverMarker.marker.durationMinutes,
-                      )}
-                    </p>
-                    <p>Sesión confirmada</p>
-                  </div>
-                ) : null}
-              </div>
-              <div className="mt-4 rounded-[12px] border border-slate-200 bg-white/75 px-3 py-3">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-                    Comparación 4 ciclos
-                  </p>
-                  <p className="text-[10px] text-slate-500">
-                    Dominio X compartido 06:00 → 06:00
-                  </p>
-                </div>
-                <div className="grid gap-2">
-                  {d3MultiDayRows.map((row) => {
-                    const combined = [...row.foodPoints, ...row.waterPoints];
-                    const rowDomain: readonly [number, number] = combined.length
-                      ? ([
-                          Math.max(
-                            0,
-                            (d3.min(combined, (point) => point.y) ?? 0) - 6,
-                          ),
-                          (d3.max(combined, (point) => point.y) ?? 100) + 6,
-                        ] as const)
-                      : d3YDomain;
-                    const miniWidth = 960;
-                    const miniHeight = 78;
-                    const miniX = d3
-                      .scaleLinear()
-                      .domain([0, 24])
-                      .range([0, miniWidth]);
-                    const miniY = d3
-                      .scaleLinear()
-                      .domain(rowDomain)
-                      .range([miniHeight, 0]);
-                    const rowFoodSessions = bowlHistorySessions.filter(
-                      (session) =>
-                        session.startT >= row.startMs &&
-                        session.startT < row.startMs + 24 * 60 * 60 * 1000,
-                    );
-                    const foodPath = d3MiniPath(
-                      row.foodPoints,
-                      row.startMs,
-                      rowDomain,
-                      miniWidth,
-                      miniHeight,
-                    );
-                    const waterPath = d3MiniPath(
-                      row.waterPoints,
-                      row.startMs,
-                      rowDomain,
-                      miniWidth,
-                      miniHeight,
-                    );
-                    return (
-                      <div
-                        key={row.key}
-                        className="grid grid-cols-[94px_1fr] items-center gap-2 rounded-[10px] border border-slate-100 bg-white px-2 py-2"
-                      >
-                        <p className="truncate text-[11px] font-semibold text-slate-600">
-                          {row.label}
-                        </p>
-                        <svg
-                          viewBox={`0 0 ${miniWidth} ${miniHeight}`}
-                          className="h-[72px] w-full"
-                          role="img"
-                          aria-label={`Patrón de ${row.label}`}
-                        >
-                          {[0, 6, 12, 18, 24].map((hour) => {
-                            const x = (hour / 24) * miniWidth;
-                            return (
-                              <line
-                                key={`${row.key}-tick-${hour}`}
-                                x1={x}
-                                y1={0}
-                                x2={x}
-                                y2={miniHeight}
-                                stroke="rgba(148,163,184,0.24)"
-                                strokeDasharray="2 4"
-                              />
-                            );
-                          })}
-                          {foodPath ? (
-                            <path
-                              d={foodPath}
-                              fill="none"
-                              stroke={KPCL_D3_CHART_OBJECT.visuals.colors.food}
-                              strokeWidth={2}
-                              opacity={0.88}
-                            />
-                          ) : null}
-                          {waterPath ? (
-                            <path
-                              d={waterPath}
-                              fill="none"
-                              stroke={KPCL_D3_CHART_OBJECT.visuals.colors.water}
-                              strokeWidth={2}
-                              opacity={0.88}
-                            />
-                          ) : null}
-                          {rowFoodSessions.map((session, index) => {
-                            const startX = miniX(
-                              toCycleHourOffset(session.startT, row.startMs),
-                            );
-                            const endX = miniX(
-                              toCycleHourOffset(session.endT, row.startMs),
-                            );
-                            const y = miniY(
-                              (session.startValue + session.endValue) / 2,
-                            );
-                            return (
-                              <g
-                                key={`${row.key}-session-${index}-${session.startT}`}
-                              >
-                                <line
-                                  x1={startX}
-                                  x2={endX}
-                                  y1={y}
-                                  y2={y}
-                                  stroke="#f472b6"
-                                  strokeWidth={1.8}
-                                  strokeDasharray="4 4"
-                                  opacity={0.72}
-                                />
-                                <circle
-                                  cx={startX}
-                                  cy={miniY(session.startValue)}
-                                  r={4.2}
-                                  fill="rgba(34,197,94,0.75)"
-                                />
-                                <circle
-                                  cx={endX}
-                                  cy={miniY(session.endValue)}
-                                  r={4.2}
-                                  fill="rgba(239,68,68,0.75)"
-                                />
-                              </g>
-                            );
-                          })}
-                        </svg>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </section>
         </header>
-
-        <section className="surface-card freeform-rise px-6 py-5">
-          {/* Pills de valores actuales */}
-          <div className="mb-4 flex flex-wrap gap-3">
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ background: "hsl(350 65% 62%)" }}
-              />
-              <span className="text-xs uppercase tracking-widest text-slate-400">
-                Comida
-              </span>
-              <span className="font-semibold text-slate-800">
-                {todayLatestWeight !== null
-                  ? `${Math.round(todayLatestWeight)} g`
-                  : "N/D"}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ background: "hsl(25 80% 52%)" }}
-              />
-              <span className="text-xs uppercase tracking-widest text-slate-400">
-                Temp
-              </span>
-              <span className="font-semibold text-slate-800">
-                {todayLatestTemp !== null
-                  ? `${Math.round(todayLatestTemp)} °C`
-                  : "N/D"}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ background: "hsl(198,70%,45%)" }}
-              />
-              <span className="text-xs uppercase tracking-widest text-slate-400">
-                Humedad
-              </span>
-              <span className="font-semibold text-slate-800">
-                {todayLatestHumidity !== null
-                  ? `${Math.round(todayLatestHumidity)} %`
-                  : "N/D"}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm">
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ background: "hsl(44,90%,52%)" }}
-              />
-              <span className="text-xs uppercase tracking-widest text-slate-400">
-                Luz
-              </span>
-              <span className="font-semibold text-slate-800">
-                {todayLatestLight !== null
-                  ? `${Math.round(todayLatestLight)} %`
-                  : "N/D"}
-              </span>
-            </div>
-          </div>
-          {/* Gráfico combinado ancho */}
-          <div className="h-40 w-full rounded-[calc(var(--radius)-8px)] bg-slate-50 px-3 py-3 sm:h-52">
-            {todayWeightSeries.length > 1 ||
-            todayTempSeries.length > 1 ||
-            todayHumiditySeries.length > 1 ||
-            todayLightSeries.length > 1 ? (
-              <Line
-                data={{
-                  labels: orderedToday3d.map((p) =>
-                    chileShortTime(p.timestamp),
-                  ),
-                  datasets: [
-                    {
-                      label: "Comida (g)",
-                      data: orderedToday3d.map((p) => p.value),
-                      borderColor: "hsl(350 65% 62%)",
-                      backgroundColor: "hsl(350 65% 62%)",
-                      borderWidth: 2.5,
-                      pointRadius: 0,
-                      tension: 0.3,
-                      yAxisID: "yWeight",
-                    },
-                    {
-                      label: "Temp (°C)",
-                      data: todayTempSeries
-                        .slice(0, 288)
-                        .reverse()
-                        .map((p) => p.value),
-                      borderColor: "hsl(25 80% 52%)",
-                      backgroundColor: "hsl(25 80% 52%)",
-                      borderWidth: 2,
-                      pointRadius: 0,
-                      tension: 0.3,
-                      yAxisID: "yEnv",
-                    },
-                    {
-                      label: "Humedad (%)",
-                      data: todayHumiditySeries
-                        .slice(0, 288)
-                        .reverse()
-                        .map((p) => p.value),
-                      borderColor: "hsl(198,70%,45%)",
-                      backgroundColor: "hsl(198,70%,45%)",
-                      borderWidth: 2,
-                      pointRadius: 0,
-                      tension: 0.3,
-                      yAxisID: "yEnv",
-                    },
-                    {
-                      label: "Luz (%)",
-                      data: todayLightSeries
-                        .slice(0, 288)
-                        .reverse()
-                        .map((p) => p.value),
-                      borderColor: "hsl(44,90%,52%)",
-                      backgroundColor: "hsl(44,90%,52%)",
-                      borderWidth: 2,
-                      pointRadius: 0,
-                      tension: 0.3,
-                      yAxisID: "yEnv",
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  animation: { duration: 340, easing: "easeOutQuart" },
-                  plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                      mode: "index",
-                      intersect: false,
-                      backgroundColor: "rgba(15,23,42,0.92)",
-                      titleColor: "#f8fafc",
-                      bodyColor: "#f8fafc",
-                      borderColor: "rgba(148,163,184,0.35)",
-                      borderWidth: 1,
-                      displayColors: true,
-                      callbacks: {
-                        title: (items) => {
-                          const idx = items[0]?.dataIndex;
-                          return idx !== undefined
-                            ? formatToday3dTooltipTitle(idx)
-                            : "";
-                        },
-                        label: (ctx) => {
-                          const raw =
-                            typeof ctx.parsed.y === "number"
-                              ? ctx.parsed.y
-                              : null;
-                          return raw !== null
-                            ? `${ctx.dataset.label}: ${Math.round(raw)}`
-                            : (ctx.dataset.label ?? "");
-                        },
-                      },
-                    },
-                  },
-                  interaction: { mode: "nearest", intersect: false },
-                  scales: {
-                    x: {
-                      grid: { display: false },
-                      border: {
-                        display: true,
-                        color:
-                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-                      },
-                      ticks: {
-                        maxTicksLimit: 2,
-                        color: "hsl(var(--muted-foreground))",
-                        font: { size: 11 },
-                        autoSkip: false,
-                        maxRotation: 0,
-                        callback: (_v, i, ticks) =>
-                          i === 0
-                            ? "-3d"
-                            : i === ticks.length - 1
-                              ? "Ahora"
-                              : "",
-                      },
-                    },
-                    yWeight: {
-                      type: "linear",
-                      position: "left",
-                      grid: { drawOnChartArea: false },
-                      border: {
-                        display: true,
-                        color:
-                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-                      },
-                      ticks: {
-                        color: "hsl(350 65% 62%)",
-                        font: { size: 10 },
-                        maxTicksLimit: 3,
-                        callback: (v) => `${Math.round(Number(v))}g`,
-                      },
-                    },
-                    yEnv: {
-                      type: "linear",
-                      position: "right",
-                      grid: { drawOnChartArea: false },
-                      border: {
-                        display: true,
-                        color:
-                          "color-mix(in oklab, hsl(var(--muted-foreground)) 24%, transparent)",
-                      },
-                      ticks: {
-                        color: "hsl(25 80% 52%)",
-                        font: { size: 10 },
-                        maxTicksLimit: 3,
-                        callback: (v) => `${Math.round(Number(v))}`,
-                      },
-                    },
-                  },
-                }}
-              />
-            ) : (
-              <p className="text-xs text-slate-500">
-                Aún sin lecturas recientes.
-              </p>
-            )}
-          </div>
-        </section>
-
-        <section className="surface-card freeform-rise px-6 py-5">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Resumen rápido
-              </p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">
-                {summaryText}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Frescura: {freshnessLabel} · Última actualización:{" "}
-                {lastRefreshAt ? formatTimestamp(lastRefreshAt) : "Sin datos"}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
-            {quickStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="relative rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 pr-20 text-sm text-slate-600 md:pr-24"
-              >
-                {stat.icon ? (
-                  <div className="absolute inset-y-3 right-4 flex w-16 items-center justify-center md:w-20">
-                    <Image
-                      src={stat.icon}
-                      alt=""
-                      aria-hidden={true}
-                      width={80}
-                      height={80}
-                      className="max-h-full max-w-full object-contain opacity-95"
-                    />
-                  </div>
-                ) : null}
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                  {stat.label}
-                </p>
-                <p className="mt-2 text-lg font-semibold text-slate-900">
-                  {stat.value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <section className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 bg-white px-4 py-4">
-            <OperationalActionsCard
-              description="Si faltan datos o aparecen gaps, sigue por la vista operativa."
-              actions={[
-                { href: "/story", label: "Abrir diario" },
-                { href: "/admin", label: "Ver admin" },
-                { href: "/registro", label: "Completar registro" },
-              ]}
-            />
-            <div className="mt-3 grid gap-3 lg:grid-cols-3">
-              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
-                <p className="font-semibold text-slate-900">Lecturas en vivo</p>
-                <p className="mt-1">
-                  Revisa si hoy hay actividad reciente, frescura y eventos
-                  duplicados.
-                </p>
-              </article>
-              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
-                <p className="font-semibold text-slate-900">
-                  Gaps e incidentes
-                </p>
-                <p className="mt-1">
-                  El admin separa bridge offline, device offline y gaps de
-                  lectura.
-                </p>
-              </article>
-              <article className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-3 text-xs text-slate-600">
-                <p className="font-semibold text-slate-900">
-                  Historia y perfil
-                </p>
-                <p className="mt-1">
-                  Story y perfil ayudan cuando el resumen todavía no explica
-                  todo.
-                </p>
-              </article>
-            </div>
-          </section>
-
-          {!hasAnalyticsHistory ? (
-            <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-sky-200 bg-sky-50/70 px-4 py-3 text-sm text-sky-800">
-              <p className="font-semibold">
-                La historia analítica todavía está en construcción
-              </p>
-              <p className="mt-1 text-sky-700">
-                La vista en vivo ya funciona, pero todavía no hay sesiones
-                históricas acumuladas para este perfil. Cuando el plato siga
-                publicando lecturas, Story empezará a mostrar más contexto.
-              </p>
-              <div className="mt-2 flex flex-wrap gap-3 text-xs">
-                <Link href="/story" className="underline">
-                  Abrir diario
-                </Link>
-                <Link href="/pet" className="underline">
-                  Revisar perfil
-                </Link>
-              </div>
-            </div>
-          ) : null}
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-500">
-              Frescura: {freshnessLabel}
-            </span>
-            <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-semibold text-rose-600">
-              Últimas 24h
-            </span>
-          </div>
-          {refreshError ? (
-            <p className="mt-2 text-xs text-rose-600">{refreshError}</p>
-          ) : null}
-        </section>
 
         {state.error ? (
           <section className="surface-card freeform-rise px-6 py-6 text-sm text-slate-600">
@@ -5333,142 +3526,6 @@ export default function TodayPage() {
           </section>
         ) : null}
 
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="display-title text-lg font-semibold text-slate-900">
-              Feed interpretado
-            </h2>
-            <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">
-                Últimas 24h
-              </span>
-              <Link
-                href="/story"
-                className="text-xs font-semibold text-slate-600 hover:text-slate-900"
-              >
-                Ver diario
-              </Link>
-            </div>
-          </div>
-          <p className="text-xs text-slate-400">
-            Las lecturas duplicadas se ignoran (idempotencia por dispositivo y
-            timestamp).
-          </p>
-          <div className="grid gap-4">
-            {state.isLoading ? (
-              <div className="surface-card freeform-rise px-6 py-5">
-                <div className="space-y-3">
-                  <div className="h-3 w-24 rounded-full bg-slate-200/70" />
-                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
-                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
-                  <div className="h-10 w-full rounded-[var(--radius)] bg-slate-100" />
-                </div>
-              </div>
-            ) : feedCards.length ? (
-              feedCards.map((card) => (
-                <article
-                  key={card.title}
-                  className="surface-card freeform-rise flex flex-col gap-3 px-6 py-5"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {card.icon ? (
-                        <Image
-                          src={card.icon}
-                          alt=""
-                          aria-hidden={true}
-                          width={36}
-                          height={36}
-                          className="h-9 w-9 rounded-[14px] border border-slate-200 bg-white object-contain p-1"
-                        />
-                      ) : null}
-                      <h3 className="text-lg font-semibold text-slate-900">
-                        {card.title}
-                      </h3>
-                    </div>
-                    <span
-                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneStyles[card.tone]}`}
-                    >
-                      {card.tone === "ok"
-                        ? "Estable"
-                        : card.tone === "warning"
-                          ? "Atención"
-                          : "Info"}
-                    </span>
-                  </div>
-                  <p className="text-sm text-slate-600">{card.description}</p>
-                  {card.insights?.length ? (
-                    <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-slate-50/60 px-3 py-2 text-xs text-slate-700">
-                      <div className="space-y-1">
-                        {card.insights.map((item) => (
-                          <p
-                            key={`${item.label}-${item.value}`}
-                            className="flex items-center gap-2"
-                          >
-                            {renderInsightIcon(item.icon)}
-                            <span>
-                              <span className="font-semibold text-slate-900">
-                                {item.label}:
-                              </span>{" "}
-                              {item.value}
-                            </span>
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                  {card.sectionRows?.length ? (
-                    <div className="rounded-[calc(var(--radius)-8px)] border border-slate-200 bg-white px-3 py-3 text-xs text-slate-700">
-                      {card.sectionTitle ? (
-                        <p className="mb-2 font-semibold text-slate-900">
-                          {card.sectionTitle}
-                        </p>
-                      ) : null}
-                      <div className="space-y-1.5">
-                        {card.sectionRows.map((row) => (
-                          <p
-                            key={`${row.label}-${row.value}`}
-                            className="flex items-center gap-2"
-                          >
-                            {renderInsightIcon(row.icon ?? "audit")}
-                            <span>
-                              <span className="font-semibold text-slate-900">
-                                {row.label}:
-                              </span>{" "}
-                              {row.value}
-                            </span>
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                  {card.footer ? (
-                    <p className="text-xs text-slate-500">{card.footer}</p>
-                  ) : null}
-                </article>
-              ))
-            ) : (
-              <div className="surface-card freeform-rise px-6 py-5 text-sm text-slate-500">
-                Aún no hay lecturas para mostrar.
-                <span className="mt-2 block text-xs text-slate-400">
-                  Cuando el plato envíe datos, aquí verás un resumen claro.
-                </span>
-              </div>
-            )}
-          </div>
-          {state.readingsCursor ? (
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={loadMoreReadings}
-                disabled={state.isLoadingMore}
-                className="h-9 rounded-[var(--radius)] border border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700"
-              >
-                {state.isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
-            </div>
-          ) : null}
-        </section>
       </div>
       {showGuide ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">

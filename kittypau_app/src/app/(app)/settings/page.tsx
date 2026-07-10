@@ -148,9 +148,9 @@ export default function SettingsPage() {
             className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
             aria-expanded={menuOpen}
             aria-haspopup="menu"
-            aria-label="Abrir menú de ajustes"
+            aria-label="Abrir menú de acciones"
           >
-            Ajustes
+            Acciones
           </button>
           {menuOpen ? (
             <div
