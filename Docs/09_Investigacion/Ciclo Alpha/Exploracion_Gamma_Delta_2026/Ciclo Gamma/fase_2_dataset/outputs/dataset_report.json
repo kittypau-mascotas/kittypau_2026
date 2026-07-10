@@ -1,0 +1,173 @@
+{
+  "splits": {
+    "train": {
+      "n_total": 77676,
+      "pct_del_total": 57.6,
+      "clases": {
+        "alimentacion": {
+          "n": 1446,
+          "pct": 1.86
+        },
+        "servido": {
+          "n": 135,
+          "pct": 0.17
+        },
+        "reposo": {
+          "n": 76095,
+          "pct": 97.96
+        }
+      }
+    },
+    "val": {
+      "n_total": 36632,
+      "pct_del_total": 27.2,
+      "clases": {
+        "alimentacion": {
+          "n": 797,
+          "pct": 2.18
+        },
+        "servido": {
+          "n": 134,
+          "pct": 0.37
+        },
+        "reposo": {
+          "n": 35701,
+          "pct": 97.46
+        }
+      }
+    },
+    "test": {
+      "n_total": 20505,
+      "pct_del_total": 15.2,
+      "clases": {
+        "alimentacion": {
+          "n": 361,
+          "pct": 1.76
+        },
+        "servido": {
+          "n": 80,
+          "pct": 0.39
+        },
+        "reposo": {
+          "n": 20064,
+          "pct": 97.85
+        }
+      }
+    }
+  },
+  "features": {
+    "weight_grams": {
+      "mean": 142.2785,
+      "std": 35.2989,
+      "min": 11.0,
+      "max": 277.0,
+      "pct_nan": 0.0
+    },
+    "delta_w": {
+      "mean": -0.0005,
+      "std": 2.2427,
+      "min": -200.0,
+      "max": 198.0,
+      "pct_nan": 0.0
+    },
+    "delta_w_10": {
+      "mean": -0.0005,
+      "std": 0.4942,
+      "min": -12.3,
+      "max": 19.6,
+      "pct_nan": 0.0
+    },
+    "rolling_std_5": {
+      "mean": 0.1559,
+      "std": 2.0073,
+      "min": 0.0,
+      "max": 109.5445,
+      "pct_nan": 0.0
+    },
+    "rolling_std_10": {
+      "mean": 0.2564,
+      "std": 2.4137,
+      "min": 0.0,
+      "max": 102.4294,
+      "pct_nan": 0.0
+    },
+    "rolling_mean_5": {
+      "mean": 142.2797,
+      "std": 35.2525,
+      "min": 72.0,
+      "max": 246.0,
+      "pct_nan": 0.0
+    },
+    "net_weight": {
+      "mean": 1.0887,
+      "std": 9.7911,
+      "min": -123.0,
+      "max": 199.2,
+      "pct_nan": 0.0
+    },
+    "is_plateau": {
+      "mean": 0.9787,
+      "std": 0.1444,
+      "min": 0.0,
+      "max": 1.0,
+      "pct_nan": 0.0
+    },
+    "plateau_duration_s": {
+      "mean": 9269.749,
+      "std": 7676.9042,
+      "min": 0.0,
+      "max": 44940.0,
+      "pct_nan": 0.0
+    },
+    "hour_sin": {
+      "mean": 0.0024,
+      "std": 0.7056,
+      "min": -1.0,
+      "max": 1.0,
+      "pct_nan": 0.0
+    },
+    "hour_cos": {
+      "mean": 0.0075,
+      "std": 0.7086,
+      "min": -1.0,
+      "max": 1.0,
+      "pct_nan": 0.0
+    },
+    "clock_invalid": {
+      "mean": 0.9816,
+      "std": 0.1343,
+      "min": 0.0,
+      "max": 1.0,
+      "pct_nan": 0.0
+    },
+    "dia_semana_sin": {
+      "mean": 0.0746,
+      "std": 0.7175,
+      "min": -0.9749,
+      "max": 0.9749,
+      "pct_nan": 0.0
+    }
+  },
+  "imbalance_ratio_train": 563.67,
+  "n_features": 13,
+  "features_lista": [
+    "weight_grams",
+    "delta_w",
+    "delta_w_10",
+    "rolling_std_5",
+    "rolling_std_10",
+    "rolling_mean_5",
+    "net_weight",
+    "is_plateau",
+    "plateau_duration_s",
+    "hour_sin",
+    "hour_cos",
+    "clock_invalid",
+    "dia_semana_sin"
+  ],
+  "label_encoding": {
+    "alimentacion": 0,
+    "servido": 1,
+    "reposo": 2
+  }
+}

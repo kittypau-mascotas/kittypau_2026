@@ -1,0 +1,101 @@
+---
+id: home
+title: Kittypau — Alpha Knowledge System
+type: knowledge
+status: active
+owner: Mauro
+created: 2026-06-28
+updated: 2026-06-29
+tags:
+  - home
+  - navegacion
+---
+
+# Kittypau — Alpha Knowledge System
+
+> Fuente única de verdad del proyecto. Si un documento entra en conflicto con este, este gana.
+> Este archivo es solo navegación — toda la información técnica vive en los documentos enlazados.
+
+---
+
+## Proyecto
+
+- [[01_Proyecto/README_Proyecto]] — Qué está activo, qué es legacy, vocabulario canónico
+- [[01_Proyecto/ESTADO_ACTUAL]] — Estado real del producto (2026-06-29)
+- [[01_Proyecto/DOC_MAESTRO_DOMINIO]] — Reglas de negocio, estados, contratos API, economía
+- [[01_Proyecto/ENUMS_OFICIALES]] — Valores permitidos: fuente única de verdad
+
+---
+
+## Sistema
+
+- [[02_Arquitectura/README_Arquitectura]] — Stack completo y flujo de datos
+- [[02_Arquitectura/MOC_Arquitectura]] — Mapa de todos los componentes
+- [[03_Backend/README_Backend]] — Supabase, Edge Functions, API Routes
+- [[04_Frontend/README_Frontend]] — App Next.js + Capacitor Android
+- [[05_API/README_API]] — Contratos de endpoints
+- [[06_BaseDatos/README_BaseDatos]] — Schema, migraciones, pgvector
+- [[07_MQTT/README_MQTT]] — HiveMQ, topics, bridge Raspberry
+- [[08_ESP32/README_ESP32]] — Firmware, OTA, hardware KPCL
+- [[09_Sensores/README_Sensores]] — KPCL0034 "Bandida", calibración
+
+---
+
+## Datos e Investigación
+
+- [[10_Datasets/README_Datasets]] — readings.csv + readings_rows.csv
+- [[11_ModelosIA/MOC_ModelosIA]] — Motor v2, Evidence Engine, modelos futuros
+- [[12_Matematica/README_Matematica]] — Fórmulas, familias de features F00–F14
+- [[13_Features/README_ShapeFeatures]] — shape_features_v2.py, 102 features
+- [[14_Experimentos/MOC_Experimentos]] — Alpha v1, Alpha v2, ciclos
+- [[15_Resultados/RESULT_AlphaV2_Snapshots]] — Snapshots históricos v2.0–v2.2
+- [[15_Resultados/MOC_Resultados]] — Índice de métricas y comparativas
+- [[16_Papers/README_Papers]] — Referencias académicas
+
+---
+
+## Producto
+
+- [[17_Mocks/README_Mocks]] — UI mockups y wireframes
+- [[18_UI/README_UI]] — Componentes, pantallas, flujos
+- [[18_UI/UX_DIAGNOSTICO_2026_06_30]] — Diagnóstico UX/UI completo: 5 críticos, 10 importantes, 8 calidad
+- [[19_DevOps/README_DevOps]] — CI/CD, Vercel, deploy
+- [[20_Testing/README_Testing]] — Tests, benchmarks, auditorías
+
+---
+
+## Gestión
+
+- [[21_Roadmap/README_Estrategia_Mercado]] — ICP, competencia, modelo de negocio, KPIs
+- [[21_Roadmap/README_CORFO_Semilla2026]] — Postulación CORFO Semilla Inicia RM 2026
+- [[22_Reuniones/README_Reuniones]] — Actas y decisiones
+- [[23_Decisiones/MOC_ADR]] — Architecture Decision Records
+- [[24_Glosario/README_Glosario]] — Vocabulario canónico del dominio
+
+---
+
+## IA y Knowledge
+
+- [[25_Prompts/README_Prompts]] — Prompts reutilizables para Claude / Cursor
+- [[26_MCP/README_MCP]] — Configuración MCP Server
+- [[27_RAG/README_RAG]] — Pipeline RAG + embeddings + pgvector
+- [[28_KnowledgeGraph/README_KnowledgeGraph]] — Ontología y relaciones
+
+---
+
+## Auditorías
+
+- [[AUDITORIA_2026_06_29]] — Auditoría completa Knowledge vs código (2026-06-29)
+- [[18_UI/UX_DIAGNOSTICO_2026_06_30]] — Diagnóstico UX/UI completo (2026-06-30)
+
+---
+
+## Orden de lectura recomendado para nuevos colaboradores
+
+1. [[01_Proyecto/README_Proyecto]]
+2. [[01_Proyecto/ESTADO_ACTUAL]]
+3. [[01_Proyecto/DOC_MAESTRO_DOMINIO]]
+4. [[02_Arquitectura/README_Arquitectura]]
+5. [[06_BaseDatos/README_BaseDatos]]
+6. [[13_Features/README_ShapeFeatures]]
+7. [[14_Experimentos/EXP_AlphaV2_Pipeline]]

@@ -1111,7 +1111,6 @@ export default function BowlPage() {
                     <option value={21_600_000}>6 h</option>
                     <option value={43_200_000}>12 h</option>
                     <option value={86_400_000}>24 h</option>
-                    <option value={604_800_000}>1 semana</option>
                   </select>
                   <button
                     type="button"
@@ -1411,7 +1410,7 @@ export default function BowlPage() {
           onClick={() => setShowConfig(false)}
         >
           <div
-            className="w-full max-w-sm rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl sm:rounded-2xl"
+            className="w-full max-w-sm overflow-y-auto rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl max-h-[90vh] sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

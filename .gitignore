@@ -157,3 +157,21 @@ notebooks/.ipynb_checkpoints/
 
 # Local data exports (repo root)
 kpcl0036_error_peso_sinbateria.csv
+Docs/11_Data/**/*.csv
+Docs/09_Investigacion/**/*.csv
+Docs/09_Investigacion/**/*.parquet
+# Datos grandes
+Docs/11_Data/**/*.csv
+Docs/09_Investigacion/**/*.csv
+
+# Modelos entrenados
+Docs/09_Investigacion/**/*.pkl
+
+# Worktrees de Claude
+.claude/worktrees/
+Docs/09_Investigacion/kpcl0036_sin_batera_actual.csv
+Docs/11_Data/2026/readings.csv
+Docs/11_Data/2026/readings_rows.csv
+Docs/09_Investigacion/kpcl0034_kpcl0036_prueba_sincargador.csv
+Docs/11_Data/**/*.csv
+Docs/09_Investigacion/**/*.csv

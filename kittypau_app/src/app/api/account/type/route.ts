@@ -10,8 +10,7 @@ function isTesterEmail(email: string | null): boolean {
   if (!email) return false;
   const defaultEmails = [
     "kittypau.mascotas@gmail.com",
-    "prueba1@gmail.com",
-    "prueba2@gmail.com",
+    "javier.dayne@gmail.com",
   ];
   const envEmails = (process.env.TESTER_EMAILS ?? "")
     .split(",")
