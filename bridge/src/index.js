@@ -236,18 +236,25 @@ async function ensureDeviceExists(deviceId) {
 // ============ HANDLERS ============
 
 async function handleSensorData(deviceId, data) {
+  // Una sola consulta a devices reutilizada para readings + analytics processor
+  // (antes eran dos SELECT separados por cada mensaje SENSORS).
+  const { data: deviceMeta, error: lookupError } = await supabase
+    .from('devices')
+    .select('id, pet_id, owner_id, device_type, plate_weight_grams')
+    .eq('device_id', deviceId)
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error(`[READINGS] Error buscando device UUID para ${deviceId}: ${lookupError.message}`);
+    return;
+  }
+
   // readings (UUID-based) es la tabla canónica leída por la app.
   // sensor_readings (TEXT device_id, compat v2.4) fue retirada en v3.1: nadie la lee.
-  await writeToReadings(deviceId, data);
+  await writeToReadings(deviceId, data, deviceMeta);
 
   // Enviar al analytics processor (best-effort, no bloquea el flujo principal)
   try {
-    const { data: deviceMeta } = await supabase
-      .from('devices')
-      .select('id, pet_id, owner_id, device_type, plate_weight_grams')
-      .eq('device_id', deviceId)
-      .maybeSingle();
-
     processor.processReading(deviceId, data, deviceMeta).catch((err) => {
       console.error(`[PROCESSOR] Error async: ${err.message}`);
     });
@@ -256,20 +263,9 @@ async function handleSensorData(deviceId, data) {
   }
 }
 
-async function writeToReadings(deviceId, data) {
+async function writeToReadings(deviceId, data, device) {
   const battery = normalizeBatteryTelemetry(data);
-  const { data: device, error: lookupError } = await supabase
-    .from('devices')
-    .select('id, pet_id')
-    .eq('device_id', deviceId)
-    .not('owner_id', 'is', null)
-    .maybeSingle();
-
-  if (lookupError) {
-    console.error(`[READINGS] Error buscando device UUID para ${deviceId}: ${lookupError.message}`);
-    return;
-  }
-  if (!device) return; // No reclamado por usuario, no escribir en readings
+  if (!device?.owner_id) return; // No reclamado por usuario, no escribir en readings
 
   const serverNow = Date.now();
   let recordedAt = new Date(serverNow).toISOString();

@@ -468,7 +468,8 @@ export default function DemoPage() {
                         {petName}
                       </h1>
                       <p className="mt-1 text-sm text-slate-500">
-                        Perro · Demo · small · adult · 0 kg
+                        {petType === "dog" ? "Perro" : "Gato"} · Demo · small ·
+                        adult · 0 kg
                       </p>
                       <p className="mt-1 text-xs font-semibold text-slate-400">
                         Titular: {ownerName}

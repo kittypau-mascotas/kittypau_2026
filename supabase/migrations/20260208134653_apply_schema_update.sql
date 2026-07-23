@@ -280,7 +280,7 @@ $$ language plpgsql;
 create or replace function public.link_device_to_pet(
   p_owner_id uuid,
   p_pet_id uuid,
-  p_device_code text,
+  p_device_id text,
   p_device_type text,
   p_status text,
   p_battery_level int
