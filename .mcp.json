@@ -5,7 +5,7 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "D:\\Escritorio\\Proyectos\\AIoT_Kittypau\\kittypau_2026_hivemq\\Knowledge"
+        "./Knowledge"
       ],
       "windowsHide": true
     },
