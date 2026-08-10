@@ -73,6 +73,16 @@ type ApiReading = {
   battery_level: number | null;
 };
 
+type HungerBarResponse = {
+  status: "ok" | "sin_datos" | "sin_dispositivo";
+  percentage: number | null;
+  lastMealDetectedAt: string | null;
+  estimatedNextMealAt: string | null;
+  intervalUsedMinutes: number | null;
+  usingFallback: boolean;
+  sampleSize: number;
+};
+
 type DayNightPoint = { x: number; y: number; t: number };
 
 type AuditEvent = {
@@ -115,7 +125,6 @@ type ConsumptionSummary = {
   month: PeriodStats;
 };
 type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
-
 
 type PetAnalyticsSession = {
   id: string;
@@ -388,7 +397,10 @@ function buildAuditEventPairs(
     if (event.category !== endCategory) continue;
     const start = open.shift();
     if (!start) continue;
-    if (new Date(event.created_at).getTime() <= new Date(start.created_at).getTime()) {
+    if (
+      new Date(event.created_at).getTime() <=
+      new Date(start.created_at).getTime()
+    ) {
       continue;
     }
     closed.push({ start, end: event });
@@ -599,7 +611,6 @@ function isAuthoritativeFoodDeviceCode(value?: string | null): boolean {
   return (value ?? "").toUpperCase() === AUTHORITATIVE_FOOD_DEVICE_CODE;
 }
 
-
 export default function TodayPage() {
   const router = useRouter();
   const [state, setState] = useState<LoadState>(defaultState);
@@ -615,9 +626,8 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
     useState<DeviceReadingsMap>({});
-  const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] = useState<
-    number | null
-  >(null);
+  const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] =
+    useState<number | null>(null);
   const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
     PetAnalyticsSession[]
   >([]);
@@ -646,8 +656,12 @@ export default function TodayPage() {
   const [waterCategoryFeedback, setWaterCategoryFeedback] = useState<
     string | null
   >(null);
-  const bowlFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const waterFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bowlFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const waterFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const onPetChangeRef = useRef<((e: Event) => void) | null>(null);
   const onDeviceChangeRef = useRef<((e: Event) => void) | null>(null);
   const [waterPlateOverrides, setWaterPlateOverrides] = useState<
@@ -1079,6 +1093,33 @@ export default function TodayPage() {
     expectedFoodDeviceCode,
     expectedWaterDeviceCode,
   ]);
+  const [hungerBar, setHungerBar] = useState<HungerBarResponse | null>(null);
+  useEffect(() => {
+    if (!primaryPet?.id) {
+      setHungerBar(null);
+      return;
+    }
+    let cancelled = false;
+    const load = () => {
+      authFetch(`/api/pets/${primaryPet.id}/hunger-bar`)
+        .then((res) =>
+          res.ok ? (res.json() as Promise<HungerBarResponse>) : null,
+        )
+        .then((data) => {
+          if (!cancelled) setHungerBar(data);
+        })
+        .catch(() => {
+          if (!cancelled) setHungerBar(null);
+        });
+    };
+    load();
+    const interval = setInterval(load, 5 * 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [primaryPet?.id]);
+
   const ownerLabel =
     state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
@@ -1543,8 +1584,12 @@ export default function TodayPage() {
         setBowlCategoryFeedback("No se pudo guardar la categoría.");
       } finally {
         setBowlCategoryBusy(null);
-        if (bowlFeedbackTimerRef.current) clearTimeout(bowlFeedbackTimerRef.current);
-        bowlFeedbackTimerRef.current = setTimeout(() => setBowlCategoryFeedback(null), 3000);
+        if (bowlFeedbackTimerRef.current)
+          clearTimeout(bowlFeedbackTimerRef.current);
+        bowlFeedbackTimerRef.current = setTimeout(
+          () => setBowlCategoryFeedback(null),
+          3000,
+        );
       }
     },
     [
@@ -1691,8 +1736,12 @@ export default function TodayPage() {
         setWaterCategoryFeedback("No se pudo guardar la categoría.");
       } finally {
         setWaterCategoryBusy(null);
-        if (waterFeedbackTimerRef.current) clearTimeout(waterFeedbackTimerRef.current);
-        waterFeedbackTimerRef.current = setTimeout(() => setWaterCategoryFeedback(null), 3000);
+        if (waterFeedbackTimerRef.current)
+          clearTimeout(waterFeedbackTimerRef.current);
+        waterFeedbackTimerRef.current = setTimeout(
+          () => setWaterCategoryFeedback(null),
+          3000,
+        );
       }
     },
     [
@@ -1806,8 +1855,7 @@ export default function TodayPage() {
         readings: result.data,
         readingsCursor: result.nextCursor,
       }));
-    } catch (err) {
-    }
+    } catch (err) {}
   };
   const bowlChartReadings = useMemo(
     () => (bowlDevice?.id ? (deviceChartReadings[bowlDevice.id] ?? []) : []),
@@ -2485,7 +2533,10 @@ export default function TodayPage() {
       return;
     }
     setBowlStoredMaxTerminoServido((prev) => {
-      const next = prev !== null ? Math.max(prev, bowlMaxServedContentGrams) : bowlMaxServedContentGrams;
+      const next =
+        prev !== null
+          ? Math.max(prev, bowlMaxServedContentGrams)
+          : bowlMaxServedContentGrams;
       if (typeof window !== "undefined") {
         const key = `${BAR_MAX_TERMINO_SERVIDO_KEY_PREFIX}${bowlDevice.id}`;
         window.localStorage.setItem(key, String(next));
@@ -2515,43 +2566,71 @@ export default function TodayPage() {
     waterReferenceReadings,
   ]);
 
-  const bowlMaxReferenceContentGrams = useMemo(() => {
-    const values = [bowlMaxServedContentGrams, bowlStoredMaxTerminoServido]
-      .filter((value): value is number => value !== null && value > 0);
-    if (!values.length) return null;
-    return Math.max(...values);
-  }, [bowlMaxServedContentGrams, bowlStoredMaxTerminoServido]);
-
-  const bowlBlockLevelPct = useMemo(() => {
-    if (
-      bowlContentWeightGrams === null ||
-      bowlMaxReferenceContentGrams === null
-    ) {
-      return null;
-    }
-    if (bowlMaxReferenceContentGrams <= 0) return null;
-    return Math.min(
-      1,
-      Math.max(0, bowlContentWeightGrams / bowlMaxReferenceContentGrams),
-    );
-  }, [bowlContentWeightGrams, bowlMaxReferenceContentGrams]);
-
   const waterBlockLevelPct = useMemo(() => {
     if (waterContentWeightGrams === null || waterMaxServedContentMl === null) {
       return null;
     }
     if (waterMaxServedContentMl <= 0) return null;
-    return Math.min(1, Math.max(0, waterContentWeightGrams / waterMaxServedContentMl));
+    return Math.min(
+      1,
+      Math.max(0, waterContentWeightGrams / waterMaxServedContentMl),
+    );
   }, [waterContentWeightGrams, waterMaxServedContentMl]);
 
-  const bowlFilledBlocks = useMemo(() => {
-    if (bowlBlockLevelPct === null) return 0;
-    return Math.max(0, Math.min(WELLNESS_BLOCKS, Math.round(bowlBlockLevelPct * WELLNESS_BLOCKS)));
-  }, [bowlBlockLevelPct]);
+  // Hunger Bar — reemplaza el medidor de combustible del plato en esta card:
+  // detección automática sobre `readings` en vez de audit_events manuales.
+  // Ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md.
+  const hungerFilledBlocks = useMemo(() => {
+    if (!hungerBar || hungerBar.percentage === null) return 0;
+    return Math.max(
+      0,
+      Math.min(
+        WELLNESS_BLOCKS,
+        Math.round((hungerBar.percentage / 100) * WELLNESS_BLOCKS),
+      ),
+    );
+  }, [hungerBar]);
+
+  const hungerStatusLabel = useMemo(() => {
+    if (
+      !hungerBar ||
+      hungerBar.status !== "ok" ||
+      hungerBar.percentage === null
+    ) {
+      return "Sin evidencia real";
+    }
+    if (hungerBar.usingFallback) return "Aprendiendo hábitos";
+    return "Confirmado";
+  }, [hungerBar]);
+
+  const hungerValueLabel = useMemo(() => {
+    if (!hungerBar || hungerBar.percentage === null) return "N/D";
+    return `${hungerBar.percentage}%`;
+  }, [hungerBar]);
+
+  const hungerNoteLabel = useMemo(() => {
+    if (
+      !hungerBar ||
+      hungerBar.status !== "ok" ||
+      hungerBar.percentage === null
+    ) {
+      return "Última comida confirmada: sin registro";
+    }
+    if (hungerBar.percentage >= 100) return "Debería haber comido ya";
+    return hungerBar.estimatedNextMealAt
+      ? `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`
+      : "Última comida confirmada: sin registro";
+  }, [hungerBar]);
 
   const waterFilledBlocks = useMemo(() => {
     if (waterBlockLevelPct === null) return 0;
-    return Math.max(0, Math.min(WELLNESS_BLOCKS, Math.round(waterBlockLevelPct * WELLNESS_BLOCKS)));
+    return Math.max(
+      0,
+      Math.min(
+        WELLNESS_BLOCKS,
+        Math.round(waterBlockLevelPct * WELLNESS_BLOCKS),
+      ),
+    );
   }, [waterBlockLevelPct]);
 
   const getConnectivityLabel = (timestamp?: string | null) => {
@@ -2575,7 +2654,10 @@ export default function TodayPage() {
     if (state === "charged")
       return { text: "Cargado", className: "text-emerald-500 font-medium" };
     if (state === "battery_only" && level != null)
-      return { text: `Batería ${Math.round(level)}%`, className: "text-slate-500" };
+      return {
+        text: `Batería ${Math.round(level)}%`,
+        className: "text-slate-500",
+      };
     if (level != null)
       return { text: `${Math.round(level)}%`, className: "text-slate-500" };
     return { text: "N/D", className: "text-slate-400" };
@@ -2647,43 +2729,49 @@ export default function TodayPage() {
   return (
     <div className="min-h-screen px-4 pb-10 pt-4 md:px-6 md:pt-4">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        {accountType === "client" && (() => {
-          const hasPet = state.pets.length > 0;
-          const hasDevice = state.devices.some((d) => d.pet_id != null);
-          const steps = [
-            !hasPet && {
-              href: "/registro",
-              label: "Agrega tu mascota",
-              desc: "Ve a Registrar para crear el perfil de tu gato.",
-            },
-            hasPet && !hasDevice && {
-              href: "/bowl",
-              label: "Vincula un plato",
-              desc: "En la pestaña Plato puedes conectar tu dispensador.",
-            },
-          ].filter(Boolean) as { href: string; label: string; desc: string }[];
-          if (steps.length === 0) return null;
-          return (
-            <div className="surface-card freeform-rise flex flex-col gap-3 px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-wide opacity-50">
-                Completa tu configuración
-              </p>
-              {steps.map((s) => (
-                <a
-                  key={s.href}
-                  href={s.href}
-                  className="flex items-start gap-3 rounded-lg border border-dashed border-current/20 px-4 py-3 hover:bg-white/5"
-                >
-                  <span className="mt-0.5 text-base">→</span>
-                  <span className="flex flex-col gap-0.5">
-                    <span className="text-sm font-semibold">{s.label}</span>
-                    <span className="text-xs opacity-60">{s.desc}</span>
-                  </span>
-                </a>
-              ))}
-            </div>
-          );
-        })()}
+        {accountType === "client" &&
+          (() => {
+            const hasPet = state.pets.length > 0;
+            const hasDevice = state.devices.some((d) => d.pet_id != null);
+            const steps = [
+              !hasPet && {
+                href: "/registro",
+                label: "Agrega tu mascota",
+                desc: "Ve a Registrar para crear el perfil de tu gato.",
+              },
+              hasPet &&
+                !hasDevice && {
+                  href: "/bowl",
+                  label: "Vincula un plato",
+                  desc: "En la pestaña Plato puedes conectar tu dispensador.",
+                },
+            ].filter(Boolean) as {
+              href: string;
+              label: string;
+              desc: string;
+            }[];
+            if (steps.length === 0) return null;
+            return (
+              <div className="surface-card freeform-rise flex flex-col gap-3 px-5 py-4">
+                <p className="text-xs font-semibold uppercase tracking-wide opacity-50">
+                  Completa tu configuración
+                </p>
+                {steps.map((s) => (
+                  <a
+                    key={s.href}
+                    href={s.href}
+                    className="flex items-start gap-3 rounded-lg border border-dashed border-current/20 px-4 py-3 hover:bg-white/5"
+                  >
+                    <span className="mt-0.5 text-base">→</span>
+                    <span className="flex flex-col gap-0.5">
+                      <span className="text-sm font-semibold">{s.label}</span>
+                      <span className="text-xs opacity-60">{s.desc}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            );
+          })()}
         <header className="flex flex-col gap-4">
           <section
             id="today-hero"
@@ -2717,7 +2805,19 @@ export default function TodayPage() {
                       aria-label="Mascota anterior"
                       title="Mascota anterior"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
                     </button>
                     <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
                       {petLabel}
@@ -2729,7 +2829,19 @@ export default function TodayPage() {
                       aria-label="Siguiente mascota"
                       title="Siguiente mascota"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
                     </button>
                   </div>
                   <p className="truncate text-xs text-slate-500 md:text-sm">
@@ -2759,13 +2871,10 @@ export default function TodayPage() {
                         key: "food",
                         title: "Comida",
                         iconSrc: "/illustrations/icono_comida.png",
-                        filledBlocks: bowlFilledBlocks,
-                        valueLabel:
-                          bowlContentWeightGrams !== null
-                            ? `${Math.round(bowlContentWeightGrams)} g`
-                            : "N/D",
-                        statusLabel: bowlWellness.stateLabel,
-                        noteLabel: bowlWellness.lastEventLabel,
+                        filledBlocks: hungerFilledBlocks,
+                        valueLabel: hungerValueLabel,
+                        statusLabel: hungerStatusLabel,
+                        noteLabel: hungerNoteLabel,
                         trackClass: "border-rose-100 bg-rose-50",
                         fillClass:
                           "bg-[linear-gradient(180deg,rgba(251,191,36,0.95)_0%,rgba(244,63,94,0.95)_100%)]",
@@ -2787,50 +2896,73 @@ export default function TodayPage() {
                         fillClass:
                           "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
                         labelClass: "text-emerald-700",
-                        badgeClass: "border-slate-200 bg-slate-50 text-slate-500",
+                        badgeClass:
+                          "border-slate-200 bg-slate-50 text-slate-500",
                       },
-                    ].map(({ key, title, iconSrc, filledBlocks, valueLabel, statusLabel, noteLabel, trackClass, fillClass, labelClass, badgeClass }) => (
-                      <div
-                        key={key}
-                        className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
-                      >
-                        <div className="flex h-8 items-center justify-center">
-                          <Image
-                            src={iconSrc}
-                            alt=""
-                            aria-hidden={true}
-                            width={32}
-                            height={32}
-                            className="h-8 w-8 object-contain opacity-90"
-                          />
+                    ].map(
+                      ({
+                        key,
+                        title,
+                        iconSrc,
+                        filledBlocks,
+                        valueLabel,
+                        statusLabel,
+                        noteLabel,
+                        trackClass,
+                        fillClass,
+                        labelClass,
+                        badgeClass,
+                      }) => (
+                        <div
+                          key={key}
+                          className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
+                        >
+                          <div className="flex h-8 items-center justify-center">
+                            <Image
+                              src={iconSrc}
+                              alt=""
+                              aria-hidden={true}
+                              width={32}
+                              height={32}
+                              className="h-8 w-8 object-contain opacity-90"
+                            />
+                          </div>
+                          <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
+                            <div
+                              className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
+                              style={{
+                                height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col items-center gap-0.5 text-center">
+                            <span
+                              className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                            >
+                              {statusLabel}
+                            </span>
+                            <p
+                              className={`text-[11px] font-semibold ${labelClass}`}
+                            >
+                              {title} · {valueLabel}
+                            </p>
+                            <p className="text-[10px] leading-tight text-slate-400">
+                              {noteLabel}
+                            </p>
+                          </div>
                         </div>
-                        <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
-                          <div
-                            className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
-                            style={{ height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%` }}
-                          />
-                        </div>
-                        <div className="flex flex-col items-center gap-0.5 text-center">
-                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}>
-                            {statusLabel}
-                          </span>
-                          <p className={`text-[11px] font-semibold ${labelClass}`}>
-                            {title} · {valueLabel}
-                          </p>
-                          <p className="text-[10px] leading-tight text-slate-400">
-                            {noteLabel}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
                     <span>{getOperationalLabel(bowlPowerState)}</span>
                     <span>
-                      {getBatteryStateLabel(
-                        bowlDevice?.battery_state,
-                        bowlDevice?.battery_level,
-                      ).text}
+                      {
+                        getBatteryStateLabel(
+                          bowlDevice?.battery_state,
+                          bowlDevice?.battery_level,
+                        ).text
+                      }
                     </span>
                   </div>
                 </div>
@@ -2995,206 +3127,226 @@ export default function TodayPage() {
                       href="/bowl"
                       className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-50"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
                       Agregar comedero
                     </Link>
                   </article>
                 ) : (
-                <>
-                <article className="today-bowl-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                          Alimentación
+                  <>
+                    <article className="today-bowl-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                              Alimentación
+                            </p>
+                            <span
+                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[bowlPowerState]}`}
+                              aria-hidden="true"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
+                            <span>
+                              {getConnectivityLabel(
+                                bowlLatestReading?.recorded_at ??
+                                  bowlDevice?.last_seen ??
+                                  null,
+                              )}
+                            </span>
+                            <span aria-hidden="true">·</span>
+                            <BatteryStatusIcon
+                              level={bowlDevice?.battery_level ?? null}
+                              charging={
+                                bowlDevice?.battery_state === "charging"
+                              }
+                              charged={bowlDevice?.battery_state === "charged"}
+                              className="h-3.5 w-3.5 text-slate-400"
+                            />
+                            {(() => {
+                              const s = getBatteryStateLabel(
+                                bowlDevice?.battery_state,
+                                bowlDevice?.battery_level,
+                              );
+                              return (
+                                <span className={s.className}>{s.text}</span>
+                              );
+                            })()}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
+                              bowlWellness.stateLabel,
+                              "food",
+                            )}`}
+                          >
+                            {bowlWellness.stateLabel}
+                          </span>
+                          <p className="text-sm text-slate-500">
+                            {bowlWellness.lastEventLabel}
+                          </p>
+                        </div>
+
+                        <div className="grid items-center gap-3">
+                          <div className="flex flex-col items-center py-1">
+                            <Image
+                              src="/illustrations/pink_food_full.png"
+                              alt="Kittypau comedero"
+                              width={224}
+                              height={164}
+                              className="mx-auto h-48 w-auto object-contain object-center"
+                            />
+                            {bowlWellness.levelLabel !== "Sin confirmación" ? (
+                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+                                {bowlWellness.levelLabel}
+                              </p>
+                            ) : null}
+                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+                              {bowlDevice?.device_id ?? "KPCLXXXX"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700"
+                            title="Contenido actual"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M3 6h18M3 12h18M3 18h18" />
+                            </svg>
+                            {bowlContentWeightText}
+                            {renderTrend(
+                              bowlContentWeightGrams,
+                              bowlPrevContentWeightGrams,
+                            )}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
+                            title="Temperatura"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                            </svg>
+                            {bowlTempText}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-600"
+                            title="Humedad"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                            </svg>
+                            {bowlHumidityText}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
+                            title="Última lectura"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            {formatTimestamp(
+                              bowlLatestReading?.recorded_at ?? null,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                    <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                      <div className="mb-2 flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                          Categorías
                         </p>
-                        <span
-                          className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                        <span>
-                          {getConnectivityLabel(
-                            bowlLatestReading?.recorded_at ??
-                              bowlDevice?.last_seen ??
-                              null,
-                          )}
-                        </span>
-                        <span aria-hidden="true">·</span>
-                        <BatteryStatusIcon
-                          level={bowlDevice?.battery_level ?? null}
-                          charging={bowlDevice?.battery_state === "charging"}
-                          charged={bowlDevice?.battery_state === "charged"}
-                          className="h-3.5 w-3.5 text-slate-400"
-                        />
-                        {(() => {
-                          const s = getBatteryStateLabel(bowlDevice?.battery_state, bowlDevice?.battery_level);
-                          return <span className={s.className}>{s.text}</span>;
-                        })()}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                          bowlWellness.stateLabel,
-                          "food",
-                        )}`}
-                      >
-                        {bowlWellness.stateLabel}
-                      </span>
-                      <p className="text-sm text-slate-500">
-                        {bowlWellness.lastEventLabel}
-                      </p>
-                    </div>
-
-                    <div className="grid items-center gap-3">
-                      <div className="flex flex-col items-center py-1">
-                        <Image
-                          src="/illustrations/pink_food_full.png"
-                          alt="Kittypau comedero"
-                          width={224}
-                          height={164}
-                          className="mx-auto h-48 w-auto object-contain object-center"
-                        />
-                        {bowlWellness.levelLabel !== "Sin confirmación" ? (
-                          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                            {bowlWellness.levelLabel}
+                        {bowlCategoryFeedback ? (
+                          <p className="text-[10px] font-semibold text-slate-500">
+                            {bowlCategoryFeedback}
                           </p>
                         ) : null}
-                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                          {bowlDevice?.device_id ?? "KPCLXXXX"}
-                        </p>
+                      </div>
+                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
+                        {BOWL_CATEGORY_CHOICES.map((choice) => {
+                          const isBusy = bowlCategoryBusy === choice.key;
+                          const isPendingConfirm =
+                            choice.key === "kpcl_con_plato" &&
+                            bowlDevice?.id &&
+                            bowlPendingPlateConfirm[bowlDevice.id];
+                          return (
+                            <button
+                              key={choice.key}
+                              type="button"
+                              onClick={() => void handleBowlCategory(choice)}
+                              disabled={Boolean(bowlCategoryBusy)}
+                              className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
+                                isBusy || isPendingConfirm
+                                  ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
+                                  : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                              } disabled:cursor-not-allowed disabled:opacity-60`}
+                              aria-pressed={isBusy}
+                              aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
+                            >
+                              {choice.label}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700"
-                        title="Contenido actual"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M3 6h18M3 12h18M3 18h18" />
-                        </svg>
-                        {bowlContentWeightText}
-                        {renderTrend(
-                          bowlContentWeightGrams,
-                          bowlPrevContentWeightGrams,
-                        )}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                        title="Temperatura"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                        </svg>
-                        {bowlTempText}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-600"
-                        title="Humedad"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                        </svg>
-                        {bowlHumidityText}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                        title="Última lectura"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        {formatTimestamp(
-                          bowlLatestReading?.recorded_at ?? null,
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-                <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                      Categorías
-                    </p>
-                    {bowlCategoryFeedback ? (
-                      <p className="text-[10px] font-semibold text-slate-500">
-                        {bowlCategoryFeedback}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                    {BOWL_CATEGORY_CHOICES.map((choice) => {
-                      const isBusy = bowlCategoryBusy === choice.key;
-                      const isPendingConfirm =
-                        choice.key === "kpcl_con_plato" &&
-                        bowlDevice?.id &&
-                        bowlPendingPlateConfirm[bowlDevice.id];
-                      return (
-                        <button
-                          key={choice.key}
-                          type="button"
-                          onClick={() => void handleBowlCategory(choice)}
-                          disabled={Boolean(bowlCategoryBusy)}
-                          className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                            isBusy || isPendingConfirm
-                              ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
-                              : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                          } disabled:cursor-not-allowed disabled:opacity-60`}
-                          aria-pressed={isBusy}
-                          aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
-                        >
-                          {choice.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                </>
+                  </>
                 )}
               </div>
 
@@ -3218,206 +3370,226 @@ export default function TodayPage() {
                       href="/bowl"
                       className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50"
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
                       Agregar bebedero
                     </Link>
                   </article>
                 ) : (
-                <>
-                <article className="today-bowl-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
-                          Hidratación
+                  <>
+                    <article className="today-bowl-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
+                              Hidratación
+                            </p>
+                            <span
+                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[waterPowerState]}`}
+                              aria-hidden="true"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
+                            <span>
+                              {getConnectivityLabel(
+                                waterLatestReading?.recorded_at ??
+                                  waterDevice?.last_seen ??
+                                  null,
+                              )}
+                            </span>
+                            <span aria-hidden="true">·</span>
+                            <BatteryStatusIcon
+                              level={waterDevice?.battery_level ?? null}
+                              charging={
+                                waterDevice?.battery_state === "charging"
+                              }
+                              charged={waterDevice?.battery_state === "charged"}
+                              className="h-3.5 w-3.5 text-slate-400"
+                            />
+                            {(() => {
+                              const s = getBatteryStateLabel(
+                                waterDevice?.battery_state,
+                                waterDevice?.battery_level,
+                              );
+                              return (
+                                <span className={s.className}>{s.text}</span>
+                              );
+                            })()}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
+                              waterWellness.stateLabel,
+                              "water",
+                            )}`}
+                          >
+                            {waterWellness.stateLabel}
+                          </span>
+                          <p className="text-sm text-slate-500">
+                            {waterWellness.lastEventLabel}
+                          </p>
+                        </div>
+
+                        <div className="grid items-center gap-3">
+                          <div className="flex flex-col items-center py-1">
+                            <Image
+                              src="/illustrations/green_water_full.png"
+                              alt="Kittypau bebedero"
+                              width={224}
+                              height={164}
+                              className="mx-auto h-48 w-auto object-contain object-center"
+                            />
+                            {waterWellness.levelLabel !== "Sin confirmación" ? (
+                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+                                {waterWellness.levelLabel}
+                              </p>
+                            ) : null}
+                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+                              {waterDevice?.device_id ?? "KPCLXXXX"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-700"
+                            title="Nivel actual"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                            </svg>
+                            {waterVolumeMlText}
+                            {renderTrend(
+                              waterContentWeightGrams,
+                              waterPrevContentWeightGrams,
+                            )}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
+                            title="Temperatura"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
+                            </svg>
+                            {waterTempText}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-600"
+                            title="Humedad"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                            </svg>
+                            {waterHumidityText}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
+                            title="Última lectura"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            {formatTimestamp(
+                              waterLatestReading?.recorded_at ?? null,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                    <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
+                      <div className="mb-2 flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                          Categorías
                         </p>
-                        <span
-                          className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                        <span>
-                          {getConnectivityLabel(
-                            waterLatestReading?.recorded_at ??
-                              waterDevice?.last_seen ??
-                              null,
-                          )}
-                        </span>
-                        <span aria-hidden="true">·</span>
-                        <BatteryStatusIcon
-                          level={waterDevice?.battery_level ?? null}
-                          charging={waterDevice?.battery_state === "charging"}
-                          charged={waterDevice?.battery_state === "charged"}
-                          className="h-3.5 w-3.5 text-slate-400"
-                        />
-                        {(() => {
-                          const s = getBatteryStateLabel(waterDevice?.battery_state, waterDevice?.battery_level);
-                          return <span className={s.className}>{s.text}</span>;
-                        })()}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                          waterWellness.stateLabel,
-                          "water",
-                        )}`}
-                      >
-                        {waterWellness.stateLabel}
-                      </span>
-                      <p className="text-sm text-slate-500">
-                        {waterWellness.lastEventLabel}
-                      </p>
-                    </div>
-
-                    <div className="grid items-center gap-3">
-                      <div className="flex flex-col items-center py-1">
-                        <Image
-                          src="/illustrations/green_water_full.png"
-                          alt="Kittypau bebedero"
-                          width={224}
-                          height={164}
-                          className="mx-auto h-48 w-auto object-contain object-center"
-                        />
-                        {waterWellness.levelLabel !== "Sin confirmación" ? (
-                          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                            {waterWellness.levelLabel}
+                        {waterCategoryFeedback ? (
+                          <p className="text-[10px] font-semibold text-slate-500">
+                            {waterCategoryFeedback}
                           </p>
                         ) : null}
-                        <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                          {waterDevice?.device_id ?? "KPCLXXXX"}
-                        </p>
+                      </div>
+                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
+                        {WATER_CATEGORY_CHOICES.map((choice) => {
+                          const isBusy = waterCategoryBusy === choice.key;
+                          const isPendingConfirm =
+                            choice.key === "kpcl_con_plato" &&
+                            waterDevice?.id &&
+                            waterPendingPlateConfirm[waterDevice.id];
+                          return (
+                            <button
+                              key={choice.key}
+                              type="button"
+                              onClick={() => void handleWaterCategory(choice)}
+                              disabled={Boolean(waterCategoryBusy)}
+                              className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
+                                isBusy || isPendingConfirm
+                                  ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
+                                  : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
+                              } disabled:cursor-not-allowed disabled:opacity-60`}
+                              aria-pressed={isBusy}
+                              aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
+                            >
+                              {choice.label}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-700"
-                        title="Nivel actual"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                        </svg>
-                        {waterVolumeMlText}
-                        {renderTrend(
-                          waterContentWeightGrams,
-                          waterPrevContentWeightGrams,
-                        )}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                        title="Temperatura"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                        </svg>
-                        {waterTempText}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-600"
-                        title="Humedad"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                        </svg>
-                        {waterHumidityText}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                        title="Última lectura"
-                      >
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden="true"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        {formatTimestamp(
-                          waterLatestReading?.recorded_at ?? null,
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-                <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                      Categorías
-                    </p>
-                    {waterCategoryFeedback ? (
-                      <p className="text-[10px] font-semibold text-slate-500">
-                        {waterCategoryFeedback}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                    {WATER_CATEGORY_CHOICES.map((choice) => {
-                      const isBusy = waterCategoryBusy === choice.key;
-                      const isPendingConfirm =
-                        choice.key === "kpcl_con_plato" &&
-                        waterDevice?.id &&
-                        waterPendingPlateConfirm[waterDevice.id];
-                      return (
-                        <button
-                          key={choice.key}
-                          type="button"
-                          onClick={() => void handleWaterCategory(choice)}
-                          disabled={Boolean(waterCategoryBusy)}
-                          className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                            isBusy || isPendingConfirm
-                              ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
-                              : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                          } disabled:cursor-not-allowed disabled:opacity-60`}
-                          aria-pressed={isBusy}
-                          aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
-                        >
-                          {choice.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                </>
+                  </>
                 )}
               </div>
             </div>
@@ -3433,7 +3605,19 @@ export default function TodayPage() {
                   aria-label="Ciclo anterior"
                   title="Ciclo anterior"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
                 </button>
                 <button
                   type="button"
@@ -3454,7 +3638,19 @@ export default function TodayPage() {
                   aria-label="Ciclo siguiente"
                   title="Ciclo siguiente"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </button>
               </div>
               <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
@@ -3483,7 +3679,6 @@ export default function TodayPage() {
               ) : null}
             </div>
           </section>
-
         </header>
 
         {state.error ? (
@@ -3525,7 +3720,6 @@ export default function TodayPage() {
             </Link>
           </section>
         ) : null}
-
       </div>
       {showGuide ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">

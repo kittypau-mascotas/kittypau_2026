@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../../_utils";
+import {
+  apiError,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../../_utils";
 import { supabaseServer } from "@/lib/supabase/server";
 import { computeHungerBar, type ReadingPoint } from "@/lib/hunger-bar";
 
@@ -12,7 +17,7 @@ const PAGE_SIZE = 5000;
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
@@ -29,18 +34,30 @@ export async function GET(
     .select("id, user_id")
     .eq("id", petId)
     .single();
-  if (petError || !pet) return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
-  if (pet.user_id !== user.id) return apiError(req, 403, "FORBIDDEN", "Forbidden");
+  if (petError || !pet)
+    return apiError(req, 404, "PET_NOT_FOUND", "Pet not found");
+  if (pet.user_id !== user.id)
+    return apiError(req, 403, "FORBIDDEN", "Forbidden");
 
-  // Dispositivo de comida activo de la mascota
-  const { data: device, error: deviceError } = await supabaseServer
+  // Dispositivo de comida activo de la mascota.
+  // ponytail: "food_bowl" es el valor legacy del constraint — en producción los
+  // devices reales usan "comedero"/"comedero_cam" (constraint devices_device_type_check
+  // permite ambos idiomas por migraciones históricas, nunca se limpió a uno solo).
+  // Puede haber más de un comedero "active" para la misma mascota (migración
+  // allow_two_active_devices_per_pet) — se desambigua tomando el que reportó
+  // lecturas más recientemente.
+  const FOOD_DEVICE_TYPES = ["food_bowl", "comedero", "comedero_cam"];
+  const { data: candidateDevices, error: deviceError } = await supabaseServer
     .from("devices")
-    .select("id")
+    .select("id, last_seen")
     .eq("pet_id", petId)
-    .eq("device_type", "food_bowl")
+    .in("device_type", FOOD_DEVICE_TYPES)
     .eq("status", "active")
-    .maybeSingle();
-  if (deviceError) return apiError(req, 500, "SUPABASE_ERROR", deviceError.message);
+    .order("last_seen", { ascending: false, nullsFirst: false })
+    .limit(1);
+  if (deviceError)
+    return apiError(req, 500, "SUPABASE_ERROR", deviceError.message);
+  const device = candidateDevices?.[0] ?? null;
   if (!device) {
     logRequestEnd(req, startedAt, 200, { pet_id: petId, device: "none" });
     return NextResponse.json({
@@ -55,10 +72,16 @@ export async function GET(
     });
   }
 
-  const sinceIso = new Date(Date.now() - WINDOW_DAYS * 86_400_000).toISOString();
+  const sinceIso = new Date(
+    Date.now() - WINDOW_DAYS * 86_400_000,
+  ).toISOString();
 
   // Paginado igual que /api/readings/bucketed — evita el límite de 5000 filas de Supabase
-  const { data: firstPage, error: firstError, count } = await supabaseServer
+  const {
+    data: firstPage,
+    error: firstError,
+    count,
+  } = await supabaseServer
     .from("readings")
     .select("recorded_at,weight_grams", { count: "exact" })
     .eq("device_id", device.id)
@@ -66,7 +89,8 @@ export async function GET(
     .not("weight_grams", "is", null)
     .order("recorded_at", { ascending: true })
     .range(0, PAGE_SIZE - 1);
-  if (firstError) return apiError(req, 500, "SUPABASE_ERROR", firstError.message);
+  if (firstError)
+    return apiError(req, 500, "SUPABASE_ERROR", firstError.message);
 
   const totalRows = count ?? 0;
   const allRows = [...(firstPage ?? [])];
@@ -83,7 +107,7 @@ export async function GET(
           .not("weight_grams", "is", null)
           .order("recorded_at", { ascending: true })
           .range(start, start + PAGE_SIZE - 1);
-      })
+      }),
     );
     for (const { data } of extra) if (data) allRows.push(...data);
     allRows.sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
@@ -91,7 +115,10 @@ export async function GET(
 
   const points: ReadingPoint[] = allRows
     .filter((r) => r.weight_grams !== null)
-    .map((r) => ({ recordedAt: r.recorded_at as string, weightGrams: r.weight_grams as number }));
+    .map((r) => ({
+      recordedAt: r.recorded_at as string,
+      weightGrams: r.weight_grams as number,
+    }));
 
   const result = computeHungerBar(points);
 
@@ -101,6 +128,8 @@ export async function GET(
     sample_size: result.sampleSize,
   });
   return NextResponse.json(result, {
-    headers: { "Cache-Control": "private, max-age=30, stale-while-revalidate=120" },
+    headers: {
+      "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
+    },
   });
 }

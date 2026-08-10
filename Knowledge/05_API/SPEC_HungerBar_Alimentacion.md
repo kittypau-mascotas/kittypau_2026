@@ -24,9 +24,12 @@ related:
 
 > v4 — post 3 rondas de discovery técnico + implementación v1 en producción.
 
-**Estado: v1 implementada y visible en `/pet`** (2026-08-10). La decisión bloqueante de
-arquitectura (§1.1) se resolvió de forma pragmática: **reglas simples en TypeScript**
-(opción B liviana), no el Motor v2/Evidence Engine completo — ver §0 y §1.2.
+**Estado: v1 implementada y verificada en vivo en `/today` y `/pet`** (2026-08-10, cuenta
+tester `kittypau.mascotas`, mascota real Bandida). La decisión bloqueante de arquitectura
+(§1.1) se resolvió de forma pragmática: **reglas simples en TypeScript** (opción B
+liviana), no el Motor v2/Evidence Engine completo — ver §0 y §1.2. En `/today` reemplaza
+la card "Comida" del widget "Barras Sims" (antes: medidor de combustible del plato +
+estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 
 ## 0. Qué se implementó (v1) vs. qué sigue pendiente
 
@@ -34,11 +37,36 @@ arquitectura (§1.1) se resolvió de forma pragmática: **reglas simples en Type
 |---|---|
 | `kittypau_app/src/lib/hunger-bar.ts` | ✅ Detección de segmentos + clasificación por reglas + cálculo de la barra |
 | `kittypau_app/src/app/api/pets/[id]/hunger-bar/route.ts` | ✅ Endpoint, on-demand sobre `readings`, sin tabla intermedia |
-| `kittypau_app/src/app/_components/hunger-bar-card.tsx` | ✅ UI, montada en `/pet` (solo si hay comedero activo) |
+| `kittypau_app/src/app/_components/hunger-bar-card.tsx` | ✅ UI en `/pet` (solo si hay comedero activo) |
+| Card "Comida" en `/today` (widget "Barras Sims") | ✅ Reemplazada — ver `today/page.tsx` |
 | Clasificación por Motor v2 / Evidence Engine real | ❌ v1 usa reglas de magnitud/dirección/duración, no las 23 features calibradas — ver §1.2 |
 | Uso de `servido` como señal secundaria (§4) | ❌ se detecta pero no se usa para ajustar la predicción |
 | Modelo circadiano | ❌ v1 usa solo mediana de intervalos, no franjas horarias |
 | Agrupar picoteo (comidas seguidas) | ❌ no implementado — cada segmento cuenta como comida independiente |
+
+## 0.2 Bugs encontrados y corregidos en la verificación en vivo
+
+Probado con Playwright contra `next dev` real, login como `kittypau.mascotas@gmail.com`
+(Bandida, mascota con datos reales de producción):
+
+1. **`device_type` incorrecto** — el endpoint filtraba `device_type = "food_bowl"`, pero
+   el constraint real (`devices_device_type_check`) permite 7 valores y en producción los
+   comederos usan `"comedero"` (español), no `"food_bowl"` (legacy, solo 1 device viejo lo
+   usa). Con el filtro viejo, el endpoint nunca encontraba comedero → `"sin_dispositivo"`
+   siempre. Fix: `.in("device_type", ["food_bowl", "comedero", "comedero_cam"])`. También
+   corregido en [[01_Proyecto/ENUMS_OFICIALES]], que documentaba el enum viejo.
+2. **Dos comederos `active` simultáneos** — Bandida tiene KPCL0034 y KPCL0035 ambos
+   `status='active'`, `device_type='comedero'` (migración `allow_two_active_devices_per_pet`
+   lo permite a propósito). `.maybeSingle()` sin desambiguar habría fallado con "multiple
+   rows". Fix: ordenar por `last_seen desc` y tomar el más reciente — el dispositivo
+   realmente en uso hoy, no uno arbitrario.
+
+Con ambos fixes: KPCL0034 (histórico, dejó de reportar el 2026-07-25) queda fuera de la
+ventana de 10 días; KPCL0035 (recién vinculado, reportando hoy) es el elegido. Sus únicas
+lecturas de hoy son un evento de **servido** real (0g→794g en un solo paso) — el
+clasificador correctamente lo descarta como `servido`, no `alimentacion`, y la UI muestra
+el estado honesto "sin comidas detectadas todavía" en vez de alucinar una comida. Validación
+en vivo de que el clasificador no confunde llenado de plato con alimentación real.
 
 ## 0.1 Números reales usados para calibrar v1
 

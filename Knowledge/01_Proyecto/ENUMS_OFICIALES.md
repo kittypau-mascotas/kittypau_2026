@@ -55,7 +55,7 @@ related:
 
 | Enum | Valores permitidos |
 |---|---|
-| `device_type` | `food_bowl` \| `water_bowl` |
+| `device_type` | `food_bowl` \| `water_bowl` \| `comedero` \| `bebedero` \| `comedero_cam` \| `bebedero_cam` \| `bridge` — constraint real (`devices_device_type_check`) permite los 7; en datos de producción (2026-08-10) solo aparecen `comedero` (3 activos) y `food_bowl` (1 activo, legacy) — **filtrar por `["food_bowl","comedero","comedero_cam"]` al buscar el comedero de una mascota, nunca solo `"food_bowl"`**, ver `hunger-bar/route.ts` |
 | `device_state` | `factory` \| `claimed` \| `linked` \| `offline` \| `lost` \| `error` |
 | `status` | `active` \| `inactive` \| `maintenance` |
 | `battery_state` | `battery_only` \| `charging` \| `charged` |
