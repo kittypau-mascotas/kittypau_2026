@@ -34,6 +34,9 @@ SKIP_PARTS = {
     "kittypau_1a_docs_legacy",
     "capacitor_www",
     ".vercel",
+    "venv",
+    ".venv",
+    "dist",
 }
 
 SKIP_PATH_FRAGMENTS = (

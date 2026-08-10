@@ -152,6 +152,12 @@ Analisis_Estadistico_ML_IA/notebooks/*
 boton gato/
 cat-movement-lab/
 supabase-analytics/
+
+# venvs sueltos y builds locales bajo Docs (rompían el encoding-check al no
+# estar trackeados) — Docs/09_Investigacion/Ciclo Alpha v2/ es la vigente,
+# "Ciclo Alpha" (v1, sin "v2") es legacy.
+**/venv/
+Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/dist/
 kittypau_app/legacy/
 notebooks/.ipynb_checkpoints/
 
