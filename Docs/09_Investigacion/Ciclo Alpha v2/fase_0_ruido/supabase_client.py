@@ -97,21 +97,21 @@ def _get_rest_client():
 
 
 # ── Conexión PostgreSQL directa (Session pooler Supabase) ─────────────────────
-_PG_HOST = "aws-1-us-east-1.pooler.supabase.com"
-_PG_PORT = 5432
-_PG_DB   = "postgres"
-_PG_USER = "postgres.zjdyhpntftgaynchqwfk"   # sin 'q' al final
-_PG_PASS = "cjc59Nb2e2wvATWT"
+def _get_pg_dsn() -> str:
+    """Lee el connection string desde DATABASE_URL — nunca hardcodear credenciales."""
+    _load_env()
+    dsn = os.getenv("DATABASE_URL", "").strip()
+    if not dsn or "[TU-PASSWORD]" in dsn:
+        raise EnvironmentError(
+            f"DATABASE_URL no configurado (o placeholder sin rellenar) en {_ENV_FILE}"
+        )
+    return dsn
 
 
 def _pg_connect():
     """Abre una conexión psycopg2 al Session pooler de Supabase."""
     import psycopg2
-    return psycopg2.connect(
-        host=_PG_HOST, port=_PG_PORT, dbname=_PG_DB,
-        user=_PG_USER, password=_PG_PASS,
-        connect_timeout=10, sslmode="require",
-    )
+    return psycopg2.connect(_get_pg_dsn(), connect_timeout=10, sslmode="require")
 
 
 # ── Timestamp de corte (lee solo las columnas mínimas del CSV) ─────────────────
