@@ -9,6 +9,7 @@ import { syncSelectedPet } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
+import HungerBarCard from "@/app/_components/hunger-bar-card";
 
 type ApiPet = {
   id: string;
@@ -830,6 +831,8 @@ export default function PetPage() {
               </div>
             </div>
           </section>
+
+          {petFoodDevice && selectedPet ? <HungerBarCard petId={selectedPet.id} /> : null}
 
           {!latestReading ? (
             <section className="surface-card freeform-rise px-6 py-4">

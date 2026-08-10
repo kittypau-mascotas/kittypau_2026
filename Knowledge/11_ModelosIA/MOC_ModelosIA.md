@@ -34,6 +34,7 @@ related:
 | Clasificador supervisado | Alimentacion / Servido / Ruido automático |
 | Modelo circadiano | Predicción hora siguiente alimentación |
 | Reward Learning | Aprendizaje de preferencias desde feedback implícito |
+| [[05_API/SPEC_HungerBar_Alimentacion]] | v1 implementada (2026-08-10) con reglas simples en TS, no el Evidence Engine real — port completo queda como upgrade path |
 
 ---
 

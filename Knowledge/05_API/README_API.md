@@ -115,6 +115,14 @@ POST /api/devices
 
 ---
 
+## Lecturas y analytics (cont.)
+
+| Ruta | Método | Auth | Descripción |
+|---|---|---|---|
+| `/api/pets/[id]/hunger-bar` | GET | ✅ usuario | Barra de hambre — comidas detectadas on-demand sobre `readings`, ver [[05_API/SPEC_HungerBar_Alimentacion]] (v1: reglas simples, no Evidence Engine) |
+
+---
+
 ## Ver también
 
 - [[03_Backend/README_Backend]] — implementación y módulos

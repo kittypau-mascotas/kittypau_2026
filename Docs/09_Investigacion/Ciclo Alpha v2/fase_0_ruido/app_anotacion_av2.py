@@ -569,10 +569,16 @@ def _batch_metricas(df_lec: pd.DataFrame, cats_dfs: dict) -> dict:
     }
 
 
+# Filtro de intervalos entre comidas: < 20 min = probable misma comida partida en dos,
+# > 36 h = gap de datos / ausencia del dueño, no refleja el hambre real.
+MIN_INTERVALO_H = 0.33
+MAX_INTERVALO_H = 36.0
+
+
 def _intervalos_validos_alim(
     df_alim: pd.DataFrame,
-    min_h: float = 0.33,
-    max_h: float = 36.0,
+    min_h: float = MIN_INTERVALO_H,
+    max_h: float = MAX_INTERVALO_H,
 ) -> tuple[list[float], int]:
     """
     Intervalos entre eventos de alimentación consecutivos, filtrados por min/max.
@@ -4003,7 +4009,12 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
                 f"Hay {n_alim_ev} disponibles."
             )
         else:
-            t_ends = df_alim["t_fin"].tolist()
+            t_starts = df_alim["t_inicio"].tolist()
+            t_ends   = df_alim["t_fin"].tolist()
+            intervalos_h_raw = [
+                (t_starts[i + 1] - t_starts[i]).total_seconds() / 3600
+                for i in range(len(t_starts) - 1)
+            ]
 
             _pb7.progress(30, "📊 Calculando intervalos entre comidas…")
             intervalos_validos, n_filt = _intervalos_validos_alim(df_alim)
