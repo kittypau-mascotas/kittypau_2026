@@ -44,6 +44,24 @@ estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 | Modelo circadiano | ❌ v1 usa solo mediana de intervalos, no franjas horarias |
 | Agrupar picoteo (comidas seguidas) | ❌ no implementado — cada segmento cuenta como comida independiente |
 
+## 0.1 Números reales usados para calibrar v1
+
+Recalculados directamente desde `anotaciones_av2.csv` (254 eventos de alimentación,
+2026-04-08 a 2026-07-10, 93 días de cobertura, 73 días con ≥1 comida registrada):
+
+| Métrica | Valor real |
+|---|---|
+| Comidas/día (días con datos) | media **3.48**, mediana **4**, rango 1–6 |
+| Comidas/semana (derivado) | ≈ 24–29 (media×7 ≈ 24.4; mediana×7 = 28) |
+| Mediana intervalo entre comidas | **5.78 h** (constante `FALLBACK_MEDIANA_H`) |
+| Media intervalo | 6.69 h |
+| IQR (P75−P25) | 4.47 h (P25=3.8h, P75=8.27h) |
+| P10 / P90 | **2.88 h / 12.02 h** → constantes `CLAMP_MIN_H`/`CLAMP_MAX_H` |
+| Horas pico reales | 19h, 05h, 16h, 10h, 17h, 06h, 07h, 09h (más repartido de lo que decía la doc vieja de "07/13/19h" — esa cifra no se sostiene contra los datos reales) |
+
+Estos valores viven como constantes documentadas en `hunger-bar.ts`, no hardcodeados
+sin explicación.
+
 ## 0.2 Bugs encontrados y corregidos en la verificación en vivo
 
 Probado con Playwright contra `next dev` real, login como `kittypau.mascotas@gmail.com`
@@ -67,24 +85,6 @@ lecturas de hoy son un evento de **servido** real (0g→794g en un solo paso) �
 clasificador correctamente lo descarta como `servido`, no `alimentacion`, y la UI muestra
 el estado honesto "sin comidas detectadas todavía" en vez de alucinar una comida. Validación
 en vivo de que el clasificador no confunde llenado de plato con alimentación real.
-
-## 0.1 Números reales usados para calibrar v1
-
-Recalculados directamente desde `anotaciones_av2.csv` (254 eventos de alimentación,
-2026-04-08 a 2026-07-10, 93 días de cobertura, 73 días con ≥1 comida registrada):
-
-| Métrica | Valor real |
-|---|---|
-| Comidas/día (días con datos) | media **3.48**, mediana **4**, rango 1–6 |
-| Comidas/semana (derivado) | ≈ 24–29 (media×7 ≈ 24.4; mediana×7 = 28) |
-| Mediana intervalo entre comidas | **5.78 h** (constante `FALLBACK_MEDIANA_H`) |
-| Media intervalo | 6.69 h |
-| IQR (P75−P25) | 4.47 h (P25=3.8h, P75=8.27h) |
-| P10 / P90 | **2.88 h / 12.02 h** → constantes `CLAMP_MIN_H`/`CLAMP_MAX_H` |
-| Horas pico reales | 19h, 05h, 16h, 10h, 17h, 06h, 07h, 09h (más repartido de lo que decía la doc vieja de "07/13/19h" — esa cifra no se sostiene contra los datos reales) |
-
-Estos valores viven como constantes documentadas en `hunger-bar.ts`, no hardcodeados
-sin explicación.
 
 ---
 
@@ -158,6 +158,118 @@ Mismo espíritu que el pipeline de dos etapas de arriba, pero sin el Evidence En
 2. **Clasificación por reglas** (no Evidence Engine): dirección + magnitud + duración del
    segmento cerrado, con scoring triangular (0-1) sobre qué tan centrado está en el rango
    típico documentado. Es un *proxy* de confianza, no el score real del motor calibrado.
+
+#### 1.3 Algoritmo completo (referencia — todas las constantes)
+
+Código real: `kittypau_app/src/lib/hunger-bar.ts`. Documentado acá completo para no
+depender de leer el TS.
+
+**Constantes:**
+
+| Constante | Valor | Para qué |
+|---|---|---|
+| `SESSION_THRESHOLD_G` | 5 | umbral de apertura de segmento (mismo que `bridge/src/processor.js`) |
+| `LAG_SECONDS` | 480 (8 min) | ventana del ancla idle — ver por qué abajo |
+| `STABLE_TOLERANCE_G` | 3 | variación máxima entre lecturas consecutivas para considerarlas "estables" |
+| `STABLE_COUNT` | 2 | lecturas estables consecutivas para cerrar el segmento |
+| `MIN_INTERVALO_H` / `MAX_INTERVALO_H` | 0.33 / 36.0 | filtro de outliers al calcular la mediana histórica (§2) |
+| `N_MIN_MUESTRAS` | 5 | comidas propias mínimas antes de dejar el fallback |
+| `FALLBACK_MEDIANA_H` | 5.78 | mediana global real (249 intervalos válidos, KPCL0034) |
+| `CLAMP_MIN_H` / `CLAMP_MAX_H` | 2.88 / 12.02 | clamp de display — P10/P90 reales |
+
+**Paso 1 — `detectSegments(readings)`** — state machine idle/active sobre lecturas
+ordenadas ascendente por `recorded_at`:
+
+```
+lagIdx = 0                    # ancla: puntero rezagado ~LAG_SECONDS detrás de i
+phase = idle
+para cada lectura i (desde la 2ª):
+  avanzar lagIdx mientras (tiempo[i] - tiempo[lagIdx+1]) >= LAG_SECONDS
+  baseline = peso[lagIdx]     # el ancla, NO la lectura anterior — ver por qué abajo
+  peso_i   = peso[i]
+
+  si phase == idle:
+    si |peso_i - baseline| >= SESSION_THRESHOLD_G:
+      phase = active
+      sessionStartIdx = lagIdx
+      lastWeight = peso_i
+      stableCount = 0
+    continuar
+
+  # phase == active
+  isStable = |peso_i - lastWeight| <= STABLE_TOLERANCE_G
+  stableCount = isStable ? stableCount + 1 : 0
+  lastWeight = peso_i
+
+  si stableCount >= STABLE_COUNT:
+    cerrar segmento: [readings[sessionStartIdx] .. readings[i]]
+    deltaG = peso_fin - peso_inicio
+    durationMin = (t_fin - t_inicio) en minutos
+    clasificar(deltaG, durationMin)  → guardar segmento
+    phase = idle
+    lagIdx = i                # reinicia la ventana desde el cierre
+```
+
+**Por qué `LAG_SECONDS` = 8 min y no "la lectura anterior":** una bajada real de
+alimentación es gradual (5-15g repartidos en 4-8min). Con lecturas frecuentes, comparar
+contra la lectura inmediatamente anterior nunca acumula lo suficiente — cada paso
+individual es minúsculo. Comparar contra una lectura de hace 8 minutos sí acumula la
+bajada completa antes de que el ancla "la persiga", y de paso promedia el ruido aleatorio
+del sensor en vez de perseguirlo paso a paso. **Este fue un bug real encontrado con un
+smoke test sintético antes de mergear** (la primera versión, con ancla = lectura anterior,
+nunca abría sesión con una rampa gradual — 0 comidas detectadas en el test).
+
+**Paso 2 — `classifySegment(deltaG, durationMin)`:**
+
+```
+si deltaG < 0 (bajó peso):
+  mag = -deltaG
+  si 3 <= mag <= 25  Y  1.5 <= durationMin <= 15:
+    magScore = triangular(mag, lo=3, mid=10, hi=25)
+    durScore = triangular(durationMin, lo=1.5, mid=6, hi=15)
+    → categoria = "alimentacion", confianza = (magScore + durScore) / 2
+  si_no:
+    → categoria = "ruido", confianza = 0
+
+si deltaG >= 15 (subió peso, rápido):
+  → categoria = "servido", confianza = 0.6   # fijo, no se usa para la barra (§4)
+
+si_no:
+  → categoria = "ruido", confianza = 0
+```
+`triangular(x, lo, mid, hi)`: 0 en los bordes, 1 en `mid`, rampa lineal entre medio —
+mide qué tan centrado está el valor en el rango típico documentado (no es probabilidad
+real, es un proxy).
+
+**Paso 3 — `computeHungerBar(readings, now)`:**
+
+```
+segments = detectSegments(readings)
+meals = segments donde categoria == "alimentacion", ordenados por t_inicio asc
+
+si meals.length == 0:
+  → status "sin_datos", todo null
+
+intervalosH = [] 
+para cada par de comidas consecutivas:
+  h = horas entre t_inicio(comida[i]) y t_inicio(comida[i-1])
+  si MIN_INTERVALO_H <= h <= MAX_INTERVALO_H: intervalosH.push(h)
+
+usingFallback = intervalosH.length < N_MIN_MUESTRAS
+intervalH_crudo = usingFallback ? FALLBACK_MEDIANA_H : mediana(intervalosH)
+intervalH = clamp(intervalH_crudo, CLAMP_MIN_H, CLAMP_MAX_H)
+
+ultimaComida  = meals[última]
+horasDesde    = (now - t_inicio(ultimaComida)) en horas
+percentage    = clamp(horasDesde / intervalH * 100, 0, 100)
+proximaComida = t_inicio(ultimaComida) + intervalH horas
+
+→ { percentage, lastMealDetectedAt: t_inicio(ultimaComida),
+    lastMealConfidence: confianza de esa comida,
+    estimatedNextMealAt: proximaComida,
+    intervalUsedMinutes: intervalH * 60,
+    usingFallback, sampleSize: meals.length }
+```
 
 ---
 
