@@ -53,15 +53,16 @@ normales de Chart.js con `pointStyle` custom (íconos de plato/agua).
 
 ---
 
-## Nota — `DayCycleChart.tsx` / `useDayCycleData.ts` son código muerto
+## Nota — `DayCycleChart.tsx` / `useDayCycleData.ts` eran código muerto — eliminados
 
 Al extraer este componente se confirmó que **`today/DayCycleChart.tsx` y
-`today/useDayCycleData.ts` no se importan desde ningún lado del código** (`grep` en todo
-`src/`, cero resultados). Son un chart D3 (SVG) con fondo de franjas de color por hora +
+`today/useDayCycleData.ts` no se importaban desde ningún lado del código** (`grep` en todo
+`src/`, cero resultados). Era un chart D3 (SVG) con fondo de franjas de color por hora +
 íconos de sesión animados — una implementación distinta y más simple que la que realmente
-está en producción (el plugin de Chart.js de arriba). Quedaron huérfanos de algún refactor
-anterior. **No se borraron en esta sesión** — es una decisión de limpieza que hay que
-confirmar (¿se recupera esa idea para algo, o se elimina?), no algo para decidir solo.
+está en producción (el plugin de Chart.js de arriba). **Eliminados el 2026-08-11 a pedido
+de Mauro**, para no dejar confusión sobre cuál de los 2 charts es el real. `d3` y
+`@types/d3` quedaron como dependencias sin uso en `package.json` — no se desinstalaron en
+esta pasada (tocar `package.json`/lockfile es un paso aparte).
 
 ---
 

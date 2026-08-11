@@ -51,10 +51,9 @@ related:
 | `_lib/today-format.tsx` | [[18_UI/Componentes/COMP_TodayFormatHelpers]] | Helpers puros de formato (batería, conectividad, tendencia) |
 | `_components/day-night-timeline-card.tsx` | [[18_UI/Componentes/COMP_DayNightTimelineCard]] | Card del timeline día/noche con el chart de Alimentación/Hidratación |
 
-> ⚠️ `DayCycleChart.tsx` + `useDayCycleData.ts` (en la raíz de `today/`, no en
-> `_components/`) están **sin usar en ningún lado del código** — confirmado con `grep` al
-> extraer `DayNightTimelineCard`. Ver [[18_UI/Componentes/COMP_DayNightTimelineCard]] para
-> el detalle. No se borraron sin confirmar primero.
+> `DayCycleChart.tsx` + `useDayCycleData.ts` (chart D3 sin uso, confirmado con `grep`)
+> fueron **eliminados el 2026-08-11** — ver [[18_UI/Componentes/COMP_DayNightTimelineCard]]
+> para el detalle. `d3`/`@types/d3` quedaron como dependencias sin uso en `package.json`.
 
 El resto de `today/page.tsx` (~2540 líneas) sigue siendo un componente monolítico con toda
 la carga de datos, el hunger bar, los charts de consumo, el timeline de audit events, etc.
