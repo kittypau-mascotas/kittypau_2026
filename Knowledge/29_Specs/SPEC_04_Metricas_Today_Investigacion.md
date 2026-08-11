@@ -21,34 +21,15 @@ related:
   - [[29_Specs/SPEC_03_Objetivos_Monitoreo]]
 ---
 
-## Estado de implementación (2026-08-11, misma sesión)
-
-Se implementó y **luego se revirtió por completo** la v1 mínima propuesta en §4.
-
-Se agregaron Rutina (`computeRoutineScore()` en `lib/hunger-bar.ts`, con std circular)
-y Datos frescos como 3ª/4ª barra del panel "Barras Sims" en `/today`. **Mauro pidió
-explícitamente revertir el cambio del panel "Barras Sims" sin dar razones puntuales** — el
-código se sacó completo (backend en `hunger-bar.ts`/`route.ts`, UI en `today/page.tsx`,
-vuelto a 2 indicadores como estaba). No quedó ningún rastro en el código.
-
-**Señal a tener en cuenta antes de tocar este widget de nuevo**: el historial de git ya
-mostraba dos veces el mismo patrón antes de esta sesión — `fix(today): restaurar cards de
-Alimentación/Hidratación, solo sacar Categorías (#20)` y `fix(today): eliminar sección
-"Estado de platos"` — Mauro es protector de que "Barras Sims" se mantenga simple/estable.
-**Cualquier cambio futuro a este panel específico debería proponerse primero y esperar
-confirmación explícita antes de implementar**, no asumir que un spec aprobado en general
-autoriza tocar este widget en particular.
-
-M1 (Confianza del sensor) y Apetito (con fix de outliers) nunca se implementaron — seguían
-diferidas incluso antes de la reversión, sin cambios.
-
-**Grupo C (Hidratación) — confirmado que NO se portó**, tal como recomienda este spec. Ver
-[[29_Specs/SPEC_03_Objetivos_Monitoreo]] para el detalle de la verificación. Esto sigue
-vigente, no fue parte de lo revertido.
-
----
-
 # SPEC 04 — Métricas de /today desde la investigación
+
+> ⚠️ **"Rutina" y "Datos frescos" ya se intentaron sumar al panel "Barras Sims" de `/today`
+> y Mauro pidió revertirlo por completo, sin dar razones puntuales** (el código se sacó
+> entero: backend en `hunger-bar.ts`, UI en `today/page.tsx`). Es la tercera vez que se
+> revierte un cambio a ese widget específico en el historial del proyecto (ver también
+> `#18`, `#20` en `git log`). **No volver a proponer cards nuevas en "Barras Sims" sin
+> preguntar primero** — el resto de este spec sigue siendo guía válida para el resto de la
+> app, solo ese widget puntual está fuera de límites sin confirmación explícita.
 
 > Regla de este spec, sin excepción: **toda métrica propuesta cita de dónde sale el número**
 > — qué archivo de `fase_0_ruido/`, qué fórmula, sobre cuántas anotaciones. Si no hay una
@@ -75,10 +56,12 @@ Bar; Agua como placeholder sin cálculo — ver [[29_Specs/SPEC_03_Objetivos_Mon
 | Métrica | Fórmula (tal como está en Tab 8) | Fuente de calibración |
 |---|---|---|
 | **Hambre** | `100 − (h_desde_última_comida / mediana_intervalo × 100)`, clamped [0,100] | Ya portada como Hunger Bar v1 — [[05_API/SPEC_HungerBar_Alimentacion]] §2 |
-| **Rutina** | `100 − std(horas_de_comida) × 10` | 527 anotaciones de alimentación reales, horas pico medidas (19h/05h/16h/10h/17h/06h/07h/09h — más repartidas de lo que decía la doc vieja de "07/13/19h", ver §0.1 de la spec de hunger bar) |
-| **Saciedad** | `comidas_hoy / (24 / mediana_intervalo)`, clamped a 100 | Misma base de datos que Hambre y Rutina |
+| **Saciedad** | `comidas_hoy / (24 / mediana_intervalo)`, clamped a 100 | Misma base de datos que Hambre |
 | **Energía** | Alias de Actividad (`comidas_hoy / mediana_diaria`) | Redundante con Actividad tal cual está definida hoy en Tab 8 — **no portar las dos, fusionar en una sola métrica antes de llevarla a producción** (ver §3) |
-| **Datos frescos** | `100 − horas_desde_último_sync × 4` (0% tras 25h sin datos) | No depende de calibración de Bandida — es una fórmula genérica de frescura, aplicable a cualquier device. Es el mismo concepto que ya usa el "Diagnóstico rápido" de `/bowl` — ver [[29_Specs/SPEC_02_UIUX_Mejoras]] U2, fusionar en el mismo componente en vez de duplicar |
+
+> Rutina y Datos frescos también son 🟢 Grupo A por fórmula/datos (ver historial de este
+> doc), pero **ya se implementaron y se revirtieron a pedido de Mauro** — no re-proponer sin
+> confirmar primero (ver nota al inicio del documento).
 
 ### 🟡 Grupo B — La idea es buena, la fórmula actual es un proxy débil que necesita más trabajo antes de producción
 
@@ -166,21 +149,19 @@ research item, no como tarea de sprint.
 
 ---
 
-## 4. Propuesta de v1 mínima para `/today`
+## 4. Qué queda pendiente de portar
 
-No portar los 10 de una — priorizar por (a) ya calculado y calibrado, (b) no redundante,
-(c) refuerza el pilar más débil identificado en [[29_Specs/SPEC_03_Objetivos_Monitoreo]]:
+Candidatos que siguen abiertos, sin implementar todavía:
 
-| Orden | Métrica | Grupo | Por qué primero |
-|---|---|---|---|
-| 1 | Rutina | 🟢 A | Complementa la Hunger Bar sin duplicarla — "¿come siempre a la misma hora?" es una pregunta que un dueño sí se hace y hoy no tiene respuesta en `/today` |
-| 2 | M1 — Confianza del sensor | Nuevo | Ataca directo el Pilar 4 (confianza en los datos) de [[29_Specs/SPEC_03_Objetivos_Monitoreo]], que es un gap transversal a toda la app |
-| 3 | Datos frescos | 🟢 A | Mismo motivo que M1, ya calculado, cero trabajo de investigación nuevo |
-| 4 | Apetito (con el fix de outliers de §1 Grupo B) | 🟡 B | Alto valor percibido ("¿está comiendo más/menos que lo normal?"), pero condicionado a resolver el filtro de gaps primero |
+| Métrica | Grupo | Nota |
+|---|---|---|
+| M1 — Confianza del sensor | Nuevo | Ataca directo el Pilar 4 (confianza en los datos) de [[29_Specs/SPEC_03_Objetivos_Monitoreo]], que es un gap transversal a toda la app. Requiere decidir arquitectura (reusar B', ver §2) |
+| Apetito (con el fix de outliers de §1 Grupo B) | 🟡 B | Alto valor percibido, condicionado a resolver el filtro de gaps primero |
 
-**Explícitamente fuera de v1:** Hidratación (bloqueada por Pilar 2 de SPEC 03 — no hay
-investigación), Sueño/reposo (renombrar antes de mostrar, ver Grupo B), Salud general
-(esperar a tener más de 2-3 indicadores reales para que un promedio tenga sentido).
+**Fuera de alcance:** Hidratación (bloqueada por Pilar 2 de SPEC 03 — no hay investigación),
+Sueño/reposo (renombrar antes de mostrar, ver Grupo B), Salud general (esperar a tener más
+indicadores reales), y **cualquier card nueva en el panel "Barras Sims"** sin confirmar
+primero (ver nota al inicio del documento).
 
 ---
 

@@ -22,11 +22,10 @@ related:
 
 # Specs — Roadmap técnico y de producto
 
-> 4 specs pedidos por Mauro el 2026-08-11, a partir de la auditoría + recorrido en vivo del
-> mismo día ([[AUDITORIA_2026_08_11]]) y del diagnóstico UX previo
-> ([[18_UI/UX_DIAGNOSTICO_2026_06_30]]). Todo lo verificado "en vivo" en estos 4 docs se
-> re-confirmó contra el código el 2026-08-11 (no se asume nada del diagnóstico de junio sin
-> re-chequear).
+> 5 specs pedidos por Mauro el 2026-08-11, a partir de la auditoría + recorrido en vivo del
+> mismo día ([[AUDITORIA_2026_08_11]]). **Backlog vivo, no archivo histórico**: cada spec
+> saca sus items en cuanto se implementan (el historial de qué se hizo vive en `git log`,
+> no acá) — si volvés a esta carpeta, todo lo que queda listado sigue pendiente.
 
 | Spec | Pregunta que responde |
 |---|---|
@@ -38,7 +37,7 @@ related:
 
 ## Cómo se relacionan entre sí
 
-Los 4 specs no son independientes — hay una cadena real:
+Los 5 specs no son independientes — hay una cadena real:
 
 ```
 SPEC 01 (errores)     →  limpia el terreno (auth bugs, rutas muertas, deuda técnica visible)
@@ -60,6 +59,6 @@ audiencia.
 
 ## Ver también
 
-- [[AUDITORIA_2026_08_11]] — hallazgos fuente de estos 4 specs
+- [[AUDITORIA_2026_08_11]] — hallazgos fuente de estos 5 specs
 - [[18_UI/README_UI]] — recorrido en vivo pantalla por pantalla
 - [[05_API/SPEC_HungerBar_Alimentacion]] — precedente de spec "investigación → producto" ya implementado

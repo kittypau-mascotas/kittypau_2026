@@ -21,28 +21,12 @@ related:
   - [[10_Datasets/README_Datasets]]
 ---
 
-## Estado de implementación (2026-08-11, misma sesión)
-
-Este spec es principalmente de estrategia de producto, no una lista de tareas de código —
-la mayoría de sus puntos (fase 0 de investigación de hidratación, notificaciones push) son
-roadmap, no algo para implementar en una sesión. Lo que sí se verificó/ajustó:
-
-- **Pilar 2 (hidratación) re-verificado en código**: la card de Hidratación en `/today`
-  (`buildWellnessState()`) ya usa copy honesto basado en `audit_events`
-  ("Aún no hay eventos reales confirmados para hidratación") — **no** muestra ningún número
-  inventado. El riesgo real (portar el `_sims_agua = 70.0` hardcodeado de la app de
-  investigación) no se materializó porque nunca se implementó. No se necesitó ningún cambio
-  de código aquí — el hallazgo de esta sesión corrige la severidad de este punto del spec,
-  de "hay que arreglar el copy" a "ya está bien, solo falta la investigación real".
-- **Pilar 1 y Pilar 4**: se intentó sumar "Rutina" y "Datos frescos" al panel "Barras Sims"
-  de `/today` — **revertido a pedido explícito de Mauro** el mismo día. Ver
-  [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] para el detalle y la señal a respetar
-  antes de volver a proponer cambios a ese widget específico.
-- **Fase 0 de investigación de hidratación**: no implementable en esta sesión (requiere
-  datos reales de un bebedero con sensor de flujo/nivel + trabajo de anotación manual,
-  semanas de proceso, no una tarea de código).
-
 # SPEC 03 — Objetivos como app de monitoreo de alimentación e hidratación
+
+> Pilar 2 (hidratación) verificado en código: la card de `/today` (`buildWellnessState()`)
+> ya usa copy honesto basado en `audit_events`, no un número inventado. Pilar 1 y Pilar 4:
+> se intentó sumar métricas al panel "Barras Sims" y **se revirtió a pedido de Mauro** — ver
+> [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] antes de volver a proponer algo ahí.
 
 > Kittypau se vende como monitoreo de alimentación **e hidratación**. Este spec mide, pilar
 > por pilar, qué tan cierto es eso hoy — con evidencia (código + investigación), no
