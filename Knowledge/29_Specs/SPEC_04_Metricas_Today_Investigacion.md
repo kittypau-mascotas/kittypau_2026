@@ -23,28 +23,28 @@ related:
 
 ## Estado de implementación (2026-08-11, misma sesión)
 
-Se implementó la v1 mínima propuesta en §4, con un ajuste de alcance (2 de las 4, las 2 que
-no dependían de trabajo adicional de detección):
+Se implementó y **luego se revirtió por completo** la v1 mínima propuesta en §4.
 
-| Métrica | Estado |
-|---|---|
-| **Rutina** | ✅ Implementada — `computeRoutineScore()` en `lib/hunger-bar.ts`, expuesta en `GET /api/pets/:id/hunger-bar` (`routineScore`, `routineStdHours`) y renderizada en `/today` como 3ª barra del panel "Barras Sims". **Mejora sobre la fórmula original de Tab 8**: usa desviación estándar circular (24h wrap-around) en vez de lineal — la versión Python trataría comidas a las 23h y la 1h como ~11h de diferencia en vez de las 2h reales. Ver comentarios en el código para la justificación completa. |
-| **Datos frescos** | ✅ Implementada — calculada en el propio `/today` (no necesitaba backend nuevo, es `100 − horas_desde_última_lectura × 4`), 4ª barra del panel |
-| M1 — Confianza del sensor | ⏸️ Diferida — requiere correr el detector de candidatos sobre la ventana reciente en producción, mismo tipo de decisión de arquitectura (A/B/B'/C) que ya se resolvió para Hunger Bar; no se reabrió esa decisión en esta pasada |
-| Apetito (con fix de outliers) | ⏸️ Diferida — necesita el mismo filtro de gaps que ya usa el cálculo de intervalos; se dejó pendiente para no introducir una fórmula a medio validar |
+Se agregaron Rutina (`computeRoutineScore()` en `lib/hunger-bar.ts`, con std circular)
+y Datos frescos como 3ª/4ª barra del panel "Barras Sims" en `/today`. **Mauro pidió
+explícitamente revertir el cambio del panel "Barras Sims" sin dar razones puntuales** — el
+código se sacó completo (backend en `hunger-bar.ts`/`route.ts`, UI en `today/page.tsx`,
+vuelto a 2 indicadores como estaba). No quedó ningún rastro en el código.
+
+**Señal a tener en cuenta antes de tocar este widget de nuevo**: el historial de git ya
+mostraba dos veces el mismo patrón antes de esta sesión — `fix(today): restaurar cards de
+Alimentación/Hidratación, solo sacar Categorías (#20)` y `fix(today): eliminar sección
+"Estado de platos"` — Mauro es protector de que "Barras Sims" se mantenga simple/estable.
+**Cualquier cambio futuro a este panel específico debería proponerse primero y esperar
+confirmación explícita antes de implementar**, no asumir que un spec aprobado en general
+autoriza tocar este widget en particular.
+
+M1 (Confianza del sensor) y Apetito (con fix de outliers) nunca se implementaron — seguían
+diferidas incluso antes de la reversión, sin cambios.
 
 **Grupo C (Hidratación) — confirmado que NO se portó**, tal como recomienda este spec. Ver
-[[29_Specs/SPEC_03_Objetivos_Monitoreo]] para el detalle de la verificación.
-
-El panel "Barras Sims" de `/today` pasó de 2 a 4 indicadores (Comida, Agua, Rutina, Datos
-frescos), en grid 2×2. Los iconos de las 2 métricas nuevas usan emoji (🕐 📡) en vez de
-imagen — no había assets de ilustración para "rutina"/"frescura" en `public/illustrations/`
-y crear ilustraciones nuevas está fuera de alcance de una sesión de código.
-
-Validado con `npm run type-check`, `npm run lint`, `npm run build`, y confirmado en vivo con
-Playwright: las 2 barras nuevas renderizan con datos reales de la cuenta tester (Rutina en
-0% por falta de comidas suficientes en la ventana — comportamiento correcto, no hay muestra
-falsa; Datos frescos en 100% con lectura de hace minutos).
+[[29_Specs/SPEC_03_Objetivos_Monitoreo]] para el detalle de la verificación. Esto sigue
+vigente, no fue parte de lo revertido.
 
 ---
 

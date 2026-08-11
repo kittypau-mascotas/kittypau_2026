@@ -34,9 +34,10 @@ roadmap, no algo para implementar en una sesión. Lo que sí se verificó/ajust�
   investigación) no se materializó porque nunca se implementó. No se necesitó ningún cambio
   de código aquí — el hallazgo de esta sesión corrige la severidad de este punto del spec,
   de "hay que arreglar el copy" a "ya está bien, solo falta la investigación real".
-- **Pilar 1 (alimentación)**: se sumó la métrica "Rutina" (regularidad horaria) a
-  `/today` — ver [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] y `lib/hunger-bar.ts`.
-- **Pilar 4 (confianza en los datos)**: se sumó "Datos frescos" a `/today` — mismo lugar.
+- **Pilar 1 y Pilar 4**: se intentó sumar "Rutina" y "Datos frescos" al panel "Barras Sims"
+  de `/today` — **revertido a pedido explícito de Mauro** el mismo día. Ver
+  [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] para el detalle y la señal a respetar
+  antes de volver a proponer cambios a ese widget específico.
 - **Fase 0 de investigación de hidratación**: no implementable en esta sesión (requiere
   datos reales de un bebedero con sensor de flujo/nivel + trabajo de anotación manual,
   semanas de proceso, no una tarea de código).
