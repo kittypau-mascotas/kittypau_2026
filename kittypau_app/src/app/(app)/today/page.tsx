@@ -6,11 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
-import {
-  BOWL_CATEGORY_CHOICES,
-  WATER_CATEGORY_CHOICES,
-  type BowlCategoryChoice,
-} from "@/lib/bowl/categories";
 import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import {
@@ -628,9 +623,6 @@ export default function TodayPage() {
   const [deviceLatestReadings, setDeviceLatestReadings] = useState<
     Record<string, ApiReading | null>
   >({});
-  const [devicePreviousReadings, setDevicePreviousReadings] = useState<
-    Record<string, ApiReading | null>
-  >({});
   const [deviceChartReadings, setDeviceChartReadings] =
     useState<DeviceReadingsMap>({});
   const [deviceHistoryReadings, setDeviceHistoryReadings] =
@@ -643,10 +635,6 @@ export default function TodayPage() {
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
-  const [bowlCategoryBusy, setBowlCategoryBusy] = useState<string | null>(null);
-  const [bowlCategoryFeedback, setBowlCategoryFeedback] = useState<
-    string | null
-  >(null);
   const [bowlPlateOverrides, setBowlPlateOverrides] = useState<
     Record<string, number>
   >({});
@@ -656,21 +644,6 @@ export default function TodayPage() {
   const [bowlTareOffsets, setBowlTareOffsets] = useState<
     Record<string, number>
   >({});
-  const [bowlPendingPlateConfirm, setBowlPendingPlateConfirm] = useState<
-    Record<string, boolean>
-  >({});
-  const [waterCategoryBusy, setWaterCategoryBusy] = useState<string | null>(
-    null,
-  );
-  const [waterCategoryFeedback, setWaterCategoryFeedback] = useState<
-    string | null
-  >(null);
-  const bowlFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const waterFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const onPetChangeRef = useRef<((e: Event) => void) | null>(null);
   const onDeviceChangeRef = useRef<((e: Event) => void) | null>(null);
   const [waterPlateOverrides, setWaterPlateOverrides] = useState<
@@ -681,9 +654,6 @@ export default function TodayPage() {
   >({});
   const [waterTareOffsets, setWaterTareOffsets] = useState<
     Record<string, number>
-  >({});
-  const [waterPendingPlateConfirm, setWaterPendingPlateConfirm] = useState<
-    Record<string, boolean>
   >({});
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
   const [accountType, setAccountType] = useState<
@@ -1194,8 +1164,6 @@ export default function TodayPage() {
     (bowlDevice
       ? (petDevices.find((device) => device.id !== bowlDevice.id) ?? null)
       : null);
-  const hasFoodDevice = petDevices.length > 0;
-  const hasWaterDevice = waterDevice !== null;
   const isAuthoritativeFoodDevice = isAuthoritativeFoodDeviceCode(
     bowlDevice?.device_id,
   );
@@ -1203,14 +1171,8 @@ export default function TodayPage() {
   const bowlLatestReading = bowlDevice?.id
     ? (deviceLatestReadings[bowlDevice.id] ?? null)
     : null;
-  const bowlPreviousReading = bowlDevice?.id
-    ? (devicePreviousReadings[bowlDevice.id] ?? null)
-    : null;
   const waterLatestReading = waterDevice?.id
     ? (deviceLatestReadings[waterDevice.id] ?? null)
-    : null;
-  const waterPreviousReading = waterDevice?.id
-    ? (devicePreviousReadings[waterDevice.id] ?? null)
     : null;
   const heroUpdatedAt = useMemo(() => {
     const candidates = [
@@ -1295,12 +1257,6 @@ export default function TodayPage() {
         setDeviceLatestReadings((prev) => ({
           ...prev,
           ...Object.fromEntries(successful.map((e) => [e.deviceId, e.latest])),
-        }));
-        setDevicePreviousReadings((prev) => ({
-          ...prev,
-          ...Object.fromEntries(
-            successful.map((e) => [e.deviceId, e.previous]),
-          ),
         }));
       }
       inFlight = false;
@@ -1470,21 +1426,6 @@ export default function TodayPage() {
     };
   }, [primaryPet?.id]);
 
-  const bowlTempText =
-    bowlLatestReading?.temperature !== null &&
-    bowlLatestReading?.temperature !== undefined
-      ? `${toRoundedSensorValue(bowlLatestReading.temperature)}°C`
-      : "N/D";
-  const bowlHumidityText =
-    bowlLatestReading?.humidity !== null &&
-    bowlLatestReading?.humidity !== undefined
-      ? `${toRoundedSensorValue(bowlLatestReading.humidity)}%`
-      : "N/D";
-  const bowlLightText =
-    bowlLatestReading?.light_percent !== null &&
-    bowlLatestReading?.light_percent !== undefined
-      ? `${toRoundedSensorValue(bowlLatestReading.light_percent)}%`
-      : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
   const bowlPlateWeightOverride =
     bowlDevice?.id && bowlPlateOverrides[bowlDevice.id] !== undefined
@@ -1494,142 +1435,6 @@ export default function TodayPage() {
     bowlPlateWeightOverride !== null
       ? bowlPlateWeightOverride
       : bowlPlateWeightGrams;
-  const bowlGrossWeightGrams = toNullableNumber(
-    bowlLatestReading?.weight_grams,
-  );
-  const bowlRawContentWeightGrams =
-    bowlGrossWeightGrams !== null
-      ? Math.max(
-          0,
-          bowlPlateWeightEffective !== null
-            ? bowlGrossWeightGrams - bowlPlateWeightEffective
-            : bowlGrossWeightGrams,
-        )
-      : null;
-  const bowlTareOffset =
-    bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
-      ? bowlTareOffsets[bowlDevice.id]
-      : 0;
-  const bowlContentWeightGrams =
-    bowlRawContentWeightGrams !== null
-      ? Math.max(0, bowlRawContentWeightGrams - bowlTareOffset)
-      : null;
-  const bowlContentWeightText =
-    bowlContentWeightGrams !== null
-      ? `${Math.round(bowlContentWeightGrams)} g`
-      : "N/D";
-  const bowlPlateWeightText =
-    bowlPlateWeightEffective !== null
-      ? `${Math.round(Math.max(0, bowlPlateWeightEffective))} g`
-      : "N/D";
-  const bowlSensorWeightText =
-    bowlGrossWeightGrams !== null
-      ? `${Math.round(Math.max(0, bowlGrossWeightGrams))} g`
-      : "N/D";
-  const handleBowlCategory = useCallback(
-    async (choice: BowlCategoryChoice) => {
-      if (!bowlDevice?.id || bowlCategoryBusy) return;
-      setBowlCategoryBusy(choice.key);
-      setBowlCategoryFeedback(null);
-      try {
-        const res = await authFetch(`/api/devices/${bowlDevice.id}/category`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            category: choice.key,
-            snapshot: {
-              device_id: bowlDevice.device_id,
-              weight_grams: bowlGrossWeightGrams,
-              plate_weight_grams: bowlPlateWeightEffective,
-              content_weight_grams: bowlContentWeightGrams,
-              sensor_recorded_at: bowlLatestReading?.recorded_at ?? null,
-            },
-          }),
-        });
-        if (!res.ok) throw new Error("category-save-failed");
-        setBowlCategoryFeedback(`Guardado: ${choice.label}`);
-        if (choice.key === "kpcl_sin_plato") {
-          if (bowlGrossWeightGrams !== null) {
-            setBowlLastEmptyWeight((prev) => ({
-              ...prev,
-              [bowlDevice.id]: bowlGrossWeightGrams,
-            }));
-          }
-          setBowlPlateOverrides((prev) => ({
-            ...prev,
-            [bowlDevice.id]: 0,
-          }));
-          setBowlPendingPlateConfirm((prev) => ({
-            ...prev,
-            [bowlDevice.id]: true,
-          }));
-        }
-        if (choice.key === "kpcl_con_plato") {
-          const emptyWeight =
-            bowlDevice.id in bowlLastEmptyWeight
-              ? bowlLastEmptyWeight[bowlDevice.id]
-              : null;
-          if (emptyWeight !== null && bowlGrossWeightGrams !== null) {
-            const plateWeight = Math.max(0, bowlGrossWeightGrams - emptyWeight);
-            setBowlPlateOverrides((prev) => ({
-              ...prev,
-              [bowlDevice.id]: plateWeight,
-            }));
-          }
-          setBowlPendingPlateConfirm((prev) => ({
-            ...prev,
-            [bowlDevice.id]: false,
-          }));
-        }
-        if (choice.key === "tare_con_plato") {
-          const tareBase =
-            bowlRawContentWeightGrams !== null ? bowlRawContentWeightGrams : 0;
-          setBowlTareOffsets((prev) => ({
-            ...prev,
-            [bowlDevice.id]: tareBase,
-          }));
-        }
-      } catch {
-        setBowlCategoryFeedback("No se pudo guardar la categoría.");
-      } finally {
-        setBowlCategoryBusy(null);
-        if (bowlFeedbackTimerRef.current)
-          clearTimeout(bowlFeedbackTimerRef.current);
-        bowlFeedbackTimerRef.current = setTimeout(
-          () => setBowlCategoryFeedback(null),
-          3000,
-        );
-      }
-    },
-    [
-      bowlCategoryBusy,
-      bowlContentWeightGrams,
-      bowlLastEmptyWeight,
-      bowlDevice?.device_id,
-      bowlDevice?.id,
-      bowlGrossWeightGrams,
-      bowlLatestReading?.recorded_at,
-      bowlPlateWeightGrams,
-      bowlPlateWeightEffective,
-      bowlRawContentWeightGrams,
-      bowlPendingPlateConfirm,
-    ],
-  );
-  const waterTempText =
-    waterLatestReading?.temperature !== null &&
-    waterLatestReading?.temperature !== undefined
-      ? `${toRoundedSensorValue(waterLatestReading.temperature)}°C`
-      : "N/D";
-  const waterHumidityText =
-    waterLatestReading?.humidity !== null &&
-    waterLatestReading?.humidity !== undefined
-      ? `${toRoundedSensorValue(waterLatestReading.humidity)}%`
-      : "N/D";
-  const waterLightText =
-    waterLatestReading?.light_percent !== null &&
-    waterLatestReading?.light_percent !== undefined
-      ? `${toRoundedSensorValue(waterLatestReading.light_percent)}%`
-      : "N/D";
   const waterPlateWeightGrams = toNullableNumber(
     waterDevice?.plate_weight_grams,
   );
@@ -1661,158 +1466,7 @@ export default function TodayPage() {
     waterRawContentWeightGrams !== null
       ? Math.max(0, waterRawContentWeightGrams - waterTareOffset)
       : null;
-  const waterPlateWeightText =
-    waterPlateWeightEffective !== null
-      ? `${Math.round(Math.max(0, waterPlateWeightEffective))} g`
-      : "N/D";
-  const waterSensorWeightText =
-    waterGrossWeightGrams !== null
-      ? `${Math.round(Math.max(0, waterGrossWeightGrams))} g`
-      : "N/D";
-  const waterVolumeMlText =
-    waterContentWeightGrams !== null
-      ? `${Math.round(waterContentWeightGrams)} mL`
-      : "N/D";
-  const handleWaterCategory = useCallback(
-    async (choice: BowlCategoryChoice) => {
-      if (!waterDevice?.id || waterCategoryBusy) return;
-      setWaterCategoryBusy(choice.key);
-      setWaterCategoryFeedback(null);
-      try {
-        const res = await authFetch(`/api/devices/${waterDevice.id}/category`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            category: choice.key,
-            snapshot: {
-              device_id: waterDevice.device_id,
-              weight_grams: waterGrossWeightGrams,
-              plate_weight_grams: waterPlateWeightEffective,
-              content_weight_grams: waterContentWeightGrams,
-              sensor_recorded_at: waterLatestReading?.recorded_at ?? null,
-            },
-          }),
-        });
-        if (!res.ok) throw new Error("category-save-failed");
-        setWaterCategoryFeedback(`Guardado: ${choice.label}`);
-        if (choice.key === "kpcl_sin_plato") {
-          if (waterGrossWeightGrams !== null) {
-            setWaterLastEmptyWeight((prev) => ({
-              ...prev,
-              [waterDevice.id]: waterGrossWeightGrams,
-            }));
-          }
-          setWaterPlateOverrides((prev) => ({
-            ...prev,
-            [waterDevice.id]: 0,
-          }));
-          setWaterPendingPlateConfirm((prev) => ({
-            ...prev,
-            [waterDevice.id]: true,
-          }));
-        }
-        if (choice.key === "kpcl_con_plato") {
-          const emptyWeight =
-            waterDevice.id in waterLastEmptyWeight
-              ? waterLastEmptyWeight[waterDevice.id]
-              : null;
-          if (emptyWeight !== null && waterGrossWeightGrams !== null) {
-            const plateWeight = Math.max(
-              0,
-              waterGrossWeightGrams - emptyWeight,
-            );
-            setWaterPlateOverrides((prev) => ({
-              ...prev,
-              [waterDevice.id]: plateWeight,
-            }));
-          }
-          setWaterPendingPlateConfirm((prev) => ({
-            ...prev,
-            [waterDevice.id]: false,
-          }));
-        }
-        if (choice.key === "tare_con_plato") {
-          const tareBase =
-            waterRawContentWeightGrams !== null
-              ? waterRawContentWeightGrams
-              : 0;
-          setWaterTareOffsets((prev) => ({
-            ...prev,
-            [waterDevice.id]: tareBase,
-          }));
-        }
-      } catch {
-        setWaterCategoryFeedback("No se pudo guardar la categoría.");
-      } finally {
-        setWaterCategoryBusy(null);
-        if (waterFeedbackTimerRef.current)
-          clearTimeout(waterFeedbackTimerRef.current);
-        waterFeedbackTimerRef.current = setTimeout(
-          () => setWaterCategoryFeedback(null),
-          3000,
-        );
-      }
-    },
-    [
-      waterCategoryBusy,
-      waterContentWeightGrams,
-      waterLastEmptyWeight,
-      waterDevice?.device_id,
-      waterDevice?.id,
-      waterGrossWeightGrams,
-      waterLatestReading?.recorded_at,
-      waterPlateWeightGrams,
-      waterPlateWeightEffective,
-      waterRawContentWeightGrams,
-      waterPendingPlateConfirm,
-    ],
-  );
-
-  const bowlPrevGrossWeightGrams = toNullableNumber(
-    bowlPreviousReading?.weight_grams,
-  );
-  const bowlPrevContentWeightGrams =
-    bowlPrevGrossWeightGrams !== null
-      ? Math.max(
-          0,
-          bowlPlateWeightEffective !== null
-            ? bowlPrevGrossWeightGrams - bowlPlateWeightEffective
-            : bowlPrevGrossWeightGrams,
-        )
-      : null;
-  const waterPrevGrossWeightGrams = toNullableNumber(
-    waterPreviousReading?.weight_grams,
-  );
-  const waterPrevContentWeightGrams =
-    waterPrevGrossWeightGrams !== null
-      ? Math.max(
-          0,
-          waterPlateWeightEffective !== null
-            ? waterPrevGrossWeightGrams - waterPlateWeightEffective
-            : waterPrevGrossWeightGrams,
-        )
-      : null;
-  const renderTrend = (current: number | null, previous: number | null) => {
-    if (current === null || previous === null) return null;
-    const delta = current - previous;
-    if (Math.abs(delta) < 0.001) return null;
-    const up = delta > 0;
-    return (
-      <span
-        aria-hidden="true"
-        className="ml-1 inline-flex text-[9px] leading-none opacity-80 text-sky-600"
-      >
-        {up ? "▲" : "▼"}
-      </span>
-    );
-  };
-  const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
-    on: "bg-emerald-500 border-emerald-400",
-    off: "bg-rose-500 border-rose-400",
-    nodata: "bg-white border-slate-300",
-  };
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
-  const waterPowerState = resolveDevicePowerState(waterDevice);
 
   const dayNightWindow = useMemo(() => {
     const anchor = new Date();
@@ -2414,14 +2068,6 @@ export default function TodayPage() {
       ),
     [waterHistorySessions, nowMs, detailPeriod],
   );
-  const bowlWellness = useMemo(
-    () =>
-      buildWellnessState({
-        type: "food",
-        sessions: bowlHistorySessions,
-      }),
-    [bowlHistorySessions],
-  );
   const waterWellness = useMemo(
     () =>
       buildWellnessState({
@@ -2652,18 +2298,6 @@ export default function TodayPage() {
     );
   }, [waterBlockLevelPct]);
 
-  const getConnectivityLabel = (timestamp?: string | null) => {
-    if (!timestamp) return "Sin señal";
-    const diffMinutes = Math.round(
-      Math.max(0, Date.now() - new Date(timestamp).getTime()) / 60000,
-    );
-    if (!Number.isFinite(diffMinutes)) return "Sin señal";
-    if (diffMinutes <= 10) return "Estable";
-    if (diffMinutes <= 45) return "Reciente";
-    if (diffMinutes <= 180) return "Atrasada";
-    return "Sin señal";
-  };
-
   const getBatteryStateLabel = (
     state: string | null | undefined,
     level: number | null | undefined,
@@ -2688,20 +2322,6 @@ export default function TodayPage() {
     return "Sin telemetría";
   };
 
-  const getWellnessToneClasses = (
-    stateLabel: string,
-    type: "food" | "water",
-  ) => {
-    if (stateLabel === "Confirmado") {
-      return type === "food"
-        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-        : "border-sky-200 bg-sky-50 text-sky-800";
-    }
-    if (stateLabel === "Sin evidencia real") {
-      return "border-slate-200 bg-slate-50 text-slate-600";
-    }
-    return "border-slate-200 bg-slate-50 text-slate-600";
-  };
   const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
     value === null ? "N/D" : `${value} ${unit}`;
   const periodLabels: Array<{
@@ -3127,501 +2747,6 @@ export default function TodayPage() {
                   </div>
                 </div>
               </aside>
-            </div>
-          </section>
-
-          <section
-            id="today-bowls"
-            role="region"
-            aria-label="Estado de platos"
-            className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                {!hasFoodDevice ? (
-                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-emerald-200 bg-emerald-50/30 p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                      Alimentación
-                    </p>
-                    <Image
-                      src="/illustrations/pink_food_full.png"
-                      alt="Sin comedero"
-                      width={96}
-                      height={70}
-                      className="h-16 w-auto object-contain opacity-40"
-                    />
-                    <p className="text-center text-sm text-slate-400">
-                      Sin comedero asignado
-                    </p>
-                    <Link
-                      href="/bowl"
-                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-50"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Agregar comedero
-                    </Link>
-                  </article>
-                ) : (
-                  <>
-                    <article className="today-bowl-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                              Alimentación
-                            </p>
-                            <span
-                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                            <span>
-                              {getConnectivityLabel(
-                                bowlLatestReading?.recorded_at ??
-                                  bowlDevice?.last_seen ??
-                                  null,
-                              )}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            <BatteryStatusIcon
-                              level={bowlDevice?.battery_level ?? null}
-                              charging={
-                                bowlDevice?.battery_state === "charging"
-                              }
-                              charged={bowlDevice?.battery_state === "charged"}
-                              className="h-3.5 w-3.5 text-slate-400"
-                            />
-                            {(() => {
-                              const s = getBatteryStateLabel(
-                                bowlDevice?.battery_state,
-                                bowlDevice?.battery_level,
-                              );
-                              return (
-                                <span className={s.className}>{s.text}</span>
-                              );
-                            })()}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                              bowlWellness.stateLabel,
-                              "food",
-                            )}`}
-                          >
-                            {bowlWellness.stateLabel}
-                          </span>
-                          <p className="text-sm text-slate-500">
-                            {bowlWellness.lastEventLabel}
-                          </p>
-                        </div>
-
-                        <div className="grid items-center gap-3">
-                          <div className="flex flex-col items-center py-1">
-                            <Image
-                              src="/illustrations/pink_food_full.png"
-                              alt="Kittypau comedero"
-                              width={224}
-                              height={164}
-                              className="mx-auto h-48 w-auto object-contain object-center"
-                            />
-                            {bowlWellness.levelLabel !== "Sin confirmación" ? (
-                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                                {bowlWellness.levelLabel}
-                              </p>
-                            ) : null}
-                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                              {bowlDevice?.device_id ?? "KPCLXXXX"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-1">
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700"
-                            title="Contenido actual"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M3 6h18M3 12h18M3 18h18" />
-                            </svg>
-                            {bowlContentWeightText}
-                            {renderTrend(
-                              bowlContentWeightGrams,
-                              bowlPrevContentWeightGrams,
-                            )}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                            title="Temperatura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                            </svg>
-                            {bowlTempText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-600"
-                            title="Humedad"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {bowlHumidityText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                            title="Última lectura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <circle cx="12" cy="12" r="10" />
-                              <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            {formatTimestamp(
-                              bowlLatestReading?.recorded_at ?? null,
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                    <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                          Categorías
-                        </p>
-                        {bowlCategoryFeedback ? (
-                          <p className="text-[10px] font-semibold text-slate-500">
-                            {bowlCategoryFeedback}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                        {BOWL_CATEGORY_CHOICES.map((choice) => {
-                          const isBusy = bowlCategoryBusy === choice.key;
-                          const isPendingConfirm =
-                            choice.key === "kpcl_con_plato" &&
-                            bowlDevice?.id &&
-                            bowlPendingPlateConfirm[bowlDevice.id];
-                          return (
-                            <button
-                              key={choice.key}
-                              type="button"
-                              onClick={() => void handleBowlCategory(choice)}
-                              disabled={Boolean(bowlCategoryBusy)}
-                              className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                                isBusy || isPendingConfirm
-                                  ? "border-emerald-300 bg-emerald-100 text-emerald-800 shadow-[0_10px_18px_-14px_rgba(16,185,129,0.65)]"
-                                  : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                              } disabled:cursor-not-allowed disabled:opacity-60`}
-                              aria-pressed={isBusy}
-                              aria-label={`Registrar ${choice.label} para ${bowlDevice?.device_id ?? "KPCL"}`}
-                            >
-                              {choice.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2">
-                {!hasWaterDevice ? (
-                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-sky-200 bg-sky-50/30 p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
-                      Hidratación
-                    </p>
-                    <Image
-                      src="/illustrations/green_water_full.png"
-                      alt="Sin bebedero"
-                      width={96}
-                      height={70}
-                      className="h-16 w-auto object-contain opacity-40"
-                    />
-                    <p className="text-center text-sm text-slate-400">
-                      Sin bebedero asignado
-                    </p>
-                    <Link
-                      href="/bowl"
-                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Agregar bebedero
-                    </Link>
-                  </article>
-                ) : (
-                  <>
-                    <article className="today-bowl-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
-                              Hidratación
-                            </p>
-                            <span
-                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                            <span>
-                              {getConnectivityLabel(
-                                waterLatestReading?.recorded_at ??
-                                  waterDevice?.last_seen ??
-                                  null,
-                              )}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            <BatteryStatusIcon
-                              level={waterDevice?.battery_level ?? null}
-                              charging={
-                                waterDevice?.battery_state === "charging"
-                              }
-                              charged={waterDevice?.battery_state === "charged"}
-                              className="h-3.5 w-3.5 text-slate-400"
-                            />
-                            {(() => {
-                              const s = getBatteryStateLabel(
-                                waterDevice?.battery_state,
-                                waterDevice?.battery_level,
-                              );
-                              return (
-                                <span className={s.className}>{s.text}</span>
-                              );
-                            })()}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                              waterWellness.stateLabel,
-                              "water",
-                            )}`}
-                          >
-                            {waterWellness.stateLabel}
-                          </span>
-                          <p className="text-sm text-slate-500">
-                            {waterWellness.lastEventLabel}
-                          </p>
-                        </div>
-
-                        <div className="grid items-center gap-3">
-                          <div className="flex flex-col items-center py-1">
-                            <Image
-                              src="/illustrations/green_water_full.png"
-                              alt="Kittypau bebedero"
-                              width={224}
-                              height={164}
-                              className="mx-auto h-48 w-auto object-contain object-center"
-                            />
-                            {waterWellness.levelLabel !== "Sin confirmación" ? (
-                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                                {waterWellness.levelLabel}
-                              </p>
-                            ) : null}
-                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                              {waterDevice?.device_id ?? "KPCLXXXX"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-1">
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-700"
-                            title="Nivel actual"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {waterVolumeMlText}
-                            {renderTrend(
-                              waterContentWeightGrams,
-                              waterPrevContentWeightGrams,
-                            )}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                            title="Temperatura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                            </svg>
-                            {waterTempText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-600"
-                            title="Humedad"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {waterHumidityText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                            title="Última lectura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <circle cx="12" cy="12" r="10" />
-                              <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            {formatTimestamp(
-                              waterLatestReading?.recorded_at ?? null,
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                    <div className="w-full rounded-[var(--radius)] border border-slate-200 bg-white p-3 shadow-[0_10px_20px_-18px_rgba(15,23,42,0.25)]">
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-                          Categorías
-                        </p>
-                        {waterCategoryFeedback ? (
-                          <p className="text-[10px] font-semibold text-slate-500">
-                            {waterCategoryFeedback}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
-                        {WATER_CATEGORY_CHOICES.map((choice) => {
-                          const isBusy = waterCategoryBusy === choice.key;
-                          const isPendingConfirm =
-                            choice.key === "kpcl_con_plato" &&
-                            waterDevice?.id &&
-                            waterPendingPlateConfirm[waterDevice.id];
-                          return (
-                            <button
-                              key={choice.key}
-                              type="button"
-                              onClick={() => void handleWaterCategory(choice)}
-                              disabled={Boolean(waterCategoryBusy)}
-                              className={`flex aspect-square items-center justify-center rounded-xl border px-1.5 py-1.5 text-center text-[8px] font-semibold uppercase leading-tight tracking-[0.06em] transition-all duration-200 ease-out ${
-                                isBusy || isPendingConfirm
-                                  ? "border-sky-300 bg-sky-100 text-sky-800 shadow-[0_10px_18px_-14px_rgba(14,116,190,0.6)]"
-                                  : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50"
-                              } disabled:cursor-not-allowed disabled:opacity-60`}
-                              aria-pressed={isBusy}
-                              aria-label={`Registrar ${choice.label} para ${waterDevice?.device_id ?? "KPBW"}`}
-                            >
-                              {choice.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
             </div>
           </section>
 
