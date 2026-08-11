@@ -58,11 +58,10 @@ export function useMqttLive(deviceId: string | null): UseMqttLiveResult {
   useEffect(() => {
     if (!deviceId) return;
 
-    if (configError) {
-      setConnected(false);
-      setError(configError);
-      return;
-    }
+    // ponytail: no seteamos connected/error acá — el return de abajo ya los
+    // deriva de configError directamente (líneas 121-122), así que setState
+    // acá solo forzaría un render extra sin cambiar nada observable.
+    if (configError) return;
 
     const client = mqtt.connect(`wss://${broker}:${port}/mqtt`, {
       username,
