@@ -67,7 +67,65 @@ export type HungerBarResult = {
   sampleSize: number;
   alertActive: boolean; // v1.1 — nunca true si status != "ok"
   hoursOverdue: number | null; // v1.1 — null si status != "ok"
+  // v1.2 — Rutina: regularidad horaria de las comidas detectadas. Ver
+  // Knowledge/29_Specs/SPEC_04_Metricas_Today_Investigacion.md Grupo A.
+  // Base: "100 − std(horas_de_comida) × 10" del Panel Sims (Tab 8) de
+  // fase_0_ruido/app_anotacion_av2.py. Diferencia deliberada: acá el std es
+  // circular (24h wrap-around), no lineal — la versión Python trata "23h y 1h"
+  // como ~11h de diferencia en vez de 2h reales. Ver computeRoutineScore().
+  routineScore: number | null; // 0-100, null si no hay suficientes comidas (< N_MIN_MUESTRAS_RUTINA)
+  routineStdHours: number | null; // desviación estándar de la hora del día de las comidas, para el tooltip
 };
+
+const N_MIN_MUESTRAS_RUTINA = 5; // mismo piso que N_MIN_MUESTRAS — bajo esto, un std es ruido, no señal
+
+/** Hora del día en America/Santiago con precisión de minuto (0.0–23.99). */
+function chileHourFraction(iso: string): number {
+  const date = new Date(iso);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Santiago",
+    hour: "numeric",
+    minute: "numeric",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 0);
+  const minute = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
+  return hour + minute / 60;
+}
+
+/**
+ * Rutina = 100 − std(horas_de_comida) × 10, clamped [0,100]. Alta cuando la
+ * mascota come siempre a horas parecidas; baja cuando el horario es errático.
+ * Circular-aware: una mascota que come a las 23:00 y a la 01:00 tiene una
+ * rutina consistente (2h de diferencia real), no un std de ~11h — se corrige
+ * proyectando cada hora sobre el círculo de 24h antes de medir la dispersión.
+ */
+export function computeRoutineScore(meals: Pick<Segment, "startAt">[]): {
+  routineScore: number | null;
+  routineStdHours: number | null;
+} {
+  if (meals.length < N_MIN_MUESTRAS_RUTINA) {
+    return { routineScore: null, routineStdHours: null };
+  }
+  const hours = meals.map((m) => chileHourFraction(m.startAt));
+  // Desviación circular: convierte cada hora a un ángulo (0-2π), promedia como
+  // vector unitario, y deriva el std circular a partir de la magnitud
+  // resultante (R). Evita que 23h y 1h se traten como "22h de diferencia".
+  const angles = hours.map((h) => (h / 24) * 2 * Math.PI);
+  const sumSin = angles.reduce((acc, a) => acc + Math.sin(a), 0);
+  const sumCos = angles.reduce((acc, a) => acc + Math.cos(a), 0);
+  const n = angles.length;
+  const r = Math.sqrt(sumSin * sumSin + sumCos * sumCos) / n;
+  const circularStdRad = Math.sqrt(
+    Math.max(0, -2 * Math.log(Math.max(r, 1e-9))),
+  );
+  const stdHours = (circularStdRad / (2 * Math.PI)) * 24;
+  const routineScore = Math.min(100, Math.max(0, 100 - stdHours * 10));
+  return {
+    routineScore: Math.round(routineScore),
+    routineStdHours: Math.round(stdHours * 100) / 100,
+  };
+}
 
 function triangularScore(
   x: number,
@@ -217,8 +275,12 @@ export function computeHungerBar(
       sampleSize: 0,
       alertActive: false,
       hoursOverdue: null,
+      routineScore: null,
+      routineStdHours: null,
     };
   }
+
+  const { routineScore, routineStdHours } = computeRoutineScore(meals);
 
   const intervalsH: number[] = [];
   for (let i = 1; i < meals.length; i++) {
@@ -258,5 +320,7 @@ export function computeHungerBar(
     sampleSize: meals.length,
     alertActive,
     hoursOverdue: Math.round(hoursOverdue * 100) / 100,
+    routineScore,
+    routineStdHours,
   };
 }

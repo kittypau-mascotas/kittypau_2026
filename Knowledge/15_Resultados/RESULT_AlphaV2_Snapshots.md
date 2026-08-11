@@ -5,7 +5,7 @@ type: result
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - resultados
   - motor-v2
@@ -32,14 +32,31 @@ ejecuta `revisar_anotaciones_v2.py`.
 
 ## Tabla Resumen
 
+> Fuente canónica de este historial: [`fase_0_ruido/HISTORIAL_RESULTADOS.md`](../../Docs/09_Investigacion/Ciclo%20Alpha%20v2/fase_0_ruido/HISTORIAL_RESULTADOS.md)
+> — la app y sus scripts escriben ahí directamente. Esta tabla es un espejo resumido
+> para navegación rápida desde el vault; ante conflicto, gana el doc de `fase_0_ruido`.
+
 | Snapshot | Fecha | Alim | Serv | Ruido | Total anot. | Candidatos | Features | Rango datos | Mejor feature (sep. A/S) |
 |----------|-------|-----:|-----:|------:|------------:|-----------:|---------:|-------------|--------------------------|
 | v2.0 | 2026-06-26 | 200 | 43 | 165 | 408 | 417 | 101 | Abr 8 → Jun 25 | — |
 | v2.1 | 2026-06-27 | 205 | 45 | 167 | 417 | 421 | 102 | Abr 8 → Jun 27 | `tpl_doble_rampa` (7.63σ) |
-| v2.2 | pendiente | 209 | 45 | 167 | 421 | 421 | — | Abr 8 → Jun 28 | pendiente regenerar |
+| v2.3 | 2026-08-10 | 254 | 55 | 187 | 496 | 589 | 102 | Abr 8 → Ago 10 | `tpl_doble_rampa` (7.69σ) |
+| v2.4 | 2026-08-11 | 254 | 55 | 187 | 496 | 589 | 102 | Abr 8 → Ago 10 | sin cambio de features — 4 mejoras de práctica (Evidence Engine, auditoría, umbrales, split mixto) |
+| **en vivo** | **2026-08-11** | **262** | **58** | **207** | **527** | **590** | **102** | — | contado directo de `data/anotaciones_av2.csv` — anotación en curso, aún no cerrado como snapshot formal |
 
-> **Pendiente (2026-06-28):** `anotaciones_av2.csv` tiene 421 anotaciones (alim=209, +4 desde v2.1).
-> Ejecutar `revisar_anotaciones_v2.py` (o botón "🔄 Actualizar Todo") para cerrar snapshot v2.2.
+**v2.3 es el cambio más importante del historial:** `evidence_score()` (Tab 1 y Tab 8) tenía
+un bug estructural — sumaba `peso × valor crudo` sin normalizar, con 496 anotaciones acertaba
+solo 49.6% (peor que predecir siempre "alimentación", 51.2%). Fix: z-score pooled + pesos
+calculados desde los datos (discriminante tipo Fisher sobre las 102 features en vez de 26
+elegidas a mano) → **78.8% accuracy held-out (20% nunca visto)**. Detalle completo en
+`fase_0_ruido/RECOPILACION_DATOS_APP.md §12bis` y `fase_0_ruido/HISTORIAL_RESULTADOS.md`.
+Tab 1 ahora sugiere la categoría automáticamente con el motor corregido.
+
+**v2.4 (mismo día, 2026-08-11) — 4 mejoras incrementales**, en orden de impacto/riesgo:
+1. `spectral_entropy` + `d1_frac_pos` agregados al fallback legado del Evidence Engine (el motor normalizado ya los usaba).
+2. Auditoría de discrepancias motor↔humano: 88/496 (17.7%) con ≥85% de confianza discrepante — reporte en `data/auditoria_discrepancias.csv`, sin corrección automática.
+3. `umbrales.json` recalibrado (304→496 anotaciones) — bug corregido: la duración/Δpeso de referencia se calculaba contra la ventana del *candidato*, no la ventana *real confirmada* de la anotación (48/55 servidos diferían >1 min).
+4. `punto_split_mixto()` implementado y testeado para partir candidatos "mixto" por giro interno — **NO aplicado todavía** a `candidatos_av2.csv` (pendiente de decisión: 25% de los splits caen en el límite de detección de 4-6g, y correr el detector desincroniza `id_candidato` de las 496 anotaciones ya guardadas).
 
 ---
 

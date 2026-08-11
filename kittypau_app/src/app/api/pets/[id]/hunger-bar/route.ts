@@ -79,6 +79,8 @@ export async function GET(
       sampleSize: 0,
       alertActive: false,
       hoursOverdue: null,
+      routineScore: null,
+      routineStdHours: null,
     });
   }
 

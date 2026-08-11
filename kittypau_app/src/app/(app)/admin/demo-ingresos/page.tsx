@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { authFetch } from "@/lib/auth/auth-fetch";
 
 type DemoIngresoItem = {
   id: string;
@@ -32,9 +33,10 @@ export default function AdminDemoIngresosPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/admin/demo-ingresos?limit=250", {
-          credentials: "include",
-        });
+        // Antes: fetch() plano con credentials:"include" (cookies) — la API espera
+        // Authorization: Bearer <jwt> como el resto de la app, no cookie de sesión.
+        // Eso causaba "Missing Authorization header" (ver SPEC_01 E1).
+        const res = await authFetch("/api/admin/demo-ingresos?limit=250");
         const jsonUnknown: unknown = await res.json();
         const json = (isRecord(jsonUnknown) ? jsonUnknown : {}) as
           | DemoIngresoResponseOk

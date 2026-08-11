@@ -11,6 +11,7 @@ import {
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
+import { parseListResponse } from "@/lib/utils/api";
 
 type ApiPet = {
   id: string;
@@ -29,8 +30,6 @@ type ApiDevice = {
   status: string;
   device_state: string | null;
 };
-
-
 
 // Sesión procesada por el analytics processor
 type ApiSession = {
@@ -72,14 +71,6 @@ const defaultState: LoadState = {
 };
 
 const formatTimestamp = (value: string) => chileCompactDatetime(value);
-
-const parseListResponse = <T,>(payload: unknown): T[] => {
-  if (Array.isArray(payload)) return payload as T[];
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T[] }).data ?? [];
-  }
-  return [];
-};
 
 // Reclasifica según límites personalizados del dueño, si están configurados.
 function applyCustomLimits(
@@ -235,7 +226,9 @@ export default function StoryPage() {
           ...prev,
           isLoading: false,
           error:
-            err instanceof Error ? err.message : "No se pudo cargar la historia.",
+            err instanceof Error
+              ? err.message
+              : "No se pudo cargar la historia.",
         }));
         return;
       }
@@ -292,7 +285,10 @@ export default function StoryPage() {
         if (!mounted) return;
         setState((prev) => ({
           ...prev,
-          error: err instanceof Error ? err.message : "No se pudieron cargar las sesiones.",
+          error:
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar las sesiones.",
         }));
       }
     };
@@ -306,11 +302,11 @@ export default function StoryPage() {
   const selectedPet = state.pets.find((p) => p.id === selectedPetId);
   const petLabel = selectedPet?.name ?? "tu mascota";
 
-  const waterDevice = state.devices.find((d) => {
-    const type = (d.device_type ?? "").toLowerCase();
-    return type.includes("bebedero") || type.includes("water");
-  }) ?? state.devices[0];
-
+  const waterDevice =
+    state.devices.find((d) => {
+      const type = (d.device_type ?? "").toLowerCase();
+      return type.includes("bebedero") || type.includes("water");
+    }) ?? state.devices[0];
 
   // Días disponibles según plan
   const maxDayOffset = state.isPremium ? 364 : 6;
@@ -343,7 +339,6 @@ export default function StoryPage() {
     const good = filteredTimeline.filter((i) => i.story.tone === "good").length;
     return { total, warn, good };
   }, [filteredTimeline]);
-
 
   const handlePetChange = async (petId: string) => {
     setSelectedPetId(petId);
@@ -611,7 +606,6 @@ export default function StoryPage() {
               )}
             </p>
           </section>
-
 
           <section className="story-list">
             {filteredTimeline.length === 0 ? (

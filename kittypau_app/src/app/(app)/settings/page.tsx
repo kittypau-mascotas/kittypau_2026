@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   clearTokens,
@@ -41,6 +41,25 @@ export default function SettingsPage() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  // Cierra el menú al hacer clic/tap fuera — mismo patrón ya usado en AppNav (ver
+  // Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md Q4, antes solo se cerraba con Escape).
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [menuOpen]);
 
   const loadProfile = async (token: string) => {
     const res = await fetch(`/api/profiles`, {
@@ -138,7 +157,7 @@ export default function SettingsPage() {
           <p className="eyebrow">Preferencias</p>
           <h1>Ajustes</h1>
         </div>
-        <div className="relative flex items-center gap-3">
+        <div ref={menuRef} className="relative flex items-center gap-3">
           <Link href="/today" className="ghost-link">
             Volver a hoy
           </Link>
@@ -308,156 +327,164 @@ export default function SettingsPage() {
             ]}
           />
 
-          <section className="surface-card freeform-rise px-6 py-6">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Perfil principal
-            </h2>
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
-              <span>{completenessLabel}</span>
-              {missingFields.length ? (
-                <span className="text-slate-400">
-                  · {missingFields.length} pendiente
-                  {missingFields.length > 1 ? "s" : ""}
-                </span>
+          {/* <form> real: antes eran <input> sueltos sin submit — Enter no guardaba y
+              los password managers no detectaban el formulario (ver SPEC_02 I4). */}
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (!form) return;
+              const errors = validate(form);
+              setFormErrors(errors);
+              if (errors.length) return;
+              const token = await getValidAccessToken();
+              if (!token) return;
+              setSaving(true);
+              setSaveMessage(null);
+              try {
+                const updated = await saveProfile(token, form);
+                setForm(updated);
+                setState((prev) => ({ ...prev, profile: updated }));
+                setFormErrors([]);
+                setSaveMessage("Cambios guardados.");
+              } catch (err) {
+                setSaveMessage(
+                  err instanceof Error
+                    ? err.message
+                    : "No se pudieron guardar los cambios.",
+                );
+              } finally {
+                setSaving(false);
+              }
+            }}
+          >
+            <section className="surface-card freeform-rise px-6 py-6">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Perfil principal
+              </h2>
+              <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+                <span>{completenessLabel}</span>
+                {missingFields.length ? (
+                  <span className="text-slate-400">
+                    · {missingFields.length} pendiente
+                    {missingFields.length > 1 ? "s" : ""}
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-slate-600">
+                  Nombre visible
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.user_name ?? ""}
+                    onChange={(event) =>
+                      handleChange("user_name", event.target.value)
+                    }
+                  />
+                </label>
+                <label className="text-sm text-slate-600">
+                  Nombre del dueño
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.owner_name ?? ""}
+                    onChange={(event) =>
+                      handleChange("owner_name", event.target.value)
+                    }
+                  />
+                </label>
+                <label className="text-sm text-slate-600">
+                  Email
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.email ?? ""}
+                    disabled
+                  />
+                </label>
+                <label className="text-sm text-slate-600">
+                  Teléfono
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.phone_number ?? ""}
+                    onChange={(event) =>
+                      handleChange("phone_number", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+              {formErrors.length ? (
+                <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700">
+                  <ul className="list-disc pl-4">
+                    {formErrors.map((err) => (
+                      <li key={err}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
               ) : null}
-            </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="text-sm text-slate-600">
-                Nombre visible
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.user_name ?? ""}
-                  onChange={(event) =>
-                    handleChange("user_name", event.target.value)
-                  }
-                />
-              </label>
-              <label className="text-sm text-slate-600">
-                Nombre del dueño
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.owner_name ?? ""}
-                  onChange={(event) =>
-                    handleChange("owner_name", event.target.value)
-                  }
-                />
-              </label>
-              <label className="text-sm text-slate-600">
-                Email
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.email ?? ""}
-                  disabled
-                />
-              </label>
-              <label className="text-sm text-slate-600">
-                Teléfono
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.phone_number ?? ""}
-                  onChange={(event) =>
-                    handleChange("phone_number", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-            {formErrors.length ? (
-              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700">
-                <ul className="list-disc pl-4">
-                  {formErrors.map((err) => (
-                    <li key={err}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {missingFields.length ? (
-              <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                Falta completar: {missingFields.join(", ")}.
-              </div>
-            ) : null}
-          </section>
+              {missingFields.length ? (
+                <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                  Falta completar: {missingFields.join(", ")}.
+                </div>
+              ) : null}
+            </section>
 
-          <section className="surface-card freeform-rise px-6 py-6">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Notificaciones
-            </h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <label className="text-sm text-slate-600">
-                Canal preferido
-                <select
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-                  value={form?.notification_channel ?? ""}
-                  onChange={(event) =>
-                    handleChange("notification_channel", event.target.value)
-                  }
+            <section className="surface-card freeform-rise px-6 py-6">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Notificaciones
+              </h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <label className="text-sm text-slate-600">
+                  Canal preferido
+                  <select
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                    value={form?.notification_channel ?? ""}
+                    onChange={(event) =>
+                      handleChange("notification_channel", event.target.value)
+                    }
+                  >
+                    <option value="">Sin definir</option>
+                    <option value="email">Email</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="push">Push</option>
+                  </select>
+                </label>
+                <label className="text-sm text-slate-600">
+                  Ciudad
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.city ?? ""}
+                    onChange={(event) =>
+                      handleChange("city", event.target.value)
+                    }
+                  />
+                </label>
+                <label className="text-sm text-slate-600">
+                  País
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={form?.country ?? ""}
+                    onChange={(event) =>
+                      handleChange("country", event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="text-sm text-slate-500">
+                  {saveMessage ??
+                    "Guarda tus cambios para mantener la experiencia alineada con tus alertas y vistas."}
+                </div>
+                <button
+                  type="submit"
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                  disabled={saving || !form}
                 >
-                  <option value="">Sin definir</option>
-                  <option value="email">Email</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="push">Push</option>
-                </select>
-              </label>
-              <label className="text-sm text-slate-600">
-                Ciudad
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.city ?? ""}
-                  onChange={(event) => handleChange("city", event.target.value)}
-                />
-              </label>
-              <label className="text-sm text-slate-600">
-                País
-                <input
-                  className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                  value={form?.country ?? ""}
-                  onChange={(event) =>
-                    handleChange("country", event.target.value)
-                  }
-                />
-              </label>
-            </div>
-          </section>
-
-          <section className="surface-card freeform-rise px-6 py-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-sm text-slate-500">
-                {saveMessage ??
-                  "Guarda tus cambios para mantener la experiencia alineada con tus alertas y vistas."}
+                  {saving ? "Guardando..." : "Guardar cambios"}
+                </button>
               </div>
-              <button
-                type="button"
-                className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
-                disabled={saving || !form}
-                onClick={async () => {
-                  if (!form) return;
-                  const errors = validate(form);
-                  setFormErrors(errors);
-                  if (errors.length) return;
-                  const token = await getValidAccessToken();
-                  if (!token) return;
-                  setSaving(true);
-                  setSaveMessage(null);
-                  try {
-                    const updated = await saveProfile(token, form);
-                    setForm(updated);
-                    setState((prev) => ({ ...prev, profile: updated }));
-                    setFormErrors([]);
-                    setSaveMessage("Cambios guardados.");
-                  } catch (err) {
-                    setSaveMessage(
-                      err instanceof Error
-                        ? err.message
-                        : "No se pudieron guardar los cambios.",
-                    );
-                  } finally {
-                    setSaving(false);
-                  }
-                }}
-              >
-                {saving ? "Guardando..." : "Guardar cambios"}
-              </button>
-            </div>
-          </section>
+            </section>
+          </form>
         </>
       )}
     </main>

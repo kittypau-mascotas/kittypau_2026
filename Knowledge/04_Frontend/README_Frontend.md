@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - nextjs
   - react
@@ -57,15 +57,19 @@ src/
 │   │   ├── registro/        ← Alta de nuevos dispositivos (registro-flow.tsx)
 │   │   ├── settings/        ← Configuración
 │   │   ├── story/           ← Historial y análisis
-│   │   └── admin/           ← Panel administrador
+│   │   └── admin/           ← Panel administrador — SOLO 3 rutas tienen page.tsx real:
+│   │                            /admin (dashboard), /admin/javo, /admin/demo-ingresos.
+│   │                            /admin/alerts, /admin/analytics, /admin/devices, /admin/legacy,
+│   │                            /admin/overview, /admin/pets, /admin/settings existen como
+│   │                            carpetas VACÍAS (0 archivos) — 404 real si se navega ahí.
 │   ├── (public)/            ← Rutas públicas (sin auth)
-│   │   ├── login/
+│   │   ├── login/           ← también aloja el modal de registro (?register=1)
 │   │   ├── register/
 │   │   ├── reset/
-│   │   ├── demo/
-│   │   ├── client-demo/
-│   │   └── test/            ← Página de test interno
-│   └── api/                 ← API Routes Next.js
+│   │   ├── demo/            ← demo sin login, acepta ?menu=today|story|pet|bowl
+│   │   ├── client-demo/     ← verificado: renderiza el mismo contenido que /demo
+│   │   └── test/            ← verificado: renderiza el mismo contenido que /demo (no es una página propia)
+│   └── api/                 ← API Routes Next.js — 30 route.ts, ver [[05_API/README_API]]
 ├── lib/
 │   ├── auth/                ← auth-fetch.ts, token.ts
 │   ├── battery/             ← contract.ts (estado batería KPCL)

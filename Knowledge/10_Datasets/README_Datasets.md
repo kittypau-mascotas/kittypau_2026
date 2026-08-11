@@ -5,7 +5,7 @@ type: dataset
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - dataset
   - readings
@@ -20,6 +20,34 @@ related:
 ---
 
 # Datasets — KPCL0034 "Bandida"
+
+---
+
+## ⚠️ Discrepancia sin resolver — tamaño real de `readings.csv` (hallazgo 2026-08-11)
+
+Verificación directa del archivo en disco (`Docs/11_Data/2026/readings.csv`, no versionado —
+está en `.gitignore` vía `Docs/11_Data/**/*.csv`, así que no hay historial git que consultar):
+
+| Métrica | Documentado (aquí y en `fase_0_ruido/`) | Medido en vivo 2026-08-11 |
+|---|---|---|
+| Filas totales del archivo | (no se documenta — se asume ≈ solo KPCL0034) | **1 085 889** |
+| Dispositivos distintos en el archivo | 1 (solo KPCL0034) | **5** (`9510a455…`=154 857, `3c1c6705…`=821 785, `67aaaf28…`=108 587, + 2 more) |
+| Filas de KPCL0034 (`9510a455...`) | **8 024** | **154 857** |
+| Rango de fechas | Abr 8 → May 23 2026 | Abr 7 → May 7 2026 (todo el archivo) |
+
+`readings_rows.csv` tiene el mismo patrón: **270 001 filas totales**, 3 dispositivos, de las
+cuales **167 959** matchean el UUID de KPCL0034 Mayo–Jun (`3a460074...`) — vs. las 94 588
+documentadas.
+
+**No parece ser corrupción reciente:** una memoria de sesión de hace ~45 días ya registraba
+"Filas KPCL0034: ~154 857" para este mismo archivo — el número coincide exacto con lo medido
+hoy. Es decir, **"8 024 filas" fue siempre un número incorrecto en la documentación**
+(probablemente confundido con un conteo resampleado a 30s, no con las filas crudas del CSV),
+no una modificación del archivo "nunca tocar". El device `3c1c6705…` domina el archivo con
+821 785 filas — no se investigó si es un sensor mal configurado floodeando lecturas o un
+export sin filtrar por device; los scripts de `fase_0_ruido/` sí filtran correctamente por
+`KPCL0034_UUIDS` antes de procesar, así que el pipeline de anotación no se ve afectado. Aun
+así, Mauro debería confirmar contra Supabase qué es exactamente ese device dominante.
 
 ---
 
@@ -74,7 +102,7 @@ related:
 | `n_muestras` | Número de muestras en el segmento (resampleo 30 s) |
 | `feature_*` | 102 features calculadas por Motor v2 |
 
-### Distribución de candidatos (v2.1)
+### Distribución de candidatos (v2.1, Jun 27 — última distribución por tipo registrada)
 
 | Tipo | N | Descripción |
 |---|---|---|
@@ -82,6 +110,10 @@ related:
 | `mixto` | 95 | Sube y baja sin tendencia clara |
 | `subida` | 78 | Peso sube durante >60% del tiempo |
 | **Total** | **421** | |
+
+> Estado en vivo verificado 2026-08-11: `candidatos_av2.csv` tiene **590 filas** (589 candidatos +
+> header). Split "mixto" por giro interno (`punto_split_mixto()`) ya está implementado pero
+> **no aplicado** — ver [[15_Resultados/RESULT_AlphaV2_Snapshots]] snapshot v2.4, punto 4.
 
 ---
 
@@ -100,14 +132,19 @@ related:
 
 **Backup automático diario:** `fase_0_ruido/data/backups/anotaciones_av2_YYYYMMDD.csv`
 
-### Estado de anotaciones (2026-06-28)
+### Estado de anotaciones
 
-| Categoría | N |
-|---|---|
-| 🍽️ `alimentacion` | 209 |
-| 🫙 `servido` | 45 |
-| ⚡ `ruido` | 167 |
-| **Total** | **421** |
+| Categoría | N (v2.4, 2026-08-11 cerrado) | N en vivo (2026-08-11, `wc -l` directo) |
+|---|---|---|
+| 🍽️ `alimentacion` | 254 | 262 |
+| 🫙 `servido` | 55 | 58 |
+| ⚡ `ruido` | 187 | 207 |
+| **Total** | **496** | **527** |
+
+> La columna "en vivo" son las filas reales de `anotaciones_av2.csv` en este momento —
+> hay anotación en curso desde el último snapshot cerrado (v2.4). No hay snapshot
+> formal para estos 527 todavía; `revisar_anotaciones_v2.py` no se ha corrido sobre
+> ellas. Ver [[15_Resultados/RESULT_AlphaV2_Snapshots]] para el historial completo.
 
 ---
 

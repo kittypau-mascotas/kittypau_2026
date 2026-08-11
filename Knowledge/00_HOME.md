@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - home
   - navegacion
@@ -85,8 +85,20 @@ tags:
 
 ## Auditorías
 
-- [[AUDITORIA_2026_06_29]] — Auditoría completa Knowledge vs código (2026-06-29)
+- [[AUDITORIA_2026_08_11]] — Auditoría vigente: Knowledge vs código + recorrido en vivo con Playwright (2026-08-11)
+- [[AUDITORIA_2026_06_29]] — Auditoría anterior, histórica (2026-06-29)
 - [[18_UI/UX_DIAGNOSTICO_2026_06_30]] — Diagnóstico UX/UI completo (2026-06-30)
+
+---
+
+## Specs — Roadmap 2026-08-11
+
+- [[29_Specs/README_Specs]] — índice y cómo se relacionan los 4 specs
+- [[29_Specs/SPEC_01_Errores_Prioritarios]] — bugs confirmados en vivo, priorizados
+- [[29_Specs/SPEC_02_UIUX_Mejoras]] — mejoras de UI/UX y patrones a generalizar
+- [[29_Specs/SPEC_03_Objetivos_Monitoreo]] — gap real por pilar: alimentación / hidratación / alertas / confianza en datos
+- [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] — qué métricas de `fase_0_ruido` están respaldadas para llevar a `/today`
+- [[29_Specs/SPEC_05_Optimizacion_Tecnica]] — seguridad (CVEs de Next.js), rate limiting, testing, duplicación de código, bridge
 
 ---
 

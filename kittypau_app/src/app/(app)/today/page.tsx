@@ -13,6 +13,7 @@ import {
   syncSelectedPet,
 } from "@/lib/runtime/selection-sync";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
+import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import { Line } from "react-chartjs-2";
 import {
@@ -78,6 +79,8 @@ type HungerBarResponse = {
   sampleSize: number;
   alertActive: boolean;
   hoursOverdue: number | null;
+  routineScore: number | null;
+  routineStdHours: number | null;
 };
 
 // v1.1 — gradiente continuo verde→amarillo→rojo. Ver
@@ -182,31 +185,6 @@ function formatTimestamp(value?: string | null) {
   return chileCompactDatetime(value);
 }
 
-function resolveDevicePowerState(
-  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
-): "on" | "off" | "nodata" {
-  if (!device) return "nodata";
-  const state = (device.device_state ?? "").toLowerCase();
-  const status = (device.status ?? "").toLowerCase();
-  if (!state && !status) return "nodata";
-  if (
-    state.includes("offline") ||
-    status === "offline" ||
-    status === "inactive"
-  ) {
-    return "off";
-  }
-  if (
-    state.includes("online") ||
-    state.includes("linked") ||
-    status === "active" ||
-    status === "linked"
-  ) {
-    return "on";
-  }
-  return "nodata";
-}
-
 function parsePetNumberSuffix(
   petName: string | null | undefined,
 ): number | null {
@@ -231,16 +209,6 @@ function toRoundedSensorValue(value: number | null | undefined): number | null {
   const numeric = toNullableNumber(value);
   if (numeric === null) return null;
   return Math.round(numeric);
-}
-
-function parseListResponse<T>(payload: unknown): T[] {
-  if (Array.isArray(payload)) {
-    return payload as T[];
-  }
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T[] }).data ?? [];
-  }
-  return [];
 }
 
 function parseCursor(payload: unknown): string | null {
@@ -2404,6 +2372,72 @@ export default function TodayPage() {
       : "Última comida confirmada: sin registro";
   }, [hungerBar]);
 
+  // Rutina — regularidad horaria de las comidas detectadas. Fórmula portada de
+  // shape_features_v2 / Panel Sims (Tab 8), ver Knowledge/29_Specs/SPEC_04_Metricas_Today_Investigacion.md.
+  const routineFilledBlocks = useMemo(() => {
+    if (!hungerBar || hungerBar.routineScore === null) return 0;
+    return Math.max(
+      0,
+      Math.min(
+        WELLNESS_BLOCKS,
+        Math.round((hungerBar.routineScore / 100) * WELLNESS_BLOCKS),
+      ),
+    );
+  }, [hungerBar]);
+
+  const routineValueLabel = useMemo(() => {
+    if (!hungerBar || hungerBar.routineScore === null) return "N/D";
+    return `${hungerBar.routineScore}%`;
+  }, [hungerBar]);
+
+  const routineStatusLabel = useMemo(() => {
+    if (!hungerBar || hungerBar.routineScore === null) {
+      return "Aprendiendo hábitos";
+    }
+    if (hungerBar.routineScore >= 70) return "Horario regular";
+    if (hungerBar.routineScore >= 40) return "Horario variable";
+    return "Horario errático";
+  }, [hungerBar]);
+
+  // Datos frescos — frescura de la última lectura del comedero. 100% con
+  // datos de la última hora, 0% pasadas 25h sin lecturas nuevas (misma
+  // fórmula que el Panel Sims: -4%/hora).
+  const bowlDataAgeHours = useMemo(() => {
+    if (!bowlLatestReading?.recorded_at) return null;
+    return (
+      (Date.now() - new Date(bowlLatestReading.recorded_at).getTime()) /
+      3_600_000
+    );
+  }, [bowlLatestReading?.recorded_at]);
+
+  const freshnessScore = useMemo(() => {
+    if (bowlDataAgeHours === null) return null;
+    return Math.max(0, Math.min(100, 100 - bowlDataAgeHours * 4));
+  }, [bowlDataAgeHours]);
+
+  const freshnessFilledBlocks = useMemo(() => {
+    if (freshnessScore === null) return 0;
+    return Math.max(
+      0,
+      Math.min(
+        WELLNESS_BLOCKS,
+        Math.round((freshnessScore / 100) * WELLNESS_BLOCKS),
+      ),
+    );
+  }, [freshnessScore]);
+
+  const freshnessValueLabel = useMemo(() => {
+    if (freshnessScore === null) return "N/D";
+    return `${Math.round(freshnessScore)}%`;
+  }, [freshnessScore]);
+
+  const freshnessStatusLabel = useMemo(() => {
+    if (freshnessScore === null) return "Sin lecturas";
+    if (freshnessScore >= 70) return "Al día";
+    if (freshnessScore >= 40) return "Retrasado";
+    return "Desactualizado";
+  }, [freshnessScore]);
+
   const waterFilledBlocks = useMemo(() => {
     if (waterBlockLevelPct === null) return 0;
     return Math.max(
@@ -2652,7 +2686,10 @@ export default function TodayPage() {
                       {
                         key: "food",
                         title: "Comida",
-                        iconSrc: "/illustrations/icono_comida.png",
+                        iconSrc: "/illustrations/icono_comida.png" as
+                          | string
+                          | undefined,
+                        iconEmoji: undefined as string | undefined,
                         filledBlocks: hungerFilledBlocks,
                         valueLabel: hungerValueLabel,
                         statusLabel: hungerStatusLabel,
@@ -2672,7 +2709,10 @@ export default function TodayPage() {
                       {
                         key: "water",
                         title: "Agua",
-                        iconSrc: "/illustrations/icono_agua.png",
+                        iconSrc: "/illustrations/icono_agua.png" as
+                          | string
+                          | undefined,
+                        iconEmoji: undefined as string | undefined,
                         filledBlocks: waterFilledBlocks,
                         valueLabel:
                           waterContentWeightGrams !== null
@@ -2690,11 +2730,51 @@ export default function TodayPage() {
                         badgeClass:
                           "border-slate-200 bg-slate-50 text-slate-500",
                       },
+                      {
+                        key: "routine",
+                        title: "Rutina",
+                        iconSrc: undefined as string | undefined,
+                        iconEmoji: "🕐" as string | undefined,
+                        filledBlocks: routineFilledBlocks,
+                        valueLabel: routineValueLabel,
+                        statusLabel: routineStatusLabel,
+                        noteLabel:
+                          "Regularidad de horario — comidas detectadas a horas parecidas",
+                        trackClass: "border-amber-100 bg-amber-50",
+                        fillClass:
+                          "bg-[linear-gradient(180deg,rgba(251,191,36,0.95)_0%,rgba(217,119,6,0.95)_100%)]",
+                        fillStyle: undefined as
+                          | { backgroundColor: string }
+                          | undefined,
+                        labelClass: "text-amber-700",
+                        badgeClass:
+                          "border-amber-100 bg-amber-50 text-amber-700",
+                      },
+                      {
+                        key: "freshness",
+                        title: "Datos frescos",
+                        iconSrc: undefined as string | undefined,
+                        iconEmoji: "📡" as string | undefined,
+                        filledBlocks: freshnessFilledBlocks,
+                        valueLabel: freshnessValueLabel,
+                        statusLabel: freshnessStatusLabel,
+                        noteLabel:
+                          "Baja 4%/hora sin lecturas nuevas del comedero",
+                        trackClass: "border-sky-100 bg-sky-50",
+                        fillClass:
+                          "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
+                        fillStyle: undefined as
+                          | { backgroundColor: string }
+                          | undefined,
+                        labelClass: "text-sky-700",
+                        badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
+                      },
                     ].map(
                       ({
                         key,
                         title,
                         iconSrc,
+                        iconEmoji,
                         filledBlocks,
                         valueLabel,
                         statusLabel,
@@ -2710,14 +2790,23 @@ export default function TodayPage() {
                           className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
                         >
                           <div className="flex h-8 items-center justify-center">
-                            <Image
-                              src={iconSrc}
-                              alt=""
-                              aria-hidden={true}
-                              width={32}
-                              height={32}
-                              className="h-8 w-8 object-contain opacity-90"
-                            />
+                            {iconSrc ? (
+                              <Image
+                                src={iconSrc}
+                                alt=""
+                                aria-hidden={true}
+                                width={32}
+                                height={32}
+                                className="h-8 w-8 object-contain opacity-90"
+                              />
+                            ) : (
+                              <span
+                                aria-hidden="true"
+                                className="text-2xl leading-none opacity-90"
+                              >
+                                {iconEmoji}
+                              </span>
+                            )}
                           </div>
                           <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
                             <div

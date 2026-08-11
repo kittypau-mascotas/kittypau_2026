@@ -5,7 +5,7 @@ type: sensor
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - esp8266
   - esp32
@@ -20,6 +20,30 @@ related:
 ---
 
 # Firmware — ESP8266 / ESP32-CAM (KPCL)
+
+---
+
+## ⚠️ Ubicación real en disco (verificado 2026-08-11)
+
+> `CLAUDE.md` describe `kittypau_iot_firmware/` como la carpeta del firmware. **Ya no es así.**
+> Esa carpeta existe en disco pero está **vacía y en `.gitignore`** (junto con
+> `kittypau_iot_firmware (antiguo)/`, que sí tiene contenido pero es legacy explícito).
+>
+> El firmware activo, versionado en git, vive en:
+> ```
+> iot_firmware/javier_1a/
+> ├── firmware-esp8266/     ← NodeMCU v3, food bowl — principal
+> │   ├── include/config.h
+> │   ├── src/*.cpp, *.h
+> │   ├── platformio.ini
+> │   └── README_BH1750_BATTERY.md   ← changelog v2.0.0 (BH1750+AHT10+batería)
+> └── firmware-esp32cam/    ← ESP32-CAM
+>     ├── include/config.h
+>     └── src/*.cpp, *.h
+> ```
+> Último commit que tocó firmware: `fc02dfc` (2026-04-28, OTA env para KPCL0036).
+> Este README ya reflejaba correctamente el contenido técnico (sensores, versión) —
+> solo la ruta de carpeta en `CLAUDE.md` estaba desactualizada.
 
 ---
 
@@ -72,7 +96,17 @@ Desde firmware v2.0.0: ADC real para `battery_level`, `battery_voltage`, `batter
 
 ### OTA (Over The Air)
 
-Actualización de firmware vía WiFi. Requiere que el dispositivo esté online y el script de deploy.
+`platformio.ini` en `firmware-esp8266/` define varios entornos:
+
+| Entorno | Uso |
+|---|---|
+| `nodemcuv2` | Build/upload producción vía USB (`upload_port = COM10`). `DEVICE_ID` default en `config.h` = `KPCL0036` |
+| `calibration` | Mismo build + `CALIBRATION_MODE` (serial interactivo para calibrar HX711) |
+| `ota` | OTA genérico — editar `upload_port` con la IP del dispositivo destino |
+| `ota_kpcl0035` | OTA dedicado — `build_flags = -D DEVICE_ID=\"KPCL0035\" -D USE_DHT11` (KPCL0035 sigue en DHT11, no AHT10) |
+| `ota_kpcl0036` | OTA dedicado a KPCL0036 |
+
+`config.h` permite `DEVICE_ID` por `build_flags` (`#ifndef DEVICE_ID`) para no editar el archivo en cada flasheo — así se reflashea la misma imagen a distintos KPCL solo cambiando el entorno.
 
 ---
 

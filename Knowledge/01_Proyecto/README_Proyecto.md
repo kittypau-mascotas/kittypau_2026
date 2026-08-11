@@ -5,7 +5,7 @@ type: architecture
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - proyecto
   - fuente-de-verdad
@@ -29,7 +29,10 @@ related:
 - `kittypau_app/` — app web/nativa principal (Next.js 16.1.6 + Capacitor 8.2.0)
 - `bridge/` — puente MQTT → Supabase v3.2 (Node.js en Raspberry Pi Zero 2W)
 - `supabase/` — esquema, 55 migraciones, funciones y tablas activas
-- `iot_firmware/` — firmware ESP8266 v2.0.0 (KPCL food bowl)
+- `iot_firmware/javier_1a/` — firmware ESP8266 v2.0.0 + ESP32-CAM (KPCL food bowl). **No
+  confundir con `kittypau_iot_firmware/`** (carpeta vacía, gitignoreada) ni con
+  `kittypau_iot_firmware (antiguo)/` (legacy, gitignoreado a propósito, contenido conservado
+  en disco sin tocar). Ver [[08_ESP32/README_ESP32]].
 - `Knowledge/` — vault de documentación (este sistema)
 - `.github/` y `.husky/` — automatización y calidad
 
