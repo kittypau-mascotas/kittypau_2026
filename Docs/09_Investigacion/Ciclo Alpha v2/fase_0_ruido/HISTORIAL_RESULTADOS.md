@@ -17,7 +17,56 @@
 
 ---
 
-## Snapshot v2.3 — 2026-08-10 — fix del Evidence Engine (normalización + pesos calculados)
+## Snapshot v2.4 — 2026-08-11 — 4 mejoras de práctica (paso a paso)
+
+Continuación directa de v2.3, mismo día de trabajo. Recomendaciones basadas en datos,
+implementadas en orden de impacto/riesgo:
+
+1. **`spectral_entropy` + `d1_frac_pos` al Evidence Engine legado.** El motor
+   normalizado (producción real) ya los usaba automáticamente vía
+   `compute_data_driven_weights()` — se agregaron al fallback legado por
+   consistencia. **Probé un discriminante pairwise (uno-contra-uno en vez de
+   uno-contra-el-resto) para el par servido/ruido — dio 74.75% vs. 78.8% del
+   actual, peor — no se implementó.**
+2. **Auditoría de discrepancias** (`02_auditar_discrepancias.py`) — 88/496
+   anotaciones (17.7%) donde el motor discrepa de la etiqueta humana con
+   ≥85% confianza, mayoría "humano dijo ruido, motor dice servido/alimentación
+   al 100%". Reporte en `data/auditoria_discrepancias.csv`, pendiente de
+   revisión manual en Tab 1 — no se corrigió nada automáticamente (el motor
+   no es perfecto, confiar ciegamente corrompería el dataset).
+3. **`umbrales.json` recalibrado** (`03_recalibrar_umbrales.py`) — de 304 a
+   496 anotaciones. Bug encontrado y corregido en el propio script: la
+   duración/Δpeso/rango de referencia se calculaban contra la ventana del
+   *candidato original* (`candidatos_av2.csv`), no la ventana *real
+   confirmada* de la anotación — 48/55 servidos diferían >1 min entre ambas
+   (candidato: 14.0min de media: anotación real: 3.4min). Corregido usando
+   lecturas crudas + t_inicio/t_fin real de cada anotación.
+4. **Partir candidatos "mixto" por giro interno** (`01_genera_candidatos.py`,
+   `punto_split_mixto()`) — **implementado y testeado, NO aplicado a
+   `candidatos_av2.csv` todavía.** Primera hipótesis (fusión de eventos
+   separados por gap con direcciones opuestas) probada y descartada: dio 0
+   diferencia contra datos reales — los "mixto" resultaron ser giros
+   internos en un solo tramo continuo (ej. 142g→24g→141g), no fusiones.
+   Segunda hipótesis (partir en el extremo interno) sí funciona: dry-run
+   sobre datos reales da 348/711 segmentos (49%) con giro interno partible,
+   "mixto" bajaría de ~23% a ~1.7% de candidatos. **Pendiente de decisión
+   antes de aplicar:** (a) el 25% de los splits detectados tiene el lado más
+   chico en 4-6g, en el límite del umbral de detección — revisar si es señal
+   real o ruido antes de confiar en el número completo; (b) `id_candidato`
+   es un índice posicional que se regenera desde cero en cada corrida —
+   correr `01_genera_candidatos.py` (con o sin este cambio) desincroniza el
+   `id_candidato` de las 496 anotaciones ya guardadas contra `anotaciones_av2.csv`,
+   porque `app_anotacion_av2.py:1031` matchea "ya anotado" por ese ID. Este
+   riesgo es preexistente (no lo introduce este cambio) pero nunca se había
+   hecho explícito — cualquier futura recalibración de `umbrales.json.deteccion`
+   o cambio al detector tiene el mismo problema.
+
+Tests nuevos: `tests/test_split_mixto.py` (4 casos). Motor Matemático sin cambios
+de familias/conteo — solo el fallback legado del Evidence Engine.
+
+---
+
+## Snapshot v2.3 — 2026-08-10 — fix del Evidence Engine (normalización y pesos calculados)
 
 **Trigger:** revisión de práctica/análisis a pedido de Mauro. No fue solo re-ingesta de
 datos (496 anotaciones vs 417 en v2.1) — se encontró y corrigió un bug estructural en

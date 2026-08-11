@@ -262,6 +262,40 @@ def _shape_features(valores: np.ndarray) -> dict:
     }
 
 
+def punto_split_mixto(df: pd.DataFrame, ini: int, fin: int, min_rango_g: float) -> int | None:
+    """
+    Si el segmento tiene un giro interno claro (baja fuerte y luego sube fuerte,
+    o viceversa — ej. 142g→24g→141g) devuelve el índice del extremo donde
+    partirlo en dos candidatos. None si no hay giro real.
+
+    Esto es distinto de fusionar dos eventos separados por un gap: acá el
+    segmento ya es UNA sola región de actividad continua (nunca bajó de
+    umbral) con un giro interno — verificado 2026-08-10 sobre los "mixto"
+    reales del dataset (todos son giros internos en un tramo continuo, no
+    fusiones de eventos con gap — un enfoque de "no fusionar direcciones
+    opuestas" en fusionar_cercanos() se probó primero y dio 0 diferencia).
+    """
+    sub = df.iloc[ini : fin + 1]["peso_g"]
+    if sub.isna().all():
+        return None
+
+    peso_ini = sub.iloc[0]
+    peso_fin = sub.iloc[-1]
+    if pd.isna(peso_ini) or pd.isna(peso_fin):
+        return None
+
+    for idx_extremo in (sub.idxmin(), sub.idxmax()):
+        if idx_extremo in (ini, fin):
+            continue  # el extremo está en el borde — es un tramo monótono, no un giro
+        val_extremo = sub.loc[idx_extremo]
+        tramo1 = abs(peso_ini - val_extremo)
+        tramo2 = abs(peso_fin - val_extremo)
+        if tramo1 >= min_rango_g and tramo2 >= min_rango_g:
+            return int(idx_extremo)
+
+    return None
+
+
 def calcular_metadata(df: pd.DataFrame, ini: int, fin: int, u: dict,
                       df_ciclos: pd.DataFrame | None = None) -> dict | None:
     sub = df.iloc[ini : fin + 1]["peso_g"].dropna()
@@ -350,6 +384,21 @@ def main():
 
     segs = fusionar_cercanos(segs, df, u["gap_merge_s"])
     print(f"  {len(segs)} segmentos tras fusionar gaps < {u['gap_merge_s']}s")
+
+    min_rango_g = u.get("min_rango_g", 4.0)
+    segs_split: list[tuple[int, int]] = []
+    n_partidos = 0
+    for ini, fin in segs:
+        punto = punto_split_mixto(df, ini, fin, min_rango_g)
+        if punto is not None:
+            segs_split.append((ini, punto))
+            segs_split.append((punto, fin))
+            n_partidos += 1
+        else:
+            segs_split.append((ini, fin))
+    if n_partidos:
+        print(f"  {n_partidos} segmentos con giro interno partidos en 2 (antes 'mixto' con delta neto ≈0)")
+    segs = segs_split
 
     candidatos = []
     for i, (ini, fin) in enumerate(segs):

@@ -1,8 +1,7 @@
 {
-  "_version": "1.2",
-  "_nota": "Umbrales actualizados empíricamente desde 304 anotaciones (alimentacion=160, ruido=113, servido=31). Fecha: 2026-06-26.",
+  "_version": "1.3",
+  "_nota": "Umbrales actualizados empíricamente desde 496 anotaciones (alimentacion=254, ruido=187, servido=55). Fecha: 2026-08-11.",
   "_fuente": "Ejecutar revisar_anotaciones.py para regenerar estadísticas base.",
-
   "deteccion": {
     "_nota": "Parámetros para 01_genera_candidatos.py. Detectar de más es preferible — el operador filtra.",
     "umbral_std_g": 1.5,
@@ -15,12 +14,10 @@
     "ventana_std_lecturas": 10,
     "ventana_delta_lecturas": 20
   },
-
   "clasificacion_referencia": {
     "_nota": "Reglas para clasificar segmentos. Derivadas de 304 anotaciones manuales. Orden: servido → alimentacion → ruido. Las features de forma (sim_*, monotonicity, r2) son el discriminador primario; las métricas clásicas (delta_w, pendiente) actúan como filtro secundario.",
-
     "servido": {
-      "_n_anotaciones": 31,
+      "_n_anotaciones": 55,
       "_descripcion_empirica": "Subida fuerte y rápida. Alguien agrega comida al bowl. sim_servido muy alto (>0.80 en 90% de casos). Δpeso siempre mayor a +20g.",
       "direction": "subida",
       "duracion_min_min": 0.5,
@@ -28,32 +25,31 @@
       "delta_w_min_g": 20.0,
       "rango_min_g": 25.0,
       "pendiente_min_g_min": 1.0,
-      "sim_servido_min": 0.70,
+      "sim_servido_min": 0.89,
       "_stats": {
-        "duracion_media_min": 4.1,
-        "duracion_std_min": 10.83,
+        "duracion_media_min": 3.36,
+        "duracion_std_min": 3.7,
         "duracion_min_obs_min": 1.0,
-        "duracion_max_obs_min": 62.0,
-        "delta_w_media_g": 64.8,
-        "delta_w_std_g": 32.05,
-        "delta_w_min_obs_g": 0.0,
-        "delta_w_max_obs_g": 129.0,
-        "delta_w_p10_g": 26.0,
-        "rango_media_g": 69.6,
-        "pendiente_media_g_min": 39.41,
-        "pendiente_min_obs_g_min": -0.02,
+        "duracion_max_obs_min": 17.0,
+        "delta_w_media_g": 61.4,
+        "delta_w_std_g": 27.28,
+        "delta_w_min_obs_g": 13.0,
+        "delta_w_max_obs_g": 126.0,
+        "delta_w_p10_g": 28.6,
+        "rango_media_g": 62.93,
+        "pendiente_media_g_min": 32.88,
+        "pendiente_min_obs_g_min": 0.93,
         "pendiente_max_obs_g_min": 126.0,
-        "monotonicity_media": 0.008,
-        "r2_lineal_media": 0.240,
-        "zcr_media": 0.185,
-        "sim_servido_media": 0.875,
-        "sim_servido_p10": 0.826,
-        "sim_servido_p90": 0.903
+        "monotonicity_media": 0.289,
+        "r2_lineal_media": 0.67,
+        "zcr_media": 0.414,
+        "sim_servido_media": 0.897,
+        "sim_servido_p10": 0.89,
+        "sim_servido_p90": 0.94
       }
     },
-
     "alimentacion": {
-      "_n_anotaciones": 160,
+      "_n_anotaciones": 254,
       "_descripcion_empirica": "Bajada gradual sostenida. La gata come entre comidas. sim_alimentacion muy alto (>0.80 en 90% de casos). Monotonía negativa consistente. R² lineal alto (>0.40).",
       "direction": "bajada",
       "duracion_min_min": 1.0,
@@ -61,67 +57,65 @@
       "delta_w_max_g": -3.0,
       "rango_min_g": 5.0,
       "pendiente_max_g_min": -0.4,
-      "sim_alimentacion_min": 0.70,
-      "monotonicity_max": -0.03,
-      "r2_lineal_min": 0.35,
+      "sim_alimentacion_min": 0.07,
+      "monotonicity_max": -0.05,
+      "r2_lineal_min": 0.19,
       "_stats": {
-        "duracion_media_min": 6.9,
-        "duracion_std_min": 2.91,
-        "duracion_min_obs_min": 1.0,
-        "duracion_max_obs_min": 20.0,
-        "delta_w_media_g": -12.2,
-        "delta_w_std_g": 9.45,
-        "delta_w_min_obs_g": -64.0,
-        "delta_w_max_obs_g": 69.0,
-        "delta_w_p10_g": -20.0,
+        "duracion_media_min": 7.61,
+        "duracion_std_min": 3.2,
+        "duracion_min_obs_min": 3.0,
+        "duracion_max_obs_min": 18.0,
+        "delta_w_media_g": -12.54,
+        "delta_w_std_g": 5.26,
+        "delta_w_min_obs_g": -33.0,
+        "delta_w_max_obs_g": 0.0,
+        "delta_w_p10_g": -18.7,
         "delta_w_p90_g": -6.0,
-        "rango_media_g": 17.7,
-        "pendiente_media_g_min": -1.61,
-        "pendiente_min_obs_g_min": -5.09,
-        "pendiente_max_obs_g_min": -0.40,
-        "monotonicity_media": -0.090,
-        "monotonicity_std": 0.051,
-        "monotonicity_p10": -0.148,
-        "monotonicity_p90": -0.027,
-        "r2_lineal_media": 0.570,
-        "r2_lineal_std": 0.138,
-        "r2_lineal_p10": 0.391,
-        "r2_lineal_p90": 0.726,
-        "zcr_media": 0.277,
-        "sim_alimentacion_media": 0.881,
-        "sim_alimentacion_p10": 0.800,
-        "sim_alimentacion_p90": 0.959
+        "rango_media_g": 17.68,
+        "pendiente_media_g_min": -1.82,
+        "pendiente_min_obs_g_min": -4.17,
+        "pendiente_max_obs_g_min": 0.0,
+        "monotonicity_media": -0.19,
+        "monotonicity_std": 0.115,
+        "monotonicity_p10": -0.33,
+        "monotonicity_p90": -0.05,
+        "r2_lineal_media": 0.618,
+        "r2_lineal_std": 0.246,
+        "r2_lineal_p10": 0.19,
+        "r2_lineal_p90": 0.9,
+        "zcr_media": 0.628,
+        "sim_alimentacion_media": 0.727,
+        "sim_alimentacion_p10": 0.07,
+        "sim_alimentacion_p90": 0.98
       }
     },
-
     "ruido": {
-      "_n_anotaciones": 113,
+      "_n_anotaciones": 187,
       "_descripcion_empirica": "Movimiento o error del sensor. No corresponde a actividad real. sim_alimentacion y sim_servido cercanos a 0 (sin forma clara). Pendiente absoluta menor a 5 g/min.",
       "direction": "mixto",
-      "pendiente_abs_max_g_min": 4.9,
+      "pendiente_abs_max_g_min": 1.12,
       "_discriminador_clave": "sim_alim < 0.70 AND sim_serv < 0.70 → RUIDO (regla residual)",
       "_stats": {
-        "duracion_media_min": 12.0,
-        "duracion_std_min": 5.05,
-        "duracion_min_obs_min": 4.0,
+        "duracion_media_min": 12.15,
+        "duracion_std_min": 5.6,
+        "duracion_min_obs_min": 1.0,
         "duracion_max_obs_min": 43.0,
-        "delta_w_media_g": 0.81,
-        "delta_w_std_g": 15.72,
-        "delta_w_p10_g": -7.8,
-        "delta_w_p90_g": 8.8,
-        "rango_media_g": 30.3,
-        "pendiente_media_g_min": 0.02,
-        "pendiente_min_obs_g_min": -3.52,
-        "pendiente_max_obs_g_min": 4.87,
+        "delta_w_media_g": 0.75,
+        "delta_w_std_g": 17.22,
+        "delta_w_p10_g": -9.0,
+        "delta_w_p90_g": 8.0,
+        "rango_media_g": 32.41,
+        "pendiente_media_g_min": -0.0,
+        "pendiente_min_obs_g_min": -5.0,
+        "pendiente_max_obs_g_min": 6.68,
         "monotonicity_media": -0.008,
-        "r2_lineal_media": 0.233,
-        "zcr_media": 0.208,
-        "sim_alimentacion_media": 0.021,
-        "sim_servido_media": -0.021
+        "r2_lineal_media": 0.243,
+        "zcr_media": 0.226,
+        "sim_alimentacion_media": 0.054,
+        "sim_servido_media": -0.054
       }
     }
   },
-
   "notas_detector": {
     "orden_evaluacion": [
       "1. SERVIDO si: sim_servido > 0.70 AND delta_w > +20g AND duracion < 15 min",
@@ -131,10 +125,10 @@
       "3. RUIDO en cualquier otro caso"
     ],
     "mejores_discriminadores": [
-      "sim_servido:      alim=-0.881 | serv=+0.875 | ruido=-0.021  → mejor feature para SERVIDO",
-      "sim_alimentacion: alim=+0.881 | serv=-0.875 | ruido=+0.021  → mejor feature para ALIMENTACION",
-      "monotonicity:     alim=-0.090 | serv=+0.008 | ruido=-0.008  → complementario (confirma bajada)",
-      "r2_lineal:        alim= 0.570 | serv= 0.240 | ruido= 0.233  → confirma tendencia lineal en alim"
+      "sim_servido:      alim=-0.727 | serv=+0.897 | ruido=-0.054  → mejor feature para SERVIDO",
+      "sim_alimentacion: alim=+0.727 | serv=-0.897 | ruido=+0.054  → mejor feature para ALIMENTACION",
+      "monotonicity:     alim=-0.190 | serv=+0.289 | ruido=-0.008  → complementario (confirma bajada)",
+      "r2_lineal:        alim= 0.618 | serv= 0.670 | ruido= 0.243  → confirma tendencia lineal en alim"
     ],
     "outliers_detectados": [
       "Servido 2026-05-06 20:54 — duración 62 min (mislabel probable — excluir de stats)",
@@ -142,10 +136,8 @@
       "Ruido con rango > 100g (varios casos) — posibles mislabels de servido"
     ],
     "proximos_pasos": [
-      "Revisar alimentacion con Δpeso positivo — posibles mislabels",
-      "Revisar ruido con rango > 100g — posibles mislabels de servido",
-      "Meta actual: servido=31/20 (ALCANZADA), ruido=113/30 (ALCANZADA), alimentacion=160/40 (ALCANZADA)",
-      "Siguiente fase: implementar detector en fase_1_extraccion/ usando sim_* como features primarias"
+      "Recalibrado 2026-08-11 sobre 496 anotaciones (antes: 304). Revisar data/auditoria_discrepancias.csv (02_auditar_discrepancias.py) para posibles mislabels en vez de buscarlos a mano.",
+      "Metas Ciclo Alpha v2: servido=55/20, ruido=187/30, alimentacion=254/40 — todas superadas ampliamente."
     ]
   }
 }

@@ -878,6 +878,9 @@ EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
     # F09 — Frecuencia
     "power_ratio_low":      (+1.0,  0.0, -1.0),
     "autocorr_lag1":        (+1.0,  0.0, -1.0),
+    "spectral_entropy":     (-1.0, -2.0, +2.5),
+    # F01 — Geometría diferencial
+    "d1_frac_pos":          (-1.0, +2.0, -1.0),
     # F14 — Compuestos
     "idx_linearity":        (+2.0, -0.5, -0.5),
     "idx_template_max":     (+1.0, +1.0, -2.0),
