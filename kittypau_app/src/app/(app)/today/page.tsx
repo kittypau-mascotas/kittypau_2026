@@ -119,35 +119,6 @@ type IntakeSession = {
 
 type DeviceReadingsMap = Record<string, ApiReading[]>;
 
-type PeriodStats = {
-  consumed: number | null;
-  cycles: number;
-};
-
-type ConsumptionSummary = {
-  day: PeriodStats;
-  week: PeriodStats;
-  month: PeriodStats;
-};
-type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
-
-type PetAnalyticsSession = {
-  id: string;
-  device_id: string;
-  session_type: string;
-  session_start: string;
-  session_end: string;
-  duration_sec: number | null;
-  grams_consumed: number | null;
-  water_ml: number | null;
-};
-
-type SessionDetailStats = {
-  events: number;
-  avgConsumed: number | null;
-  avgDurationMinutes: number | null;
-};
-
 type WellnessState = {
   stateLabel: string;
   actionLabel: string;
@@ -432,97 +403,6 @@ function findSessionForPoint(
   );
 }
 
-function summarizeSessionsByPeriods(
-  sessions: IntakeSession[],
-  nowMs: number,
-): ConsumptionSummary {
-  const boundaries = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-
-  const build = (startMs: number): PeriodStats => {
-    const filtered = sessions.filter((session) => session.endT >= startMs);
-    if (!filtered.length) return { consumed: null, cycles: 0 };
-    const consumed = filtered.reduce(
-      (acc, session) => acc + Math.max(0, session.consumed),
-      0,
-    );
-    return { consumed: Math.round(consumed), cycles: filtered.length };
-  };
-
-  return {
-    day: build(boundaries.day),
-    week: build(boundaries.week),
-    month: build(boundaries.month),
-  };
-}
-
-function summarizeSessionDetailsByPeriod(
-  sessions: IntakeSession[],
-  nowMs: number,
-  period: keyof ConsumptionSummary,
-): SessionDetailStats {
-  const startMsByPeriod = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-  const filtered = sessions.filter(
-    (session) => session.endT >= startMsByPeriod[period],
-  );
-  if (!filtered.length) {
-    return {
-      events: 0,
-      avgConsumed: null,
-      avgDurationMinutes: null,
-    };
-  }
-  const totalConsumed = filtered.reduce(
-    (acc, session) => acc + Math.max(0, session.consumed),
-    0,
-  );
-  const totalDuration = filtered.reduce(
-    (acc, session) => acc + Math.max(0, session.durationMinutes),
-    0,
-  );
-  return {
-    events: filtered.length,
-    avgConsumed: Math.round(totalConsumed / filtered.length),
-    avgDurationMinutes: Math.round(totalDuration / filtered.length),
-  };
-}
-
-function summarizeAnalyticsSessionsByPeriods(
-  sessions: PetAnalyticsSession[],
-  valueKey: "grams_consumed" | "water_ml",
-  nowMs: number,
-): ConsumptionSummary {
-  const boundaries = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-  const build = (startMs: number): PeriodStats => {
-    const filtered = sessions.filter((s) => {
-      const endT = new Date(s.session_end).getTime();
-      return !Number.isNaN(endT) && endT >= startMs;
-    });
-    if (!filtered.length) return { consumed: null, cycles: 0 };
-    const consumed = filtered.reduce((acc, s) => {
-      const v = s[valueKey];
-      return acc + Math.max(0, typeof v === "number" ? v : 0);
-    }, 0);
-    return { consumed: Math.round(consumed), cycles: filtered.length };
-  };
-  return {
-    day: build(boundaries.day),
-    week: build(boundaries.week),
-    month: build(boundaries.month),
-  };
-}
-
 function buildWellnessState(params: {
   type: "food" | "water";
   sessions: IntakeSession[];
@@ -598,9 +478,6 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] =
     useState<number | null>(null);
-  const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
-    PetAnalyticsSession[]
-  >([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -628,8 +505,6 @@ export default function TodayPage() {
   const [accountType, setAccountType] = useState<
     "admin" | "tester" | "client" | null
   >(null);
-  const [consumptionPeriod, setConsumptionPeriod] =
-    useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
   const [deviceAuditEvents, setDeviceAuditEvents] = useState<
     Record<string, AuditEvent[]>
@@ -1380,35 +1255,6 @@ export default function TodayPage() {
     };
   }, [bowlDevice?.id, waterDevice?.id, dayCycleOffsetDays]);
 
-  useEffect(() => {
-    const petId = primaryPet?.id;
-    if (!petId) return;
-    let active = true;
-    const loadAnalyticsSessions = async () => {
-      const from = new Date(
-        Date.now() - 30 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const params = new URLSearchParams({ pet_id: petId, from, limit: "200" });
-      try {
-        const res = await authFetch(
-          `/api/analytics/sessions?${params.toString()}`,
-        );
-        if (!res.ok) return;
-        const payload = (await res.json()) as { data?: unknown[] };
-        if (!active) return;
-        setAnalyticsHistorySessions(
-          (payload.data ?? []) as PetAnalyticsSession[],
-        );
-      } catch {
-        // keep empty — fallback to raw readings summary
-      }
-    };
-    void loadAnalyticsSessions();
-    return () => {
-      active = false;
-    };
-  }, [primaryPet?.id]);
-
   const bowlTempText =
     bowlLatestReading?.temperature !== null &&
     bowlLatestReading?.temperature !== undefined
@@ -2103,46 +1949,6 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [deviceAuditEvents, waterDevice?.id, waterHistoryPoints]);
-  const bowlConsumptionSummary = useMemo(
-    () => summarizeSessionsByPeriods(bowlHistorySessions, nowMs),
-    [bowlHistorySessions, nowMs],
-  );
-  const waterConsumptionSummary = useMemo(
-    () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
-    [waterHistorySessions, nowMs],
-  );
-
-  const waterAnalyticsSummary = useMemo(() => {
-    if (!waterDevice?.id) return null;
-    const deviceSessions = analyticsHistorySessions.filter(
-      (s) => s.device_id === waterDevice.id,
-    );
-    if (!deviceSessions.length) return null;
-    return summarizeAnalyticsSessionsByPeriods(
-      deviceSessions,
-      "water_ml",
-      nowMs,
-    );
-  }, [analyticsHistorySessions, waterDevice?.id, nowMs]);
-
-  const summaryPeriod: keyof ConsumptionSummary =
-    consumptionPeriod === "one" ? "day" : consumptionPeriod;
-  const detailPeriod: keyof ConsumptionSummary =
-    consumptionPeriod === "one" ? "month" : consumptionPeriod;
-  const bowlDetailSummary = useMemo(
-    () =>
-      summarizeSessionDetailsByPeriod(bowlHistorySessions, nowMs, detailPeriod),
-    [bowlHistorySessions, nowMs, detailPeriod],
-  );
-  const waterDetailSummary = useMemo(
-    () =>
-      summarizeSessionDetailsByPeriod(
-        waterHistorySessions,
-        nowMs,
-        detailPeriod,
-      ),
-    [waterHistorySessions, nowMs, detailPeriod],
-  );
   const bowlWellness = useMemo(
     () =>
       buildWellnessState({
@@ -2431,40 +2237,6 @@ export default function TodayPage() {
     }
     return "border-slate-200 bg-slate-50 text-slate-600";
   };
-  const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
-    value === null ? "N/D" : `${value} ${unit}`;
-  const periodLabels: Array<{
-    key: ConsumptionViewPeriod;
-    label: string;
-    description: string;
-  }> = [
-    {
-      key: "one",
-      label: "Unidad",
-      description:
-        "Promedio por evento individual durante los últimos 30 días.",
-    },
-    {
-      key: "day",
-      label: "Día",
-      description: "Resumen acumulado de consumo y frecuencia en 24 horas.",
-    },
-    {
-      key: "week",
-      label: "Semana",
-      description: "Vista semanal para detectar cambios de patrón de rutina.",
-    },
-    {
-      key: "month",
-      label: "Mes",
-      description: "Tendencia mensual para evaluar hábitos de largo plazo.",
-    },
-  ];
-  const activePeriodLabel =
-    periodLabels
-      .find((item) => item.key === summaryPeriod)
-      ?.label.toLowerCase() ?? "día";
-
   // Mientras no se resuelve el account type no renderizar nada (evita flicker)
   if (accountType === null) {
     return null;
@@ -2723,136 +2495,6 @@ export default function TodayPage() {
                         ).text
                       }
                     </span>
-                  </div>
-                </div>
-                <div className="today-hero-summary inline-flex items-center gap-2 hidden">
-                  <div className="today-hero-summary-cards grid grid-cols-1 gap-1.5 md:grid-cols-2">
-                    <div className="today-hero-summary-card today-hero-summary-card-food flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
-                      <div>
-                        <p className="text-xs font-semibold text-emerald-700">
-                          Alimentación
-                        </p>
-                        <div className="mt-1 space-y-0.5">
-                          <p className="text-[11px] text-slate-600">
-                            {consumptionPeriod === "one"
-                              ? `${bowlDetailSummary.events} eventos (30d)`
-                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
-                          </p>
-                          {consumptionPeriod === "one" ? (
-                            <p className="text-[11px] text-slate-600">
-                              Unit:{" "}
-                              {formatConsumedValue(
-                                bowlDetailSummary.avgConsumed,
-                                "g",
-                              )}{" "}
-                              ·{" "}
-                              {bowlDetailSummary.avgDurationMinutes === null
-                                ? "N/D"
-                                : formatSessionDuration(
-                                    bowlDetailSummary.avgDurationMinutes,
-                                  )}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-slate-600">
-                              Consumo:{" "}
-                              {formatConsumedValue(
-                                bowlConsumptionSummary[summaryPeriod].consumed,
-                                "g",
-                              )}{" "}
-                              /{activePeriodLabel}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <Image
-                        src="/illustrations/icono_comida.png"
-                        alt=""
-                        aria-hidden={true}
-                        width={36}
-                        height={36}
-                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
-                      />
-                    </div>
-                    <div className="today-hero-summary-card today-hero-summary-card-water flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
-                      <div>
-                        <p className="text-xs font-semibold text-sky-700">
-                          Hidratación
-                        </p>
-                        <div className="mt-1 space-y-0.5">
-                          <p className="text-[11px] text-slate-600">
-                            {consumptionPeriod === "one"
-                              ? `${waterDetailSummary.events} eventos (30d)`
-                              : `${(waterAnalyticsSummary ?? waterConsumptionSummary)[summaryPeriod].cycles} veces/${activePeriodLabel}`}
-                          </p>
-                          {consumptionPeriod === "one" ? (
-                            <p className="text-[11px] text-slate-600">
-                              Unit:{" "}
-                              {formatConsumedValue(
-                                waterDetailSummary.avgConsumed,
-                                "ml",
-                              )}{" "}
-                              ·{" "}
-                              {waterDetailSummary.avgDurationMinutes === null
-                                ? "N/D"
-                                : formatSessionDuration(
-                                    waterDetailSummary.avgDurationMinutes,
-                                  )}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-slate-600">
-                              Consumo:{" "}
-                              {formatConsumedValue(
-                                (waterAnalyticsSummary ??
-                                  waterConsumptionSummary)[summaryPeriod]
-                                  .consumed,
-                                "ml",
-                              )}{" "}
-                              /{activePeriodLabel}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <Image
-                        src="/illustrations/icono_agua.png"
-                        alt=""
-                        aria-hidden={true}
-                        width={36}
-                        height={36}
-                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
-                      />
-                    </div>
-                  </div>
-                  <div className="today-hero-period hidden my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
-                    {periodLabels.map(({ key, label, description }) => {
-                      const isActive = key === consumptionPeriod;
-                      return (
-                        <div
-                          key={`period-${key}`}
-                          className="group relative w-full"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => setConsumptionPeriod(key)}
-                            className={`w-full rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-[1.05] tracking-tight transition ${
-                              isActive
-                                ? "bg-emerald-400 text-slate-900"
-                                : "text-slate-900 hover:bg-slate-100"
-                            }`}
-                            aria-pressed={isActive}
-                            aria-label={`${label}: ${description}`}
-                          >
-                            {label}
-                          </button>
-                          <span className="pointer-events-none absolute right-full top-1/2 z-20 mr-2 hidden w-44 -translate-y-1/2 rounded-[10px] border border-rose-200/70 bg-rose-50/95 px-2.5 py-2 text-[10px] font-semibold leading-relaxed text-slate-700 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.55)] group-hover:block group-focus-within:block">
-                            {description}
-                            <span
-                              aria-hidden="true"
-                              className="absolute left-full top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-t border-rose-200/70 bg-rose-50/95"
-                            />
-                          </span>
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
               </aside>
