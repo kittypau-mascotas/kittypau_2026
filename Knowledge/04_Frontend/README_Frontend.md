@@ -17,6 +17,7 @@ related:
   - [[02_Arquitectura/README_Arquitectura]]
   - [[05_API/README_API]]
   - [[03_Backend/README_Backend]]
+  - [[04_Frontend/ESTRUCTURA_src_app]]
 ---
 
 # Frontend — App Kittypau
@@ -49,8 +50,8 @@ related:
 src/
 ├── app/
 │   ├── (app)/               ← Rutas protegidas (auth requerida)
-│   │   ├── inicio/          ← Dashboard principal
-│   │   ├── today/           ← Actividad del día
+│   │   ├── inicio/          ← Solo redirect a /today (no tiene UI propia)
+│   │   ├── today/           ← Actividad del día — dashboard real de la app
 │   │   ├── bowl/            ← Monitoreo del comedero en tiempo real (MQTT)
 │   │   ├── pet/             ← Perfil de la mascota
 │   │   ├── dispositivos/    ← Gestión KPCL (solo /dispositivos/nuevo tiene page.tsx)
@@ -163,6 +164,7 @@ Si alguna de estas variables está ausente, el hook falla silenciosamente y `/bo
 
 ## Ver también
 
+- [[04_Frontend/ESTRUCTURA_src_app]] — función de cada carpeta de `src/app`, carpeta por carpeta, con hallazgos de código huérfano
 - [[05_API/README_API]] — API Routes expuestas por la app
 - [[03_Backend/README_Backend]] — Supabase Edge Functions
 - [[02_Arquitectura/README_Arquitectura]] — stack completo del sistema

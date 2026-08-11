@@ -33,6 +33,7 @@ tags:
 - [[02_Arquitectura/MOC_Arquitectura]] — Mapa de todos los componentes
 - [[03_Backend/README_Backend]] — Supabase, Edge Functions, API Routes
 - [[04_Frontend/README_Frontend]] — App Next.js + Capacitor Android
+- [[04_Frontend/ESTRUCTURA_src_app]] — función de cada carpeta de `src/app`, carpeta por carpeta
 - [[05_API/README_API]] — Contratos de endpoints
 - [[06_BaseDatos/README_BaseDatos]] — Schema, migraciones, pgvector
 - [[07_MQTT/README_MQTT]] — HiveMQ, topics, bridge Raspberry
