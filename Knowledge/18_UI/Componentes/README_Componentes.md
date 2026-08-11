@@ -49,7 +49,12 @@ related:
 | `_components/bowl-wellness-card.tsx` | [[18_UI/Componentes/COMP_BowlWellnessCard]] | Card de Alimentación/Hidratación — un componente para ambas |
 | `_components/onboarding-guide-modal.tsx` | [[18_UI/Componentes/COMP_OnboardingGuideModal]] | Modal "Modo guía" de bienvenida |
 | `_lib/today-format.tsx` | [[18_UI/Componentes/COMP_TodayFormatHelpers]] | Helpers puros de formato (batería, conectividad, tendencia) |
-| `DayCycleChart.tsx` + `useDayCycleData.ts` | _pendiente de documentar_ | Ilustración de ciclo día/noche — ya eran componente separado antes de esta sesión |
+| `_components/day-night-timeline-card.tsx` | [[18_UI/Componentes/COMP_DayNightTimelineCard]] | Card del timeline día/noche con el chart de Alimentación/Hidratación |
+
+> ⚠️ `DayCycleChart.tsx` + `useDayCycleData.ts` (en la raíz de `today/`, no en
+> `_components/`) están **sin usar en ningún lado del código** — confirmado con `grep` al
+> extraer `DayNightTimelineCard`. Ver [[18_UI/Componentes/COMP_DayNightTimelineCard]] para
+> el detalle. No se borraron sin confirmar primero.
 
 El resto de `today/page.tsx` (~2540 líneas) sigue siendo un componente monolítico con toda
 la carga de datos, el hunger bar, los charts de consumo, el timeline de audit events, etc.

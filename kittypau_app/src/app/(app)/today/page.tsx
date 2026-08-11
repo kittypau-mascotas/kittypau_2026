@@ -14,7 +14,6 @@ import {
 } from "@/lib/runtime/selection-sync";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
-import { Line } from "react-chartjs-2";
 import {
   getChileDayNightWindow,
   chileCompactDatetime,
@@ -23,6 +22,7 @@ import {
 } from "@/lib/time/chile";
 import BarrasSimsCard from "./_components/barras-sims-card";
 import BowlWellnessCard from "./_components/bowl-wellness-card";
+import DayNightTimelineCard from "./_components/day-night-timeline-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 
 type ApiPet = {
@@ -2402,90 +2402,18 @@ export default function TodayPage() {
             </div>
           </section>
 
-          <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
-            <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
-              <div className="mb-2 flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                  aria-label="Ciclo anterior"
-                  title="Ciclo anterior"
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays(0)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-0.5 text-[12px] font-semibold text-slate-600 hover:bg-slate-50"
-                  aria-label="Volver a hoy"
-                  title="Volver a hoy"
-                >
-                  {dayNightRangeTitle}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
-                  }
-                  disabled={dayCycleOffsetDays === 0}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Ciclo siguiente"
-                  title="Ciclo siguiente"
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              </div>
-              <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
-                <Line
-                  data={dayNightChartData}
-                  options={dayNightChartOptions}
-                  plugins={[dayNightBackgroundPlugin]}
-                />
-              </div>
-              {chartLoadError ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-slate-500">
-                  {chartLoadError}
-                </p>
-              ) : null}
-              {mqttLiveError ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-                  {mqttLiveError}
-                </p>
-              ) : null}
-              {!isAuthoritativeFoodDevice ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-                  Alimentación sin evidencia auditada: solo se confirma comida
-                  desde {AUTHORITATIVE_FOOD_DEVICE_CODE} con categorías
-                  inicio/termino.
-                </p>
-              ) : null}
-            </div>
-          </section>
+          <DayNightTimelineCard
+            dayCycleOffsetDays={dayCycleOffsetDays}
+            onOffsetChange={setDayCycleOffsetDays}
+            rangeTitle={dayNightRangeTitle}
+            chartData={dayNightChartData}
+            chartOptions={dayNightChartOptions}
+            backgroundPlugin={dayNightBackgroundPlugin}
+            chartLoadError={chartLoadError}
+            mqttLiveError={mqttLiveError}
+            isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
+            authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
+          />
         </header>
 
         {state.error ? (
