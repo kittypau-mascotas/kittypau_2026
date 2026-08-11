@@ -10,7 +10,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import AppNav from "@/app/(app)/_components/app-nav";
+import AppNav from "@/app/_components/app-nav";
 import { chileCompactDatetime } from "@/lib/time/chile";
 import { AppDataProvider } from "@/lib/context/app-context";
 import TrialRpgDialogDock from "@/chatbot-gato/trial-rpg-dialog-dock";

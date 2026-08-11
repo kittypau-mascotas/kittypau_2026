@@ -208,9 +208,7 @@ export default function AppNav() {
     | "story"
     | "pet"
     | "bowl";
-  const navItems = isDemoMode
-    ? demoNavItems
-    : specialNavItems;
+  const navItems = isDemoMode ? demoNavItems : specialNavItems;
   const resolvedDeviceLabel = isDemoMode
     ? demoDeviceId || "KPCL-DEMO"
     : selectedDeviceId
