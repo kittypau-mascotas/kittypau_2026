@@ -24,6 +24,16 @@ related:
 
 > v4 — post 3 rondas de discovery técnico + implementación v1 en producción.
 
+> **Principio rector:** todo lo aprendido en
+> `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` (taxonomía `alimentacion`/
+> `servido`/`ruido` con rangos medidos, Motor v2/Evidence Engine calibrado contra 417
+> anotaciones reales, estadísticas de KPCL0034) está **al servicio de cómo funciona la
+> barra** — no es contexto histórico aparte. Ninguna constante o regla nueva en
+> `hunger-bar.ts` se agrega sin antes buscar si ese folder ya la midió o la acota. El v1
+> actual (§1.1-1.3) ya sigue esto parcialmente (rangos de clasificación, mediana/clamps
+> reales) pero es un stand-in simplificado del Evidence Engine — ese es el gap a cerrar,
+> no una decisión de ingeniería aislada.
+
 **Estado: v1 implementada y verificada en vivo en `/today` y `/pet`** (2026-08-10, cuenta
 tester `kittypau.mascotas`, mascota real Bandida). La decisión bloqueante de arquitectura
 (§1.1) se resolvió de forma pragmática: **reglas simples en TypeScript** (opción B
