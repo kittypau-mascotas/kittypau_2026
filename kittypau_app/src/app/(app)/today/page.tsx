@@ -81,7 +81,16 @@ type HungerBarResponse = {
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
   sampleSize: number;
+  alertActive: boolean;
+  hoursOverdue: number | null;
 };
+
+// v1.1 — gradiente continuo verde→amarillo→rojo. Ver
+// Knowledge/05_API/SPEC_HungerBar_Alertas.md §2.
+function hungerBarColor(pct: number): string {
+  const hue = Math.max(0, Math.min(100, pct)) * 1.2;
+  return `hsl(${hue}, 70%, 45%)`;
+}
 
 type DayNightPoint = { x: number; y: number; t: number };
 
@@ -2599,6 +2608,7 @@ export default function TodayPage() {
     ) {
       return "Sin evidencia real";
     }
+    if (hungerBar.alertActive) return "Atrasada";
     if (hungerBar.usingFallback) return "Aprendiendo hábitos";
     return "Confirmado";
   }, [hungerBar]);
@@ -2608,6 +2618,12 @@ export default function TodayPage() {
     return `${hungerBar.percentage}%`;
   }, [hungerBar]);
 
+  // v1.1 — gradiente continuo en vez del degradé fijo ámbar→rosa
+  const hungerFillColor = useMemo(() => {
+    if (!hungerBar || hungerBar.percentage === null) return null;
+    return hungerBarColor(hungerBar.percentage);
+  }, [hungerBar]);
+
   const hungerNoteLabel = useMemo(() => {
     if (
       !hungerBar ||
@@ -2615,6 +2631,9 @@ export default function TodayPage() {
       hungerBar.percentage === null
     ) {
       return "Última comida confirmada: sin registro";
+    }
+    if (hungerBar.alertActive) {
+      return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
     if (hungerBar.percentage >= 100) return "Debería haber comido ya";
     return hungerBar.estimatedNextMealAt
@@ -2875,11 +2894,17 @@ export default function TodayPage() {
                         valueLabel: hungerValueLabel,
                         statusLabel: hungerStatusLabel,
                         noteLabel: hungerNoteLabel,
-                        trackClass: "border-rose-100 bg-rose-50",
-                        fillClass:
-                          "bg-[linear-gradient(180deg,rgba(251,191,36,0.95)_0%,rgba(244,63,94,0.95)_100%)]",
+                        trackClass: hungerBar?.alertActive
+                          ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
+                          : "border-rose-100 bg-rose-50",
+                        fillClass: "",
+                        fillStyle: hungerFillColor
+                          ? { backgroundColor: hungerFillColor }
+                          : undefined,
                         labelClass: "text-rose-700",
-                        badgeClass: "border-rose-100 bg-rose-50 text-rose-700",
+                        badgeClass: hungerBar?.alertActive
+                          ? "border-rose-300 bg-rose-100 text-rose-800"
+                          : "border-rose-100 bg-rose-50 text-rose-700",
                       },
                       {
                         key: "water",
@@ -2895,6 +2920,9 @@ export default function TodayPage() {
                         trackClass: "border-emerald-100 bg-emerald-50",
                         fillClass:
                           "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
+                        fillStyle: undefined as
+                          | { backgroundColor: string }
+                          | undefined,
                         labelClass: "text-emerald-700",
                         badgeClass:
                           "border-slate-200 bg-slate-50 text-slate-500",
@@ -2910,6 +2938,7 @@ export default function TodayPage() {
                         noteLabel,
                         trackClass,
                         fillClass,
+                        fillStyle,
                         labelClass,
                         badgeClass,
                       }) => (
@@ -2932,6 +2961,7 @@ export default function TodayPage() {
                               className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
                               style={{
                                 height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
+                                ...fillStyle,
                               }}
                             />
                           </div>

@@ -69,6 +69,8 @@ export async function GET(
       intervalUsedMinutes: null,
       usingFallback: false,
       sampleSize: 0,
+      alertActive: false,
+      hoursOverdue: null,
     });
   }
 

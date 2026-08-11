@@ -390,6 +390,7 @@ producción (monitorear `sampleSize` y `usingFallback` por mascota).
 
 ## Ver también
 
+- [[05_API/SPEC_HungerBar_Alertas]] — v1.1: alerta visual ≥2h de atraso + color continuo de la barra
 - [[11_ModelosIA/MODEL_EvidenceEngine]] — motor de clasificación usado en §1
 - [[13_Features/README_ShapeFeatures]] — `shape_features_v2.py`
 - [[06_BaseDatos/README_BaseDatos]] — `readings`, `devices`, `device_bowl_sessions`

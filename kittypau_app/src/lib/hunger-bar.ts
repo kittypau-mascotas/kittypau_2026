@@ -35,6 +35,11 @@ export const FALLBACK_MEDIANA_H = 5.78; // mediana global real, 249 intervalos v
 export const CLAMP_MIN_H = 2.88;
 export const CLAMP_MAX_H = 12.02;
 
+// v1.1 — alerta visual. Ver Knowledge/05_API/SPEC_HungerBar_Alertas.md.
+// Dispara 2h después de que la barra llega a 0% (estimatedNextMealAt), no 2h
+// desde la última comida.
+export const ALERT_THRESHOLD_HOURS = 2;
+
 export type ReadingPoint = {
   recordedAt: string;
   weightGrams: number;
@@ -60,22 +65,35 @@ export type HungerBarResult = {
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
   sampleSize: number;
+  alertActive: boolean; // v1.1 — nunca true si status != "ok"
+  hoursOverdue: number | null; // v1.1 — null si status != "ok"
 };
 
-function triangularScore(x: number, lo: number, mid: number, hi: number): number {
+function triangularScore(
+  x: number,
+  lo: number,
+  mid: number,
+  hi: number,
+): number {
   if (x <= lo || x >= hi) return 0;
   if (x <= mid) return (x - lo) / (mid - lo);
   return (hi - x) / (hi - mid);
 }
 
-function classifySegment(deltaG: number, durationMin: number): { category: SegmentCategory; confidence: number } {
+function classifySegment(
+  deltaG: number,
+  durationMin: number,
+): { category: SegmentCategory; confidence: number } {
   if (deltaG < 0) {
     // candidato a alimentación: baja 5–15 g en 4–8 min (rango documentado, con margen)
     const mag = -deltaG;
     if (mag >= 3 && mag <= 25 && durationMin >= 1.5 && durationMin <= 15) {
       const magScore = triangularScore(mag, 3, 10, 25);
       const durScore = triangularScore(durationMin, 1.5, 6, 15);
-      return { category: "alimentacion", confidence: (magScore + durScore) / 2 };
+      return {
+        category: "alimentacion",
+        confidence: (magScore + durScore) / 2,
+      };
     }
     return { category: "ruido", confidence: 0 };
   }
@@ -117,7 +135,10 @@ export function detectSegments(readings: ReadingPoint[]): Segment[] {
   let stableCount = 0;
 
   for (let i = 1; i < readings.length; i++) {
-    while (lagIdx < i - 1 && times[i] - times[lagIdx + 1] >= LAG_SECONDS * 1000) {
+    while (
+      lagIdx < i - 1 &&
+      times[i] - times[lagIdx + 1] >= LAG_SECONDS * 1000
+    ) {
       lagIdx++;
     }
     const baseline = readings[lagIdx].weightGrams;
@@ -143,7 +164,9 @@ export function detectSegments(readings: ReadingPoint[]): Segment[] {
       const endPoint = readings[i];
       const deltaG = endPoint.weightGrams - startPoint.weightGrams;
       const durationMin =
-        (new Date(endPoint.recordedAt).getTime() - new Date(startPoint.recordedAt).getTime()) / 60_000;
+        (new Date(endPoint.recordedAt).getTime() -
+          new Date(startPoint.recordedAt).getTime()) /
+        60_000;
 
       const { category, confidence } = classifySegment(deltaG, durationMin);
       segments.push({
@@ -166,14 +189,21 @@ export function detectSegments(readings: ReadingPoint[]): Segment[] {
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
-export function computeHungerBar(readings: ReadingPoint[], now: Date = new Date()): HungerBarResult {
+export function computeHungerBar(
+  readings: ReadingPoint[],
+  now: Date = new Date(),
+): HungerBarResult {
   const segments = detectSegments(readings);
   const meals = segments
     .filter((s) => s.category === "alimentacion")
-    .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+    .sort(
+      (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
+    );
 
   if (meals.length === 0) {
     return {
@@ -185,13 +215,17 @@ export function computeHungerBar(readings: ReadingPoint[], now: Date = new Date(
       intervalUsedMinutes: null,
       usingFallback: false,
       sampleSize: 0,
+      alertActive: false,
+      hoursOverdue: null,
     };
   }
 
   const intervalsH: number[] = [];
   for (let i = 1; i < meals.length; i++) {
     const h =
-      (new Date(meals[i].startAt).getTime() - new Date(meals[i - 1].startAt).getTime()) / 3_600_000;
+      (new Date(meals[i].startAt).getTime() -
+        new Date(meals[i - 1].startAt).getTime()) /
+      3_600_000;
     if (h >= MIN_INTERVALO_H && h <= MAX_INTERVALO_H) intervalsH.push(h);
   }
 
@@ -203,7 +237,15 @@ export function computeHungerBar(readings: ReadingPoint[], now: Date = new Date(
   const lastMealAt = new Date(lastMeal.startAt);
   const hoursSince = (now.getTime() - lastMealAt.getTime()) / 3_600_000;
   const percentage = Math.min(100, Math.max(0, (hoursSince / intervalH) * 100));
-  const estimatedNextMealAt = new Date(lastMealAt.getTime() + intervalH * 3_600_000);
+  const estimatedNextMealAt = new Date(
+    lastMealAt.getTime() + intervalH * 3_600_000,
+  );
+
+  const hoursOverdue = Math.max(
+    0,
+    (now.getTime() - estimatedNextMealAt.getTime()) / 3_600_000,
+  );
+  const alertActive = hoursOverdue >= ALERT_THRESHOLD_HOURS;
 
   return {
     status: "ok",
@@ -214,5 +256,7 @@ export function computeHungerBar(readings: ReadingPoint[], now: Date = new Date(
     intervalUsedMinutes: Math.round(intervalH * 60),
     usingFallback,
     sampleSize: meals.length,
+    alertActive,
+    hoursOverdue: Math.round(hoursOverdue * 100) / 100,
   };
 }

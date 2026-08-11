@@ -832,7 +832,9 @@ export default function PetPage() {
             </div>
           </section>
 
-          {petFoodDevice && selectedPet ? <HungerBarCard petId={selectedPet.id} /> : null}
+          {petFoodDevice && selectedPet ? (
+            <HungerBarCard petId={selectedPet.id} petName={selectedPet.name} />
+          ) : null}
 
           {!latestReading ? (
             <section className="surface-card freeform-rise px-6 py-4">
