@@ -165,9 +165,10 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 - **`api/onboarding/status`**: alias sin caller, duplica `api/registro/status`. Candidata
   segura a eliminar (root cause sería quitar el import si algo la usara, pero no hay).
 - **`(app)/admin/page.tsx`** (4043 líneas) es ahora el monolito más grande de la app,
-  más que `today/page.tsx` (2468) y `login/page.tsx` (1977). No estaba en el radar de
-  [[29_Specs/SPEC_02_UIUX_Mejoras]] — evaluar si entra al mismo tratamiento de
-  extracción por componentes que recibió `today/`.
+  más que `today/page.tsx` (2468) y `login/page.tsx` (1977). Evaluado y agregado como
+  ítem A-C1 en [[29_Specs/SPEC_02_UIUX_Mejoras]] — estructura ya inspeccionada (~15
+  secciones delimitadas por `<h2>`, mismo patrón extraíble que `today/`), pero
+  **dejado de lado a propósito por Mauro**, no priorizar sin pedido explícito.
 - **`(app)/inicio`**: el nombre sugiere "dashboard" pero es 100% redirect a `/today`.
   `README_Frontend.md` lo listaba como "Dashboard principal" — corregido.
 - Carpetas `_components`/`_lib` privadas ya confirmadas correctamente ubicadas tras

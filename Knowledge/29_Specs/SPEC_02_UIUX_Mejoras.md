@@ -62,6 +62,7 @@ tips específicos por pantalla, reusando el mismo componente modal de `/today`.
 | I9 | SSIDs de WiFi solo en `localStorage`, se pierden en reinstall de la APK | Pérdida de datos de configuración — requiere migración de schema (persistir en `devices`) | M |
 | L-C1 | `/login` sigue siendo un monolito de ~1924 líneas | Mantenibilidad — no bloquea usuario final | XL |
 | L-C3 | SVG del gato como string gigante inline con `dangerouslySetInnerHTML` en `/login` | Mantenibilidad, no seguridad (contenido estático propio) | M |
+| A-C1 | `/admin` es un monolito de ~4043 líneas — el más grande de la app, mayor que `/login` (L-C1) y `/today` antes de su extracción | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final. Estructura ya inspeccionada: ~15 secciones delimitadas por `<h2>` (Salud del sistema, Integridad de datos, Infraestructura, Tablas y Vistas, Uso KPCL, etc.), cada una con su propio fetch/estado local — mismo patrón que hizo segura la extracción de `today/_components/`. **Evaluado 2026-08-11, dejado de lado a propósito por Mauro — no priorizar sin pedido explícito.** | XL |
 
 ---
 
