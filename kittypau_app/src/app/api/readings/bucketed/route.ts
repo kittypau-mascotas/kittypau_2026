@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, getUserClient, logRequestEnd, startRequestTimer } from "../../_utils";
+import {
+  apiError,
+  getUserClient,
+  logRequestEnd,
+  startRequestTimer,
+} from "../../_utils";
 import { supabaseServer } from "@/lib/supabase/server";
 
 // No edge runtime — necesita múltiples queries paginadas server-side
@@ -16,9 +21,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const deviceId = searchParams.get("device_id");
   const fromParam = searchParams.get("from");
-  const bucketS = Math.max(60, Math.min(86400, Number(searchParams.get("bucket_s") ?? "300")));
+  const bucketS = Math.max(
+    60,
+    Math.min(86400, Number(searchParams.get("bucket_s") ?? "300")),
+  );
 
-  if (!deviceId) return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
+  if (!deviceId)
+    return apiError(req, 400, "MISSING_DEVICE_ID", "device_id is required");
   if (!fromParam) return apiError(req, 400, "MISSING_FROM", "from is required");
 
   const fromDate = new Date(fromParam);
@@ -33,45 +42,41 @@ export async function GET(req: NextRequest) {
     .eq("id", deviceId)
     .single();
 
-  if (deviceError || !device) return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
-  if (device.owner_id !== user.id) return apiError(req, 403, "FORBIDDEN", "Forbidden");
+  if (deviceError || !device)
+    return apiError(req, 404, "DEVICE_NOT_FOUND", "Device not found");
+  if (device.owner_id !== user.id)
+    return apiError(req, 403, "FORBIDDEN", "Forbidden");
 
-  // Obtener todas las lecturas paginando en paralelo
-  const PAGE_SIZE = 5000;
+  // Obtener todas las lecturas, paginando por tamaño de página REAL devuelto.
+  // ponytail: Supabase/PostgREST cappea cada request a un máximo del lado del
+  // servidor (medido: 1000 filas, `db-max-rows`) sin importar qué .range() se
+  // pida — pedir range(0,4999) no trae 5000, trae 1000 igual (Content-Range:
+  // 0-999/N). Asumir "si total <= PAGE_SIZE entonces 1 página alcanza" es el
+  // bug real (encontrado 2026-08-11 en /api/pets/[id]/hunger-bar, mismo
+  // patrón copiado de acá) — se perdían silenciosamente filas cada vez que
+  // el total caía entre 1000 y PAGE_SIZE.
+  const PAGE_SIZE = 1000;
+  const MAX_PAGES = 150; // ~150k filas tope de seguridad, igual que antes
 
-  // Primera página para saber cuántas hay
-  const { data: firstPage, error: firstError, count } = await supabaseServer
-    .from("readings")
-    .select("recorded_at,weight_grams,temperature,humidity,light_percent", { count: "exact" })
-    .eq("device_id", deviceId)
-    .gte("recorded_at", fromParam)
-    .order("recorded_at", { ascending: false })
-    .range(0, PAGE_SIZE - 1);
-
-  if (firstError) return apiError(req, 500, "SUPABASE_ERROR", firstError.message);
-
-  const totalRows = count ?? 0;
-  const allRows = [...(firstPage ?? [])];
-
-  // Páginas adicionales en paralelo si hay más datos
-  if (totalRows > PAGE_SIZE) {
-    const pageCount = Math.min(Math.ceil(totalRows / PAGE_SIZE), 30); // max 30 páginas = 150k rows
-    const extra = await Promise.all(
-      Array.from({ length: pageCount - 1 }, (_, i) => {
-        const start = (i + 1) * PAGE_SIZE;
-        const end = start + PAGE_SIZE - 1;
-        return supabaseServer
-          .from("readings")
-          .select("recorded_at,weight_grams,temperature,humidity,light_percent")
-          .eq("device_id", deviceId)
-          .gte("recorded_at", fromParam)
-          .order("recorded_at", { ascending: false })
-          .range(start, end);
-      }),
-    );
-    for (const { data } of extra) {
-      if (data) allRows.push(...data);
-    }
+  const allRows: {
+    recorded_at: string | null;
+    weight_grams: number | null;
+    temperature: number | null;
+    humidity: number | null;
+    light_percent: number | null;
+  }[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const start = page * PAGE_SIZE;
+    const { data, error } = await supabaseServer
+      .from("readings")
+      .select("recorded_at,weight_grams,temperature,humidity,light_percent")
+      .eq("device_id", deviceId)
+      .gte("recorded_at", fromParam)
+      .order("recorded_at", { ascending: false })
+      .range(start, start + PAGE_SIZE - 1);
+    if (error) return apiError(req, 500, "SUPABASE_ERROR", error.message);
+    if (data) allRows.push(...data);
+    if (!data || data.length < PAGE_SIZE) break; // página incompleta = no hay más
   }
 
   // Agregar por bucket
@@ -83,7 +88,10 @@ export async function GET(req: NextRequest) {
     light_percent: number | null;
   };
 
-  const buckets = new Map<number, { wg: number[]; t: number[]; h: number[]; lp: number[] }>();
+  const buckets = new Map<
+    number,
+    { wg: number[]; t: number[]; h: number[]; lp: number[] }
+  >();
   const bucketMs = bucketS * 1000;
 
   for (const row of allRows as Row[]) {
@@ -99,7 +107,8 @@ export async function GET(req: NextRequest) {
     if (row.light_percent !== null) b.lp.push(row.light_percent);
   }
 
-  const avg = (arr: number[]) => (arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : null);
+  const avg = (arr: number[]) =>
+    arr.length ? arr.reduce((s, v) => s + v, 0) / arr.length : null;
 
   const result = Array.from(buckets.entries())
     .sort(([a], [b]) => b - a) // desc (newest first)
@@ -111,6 +120,10 @@ export async function GET(req: NextRequest) {
       light_percent: avg(b.lp),
     }));
 
-  logRequestEnd(req, startedAt, 200, { device_id: deviceId, rows_in: allRows.length, buckets: result.length });
+  logRequestEnd(req, startedAt, 200, {
+    device_id: deviceId,
+    rows_in: allRows.length,
+    buckets: result.length,
+  });
   return NextResponse.json({ data: result, rows_processed: allRows.length });
 }

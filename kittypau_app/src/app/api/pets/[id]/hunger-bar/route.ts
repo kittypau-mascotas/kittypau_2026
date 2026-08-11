@@ -13,7 +13,15 @@ import { computeHungerBar, type ReadingPoint } from "@/lib/hunger-bar";
 // Ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md.
 
 const WINDOW_DAYS = 10; // suficiente para varias comidas + mediana propia; ver N_MIN_MUESTRAS
-const PAGE_SIZE = 5000;
+// ponytail: Supabase/PostgREST cappea CADA request a un máximo del lado del
+// servidor (medido: 1000 filas, `db-max-rows`) sin importar qué .range() se
+// pida — pedir range(0,4999) no trae 5000, trae 1000 igual, con
+// Content-Range: 0-999/N. Asumir "si total <= PAGE_SIZE entonces 1 página
+// alcanza" es el bug real (encontrado 2026-08-11: se perdían las lecturas
+// de HOY, orden ascendente + corte a 1000 se queda con las más viejas).
+// Fix: paginar por el tamaño de página REAL devuelto, no por este número.
+const PAGE_SIZE = 1000;
+const MAX_PAGES = 60; // ~60k filas tope de seguridad
 
 export async function GET(
   req: NextRequest,
@@ -78,41 +86,21 @@ export async function GET(
     Date.now() - WINDOW_DAYS * 86_400_000,
   ).toISOString();
 
-  // Paginado igual que /api/readings/bucketed — evita el límite de 5000 filas de Supabase
-  const {
-    data: firstPage,
-    error: firstError,
-    count,
-  } = await supabaseServer
-    .from("readings")
-    .select("recorded_at,weight_grams", { count: "exact" })
-    .eq("device_id", device.id)
-    .gte("recorded_at", sinceIso)
-    .not("weight_grams", "is", null)
-    .order("recorded_at", { ascending: true })
-    .range(0, PAGE_SIZE - 1);
-  if (firstError)
-    return apiError(req, 500, "SUPABASE_ERROR", firstError.message);
-
-  const totalRows = count ?? 0;
-  const allRows = [...(firstPage ?? [])];
-  if (totalRows > PAGE_SIZE) {
-    const pageCount = Math.min(Math.ceil(totalRows / PAGE_SIZE), 12); // cap ~60k filas
-    const extra = await Promise.all(
-      Array.from({ length: pageCount - 1 }, (_, i) => {
-        const start = (i + 1) * PAGE_SIZE;
-        return supabaseServer
-          .from("readings")
-          .select("recorded_at,weight_grams")
-          .eq("device_id", device.id)
-          .gte("recorded_at", sinceIso)
-          .not("weight_grams", "is", null)
-          .order("recorded_at", { ascending: true })
-          .range(start, start + PAGE_SIZE - 1);
-      }),
-    );
-    for (const { data } of extra) if (data) allRows.push(...data);
-    allRows.sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
+  // Paginado por tamaño de página REAL devuelto — ver nota de PAGE_SIZE arriba.
+  const allRows: { recorded_at: string; weight_grams: number | null }[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const start = page * PAGE_SIZE;
+    const { data, error } = await supabaseServer
+      .from("readings")
+      .select("recorded_at,weight_grams")
+      .eq("device_id", device.id)
+      .gte("recorded_at", sinceIso)
+      .not("weight_grams", "is", null)
+      .order("recorded_at", { ascending: true })
+      .range(start, start + PAGE_SIZE - 1);
+    if (error) return apiError(req, 500, "SUPABASE_ERROR", error.message);
+    if (data) allRows.push(...data);
+    if (!data || data.length < PAGE_SIZE) break; // página incompleta = no hay más
   }
 
   const points: ReadingPoint[] = allRows
