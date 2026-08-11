@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { Parallax } from "react-scroll-parallax";
 import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
 import { LOGIN_CHATBOT_CONTEXT } from "@/chatbot-gato/login-context";
@@ -12,7 +18,7 @@ import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 import { resolveAuthenticatedPath, setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
-import RegistroFlow from "@/app/(app)/registro/_components/registro-flow";
+import RegistroFlow from "./_components/registro-flow";
 import SocialLinks from "@/app/_components/social-links";
 
 export default function LoginPage() {
@@ -69,8 +75,16 @@ export default function LoginPage() {
   const [isTrialCatAwake, setIsTrialCatAwake] = useState(false);
   const catEyeXRaw = useMotionValue(0);
   const catEyeYRaw = useMotionValue(0);
-  const catEyeXSpring = useSpring(catEyeXRaw, { stiffness: 180, damping: 22, mass: 0.5 });
-  const catEyeYSpring = useSpring(catEyeYRaw, { stiffness: 180, damping: 22, mass: 0.5 });
+  const catEyeXSpring = useSpring(catEyeXRaw, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.5,
+  });
+  const catEyeYSpring = useSpring(catEyeYRaw, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.5,
+  });
   const catEyeXPx = useTransform(catEyeXSpring, (v) => `${v}px`);
   const catEyeYPx = useTransform(catEyeYSpring, (v) => `${v}px`);
   const [aiTrialDialogReply, setAiTrialDialogReply] = useState<{
@@ -807,7 +821,7 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: emailValue, password: passwordValue }),
       });
-      const session = await authRes.json() as Record<string, unknown>;
+      const session = (await authRes.json()) as Record<string, unknown>;
       if (!authRes.ok) {
         setError(
           typeof session.error === "string"
@@ -823,7 +837,8 @@ export default function LoginPage() {
         return;
       }
       accessToken = session.access_token;
-      refreshToken = typeof session.refresh_token === "string" ? session.refresh_token : "";
+      refreshToken =
+        typeof session.refresh_token === "string" ? session.refresh_token : "";
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Error de red al iniciar sesión.",
@@ -838,7 +853,10 @@ export default function LoginPage() {
     const supabase = getSupabaseBrowser();
     if (supabase) {
       try {
-        await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
       } catch {
         // No bloquear el login si setSession falla.
       }
@@ -1017,20 +1035,29 @@ export default function LoginPage() {
     if (!showRegister) return;
     const modal = registerModalRef.current;
     if (!modal) return;
-    const sel = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const sel =
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
     modal.querySelector<HTMLElement>(sel)?.focus();
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { closeRegister(); return; }
+      if (e.key === "Escape") {
+        closeRegister();
+        return;
+      }
       if (e.key !== "Tab") return;
       const focusable = Array.from(modal.querySelectorAll<HTMLElement>(sel));
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showRegister]);
 
   const openTrial = () => {
@@ -1313,10 +1340,12 @@ export default function LoginPage() {
                     ref={trialCatRef}
                     onMouseEnter={wakeTrialCat}
                     onMouseLeave={sleepTrialCat}
-                    style={{
-                      "--cat-eye-x": catEyeXPx,
-                      "--cat-eye-y": catEyeYPx,
-                    } as unknown as CSSProperties}
+                    style={
+                      {
+                        "--cat-eye-x": catEyeXPx,
+                        "--cat-eye-y": catEyeYPx,
+                      } as unknown as CSSProperties
+                    }
                   >
                     <div className="cat">
                       <div className="sleep-symbol" aria-hidden="true">
@@ -1541,383 +1570,407 @@ export default function LoginPage() {
       </div>
 
       <AnimatePresence>
-      {showRegister ? (
-        <motion.div
-          key="register-backdrop"
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-        >
+        {showRegister ? (
           <motion.div
-            className="relative w-full max-w-4xl sm:px-0"
-            initial={{ y: 36, opacity: 0, scale: 0.97 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 36, opacity: 0, scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.9 }}
+            key="register-backdrop"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 px-0 py-0 backdrop-blur-sm sm:items-center sm:px-4 sm:py-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
           >
-            <div
-              ref={registerModalRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="register-modal-title"
-              className={`glass-panel login-register-modal w-full overflow-hidden ${
-                registerStep === "registro"
-                  ? "login-register-modal-registro"
-                  : ""
-              }`}
+            <motion.div
+              className="relative w-full max-w-4xl sm:px-0"
+              initial={{ y: 36, opacity: 0, scale: 0.97 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 36, opacity: 0, scale: 0.97 }}
+              transition={{
+                type: "spring",
+                stiffness: 380,
+                damping: 32,
+                mass: 0.9,
+              }}
             >
-              <div className="login-register-head border-b border-white/30 px-6 py-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                      Registro
-                    </p>
-                    <h2 id="register-modal-title" className="display-title text-2xl font-semibold text-slate-900">
-                      {registerTitle}
-                    </h2>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="login-register-pill text-xs font-semibold">
-                      Paso {modalStep} / 4
-                    </span>
-                    <button
-                      type="button"
-                      onClick={closeRegister}
-                      className="rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm"
-                    >
-                      Cerrar
-                    </button>
-                  </div>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {stepperContent}
-                  {registerStep === "account" &&
-                  registerConfirmed &&
-                  registerConfirmedMessage ? (
-                    <p className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
-                      {registerConfirmedMessage}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
               <div
-                className={`login-register-body ${
-                  registerStep === "account"
-                    ? "p-6"
-                    : "login-register-body-registro"
+                ref={registerModalRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="register-modal-title"
+                className={`glass-panel login-register-modal w-full overflow-hidden ${
+                  registerStep === "registro"
+                    ? "login-register-modal-registro"
+                    : ""
                 }`}
               >
-                {registerStep === "account" ? (
-                  <form
-                    className="space-y-4"
-                    onSubmit={onRegister}
-                    aria-busy={isRegistering}
-                  >
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <label htmlFor="reg-email" className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                          Email
-                        </label>
-                        <input
-                          id="reg-email"
-                          type="email"
-                          placeholder="tu@email.com"
-                          value={registerEmail}
-                          onChange={(event) =>
-                            setRegisterEmail(event.target.value)
-                          }
-                          className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="reg-password" className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                          Contraseña
-                        </label>
-                        <input
-                          id="reg-password"
-                          type={registerShowPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          value={registerPassword}
-                          onChange={(event) =>
-                            setRegisterPassword(event.target.value)
-                          }
-                          className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        {registerPassword.length > 0 &&
-                        !isRegisterPasswordValid ? (
-                          <p className="text-[11px] text-rose-600">
-                            Debe tener 8 caracteres o más.
-                          </p>
-                        ) : null}
-                      </div>
+                <div className="login-register-head border-b border-white/30 px-6 py-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        Registro
+                      </p>
+                      <h2
+                        id="register-modal-title"
+                        className="display-title text-2xl font-semibold text-slate-900"
+                      >
+                        {registerTitle}
+                      </h2>
                     </div>
-                    <label className="flex items-center gap-2 text-xs text-slate-500">
-                      <input
-                        type="checkbox"
-                        checked={registerShowPassword}
-                        onChange={(event) =>
-                          setRegisterShowPassword(event.target.checked)
-                        }
-                      />
-                      Mostrar contraseña
-                    </label>
-                    {registerEmail.length > 0 && !isRegisterEmailValid ? (
-                      <p className="text-[11px] text-rose-600">
-                        Ingresa un email válido.
-                      </p>
-                    ) : null}
-                    {registerError ? (
-                      <p
-                        className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
-                        role="alert"
-                      >
-                        {registerError}
-                      </p>
-                    ) : null}
-                    <button
-                      type="submit"
-                      disabled={isRegistering || !isRegisterValid}
-                      className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
-                    >
-                      {isRegistering ? "Creando..." : "Continuar"}
-                    </button>
-                    {isRegistering ? (
-                      <p className="text-[11px] text-slate-500">
-                        Creando cuenta...
-                      </p>
-                    ) : null}
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
-                      <button
-                        type="button"
-                        onClick={resendConfirmation}
-                        disabled={isResending || isRegistering}
-                        className="font-semibold text-slate-600 hover:text-slate-900"
-                      >
-                        {isResending
-                          ? "Reenviando..."
-                          : "Reenviar confirmación"}
-                      </button>
+                    <div className="flex items-center gap-2">
+                      <span className="login-register-pill text-xs font-semibold">
+                        Paso {modalStep} / 4
+                      </span>
                       <button
                         type="button"
                         onClick={closeRegister}
-                        className="font-semibold text-slate-600 hover:text-slate-900"
+                        className="rounded-full border border-slate-200 bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm"
                       >
-                        Volver al login
+                        Cerrar
                       </button>
                     </div>
-                  </form>
-                ) : (
-                  <RegistroFlow
-                    mode="modal"
-                    onClose={closeRegister}
-                    forcedStep={manualRegistroStep}
-                    onProgress={(step) => {
-                      setRegistroProgress(step);
-                      if (
-                        manualRegistroStep !== null &&
-                        step !== manualRegistroStep
-                      ) {
-                        setManualRegistroStep(null);
-                      }
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      ) : null}
-      </AnimatePresence>
-
-      <AnimatePresence>
-      {showTrialModal ? (
-        <motion.div
-          key="trial-backdrop"
-          className="login-trial-overlay fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="trial-modal-title"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) closeTrial();
-          }}
-        >
-          <motion.div
-            className="login-trial-modal-host relative w-full max-w-lg"
-            initial={{ y: 28, opacity: 0, scale: 0.97 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 28, opacity: 0, scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.9 }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-3 sm:p-5">
-              <div className="mb-3">
-                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
-                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                    <p className="login-trial-eyebrow brand-title text-[0.88rem] font-semibold uppercase tracking-[0.18em]">
-                      Modo prueba
-                    </p>
-                    <h2 id="trial-modal-title" className="login-trial-title text-[0.96rem] font-semibold">
-                      {trialDialogIntro.title}
-                    </h2>
-                    {trialDialogIntro.body ? (
-                      <p className="login-trial-copy mt-0.5 text-[0.75rem]">
-                        {trialDialogIntro.body}
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {stepperContent}
+                    {registerStep === "account" &&
+                    registerConfirmed &&
+                    registerConfirmedMessage ? (
+                      <p className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                        {registerConfirmedMessage}
                       </p>
                     ) : null}
                   </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <Image
-                      src="/logo_carga.jpg"
-                      alt=""
-                      width={56}
-                      height={56}
-                      className="rounded-full object-cover"
-                      draggable={false}
+                </div>
+                <div
+                  className={`login-register-body ${
+                    registerStep === "account"
+                      ? "p-6"
+                      : "login-register-body-registro"
+                  }`}
+                >
+                  {registerStep === "account" ? (
+                    <form
+                      className="space-y-4"
+                      onSubmit={onRegister}
+                      aria-busy={isRegistering}
+                    >
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="reg-email"
+                            className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                          >
+                            Email
+                          </label>
+                          <input
+                            id="reg-email"
+                            type="email"
+                            placeholder="tu@email.com"
+                            value={registerEmail}
+                            onChange={(event) =>
+                              setRegisterEmail(event.target.value)
+                            }
+                            className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="reg-password"
+                            className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                          >
+                            Contraseña
+                          </label>
+                          <input
+                            id="reg-password"
+                            type={registerShowPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            value={registerPassword}
+                            onChange={(event) =>
+                              setRegisterPassword(event.target.value)
+                            }
+                            className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          {registerPassword.length > 0 &&
+                          !isRegisterPasswordValid ? (
+                            <p className="text-[11px] text-rose-600">
+                              Debe tener 8 caracteres o más.
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                      <label className="flex items-center gap-2 text-xs text-slate-500">
+                        <input
+                          type="checkbox"
+                          checked={registerShowPassword}
+                          onChange={(event) =>
+                            setRegisterShowPassword(event.target.checked)
+                          }
+                        />
+                        Mostrar contraseña
+                      </label>
+                      {registerEmail.length > 0 && !isRegisterEmailValid ? (
+                        <p className="text-[11px] text-rose-600">
+                          Ingresa un email válido.
+                        </p>
+                      ) : null}
+                      {registerError ? (
+                        <p
+                          className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
+                          role="alert"
+                        >
+                          {registerError}
+                        </p>
+                      ) : null}
+                      <button
+                        type="submit"
+                        disabled={isRegistering || !isRegisterValid}
+                        className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {isRegistering ? "Creando..." : "Continuar"}
+                      </button>
+                      {isRegistering ? (
+                        <p className="text-[11px] text-slate-500">
+                          Creando cuenta...
+                        </p>
+                      ) : null}
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+                        <button
+                          type="button"
+                          onClick={resendConfirmation}
+                          disabled={isResending || isRegistering}
+                          className="font-semibold text-slate-600 hover:text-slate-900"
+                        >
+                          {isResending
+                            ? "Reenviando..."
+                            : "Reenviar confirmación"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={closeRegister}
+                          className="font-semibold text-slate-600 hover:text-slate-900"
+                        >
+                          Volver al login
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <RegistroFlow
+                      mode="modal"
+                      onClose={closeRegister}
+                      forcedStep={manualRegistroStep}
+                      onProgress={(step) => {
+                        setRegistroProgress(step);
+                        if (
+                          manualRegistroStep !== null &&
+                          step !== manualRegistroStep
+                        ) {
+                          setManualRegistroStep(null);
+                        }
+                      }}
                     />
-                    <div className="flex flex-col leading-tight">
-                      <span className="brand-title text-[1.25rem] font-semibold text-primary">
-                        Kittypau
-                      </span>
-                      <span className="text-[0.75rem] font-medium text-slate-400">
-                        PetTech AIoT
-                      </span>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showTrialModal ? (
+          <motion.div
+            key="trial-backdrop"
+            className="login-trial-overlay fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 sm:py-8"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="trial-modal-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) closeTrial();
+            }}
+          >
+            <motion.div
+              className="login-trial-modal-host relative w-full max-w-lg"
+              initial={{ y: 28, opacity: 0, scale: 0.97 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 28, opacity: 0, scale: 0.97 }}
+              transition={{
+                type: "spring",
+                stiffness: 380,
+                damping: 32,
+                mass: 0.9,
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="login-register-modal login-trial-modal glass-panel w-full rounded-[var(--radius)] p-3 sm:p-5">
+                <div className="mb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                      <p className="login-trial-eyebrow brand-title text-[0.88rem] font-semibold uppercase tracking-[0.18em]">
+                        Modo prueba
+                      </p>
+                      <h2
+                        id="trial-modal-title"
+                        className="login-trial-title text-[0.96rem] font-semibold"
+                      >
+                        {trialDialogIntro.title}
+                      </h2>
+                      {trialDialogIntro.body ? (
+                        <p className="login-trial-copy mt-0.5 text-[0.75rem]">
+                          {trialDialogIntro.body}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Image
+                        src="/logo_carga.jpg"
+                        alt=""
+                        width={56}
+                        height={56}
+                        className="rounded-full object-cover"
+                        draggable={false}
+                      />
+                      <div className="flex flex-col leading-tight">
+                        <span className="brand-title text-[1.25rem] font-semibold text-primary">
+                          Kittypau
+                        </span>
+                        <span className="text-[0.75rem] font-medium text-slate-400">
+                          PetTech AIoT
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-2.5">
-                <div className="space-y-1.5">
-                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
-                    Cuál es tu mascota?
-                  </span>
-                  <div className="flex gap-4">
-                    {[
-                      {
-                        type: "dog" as const,
-                        label: "Perro",
-                        src: "/illustrations/nervous-not.gif",
-                      },
-                      {
-                        type: "cat" as const,
-                        label: "Gato",
-                        src: "/illustrations/giphy.gif",
-                      },
-                    ].map((option) => {
-                      const isSelected = trialPetType === option.type;
-                      const isHovered = hoveredTrialPetType === option.type;
-                      return (
-                        <div
-                          key={option.type}
-                          className="relative flex flex-col items-center gap-1"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => setTrialPetType(option.type)}
-                            onMouseEnter={() =>
-                              setHoveredTrialPetType(option.type)
-                            }
-                            onMouseLeave={() => setHoveredTrialPetType(null)}
-                            aria-label={option.label}
-                            className={`group relative z-10 mx-auto flex h-[5.5rem] w-[5.5rem] items-center justify-center overflow-hidden rounded-full border-2 bg-white transition sm:h-[6.2rem] sm:w-[6.2rem] ${
-                              isSelected
-                                ? "border-emerald-500 shadow-[0_12px_30px_-16px_rgba(34,197,94,0.4)]"
-                                : isHovered
-                                  ? "border-emerald-400 shadow-[0_8px_24px_-20px_rgba(34,197,94,0.24)]"
-                                  : "border-[color-mix(in_oklab,hsl(var(--border))_78%,_#ffffff)] shadow-[0_8px_24px_-20px_rgba(15,23,42,0.18)] hover:border-emerald-300"
-                            }`}
-                            aria-pressed={isSelected}
+                <div className="space-y-2.5">
+                  <div className="space-y-1.5">
+                    <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
+                      Cuál es tu mascota?
+                    </span>
+                    <div className="flex gap-4">
+                      {[
+                        {
+                          type: "dog" as const,
+                          label: "Perro",
+                          src: "/illustrations/nervous-not.gif",
+                        },
+                        {
+                          type: "cat" as const,
+                          label: "Gato",
+                          src: "/illustrations/giphy.gif",
+                        },
+                      ].map((option) => {
+                        const isSelected = trialPetType === option.type;
+                        const isHovered = hoveredTrialPetType === option.type;
+                        return (
+                          <div
+                            key={option.type}
+                            className="relative flex flex-col items-center gap-1"
                           >
-                            <img
-                              src={option.src}
-                              alt=""
-                              aria-hidden="true"
-                              className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]"
-                            />
-                          </button>
-                          <span className="text-[0.82rem] font-semibold leading-none text-slate-700">
-                            {option.label}
-                          </span>
-                        </div>
-                      );
-                    })}
+                            <button
+                              type="button"
+                              onClick={() => setTrialPetType(option.type)}
+                              onMouseEnter={() =>
+                                setHoveredTrialPetType(option.type)
+                              }
+                              onMouseLeave={() => setHoveredTrialPetType(null)}
+                              aria-label={option.label}
+                              className={`group relative z-10 mx-auto flex h-[5.5rem] w-[5.5rem] items-center justify-center overflow-hidden rounded-full border-2 bg-white transition sm:h-[6.2rem] sm:w-[6.2rem] ${
+                                isSelected
+                                  ? "border-emerald-500 shadow-[0_12px_30px_-16px_rgba(34,197,94,0.4)]"
+                                  : isHovered
+                                    ? "border-emerald-400 shadow-[0_8px_24px_-20px_rgba(34,197,94,0.24)]"
+                                    : "border-[color-mix(in_oklab,hsl(var(--border))_78%,_#ffffff)] shadow-[0_8px_24px_-20px_rgba(15,23,42,0.18)] hover:border-emerald-300"
+                              }`}
+                              aria-pressed={isSelected}
+                            >
+                              <img
+                                src={option.src}
+                                alt=""
+                                aria-hidden="true"
+                                className="h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]"
+                              />
+                            </button>
+                            <span className="text-[0.82rem] font-semibold leading-none text-slate-700">
+                              {option.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
+                  <label className="block space-y-1">
+                    <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
+                      Tu nombre
+                    </span>
+                    <input
+                      type="text"
+                      value={trialOwnerName}
+                      onChange={(event) =>
+                        setTrialOwnerName(event.target.value)
+                      }
+                      className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
+                    />
+                  </label>
+                  <label className="block space-y-1">
+                    <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
+                      Nombre de tu mascota
+                    </span>
+                    <input
+                      type="text"
+                      value={trialPetName}
+                      onChange={(event) => setTrialPetName(event.target.value)}
+                      className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
+                    />
+                  </label>
                 </div>
-                <label className="block space-y-1">
-                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
-                    Tu nombre
-                  </span>
-                  <input
-                    type="text"
-                    value={trialOwnerName}
-                    onChange={(event) => setTrialOwnerName(event.target.value)}
-                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
-                  />
-                </label>
-                <label className="block space-y-1">
-                  <span className="login-trial-label text-[0.62rem] font-medium uppercase tracking-[0.12em]">
-                    Nombre de tu mascota
-                  </span>
-                  <input
-                    type="text"
-                    value={trialPetName}
-                    onChange={(event) => setTrialPetName(event.target.value)}
-                    className="login-trial-input h-9 w-full rounded-[var(--radius)] border px-3 text-[0.82rem] outline-none focus:ring-2"
-                  />
-                </label>
-              </div>
 
-              {trialError ? (
-                <p className="login-trial-error mt-3 rounded-[var(--radius)] border px-3 py-2 text-xs">
-                  {trialError}
-                </p>
-              ) : null}
+                {trialError ? (
+                  <p className="login-trial-error mt-3 rounded-[var(--radius)] border px-3 py-2 text-xs">
+                    {trialError}
+                  </p>
+                ) : null}
 
-              <div className="mt-4 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={closeTrial}
-                  className="login-trial-cancel rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={startTrial}
-                  className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
-                >
-                  {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
-                </button>
-              </div>
-
-              <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-center">
-                <a
-                  href="https://www.instagram.com/kittypau.mascotas/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-[#E1306C]"
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5 text-[#E1306C]"
-                    fill="currentColor"
+                <div className="mt-4 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeTrial}
+                    className="login-trial-cancel rounded-[var(--radius)] border px-3 py-2 text-xs font-semibold"
                   >
-                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
-                  </svg>
-                  <span>Síguenos en Instagram</span>
-                </a>
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={startTrial}
+                    className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
+                  >
+                    {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
+                  </button>
+                </div>
+
+                <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-center">
+                  <a
+                    href="https://www.instagram.com/kittypau.mascotas/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-[#E1306C]"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="h-5 w-5 text-[#E1306C]"
+                      fill="currentColor"
+                    >
+                      <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm8.5 1.5h-8.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5a4.25 4.25 0 0 0-4.25-4.25ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm5.25-2.38a1.13 1.13 0 1 1 0 2.26 1.13 1.13 0 0 1 0-2.26Z" />
+                    </svg>
+                    <span>Síguenos en Instagram</span>
+                  </a>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      ) : null}
+        ) : null}
       </AnimatePresence>
     </div>
   );
