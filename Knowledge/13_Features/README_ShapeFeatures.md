@@ -15,6 +15,7 @@ tags:
 related:
   - [[00_HOME]]
   - [[11_ModelosIA/MOC_ModelosIA]]
+  - [[11_ModelosIA/MODEL_EvidenceEngine]]
   - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
   - [[15_Resultados/RESULT_AlphaV2_Snapshots]]
   - [[23_Decisiones/ADR_003_MotorMatematico]]
@@ -67,26 +68,33 @@ score    = evidence_score(señal)     # dict con probabilidades por categoría
 
 | Feature | sep A/S | sep A/R | Interpretación |
 |---------|--------:|--------:|----------------|
-| `tpl_doble_rampa` | **7.63σ** | 1.63σ | Alimentación cae en doble rampa; servido sube |
-| `tpl_sigmoide` | **6.03σ** | 1.37σ | Servido tiene forma sigmoidea de subida |
-| `tpl_alim_escalonada` | **5.86σ** | 1.32σ | Alimentación en escalones de descenso |
-| `sim_alimentacion` | **5.80σ** | 1.32σ | Similitud global con curva prototipo de alimentación |
-| `sim_servido` | **5.80σ** | 1.32σ | Similitud global con curva prototipo de servido |
+| `tpl_doble_rampa` | **7.69σ** | 1.58σ | Alimentación cae en doble rampa; servido sube |
+| `tpl_sigmoide` | **6.26σ** | 1.33σ | Servido tiene forma sigmoidea de subida |
+| `tpl_alim_escalonada` | **6.07σ** | 1.28σ | Alimentación en escalones de descenso |
+| `sim_alimentacion` | **6.03σ** | 1.28σ | Similitud global con curva prototipo de alimentación |
+| `sim_servido` | **6.03σ** | 1.28σ | Similitud global con curva prototipo de servido |
+
+> Valores recalculados 2026-08-10 sobre 496 anotaciones (antes: 417). El feature #1 no
+> cambió, solo la cifra exacta.
 
 ---
 
 ## Evidence Engine
 
-**23 features con pesos calibrados** + softmax para probabilidades por categoría.
+**Normaliza cada feature (z-score) y calcula los pesos directamente de los datos** —
+discriminante tipo Fisher sobre las 102 features + softmax. Reescrito 2026-08-10, ver
+[[11_ModelosIA/MODEL_EvidenceEngine]] para el detalle completo (por qué el motor anterior
+con pesos a mano sin normalizar acertaba menos que adivinar la clase mayoritaria).
 
 ```python
-score = evidence_score(señal)
-# → {"alimentacion": 0.82, "servido": 0.07, "ruido": 0.11}
+score = evidence_score(feats, comp_stats)
+# → {"score_alimentacion": 0.82, "score_servido": 0.07, "score_ruido": 0.11, ...}
 ```
 
-- Mejor discriminador: `tpl_doble_rampa` (7.63σ Alimentación vs Servido)
-- Calibrado sobre 417 anotaciones (snapshot v2.1)
-- Ver pesos en `COMP_STATS` dentro de `app_anotacion_av2.py`
+- Mejor discriminador: `tpl_doble_rampa` (7.69σ Alimentación vs Servido)
+- Calibrado sobre 496 anotaciones (2026-08-10)
+- Accuracy held-out validada: 78.8% (antes del fix: 49.6%)
+- Ver [[11_ModelosIA/MODEL_EvidenceEngine]] para pesos y fórmula completa
 
 ---
 

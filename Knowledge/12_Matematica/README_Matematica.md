@@ -17,6 +17,7 @@ related:
   - [[13_Features/README_ShapeFeatures]]
   - [[13_Features/ATLAS_Features_v2]]
   - [[11_ModelosIA/MOC_ModelosIA]]
+  - [[11_ModelosIA/MODEL_EvidenceEngine]]
 ---
 
 # Fundamentos Matemáticos — Motor v2
@@ -178,19 +179,24 @@ Prototipos calculados como media de señales anotadas de cada categoría:
 - `template_servido` → curva de subida sigmoide
 - `template_ruido` → señal irregular sin tendencia clara
 
-**Los más discriminativos:** `tpl_doble_rampa` (7.63σ), `tpl_sigmoide` (6.03σ).
+**Los más discriminativos:** `tpl_doble_rampa` (7.69σ), `tpl_sigmoide` (6.26σ) — recalculado 2026-08-10 sobre 496 anotaciones.
 
 ---
 
 ## F14 — Evidence Engine
 
-Ver [[11_ModelosIA/MOC_ModelosIA]] para descripción completa.
+Ver [[11_ModelosIA/MODEL_EvidenceEngine]] para el detalle completo (reescrito 2026-08-10).
 
 ```
-score_cat = softmax(Σ wᵢ × fᵢ)   para cat ∈ {alim, serv, ruido}
+fᵢ_norm = (fᵢ − μ_pooled(fᵢ)) / σ_pooled(fᵢ)         ← normalización z-score, NUEVO
+w_cat(fᵢ) = μ_cat_norm(fᵢ) − μ_resto_norm(fᵢ)        ← peso calculado desde los datos, NUEVO
+score_cat = softmax(Σ w_cat(fᵢ) × fᵢ_norm)            para cat ∈ {alim, serv, ruido}
 ```
 
-Pesos `wᵢ` calibrados por separabilidad (sep A/S y sep A/R) sobre 417 anotaciones.
+Antes los pesos `wᵢ` se elegían a mano y se aplicaban sobre `fᵢ` sin normalizar — con
+496 anotaciones acertaba 49.6% (peor que adivinar la clase mayoritaria). Normalizando y
+calculando los pesos desde `comp_stats_v2.json` (discriminante tipo Fisher, sobre las 102
+features): 78.8% held-out.
 
 ---
 

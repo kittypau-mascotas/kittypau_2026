@@ -13,11 +13,25 @@
 |----------|-------|-----:|-----:|------:|------------:|-----------:|---------:|-------------|--------------------------|
 | v2.0 | 2026-06-26 | 200 | 43 | 165 | 408 | 417 | 101 | Abr 8 → Jun 25 | — |
 | v2.1 | 2026-06-27 | 205 | 45 | 167 | 417 | 421 | 102 | Abr 8 → Jun 27 | `tpl_doble_rampa` (7.63σ) |
-| v2.2 | pendiente | 209 | 45 | 167 | 421 | 421 | — | Abr 8 → Jun 28 | pendiente regenerar |
+| v2.3 | 2026-08-10 | 254 | 55 | 187 | 496 | 589 | 102 | Abr 8 → Ago 10 | `tpl_doble_rampa` (7.69σ) |
 
-> **Pendiente (2026-06-28):** `anotaciones_av2.csv` tiene 421 anotaciones (alim=209, +4 desde v2.1).
-> Ejecutar `revisar_anotaciones_v2.py` (o botón "🔄 Actualizar Todo") para regenerar
-> `features_anotaciones_v2.csv` y `comp_stats_v2.json` y cerrar snapshot v2.2.
+---
+
+## Snapshot v2.3 — 2026-08-10 — fix del Evidence Engine (normalización + pesos calculados)
+
+**Trigger:** revisión de práctica/análisis a pedido de Mauro. No fue solo re-ingesta de
+datos (496 anotaciones vs 417 en v2.1) — se encontró y corrigió un bug estructural en
+`evidence_score()`. Detalle completo en
+[RECOPILACION_DATOS_APP.md §12bis](RECOPILACION_DATOS_APP.md#12bis-actualización-2026-08-10--el-problema-real-no-eran-los-pesos-era-la-escala).
+
+**Resumen:** `evidence_score()` sumaba `peso × valor crudo` sin normalizar. Con 496
+anotaciones acertaba **49.6%** — peor que predecir siempre "alimentación" (51.2%). Fix:
+normalizar (z-score pooled) + calcular pesos desde los datos (discriminante tipo Fisher,
+102 features en vez de las 26 elegidas a mano). Accuracy held-out (20% nunca visto):
+**78.8%**. Test de regresión: `tests/test_evidence_engine.py`.
+
+Tab 1 (Revisar Candidatos) ahora sugiere la categoría automáticamente usando el motor
+corregido — antes no había ninguna sugerencia, el operador anotaba a ciegas.
 
 ---
 

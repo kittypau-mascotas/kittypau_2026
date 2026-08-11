@@ -1048,7 +1048,48 @@ Texto actual:
 
 ---
 
-## 12. Referencia rápida para calibración del Evidence Engine
+## 12bis. Actualización 2026-08-10 — el problema real no eran los pesos, era la escala
+
+Las recomendaciones de la §12 (agregar `tpl_doble_rampa`, `entropy_shannon`, etc. a mano)
+nunca se aplicaron, y aunque se hubieran aplicado tal cual no habrían arreglado el
+problema real: **`evidence_score()` sumaba `peso × valor crudo` sin normalizar**. Con 496
+anotaciones (el doble que en junio), medido directamente:
+
+- Motor con `EVIDENCE_WEIGHTS` (26 features, pesos a mano, sin normalizar): **49.6%**
+  accuracy — peor que predecir siempre "alimentación" (51.2%, clase mayoritaria).
+- Causa: los features viven en escalas muy distintas — la mayoría en `[-1, 1]`, pero
+  `entropy_sample` llega a 22.7. Con pesos `±1` a `±5` elegidos asumiendo escala uniforme,
+  el feature de mayor magnitud cruda domina la suma sin importar el peso que se le asigne.
+  `entropy_sample` además tenía el signo invertido: media alta en alimentación (9.57), no
+  en ruido — el peso `(-1.0, 0.0, +1.0)` premiaba ruido cuando debía premiar alimentación.
+
+**Fix aplicado:** `evidence_score(feats, comp_stats)` ahora normaliza cada feature
+(z-score pooled contra `comp_stats_v2.json`) y calcula los pesos directamente de los
+datos — discriminante tipo Fisher, sobre las 102 features (no solo las 26 elegidas a
+mano). Ver `compute_data_driven_weights()` y `_normalize_feats()` en
+`shape_features_v2.py`.
+
+| Versión | Accuracy (held-out 20%, pesos fitteados solo con el 80%) |
+|---|---|
+| Motor legado (`EVIDENCE_WEIGHTS`, sin normalizar) | 51.5% |
+| Motor normalizado + pesos calculados desde los datos | **78.8%** |
+
+`EVIDENCE_WEIGHTS` queda como fallback legado (sin `comp_stats`, ej. cold start sin
+`comp_stats_v2.json` generado aún) — se le agregaron `tpl_doble_rampa`, `d1_frac_neg`,
+`entropy_shannon` y se removió `tpl_plateau` (constante 0.0), pero ya no es el camino
+principal de clasificación.
+
+**Tab 1 (Revisar Candidatos)** ahora muestra la sugerencia del motor normalizado como
+categoría pre-seleccionada, con badge de confianza 🟢≥70% / 🟡50-70% / 🔴<50% — antes no
+existía ninguna sugerencia automática, el operador anotaba a ciegas pese a que las
+features ya estaban calculadas por `01_genera_candidatos.py`.
+
+Test de regresión: `tests/test_evidence_engine.py` (accuracy held-out, no-NaN, motor
+normalizado > legado).
+
+---
+
+## 12. Referencia rápida para calibración del Evidence Engine (histórico — pre 12bis)
 
 ### Features con mayor impacto por categoría
 

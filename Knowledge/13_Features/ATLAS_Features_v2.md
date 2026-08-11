@@ -15,6 +15,7 @@ tags:
 related:
   - [[00_HOME]]
   - [[13_Features/README_ShapeFeatures]]
+  - [[11_ModelosIA/MODEL_EvidenceEngine]]
   - [[15_Resultados/RESULT_AlphaV2_Snapshots]]
   - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
 ---
@@ -22,8 +23,13 @@ related:
 # Atlas de Features — Motor v2
 
 > Referencia completa de las 102 features del Motor Matemático v2.  
-> Estadísticas basadas en **417 anotaciones** (snapshot v2.1: alim=205, serv=45, ruido=167).  
-> Ver [[README_ShapeFeatures]] para descripción de familias.
+> Estadísticas basadas en **417 anotaciones** (snapshot v2.1: alim=205, serv=45, ruido=167) —
+> tabla completa sin regenerar desde entonces. Los valores de cabecera (`tpl_doble_rampa`,
+> etc.) y las secciones de "candidatas a agregar/remover" al final **sí** se actualizaron
+> el 2026-08-10 contra 496 anotaciones — ver nota al final de cada sección.  
+> Ver [[README_ShapeFeatures]] para descripción de familias y
+> [[11_ModelosIA/MODEL_EvidenceEngine]] para el motor de clasificación actual (ya no usa
+> estos 23 pesos a mano — normaliza y calcula pesos sobre las 102 features).
 
 ---
 
@@ -33,7 +39,7 @@ related:
 
 | # | Feature | µ_alim | σ_alim | µ_serv | σ_serv | µ_ruido | σ_ruido | sep_AS | sep_AR |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | `tpl_doble_rampa` | +0.7441 | 0.3176 | −0.9370 | 0.0684 | +0.0376 | 0.5434 | **7.32σ** | 1.59σ |
+| 1 | `tpl_doble_rampa` | +0.7607 | 0.2935 | −0.9131 | 0.0932 | +0.0724 | 0.5435 | **7.69σ**¹ | 1.58σ¹ |
 | 2 | `tpl_sigmoide` | −0.7040 | 0.3887 | +0.9083 | 0.0656 | −0.0220 | 0.6175 | **5.78σ** | 1.32σ |
 | 3 | `tpl_alim_escalonada` | +0.6861 | 0.3955 | −0.8969 | 0.0591 | +0.0096 | 0.6393 | **5.60σ** | 1.27σ |
 | 4 | `tpl_ramp_up` | −0.6895 | 0.4001 | +0.8980 | 0.0576 | −0.0105 | 0.6412 | **5.55σ** | 1.27σ |
@@ -136,11 +142,19 @@ related:
 | 101 | `tpl_plateau` | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | 0.0000 | **0.00σ** | 0.00σ |
 | 102 | `d3_energy` | ~0.000 | ~0.000 | ~0.000 | ~0.000 | ~0.0001 | ~0.0001 | **0.00σ** | 1.41σ |
 
-> **Nota sobre `tpl_plateau`:** siempre 0.0 en datos reales — candidata a remover en v2.3.
+> **Nota sobre `tpl_plateau`:** siempre 0.0 en datos reales — **removido del Evidence Engine
+> el 2026-08-10.**
+>
+> ¹ Recalculado 2026-08-10 sobre 496 anotaciones (μ/σ del resto de la tabla siguen en 417 —
+> pendiente regenerar completa).
 
 ---
 
-## Evidence Engine — pesos calibrados (23 features)
+## Evidence Engine — pesos calibrados (23 features) — ⚠️ legado desde 2026-08-10
+
+> Este es el fallback legado. El motor activo normaliza y calcula los pesos desde los
+> datos sobre las 102 features — ver [[11_ModelosIA/MODEL_EvidenceEngine]]. Esta tabla
+> queda como referencia histórica de cómo funcionaba antes.
 
 Prior inicial: `ruido=0.5, alim=0.0, serv=0.0`
 
@@ -193,23 +207,27 @@ probs = exp(vals) / sum(exp(vals))
 
 ---
 
-## Candidatas a agregar al Evidence Engine (v2.3)
+## ✅ Resuelto 2026-08-10 — agregadas/removidas del fallback legado
 
-| Feature | sep_AS | w_alim | w_serv | w_ruido | Razón |
-|---|---:|---|---|---|---|
-| `tpl_doble_rampa` | 7.32σ | +3.0 | −3.0 | 0.0 | Feature #1, no está en Evidence Engine |
-| `entropy_shannon` | 4.50σ | +1.5 | −1.5 | 0.0 | Alta sep A/S, no incluida |
-| `stat_cv` | 3.30σ | −2.0 | +2.0 | 0.0 | CV alto en servido |
-| `n_plateaus` | 0.15σ | −1.0 | 0.0 | +2.0 | Discrimina ruido (1.40 vs 0.16 en alim) |
+Estas eran "candidatas" desde junio, nunca aplicadas. Ahora sí:
 
-## Features candidatas a remover (v2.3)
+| Feature | sep_AS (496 anot.) | Acción |
+|---|---:|---|
+| `tpl_doble_rampa` | 7.69σ | Agregada `(+5.0, -4.0, 0.0)` |
+| `d1_frac_neg` | 3.13σ (3.22σ A/R — el mejor discriminador alim/ruido) | Agregada `(+2.0, -1.5, -1.5)` |
+| `entropy_shannon` | 3.69σ | Agregada `(+2.0, -1.5, -1.0)` |
+| `tpl_plateau` | 0.00σ | Removida — constante 0.0 |
 
-| Feature | sep_AS | sep_AR | Razón |
-|---|---:|---:|---|
-| `tpl_plateau` | 0.00σ | 0.00σ | Siempre 0.0 — no discrimina nada |
-| `autocorr_lag5` | 0.01σ | 0.50σ | Sin poder discriminativo |
-| `initial_slope_g_min` | 0.06σ | 0.16σ | Muy ruidosa |
-| `stat_mad` | 0.07σ | 1.31σ | No agrega sobre IQR |
+`stat_cv` y `n_plateaus` (candidatas de junio) **no** se agregaron — con 496 anotaciones
+su separación bajó por debajo del resto de las prioridades (`stat_cv` sep_AS actual:
+revisar en próxima regeneración de esta tabla). `autocorr_lag5`, `initial_slope_g_min`,
+`stat_mad` siguen débiles (<0.5σ) pero no se removieron — solo nunca estuvieron en
+`EVIDENCE_WEIGHTS`, no hay nada que sacar.
+
+Pero el fix real **no fue este ajuste de pesos** — fue normalizar antes de sumar y
+calcular los pesos desde los datos en vez de a mano. Ver
+[[11_ModelosIA/MODEL_EvidenceEngine]] — el motor legado (aunque se le agreguen estas 3
+features) acierta 51.5%, el normalizado 78.8%.
 
 ---
 

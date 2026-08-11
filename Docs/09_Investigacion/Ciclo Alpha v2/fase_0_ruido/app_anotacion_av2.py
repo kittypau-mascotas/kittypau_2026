@@ -333,9 +333,10 @@ def _evidence_ventana_cached(df_lec: pd.DataFrame, minutos: int) -> dict | None:
     if len(sub) < 3:
         return None
     fv = _extraer_v2(sub.values, resample_s=RESAMPLE_S)
+    _cs, *_ = load_comp_stats()
     return {
         "feats":     fv,
-        "ev":        evidence_score(fv),
+        "ev":        evidence_score(fv, _cs),
         "sub_len":   len(sub),
         "peso_now":  float(sub.iloc[-1]),
         "delta_now": float(sub.iloc[-1] - sub.iloc[0]),
@@ -1718,6 +1719,28 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                             prev = str(anot_este.iloc[-1]["categoria"])
                             if prev in cat_opts:
                                 cat_def = cat_opts.index(prev)
+
+                        # ── Sugerencia del Evidence Engine ──────────────────────────
+                        # ponytail: usa las features ya calculadas por 01_genera_candidatos.py
+                        # (guardadas en cand), cero cómputo extra. Motor normalizado +
+                        # pesos calculados desde los datos (77.8% accuracy fuera de muestra,
+                        # ver shape_features_v2.py) — antes de eso no se mostraba nunca una
+                        # sugerencia automática acá, el operador anotaba a ciegas.
+                        _ev_sug = None
+                        if _MOTOR_V2_OK and cs_dict:
+                            try:
+                                _ev_sug = evidence_score(dict(cand), cs_dict)
+                            except Exception:
+                                _ev_sug = None
+                        if _ev_sug is not None:
+                            cat_def = cat_opts.index(_ev_sug["prediccion"])
+                            _conf_pct = _ev_sug["confianza"] * 100
+                            _conf_tone = "🟢" if _conf_pct >= 70 else ("🟡" if _conf_pct >= 50 else "🔴")
+                            st.caption(
+                                f"{_conf_tone} **Sugerencia del motor:** "
+                                f"{CATEGORIAS[_ev_sug['prediccion']][0]} ({_conf_pct:.0f}% confianza) — "
+                                f"{_ev_sug['razon']}. Revisar si la confianza es baja."
+                            )
 
                         # Placeholder para errores de validación — se muestra dentro de la columna
                         _form_error = st.empty()
@@ -3380,16 +3403,18 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
                 st.markdown("#### Predicción — Evidence Engine")
                 _ev_n_anot = cs_n_alim + cs_n_serv + cs_n_ruido
                 st.caption(
-                    f"El Evidence Engine combina **23 features con pesos calibrados** "
-                    f"sobre {_ev_n_anot or '417'} anotaciones (alim={cs_n_alim} · serv={cs_n_serv} · ruido={cs_n_ruido}). "
-                    "Fórmula: para cada categoría se acumula `Σ(w_i × feature_i)`, con un prior leve de +0.5 hacia 'ruido'. "
-                    "Luego se aplica **softmax** para convertir los scores en probabilidades (suman 100 %). "
-                    "**Cómo interpretar los scores:** Score Alim. > 70 % = el motor está bastante seguro de que Bandida comió. "
-                    "Score < 50 % en todas = caso ambiguo, revisar manualmente. "
-                    "Los **pesos más fuertes** son `sim_alimentacion` y `sim_servido` (±5.0): "
-                    "la dirección y forma general de la curva es la evidencia más potente."
+                    f"El Evidence Engine normaliza (z-score) cada feature contra "
+                    f"{_ev_n_anot or '496'} anotaciones (alim={cs_n_alim} · serv={cs_n_serv} · ruido={cs_n_ruido}) "
+                    "y calcula el peso de cada una directamente de los datos (discriminante tipo Fisher, "
+                    "las ~100 features de `comp_stats_v2.json`) — no son números elegidos a mano. "
+                    "Fórmula: para cada categoría se acumula `Σ(w_i × feature_i_normalizada)`, con un prior leve "
+                    "de +0.5 hacia 'ruido'. Luego se aplica **softmax** para convertir los scores en probabilidades "
+                    "(suman 100 %). **Cómo interpretar los scores:** Score Alim. > 70 % = el motor está bastante "
+                    "seguro de que Bandida comió. Score < 50 % en todas = caso ambiguo, revisar manualmente. "
+                    "Accuracy validada fuera de muestra: 77.8% (antes de normalizar: 49.6%, peor que adivinar "
+                    "siempre 'alimentación')."
                 )
-                ev = evidence_score(feats_v2)
+                ev = evidence_score(feats_v2, cs_dict)
                 eg1, eg2, eg3, eg4 = st.columns(4)
                 col_pred = {
                     "alimentacion": CATEGORIAS["alimentacion"][1],

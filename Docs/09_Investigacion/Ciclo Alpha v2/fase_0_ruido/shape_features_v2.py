@@ -838,7 +838,14 @@ _reg("idx_shape_noise",    "F14_compuestos", "fractal × lempel_ziv", (0, 1e6), 
 # Evidence Engine
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Pesos calibrados en ~304 anotaciones (separación en σ entre categorías)
+# Pesos calibrados en ~304 anotaciones (separación en σ entre categorías).
+# Recalibrado 2026-08-10 contra 496 anotaciones (alim=254/serv=55/ruido=187) —
+# ver Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/RECOPILACION_DATOS_APP.md §12:
+# agregados tpl_doble_rampa (mejor discriminador del motor, 7.69σ A/S, no estaba
+# usado en clasificación pese a estar calculado), d1_frac_neg (mejor discriminador
+# A/R, 3.22σ) y entropy_shannon (3.69σ A/S, 2.43σ A/R). Removido tpl_plateau
+# (constante 0.0 en 496/496 anotaciones — sin poder discriminativo, no aportaba
+# nada al softmax).
 # (w_alim, w_serv, w_ruido): contribución de cada feature a cada hipótesis
 EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
     # F00 — Features primarias
@@ -847,13 +854,15 @@ EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
     "monotonicity":         (-3.0,  0.0,  0.0),
     "r2_lineal":            (+2.0, -0.5, -0.5),
     "zcr":                  (-1.0,  0.0, +1.0),
+    # F01 — Geometría diferencial
+    "d1_frac_neg":          (+2.0, -1.5, -1.5),
     # F12 — Templates
+    "tpl_doble_rampa":      (+5.0, -4.0,  0.0),
     "tpl_ramp_down":        (+3.0, -2.0,  0.0),
     "tpl_exp_decay":        (+2.0, -1.0,  0.0),
     "tpl_ramp_up":          (-2.0, +3.0,  0.0),
     "tpl_exp_rise":         (-1.0, +2.0,  0.0),
     "tpl_sigmoide":         (-0.5, +1.5,  0.0),
-    "tpl_plateau":          (-1.0, -1.0, +2.0),
     # F04 — Tortuosidad
     "tortuosity":           (-1.5, -0.5, +2.0),
     "straightness":         (+1.5,  0.0, -1.5),
@@ -865,6 +874,7 @@ EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
     # F06 — Entropías
     "entropy_permutation":  (-1.5,  0.0, +1.5),
     "entropy_sample":       (-1.0,  0.0, +1.0),
+    "entropy_shannon":      (+2.0, -1.5, -1.0),
     # F09 — Frecuencia
     "power_ratio_low":      (+1.0,  0.0, -1.0),
     "autocorr_lag1":        (+1.0,  0.0, -1.0),
@@ -875,18 +885,127 @@ EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
 }
 
 
-def evidence_score(feats: dict) -> dict:
+# ─────────────────────────────────────────────────────────────────────────────
+# Normalización + pesos calculados desde los datos (2026-08-10)
+# ─────────────────────────────────────────────────────────────────────────────
+# El EVIDENCE_WEIGHTS de arriba, aplicado sobre valores CRUDOS (sin normalizar),
+# acertaba 49.6% sobre las 496 anotaciones reales — peor que predecir siempre
+# "alimentacion" (51.2%, la clase mayoritaria). Causa: los 26 features pesados
+# viven en escalas muy distintas (la mayoría en [-1,1], pero entropy_sample llega
+# a 22.7) — con pesos ±1 a ±5 elegidos a mano asumiendo escala uniforme, el
+# feature de mayor magnitud cruda domina la suma sin importar su peso asignado.
+# Normalizando (z-score pooled) y calculando los pesos directamente desde
+# comp_stats_v2.json (discriminante tipo Fisher, sobre las 102 features, no solo
+# las 26 elegidas a mano) la accuracy sube a 77.8% en un 20% de datos nunca
+# usados para calcular los pesos. Ver RECOPILACION_DATOS_APP.md §12.
+#
+# EVIDENCE_WEIGHTS queda como fallback legado si no hay comp_stats disponible
+# (cold start sin `comp_stats_v2.json` aún generado).
+
+def _pooled_mean_std(comp_stats: dict, fname: str) -> tuple[float, float]:
+    """Media y desviación estándar pooled (las 3 categorías juntas) de un feature."""
+    total_n = 0
+    weighted_mean = 0.0
+    per_cat = comp_stats.get(fname, {})
+    for cat in ("alimentacion", "servido", "ruido"):
+        st = per_cat.get(cat) or {}
+        n = st.get("n") or 0
+        if n:
+            weighted_mean += st["mean"] * n
+            total_n += n
+    if total_n == 0:
+        return 0.0, 1.0
+    pooled_mean = weighted_mean / total_n
+    pooled_var = 0.0
+    for cat in ("alimentacion", "servido", "ruido"):
+        st = per_cat.get(cat) or {}
+        n = st.get("n") or 0
+        if n:
+            pooled_var += n * (st["std"] ** 2 + (st["mean"] - pooled_mean) ** 2)
+    pooled_var /= total_n
+    pooled_std = pooled_var ** 0.5
+    return pooled_mean, pooled_std if pooled_std > 1e-9 else 1.0
+
+
+def compute_data_driven_weights(comp_stats: dict) -> dict[str, tuple[float, float, float]]:
+    """
+    Calcula pesos del Evidence Engine directamente desde comp_stats_v2.json.
+
+    Discriminante tipo Fisher sobre valores normalizados:
+        w_cat(f) = mean_cat_normalizada(f) - mean_resto_normalizada(f)
+
+    Cubre las 102 features de comp_stats_v2.json (no solo las 26 de
+    EVIDENCE_WEIGHTS). Se recalcula en cada llamada — es barato (dict lookups
+    sobre ~100 features) y así queda al día automáticamente cuando se
+    regenera comp_stats_v2.json con más anotaciones, sin tocar código.
+    """
+    cats = ("alimentacion", "servido", "ruido")
+    weights: dict[str, tuple[float, float, float]] = {}
+    for fname, per_cat in comp_stats.items():
+        pooled_mean, pooled_std = _pooled_mean_std(comp_stats, fname)
+        row = []
+        for cat in cats:
+            st = per_cat.get(cat) or {}
+            n_cat = st.get("n") or 0
+            if not n_cat:
+                row.append(0.0)
+                continue
+            mean_cat_n = (st["mean"] - pooled_mean) / pooled_std
+            rest_n = 0
+            rest_weighted_mean = 0.0
+            for other in cats:
+                if other == cat:
+                    continue
+                ost = per_cat.get(other) or {}
+                on = ost.get("n") or 0
+                if on:
+                    rest_weighted_mean += ost["mean"] * on
+                    rest_n += on
+            mean_rest = rest_weighted_mean / rest_n if rest_n else pooled_mean
+            mean_rest_n = (mean_rest - pooled_mean) / pooled_std
+            row.append(round(mean_cat_n - mean_rest_n, 4))
+        weights[fname] = tuple(row)  # type: ignore[assignment]
+    return weights
+
+
+def _normalize_feats(feats: dict, comp_stats: dict) -> dict:
+    """z-score pooled de cada feature, usando comp_stats_v2.json como referencia."""
+    normed = {}
+    for fname, val in feats.items():
+        try:
+            val_f = float(val)
+        except (TypeError, ValueError):
+            continue
+        pooled_mean, pooled_std = _pooled_mean_std(comp_stats, fname)
+        normed[fname] = (val_f - pooled_mean) / pooled_std
+    return normed
+
+
+def evidence_score(feats: dict, comp_stats: dict | None = None) -> dict:
     """
     Calcula el score de evidencia para cada hipótesis.
+
+    Si se pasa `comp_stats` (comp_stats_v2.json cargado), normaliza cada
+    feature y usa pesos calculados desde los datos (`compute_data_driven_weights`)
+    — 77.8% accuracy validada fuera de muestra, ver comentario arriba. Sin
+    `comp_stats`, cae al fallback legado `EVIDENCE_WEIGHTS` sobre valores
+    crudos (49.6% accuracy — solo para cuando no hay comp_stats_v2.json aún).
 
     Retorna:
         dict con keys: 'score_alimentacion', 'score_servido', 'score_ruido',
         'prediccion', 'confianza', 'razon'.
     """
+    if comp_stats:
+        weights    = compute_data_driven_weights(comp_stats)
+        feats_used = _normalize_feats(feats, comp_stats)
+    else:
+        weights    = EVIDENCE_WEIGHTS
+        feats_used = feats
+
     raw = {"alimentacion": 0.0, "servido": 0.0, "ruido": 0.5}  # prior leve a ruido
 
-    for fname, (w_a, w_s, w_r) in EVIDENCE_WEIGHTS.items():
-        val = float(feats.get(fname, 0.0))
+    for fname, (w_a, w_s, w_r) in weights.items():
+        val = float(feats_used.get(fname, 0.0))
         raw["alimentacion"] += w_a * val
         raw["servido"]      += w_s * val
         raw["ruido"]        += w_r * val
@@ -902,10 +1021,9 @@ def evidence_score(feats: dict) -> dict:
     conf   = round(float(probs[best_i]), 3)
 
     # Razón textual (top 3 features más influyentes para la predicción)
-    w_col = {0: "alimentacion", 1: "servido", 2: "ruido"}[best_i]
     influencia = {
-        fname: abs(ws[best_i] * float(feats.get(fname, 0.0)))
-        for fname, ws in EVIDENCE_WEIGHTS.items()
+        fname: abs(ws[best_i] * float(feats_used.get(fname, 0.0)))
+        for fname, ws in weights.items()
     }
     top3 = sorted(influencia, key=influencia.get, reverse=True)[:3]  # type: ignore
     razon = f"Features clave: {', '.join(top3)}"
