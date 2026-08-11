@@ -123,6 +123,7 @@ Thumbs.db
 Test Graficos/
 kittypau_2026/
 kittypau_iot_firmware/
+kittypau_iot_firmware (antiguo)/
 
 # ── Docs sensibles ───────────────────────────────────────────
 Docs/.env.test.local
