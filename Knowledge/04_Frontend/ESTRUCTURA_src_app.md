@@ -95,7 +95,6 @@ Sin layout propio — hereda directo del root `layout.tsx`.
 |---|---|---|---|
 | `login/` | `/login` | 1977 líneas | Login + modal de registro (`?register=1`, abre `RegistroFlow`) + demo animada del gato (trial dialog con typing effect, easter egg). El segundo `page.tsx` más grande de la app. |
 | `login/_components/` | — | — | `registro-flow.tsx` — flujo de 4 pasos (cuenta → usuario → mascota → dispositivo). Movido acá el 2026-08-11: es el único consumidor real, `(app)/registro/page.tsx` solo redirige. |
-| `register/` | `/register` | 233 líneas | Página de registro standalone (email + password + reenvío de confirmación) — **sin ningún link interno que apunte a `/register`** (grep confirma cero referencias en `src/`). Formulario distinto y más simple que `RegistroFlow`. Candidata a legacy/huérfana — revisar si sigue teniendo un propósito (¿link externo, email de confirmación?) antes de tocarla. |
 | `reset/` | `/reset` | 165 líneas | Reset de contraseña (llega desde el link del email de Supabase Auth). |
 | `demo/` | `/demo` | 557 líneas | Demo pública sin login, acepta `?menu=today\|story\|pet\|bowl` para mostrar cada pantalla con datos de ejemplo. Usa `AppNav` (por eso ese componente tuvo que subir a `_components/` top-level). |
 | `client-demo/` | `/client-demo` | 35 líneas | Verificado en vivo: renderiza el mismo contenido que `/demo` (wrapper/alias). |
@@ -160,10 +159,14 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 
 ## 6. Hallazgos de esta pasada (2026-08-11)
 
-- **`(public)/register`**: huérfana, sin referencias internas. Revisar antes de tocar
-  (puede ser el destino de un link en un correo transaccional fuera del código).
-- **`api/onboarding/status`**: alias sin caller, duplica `api/registro/status`. Candidata
-  segura a eliminar (root cause sería quitar el import si algo la usara, pero no hay).
+- **`(public)/register`**: eliminada. Estaba huérfana (cero referencias en código,
+  `supabase/` — templates de email, redirect URLs — y Docs). El registro real es
+  `RegistroFlow` en `/login`. Confirmado con Mauro antes de borrar.
+- **`api/onboarding/status`**: alias de 1 línea a `api/registro/status`, sin caller
+  interno — pero **no es basura accidental**. Se creó a propósito en el commit
+  `322eb94` (migración "onboarding" → "Registro Kittypau") para no romper una APK ya
+  instalada que aún llamara a la URL vieja. Costo de mantenerlo es cero (1 línea):
+  **se deja**, no se elimina.
 - **`(app)/admin/page.tsx`** (4043 líneas) es ahora el monolito más grande de la app,
   más que `today/page.tsx` (2468) y `login/page.tsx` (1977). Evaluado y agregado como
   ítem A-C1 en [[29_Specs/SPEC_02_UIUX_Mejoras]] — estructura ya inspeccionada (~15
