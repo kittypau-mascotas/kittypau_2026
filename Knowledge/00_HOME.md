@@ -58,6 +58,7 @@ tags:
 
 - [[17_Mocks/README_Mocks]] — UI mockups y wireframes
 - [[18_UI/README_UI]] — Componentes, pantallas, flujos
+- [[18_UI/Componentes/README_Componentes]] — Doc por componente (objetivo, props, métricas) a medida que se extraen de las páginas
 - [[18_UI/UX_DIAGNOSTICO_2026_06_30]] — Diagnóstico UX/UI completo: 5 críticos, 10 importantes, 8 calidad
 - [[19_DevOps/README_DevOps]] — CI/CD, Vercel, deploy
 - [[20_Testing/README_Testing]] — Tests, benchmarks, auditorías

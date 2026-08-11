@@ -73,6 +73,10 @@ related:
 | `empty-state.tsx` | Estado vacío estandarizado con título + children + acciones |
 | `operational-actions-card.tsx` | Card de acciones fallback cuando faltan datos |
 | `social-links.tsx` | Links sociales en nav sidebar |
+| `accessible-modal.tsx` | Modal con `role="dialog"`, focus trap y Escape — patrón portado de `/login`, usado en `/bowl` |
+
+Componentes propios de cada página (no globales) se documentan por separado a medida que se
+extraen — ver [[18_UI/Componentes/README_Componentes]] (empezó con `today/_components/`).
 
 ---
 
