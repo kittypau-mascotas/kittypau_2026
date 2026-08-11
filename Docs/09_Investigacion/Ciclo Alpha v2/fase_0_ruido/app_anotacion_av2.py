@@ -1532,7 +1532,13 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                     {"tipo": "candidato", "t_sort": _r["t_inicio"], "row": _r}
                     for _r in df_filt.to_dict("records")
                 ]
-                if len(df_ciclos) > 0:
+                # Ciclos S/A: son referencias editables, no "candidatos nuevos" —
+                # nunca tienen estado "hecho" (ciclos_servido_alimento.csv no tiene
+                # columna de estado). Por eso NO se agregan en modo "pendiente":
+                # de lo contrario los mismos ciclos viejos se repetían en cada
+                # revisión, mezclados con lo que sí es nuevo por categorizar.
+                # Siguen disponibles en los filtros "Anotados"/"Todos".
+                if len(df_ciclos) > 0 and st.session_state.filtro_estado != "pendiente":
                     for _cr in df_ciclos.sort_values("id_ciclo").to_dict("records"):
                         _items.append({
                             "tipo":     "ciclo",
@@ -1547,21 +1553,16 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                 st.session_state["_items_cache_val"] = _items
 
             n_filt = len(_items)
-            _n_cands_pendientes = sum(1 for i in _items if i["tipo"] == "candidato")
 
             if n_filt == 0:
                 _pb1.empty()
                 st.success(
                     "🏁 **¡NO QUEDAN MÁS CANDIDATOS!**  \n"
                     "Todos los candidatos han sido anotados. "
-                    "Puedes cambiar el filtro a *Anotados* o *Todos* para revisar lo guardado."
+                    "Puedes cambiar el filtro a *Anotados* o *Todos* para revisar lo guardado "
+                    "(incluye los 🟡 Ciclos S/A)."
                 )
             else:
-                if st.session_state.filtro_estado == "pendiente" and _n_cands_pendientes == 0:
-                    st.info(
-                        "✅ No quedan candidatos pendientes — la lista muestra solo los 🟡 Ciclos S/A.  \n"
-                        "Cambia el filtro a *Todos* para ver también los candidatos anotados."
-                    )
                 if st.session_state.idx_actual >= n_filt:
                     st.session_state.idx_actual = 0
 
