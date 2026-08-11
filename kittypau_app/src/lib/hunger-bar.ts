@@ -236,7 +236,14 @@ export function computeHungerBar(
   const lastMeal = meals[meals.length - 1];
   const lastMealAt = new Date(lastMeal.startAt);
   const hoursSince = (now.getTime() - lastMealAt.getTime()) / 3_600_000;
-  const percentage = Math.min(100, Math.max(0, (hoursSince / intervalH) * 100));
+  // barra(t) = 100 × (1 − (t − última_comida) / intervalo) — spec §2. 100% al
+  // comer (verde), decae hacia 0% (rojo) hasta la próxima comida detectada.
+  // BUG corregido 2026-08-11: estaba implementado al revés (0% al comer,
+  // subiendo a 100% con el tiempo) — Mauro lo reportó viendo la app en vivo.
+  const percentage = Math.min(
+    100,
+    Math.max(0, 100 * (1 - hoursSince / intervalH)),
+  );
   const estimatedNextMealAt = new Date(
     lastMealAt.getTime() + intervalH * 3_600_000,
   );

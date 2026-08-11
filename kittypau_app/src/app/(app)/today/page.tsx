@@ -2364,7 +2364,7 @@ export default function TodayPage() {
     if (hungerBar.alertActive) {
       return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
-    if (hungerBar.percentage >= 100) return "Debería haber comido ya";
+    if (hungerBar.percentage <= 0) return "Debería haber comido ya";
     return hungerBar.estimatedNextMealAt
       ? `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`
       : "Última comida confirmada: sin registro";
