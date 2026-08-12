@@ -34,6 +34,15 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
   },
+  plugins: {
+    // Icono/color por defecto para toda notificación local (thanks-notification,
+    // alerta del hunger bar) — generado desde resources/icon.jpg, ver
+    // Knowledge/05_API/SPEC_HungerBar_Alertas.md §6.1.
+    LocalNotifications: {
+      smallIcon: "ic_stat_kittypau",
+      iconColor: "#ebb6a8",
+    },
+  },
 };
 
 export default config;

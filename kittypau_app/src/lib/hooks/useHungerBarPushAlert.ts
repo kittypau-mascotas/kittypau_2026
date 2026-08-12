@@ -31,13 +31,21 @@ export function useHungerBarPushAlert(params: {
   petName: string | undefined;
   status: "ok" | "sin_datos" | "sin_dispositivo" | undefined;
   estimatedNextMealAt: string | null | undefined;
+  /** ponytail: solo para QA manual en dispositivo real — fuerza el horario de
+   * disparo a "ahora + N segundos" en vez de estimatedNextMealAt + umbral, sin
+   * tocar el resto de la lógica (icono, sonido default, cancel-then-schedule).
+   * Gatear siempre por un query param explícito (`?testPushAlert=1`), nunca
+   * dejarlo activo por default. Ver Knowledge/05_API/SPEC_HungerBar_Alertas.md §6.1. */
+  testDelaySeconds?: number;
 }) {
-  const { petId, petName, status, estimatedNextMealAt } = params;
+  const { petId, petName, status, estimatedNextMealAt, testDelaySeconds } =
+    params;
   const scheduledForRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!petId || status !== "ok" || !estimatedNextMealAt) return;
-    if (scheduledForRef.current === estimatedNextMealAt) return;
+    const cacheKey = `${estimatedNextMealAt}::${testDelaySeconds ?? ""}`;
+    if (scheduledForRef.current === cacheKey) return;
 
     let cancelled = false;
 
@@ -46,10 +54,12 @@ export function useHungerBarPushAlert(params: {
         const { Capacitor } = await import("@capacitor/core");
         if (!Capacitor.isNativePlatform()) return;
 
-        const alertAt = new Date(
-          new Date(estimatedNextMealAt).getTime() +
-            ALERT_THRESHOLD_HOURS * 3_600_000,
-        );
+        const alertAt = testDelaySeconds
+          ? new Date(Date.now() + testDelaySeconds * 1000)
+          : new Date(
+              new Date(estimatedNextMealAt).getTime() +
+                ALERT_THRESHOLD_HOURS * 3_600_000,
+            );
         // Ya debería estar activa (o no es un horario futuro válido) — la
         // barra visual ya cubre este caso si el usuario abre la app ahora.
         if (
@@ -74,11 +84,16 @@ export function useHungerBarPushAlert(params: {
               title: "Kittypau",
               body: `${petName ?? "Tu mascota"} debería haber comido hace ${ALERT_THRESHOLD_HOURS}h. Revisa el plato.`,
               schedule: { at: alertAt },
+              smallIcon: "ic_stat_kittypau",
+              largeIcon: "ic_notification_kittypau",
+              iconColor: "#ebb6a8",
+              // sin `sound`: usa el sonido de notificaciones que el usuario
+              // tenga configurado en el celular (canal "default" de Android).
             },
           ],
         });
 
-        scheduledForRef.current = estimatedNextMealAt;
+        scheduledForRef.current = cacheKey;
       } catch {
         // Best-effort, nativo solamente. No-op en web o si el plugin falla.
       }
@@ -88,5 +103,5 @@ export function useHungerBarPushAlert(params: {
     return () => {
       cancelled = true;
     };
-  }, [petId, petName, status, estimatedNextMealAt]);
+  }, [petId, petName, status, estimatedNextMealAt, testDelaySeconds]);
 }
