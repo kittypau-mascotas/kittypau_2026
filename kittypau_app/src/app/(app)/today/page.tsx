@@ -8,6 +8,7 @@ import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { authFetch } from "@/lib/auth/auth-fetch";
 import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
+import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -946,6 +947,13 @@ export default function TodayPage() {
   const ownerLabel =
     state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
+
+  useHungerBarPushAlert({
+    petId: primaryPet?.id,
+    petName: petLabel,
+    status: hungerBar?.status,
+    estimatedNextMealAt: hungerBar?.estimatedNextMealAt,
+  });
   const petTypeLabel =
     primaryPet?.type === "dog"
       ? "Perro"

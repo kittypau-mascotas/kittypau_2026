@@ -5,7 +5,7 @@ type: spec
 status: v1.1-implementado
 owner: Mauro
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-12
 tags:
   - feature
   - hunger-bar
@@ -21,8 +21,15 @@ related:
 > Addendum sobre la v1 ya implementada (`kittypau_app/src/lib/hunger-bar.ts` +
 > `/api/pets/[id]/hunger-bar` + `hunger-bar-card.tsx`). No cambia la arquitectura de
 > detección (§1-2 de la spec v1) — solo agrega: (a) un flag de "atrasado" y (b) el color
-> continuo de la barra. **Sin notificaciones push/WhatsApp/email** — la alerta es 100%
-> visual dentro de la app, según lo decidido.
+> continuo de la barra.
+>
+> ⚠️ **Actualización 2026-08-12:** este doc decía "sin notificaciones push, según lo
+> decidido" (§5). Un día después, [[29_Specs/SPEC_03_Objetivos_Monitoreo]] (Pilar 3)
+> recomendó exactamente lo contrario como el siguiente salto de valor del producto, y se
+> implementó (ver §6) — push local vía Capacitor, agendada para `estimatedNextMealAt +
+> ALERT_THRESHOLD_HOURS`, sin tocar la fórmula de v1. **No encontré el porqué original de
+> "sin push" documentado en ningún otro lado** (ni ADR, ni acta de reunión) — si fue una
+> decisión de UX/producto con una razón puntual que sigue vigente, avisar para revertir.
 
 ---
 
@@ -116,10 +123,9 @@ Se agregan dos campos a la respuesta ya implementada de
 
 ## 5. Fuera de alcance para esta iteración (confirmado explícitamente)
 
-- Sin notificaciones push, WhatsApp o email — pese a que `notification_channel` ya existe
-  como enum del dominio (`ENUMS_OFICIALES.md`), no se usa acá. Si más adelante se quiere
-  sumar, es una extensión natural de `alertActive` (disparar un envío cuando pasa de
-  `false` a `true`), no un rediseño.
+- ~~Sin notificaciones push~~ — implementado 2026-08-12, ver §6. WhatsApp/email siguen
+  fuera de alcance; `notification_channel` (enum del dominio, `ENUMS_OFICIALES.md`) sigue
+  sin usarse para esos dos canales.
 - Sin barra de hidratación ni indicador de batería como barra — descartado por ahora.
 - Sin logging a `audit_events` tipo `alert_generated` (sigue en "Futuros" en
   `DOC_MAESTRO_DOMINIO.md`) — no es necesario para una alerta puramente visual/derivada; se
@@ -127,14 +133,38 @@ Se agregan dos campos a la respuesta ya implementada de
 
 ---
 
-## 6. Implementación (2026-08-10)
+## 6. Implementación (2026-08-10, notificación push agregada 2026-08-12)
 
 | Pieza | Estado |
 |---|---|
 | `hunger-bar.ts` — `ALERT_THRESHOLD_HOURS`, `alertActive`/`hoursOverdue` en `computeHungerBar()` | ✅ |
 | `hunger-bar-card.tsx` (`/pet`) — gradiente HSL, borde/ícono/texto de alerta | ✅ |
 | `today/page.tsx` (`/today`, card "Comida") — gradiente HSL en el relleno + badge de atraso | ✅ (tratamiento liviano, no el borde/pulse completo — la card es compacta y comparte grilla con "Agua") |
-| Notificaciones push/WhatsApp/email | ❌ fuera de alcance, confirmado en §5 |
+| `lib/hooks/useHungerBarPushAlert.ts` — notificación push local (Capacitor) | ✅ (2026-08-12, SPEC_03 Pilar 3) |
+| WhatsApp/email | ❌ fuera de alcance |
+
+### 6.1 Notificación push local (2026-08-12)
+
+- **No es polling** — usa `LocalNotifications.schedule({ at: alertAt })` de Capacitor:
+  el SO dispara la notificación en el horario exacto aunque la app esté cerrada o en
+  background. `alertAt = estimatedNextMealAt + ALERT_THRESHOLD_HOURS` — mismo umbral
+  que la alerta visual, ningún número nuevo.
+- **Solo nativo (APK):** `Capacitor.isNativePlatform()` gatea todo — no-op silencioso en
+  web, mismo patrón que `native-thanks-notification.tsx` (que ya usaba este plugin).
+- **Re-agenda, no acumula:** id numérico estable por `petId` (hash simple) — cada vez que
+  `estimatedNextMealAt` cambia (nueva comida detectada corrió la barra), cancela la
+  notificación anterior y agenda la nueva. Si el horario de alerta ya pasó al momento de
+  calcularlo, no agenda nada (la barra visual ya cubre ese caso si el usuario abre la app).
+- Se dispara desde 2 lugares — `today/page.tsx` y `hunger-bar-card.tsx` (`/pet`) — porque
+  cada uno mantiene su propio fetch de `/api/pets/:id/hunger-bar` (ver
+  [[04_Frontend/ESTRUCTURA_src_app]], no son el mismo estado). El id estable por mascota
+  hace que sea seguro agendar desde ambos: el segundo simplemente reemplaza al primero si
+  el `estimatedNextMealAt` es el mismo, y el `useRef` interno evita reagendar si ninguno
+  cambió el valor.
+- **No verificado en dispositivo real** — sin emulador/APK Android disponible en esta
+  sesión. Validado: type-check, build, y cero errores de consola en el no-op web vía
+  Playwright. Falta probar en un build de Capacitor real que la notificación efectivamente
+  suena a la hora agendada.
 
 ---
 

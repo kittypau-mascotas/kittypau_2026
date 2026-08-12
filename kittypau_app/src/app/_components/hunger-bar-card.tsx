@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { getValidAccessToken } from "@/lib/auth/token";
 import { chileCompactDatetime } from "@/lib/time/chile";
+import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
 
 type HungerBarResponse = {
   status: "ok" | "sin_datos" | "sin_dispositivo";
@@ -68,6 +69,13 @@ export default function HungerBarCard({
       clearInterval(interval);
     };
   }, [petId]);
+
+  useHungerBarPushAlert({
+    petId,
+    petName,
+    status: data?.status,
+    estimatedNextMealAt: data?.estimatedNextMealAt,
+  });
 
   if (error) {
     return (

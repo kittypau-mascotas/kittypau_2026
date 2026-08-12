@@ -5,7 +5,7 @@ type: spec
 status: draft
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - spec
   - producto
@@ -116,23 +116,21 @@ todavía no se hizo**. Recomendación concreta abajo.
 
 ---
 
-## Pilar 3 — Alertas / urgencia: 🟡 arrancado, angosto
+## Pilar 3 — Alertas / urgencia: 🟢 comida cubierta con push real, resto sigue angosto
 
-**Lo que existe:** alerta visual de ≥2h de atraso en la barra de comida (v1.1,
-[[05_API/SPEC_HungerBar_Alertas]]). Nada equivalente para hidratación (por el gap del
-pilar 2) ni para salud del dispositivo (batería baja, offline prolongado — existe la lógica
-de estado en `/bowl`, pero no dispara ninguna notificación push/email).
+> ✅ **Hecho (2026-08-12):** la alerta visual de comida ahora también dispara una
+> notificación push local (Capacitor `LocalNotifications`, agendada para
+> `estimatedNextMealAt + ALERT_THRESHOLD_HOURS`) — el usuario ya no necesita tener la app
+> abierta para enterarse. Ver [[05_API/SPEC_HungerBar_Alertas]] §6.1 para el detalle técnico
+> y una nota de contexto: esto revierte una exclusión explícita que tenía el doc de v1.1
+> ("sin push, según lo decidido") sin que encontráramos el porqué documentado en otro lado
+> — confirmar que la reversión es intencional. **No verificado en dispositivo/APK real**,
+> solo en el no-op web (sin emulador Android disponible en esta sesión).
 
-**Gap:** `HF_TOKEN`/`HF_MODEL` (chatbot) y notificaciones nativas de Capacitor están
-implementados a nivel de infraestructura, pero no hay ningún flujo que dispare una alerta
-proactiva fuera de la barra visual en `/today`. Un usuario tiene que **abrir la app** para
-enterarse de que su mascota lleva más tiempo del normal sin comer.
-
-**Recomendación:** el siguiente salto de valor de producto no es más UI en `/today` — es
-convertir la alerta visual ya calibrada en una notificación push (Capacitor local
-notifications ya está en `package.json` como dependencia,
-`@capacitor/local-notifications`). El cálculo ya existe (`hunger-bar.ts`); falta el
-disparador.
+Sigue sin cubrir: hidratación (bloqueado por el gap del pilar 2 — no hay barra que
+alertar) y salud del dispositivo (batería baja, offline prolongado — existe la lógica de
+estado en `/bowl`, pero nada dispara push todavía; sería la misma extensión del hook
+`useHungerBarPushAlert` aplicada a `device-diagnostics.ts` en vez de a `hunger-bar.ts`).
 
 ---
 
@@ -154,7 +152,7 @@ el primer falso negativo.
 |---|---|---|
 | Alimentación | 🟢 Real, calibrado, en producción | Falta portar el Evidence Engine completo (v2) y agrupar picoteo |
 | Hidratación | 🔴 No investigado | Falta una "fase_0" de investigación de agua — no es tarea de ingeniería de producto, es de investigación primero |
-| Alertas | 🟡 Solo visual, solo comida | Falta el disparador de notificación push (infraestructura ya existe) |
+| Alertas | 🟢 Comida: visual + push. Sin cubrir: hidratación, salud del dispositivo | Push de comida no verificado en APK real; hidratación bloqueada por el gap del pilar 2 |
 | Confianza en los datos | 🟡 Buen patrón aislado en `/bowl` | Falta generalizar el "Diagnóstico rápido" a `/today` y `/pet` |
 
 **La app hoy cumple su promesa de "monitoreo de alimentación" de forma razonable. No cumple
