@@ -29,18 +29,9 @@ related:
 
 ## Patrones buenos que ya existen y deberían generalizarse
 
-### U2 — El panel "Diagnóstico rápido" de `/bowl` es el mejor patrón de confianza-en-los-datos que tiene la app
-
-3 columnas (Conexión/Energía/Firmware) + "Acciones recomendadas" en lenguaje simple ("Todo
-estable. Mantén el plato conectado."). Es exactamente el tipo de comunicación que un
-producto de monitoreo necesita en **todas** las pantallas con datos de sensor, no solo
-`/bowl`. `/today` y `/pet` muestran datos "sin evidencia real" o "N/D" sin ese mismo nivel
-de explicación accionable.
-
-**Propuesta:** extraer `<DiagnosticoRapidoCard>` reusable y mostrarlo también en `/today`
-(junto a la card de Alimentación/Hidratación) y en `/pet` (junto a "Platos asociados").
-**Nota:** el panel "Barras Sims" de `/today` es sensible a cambios — proponer antes de
-implementar, ver [[29_Specs/SPEC_04_Metricas_Today_Investigacion]].
+> ✅ **U2 hecho (2026-08-12):** `<DiagnosticoRapidoCard>` extraído y generalizado a
+> `/today` (debajo de Alimentación/Hidratación, fuera de "Barras Sims") y `/pet` (junto a
+> "Platos asociados"). Ver [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]].
 
 ### U3 — El modal "MODO GUÍA" de onboarding en `/today` es un buen patrón sin continuación
 

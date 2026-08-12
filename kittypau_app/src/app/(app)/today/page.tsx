@@ -13,6 +13,11 @@ import {
   syncSelectedPet,
 } from "@/lib/runtime/selection-sync";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
+import {
+  getConnectionHint,
+  getActionNotes,
+  getBatterySummary,
+} from "@/lib/device-diagnostics";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
 import {
   getChileDayNightWindow,
@@ -24,6 +29,7 @@ import BarrasSimsCard from "./_components/barras-sims-card";
 import BowlWellnessCard from "./_components/bowl-wellness-card";
 import DayNightTimelineCard from "./_components/day-night-timeline-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
+import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 
 type ApiPet = {
   id: string;
@@ -55,6 +61,9 @@ type ApiDevice = {
   device_state: string | null;
   battery_level: number | null;
   battery_state: string | null;
+  battery_voltage?: number | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
   last_seen: string | null;
 };
 
@@ -1892,6 +1901,48 @@ export default function TodayPage() {
     [waterHistorySessions],
   );
 
+  // Diagnóstico rápido (SPEC_02 U2) — mismo patrón de /bowl, generalizado.
+  const bowlDiagnostics = useMemo(() => {
+    const batteryLevel = bowlDevice?.battery_level ?? null;
+    const lastSeen = bowlDevice?.last_seen ?? null;
+    return {
+      connectionHint: getConnectionHint(lastSeen),
+      actionNotes: getActionNotes({ batteryLevel, lastSeen }),
+      ...getBatterySummary({
+        level: batteryLevel,
+        voltage: bowlDevice?.battery_voltage ?? null,
+        source: bowlDevice?.battery_source ?? null,
+        isEstimated: bowlDevice?.battery_is_estimated ?? false,
+      }),
+    };
+  }, [
+    bowlDevice?.battery_level,
+    bowlDevice?.last_seen,
+    bowlDevice?.battery_voltage,
+    bowlDevice?.battery_source,
+    bowlDevice?.battery_is_estimated,
+  ]);
+  const waterDiagnostics = useMemo(() => {
+    const batteryLevel = waterDevice?.battery_level ?? null;
+    const lastSeen = waterDevice?.last_seen ?? null;
+    return {
+      connectionHint: getConnectionHint(lastSeen),
+      actionNotes: getActionNotes({ batteryLevel, lastSeen }),
+      ...getBatterySummary({
+        level: batteryLevel,
+        voltage: waterDevice?.battery_voltage ?? null,
+        source: waterDevice?.battery_source ?? null,
+        isEstimated: waterDevice?.battery_is_estimated ?? false,
+      }),
+    };
+  }, [
+    waterDevice?.battery_level,
+    waterDevice?.last_seen,
+    waterDevice?.battery_voltage,
+    waterDevice?.battery_source,
+    waterDevice?.battery_is_estimated,
+  ]);
+
   // 100% = máximo peso de contenido registrado en eventos auditados de "termino_servido".
   const bowlMaxServedContentGrams = useMemo(() => {
     const events = deviceAuditEvents[bowlDevice?.id ?? ""] ?? [];
@@ -2344,6 +2395,29 @@ export default function TodayPage() {
               </div>
             </div>
           </section>
+
+          {hasFoodDevice || hasWaterDevice ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {hasFoodDevice ? (
+                <DiagnosticoRapidoCard
+                  title="Diagnóstico rápido · Comedero"
+                  connectionHint={bowlDiagnostics.connectionHint}
+                  batterySummary={bowlDiagnostics.summary}
+                  batteryExtra={bowlDiagnostics.extra}
+                  actionNotes={bowlDiagnostics.actionNotes}
+                />
+              ) : null}
+              {hasWaterDevice ? (
+                <DiagnosticoRapidoCard
+                  title="Diagnóstico rápido · Bebedero"
+                  connectionHint={waterDiagnostics.connectionHint}
+                  batterySummary={waterDiagnostics.summary}
+                  batteryExtra={waterDiagnostics.extra}
+                  actionNotes={waterDiagnostics.actionNotes}
+                />
+              ) : null}
+            </div>
+          ) : null}
 
           <DayNightTimelineCard
             dayCycleOffsetDays={dayCycleOffsetDays}

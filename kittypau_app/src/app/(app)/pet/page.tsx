@@ -10,11 +10,17 @@ import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import HungerBarCard from "@/app/_components/hunger-bar-card";
+import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import {
   parseListResponse,
   resolveDevicePowerState,
   devicePowerStateLabel,
 } from "@/lib/utils/api";
+import {
+  getConnectionHint,
+  getActionNotes,
+  getBatterySummary,
+} from "@/lib/device-diagnostics";
 
 type ApiPet = {
   id: string;
@@ -38,6 +44,11 @@ type ApiDevice = {
   device_type: string;
   status: string;
   device_state: string | null;
+  battery_level?: number | null;
+  battery_voltage?: number | null;
+  battery_source?: string | null;
+  battery_is_estimated?: boolean | null;
+  last_seen?: string | null;
 };
 
 type ApiReading = {
@@ -276,6 +287,34 @@ export default function PetPage() {
       return t.includes("water") || t.includes("bebedero");
     }) ?? (petDevices.length > 1 ? petDevices[1] : null);
   const latestReading = state.readings[0] ?? null;
+
+  // Diagnóstico rápido (SPEC_02 U2) — mismo patrón de /bowl, generalizado.
+  const foodDiagnostics = {
+    connectionHint: getConnectionHint(petFoodDevice?.last_seen ?? null),
+    actionNotes: getActionNotes({
+      batteryLevel: petFoodDevice?.battery_level ?? null,
+      lastSeen: petFoodDevice?.last_seen ?? null,
+    }),
+    ...getBatterySummary({
+      level: petFoodDevice?.battery_level ?? null,
+      voltage: petFoodDevice?.battery_voltage ?? null,
+      source: petFoodDevice?.battery_source ?? null,
+      isEstimated: petFoodDevice?.battery_is_estimated ?? false,
+    }),
+  };
+  const waterDiagnostics = {
+    connectionHint: getConnectionHint(petWaterDevice?.last_seen ?? null),
+    actionNotes: getActionNotes({
+      batteryLevel: petWaterDevice?.battery_level ?? null,
+      lastSeen: petWaterDevice?.last_seen ?? null,
+    }),
+    ...getBatterySummary({
+      level: petWaterDevice?.battery_level ?? null,
+      voltage: petWaterDevice?.battery_voltage ?? null,
+      source: petWaterDevice?.battery_source ?? null,
+      isEstimated: petWaterDevice?.battery_is_estimated ?? false,
+    }),
+  };
 
   const insights = useMemo(() => {
     if (!latestReading) {
@@ -845,6 +884,29 @@ export default function PetPage() {
               </div>
             </div>
           </section>
+
+          {petFoodDevice || petWaterDevice ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {petFoodDevice ? (
+                <DiagnosticoRapidoCard
+                  title="Diagnóstico rápido · Comedero"
+                  connectionHint={foodDiagnostics.connectionHint}
+                  batterySummary={foodDiagnostics.summary}
+                  batteryExtra={foodDiagnostics.extra}
+                  actionNotes={foodDiagnostics.actionNotes}
+                />
+              ) : null}
+              {petWaterDevice ? (
+                <DiagnosticoRapidoCard
+                  title="Diagnóstico rápido · Bebedero"
+                  connectionHint={waterDiagnostics.connectionHint}
+                  batterySummary={waterDiagnostics.summary}
+                  batteryExtra={waterDiagnostics.extra}
+                  actionNotes={waterDiagnostics.actionNotes}
+                />
+              ) : null}
+            </div>
+          ) : null}
 
           {petFoodDevice && selectedPet ? (
             <HungerBarCard petId={selectedPet.id} petName={selectedPet.name} />

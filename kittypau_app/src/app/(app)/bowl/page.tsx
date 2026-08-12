@@ -10,10 +10,17 @@ import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import AccessibleModal from "@/app/_components/accessible-modal";
+import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
-import { formatBatterySourceLabel } from "@/lib/battery/contract";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
+import {
+  getConnectionHint,
+  getStatusSummary,
+  getActionNotes,
+  getStatusBlurb,
+  getBatterySummary,
+} from "@/lib/device-diagnostics";
 
 type ApiDevice = {
   id: string;
@@ -148,14 +155,6 @@ const READINGS_BUFFER_MAX = 4000;
 const formatTimestamp = (value: string | null) => {
   if (!value) return "Sin datos";
   return chileCompactDatetime(value);
-};
-
-const batteryLabel = (battery: number | null) => {
-  if (battery === null || Number.isNaN(battery)) return "Sin datos";
-  if (battery <= 15) return "Crítica";
-  if (battery <= 35) return "Baja";
-  if (battery <= 70) return "Media";
-  return "Óptima";
 };
 
 const deviceToTestLabel = (deviceId: string | null | undefined) => {
@@ -797,65 +796,34 @@ export default function BowlPage() {
     }
   };
 
-  const connectionHint = useMemo(() => {
-    if (!selectedDevice?.last_seen) return "Sin check-in reciente.";
-    const last = new Date(selectedDevice.last_seen).getTime();
-    if (Number.isNaN(last)) return "Sin check-in reciente.";
-    const diffMin = Math.round((Date.now() - last) / 60000);
-    if (diffMin <= 5) return "Conectado en tiempo real.";
-    if (diffMin <= 30) return "Conectado recientemente.";
-    return "Conexión inestable o apagado.";
-  }, [selectedDevice?.last_seen]);
+  const connectionHint = useMemo(
+    () => getConnectionHint(selectedDevice?.last_seen),
+    [selectedDevice?.last_seen],
+  );
 
-  const statusSummary = useMemo(() => {
-    if (!selectedDevice) return { label: "Sin datos", tone: "muted" as const };
-    const battery = selectedDevice.battery_level ?? null;
-    const last = selectedDevice.last_seen
-      ? new Date(selectedDevice.last_seen).getTime()
-      : null;
-    const offline =
-      last === null || Number.isNaN(last) || Date.now() - last > 30 * 60 * 1000;
-    if (offline) return { label: "Atención", tone: "warn" as const };
-    if (battery !== null && battery <= 15) {
-      return { label: "Crítico", tone: "warn" as const };
-    }
-    if (battery !== null && battery <= 35) {
-      return { label: "Requiere cuidado", tone: "warn" as const };
-    }
-    return { label: "Estable", tone: "ok" as const };
-  }, [selectedDevice]);
+  const statusSummary = useMemo(
+    () =>
+      getStatusSummary({
+        hasDevice: !!selectedDevice,
+        batteryLevel: selectedDevice?.battery_level ?? null,
+        lastSeen: selectedDevice?.last_seen ?? null,
+      }),
+    [selectedDevice],
+  );
 
-  const actionNotes = useMemo(() => {
-    const notes: string[] = [];
-    if (
-      selectedDevice?.battery_level !== null &&
-      selectedDevice?.battery_level !== undefined
-    ) {
-      if (selectedDevice.battery_level <= 15) {
-        notes.push("Carga el plato en las próximas horas.");
-      } else if (selectedDevice.battery_level <= 35) {
-        notes.push("Planifica una carga hoy para evitar apagados.");
-      }
-    }
-    if (!selectedDevice?.last_seen) {
-      notes.push("Revisa energía y Wi-Fi antes de usarlo.");
-    }
-    if (notes.length === 0) {
-      notes.push("Todo estable. Mantén el plato conectado.");
-    }
-    return notes;
-  }, [selectedDevice?.battery_level, selectedDevice?.last_seen]);
+  const actionNotes = useMemo(
+    () =>
+      getActionNotes({
+        batteryLevel: selectedDevice?.battery_level ?? null,
+        lastSeen: selectedDevice?.last_seen ?? null,
+      }),
+    [selectedDevice?.battery_level, selectedDevice?.last_seen],
+  );
 
-  const statusBlurb = useMemo(() => {
-    if (!selectedDevice) return "Sin diagnóstico disponible.";
-    if (statusSummary.tone === "warn") {
-      return "Se detectó un riesgo operativo. Revisa batería, conexión y última señal.";
-    }
-    if (statusSummary.tone === "ok") {
-      return "Plato estable y conectado. Todo en orden.";
-    }
-    return "Todavía no hay suficientes lecturas para un diagnóstico completo. Cuando el plato siga publicando datos, aquí verás una lectura más precisa.";
-  }, [selectedDevice, statusSummary.tone]);
+  const statusBlurb = useMemo(
+    () => getStatusBlurb(!!selectedDevice, statusSummary.tone),
+    [selectedDevice, statusSummary.tone],
+  );
 
   // Rangos disponibles según plan: free → hasta 3d; premium → hasta 1w
   const visibleRanges = useMemo(
@@ -927,19 +895,12 @@ export default function BowlPage() {
     selectedDevice?.battery_is_estimated ??
     latestBatteryReading?.battery_is_estimated ??
     false;
-  const batterySummary =
-    batteryLevelValue !== null && batteryLevelValue !== undefined
-      ? `${batteryLevelValue}% · ${batteryLabel(batteryLevelValue)}`
-      : "Sin datos";
-  const batteryExtra = [
-    batteryEstimatedValue ? "estimada" : null,
-    formatBatterySourceLabel(batterySourceValue),
-    typeof batteryVoltageValue === "number"
-      ? `${batteryVoltageValue.toFixed(2)}V`
-      : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const { summary: batterySummary, extra: batteryExtra } = getBatterySummary({
+    level: batteryLevelValue,
+    voltage: batteryVoltageValue,
+    source: batterySourceValue,
+    isEstimated: batteryEstimatedValue,
+  });
   const showOperationalFallback =
     readingsError || batterySummary === "Sin datos";
 
@@ -1334,53 +1295,12 @@ export default function BowlPage() {
             ) : null}
           </section>
 
-          <section className="surface-card freeform-rise px-6 py-5">
-            <h2 className="text-lg font-semibold text-slate-900">
-              Diagnóstico rápido
-            </h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Conexión
-                </p>
-                <p className="mt-2 text-slate-700">
-                  {connectionHint === "Conectado en tiempo real."
-                    ? "Datos en vivo. Todo responde bien."
-                    : connectionHint === "Conectado recientemente."
-                      ? "Último check-in dentro de la ventana esperada."
-                      : "Sin check-in reciente. Revisa energía y Wi-Fi."}
-                </p>
-              </div>
-              <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Energía
-                </p>
-                <p className="mt-2 text-slate-700">
-                  {batterySummary === "Sin datos"
-                    ? "Sin datos de batería todavía."
-                    : `Batería ${batterySummary}`}
-                  {batteryExtra ? ` (${batteryExtra})` : ""}
-                </p>
-              </div>
-              <div className="rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-sm text-slate-600">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Firmware
-                </p>
-                <p className="mt-2 text-slate-700">
-                  Sincronizado (próximamente versión remota).
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 rounded-[calc(var(--radius)-6px)] border border-slate-200 px-4 py-3 text-xs text-slate-600">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                Acciones recomendadas
-              </p>
-              <ul className="mt-2 list-disc pl-4 text-slate-700">
-                {actionNotes.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-            </div>
+          <DiagnosticoRapidoCard
+            connectionHint={connectionHint}
+            batterySummary={batterySummary}
+            batteryExtra={batteryExtra}
+            actionNotes={actionNotes}
+          >
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
@@ -1399,7 +1319,7 @@ export default function BowlPage() {
                 Reinicio remoto (en roadmap)
               </button>
             </div>
-          </section>
+          </DiagnosticoRapidoCard>
         </>
       )}
       {/* ── Modal de configuración ── */}

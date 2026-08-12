@@ -53,12 +53,25 @@ related:
 
 > `DayCycleChart.tsx` + `useDayCycleData.ts` (chart D3 sin uso, confirmado con `grep`)
 > fueron **eliminados el 2026-08-11** — ver [[18_UI/Componentes/COMP_DayNightTimelineCard]]
-> para el detalle. `d3`/`@types/d3` quedaron como dependencias sin uso en `package.json`.
+> para el detalle. `d3`/`@types/d3` también se eliminaron de `package.json` ese mismo día
+> (cero imports restantes).
 
 El resto de `today/page.tsx` (~2540 líneas) sigue siendo un componente monolítico con toda
 la carga de datos, el hunger bar, los charts de consumo, el timeline de audit events, etc.
 — no se documenta acá pieza por pieza porque no está partido en componentes todavía. Ver
 [[29_Specs/SPEC_02_UIUX_Mejoras]] si se retoma ese trabajo.
+
+---
+
+## Compartidos entre páginas (`_components/` top-level)
+
+Componentes con lógica/props real usados por más de una página — viven en
+`kittypau_app/src/app/_components/` (no en el `_components/` de una sola ruta), ver
+[[04_Frontend/ESTRUCTURA_src_app]] §4 para la convención completa.
+
+| Componente | Doc | Quién lo usa |
+|---|---|---|
+| `diagnostico-rapido-card.tsx` | [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]] | `/bowl`, `/today`, `/pet` |
 
 ---
 
