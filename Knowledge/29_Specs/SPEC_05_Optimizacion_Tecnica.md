@@ -45,30 +45,25 @@ transitivas parchadas. Revisar cada 1-2 meses, no urgente.
 
 ---
 
-## 🟠 Testing: cero tests automatizados en la app web
+## 🟠 Testing: cero tests de integración/E2E — el precedente unitario ya está sentado
 
-No hay archivos `*.test.*`/`*.spec.*` en `kittypau_app/src`, no hay config de
-Jest/Vitest/Playwright, y `package.json` no tiene script `test`. La única validación
-automática es `npm run lint` + `npm run build` en CI.
+> ✅ Hecho (2026-08-11): Vitest instalado, `npm run test`, wired en `pr-quality.yml` (corre
+> en cada PR junto a lint/build). Primer suite real en `src/lib/hunger-bar.test.ts` — 6 tests
+> sobre `detectSegments`/`computeHungerBar`, incluye test de regresión del bug de dirección
+> del 2026-08-11 (percentage=100 al comer, no 0).
 
-- **Cero tests unitarios** de lógica pura sin UI — el candidato más obvio y barato es
-  `hunger-bar.ts` (`detectSegments`, `classifySegment`, `computeHungerBar`, ahora también
-  `computeRoutineScore` si se vuelve a usar), lógica pura sin red ni DOM.
-- **Cero tests de integración de API routes.**
-- **Cero tests E2E.**
+Nota: el Python de investigación (`fase_0_ruido/tests/`) sí tenía tests reales antes que el
+lado TypeScript — ya no es el único lugar del proyecto con ese rigor.
 
-Nota: el Python de investigación (`fase_0_ruido/tests/`) sí tiene tests reales — el rigor
-existe en el proyecto, no se trasladó al lado TypeScript/Next.js.
-
-**Fix propuesto — orden de bajo a alto esfuerzo:**
-1. Agregar Vitest + 1 test real sobre `hunger-bar.ts` — sienta el precedente.
-2. Tests unitarios de `lib/utils/api.ts` (`parseListResponse`, `resolveDevicePowerState`).
-3. 1-2 tests de integración de API routes críticas (`/api/pets/[id]/hunger-bar`,
+**Sigue pendiente — orden de bajo a alto esfuerzo:**
+1. Tests unitarios de `lib/utils/api.ts` (`parseListResponse`, `resolveDevicePowerState`).
+2. 1-2 tests de integración de API routes críticas (`/api/pets/[id]/hunger-bar`,
    `/api/devices/[id]/tare`).
-4. E2E con Playwright para el flujo de login + `/today`.
+3. E2E con Playwright para el flujo de login + `/today`.
 
-**Esfuerzo:** M para el punto 1, luego incremental. **Impacto:** Alto a mediano plazo — sin
-esto, cada cambio en páginas grandes como `today/page.tsx` es un cambio a ciegas.
+**Esfuerzo:** S-M incremental por punto. **Impacto:** Alto a mediano plazo — sin esto, cada
+cambio en páginas grandes como `today/page.tsx` sigue siendo mayormente a ciegas fuera de la
+lógica pura ya cubierta.
 
 ---
 
@@ -108,10 +103,10 @@ la señal-ruido del schema.
 
 | # | Fix | Esfuerzo | Impacto |
 |---|-----|----------|---------|
-| 1 | Setup Vitest + primer test sobre `hunger-bar.ts` | M | Alto a mediano plazo |
-| 2 | Persistir estado del bridge en disco | M | Medio |
-| 3 | `npm audit fix` en dependencias de Capacitor/Android | S | Bajo/medio |
-| 4 | Decidir `breeds`/`pet_breeds`, `DROP sensor_readings` | XS | Bajo |
+| 1 | Persistir estado del bridge en disco | M | Medio |
+| 2 | `npm audit fix` en dependencias de Capacitor/Android | S | Bajo/medio |
+| 3 | Decidir `breeds`/`pet_breeds`, `DROP sensor_readings` | XS | Bajo |
+| 4 | Tests unitarios `lib/utils/api.ts` + integración de API routes críticas | S-M | Medio |
 
 ---
 

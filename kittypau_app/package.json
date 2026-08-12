@@ -13,6 +13,7 @@
     "android:sync": "npx cap sync android",
     "android:open": "npx cap open android",
     "android:build:debug": "cd android && .\\gradlew assembleDebug",
+    "test": "vitest run",
     "lint": "eslint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -23,7 +24,7 @@
     "security-check": "npm audit --audit-level=high",
     "fix:all": "npm run lint:fix && npm run clean:imports && npm run format",
     "dev:check": "npm run fix:all && npm run type-check && npm run encoding-check",
-    "ci:check": "npm run dev:check && npm run build-check",
+    "ci:check": "npm run dev:check && npm run test && npm run build-check",
     "staged:check": "npm run encoding-check && lint-staged --no-stash"
   },
   "dependencies": {
@@ -58,6 +59,7 @@
     "lint-staged": "^16.3.2",
     "prettier": "^3.8.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
