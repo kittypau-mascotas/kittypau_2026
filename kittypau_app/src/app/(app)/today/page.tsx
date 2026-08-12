@@ -948,22 +948,11 @@ export default function TodayPage() {
     state.profile?.owner_name || state.profile?.user_name || "tu";
   const petLabel = primaryPet?.name ?? "tu mascota";
 
-  // ponytail: QA manual en dispositivo real via ?testPushAlert=<segundos> —
-  // ver Knowledge/05_API/SPEC_HungerBar_Alertas.md §6.1. Sin el query param,
-  // comportamiento normal (agenda para estimatedNextMealAt + umbral real).
-  const testPushAlertSeconds =
-    typeof window !== "undefined"
-      ? Number(
-          new URLSearchParams(window.location.search).get("testPushAlert"),
-        ) || undefined
-      : undefined;
-
   useHungerBarPushAlert({
     petId: primaryPet?.id,
     petName: petLabel,
     status: hungerBar?.status,
     estimatedNextMealAt: hungerBar?.estimatedNextMealAt,
-    testDelaySeconds: testPushAlertSeconds,
   });
   const petTypeLabel =
     primaryPet?.type === "dog"

@@ -11,6 +11,7 @@ import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import HungerBarCard from "@/app/_components/hunger-bar-card";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
+import { scheduleHungerBarAlert } from "@/lib/hooks/useHungerBarPushAlert";
 import {
   parseListResponse,
   resolveDevicePowerState,
@@ -910,6 +911,34 @@ export default function PetPage() {
 
           {petFoodDevice && selectedPet ? (
             <HungerBarCard petId={selectedPet.id} petName={selectedPet.name} />
+          ) : null}
+
+          {selectedPet ? (
+            // ponytail: botón temporal de QA para probar la notificación push
+            // del hunger bar en dispositivo real sin esperar el horario real
+            // ni conectar por USB — BORRAR una vez confirmado con Mauro. Ver
+            // Knowledge/05_API/SPEC_HungerBar_Alertas.md §6.1.
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  void scheduleHungerBarAlert({
+                    petId: selectedPet.id,
+                    petName: selectedPet.name,
+                    alertAt: new Date(Date.now() + 20_000),
+                  }).then((ok) => {
+                    window.alert(
+                      ok
+                        ? "Notificación agendada — debería sonar en ~20s."
+                        : "No se agendó (¿app nativa? ¿diste permiso de notificaciones?).",
+                    );
+                  });
+                }}
+                className="rounded-full border border-dashed border-rose-300 bg-rose-50 px-3 py-1.5 text-[11px] font-semibold text-rose-600"
+              >
+                🔔 Probar notificación (QA — borrar después)
+              </button>
+            </div>
           ) : null}
 
           {!latestReading ? (
