@@ -412,12 +412,20 @@ function buildWellnessState(params: {
   const latestSession =
     [...params.sessions].sort((a, b) => b.endT - a.endT)[0] ?? null;
   if (!latestSession) {
+    // Hidratación no tiene (todavía) un modelo de detección calibrado como el
+    // Hunger Bar de comida — no hay investigación de hidratación en fase_0_ruido/
+    // (ver Knowledge/29_Specs/SPEC_03_Objetivos_Monitoreo.md Pilar 2). Decirlo
+    // explícito en vez de "Sin evidencia real" evita que el usuario confunda
+    // "tu gato no bebió" con "no sabemos medir esto todavía".
     return {
-      stateLabel: "Sin evidencia real",
+      stateLabel:
+        params.type === "food"
+          ? "Sin evidencia real"
+          : "Sin modelo de detección todavía",
       actionLabel:
         params.type === "food"
           ? "Solo mostraremos alimentación confirmada con eventos reales."
-          : "Aún no hay eventos reales confirmados para hidratación.",
+          : "Mostrando lectura cruda del sensor — sin modelo de detección calibrado todavía para hidratación.",
       levelLabel: "Sin confirmación",
       lastEventLabel:
         params.type === "food"

@@ -106,11 +106,11 @@ todavía no se hizo**. Recomendación concreta abajo.
 1. **Fase 0 (investigación, análoga a `fase_0_ruido` pero para agua):** con datos reales de
    un bebedero KPCL con sensor de flujo/nivel, repetir el proceso que ya funcionó para
    comida: candidatos → anotación manual → features → calibración. No hay atajo honesto.
-2. **Mientras tanto (producto):** la card de Hidratación en `/today` debería decir
-   explícitamente *"Sin modelo de detección todavía — mostrando lectura cruda del sensor"*
-   en vez de solo "Sin evidencia real", para que el usuario entienda la diferencia entre
-   "no hay actividad" y "no sabemos medir la actividad todavía" (mismo principio de copy
-   honesto que [[29_Specs/SPEC_02_UIUX_Mejoras]] U6 recomienda para toda la app).
+2. ✅ **Hecho (2026-08-11):** la card de Hidratación en `/today` (y el bar de Agua del panel
+   Barras Sims, misma fuente `buildWellnessState()`) ahora dicen explícitamente "Sin modelo
+   de detección todavía" en vez de "Sin evidencia real" cuando no hay sesión confirmada —
+   comida mantiene su copy original (sí tiene Hunger Bar calibrado). Mismo principio de copy
+   honesto que [[29_Specs/SPEC_02_UIUX_Mejoras]] U6 recomienda para toda la app.
 3. **No portar el `_sims_agua = 70.0` a producción bajo ninguna forma** — es un placeholder
    de investigación, no una métrica.
 
