@@ -481,28 +481,9 @@ export default function TodayPage() {
   const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] =
     useState<number | null>(null);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
-  const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
-  const [bowlPlateOverrides, setBowlPlateOverrides] = useState<
-    Record<string, number>
-  >({});
-  const [bowlLastEmptyWeight, setBowlLastEmptyWeight] = useState<
-    Record<string, number>
-  >({});
-  const [bowlTareOffsets, setBowlTareOffsets] = useState<
-    Record<string, number>
-  >({});
   const onPetChangeRef = useRef<((e: Event) => void) | null>(null);
   const onDeviceChangeRef = useRef<((e: Event) => void) | null>(null);
-  const [waterPlateOverrides, setWaterPlateOverrides] = useState<
-    Record<string, number>
-  >({});
-  const [waterLastEmptyWeight, setWaterLastEmptyWeight] = useState<
-    Record<string, number>
-  >({});
-  const [waterTareOffsets, setWaterTareOffsets] = useState<
-    Record<string, number>
-  >({});
   const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
   const [accountType, setAccountType] = useState<
     "admin" | "tester" | "client" | null
@@ -1268,14 +1249,7 @@ export default function TodayPage() {
       ? `${toRoundedSensorValue(bowlLatestReading.humidity)}%`
       : "N/D";
   const bowlPlateWeightGrams = toNullableNumber(bowlDevice?.plate_weight_grams);
-  const bowlPlateWeightOverride =
-    bowlDevice?.id && bowlPlateOverrides[bowlDevice.id] !== undefined
-      ? bowlPlateOverrides[bowlDevice.id]
-      : null;
-  const bowlPlateWeightEffective =
-    bowlPlateWeightOverride !== null
-      ? bowlPlateWeightOverride
-      : bowlPlateWeightGrams;
+  const bowlPlateWeightEffective = bowlPlateWeightGrams;
   const bowlGrossWeightGrams = toNullableNumber(
     bowlLatestReading?.weight_grams,
   );
@@ -1288,14 +1262,7 @@ export default function TodayPage() {
             : bowlGrossWeightGrams,
         )
       : null;
-  const bowlTareOffset =
-    bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
-      ? bowlTareOffsets[bowlDevice.id]
-      : 0;
-  const bowlContentWeightGrams =
-    bowlRawContentWeightGrams !== null
-      ? Math.max(0, bowlRawContentWeightGrams - bowlTareOffset)
-      : null;
+  const bowlContentWeightGrams = bowlRawContentWeightGrams;
   const bowlContentWeightText =
     bowlContentWeightGrams !== null
       ? `${Math.round(bowlContentWeightGrams)} g`
@@ -1313,14 +1280,7 @@ export default function TodayPage() {
   const waterPlateWeightGrams = toNullableNumber(
     waterDevice?.plate_weight_grams,
   );
-  const waterPlateWeightOverride =
-    waterDevice?.id && waterPlateOverrides[waterDevice.id] !== undefined
-      ? waterPlateOverrides[waterDevice.id]
-      : null;
-  const waterPlateWeightEffective =
-    waterPlateWeightOverride !== null
-      ? waterPlateWeightOverride
-      : waterPlateWeightGrams;
+  const waterPlateWeightEffective = waterPlateWeightGrams;
   const waterGrossWeightGrams = toNullableNumber(
     waterLatestReading?.weight_grams,
   );
@@ -1333,14 +1293,7 @@ export default function TodayPage() {
             : waterGrossWeightGrams,
         )
       : null;
-  const waterTareOffset =
-    waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
-      ? waterTareOffsets[waterDevice.id]
-      : 0;
-  const waterContentWeightGrams =
-    waterRawContentWeightGrams !== null
-      ? Math.max(0, waterRawContentWeightGrams - waterTareOffset)
-      : null;
+  const waterContentWeightGrams = waterRawContentWeightGrams;
   const waterVolumeMlText =
     waterContentWeightGrams !== null
       ? `${Math.round(waterContentWeightGrams)} mL`
@@ -1441,13 +1394,9 @@ export default function TodayPage() {
         bowlPlateWeightEffective !== null
           ? Math.max(0, gross - bowlPlateWeightEffective)
           : gross;
-      const offset =
-        bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
-          ? bowlTareOffsets[bowlDevice.id]
-          : 0;
-      return Math.max(0, base - offset);
+      return Math.max(0, base);
     },
-    [bowlPlateWeightEffective, bowlDevice?.id, bowlTareOffsets],
+    [bowlPlateWeightEffective],
   );
 
   const selectWaterSeriesValue = useCallback(
@@ -1460,13 +1409,9 @@ export default function TodayPage() {
         waterPlateWeightEffective !== null
           ? Math.max(0, gross - waterPlateWeightEffective)
           : gross;
-      const offset =
-        waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
-          ? waterTareOffsets[waterDevice.id]
-          : 0;
-      return Math.max(0, base - offset);
+      return Math.max(0, base);
     },
-    [waterPlateWeightEffective, waterDevice?.id, waterTareOffsets],
+    [waterPlateWeightEffective],
   );
 
   useEffect(() => {
@@ -1865,17 +1810,12 @@ export default function TodayPage() {
             bowlPlateWeightEffective !== null
               ? Math.max(0, gross - bowlPlateWeightEffective)
               : gross;
-          const offset =
-            bowlDevice?.id && bowlTareOffsets[bowlDevice.id] !== undefined
-              ? bowlTareOffsets[bowlDevice.id]
-              : 0;
-          return Math.max(0, base - offset);
+          return Math.max(0, base);
         },
       ),
     [
       bowlDevice?.id,
       bowlPlateWeightEffective,
-      bowlTareOffsets,
       deviceHistoryReadings,
       monthStartMs,
       nowMs,
@@ -1894,17 +1834,12 @@ export default function TodayPage() {
             waterPlateWeightEffective !== null
               ? Math.max(0, gross - waterPlateWeightEffective)
               : gross;
-          const offset =
-            waterDevice?.id && waterTareOffsets[waterDevice.id] !== undefined
-              ? waterTareOffsets[waterDevice.id]
-              : 0;
-          return Math.max(0, base - offset);
+          return Math.max(0, base);
         },
       ),
     [
       waterDevice?.id,
       waterPlateWeightEffective,
-      waterTareOffsets,
       deviceHistoryReadings,
       monthStartMs,
       nowMs,
