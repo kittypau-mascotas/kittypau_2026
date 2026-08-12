@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Fraunces, Inter, Lato, Titan_One } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
 import NativeApkMode from "./_components/native-apk-mode";
@@ -93,6 +94,7 @@ export default function RootLayout({
         <NativeThanksNotification />
         <RouteLoadingOverlay />
         <ParallaxRoot>{children}</ParallaxRoot>
+        <Analytics />
       </body>
     </html>
   );

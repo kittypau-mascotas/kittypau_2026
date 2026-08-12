@@ -39,8 +39,8 @@ related:
 | MQTT | 5.10.4 | IoT tiempo real |
 | Capacitor | 8.2.0 | APK Android |
 | Chart.js | 4.5.1 | Gráficos |
-| D3 | 7.9.0 | Visualización |
 | Lucide Icons | 0.542.0 | Iconografía |
+| @vercel/analytics | 2.0.1 | Web Analytics — visitantes/page views en el dashboard de Vercel |
 
 ---
 
