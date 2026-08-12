@@ -26,30 +26,40 @@ function hashToNotificationId(petId: string): number {
   return (Math.abs(hash) % 1_000_000) + 60_000;
 }
 
+export type ScheduleHungerBarAlertResult =
+  | { ok: true }
+  | { ok: false; reason: string };
+
 /**
  * Agenda directamente, sin pasar por el efecto — usado por el hook de abajo
  * (con el horario real) y por el botón manual de QA (con un delay corto).
- * No-op silencioso en web o si el plugin/permiso falla.
+ * No-op silencioso en web o si el plugin/permiso falla — devuelve el motivo
+ * exacto (`reason`) para poder diagnosticar en un dispositivo real sin
+ * consola (ver el botón de QA en /pet).
  */
 export async function scheduleHungerBarAlert(params: {
   petId: string;
   petName: string | undefined;
   alertAt: Date;
-}): Promise<boolean> {
+}): Promise<ScheduleHungerBarAlertResult> {
   try {
     const { Capacitor } = await import("@capacitor/core");
-    if (!Capacitor.isNativePlatform()) return false;
+    if (!Capacitor.isNativePlatform()) {
+      return { ok: false, reason: "no es plataforma nativa (Capacitor)" };
+    }
     if (
       !Number.isFinite(params.alertAt.getTime()) ||
       params.alertAt.getTime() <= Date.now()
     ) {
-      return false;
+      return { ok: false, reason: "horario ya paso o invalido" };
     }
 
     const { LocalNotifications } =
       await import("@capacitor/local-notifications");
     const permission = await LocalNotifications.requestPermissions();
-    if (permission.display !== "granted") return false;
+    if (permission.display !== "granted") {
+      return { ok: false, reason: `permiso: ${permission.display}` };
+    }
 
     const id = hashToNotificationId(params.petId);
     await LocalNotifications.cancel({ notifications: [{ id }] });
@@ -68,9 +78,12 @@ export async function scheduleHungerBarAlert(params: {
         },
       ],
     });
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      reason: `excepcion: ${err instanceof Error ? err.message : String(err)}`,
+    };
   }
 }
 
@@ -93,8 +106,10 @@ export function useHungerBarPushAlert(params: {
         ALERT_THRESHOLD_HOURS * 3_600_000,
     );
 
-    void scheduleHungerBarAlert({ petId, petName, alertAt }).then((ok) => {
-      if (!cancelled && ok) scheduledForRef.current = estimatedNextMealAt;
+    void scheduleHungerBarAlert({ petId, petName, alertAt }).then((result) => {
+      if (!cancelled && result.ok) {
+        scheduledForRef.current = estimatedNextMealAt;
+      }
     });
 
     return () => {

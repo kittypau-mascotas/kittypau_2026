@@ -926,11 +926,11 @@ export default function PetPage() {
                     petId: selectedPet.id,
                     petName: selectedPet.name,
                     alertAt: new Date(Date.now() + 20_000),
-                  }).then((ok) => {
+                  }).then((result) => {
                     window.alert(
-                      ok
+                      result.ok
                         ? "Notificación agendada — debería sonar en ~20s."
-                        : "No se agendó (¿app nativa? ¿diste permiso de notificaciones?).",
+                        : `No se agendó: ${result.reason}`,
                     );
                   });
                 }}
