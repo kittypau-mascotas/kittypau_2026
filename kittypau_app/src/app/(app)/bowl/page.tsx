@@ -9,9 +9,11 @@ import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
+import AccessibleModal from "@/app/_components/accessible-modal";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
 import { formatBatterySourceLabel } from "@/lib/battery/contract";
+import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
 
 type ApiDevice = {
   id: string;
@@ -143,14 +145,6 @@ const CHART_RANGES: {
 
 const READINGS_BUFFER_MAX = 4000;
 
-const parseListResponse = <T,>(payload: unknown): T[] => {
-  if (Array.isArray(payload)) return payload as T[];
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T[] }).data ?? [];
-  }
-  return [];
-};
-
 const formatTimestamp = (value: string | null) => {
   if (!value) return "Sin datos";
   return chileCompactDatetime(value);
@@ -162,31 +156,6 @@ const batteryLabel = (battery: number | null) => {
   if (battery <= 35) return "Baja";
   if (battery <= 70) return "Media";
   return "Óptima";
-};
-
-const resolveDevicePowerState = (
-  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
-): "on" | "off" | "nodata" => {
-  if (!device) return "nodata";
-  const state = (device.device_state ?? "").toLowerCase();
-  const status = (device.status ?? "").toLowerCase();
-  if (!state && !status) return "nodata";
-  if (
-    state.includes("offline") ||
-    status === "offline" ||
-    status === "inactive"
-  ) {
-    return "off";
-  }
-  if (
-    state.includes("online") ||
-    state.includes("linked") ||
-    status === "active" ||
-    status === "linked"
-  ) {
-    return "on";
-  }
-  return "nodata";
 };
 
 const deviceToTestLabel = (deviceId: string | null | undefined) => {
@@ -230,13 +199,19 @@ export default function BowlPage() {
   );
   const [removingWifiSsid, setRemovingWifiSsid] = useState<string | null>(null);
   const [isUnassigning, setIsUnassigning] = useState(false);
-  const [unassignStatus, setUnassignStatus] = useState<"ok" | "error" | null>(null);
+  const [unassignStatus, setUnassignStatus] = useState<"ok" | "error" | null>(
+    null,
+  );
   const [showAddDevice, setShowAddDevice] = useState(false);
   const [addDeviceCode, setAddDeviceCode] = useState("");
   const [addDevicePetId, setAddDevicePetId] = useState("");
-  const [addDeviceType, setAddDeviceType] = useState<"food_bowl" | "water_bowl">("water_bowl");
+  const [addDeviceType, setAddDeviceType] = useState<
+    "food_bowl" | "water_bowl"
+  >("water_bowl");
   const [isAddingDevice, setIsAddingDevice] = useState(false);
-  const [addDeviceStatus, setAddDeviceStatus] = useState<"ok" | "error" | null>(null);
+  const [addDeviceStatus, setAddDeviceStatus] = useState<"ok" | "error" | null>(
+    null,
+  );
   const [addDeviceError, setAddDeviceError] = useState<string | null>(null);
   const [addDevicePets, setAddDevicePets] = useState<ApiPet[]>([]);
 
@@ -525,8 +500,11 @@ export default function BowlPage() {
   const cycleDevice = (offset: -1 | 1) => {
     const assignedDevices = state.devices.filter((d) => d.pet_id);
     if (assignedDevices.length <= 1) return;
-    const currentIdx = assignedDevices.findIndex((d) => d.id === selectedDeviceId);
-    const nextIndex = (currentIdx + offset + assignedDevices.length) % assignedDevices.length;
+    const currentIdx = assignedDevices.findIndex(
+      (d) => d.id === selectedDeviceId,
+    );
+    const nextIndex =
+      (currentIdx + offset + assignedDevices.length) % assignedDevices.length;
     const nextDeviceId = assignedDevices[nextIndex]?.id ?? null;
     if (!nextDeviceId) return;
     setSelectedDeviceId(nextDeviceId);
@@ -620,7 +598,9 @@ export default function BowlPage() {
     try {
       const token = await getValidAccessToken();
       if (!token) throw new Error("No autenticado");
-      const body: Record<string, string | null> = { device_type: configDeviceType };
+      const body: Record<string, string | null> = {
+        device_type: configDeviceType,
+      };
       body.pet_id = configPetId || null;
       const res = await fetch(`/api/devices/${selectedDevice.id}`, {
         method: "PATCH",
@@ -730,7 +710,10 @@ export default function BowlPage() {
       if (!token) throw new Error("No autenticado");
       const res = await fetch(`/api/devices/${selectedDevice.id}`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ pet_id: null }),
       });
       if (!res.ok) throw new Error("Error al desasignar");
@@ -760,14 +743,18 @@ export default function BowlPage() {
     try {
       const token = await getValidAccessToken();
       if (!token) return;
-      const res = await fetch("/api/pets?limit=50", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch("/api/pets?limit=50", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) {
         const payload = await res.json();
         const list = Array.isArray(payload) ? payload : (payload.data ?? []);
         setAddDevicePets(list as ApiPet[]);
         setAddDevicePetId((list as ApiPet[])[0]?.id ?? "");
       }
-    } catch { /* mostrar igual */ }
+    } catch {
+      /* mostrar igual */
+    }
     setShowAddDevice(true);
   };
 
@@ -781,7 +768,10 @@ export default function BowlPage() {
       if (!token) throw new Error("No autenticado");
       const res = await fetch("/api/devices", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           device_id: addDeviceCode.trim().toUpperCase(),
           pet_id: addDevicePetId,
@@ -795,7 +785,10 @@ export default function BowlPage() {
       const newDevice = json as ApiDevice;
       setState((prev) => ({ ...prev, devices: [...prev.devices, newDevice] }));
       setAddDeviceStatus("ok");
-      setTimeout(() => { setAddDeviceStatus(null); setShowAddDevice(false); }, 1500);
+      setTimeout(() => {
+        setAddDeviceStatus(null);
+        setShowAddDevice(false);
+      }, 1500);
     } catch (e) {
       setAddDeviceError(e instanceof Error ? e.message : "Error desconocido");
       setAddDeviceStatus("error");
@@ -1070,7 +1063,19 @@ export default function BowlPage() {
                     disabled={state.devices.length <= 1}
                     aria-label="Plato anterior"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
                   </button>
                   <div className="flex min-w-[108px] items-center justify-center text-center leading-none">
                     <span className="text-sm font-semibold text-slate-800">
@@ -1084,39 +1089,31 @@ export default function BowlPage() {
                     disabled={state.devices.length <= 1}
                     aria-label="Siguiente plato"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
                   </button>
                 </div>
-                {/* Selector intervalo escaneo */}
+                {/* Botón de escaneo — el selector de intervalo vive solo en el modal
+                    de configuración (con explicación de qué hace cada valor); antes
+                    estaba duplicado acá y en el modal con el mismo estado, confundía
+                    cuál usar (ver Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md I1). */}
                 <div className="flex items-center gap-1">
-                  <select
-                    value={selectedInterval}
-                    onChange={(e) =>
-                      setSelectedInterval(Number(e.target.value))
-                    }
-                    disabled={!selectedDevice}
-                    className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-600 focus:outline-none disabled:opacity-40"
-                  >
-                    <option value={1_000}>1 s</option>
-                    <option value={5_000}>5 s</option>
-                    <option value={15_000}>15 s</option>
-                    <option value={30_000}>30 s</option>
-                    <option value={60_000}>1 min</option>
-                    <option value={300_000}>5 min</option>
-                    <option value={1_500_000}>25 min</option>
-                    <option value={1_800_000}>30 min</option>
-                    <option value={3_600_000}>1 h</option>
-                    <option value={7_200_000}>2 h</option>
-                    <option value={14_400_000}>4 h</option>
-                    <option value={21_600_000}>6 h</option>
-                    <option value={43_200_000}>12 h</option>
-                    <option value={86_400_000}>24 h</option>
-                  </select>
                   <button
                     type="button"
                     onClick={() => void handleSetInterval()}
                     disabled={isSettingInterval || !selectedDevice}
-                    title="Aplicar intervalo de escaneo"
+                    title="Aplicar intervalo de escaneo configurado"
                     className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900 disabled:opacity-40"
                   >
                     {isSettingInterval ? (
@@ -1389,15 +1386,17 @@ export default function BowlPage() {
                 type="button"
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
+                title="Todavía no implementado — por ahora, calibra desde el modal de configuración del dispositivo."
               >
-                Calibración remota (próximamente)
+                Calibración remota (en roadmap)
               </button>
               <button
                 type="button"
                 className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-400"
                 disabled
+                title="Todavía no implementado — sin fecha estimada."
               >
-                Reinicio remoto (próximamente)
+                Reinicio remoto (en roadmap)
               </button>
             </div>
           </section>
@@ -1405,21 +1404,21 @@ export default function BowlPage() {
       )}
       {/* ── Modal de configuración ── */}
       {showConfig && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
-          onClick={() => setShowConfig(false)}
+        <AccessibleModal
+          onClose={() => setShowConfig(false)}
+          titleId="bowl-config-modal-title"
         >
-          <div
-            className="w-full max-w-sm overflow-y-auto rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl max-h-[90vh] sm:rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <>
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-widest text-slate-400">
                   Configuración
                 </p>
-                <p className="text-base font-semibold text-slate-900">
+                <p
+                  id="bowl-config-modal-title"
+                  className="text-base font-semibold text-slate-900"
+                >
                   {selectedDevice?.device_id ?? "Dispositivo"}
                 </p>
               </div>
@@ -1648,7 +1647,6 @@ export default function BowlPage() {
                 <option value={21_600_000}>6 horas</option>
                 <option value={43_200_000}>12 horas</option>
                 <option value={86_400_000}>24 horas</option>
-                <option value={604_800_000}>1 semana</option>
               </select>
               <button
                 type="button"
@@ -1671,15 +1669,17 @@ export default function BowlPage() {
                 memoria.
               </p>
             </div>
-          </div>
-        </div>
+          </>
+        </AccessibleModal>
       )}
 
       {/* ── Dispositivos sin asignar ── */}
       {!state.isLoading && state.devices.some((d) => !d.pet_id) && (
         <section className="surface-card freeform-rise px-6 py-5">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-700">Disponibles para asignar</h3>
+            <h3 className="text-sm font-semibold text-slate-700">
+              Disponibles para asignar
+            </h3>
             <button
               type="button"
               onClick={() => void handleOpenAddDevice()}
@@ -1689,42 +1689,69 @@ export default function BowlPage() {
             </button>
           </div>
           <ul className="space-y-2">
-            {state.devices.filter((d) => !d.pet_id).map((d) => (
-              <li key={d.id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5">
-                <div>
-                  <span className="text-sm font-semibold text-slate-800">{d.device_id}</span>
-                  <span className="ml-2 text-xs text-slate-500">{d.device_type === "water_bowl" ? "Bebedero" : "Comedero"}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedDeviceId(d.id);
-                    void handleOpenConfig();
-                  }}
-                  className="rounded-lg border border-violet-200 px-3 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50"
+            {state.devices
+              .filter((d) => !d.pet_id)
+              .map((d) => (
+                <li
+                  key={d.id}
+                  className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5"
                 >
-                  Asignar
-                </button>
-              </li>
-            ))}
+                  <div>
+                    <span className="text-sm font-semibold text-slate-800">
+                      {d.device_id}
+                    </span>
+                    <span className="ml-2 text-xs text-slate-500">
+                      {d.device_type === "water_bowl" ? "Bebedero" : "Comedero"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedDeviceId(d.id);
+                      void handleOpenConfig();
+                    }}
+                    className="rounded-lg border border-violet-200 px-3 py-1 text-xs font-semibold text-violet-700 hover:bg-violet-50"
+                  >
+                    Asignar
+                  </button>
+                </li>
+              ))}
           </ul>
         </section>
       )}
 
       {/* ── Modal: Añadir Bebedero ── */}
       {showAddDevice && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-          <div className="w-full max-w-sm rounded-t-2xl bg-white px-5 pb-8 pt-5 shadow-xl sm:rounded-2xl">
+        <AccessibleModal
+          onClose={() => setShowAddDevice(false)}
+          titleId="bowl-add-device-modal-title"
+        >
+          <>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Plato</p>
-                <p className="text-lg font-bold text-slate-900">Añadir dispositivo</p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                  Plato
+                </p>
+                <p
+                  id="bowl-add-device-modal-title"
+                  className="text-lg font-bold text-slate-900"
+                >
+                  Añadir dispositivo
+                </p>
               </div>
-              <button type="button" onClick={() => setShowAddDevice(false)} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100">✕</button>
+              <button
+                type="button"
+                onClick={() => setShowAddDevice(false)}
+                className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="mb-3">
-              <label className="mb-1 block text-xs font-medium text-slate-600">Código del dispositivo</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">
+                Código del dispositivo
+              </label>
               <input
                 type="text"
                 value={addDeviceCode}
@@ -1736,23 +1763,31 @@ export default function BowlPage() {
             </div>
 
             <div className="mb-3">
-              <label className="mb-1 block text-xs font-medium text-slate-600">Mascota</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">
+                Mascota
+              </label>
               <select
                 value={addDevicePetId}
                 onChange={(e) => setAddDevicePetId(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
               >
                 {addDevicePets.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="mb-4">
-              <label className="mb-1 block text-xs font-medium text-slate-600">Tipo</label>
+              <label className="mb-1 block text-xs font-medium text-slate-600">
+                Tipo
+              </label>
               <select
                 value={addDeviceType}
-                onChange={(e) => setAddDeviceType(e.target.value as "food_bowl" | "water_bowl")}
+                onChange={(e) =>
+                  setAddDeviceType(e.target.value as "food_bowl" | "water_bowl")
+                }
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
               >
                 <option value="water_bowl">Bebedero</option>
@@ -1761,21 +1796,29 @@ export default function BowlPage() {
             </div>
 
             {addDeviceError && (
-              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">{addDeviceError}</p>
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                {addDeviceError}
+              </p>
             )}
 
             <button
               type="button"
               onClick={() => void handleAddDevice()}
-              disabled={isAddingDevice || !addDeviceCode.trim() || !addDevicePetId}
+              disabled={
+                isAddingDevice || !addDeviceCode.trim() || !addDevicePetId
+              }
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
             >
               {isAddingDevice ? (
                 <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-              ) : addDeviceStatus === "ok" ? "✓ Registrado" : "Registrar dispositivo"}
+              ) : addDeviceStatus === "ok" ? (
+                "✓ Registrado"
+              ) : (
+                "Registrar dispositivo"
+              )}
             </button>
-          </div>
-        </div>
+          </>
+        </AccessibleModal>
       )}
     </main>
   );

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apiError, enforceBodySize, startRequestTimer, logRequestEnd } from "../_utils";
-import { resolveChatbotGatoAiReply, type ChatbotGatoAiRequest } from "@/chatbot-gato/hf";
+import {
+  apiError,
+  enforceBodySize,
+  startRequestTimer,
+  logRequestEnd,
+} from "../_utils";
+import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
+import {
+  resolveChatbotGatoAiReply,
+  type ChatbotGatoAiRequest,
+} from "@/chatbot-gato/hf";
 import type { ChatbotGatoPage } from "@/chatbot-gato/runtime";
 
 function isChatbotGatoPage(value: unknown): value is ChatbotGatoPage {
@@ -16,6 +25,21 @@ export async function POST(req: NextRequest) {
   if (sizeError) return sizeError;
 
   const startedAt = startRequestTimer(req);
+
+  // Cada llamada dispara una inferencia real en Hugging Face (costo por request) — sin
+  // límite, un abuso genera factura, no solo carga de servidor.
+  const rate = await checkRateLimit(
+    `${getRateKeyFromRequest(req)}:chatbot-gato`,
+    20,
+    10 * 60_000,
+  );
+  if (!rate.ok) {
+    logRequestEnd(req, startedAt, 429);
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
+  }
+
   let body: Record<string, unknown> | null = null;
 
   try {
@@ -82,5 +106,3 @@ export async function POST(req: NextRequest) {
     lines: reply.lines,
   });
 }
-
-

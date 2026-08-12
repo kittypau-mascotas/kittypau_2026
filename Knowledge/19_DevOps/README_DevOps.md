@@ -144,9 +144,13 @@ Ejemplos recientes:
 - `fix(app): corregir login, pestañas y data para demo BIG12`
 - `docs(corfo): agregar formulario completo y video pitch`
 
-### No hay CI/CD automatizado actualmente
+### CI/CD — corregido 2026-08-11: sí existe, pero no corre tests (porque no hay tests)
 
-Los tests y linting se corren localmente antes de push. Futuro: GitHub Actions.
+`.github/workflows/pr-quality.yml` corre en cada PR a `main`: lint + build de
+`kittypau_app`, `check_encoding.py`, y un guard que bloquea archivos `.env` trackeados por
+error. `.github/workflows/monthly-fusion-review.yml` corre aparte. Lo que falta no es el
+pipeline — es el paso `test`, porque no hay tests automatizados que correr (ver
+[[29_Specs/SPEC_05_Optimizacion_Tecnica]] §4 y §8).
 
 ---
 

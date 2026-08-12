@@ -5,7 +5,7 @@ type: architecture
 status: active
 owner: Mauro
 created: 2026-06-29
-updated: 2026-06-29
+updated: 2026-08-11
 tags:
   - estado
   - snapshot
@@ -20,12 +20,13 @@ related:
 
 # Estado Actual del Proyecto — Kittypau
 
-> Snapshot del estado real del sistema. Verificado en auditoría 2026-06-29.
+> Snapshot del estado real del sistema. Verificado en auditoría 2026-06-29, re-verificado con
+> `npm run dev` + Playwright en vivo el **2026-08-11** (ver [[AUDITORIA_2026_08_11]]).
 > Actualizar este documento cada vez que cambie el estado de producción.
 
 ---
 
-## Resumen ejecutivo (2026-06-29)
+## Resumen ejecutivo (2026-08-11)
 
 | Área | Estado |
 |---|---|
@@ -35,8 +36,8 @@ related:
 | Supabase DB | 🟢 55 migraciones aplicadas |
 | APK Android | 🟡 Build manual — no en stores |
 | Chatbot IA | 🟡 Implementado, sin UI final integrada |
-| Tests automáticos | 🔴 Pendientes — solo inspección manual |
-| CI/CD | 🔴 Sin pipeline — push manual + Vercel auto-deploy |
+| Tests automáticos | 🔴 Cero tests en `kittypau_app` (confirmado 2026-08-11 — sin Jest/Vitest, sin `*.test.*`). Sí hay tests reales en `fase_0_ruido/tests/` (Python) |
+| CI/CD | 🟡 `pr-quality.yml` corre lint+build+encoding-check en cada PR — falta paso de test (no hay tests que correr) |
 
 ---
 
@@ -65,29 +66,46 @@ related:
 KPCL0031, KPCL0033, KPCL0034 ("Bandida"), KPCL0035,
 KPCL0036, KPCL0037, KPCL0038, KPCL0040, KPCL0041
 ```
-Todos con firmware v2.0.0 (NodeMCU v3 ESP8266).  
-KPCL0034 es el dispositivo de investigación principal (102.612 lecturas acumuladas).
+Todos con firmware v2.0.0 (NodeMCU v3 ESP8266), código en `iot_firmware/javier_1a/firmware-esp8266/`
+(ver [[08_ESP32/README_ESP32]] — **no** en `kittypau_iot_firmware/`, esa carpeta está vacía).  
+KPCL0034 es el dispositivo de investigación principal (más de 700k lecturas acumuladas en el
+export local — ver discrepancia sin resolver en [[10_Datasets/README_Datasets]]).
+
+> ⚠️ El array `DEVICES` hardcodeado en `bridge/src/index.js` (los que el bridge trata como
+> KPCL conocidos) es `KPCL0031, KPCL0033, KPCL0035, KPCL0036, KPCL0037, KPCL0038, KPCL0040,
+> KPCL0041` — **no incluye KPCL0034**. Verificar si es intencional (KPCL0034 es de
+> investigación, no de campo) antes de asumir que está fuera del flujo del bridge por error.
+
+> ⚠️ En la app en vivo (cuenta tester `kittypau.mascotas`), la mascota Bandida tiene
+> **KPCL0035 como comedero (alimentación)** y **KPCL0034 como bebedero (hidratación)** —
+> confirmado con Playwright el 2026-08-11. Ver [[18_UI/README_UI]].
 
 ---
 
-## Rutas activas confirmadas (2026-06-29)
+## Rutas activas confirmadas (re-verificado en vivo con Playwright, 2026-08-11)
 
 ### App routes
 | Ruta | Estado |
 |---|---|
-| `/(app)/inicio/` | ✅ |
+| `/(app)/inicio/` | ✅ redirect a `/today` |
 | `/(app)/today/` | ✅ |
-| `/(app)/bowl/` | ✅ (MQTT en vivo) |
+| `/(app)/bowl/` | ✅ (degrada a REST sin MQTT en vivo — sin `NEXT_PUBLIC_MQTT_*` en este `.env.local`) |
 | `/(app)/pet/` | ✅ |
-| `/(app)/registro/` | ✅ |
+| `/(app)/registro/` | ✅ redirect a `/login?register=1` |
 | `/(app)/settings/` | ✅ |
-| `/(app)/story/` | ✅ |
-| `/(app)/admin/` | ✅ |
-| `/(app)/dispositivos/` | ⚠️ Solo `/dispositivos/nuevo` tiene `page.tsx` |
+| `/(app)/story/` | ✅ (degrada con aviso si falta `SUPABASE_ANALYTICS_URL`) |
+| `/(app)/admin/` | ⚠️ En este entorno, tanto la cuenta tester como la admin conocida terminan redirigidas a `/today` al navegar a `/admin` — no se pudo confirmar el dashboard visualmente. Ver [[18_UI/README_UI]]. |
+| `/(app)/admin/javo` | ✅ accesible directo por URL (sin el mismo gate que `/admin` root) |
+| `/(app)/admin/demo-ingresos` | ✅ carga pero 🐞 muestra `Missing Authorization header` |
+| `/(app)/admin/{alerts,analytics,devices,legacy,overview,pets,settings}` | 🔴 404 real — carpetas vacías, sin `page.tsx` |
+| `/(app)/dispositivos/` | 🔴 404 real — solo `/dispositivos/nuevo` tiene `page.tsx` |
+| `/(app)/dispositivos/nuevo` | ✅ |
 | `/(public)/login/` | ✅ |
 | `/(public)/register/` | ✅ |
+| `/(public)/reset/` | ✅ |
 | `/(public)/demo/` | ✅ |
-| `/(public)/client-demo/` | ✅ |
+| `/(public)/client-demo/` | ✅ — mismo contenido que `/demo?menu=today` |
+| `/(public)/test/` | ✅ — mismo contenido que `/demo?menu=today`, no es una vista de test propia |
 
 ---
 
@@ -154,10 +172,15 @@ Las siguientes variables DEBEN estar configuradas para que la app funcione:
 | Componente | Estado |
 |---|---|
 | `shape_features_v2.py` | ✅ 102 features en 15 familias (F00–F14) |
-| Evidence Engine | ✅ Implementado |
-| Anotaciones KPCL0034 | ✅ 421 (alim=209 / serv=45 / ruido=167) |
-| Separabilidad A/S mejor feature (`tpl_doble_rampa`) | ✅ 7.63σ |
-| Modelo ML en producción | 🔴 Pendiente — motor matemático no está en la app aún |
+| Evidence Engine | ✅ Corregido 2026-08-10 — normalización z-score + pesos calculados desde datos. Accuracy held-out: 78.8% (antes 49.6%, peor que el baseline trivial) |
+| Anotaciones KPCL0034 | 496 cerradas en snapshot v2.4 (2026-08-11) — **527 en vivo** en `anotaciones_av2.csv` sin snapshot formal aún (alim=262 / serv=58 / ruido=207) |
+| Separabilidad A/S mejor feature (`tpl_doble_rampa`) | ✅ 7.69σ (v2.3) |
+| Auditoría motor↔humano | 88/496 (17.7%) discrepancias ≥85% confianza — pendiente de revisión manual, sin corrección automática |
+| Split de candidatos "mixto" por giro interno | Implementado y testeado, **no aplicado** — pendiente de decisión (ver [[15_Resultados/RESULT_AlphaV2_Snapshots]]) |
+| Modelo ML en producción | 🔴 Pendiente — motor matemático no está en la app Next.js todavía, solo en la app Streamlit de investigación |
+
+> Detalle completo del historial de snapshots: [[15_Resultados/RESULT_AlphaV2_Snapshots]] y
+> `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/HISTORIAL_RESULTADOS.md` (fuente canónica).
 
 ---
 

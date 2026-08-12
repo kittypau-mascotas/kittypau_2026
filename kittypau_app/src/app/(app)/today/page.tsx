@@ -12,15 +12,18 @@ import {
   syncSelectedDevice,
   syncSelectedPet,
 } from "@/lib/runtime/selection-sync";
-import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
+import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
 import { type ChartData, type ChartOptions, type Plugin } from "chart.js";
-import { Line } from "react-chartjs-2";
 import {
   getChileDayNightWindow,
   chileCompactDatetime,
   chileShortTime,
   chileLongDate,
 } from "@/lib/time/chile";
+import BarrasSimsCard from "./_components/barras-sims-card";
+import BowlWellnessCard from "./_components/bowl-wellness-card";
+import DayNightTimelineCard from "./_components/day-night-timeline-card";
+import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 
 type ApiPet = {
   id: string;
@@ -118,35 +121,6 @@ type IntakeSession = {
 
 type DeviceReadingsMap = Record<string, ApiReading[]>;
 
-type PeriodStats = {
-  consumed: number | null;
-  cycles: number;
-};
-
-type ConsumptionSummary = {
-  day: PeriodStats;
-  week: PeriodStats;
-  month: PeriodStats;
-};
-type ConsumptionViewPeriod = "one" | keyof ConsumptionSummary;
-
-type PetAnalyticsSession = {
-  id: string;
-  device_id: string;
-  session_type: string;
-  session_start: string;
-  session_end: string;
-  duration_sec: number | null;
-  grams_consumed: number | null;
-  water_ml: number | null;
-};
-
-type SessionDetailStats = {
-  events: number;
-  avgConsumed: number | null;
-  avgDurationMinutes: number | null;
-};
-
 type WellnessState = {
   stateLabel: string;
   actionLabel: string;
@@ -182,31 +156,6 @@ function formatTimestamp(value?: string | null) {
   return chileCompactDatetime(value);
 }
 
-function resolveDevicePowerState(
-  device: Pick<ApiDevice, "device_state" | "status"> | null | undefined,
-): "on" | "off" | "nodata" {
-  if (!device) return "nodata";
-  const state = (device.device_state ?? "").toLowerCase();
-  const status = (device.status ?? "").toLowerCase();
-  if (!state && !status) return "nodata";
-  if (
-    state.includes("offline") ||
-    status === "offline" ||
-    status === "inactive"
-  ) {
-    return "off";
-  }
-  if (
-    state.includes("online") ||
-    state.includes("linked") ||
-    status === "active" ||
-    status === "linked"
-  ) {
-    return "on";
-  }
-  return "nodata";
-}
-
 function parsePetNumberSuffix(
   petName: string | null | undefined,
 ): number | null {
@@ -231,16 +180,6 @@ function toRoundedSensorValue(value: number | null | undefined): number | null {
   const numeric = toNullableNumber(value);
   if (numeric === null) return null;
   return Math.round(numeric);
-}
-
-function parseListResponse<T>(payload: unknown): T[] {
-  if (Array.isArray(payload)) {
-    return payload as T[];
-  }
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T[] }).data ?? [];
-  }
-  return [];
 }
 
 function parseCursor(payload: unknown): string | null {
@@ -466,97 +405,6 @@ function findSessionForPoint(
   );
 }
 
-function summarizeSessionsByPeriods(
-  sessions: IntakeSession[],
-  nowMs: number,
-): ConsumptionSummary {
-  const boundaries = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-
-  const build = (startMs: number): PeriodStats => {
-    const filtered = sessions.filter((session) => session.endT >= startMs);
-    if (!filtered.length) return { consumed: null, cycles: 0 };
-    const consumed = filtered.reduce(
-      (acc, session) => acc + Math.max(0, session.consumed),
-      0,
-    );
-    return { consumed: Math.round(consumed), cycles: filtered.length };
-  };
-
-  return {
-    day: build(boundaries.day),
-    week: build(boundaries.week),
-    month: build(boundaries.month),
-  };
-}
-
-function summarizeSessionDetailsByPeriod(
-  sessions: IntakeSession[],
-  nowMs: number,
-  period: keyof ConsumptionSummary,
-): SessionDetailStats {
-  const startMsByPeriod = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-  const filtered = sessions.filter(
-    (session) => session.endT >= startMsByPeriod[period],
-  );
-  if (!filtered.length) {
-    return {
-      events: 0,
-      avgConsumed: null,
-      avgDurationMinutes: null,
-    };
-  }
-  const totalConsumed = filtered.reduce(
-    (acc, session) => acc + Math.max(0, session.consumed),
-    0,
-  );
-  const totalDuration = filtered.reduce(
-    (acc, session) => acc + Math.max(0, session.durationMinutes),
-    0,
-  );
-  return {
-    events: filtered.length,
-    avgConsumed: Math.round(totalConsumed / filtered.length),
-    avgDurationMinutes: Math.round(totalDuration / filtered.length),
-  };
-}
-
-function summarizeAnalyticsSessionsByPeriods(
-  sessions: PetAnalyticsSession[],
-  valueKey: "grams_consumed" | "water_ml",
-  nowMs: number,
-): ConsumptionSummary {
-  const boundaries = {
-    day: nowMs - 24 * 60 * 60 * 1000,
-    week: nowMs - 7 * 24 * 60 * 60 * 1000,
-    month: nowMs - 30 * 24 * 60 * 60 * 1000,
-  };
-  const build = (startMs: number): PeriodStats => {
-    const filtered = sessions.filter((s) => {
-      const endT = new Date(s.session_end).getTime();
-      return !Number.isNaN(endT) && endT >= startMs;
-    });
-    if (!filtered.length) return { consumed: null, cycles: 0 };
-    const consumed = filtered.reduce((acc, s) => {
-      const v = s[valueKey];
-      return acc + Math.max(0, typeof v === "number" ? v : 0);
-    }, 0);
-    return { consumed: Math.round(consumed), cycles: filtered.length };
-  };
-  return {
-    day: build(boundaries.day),
-    week: build(boundaries.week),
-    month: build(boundaries.month),
-  };
-}
-
 function buildWellnessState(params: {
   type: "food" | "water";
   sessions: IntakeSession[];
@@ -632,9 +480,6 @@ export default function TodayPage() {
     useState<DeviceReadingsMap>({});
   const [bowlStoredMaxTerminoServido, setBowlStoredMaxTerminoServido] =
     useState<number | null>(null);
-  const [analyticsHistorySessions, setAnalyticsHistorySessions] = useState<
-    PetAnalyticsSession[]
-  >([]);
   const [chartLoadError, setChartLoadError] = useState<string | null>(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -662,8 +507,6 @@ export default function TodayPage() {
   const [accountType, setAccountType] = useState<
     "admin" | "tester" | "client" | null
   >(null);
-  const [consumptionPeriod, setConsumptionPeriod] =
-    useState<ConsumptionViewPeriod>("day");
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
   const [deviceAuditEvents, setDeviceAuditEvents] = useState<
     Record<string, AuditEvent[]>
@@ -1414,35 +1257,6 @@ export default function TodayPage() {
     };
   }, [bowlDevice?.id, waterDevice?.id, dayCycleOffsetDays]);
 
-  useEffect(() => {
-    const petId = primaryPet?.id;
-    if (!petId) return;
-    let active = true;
-    const loadAnalyticsSessions = async () => {
-      const from = new Date(
-        Date.now() - 30 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const params = new URLSearchParams({ pet_id: petId, from, limit: "200" });
-      try {
-        const res = await authFetch(
-          `/api/analytics/sessions?${params.toString()}`,
-        );
-        if (!res.ok) return;
-        const payload = (await res.json()) as { data?: unknown[] };
-        if (!active) return;
-        setAnalyticsHistorySessions(
-          (payload.data ?? []) as PetAnalyticsSession[],
-        );
-      } catch {
-        // keep empty — fallback to raw readings summary
-      }
-    };
-    void loadAnalyticsSessions();
-    return () => {
-      active = false;
-    };
-  }, [primaryPet?.id]);
-
   const bowlTempText =
     bowlLatestReading?.temperature !== null &&
     bowlLatestReading?.temperature !== undefined
@@ -1555,25 +1369,6 @@ export default function TodayPage() {
             : waterPrevGrossWeightGrams,
         )
       : null;
-  const renderTrend = (current: number | null, previous: number | null) => {
-    if (current === null || previous === null) return null;
-    const delta = current - previous;
-    if (Math.abs(delta) < 0.001) return null;
-    const up = delta > 0;
-    return (
-      <span
-        aria-hidden="true"
-        className="ml-1 inline-flex text-[9px] leading-none opacity-80 text-sky-600"
-      >
-        {up ? "▲" : "▼"}
-      </span>
-    );
-  };
-  const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
-    on: "bg-emerald-500 border-emerald-400",
-    off: "bg-rose-500 border-rose-400",
-    nodata: "bg-white border-slate-300",
-  };
   const bowlPowerState = resolveDevicePowerState(bowlDevice);
   const waterPowerState = resolveDevicePowerState(waterDevice);
 
@@ -2137,46 +1932,6 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [deviceAuditEvents, waterDevice?.id, waterHistoryPoints]);
-  const bowlConsumptionSummary = useMemo(
-    () => summarizeSessionsByPeriods(bowlHistorySessions, nowMs),
-    [bowlHistorySessions, nowMs],
-  );
-  const waterConsumptionSummary = useMemo(
-    () => summarizeSessionsByPeriods(waterHistorySessions, nowMs),
-    [waterHistorySessions, nowMs],
-  );
-
-  const waterAnalyticsSummary = useMemo(() => {
-    if (!waterDevice?.id) return null;
-    const deviceSessions = analyticsHistorySessions.filter(
-      (s) => s.device_id === waterDevice.id,
-    );
-    if (!deviceSessions.length) return null;
-    return summarizeAnalyticsSessionsByPeriods(
-      deviceSessions,
-      "water_ml",
-      nowMs,
-    );
-  }, [analyticsHistorySessions, waterDevice?.id, nowMs]);
-
-  const summaryPeriod: keyof ConsumptionSummary =
-    consumptionPeriod === "one" ? "day" : consumptionPeriod;
-  const detailPeriod: keyof ConsumptionSummary =
-    consumptionPeriod === "one" ? "month" : consumptionPeriod;
-  const bowlDetailSummary = useMemo(
-    () =>
-      summarizeSessionDetailsByPeriod(bowlHistorySessions, nowMs, detailPeriod),
-    [bowlHistorySessions, nowMs, detailPeriod],
-  );
-  const waterDetailSummary = useMemo(
-    () =>
-      summarizeSessionDetailsByPeriod(
-        waterHistorySessions,
-        nowMs,
-        detailPeriod,
-      ),
-    [waterHistorySessions, nowMs, detailPeriod],
-  );
   const bowlWellness = useMemo(
     () =>
       buildWellnessState({
@@ -2398,7 +2153,7 @@ export default function TodayPage() {
     if (hungerBar.alertActive) {
       return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
-    if (hungerBar.percentage >= 100) return "Debería haber comido ya";
+    if (hungerBar.percentage <= 0) return "Debería haber comido ya";
     return hungerBar.estimatedNextMealAt
       ? `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`
       : "Última comida confirmada: sin registro";
@@ -2414,90 +2169,6 @@ export default function TodayPage() {
       ),
     );
   }, [waterBlockLevelPct]);
-
-  const getConnectivityLabel = (timestamp?: string | null) => {
-    if (!timestamp) return "Sin señal";
-    const diffMinutes = Math.round(
-      Math.max(0, Date.now() - new Date(timestamp).getTime()) / 60000,
-    );
-    if (!Number.isFinite(diffMinutes)) return "Sin señal";
-    if (diffMinutes <= 10) return "Estable";
-    if (diffMinutes <= 45) return "Reciente";
-    if (diffMinutes <= 180) return "Atrasada";
-    return "Sin señal";
-  };
-
-  const getBatteryStateLabel = (
-    state: string | null | undefined,
-    level: number | null | undefined,
-  ): { text: string; className: string } => {
-    if (state === "charging")
-      return { text: "Cargando", className: "text-emerald-600 font-medium" };
-    if (state === "charged")
-      return { text: "Cargado", className: "text-emerald-500 font-medium" };
-    if (state === "battery_only" && level != null)
-      return {
-        text: `Batería ${Math.round(level)}%`,
-        className: "text-slate-500",
-      };
-    if (level != null)
-      return { text: `${Math.round(level)}%`, className: "text-slate-500" };
-    return { text: "N/D", className: "text-slate-400" };
-  };
-
-  const getOperationalLabel = (powerState: "on" | "off" | "nodata") => {
-    if (powerState === "on") return "Dispositivo encendido";
-    if (powerState === "off") return "Dispositivo apagado";
-    return "Sin telemetría";
-  };
-
-  const getWellnessToneClasses = (
-    stateLabel: string,
-    type: "food" | "water",
-  ) => {
-    if (stateLabel === "Confirmado") {
-      return type === "food"
-        ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-        : "border-sky-200 bg-sky-50 text-sky-800";
-    }
-    if (stateLabel === "Sin evidencia real") {
-      return "border-slate-200 bg-slate-50 text-slate-600";
-    }
-    return "border-slate-200 bg-slate-50 text-slate-600";
-  };
-  const formatConsumedValue = (value: number | null, unit: "g" | "ml") =>
-    value === null ? "N/D" : `${value} ${unit}`;
-  const periodLabels: Array<{
-    key: ConsumptionViewPeriod;
-    label: string;
-    description: string;
-  }> = [
-    {
-      key: "one",
-      label: "Unidad",
-      description:
-        "Promedio por evento individual durante los últimos 30 días.",
-    },
-    {
-      key: "day",
-      label: "Día",
-      description: "Resumen acumulado de consumo y frecuencia en 24 horas.",
-    },
-    {
-      key: "week",
-      label: "Semana",
-      description: "Vista semanal para detectar cambios de patrón de rutina.",
-    },
-    {
-      key: "month",
-      label: "Mes",
-      description: "Tendencia mensual para evaluar hábitos de largo plazo.",
-    },
-  ];
-  const activePeriodLabel =
-    periodLabels
-      .find((item) => item.key === summaryPeriod)
-      ?.label.toLowerCase() ?? "día";
 
   // Mientras no se resuelve el account type no renderizar nada (evita flicker)
   if (accountType === null) {
@@ -2638,257 +2309,52 @@ export default function TodayPage() {
                 <p className="today-hero-updated text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
                   Actualizado el {heroUpdatedLabel}
                 </p>
-                <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      Barras Sims
-                    </p>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
-                      {bowlDevice?.device_id ?? "KPCLXXXX"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      {
-                        key: "food",
-                        title: "Comida",
-                        iconSrc: "/illustrations/icono_comida.png",
-                        filledBlocks: hungerFilledBlocks,
-                        valueLabel: hungerValueLabel,
-                        statusLabel: hungerStatusLabel,
-                        noteLabel: hungerNoteLabel,
-                        trackClass: hungerBar?.alertActive
-                          ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
-                          : "border-rose-100 bg-rose-50",
-                        fillClass: "",
-                        fillStyle: hungerFillColor
-                          ? { backgroundColor: hungerFillColor }
-                          : undefined,
-                        labelClass: "text-rose-700",
-                        badgeClass: hungerBar?.alertActive
-                          ? "border-rose-300 bg-rose-100 text-rose-800"
-                          : "border-rose-100 bg-rose-50 text-rose-700",
-                      },
-                      {
-                        key: "water",
-                        title: "Agua",
-                        iconSrc: "/illustrations/icono_agua.png",
-                        filledBlocks: waterFilledBlocks,
-                        valueLabel:
-                          waterContentWeightGrams !== null
-                            ? `${Math.round(waterContentWeightGrams)} mL`
-                            : "N/D",
-                        statusLabel: waterWellness.stateLabel,
-                        noteLabel: waterWellness.lastEventLabel,
-                        trackClass: "border-emerald-100 bg-emerald-50",
-                        fillClass:
-                          "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
-                        fillStyle: undefined as
-                          | { backgroundColor: string }
-                          | undefined,
-                        labelClass: "text-emerald-700",
-                        badgeClass:
-                          "border-slate-200 bg-slate-50 text-slate-500",
-                      },
-                    ].map(
-                      ({
-                        key,
-                        title,
-                        iconSrc,
-                        filledBlocks,
-                        valueLabel,
-                        statusLabel,
-                        noteLabel,
-                        trackClass,
-                        fillClass,
-                        fillStyle,
-                        labelClass,
-                        badgeClass,
-                      }) => (
-                        <div
-                          key={key}
-                          className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
-                        >
-                          <div className="flex h-8 items-center justify-center">
-                            <Image
-                              src={iconSrc}
-                              alt=""
-                              aria-hidden={true}
-                              width={32}
-                              height={32}
-                              className="h-8 w-8 object-contain opacity-90"
-                            />
-                          </div>
-                          <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
-                            <div
-                              className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
-                              style={{
-                                height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
-                                ...fillStyle,
-                              }}
-                            />
-                          </div>
-                          <div className="flex flex-col items-center gap-0.5 text-center">
-                            <span
-                              className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
-                            >
-                              {statusLabel}
-                            </span>
-                            <p
-                              className={`text-[11px] font-semibold ${labelClass}`}
-                            >
-                              {title} · {valueLabel}
-                            </p>
-                            <p className="text-[10px] leading-tight text-slate-400">
-                              {noteLabel}
-                            </p>
-                          </div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
-                    <span>{getOperationalLabel(bowlPowerState)}</span>
-                    <span>
-                      {
-                        getBatteryStateLabel(
-                          bowlDevice?.battery_state,
-                          bowlDevice?.battery_level,
-                        ).text
-                      }
-                    </span>
-                  </div>
-                </div>
-                <div className="today-hero-summary inline-flex items-center gap-2 hidden">
-                  <div className="today-hero-summary-cards grid grid-cols-1 gap-1.5 md:grid-cols-2">
-                    <div className="today-hero-summary-card today-hero-summary-card-food flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-emerald-100 bg-emerald-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(5,150,105,0.7)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(5,150,105,0.75)]">
-                      <div>
-                        <p className="text-xs font-semibold text-emerald-700">
-                          Alimentación
-                        </p>
-                        <div className="mt-1 space-y-0.5">
-                          <p className="text-[11px] text-slate-600">
-                            {consumptionPeriod === "one"
-                              ? `${bowlDetailSummary.events} eventos (30d)`
-                              : `${bowlConsumptionSummary[summaryPeriod].cycles} veces/${activePeriodLabel}`}
-                          </p>
-                          {consumptionPeriod === "one" ? (
-                            <p className="text-[11px] text-slate-600">
-                              Unit:{" "}
-                              {formatConsumedValue(
-                                bowlDetailSummary.avgConsumed,
-                                "g",
-                              )}{" "}
-                              ·{" "}
-                              {bowlDetailSummary.avgDurationMinutes === null
-                                ? "N/D"
-                                : formatSessionDuration(
-                                    bowlDetailSummary.avgDurationMinutes,
-                                  )}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-slate-600">
-                              Consumo:{" "}
-                              {formatConsumedValue(
-                                bowlConsumptionSummary[summaryPeriod].consumed,
-                                "g",
-                              )}{" "}
-                              /{activePeriodLabel}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <Image
-                        src="/illustrations/icono_comida.png"
-                        alt=""
-                        aria-hidden={true}
-                        width={36}
-                        height={36}
-                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
-                      />
-                    </div>
-                    <div className="today-hero-summary-card today-hero-summary-card-water flex min-h-[76px] min-w-[176px] items-center justify-between gap-2 rounded-[10px] border border-sky-100 bg-sky-50/50 px-3 py-2 shadow-[0_14px_24px_-20px_rgba(14,116,190,0.6)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_30px_-18px_rgba(14,116,190,0.7)]">
-                      <div>
-                        <p className="text-xs font-semibold text-sky-700">
-                          Hidratación
-                        </p>
-                        <div className="mt-1 space-y-0.5">
-                          <p className="text-[11px] text-slate-600">
-                            {consumptionPeriod === "one"
-                              ? `${waterDetailSummary.events} eventos (30d)`
-                              : `${(waterAnalyticsSummary ?? waterConsumptionSummary)[summaryPeriod].cycles} veces/${activePeriodLabel}`}
-                          </p>
-                          {consumptionPeriod === "one" ? (
-                            <p className="text-[11px] text-slate-600">
-                              Unit:{" "}
-                              {formatConsumedValue(
-                                waterDetailSummary.avgConsumed,
-                                "ml",
-                              )}{" "}
-                              ·{" "}
-                              {waterDetailSummary.avgDurationMinutes === null
-                                ? "N/D"
-                                : formatSessionDuration(
-                                    waterDetailSummary.avgDurationMinutes,
-                                  )}
-                            </p>
-                          ) : (
-                            <p className="text-[11px] text-slate-600">
-                              Consumo:{" "}
-                              {formatConsumedValue(
-                                (waterAnalyticsSummary ??
-                                  waterConsumptionSummary)[summaryPeriod]
-                                  .consumed,
-                                "ml",
-                              )}{" "}
-                              /{activePeriodLabel}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <Image
-                        src="/illustrations/icono_agua.png"
-                        alt=""
-                        aria-hidden={true}
-                        width={36}
-                        height={36}
-                        className="today-hero-summary-icon h-9 w-9 shrink-0 object-contain opacity-90"
-                      />
-                    </div>
-                  </div>
-                  <div className="today-hero-period hidden my-auto flex flex-col items-stretch justify-center gap-0.5 rounded-[10px] border border-slate-200 bg-white p-0.5">
-                    {periodLabels.map(({ key, label, description }) => {
-                      const isActive = key === consumptionPeriod;
-                      return (
-                        <div
-                          key={`period-${key}`}
-                          className="group relative w-full"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => setConsumptionPeriod(key)}
-                            className={`w-full rounded-md px-2.5 py-1 text-center text-[10px] font-semibold leading-[1.05] tracking-tight transition ${
-                              isActive
-                                ? "bg-emerald-400 text-slate-900"
-                                : "text-slate-900 hover:bg-slate-100"
-                            }`}
-                            aria-pressed={isActive}
-                            aria-label={`${label}: ${description}`}
-                          >
-                            {label}
-                          </button>
-                          <span className="pointer-events-none absolute right-full top-1/2 z-20 mr-2 hidden w-44 -translate-y-1/2 rounded-[10px] border border-rose-200/70 bg-rose-50/95 px-2.5 py-2 text-[10px] font-semibold leading-relaxed text-slate-700 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.55)] group-hover:block group-focus-within:block">
-                            {description}
-                            <span
-                              aria-hidden="true"
-                              className="absolute left-full top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-t border-rose-200/70 bg-rose-50/95"
-                            />
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <BarrasSimsCard
+                  deviceId={bowlDevice?.device_id}
+                  powerState={bowlPowerState}
+                  batteryState={bowlDevice?.battery_state}
+                  batteryLevel={bowlDevice?.battery_level}
+                  bars={[
+                    {
+                      key: "food",
+                      title: "Comida",
+                      iconSrc: "/illustrations/icono_comida.png",
+                      filledBlocks: hungerFilledBlocks,
+                      valueLabel: hungerValueLabel,
+                      statusLabel: hungerStatusLabel,
+                      noteLabel: hungerNoteLabel,
+                      trackClass: hungerBar?.alertActive
+                        ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
+                        : "border-rose-100 bg-rose-50",
+                      fillClass: "",
+                      fillStyle: hungerFillColor
+                        ? { backgroundColor: hungerFillColor }
+                        : undefined,
+                      labelClass: "text-rose-700",
+                      badgeClass: hungerBar?.alertActive
+                        ? "border-rose-300 bg-rose-100 text-rose-800"
+                        : "border-rose-100 bg-rose-50 text-rose-700",
+                    },
+                    {
+                      key: "water",
+                      title: "Agua",
+                      iconSrc: "/illustrations/icono_agua.png",
+                      filledBlocks: waterFilledBlocks,
+                      valueLabel:
+                        waterContentWeightGrams !== null
+                          ? `${Math.round(waterContentWeightGrams)} mL`
+                          : "N/D",
+                      statusLabel: waterWellness.stateLabel,
+                      noteLabel: waterWellness.lastEventLabel,
+                      trackClass: "border-emerald-100 bg-emerald-50",
+                      fillClass:
+                        "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
+                      fillStyle: undefined,
+                      labelClass: "text-emerald-700",
+                      badgeClass: "border-slate-200 bg-slate-50 text-slate-500",
+                    },
+                  ]}
+                />
               </aside>
             </div>
           </section>
@@ -2901,501 +2367,53 @@ export default function TodayPage() {
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
-                {!hasFoodDevice ? (
-                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-emerald-200 bg-emerald-50/30 p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                      Alimentación
-                    </p>
-                    <Image
-                      src="/illustrations/pink_food_full.png"
-                      alt="Sin comedero"
-                      width={96}
-                      height={70}
-                      className="h-16 w-auto object-contain opacity-40"
-                    />
-                    <p className="text-center text-sm text-slate-400">
-                      Sin comedero asignado
-                    </p>
-                    <Link
-                      href="/bowl"
-                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-50"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Agregar comedero
-                    </Link>
-                  </article>
-                ) : (
-                  <>
-                    <article className="today-bowl-card rounded-[var(--radius)] border border-emerald-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                              Alimentación
-                            </p>
-                            <span
-                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[bowlPowerState]}`}
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                            <span>
-                              {getConnectivityLabel(
-                                bowlLatestReading?.recorded_at ??
-                                  bowlDevice?.last_seen ??
-                                  null,
-                              )}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            <BatteryStatusIcon
-                              level={bowlDevice?.battery_level ?? null}
-                              charging={
-                                bowlDevice?.battery_state === "charging"
-                              }
-                              charged={bowlDevice?.battery_state === "charged"}
-                              className="h-3.5 w-3.5 text-slate-400"
-                            />
-                            {(() => {
-                              const s = getBatteryStateLabel(
-                                bowlDevice?.battery_state,
-                                bowlDevice?.battery_level,
-                              );
-                              return (
-                                <span className={s.className}>{s.text}</span>
-                              );
-                            })()}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                              bowlWellness.stateLabel,
-                              "food",
-                            )}`}
-                          >
-                            {bowlWellness.stateLabel}
-                          </span>
-                          <p className="text-sm text-slate-500">
-                            {bowlWellness.lastEventLabel}
-                          </p>
-                        </div>
-
-                        <div className="grid items-center gap-3">
-                          <div className="flex flex-col items-center py-1">
-                            <Image
-                              src="/illustrations/pink_food_full.png"
-                              alt="Kittypau comedero"
-                              width={224}
-                              height={164}
-                              className="mx-auto h-48 w-auto object-contain object-center"
-                            />
-                            {bowlWellness.levelLabel !== "Sin confirmación" ? (
-                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                                {bowlWellness.levelLabel}
-                              </p>
-                            ) : null}
-                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                              {bowlDevice?.device_id ?? "KPCLXXXX"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-1">
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700"
-                            title="Contenido actual"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M3 6h18M3 12h18M3 18h18" />
-                            </svg>
-                            {bowlContentWeightText}
-                            {renderTrend(
-                              bowlContentWeightGrams,
-                              bowlPrevContentWeightGrams,
-                            )}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                            title="Temperatura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                            </svg>
-                            {bowlTempText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-600"
-                            title="Humedad"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {bowlHumidityText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                            title="Última lectura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <circle cx="12" cy="12" r="10" />
-                              <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            {formatTimestamp(
-                              bowlLatestReading?.recorded_at ?? null,
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </>
-                )}
+                <BowlWellnessCard
+                  kind="food"
+                  hasDevice={hasFoodDevice}
+                  device={bowlDevice}
+                  latestReading={bowlLatestReading}
+                  powerState={bowlPowerState}
+                  wellness={bowlWellness}
+                  contentValueText={bowlContentWeightText}
+                  contentWeightGrams={bowlContentWeightGrams}
+                  prevContentWeightGrams={bowlPrevContentWeightGrams}
+                  tempText={bowlTempText}
+                  humidityText={bowlHumidityText}
+                  formatTimestamp={formatTimestamp}
+                />
               </div>
 
               <div className="flex flex-col gap-2">
-                {!hasWaterDevice ? (
-                  <article className="today-bowl-card flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius)] border border-dashed border-sky-200 bg-sky-50/30 p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
-                      Hidratación
-                    </p>
-                    <Image
-                      src="/illustrations/green_water_full.png"
-                      alt="Sin bebedero"
-                      width={96}
-                      height={70}
-                      className="h-16 w-auto object-contain opacity-40"
-                    />
-                    <p className="text-center text-sm text-slate-400">
-                      Sin bebedero asignado
-                    </p>
-                    <Link
-                      href="/bowl"
-                      className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-sky-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-sky-700 shadow-sm transition hover:bg-sky-50"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                      Agregar bebedero
-                    </Link>
-                  </article>
-                ) : (
-                  <>
-                    <article className="today-bowl-card rounded-[var(--radius)] border border-sky-100 bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5">
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700">
-                              Hidratación
-                            </p>
-                            <span
-                              className={`inline-block h-2 w-2 rounded-full border ${powerDotStyles[waterPowerState]}`}
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                            <span>
-                              {getConnectivityLabel(
-                                waterLatestReading?.recorded_at ??
-                                  waterDevice?.last_seen ??
-                                  null,
-                              )}
-                            </span>
-                            <span aria-hidden="true">·</span>
-                            <BatteryStatusIcon
-                              level={waterDevice?.battery_level ?? null}
-                              charging={
-                                waterDevice?.battery_state === "charging"
-                              }
-                              charged={waterDevice?.battery_state === "charged"}
-                              className="h-3.5 w-3.5 text-slate-400"
-                            />
-                            {(() => {
-                              const s = getBatteryStateLabel(
-                                waterDevice?.battery_state,
-                                waterDevice?.battery_level,
-                              );
-                              return (
-                                <span className={s.className}>{s.text}</span>
-                              );
-                            })()}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-                              waterWellness.stateLabel,
-                              "water",
-                            )}`}
-                          >
-                            {waterWellness.stateLabel}
-                          </span>
-                          <p className="text-sm text-slate-500">
-                            {waterWellness.lastEventLabel}
-                          </p>
-                        </div>
-
-                        <div className="grid items-center gap-3">
-                          <div className="flex flex-col items-center py-1">
-                            <Image
-                              src="/illustrations/green_water_full.png"
-                              alt="Kittypau bebedero"
-                              width={224}
-                              height={164}
-                              className="mx-auto h-48 w-auto object-contain object-center"
-                            />
-                            {waterWellness.levelLabel !== "Sin confirmación" ? (
-                              <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
-                                {waterWellness.levelLabel}
-                              </p>
-                            ) : null}
-                            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
-                              {waterDevice?.device_id ?? "KPCLXXXX"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2 pt-1">
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-sky-700"
-                            title="Nivel actual"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {waterVolumeMlText}
-                            {renderTrend(
-                              waterContentWeightGrams,
-                              waterPrevContentWeightGrams,
-                            )}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
-                            title="Temperatura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-                            </svg>
-                            {waterTempText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-violet-600"
-                            title="Humedad"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-                            </svg>
-                            {waterHumidityText}
-                          </span>
-                          <span
-                            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
-                            title="Última lectura"
-                          >
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
-                            >
-                              <circle cx="12" cy="12" r="10" />
-                              <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            {formatTimestamp(
-                              waterLatestReading?.recorded_at ?? null,
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5">
-            <div className="rounded-[calc(var(--radius)-8px)] border border-rose-100 bg-[linear-gradient(180deg,rgba(251,207,232,0.22)_0%,rgba(236,253,245,0.22)_55%,rgba(255,255,255,0.95)_100%)] p-3 shadow-[0_10px_28px_-22px_rgba(236,72,153,0.6)]">
-              <div className="mb-2 flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays((prev) => prev + 1)}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900"
-                  aria-label="Ciclo anterior"
-                  title="Ciclo anterior"
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDayCycleOffsetDays(0)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-0.5 text-[12px] font-semibold text-slate-600 hover:bg-slate-50"
-                  aria-label="Volver a hoy"
-                  title="Volver a hoy"
-                >
-                  {dayNightRangeTitle}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDayCycleOffsetDays((prev) => Math.max(0, prev - 1))
-                  }
-                  disabled={dayCycleOffsetDays === 0}
-                  className="px-1 text-sm font-semibold text-slate-600 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-                  aria-label="Ciclo siguiente"
-                  title="Ciclo siguiente"
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              </div>
-              <div className="h-[360px] w-full rounded-[calc(var(--radius)-10px)] border border-white/70 bg-gradient-to-b from-rose-50/35 via-emerald-50/20 to-white px-2 py-2">
-                <Line
-                  data={dayNightChartData}
-                  options={dayNightChartOptions}
-                  plugins={[dayNightBackgroundPlugin]}
+                <BowlWellnessCard
+                  kind="water"
+                  hasDevice={hasWaterDevice}
+                  device={waterDevice}
+                  latestReading={waterLatestReading}
+                  powerState={waterPowerState}
+                  wellness={waterWellness}
+                  contentValueText={waterVolumeMlText}
+                  contentWeightGrams={waterContentWeightGrams}
+                  prevContentWeightGrams={waterPrevContentWeightGrams}
+                  tempText={waterTempText}
+                  humidityText={waterHumidityText}
+                  formatTimestamp={formatTimestamp}
                 />
               </div>
-              {chartLoadError ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-slate-500">
-                  {chartLoadError}
-                </p>
-              ) : null}
-              {mqttLiveError ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-                  {mqttLiveError}
-                </p>
-              ) : null}
-              {!isAuthoritativeFoodDevice ? (
-                <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-                  Alimentación sin evidencia auditada: solo se confirma comida
-                  desde {AUTHORITATIVE_FOOD_DEVICE_CODE} con categorías
-                  inicio/termino.
-                </p>
-              ) : null}
             </div>
           </section>
+
+          <DayNightTimelineCard
+            dayCycleOffsetDays={dayCycleOffsetDays}
+            onOffsetChange={setDayCycleOffsetDays}
+            rangeTitle={dayNightRangeTitle}
+            chartData={dayNightChartData}
+            chartOptions={dayNightChartOptions}
+            backgroundPlugin={dayNightBackgroundPlugin}
+            chartLoadError={chartLoadError}
+            mqttLiveError={mqttLiveError}
+            isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
+            authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
+          />
         </header>
 
         {state.error ? (
@@ -3439,54 +2457,11 @@ export default function TodayPage() {
         ) : null}
       </div>
       {showGuide ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 py-10">
-          <div className="surface-card freeform-rise w-full max-w-lg px-6 py-6">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
-              Modo guía
-            </p>
-            <h2 className="display-title mt-2 text-2xl font-semibold text-slate-900">
-              Bienvenido a Hoy en casa
-            </h2>
-            <p className="mt-3 text-sm text-slate-600">
-              Aquí verás cuánto come {petLabel}. También verás el estado del
-              plato y comentarios personalizados para {ownerLabel}.
-            </p>
-            <div className="mt-5 grid gap-3 text-xs text-slate-600">
-              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">
-                Consejo: usa “Ver diario” para ver eventos del día.
-              </div>
-              <div className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2">
-                Consejo: revisa “Perfil conductual” para ajustes de mascota.
-              </div>
-            </div>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.localStorage.setItem("kittypau_guide_seen", "1");
-                  }
-                  setShowGuide(false);
-                }}
-                className="h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
-              >
-                Entendido
-              </button>
-              <Link
-                href="/registro"
-                className="h-10 rounded-[var(--radius)] border border-slate-200 px-4 text-xs font-semibold text-slate-700"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.localStorage.setItem("kittypau_guide_seen", "1");
-                  }
-                  setShowGuide(false);
-                }}
-              >
-                Completar registro
-              </Link>
-            </div>
-          </div>
-        </div>
+        <OnboardingGuideModal
+          petLabel={petLabel}
+          ownerLabel={ownerLabel}
+          onClose={() => setShowGuide(false)}
+        />
       ) : null}
     </div>
   );

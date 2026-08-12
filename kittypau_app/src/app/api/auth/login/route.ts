@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit, getRateKeyFromRequest } from "@/app/api/_rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  // Sin esto, cualquiera puede probar contraseñas contra este proxy sin límite propio
+  // (Supabase Auth tiene su propio rate limit interno, pero no dependemos solo de eso).
+  const rateKey = `${getRateKeyFromRequest(req)}:auth-login`;
+  const rate = await checkRateLimit(rateKey, 10, 5 * 60_000);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Demasiados intentos. Intenta de nuevo en unos minutos." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
+    );
+  }
+
   let email: string;
   let password: string;
   try {
@@ -10,11 +22,17 @@ export async function POST(req: NextRequest) {
     email = typeof body.email === "string" ? body.email.trim() : "";
     password = typeof body.password === "string" ? body.password : "";
   } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 },
+    );
   }
 
   if (!email || !password) {
-    return NextResponse.json({ error: "Email y contraseña requeridos." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Email y contraseña requeridos." },
+      { status: 400 },
+    );
   }
 
   const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -25,18 +43,24 @@ export async function POST(req: NextRequest) {
     .trim();
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.json({ error: "Configuración de servidor incompleta." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Configuración de servidor incompleta." },
+      { status: 500 },
+    );
   }
 
   try {
-    const authRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: supabaseAnonKey,
+    const authRes = await fetch(
+      `${supabaseUrl}/auth/v1/token?grant_type=password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: supabaseAnonKey,
+        },
+        body: JSON.stringify({ email, password }),
       },
-      body: JSON.stringify({ email, password }),
-    });
+    );
 
     const data = await authRes.json();
 
@@ -59,6 +83,9 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     );
   } catch {
-    return NextResponse.json({ error: "Error de red al contactar Supabase." }, { status: 502 });
+    return NextResponse.json(
+      { error: "Error de red al contactar Supabase." },
+      { status: 502 },
+    );
   }
 }

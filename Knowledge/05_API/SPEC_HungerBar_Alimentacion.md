@@ -96,6 +96,18 @@ clasificador correctamente lo descarta como `servido`, no `alimentacion`, y la U
 el estado honesto "sin comidas detectadas todavía" en vez de alucinar una comida. Validación
 en vivo de que el clasificador no confunde llenado de plato con alimentación real.
 
+3. **Barra invertida (encontrado 2026-08-11 por Mauro viendo la app en vivo)** —
+   `computeHungerBar()` tenía `percentage = (hoursSince / intervalH) * 100`: 0% justo al
+   comer, subiendo a 100% con el tiempo. La fórmula de este mismo documento (§2) siempre
+   dijo lo contrario: **100% = instante de comer**, decayendo a 0% hasta la próxima comida.
+   El color (`hungerBarColor`, verde en pct alto / rojo en pct bajo) nunca se tocó — estaba
+   bien, era el `percentage` el que tenía el signo cambiado, así que el resultado visual era
+   "verde recién comió... no, rojo recién comió, verde cuando lleva horas sin comer".
+   Fix: `percentage = 100 × (1 − hoursSince / intervalH)`, clamped [0,100] — igual a la
+   fórmula de §2, tal cual estaba documentada. Corregido en `hunger-bar.ts`,
+   `today/page.tsx` (umbral de "Debería haber comido ya": `>= 100` → `<= 0`) y
+   `hunger-bar-card.tsx` (mismo umbral, usado en `/pet`).
+
 ---
 
 ## Decisión ya tomada: fuente de datos

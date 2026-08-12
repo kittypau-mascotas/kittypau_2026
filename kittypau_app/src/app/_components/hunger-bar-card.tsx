@@ -133,7 +133,7 @@ export default function HungerBarCard({
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
         <span className="font-semibold text-slate-900">{pct}%</span>
         <span className="text-slate-500">
-          {pct >= 100
+          {pct <= 0
             ? "Debería haber comido ya"
             : `Próxima comida estimada: ${
                 data.estimatedNextMealAt

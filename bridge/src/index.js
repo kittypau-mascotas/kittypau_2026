@@ -115,7 +115,7 @@ const mqttOptions = {
 };
 
 console.log('=================================');
-console.log('   Kittypau Bridge v3.0');
+console.log('   Kittypau Bridge v3.2');
 console.log('=================================');
 console.log(`MQTT Broker: ${process.env.MQTT_BROKER}`);
 console.log(`Supabase: ${process.env.SUPABASE_URL}`);

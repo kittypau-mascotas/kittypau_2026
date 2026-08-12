@@ -10,6 +10,11 @@ import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import HungerBarCard from "@/app/_components/hunger-bar-card";
+import {
+  parseListResponse,
+  resolveDevicePowerState,
+  devicePowerStateLabel,
+} from "@/lib/utils/api";
 
 type ApiPet = {
   id: string;
@@ -63,14 +68,6 @@ const defaultState: LoadState = {
 };
 
 const formatTimestamp = (value: string) => chileCompactDatetime(value);
-
-const parseListResponse = <T,>(payload: unknown): T[] => {
-  if (Array.isArray(payload)) return payload as T[];
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T[] }).data ?? [];
-  }
-  return [];
-};
 
 const toRoundedSensorValue = (
   value: number | null | undefined,
@@ -262,16 +259,22 @@ export default function PetPage() {
   const petDevices = state.devices.filter(
     (device) => device.pet_id === selectedPetId,
   );
+  // device_type real en producción es "comedero"/"bebedero" (español), no solo el enum
+  // legacy "food_bowl"/"water_bowl" — ver Knowledge/01_Proyecto/ENUMS_OFICIALES. Sin este
+  // match, ambos caían al fallback por posición (petDevices[0]/[1]), que asigna
+  // Comedero/Bebedero por orden de llegada en vez de por tipo real.
   const petFoodDevice =
-    petDevices.find((device) =>
-      (device.device_type ?? "").toLowerCase().includes("food"),
-    ) ??
+    petDevices.find((device) => {
+      const t = (device.device_type ?? "").toLowerCase();
+      return t.includes("food") || t.includes("comedero");
+    }) ??
     petDevices[0] ??
     null;
   const petWaterDevice =
-    petDevices.find((device) =>
-      (device.device_type ?? "").toLowerCase().includes("water"),
-    ) ?? (petDevices.length > 1 ? petDevices[1] : null);
+    petDevices.find((device) => {
+      const t = (device.device_type ?? "").toLowerCase();
+      return t.includes("water") || t.includes("bebedero");
+    }) ?? (petDevices.length > 1 ? petDevices[1] : null);
   const latestReading = state.readings[0] ?? null;
 
   const insights = useMemo(() => {
@@ -478,7 +481,43 @@ export default function PetPage() {
           </section>
 
           {showEdit && selectedPet ? (
-            <section className="surface-card freeform-rise px-6 py-5">
+            // <form> real (antes <section> con <input> sueltos) — Enter no guardaba
+            // y los password managers no detectaban el formulario (ver SPEC_02 I4).
+            <form
+              className="surface-card freeform-rise px-6 py-5"
+              onSubmit={async (event) => {
+                event.preventDefault();
+                const token = await getValidAccessToken();
+                if (!token) return;
+                setIsSaving(true);
+                try {
+                  // Excluir campos inmutables antes de enviar
+                  const { type, id, pet_state, ...sendPayload } = editPayload;
+                  void type;
+                  void id;
+                  void pet_state;
+                  const updated = await savePet(
+                    token,
+                    selectedPet.id,
+                    sendPayload,
+                  );
+                  setState((prev) => ({
+                    ...prev,
+                    pets: prev.pets.map((pet) =>
+                      pet.id === updated.id ? updated : pet,
+                    ),
+                  }));
+                  setEditMessage("Perfil actualizado.");
+                  setShowEdit(false);
+                } catch (err) {
+                  setEditMessage(
+                    err instanceof Error ? err.message : "No se pudo guardar.",
+                  );
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+            >
               <h2 className="text-lg font-semibold text-slate-900">
                 Editar perfil
               </h2>
@@ -658,49 +697,15 @@ export default function PetPage() {
 
               <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <button
-                  type="button"
+                  type="submit"
                   className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
                   disabled={isSaving}
-                  onClick={async () => {
-                    const token = await getValidAccessToken();
-                    if (!token) return;
-                    setIsSaving(true);
-                    try {
-                      // Excluir campos inmutables antes de enviar
-                      const { type, id, pet_state, ...sendPayload } =
-                        editPayload;
-                      void type;
-                      void id;
-                      void pet_state;
-                      const updated = await savePet(
-                        token,
-                        selectedPet.id,
-                        sendPayload,
-                      );
-                      setState((prev) => ({
-                        ...prev,
-                        pets: prev.pets.map((pet) =>
-                          pet.id === updated.id ? updated : pet,
-                        ),
-                      }));
-                      setEditMessage("Perfil actualizado.");
-                      setShowEdit(false);
-                    } catch (err) {
-                      setEditMessage(
-                        err instanceof Error
-                          ? err.message
-                          : "No se pudo guardar.",
-                      );
-                    } finally {
-                      setIsSaving(false);
-                    }
-                  }}
                 >
                   {isSaving ? "Guardando..." : "Guardar cambios"}
                 </button>
                 {editMessage ? <span>{editMessage}</span> : null}
               </div>
-            </section>
+            </form>
           ) : null}
 
           <section className="surface-card freeform-rise px-6 py-5">
@@ -785,18 +790,27 @@ export default function PetPage() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {petFoodDevice || petWaterDevice
-                    ? `Comedero: ${petFoodDevice?.status ?? "sin estado"} · Bebedero: ${petWaterDevice?.status ?? "sin estado"}`
+                    ? `Comedero: ${devicePowerStateLabel(resolveDevicePowerState(petFoodDevice))} · Bebedero: ${devicePowerStateLabel(resolveDevicePowerState(petWaterDevice))}`
                     : "Conecta los platos para completar el perfil."}
                 </p>
+                {/* Antes mostraba `status` en el texto y `device_state` en el badge por
+                    separado — podían contradecirse (ver SPEC_01 E4). Ambos leen ahora
+                    resolveDevicePowerState(), la misma fuente de verdad. */}
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {petFoodDevice?.device_state ? (
+                  {petFoodDevice ? (
                     <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      Comedero: {petFoodDevice.device_state}
+                      Comedero:{" "}
+                      {devicePowerStateLabel(
+                        resolveDevicePowerState(petFoodDevice),
+                      )}
                     </span>
                   ) : null}
-                  {petWaterDevice?.device_state ? (
+                  {petWaterDevice ? (
                     <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      Bebedero: {petWaterDevice.device_state}
+                      Bebedero:{" "}
+                      {devicePowerStateLabel(
+                        resolveDevicePowerState(petWaterDevice),
+                      )}
                     </span>
                   ) : null}
                 </div>

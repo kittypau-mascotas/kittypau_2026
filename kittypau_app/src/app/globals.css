@@ -4370,58 +4370,6 @@ textarea::placeholder {
     letter-spacing: 0.11em;
   }
 
-  .kp-native-apk #today-hero .today-hero-summary,
-  .kp-flavor-native #today-hero .today-hero-summary {
-    width: 100%;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-summary-cards,
-  .kp-flavor-native #today-hero .today-hero-summary-cards {
-    flex: 1;
-    gap: 6px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-summary-card,
-  .kp-flavor-native #today-hero .today-hero-summary-card {
-    min-width: 0;
-    min-height: 62px;
-    border-radius: 12px;
-    padding: 8px 10px;
-    gap: 8px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-summary-card p,
-  .kp-flavor-native #today-hero .today-hero-summary-card p {
-    font-size: 11px;
-    line-height: 1.05rem;
-  }
-
-  .kp-native-apk #today-hero .today-hero-summary-card p.text-xs,
-  .kp-flavor-native #today-hero .today-hero-summary-card p.text-xs {
-    font-size: 10px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-summary-icon,
-  .kp-flavor-native #today-hero .today-hero-summary-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-period,
-  .kp-flavor-native #today-hero .today-hero-period {
-    flex: 0 0 86px;
-    padding: 2px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-period button,
-  .kp-flavor-native #today-hero .today-hero-period button {
-    font-size: 8px;
-    line-height: 1;
-    padding: 7px 4px;
-  }
-
   .kp-native-apk #today-bowls .today-bowl-card,
   .kp-flavor-native #today-bowls .today-bowl-card {
     padding: 12px;

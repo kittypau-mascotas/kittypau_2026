@@ -6,6 +6,7 @@ import {
   logRequestEnd,
   startRequestTimer,
 } from "@/app/api/_utils";
+import { checkRateLimit, getRateKeyFromRequest } from "@/app/api/_rate-limit";
 
 type DemoIngresoBody = {
   owner_name?: string;
@@ -27,6 +28,19 @@ export async function POST(req: NextRequest) {
   if (sizeError) return sizeError;
 
   const startedAt = startRequestTimer(req);
+
+  // Público, sin auth — sin límite un atacante puede floodear demo_ingresos_leads gratis.
+  const rate = await checkRateLimit(
+    `${getRateKeyFromRequest(req)}:demo-ingreso`,
+    5,
+    10 * 60_000,
+  );
+  if (!rate.ok) {
+    logRequestEnd(req, startedAt, 429);
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
+  }
 
   let body: DemoIngresoBody | null = null;
   try {
