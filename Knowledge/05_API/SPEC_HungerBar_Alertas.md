@@ -145,6 +145,11 @@ Se agregan dos campos a la respuesta ya implementada de
 
 ### 6.1 Notificación push local (2026-08-12)
 
+> ✅ **Verificado en dispositivo real** el mismo día — celular Android de Mauro, vía un APK
+> debug instalado manualmente (compilado con `gradlew assembleDebug`, transferido por
+> WhatsApp). Sonido default del teléfono ✅. Ícono con el logo de Kittypau ✅ (segunda
+> vuelta, ver más abajo — la primera versión del ícono salía descolorida).
+
 - **No es polling** — usa `LocalNotifications.schedule({ at: alertAt })` de Capacitor:
   el SO dispara la notificación en el horario exacto aunque la app esté cerrada o en
   background. `alertAt = estimatedNextMealAt + ALERT_THRESHOLD_HOURS` — mismo umbral
@@ -161,10 +166,46 @@ Se agregan dos campos a la respuesta ya implementada de
   hace que sea seguro agendar desde ambos: el segundo simplemente reemplaza al primero si
   el `estimatedNextMealAt` es el mismo, y el `useRef` interno evita reagendar si ninguno
   cambió el valor.
-- **No verificado en dispositivo real** — sin emulador/APK Android disponible en esta
-  sesión. Validado: type-check, build, y cero errores de consola en el no-op web vía
-  Playwright. Falta probar en un build de Capacitor real que la notificación efectivamente
-  suena a la hora agendada.
+- Lógica de agendado extraída a `scheduleHungerBarAlert()` (standalone, exportada de
+  `useHungerBarPushAlert.ts`), no solo dentro del hook — reusada por un botón manual de QA
+  en `/pet` (ver más abajo) y devuelve `{ok, reason}` en vez de boolean para poder
+  diagnosticar en un dispositivo sin consola conectada.
+
+**Lección real de esta verificación:** el primer intento en el celular de Mauro falló con
+`"LocalNotifications" plugin is not implemented on android` — el APK que ya tenía instalado
+(actualizado solo, hasta ahora, vía el `server.url` de Vercel) era de antes de que el plugin
+nativo se agregara al proyecto. **El JS se actualiza solo; el código nativo (plugins,
+recursos, permisos) no — necesita un APK nuevo compilado e instalado.** Ver también
+[[29_Specs/SPEC_06_Mobile_APK_2026]], que nace de este mismo hallazgo.
+
+#### Ícono de la notificación
+
+Generado con Python/Pillow (script ad-hoc, no versionado) desde `resources/icon.jpg`
+(el mismo source que usa `@capacitor/assets` para el ícono de la app):
+
+- **`ic_stat_kittypau`** (`smallIcon`, barra de estado) — silueta blanca sobre transparente
+  del lineart del logo, por threshold de luminancia (`<170` → blanco opaco, resto
+  transparente). Android tiñe este ícono de un solo color siempre (no importa el color
+  original), por eso alcanza con la silueta.
+- **`ic_notification_kittypau`** (`largeIcon`, card expandida) — **la foto original tal
+  cual, con su fondo blanco incluido**, solo recortada a cuadrado. Se intentó primero una
+  versión con el fondo removido (transparente) para que se viera "flotando" dentro del
+  círculo que arma Android — salió lavada/rosa pálido, sin los colores reales del logo.
+  Mauro lo confirmó en su celular, se revirtió a la foto sin procesar.
+- 5 densidades cada uno (`drawable-mdpi` a `drawable-xxxhdpi`), tamaños estándar Android
+  (24dp para smallIcon, 64dp para largeIcon). `iconColor: "#ebb6a8"` (rosa de marca) como
+  tint por defecto en `capacitor.config.ts` → `plugins.LocalNotifications`.
+- Si el logo cambia, regenerar con el mismo enfoque (threshold de luminancia para el
+  smallIcon, foto sin procesar para el largeIcon) — el script no quedó en el repo, pero el
+  método sí queda documentado acá.
+
+#### Botón de QA manual — pendiente de borrar
+
+`/pet`, debajo de `HungerBarCard`: **"🔔 Probar notificación (QA — borrar después)"**.
+Agenda un push a +20s usando `scheduleHungerBarAlert()` directo, sin esperar el umbral
+real — se agregó porque no había forma de pasarle un query param de test a la app nativa
+(no tiene barra de direcciones). **Confirmado funcionando en dispositivo real — borrar este
+botón en la próxima sesión que toque `pet/page.tsx`**, ya cumplió su propósito.
 
 ---
 

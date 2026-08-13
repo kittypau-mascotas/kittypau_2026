@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - nextjs
   - react
@@ -18,6 +18,7 @@ related:
   - [[05_API/README_API]]
   - [[03_Backend/README_Backend]]
   - [[04_Frontend/ESTRUCTURA_src_app]]
+  - [[29_Specs/SPEC_06_Mobile_APK_2026]]
 ---
 
 # Frontend — App Kittypau
@@ -37,10 +38,11 @@ related:
 | Tailwind CSS | 4 | Estilos |
 | Supabase | 2.106.1 | DB + Auth client |
 | MQTT | 5.10.4 | IoT tiempo real |
-| Capacitor | 8.2.0 | APK Android |
+| Capacitor | 8.5.0 (`@capacitor/cli` en 7.6.0 — Node ≥22 requerido por el CLI 8.x, ver [[29_Specs/SPEC_06_Mobile_APK_2026]] A2) | APK Android |
 | Chart.js | 4.5.1 | Gráficos |
 | Lucide Icons | 0.542.0 | Iconografía |
 | @vercel/analytics | 2.0.1 | Web Analytics — visitantes/page views en el dashboard de Vercel |
+| Vitest | 4.1.10 | Tests unitarios — primer suite real en `lib/hunger-bar.test.ts` |
 
 ---
 
@@ -72,18 +74,22 @@ src/
 │   │   └── test/            ← verificado: renderiza el mismo contenido que /demo (no es una página propia)
 │   └── api/                 ← API Routes Next.js — 30 route.ts, ver [[05_API/README_API]]
 ├── lib/
+│   ├── hunger-bar.ts        ← detección de comidas + Hunger Bar, ver [[05_API/SPEC_HungerBar_Alimentacion]]
+│   ├── hunger-bar.test.ts   ← primer suite Vitest del proyecto (6 tests)
+│   ├── device-diagnostics.ts ← lógica de "Diagnóstico rápido" (conexión/batería/acciones), compartida por /bowl, /today, /pet — ver [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]]
 │   ├── auth/                ← auth-fetch.ts, token.ts
 │   ├── battery/             ← contract.ts (estado batería KPCL)
-│   ├── charts/              ← Chart.js/D3
+│   ├── charts/              ← Chart.js
 │   ├── context/             ← app-context.tsx (estado global: perfil, mascota, KPCL)
 │   ├── errors/              ← kittypau-error.ts (manejo de errores tipados)
 │   ├── finance/             ← kpcl-catalog.ts (catálogo de perfiles de manufactura)
-│   ├── hooks/               ← useMqttLive.ts
+│   ├── hooks/               ← useMqttLive.ts, useHungerBarPushAlert.ts (notificación push del hunger bar)
 │   ├── observability/       ← reading-gaps.ts (detección de gaps en lecturas)
 │   ├── runtime/             ← app-flavor.ts (web vs android), selection-sync.ts
 │   ├── supabase/            ← browser.ts, server.ts, analytics.ts, user-server.ts
 │   ├── time/                ← chile.ts (timezone America/Santiago)
-│   └── ui/                  ← battery-status-icon.tsx (componentes UI compartidos)
+│   ├── ui/                  ← battery-status-icon.tsx (componentes UI compartidos)
+│   └── utils/                ← api.ts (parseListResponse, resolveDevicePowerState — dedup entre today/bowl/pet/story)
 ├── chatbot-gato/            ← Sistema chatbot IA (13 archivos)
 │   ├── client.ts
 │   ├── hf.ts
@@ -106,8 +112,9 @@ src/
 | `npm run build` | Build producción |
 | `npm run android:sync` | Sincronizar cambios Next.js → Android |
 | `npm run android:build:debug` | Generar APK debug |
+| `npm run test` | Vitest (`hunger-bar.test.ts`) — corre también en CI, ver `.github/workflows/pr-quality.yml` |
 | `npm run dev:check` | fix:all + type-check + encoding-check |
-| `npm run ci:check` | dev:check + build |
+| `npm run ci:check` | dev:check + test + build-check |
 
 ---
 
@@ -118,6 +125,14 @@ Controlado por `NEXT_PUBLIC_APP_FLAVOR`:
 - `android` — activa lógica específica Capacitor (notificaciones nativas, etc.)
 
 Ver `src/lib/runtime/app-flavor.ts`
+
+**Importante:** el WebView carga `kittypau-app.vercel.app` en vivo (`capacitor.config.ts` →
+`server.url`), no un bundle offline — **el JS se actualiza solo con cada deploy de Vercel,
+pero cualquier recurso nativo (plugins, íconos, permisos, SDK target) necesita un APK nuevo
+compilado e instalado**, el deploy web no lo toca. Lección real: un APK viejo instalado
+falló con `"LocalNotifications" plugin is not implemented on android` pese a que el JS ya
+llamaba a esa API. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16 (targetSdk 36,
+deadline Google Play 31/08/2026), edge-to-edge, plugins recomendados.
 
 ---
 
@@ -165,6 +180,7 @@ Si alguna de estas variables está ausente, el hook falla silenciosamente y `/bo
 ## Ver también
 
 - [[04_Frontend/ESTRUCTURA_src_app]] — función de cada carpeta de `src/app`, carpeta por carpeta, con hallazgos de código huérfano
+- [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16, edge-to-edge, plugins Capacitor recomendados
 - [[05_API/README_API]] — API Routes expuestas por la app
 - [[03_Backend/README_Backend]] — Supabase Edge Functions
 - [[02_Arquitectura/README_Arquitectura]] — stack completo del sistema

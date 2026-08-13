@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - home
   - navegacion
@@ -93,9 +93,9 @@ tags:
 
 ---
 
-## Specs — Roadmap 2026-08-11
+## Specs — Roadmap (desde 2026-08-11)
 
-- [[29_Specs/README_Specs]] — índice y cómo se relacionan los 4 specs
+- [[29_Specs/README_Specs]] — índice y cómo se relacionan los specs
 - [[29_Specs/SPEC_01_Errores_Prioritarios]] — bugs confirmados en vivo, priorizados
 - [[29_Specs/SPEC_02_UIUX_Mejoras]] — mejoras de UI/UX y patrones a generalizar
 - [[29_Specs/SPEC_03_Objetivos_Monitoreo]] — gap real por pilar: alimentación / hidratación / alertas / confianza en datos

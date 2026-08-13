@@ -5,7 +5,7 @@ type: architecture
 status: active
 owner: Mauro
 created: 2026-06-29
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - estado
   - snapshot
@@ -16,17 +16,20 @@ related:
   - [[01_Proyecto/README_Proyecto]]
   - [[AUDITORIA_2026_06_29]]
   - [[19_DevOps/README_DevOps]]
+  - [[29_Specs/SPEC_06_Mobile_APK_2026]]
 ---
 
 # Estado Actual del Proyecto — Kittypau
 
 > Snapshot del estado real del sistema. Verificado en auditoría 2026-06-29, re-verificado con
 > `npm run dev` + Playwright en vivo el **2026-08-11** (ver [[AUDITORIA_2026_08_11]]).
+> Filas de la tabla actualizadas puntualmente el 2026-08-12 (tests, CI, push, Android 16) —
+> no se repitió la auditoría completa en vivo, solo se corrigieron los ítems que cambiaron.
 > Actualizar este documento cada vez que cambie el estado de producción.
 
 ---
 
-## Resumen ejecutivo (2026-08-11)
+## Resumen ejecutivo (actualizado 2026-08-12)
 
 | Área | Estado |
 |---|---|
@@ -36,8 +39,10 @@ related:
 | Supabase DB | 🟢 55 migraciones aplicadas |
 | APK Android | 🟡 Build manual — no en stores |
 | Chatbot IA | 🟡 Implementado, sin UI final integrada |
-| Tests automáticos | 🔴 Cero tests en `kittypau_app` (confirmado 2026-08-11 — sin Jest/Vitest, sin `*.test.*`). Sí hay tests reales en `fase_0_ruido/tests/` (Python) |
-| CI/CD | 🟡 `pr-quality.yml` corre lint+build+encoding-check en cada PR — falta paso de test (no hay tests que correr) |
+| Tests automáticos | 🟡 Primer suite real desde 2026-08-12 — Vitest, `lib/hunger-bar.test.ts` (6 tests). Falta integración de API routes y E2E. `fase_0_ruido/tests/` (Python) sigue aparte |
+| CI/CD | 🟢 `pr-quality.yml` corre lint+**test**+build+encoding-check en cada PR (test agregado 2026-08-12) |
+| Push notifications | 🟢 Alerta del hunger bar agendada como notificación local (Capacitor), verificada en dispositivo real 2026-08-12 — ver [[05_API/SPEC_HungerBar_Alertas]] §6 |
+| APK — SDK objetivo | 🟢 Android 16 (API 36) desde 2026-08-12, antes de que Google Play lo exija (31/08/2026) — ver [[29_Specs/SPEC_06_Mobile_APK_2026]] |
 
 ---
 
@@ -46,7 +51,7 @@ related:
 ### App (Vercel)
 - **URL producción:** app de Kittypau en Vercel (branch `main`)
 - **Framework:** Next.js 16.1.6 + React 19.2.3 + Tailwind CSS 4
-- **APK:** Capacitor 8.2.0 — build manual, no publicada en Play Store
+- **APK:** Capacitor 8.5.0, targetSdk 36 (Android 16) — build manual, no publicada en Play Store. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]]
 
 ### Bridge (Raspberry Pi Zero 2W)
 - **Versión:** v3.2 (`bridge/src/index.js`)

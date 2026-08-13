@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-12
 tags:
   - devops
   - vercel
@@ -17,6 +17,7 @@ related:
   - [[03_Backend/README_Backend]]
   - [[04_Frontend/README_Frontend]]
   - [[07_MQTT/README_MQTT]]
+  - [[29_Specs/SPEC_06_Mobile_APK_2026]]
 ---
 
 # DevOps — Deploy, CI/CD, Infraestructura
@@ -74,8 +75,9 @@ npm run lint             # ESLint (sin fix)
 npm run lint:fix         # ESLint con autofix
 npm run format           # Prettier
 npm run type-check       # TypeScript sin emit
+npm run test             # Vitest (hunger-bar.test.ts)
 npm run dev:check        # fix:all + type-check + encoding-check
-npm run ci:check         # dev:check + build (pipeline completo)
+npm run ci:check         # dev:check + test + build-check (pipeline completo)
 npm run security-check   # npm audit --audit-level=high
 ```
 
@@ -144,13 +146,13 @@ Ejemplos recientes:
 - `fix(app): corregir login, pestañas y data para demo BIG12`
 - `docs(corfo): agregar formulario completo y video pitch`
 
-### CI/CD — corregido 2026-08-11: sí existe, pero no corre tests (porque no hay tests)
+### CI/CD — actualizado 2026-08-12: ahora sí corre tests
 
-`.github/workflows/pr-quality.yml` corre en cada PR a `main`: lint + build de
-`kittypau_app`, `check_encoding.py`, y un guard que bloquea archivos `.env` trackeados por
-error. `.github/workflows/monthly-fusion-review.yml` corre aparte. Lo que falta no es el
-pipeline — es el paso `test`, porque no hay tests automatizados que correr (ver
-[[29_Specs/SPEC_05_Optimizacion_Tecnica]] §4 y §8).
+`.github/workflows/pr-quality.yml` corre en cada PR a `main`: lint + **test** (Vitest,
+agregado 2026-08-12) + build de `kittypau_app`, `check_encoding.py`, y un guard que bloquea
+archivos `.env` trackeados por error. `.github/workflows/monthly-fusion-review.yml` corre
+aparte. Ver [[29_Specs/SPEC_05_Optimizacion_Tecnica]] §4 para el resto de la deuda de
+testing (todavía sin tests de integración de API routes ni E2E).
 
 ---
 
@@ -167,9 +169,15 @@ npx cap sync android   # sincronizar con Capacitor
 
 ### Configuración Capacitor
 
-- `capacitor.config.ts` en raíz de `src/`
+- `capacitor.config.ts` en raíz de `kittypau_app/`
 - Package ID: `com.kittypau.app` ✅ confirmado en `capacitor.config.ts`
-- Target SDK: Android 13+
+- Target/compile SDK: **36 (Android 16)**, min SDK 24 — actualizado 2026-08-12, Google Play
+  exige 36 desde el 31/08/2026. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]] para la cadena
+  completa de versiones (AGP 8.13.2, Gradle 8.14.5, Capacitor 8.5.0) y el pendiente de
+  verificación visual en dispositivo real.
+- `server.url` apunta a `kittypau-app.vercel.app` en vivo — no es un bundle offline. El JS
+  se actualiza solo con cada deploy; los recursos nativos (plugins, íconos, SDK) no, ver
+  nota en [[04_Frontend/README_Frontend]] § Modo web vs Android.
 
 ---
 
@@ -208,8 +216,8 @@ npx cap sync android   # sincronizar con Capacitor
 
 | Item | Descripción |
 |---|---|
-| CI/CD | Sin pipeline automático — tests solo en local antes del push |
-| Android | APK no publicada en Play Store — build manual |
+| CI/CD | ✅ Pipeline existe y corre lint+test+build en cada PR (ver arriba). Falta: tests de integración de API routes y E2E — [[29_Specs/SPEC_05_Optimizacion_Tecnica]] |
+| Android | APK no publicada en Play Store — build manual, distribución por WhatsApp/USB. SDK actualizado a 36 pero falta verificar edge-to-edge en dispositivo real — [[29_Specs/SPEC_06_Mobile_APK_2026]] |
 | Ramas obsoletas | 6 ramas locales no mergeadas pendientes de eliminar |
 | Commit limpieza | 608 archivos `D` + 139 `AD` sin commitear (docs legacy → vault) |
 
@@ -220,3 +228,4 @@ npx cap sync android   # sincronizar con Capacitor
 - [[03_Backend/README_Backend]] — arquitectura de capas backend
 - [[04_Frontend/README_Frontend]] — stack Next.js + Capacitor
 - [[07_MQTT/README_MQTT]] — Bridge Pi y HiveMQ
+- [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16, edge-to-edge, plugins recomendados

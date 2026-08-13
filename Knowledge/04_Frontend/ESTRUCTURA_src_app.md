@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - nextjs
   - app-router
@@ -109,7 +109,8 @@ Sin layout propio — hereda directo del root `layout.tsx`.
 | Archivo | Usado por |
 |---|---|
 | `app-nav.tsx` | `(app)/layout.tsx` **y** `(public)/demo/page.tsx` — cross-group, por eso vive acá y no dentro de `(app)`. |
-| `hunger-bar-card.tsx` | Card de la barra de hambre — ver [[05_API/SPEC_HungerBar_Alimentacion]] para la fórmula. |
+| `hunger-bar-card.tsx` | Card de la barra de hambre — ver [[05_API/SPEC_HungerBar_Alimentacion]] para la fórmula. Usada solo en `/pet` (`/today` tiene su propio fetch inline, no reusa este componente). |
+| `diagnostico-rapido-card.tsx` | Panel "Diagnóstico rápido" (Conexión/Energía/Firmware + acciones recomendadas) — nació en `/bowl`, generalizado a `/today` y `/pet` (SPEC_02 U2). Lógica en `@/lib/device-diagnostics`, ver [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]]. |
 | `accessible-modal.tsx` | Modal reutilizable con `role="dialog"`, `aria-modal`, focus trap, Escape-to-close. |
 | `alert.tsx` | Banner de alerta genérico (usado en `dispositivos/nuevo`, entre otros). |
 | `empty-state.tsx` | Estado vacío genérico (sin datos aún). |
