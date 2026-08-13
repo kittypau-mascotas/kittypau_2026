@@ -5,7 +5,7 @@ type: dataset
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-11
+updated: 2026-08-13
 tags:
   - dataset
   - readings
@@ -17,6 +17,7 @@ related:
   - [[09_Sensores/README_Sensores]]
   - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
   - [[24_Glosario/README_Glosario]]
+  - [[29_Specs/SPEC_07_Investigacion_Hidratacion]]
 ---
 
 # Datasets — KPCL0034 "Bandida"
@@ -38,6 +39,13 @@ está en `.gitignore` vía `Docs/11_Data/**/*.csv`, así que no hay historial gi
 `readings_rows.csv` tiene el mismo patrón: **270 001 filas totales**, 3 dispositivos, de las
 cuales **167 959** matchean el UUID de KPCL0034 Mayo–Jun (`3a460074...`) — vs. las 94 588
 documentadas.
+
+> ✅ **Resuelto 2026-08-13:** el device dominante `3c1c6705…` (821 785 filas, 75,7% del
+> archivo) es **KPCL0036, el bebedero** — confirmado por Mauro. No es un sensor mal
+> configurado floodeando lecturas: reporta a una cadencia real de ~1,16s (15–25× más
+> rápido que KPCL0034), lo que explica el volumen sin que implique más uso. Ver
+> [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §2.2–§2.3 para el diagnóstico completo
+> (incluye una anomalía de hardware sin resolver: 9,09% de lecturas en exactamente `0`).
 
 **No parece ser corrupción reciente:** una memoria de sesión de hace ~45 días ya registraba
 "Filas KPCL0034: ~154 857" para este mismo archivo — el número coincide exacto con lo medido
@@ -178,9 +186,23 @@ python revisar_anotaciones_v2.py
 
 ---
 
+## Dataset de hidratación (KPCL0036) — separado, en construcción
+
+Desde 2026-08-13 existe `fase_0_ruido/data_agua/candidatos_agua.csv` (393 candidatos: 223
+bajada/57%, 159 subida/40%, 11 mixto/3%), generado por el mismo `01_genera_candidatos.py`
+de esta página vía `KITTYPAU_DEVICE_PROFILE=KPCL0036` — parametrización descrita en
+[[29_Specs/SPEC_07_Investigacion_Hidratacion]] §5.1/§7. **No es un fork**: mismo código,
+carpeta de datos distinta (`data_agua/` vs. `data/`), nunca se mezclan. Todavía sin
+anotaciones manuales ni `umbrales_agua.json` calibrado — ver SPEC_07 §7 para el roadmap
+completo. No agregar filas de agua a las tablas de esta página; su esquema y estado viven
+en el índice propio [[00_INDICE_AV2_AGUA]].
+
 ## Ver también
 
 - [[09_Sensores/README_Sensores]] — el dispositivo que genera los datos
 - [[14_Experimentos/EXP_AlphaV2_Pipeline]] — pipeline completo
 - [[14_Experimentos/EXP_AlphaV2_AppArq]] — app que lee estos archivos
 - [[13_Features/README_ShapeFeatures]] — features extraídas de los candidatos
+- [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — línea de investigación de hidratación
+  (KPCL0036), datasets/parámetros propios, no mezclar con los de esta página (comida)
+- [[00_INDICE_AV2_AGUA]] — índice de artefactos generados para hidratación

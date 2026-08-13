@@ -114,6 +114,7 @@ tags:
 - [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] — qué métricas de `fase_0_ruido` están respaldadas para llevar a `/today`
 - [[29_Specs/SPEC_05_Optimizacion_Tecnica]] — seguridad (CVEs de Next.js), rate limiting, testing, duplicación de código, bridge
 - [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16 (deadline 31/08/2026), plugins Capacitor recomendados, UX móvil 2026
+- [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — reorganización de `Docs/09_Investigacion` + roadmap para replicar el pipeline de comida del lado de agua
 
 ---
 

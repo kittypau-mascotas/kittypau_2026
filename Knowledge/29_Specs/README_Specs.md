@@ -35,6 +35,7 @@ related:
 | [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] | ¿Qué métricas nuevas en `/today` están respaldadas por la investigación de `fase_0_ruido`, y cuáles no? |
 | [[29_Specs/SPEC_05_Optimizacion_Tecnica]] | ¿Qué hay que arreglar/optimizar que no se ve navegando la app — seguridad, tests, duplicación, bridge? |
 | [[29_Specs/SPEC_06_Mobile_APK_2026]] | ¿Qué necesita el APK móvil para seguir siendo publicable y sentirse actual en 2026 — Android 16, plugins, UX nativa? |
+| [[29_Specs/SPEC_07_Investigacion_Hidratacion]] | ¿Cómo se reorganiza `Docs/09_Investigacion` y qué hace falta para replicar el pipeline de comida (`fase_0_ruido/`) del lado de hidratación, sin perder ni romper nada? |
 
 ## Cómo se relacionan entre sí
 
@@ -57,6 +58,11 @@ SPEC 02 (UI/UX)       →  cómo se ve y se siente todo lo anterior
 No implementar SPEC 04 sin haber leído SPEC 03 — la mitad del valor de una métrica nueva es
 saber si responde a un gap real de producto o es una curiosidad de investigación sin
 audiencia.
+
+**SPEC 07 es aparte de esta cadena** — desarrolla en profundidad el Pilar 2 (Hidratación)
+de SPEC 03, pero vive del lado de `Docs/09_Investigacion/` (reorganización de carpetas +
+roadmap de investigación), no del lado de `kittypau_app`. Léelo si el próximo paso es
+"empezar a investigar hidratación", no si el próximo paso es tocar código de producto.
 
 ## Ver también
 

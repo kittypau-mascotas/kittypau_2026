@@ -72,39 +72,80 @@ except ImportError:
 # ─── Rutas ───────────────────────────────────────────────────────────────────
 SCRIPT_DIR      = Path(__file__).parent
 DATA_DIR        = SCRIPT_DIR / "data"
+DATA_DIR_AGUA   = SCRIPT_DIR / "data_agua"
 CONFIG_DIR      = SCRIPT_DIR / "config"
-CANDIDATOS_CSV  = DATA_DIR / "candidatos_av2.csv"
-ANOTACIONES_CSV = DATA_DIR / "anotaciones_av2.csv"
-UMBRALES_JSON   = CONFIG_DIR / "umbrales.json"
-COMP_STATS_JSON = DATA_DIR / "comp_stats_v2.json"
 
 SCRIPT_CANDIDATOS = SCRIPT_DIR / "01_genera_candidatos.py"
 SCRIPT_REVISAR    = SCRIPT_DIR / "revisar_anotaciones_v2.py"
 
-# Datos crudos en Docs/11_Data/2026/ (3 niveles arriba → Docs/)
+# Datos crudos en Docs/11_Data/2026/ (3 niveles arriba → Docs/) — compartidos entre
+# todos los perfiles de dispositivo; cada perfil filtra por sus propios UUIDs (abajo).
 RAW_DATA_DIR      = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 READINGS_CSV      = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
-# Cache procesado en disco — se regenera solo cuando los CSVs son más nuevos
-_LECTURAS_CACHE_PARQUET = DATA_DIR / "_cache_lecturas_30s.parquet"
-CICLOS_CSV              = DATA_DIR / "ciclos_servido_alimento.csv"
-BACKUPS_DIR             = DATA_DIR / "backups"
+
+# ─── Perfiles de dispositivo ──────────────────────────────────────────────────
+# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1.
+# KPCL0036 (agua) está registrado como DATOS EN REPOSO — no es seleccionable
+# todavía. Activarlo hoy rompería la app: 53 literales "alimentacion" /
+# "ciclo_servido_alimento" hardcodeados como llaves de CATEGORIAS y comparaciones
+# de DataFrame a lo largo del archivo (no solo en la definición de CATEGORIAS),
+# lo que dispararía KeyError en cuanto _ACTIVE_PROFILE != "KPCL0034". Resolver esa
+# indirección de nombres de categoría es un paso propio, todavía pendiente —
+# ver SPEC_07 §5.1 "Corrección importante". Hasta entonces _ACTIVE_PROFILE
+# sigue hardcodeado abajo. Cero cambio de comportamiento para KPCL0034.
+DEVICE_PROFILES: dict[str, dict] = {
+    "KPCL0034": {
+        "device_code": "KPCL0034",
+        "uuids": {
+            "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
+            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
+        },
+        "candidatos_csv": DATA_DIR / "candidatos_av2.csv",
+        "anotaciones_csv": DATA_DIR / "anotaciones_av2.csv",
+        "ciclos_csv": DATA_DIR / "ciclos_servido_alimento.csv",
+        "umbrales_json": CONFIG_DIR / "umbrales.json",
+        "comp_stats_json": DATA_DIR / "comp_stats_v2.json",
+        "cache_parquet": DATA_DIR / "_cache_lecturas_30s.parquet",
+    },
+    "KPCL0036": {
+        "device_code": "KPCL0036",
+        "uuids": {
+            "3c1c6705-636d-4770-bdcf-21aa6f7225a5",  # bebedero, confirmado 2026-08-13
+        },
+        "candidatos_csv": DATA_DIR_AGUA / "candidatos_agua.csv",
+        "anotaciones_csv": DATA_DIR_AGUA / "anotaciones_agua.csv",
+        "ciclos_csv": DATA_DIR_AGUA / "ciclos_servido_hidratacion.csv",
+        "umbrales_json": CONFIG_DIR / "umbrales_agua.json",
+        "comp_stats_json": DATA_DIR_AGUA / "comp_stats_agua.json",
+        "cache_parquet": DATA_DIR_AGUA / "_cache_lecturas_30s.parquet",
+    },
+}
+
+# Perfil activo — hardcodeado a "KPCL0034" hasta resolver la indirección de
+# CATEGORIAS (ver comentario arriba). No cambiar sin completar ese paso.
+_ACTIVE_PROFILE = "KPCL0034"
+_ACTIVE = DEVICE_PROFILES[_ACTIVE_PROFILE]
+
+CANDIDATOS_CSV           = _ACTIVE["candidatos_csv"]
+ANOTACIONES_CSV          = _ACTIVE["anotaciones_csv"]
+UMBRALES_JSON            = _ACTIVE["umbrales_json"]
+COMP_STATS_JSON          = _ACTIVE["comp_stats_json"]
+_LECTURAS_CACHE_PARQUET  = _ACTIVE["cache_parquet"]
+CICLOS_CSV               = _ACTIVE["ciclos_csv"]
+KPCL0034_UUIDS           = _ACTIVE["uuids"]  # nombre histórico; sigue siendo el set de UUIDs del perfil activo
+DEVICE_CODE              = _ACTIVE["device_code"]
+
+BACKUPS_DIR = DATA_DIR / "backups"
 BACKUPS_DIR.mkdir(exist_ok=True)
 
 # Cache de mtime por rerun — evita N×2 llamadas stat() por cada @st.cache_data hash.
 # Se limpia al inicio de main() para garantizar frescura.
 _mtime_cache: dict[str, object] = {}
 
-# UUIDs de KPCL0034 (food_bowl "Bandida")
-KPCL0034_UUIDS = {
-    "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
-    "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
-}
-
 TZ_STGO     = ZoneInfo("America/Santiago")
 RESAMPLE_S  = 30
 BUFFER_MIN  = 5
-DEVICE_CODE = "KPCL0034"
 
 # ─── Taxonomía ───────────────────────────────────────────────────────────────
 CATEGORIAS: dict[str, tuple[str, str, str]] = {

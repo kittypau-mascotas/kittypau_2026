@@ -18,6 +18,7 @@ Uso:
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -38,24 +39,56 @@ except ImportError:
 # ─── Rutas ───────────────────────────────────────────────────────────────────
 SCRIPT_DIR    = Path(__file__).parent
 DATA_DIR      = SCRIPT_DIR / "data"
+DATA_DIR_AGUA = SCRIPT_DIR / "data_agua"
 CONFIG_DIR    = SCRIPT_DIR / "config"
 
-# Datos crudos en Docs/11_Data/2026/ (3 niveles arriba de fase_0_ruido → Docs/)
+# Datos crudos en Docs/11_Data/2026/ (3 niveles arriba de fase_0_ruido → Docs/) —
+# compartidos entre perfiles; cada perfil filtra por sus propios UUIDs (abajo).
 RAW_DATA_DIR      = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 READINGS_CSV      = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 
-CANDIDATOS_CSV = DATA_DIR / "candidatos_av2.csv"
-CICLOS_CSV     = DATA_DIR / "ciclos_servido_alimento.csv"
-UMBRALES_JSON  = CONFIG_DIR / "umbrales.json"
+# ─── Perfiles de dispositivo ──────────────────────────────────────────────────
+# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1 — paso 3 del
+# roadmap: agrega el perfil KPCL0036 (agua). Este script no usa CATEGORIAS/
+# METAS_AV2 (esos solo existen en app_anotacion_av2.py), así que activar el
+# perfil agua acá es seguro — no dispara el problema de las ~50 claves de
+# categoría hardcodeadas documentado en el spec.
+DEVICE_PROFILES: dict[str, dict] = {
+    "KPCL0034": {
+        "device_code": "KPCL0034",
+        "uuids": {
+            "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
+            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
+        },
+        "candidatos_csv": DATA_DIR / "candidatos_av2.csv",
+        "ciclos_csv": DATA_DIR / "ciclos_servido_alimento.csv",
+        "umbrales_json": CONFIG_DIR / "umbrales.json",
+    },
+    "KPCL0036": {
+        "device_code": "KPCL0036",
+        "uuids": {
+            "3c1c6705-636d-4770-bdcf-21aa6f7225a5",  # bebedero, confirmado SPEC_07 §2.2
+        },
+        "candidatos_csv": DATA_DIR_AGUA / "candidatos_agua.csv",
+        "ciclos_csv": DATA_DIR_AGUA / "ciclos_servido_hidratacion.csv",
+        "umbrales_json": CONFIG_DIR / "umbrales_agua.json",
+    },
+}
+
+# Perfil activo: "KPCL0034" por defecto (sin cambio de comportamiento). Se puede
+# generar candidatos de otro perfil sin tocar el default con, por ejemplo:
+#   KITTYPAU_DEVICE_PROFILE=KPCL0036 python 01_genera_candidatos.py
+_ACTIVE_PROFILE = os.environ.get("KITTYPAU_DEVICE_PROFILE", "KPCL0034")
+_ACTIVE = DEVICE_PROFILES[_ACTIVE_PROFILE]
+
+CANDIDATOS_CSV = _ACTIVE["candidatos_csv"]
+CICLOS_CSV     = _ACTIVE["ciclos_csv"]
+UMBRALES_JSON  = _ACTIVE["umbrales_json"]
+KPCL0034_UUIDS = _ACTIVE["uuids"]  # nombre histórico; sigue siendo el set de UUIDs del perfil activo
+DEVICE_CODE    = _ACTIVE["device_code"]
 
 TZ_STGO = ZoneInfo("America/Santiago")
-
-# UUIDs de KPCL0034 (food_bowl "Bandida")
-KPCL0034_UUIDS = {
-    "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
-    "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
-}
 
 # ─── Parámetros por defecto (se sobrescriben con umbrales.json) ───────────────
 DEFAULTS = {
@@ -134,7 +167,7 @@ def cargar_lecturas() -> pd.DataFrame:
         df_raw = pd.read_csv(csv_path, low_memory=False)
         mask = df_raw["device_id"].isin(KPCL0034_UUIDS)
         df_dev = df_raw[mask].copy()
-        print(f"  {csv_path.name}: {len(df_dev):,} filas de KPCL0034 (de {len(df_raw):,} total)")
+        print(f"  {csv_path.name}: {len(df_dev):,} filas de {DEVICE_CODE} (de {len(df_raw):,} total)")
         frames.append(df_dev)
 
     df = pd.concat(frames, ignore_index=True)
@@ -150,7 +183,7 @@ def cargar_lecturas() -> pd.DataFrame:
         .reset_index(drop=True)
     )
 
-    assert len(df) > 0, "DataFrame vacío después de filtrar KPCL0034"
+    assert len(df) > 0, f"DataFrame vacío después de filtrar {DEVICE_CODE}"
 
     return df
 
@@ -437,7 +470,7 @@ def main():
             print(f"  horas_desde_servido media: {df_cand['horas_desde_servido'].mean():.1f} h")
             print(f"  fraccion_ciclo media:      {df_cand['fraccion_ciclo'].mean():.3f}")
 
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    CANDIDATOS_CSV.parent.mkdir(parents=True, exist_ok=True)
     df_cand.to_csv(CANDIDATOS_CSV, index=False)
     print(f"\nGuardado: {CANDIDATOS_CSV.name}")
     print(f"Total candidatos a anotar: {len(df_cand)}")

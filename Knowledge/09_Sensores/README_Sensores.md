@@ -5,7 +5,7 @@ type: sensor
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-13
 tags:
   - kpcl
   - kpcl0034
@@ -18,6 +18,7 @@ related:
   - [[10_Datasets/README_Datasets]]
   - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
   - [[24_Glosario/README_Glosario]]
+  - [[29_Specs/SPEC_07_Investigacion_Hidratacion]]
 ---
 
 # Sensores — KPCL0034 "Bandida"
@@ -96,7 +97,7 @@ Ambos UUIDs se filtran en el pipeline para obtener la señal completa de KPCL003
 |---|---|---|
 | KPCL0031, KPCL0033 | food_bowl | Activos, usuarios reales |
 | KPCL0035 | food_bowl | DHT11 en lugar de AHT10 — payload igual |
-| KPCL0036 | food_bowl | Activo — usado en pruebas comparativas |
+| KPCL0036 | **water_bowl (bebedero)** ✅ confirmado 2026-08-13 | UUID `3c1c6705-636d-4770-bdcf-21aa6f7225a5`. Esta fila decía `food_bowl` — corregido: 3 fuentes independientes (`07_AUDITORIA_KPCL0036_ERROR_PESO.md`, `README.md` raíz, `GLOSARIO_GAMMA.md`) lo documentan como bebedero desde abril 2026; el `device_type=comedero` que aparece en exports recientes es una reclasificación posterior del hardware (reutilizado en pruebas comparativas), no su rol original. Tiene 821.785 lecturas crudas (más que KPCL0034) pero con una anomalía de voltaje/spikes documentada, sin resolver. Detalle completo en [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §2.2–§2.3 |
 | KPCL0037, KPCL0038, KPCL0040, KPCL0041 | food_bowl | Activos |
 
 ---
