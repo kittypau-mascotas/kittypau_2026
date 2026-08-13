@@ -34,6 +34,7 @@ related:
 | [[29_Specs/SPEC_03_Objetivos_Monitoreo]] | ¿La app realmente cumple su promesa de monitorear alimentación e hidratación? |
 | [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] | ¿Qué métricas nuevas en `/today` están respaldadas por la investigación de `fase_0_ruido`, y cuáles no? |
 | [[29_Specs/SPEC_05_Optimizacion_Tecnica]] | ¿Qué hay que arreglar/optimizar que no se ve navegando la app — seguridad, tests, duplicación, bridge? |
+| [[29_Specs/SPEC_06_Mobile_APK_2026]] | ¿Qué necesita el APK móvil para seguir siendo publicable y sentirse actual en 2026 — Android 16, plugins, UX nativa? |
 
 ## Cómo se relacionan entre sí
 
