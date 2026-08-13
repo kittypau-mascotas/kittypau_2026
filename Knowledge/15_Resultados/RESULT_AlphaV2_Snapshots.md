@@ -16,7 +16,6 @@ related:
   - [[00_HOME]]
   - [[13_Features/README_ShapeFeatures]]
   - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
-  - [[11_ModelosIA/MODEL_MotorMatematico]]
   - [[10_Datasets/README_Datasets]]
 ---
 
@@ -197,4 +196,3 @@ python revisar_anotaciones_v2.py
 
 - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
 - [[13_Features/README_ShapeFeatures]]
-- [[11_ModelosIA/MODEL_MotorMatematico]]

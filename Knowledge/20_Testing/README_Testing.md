@@ -2,10 +2,10 @@
 id: readme_testing
 title: Testing — Estrategia y Auditorías
 type: knowledge
-status: draft
+status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-12
 tags:
   - testing
   - qa
@@ -16,11 +16,49 @@ related:
   - [[13_Features/ATLAS_Features_v2]]
   - [[14_Experimentos/MOC_Experimentos]]
   - [[15_Resultados/MOC_Resultados]]
+  - [[29_Specs/SPEC_01_Errores_Prioritarios]]
+  - [[29_Specs/SPEC_05_Optimizacion_Tecnica]]
+  - [[18_UI/README_UI]]
 ---
 
 # Testing — Estrategia y Auditorías
 
-> Estado: **en definición** — actualmente los tests son manuales o por inspección de snapshots.
+> ✅ **Actualizado 2026-08-12:** dejó de ser 100% manual — primer suite Vitest real en
+> `kittypau_app/src/lib/hunger-bar.test.ts` (6 tests), corre en cada PR
+> (`.github/workflows/pr-quality.yml`). Ver [[29_Specs/SPEC_05_Optimizacion_Tecnica]] §Testing
+> para el resto de la deuda (API routes, E2E). Las secciones de abajo con "⏳ Pendiente"
+> siguen siendo un plan a futuro, no lo ya implementado.
+>
+> ⚠️ **La lista de QA-\* de este doc es la auditoría histórica del 2026-06-29 — el tracking
+> de bugs vivo hoy es [[29_Specs/SPEC_01_Errores_Prioritarios]].** No se actualizan en
+> paralelo; si algo contradice, gana SPEC_01.
+
+---
+
+## Cuentas de prueba (Supabase)
+
+> Documentado acá porque no vivía en Knowledge — estaba solo en memoria de sesión de Claude,
+> lo que dejaba un link roto en [[18_UI/README_UI]]. **Sin re-verificar en vivo desde hace
+> tiempo** — confirmar contra Supabase antes de asumir que sigue exacto si pasó mucho tiempo.
+
+- **Proyecto Supabase:** `zjdyhpntftgaynchqwfk` (`kplantaiot's Org`, plan Free)
+
+| Vista | Quién | Email | Password |
+|---|---|---|---|
+| Demo | Cualquier visitante | — | — |
+| Tester | kittypau | `kittypau.mascotas@gmail.com` | `prueba1234` |
+| Tester / Admin | Javier | `javier.dayne@gmail.com` | `prueba1234` |
+| Cliente real | (no implementado aún) | — | — |
+
+| Pet | Tipo | Owner | Devices |
+|---|---|---|---|
+| Bandida | Gato — datos reales | kittypau.mascotas | KPCL0034, KPCL0035 |
+| Amanda | Perro | kittypau.mascotas | Sin device |
+
+Bandida (KPCL0034) es el animal tester principal — todos los datos reales usados para
+calibrar Hunger Bar/Motor Matemático vienen de ahí. Routing post-login
+(`/api/account/type`): `admin`→`/admin`, `tester`/`client`→`/today`. Testers hardcodeados en
+código, extensible vía `TESTER_EMAILS` (CSV) en env.
 
 ---
 
@@ -55,6 +93,15 @@ def test_evidence_sums_to_one():
 
 ---
 
+### 1.1 TypeScript/Next.js (kittypau_app) — Vitest
+
+| Test | Tipo | Estado |
+|---|---|---|
+| `detectSegments()` clasifica bajada gradual como alimentación | Unitario | ✅ `lib/hunger-bar.test.ts` |
+| `computeHungerBar()` — regresión del bug de dirección (100% al comer, no 0%) | Unitario/regresión | ✅ |
+| `computeHungerBar()` — decae con el tiempo, alerta a las `ALERT_THRESHOLD_HOURS` | Unitario | ✅ |
+| `lib/utils/api.ts` (`parseListResponse`, `resolveDevicePowerState`) | Unitario | ⏳ Pendiente |
+
 ### 2. API Routes (Next.js)
 
 | Endpoint | Caso a testear | Estado |
@@ -65,7 +112,8 @@ def test_evidence_sums_to_one():
 | `GET /api/readings/latest` | Retorna última lectura del dispositivo activo | ⏳ |
 | `GET /api/admin/*` | Rechaza requests sin service_role | ⏳ |
 
-**Herramienta:** Vitest o Jest + Supertest (integración real con Supabase de test).
+**Herramienta:** Vitest (ya instalado — ver 1.1) + Supertest o `fetch` directo contra un
+Supabase de test para la integración real.
 
 ---
 
@@ -121,7 +169,7 @@ Los siguientes problemas fueron identificados en la auditoría y requieren atenc
 
 | # | Issue | Severidad | Estado |
 |---|---|---|---|
-| QA-01 | `useMqttLive.ts` sin guard para vars de entorno faltantes | 🟠 Alta | ⏳ Pendiente |
+| QA-01 | `useMqttLive.ts` sin guard para vars de entorno faltantes | 🟠 Alta | ✅ Fijo — guard con mensaje `"MQTT no configurado: faltan ..."` ya en producción (confirmado 2026-08-12) |
 | QA-02 | `ADMIN_OVERVIEW_CACHE_TTL_SEC` con valor string no numérico en `.env.local` | 🟠 Alta | ⏳ Pendiente |
 | QA-03 | `/dispositivos` retorna 404 — no hay `page.tsx` | 🟡 Media | ⏳ Pendiente |
 | QA-04 | Variables MQTT (`NEXT_PUBLIC_MQTT_*`) ausentes en `.env.local` de dev | 🟠 Alta | ⏳ Pendiente |
@@ -135,7 +183,7 @@ Los siguientes problemas fueron identificados en la auditoría y requieren atenc
 | QA-12 | Modales sin `role="dialog"`, sin Escape, sin focus trap | 🟠 Alta | ⏳ Pendiente (ver C5) |
 | QA-13 | Formularios de edición sin `<form>` → Enter no guarda | 🟡 Media | ⏳ Pendiente (ver I4) |
 | QA-14 | KPCL0034 hardcodeado como "dispositivo autoritativo" en `today/page.tsx:716` | 🟡 Media | ⏳ Pendiente (ver Q2) |
-| QA-15 | `/today` es monolito 5526 líneas con D3 + Chart.js dual → TTI alto | 🟠 Alta | ⏳ Pendiente (ver C2) |
+| QA-15 | `/today` es monolito 5526 líneas con D3 + Chart.js dual → TTI alto | 🟠 Alta | 🟡 Parcial — bajó a ~2493 líneas (2026-08-12), D3 eliminado por completo (solo Chart.js), extraído a `today/_components/`/`_lib/`. Sigue siendo el 2° `page.tsx` más grande de la app, ver [[04_Frontend/ESTRUCTURA_src_app]] |
 
 **Fix recomendado para QA-01:**
 ```typescript
@@ -169,6 +217,9 @@ Ver [[13_Features/ATLAS_Features_v2]] para la tabla completa. Benchmark de refer
 
 ## Ver también
 
+- [[29_Specs/SPEC_01_Errores_Prioritarios]] — tracking de bugs vivo (esta lista QA-* es historia)
+- [[29_Specs/SPEC_05_Optimizacion_Tecnica]] — deuda de testing pendiente, priorizada
+- [[18_UI/README_UI]] — recorrido en vivo pantalla por pantalla (usa las cuentas de arriba)
 - [[14_Experimentos/MOC_Experimentos]] — ciclos Alpha y resultados
 - [[15_Resultados/MOC_Resultados]] — snapshots de métricas
 - [[13_Features/ATLAS_Features_v2]] — tabla completa de separabilidades

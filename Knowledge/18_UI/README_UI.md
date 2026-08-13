@@ -20,6 +20,7 @@ related:
   - [[17_Mocks/README_Mocks]]
   - [[18_UI/UX_DIAGNOSTICO_2026_06_30]]
   - [[01_Proyecto/ENUMS_OFICIALES]]
+  - [[20_Testing/README_Testing]]
 ---
 
 # UI/UX — KittyPau
@@ -264,7 +265,7 @@ completado desde acá).
 ### `/admin` (root) — comportamiento distinto al documentado
 
 Con **ambas** cuentas de prueba (`kittypau.mascotas`, tester; y `javier.dayne`, admin
-según [[project-supabase-accounts]]), navegar a `/admin` terminó en un redirect a `/today`
+según [[20_Testing/README_Testing]] § Cuentas de prueba), navegar a `/admin` terminó en un redirect a `/today`
 en este entorno — no se pudo confirmar visualmente el dashboard de `/admin` (`page.tsx`
 existe en el código, pero el gate de cuenta-admin no dejó pasar a ninguna de las 2 cuentas
 de prueba tal como está configurada la DB de este entorno). **No asumir que `javier.dayne`

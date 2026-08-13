@@ -24,7 +24,7 @@ related:
 
 | Documento | Versión | Estado | Descripción |
 |-----------|---------|--------|-------------|
-| [[MODEL_MotorMatematico]] | v2 | Activo | 102 features en 15 familias (F00–F14) — numpy/scipy only |
+| [[13_Features/README_ShapeFeatures]] | v2 | Activo | 102 features en 15 familias (F00–F14) — numpy/scipy only |
 | [[MODEL_EvidenceEngine]] | v2 (2026-08-10) | Activo | Normalización + pesos calculados desde los datos sobre las 102 features — 78.8% accuracy held-out (antes: 49.6%, peor que adivinar). Mejor: `tpl_doble_rampa` 7.69σ |
 
 ## Modelos futuros / en planificación
@@ -49,6 +49,8 @@ related:
 
 ## Estado de documentación
 
-- [ ] MODEL_MotorMatematico
+- [x] [[13_Features/README_ShapeFeatures]] — el "MODEL_MotorMatematico" planeado acá terminó
+  documentado bajo `13_Features/` en vez de `11_ModelosIA/` (son features, no un modelo
+  entrenado) — corregido el link roto 2026-08-12, apuntaba a un archivo que nunca existió.
 - [x] [[MODEL_EvidenceEngine]] — creado 2026-08-10
 - [ ] Modelos futuros con ADR de arquitectura

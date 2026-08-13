@@ -17,7 +17,6 @@ related:
   - [[13_Features/README_ShapeFeatures]]
   - [[15_Resultados/RESULT_AlphaV2_Snapshots]]
   - [[10_Datasets/README_Datasets]]
-  - [[11_ModelosIA/MODEL_MotorMatematico]]
 ---
 
 # EXP: Alpha v2 — Pipeline de Anotación y Motor Matemático
@@ -197,5 +196,4 @@ python -m streamlit run app_anotacion_av2.py
 
 - [[15_Resultados/RESULT_AlphaV2_Snapshots]]
 - [[13_Features/README_ShapeFeatures]]
-- [[11_ModelosIA/MODEL_MotorMatematico]]
 - [[10_Datasets/README_Datasets]]
