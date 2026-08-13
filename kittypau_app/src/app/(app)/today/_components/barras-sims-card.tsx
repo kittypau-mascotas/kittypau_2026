@@ -85,9 +85,9 @@ export default function BarrasSimsCard({
                   className="h-8 w-8 object-contain opacity-90"
                 />
               </div>
-              <div className="relative flex h-36 w-10 items-end rounded-[999px] border border-slate-100 p-1 shadow-inner shadow-white/50">
+              <div className="kp-liquid-track h-36 w-10 border border-slate-100 bg-white">
                 <div
-                  className={`w-full rounded-[999px] transition-[height] duration-500 ease-out ${fillClass}`}
+                  className={`kp-liquid-fill ${fillClass}`}
                   style={{
                     height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
                     ...fillStyle,

@@ -5,7 +5,7 @@ type: component
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - componente
   - today
@@ -76,6 +76,17 @@ solo traducen el `powerState`/`battery_state` crudo a texto — no son métricas
 - `fillStyle` opcional permite un color de relleno calculado en runtime (usado por Comida,
   vía `hungerBarColor()` en `page.tsx` — gradiente continuo verde→rojo según `percentage`);
   Agua usa un gradiente CSS fijo en vez de `fillStyle`.
+- **Estilo visual "líquido" (2026-08-12):** el track (`.kp-liquid-track`) y el fill
+  (`.kp-liquid-fill`, ambos en `globals.css`) reemplazan el pill plano original por un
+  efecto de cápsula con sombra neumórfica + un "menisco" redondeado en la superficie del
+  relleno (un `::before` circular posicionado con `transform: translateY(-50%)` — no con
+  `top: -50%`, que queda relativo al alto del propio fill y rompe el efecto al variar el
+  %, error real cometido y corregido en la misma sesión). Adaptado de un loader decorativo
+  de referencia (animación infinita con keyframes) a algo 100% data-driven: sin
+  `@keyframes`, la altura sigue siendo `filledBlocks/WELLNESS_BLOCKS` calculado en
+  `page.tsx`, sin cambios. Verificado visualmente en 0%, 30%, 65% y 100% vía Playwright
+  (altura del DOM forzada por script, ninguna cuenta de prueba tenía datos reales en un %
+  intermedio en el momento de verificar).
 
 ---
 
@@ -87,6 +98,13 @@ razones puntuales — es la tercera vez que se revierte un cambio a este panel e
 el historial del proyecto (ver `git log` #18, #20). Ver
 [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] para el detalle completo antes de volver a
 proponer algo acá.
+
+> El rediseño visual del 2026-08-12 (estilo "líquido" de arriba) es distinto de los 3
+> reverts anteriores: Mauro lo pidió explícito, pegando el código de referencia y
+> especificando "respetando funciones, cálculos y colores según el progreso" — no es una
+> adición no solicitada de métricas/cards, es un cambio de skin sobre las 2 barras que ya
+> existían. Cero cambio en `today/page.tsx` (props/cálculo/color intactos), solo en este
+> componente + `globals.css`.
 
 ---
 

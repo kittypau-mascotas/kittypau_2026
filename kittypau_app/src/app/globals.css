@@ -4239,6 +4239,50 @@ textarea::placeholder {
   pointer-events: auto;
 }
 
+/* Barras Sims (/today) — pill "líquido" (pedido por Mauro 2026-08-12, a partir
+ * de un loader decorativo de referencia). El loader original animaba en loop
+ * infinito con keyframes + un truco de box-shadow con spread gigante — acá se
+ * adapta a data real: la altura la sigue calculando barras-sims-card.tsx
+ * (filledBlocks/WELLNESS_BLOCKS, sin cambios), y el "menisco" redondeado de la
+ * superficie es un círculo posicionado sobre el borde superior del fill, no
+ * una animación. Color y % de llenado siguen viniendo 100% de
+ * today/page.tsx (fillClass/fillStyle/filledBlocks) — ver
+ * Knowledge/18_UI/Componentes/COMP_BarrasSimsCard.md. */
+.kp-liquid-track {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  box-shadow:
+    inset -4px -4px 8px rgba(255, 255, 255, 0.7),
+    inset 4px 4px 10px rgba(15, 23, 42, 0.1),
+    6px 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.kp-liquid-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transition:
+    height 600ms ease-out,
+    background-color 600ms ease-out;
+}
+
+.kp-liquid-fill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 100%;
+  background: inherit;
+  /* -50% acá es relativo a la altura del propio círculo (no la del fill,
+     que cambia con el dato) — así queda centrado sobre el borde superior
+     sin importar qué tan lleno esté el fill. */
+  transform: translateY(-50%);
+}
+
 /* APK-specific distribution (Capacitor native app + native flavor deploy) */
 .kp-native-apk .app-shell,
 .kp-flavor-native .app-shell {
