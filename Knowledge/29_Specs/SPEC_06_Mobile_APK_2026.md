@@ -37,6 +37,14 @@ related:
 
 ### A1 — `targetSdkVersion` en 35, Google Play exige 36 desde el 31 de agosto de 2026
 
+> ✅ **Hecho (2026-08-12).** `compileSdkVersion`/`targetSdkVersion` 35→36,
+> `minSdkVersion` 23→24, `SystemBars` configurado en `capacitor.config.ts` (edge-to-edge).
+> Cadena de bumps real, descubierta compilando (no supuesta): androidx 1.11.0/1.17.0 exigen
+> AGP ≥8.9.1 (estaba en 8.7.2) → subido a **8.13.2** (último estable de la rama 8.x, sin
+> saltar a AGP 9.x); AGP 8.13.2 exige Gradle ≥8.13 (estaba en 8.11.1) → subido a **8.14.5**.
+> `gradlew assembleDebug` compila limpio. **Falta:** verificar edge-to-edge visualmente en
+> el celular de Mauro (APK nuevo mandado por WhatsApp, mismo flujo que la notificación push).
+
 **Hoy es 2026-08-12 — quedan ~19 días.** Desde esa fecha, Google Play **rechaza** apps nuevas
 o actualizaciones que no targeteen Android 16 (API 36), salvo extensión aprobada
 explícitamente.
@@ -58,21 +66,35 @@ romper visualmente el layout.
 **Esfuerzo:** M (bump de SDK + adoptar System Bars + probar cada pantalla con edge-to-edge).
 **Impacto:** Alto — bloquea publicar en Play Store pasado el plazo, no es cosmético.
 
-### A2 — Desalineación de versiones Capacitor: CLI en 7.6.0, core/android en 8.2.0
+**Pendiente de pulir, no bloqueante:** `globals.css` ya tenía `env(safe-area-inset-*)`
+extenso de trabajo previo (~15 usos), pero `system-bars.md` de Capacitor documenta un bug de
+WebView Android <140 donde `env()` solo no alcanza — el patrón robusto es
+`var(--safe-area-inset-top, env(safe-area-inset-top, 0px))` (la var la inyecta el plugin
+como fallback). No se reescribió todo el CSS existente en esta pasada — bajo riesgo (la
+mayoría de WebView activo en 2026 ya es ≥140), pero anotado para cuando se audite cada
+pantalla con edge-to-edge real.
 
-```json
-"@capacitor/cli": "^7.6.0",       // ⚠️ un major atrás
-"@capacitor/core": "^8.2.0",
-"@capacitor/android": "^8.2.0",
-```
+### A2 — `@capacitor/cli` en v8 requiere Node ≥22, esta máquina tiene Node 20
 
-El CLI genera/sincroniza el proyecto nativo — con un major de diferencia, comandos como
-`cap sync`/`cap doctor` pueden dar resultados inconsistentes con lo que el runtime v8
-realmente necesita (Gradle 8.14.3, AGP 8.13.0, Kotlin 2.2, sintaxis `compileSdk = 36` en vez
-de `compileSdk 36`). Actualizar el CLI a `^8.x` es el primer paso antes de tocar A1.
+> ⚠️ **Bloqueado, necesita decisión de Mauro (2026-08-12).** `@capacitor/core` y
+> `@capacitor/android` ya están en `8.5.0` (última). Se intentó subir `@capacitor/cli` a
+> `8.5.0` también — **falla explícitamente**: `The Capacitor CLI requires NodeJS >=22.0.0`.
+> La máquina de desarrollo tiene Node v20.19.6. Se revirtió el CLI a `^7.6.0` (confirmado
+> que sigue funcionando bien con core/android en 8.x — `cap sync`/`assembleDebug` corrieron
+> sin problema durante todo A1).
 
-**Esfuerzo:** XS. **Impacto:** Medio — previene fricción/errores confusos en el resto de
-esta lista.
+**Dos caminos, sin apuro real** (a diferencia de A1, esto no tiene fecha límite de Play
+Store):
+1. Actualizar Node del sistema a ≥22 (nvm-windows, o reinstalar Node) y recién ahí subir
+   `@capacitor/cli` a `8.5.0` — alinea todo, pero es un cambio de entorno que puede afectar
+   otros proyectos en esta máquina, no solo Kittypau.
+2. Quedarse en `@capacitor/cli@7.6.0` indefinidamente — ya probado que funciona con
+   core/android 8.x en esta sesión. El CLI viejo puede no soportar features nuevas del
+   ecosistema v8 (ej. templates), pero para `sync`/`build`/`add` diario no mostró problemas.
+
+**Esfuerzo:** XS si se elige el camino 2 (no hacer nada). M si se elige el camino 1
+(upgrade de Node + validar que nada más en la máquina se rompa). **Impacto:** Bajo — no
+bloquea nada de lo que se hizo en A1.
 
 ---
 
@@ -150,11 +172,12 @@ autorizar la conexión del dispositivo (USB o inalámbrica) — no hay forma de 
 
 | # | Item | Esfuerzo | Impacto | Urgencia |
 |---|---|---|---|---|
-| 1 | A2 — alinear `@capacitor/cli` a v8 | XS | Medio | Antes de tocar A1 |
-| 2 | A1 — `targetSdk`/`compileSdk` 36 + System Bars (edge-to-edge) | M | Alto | **Antes del 31/08/2026** |
+| 1 | ~~A1 — `targetSdk`/`compileSdk` 36 + System Bars~~ | M | Alto | ✅ Hecho 2026-08-12, falta verificar en dispositivo |
+| 2 | A2 — decidir Node ≥22 vs quedarse en `@capacitor/cli@7.6.0` | XS-M | Bajo | Sin apuro, decisión de Mauro |
 | 3 | `@capacitor/app` — predictive back + deep links | S | Medio | Ligada a A1 (mismo cambio de comportamiento de Android 16) |
 | 4 | `@capacitor/haptics` | XS | Bajo/medio | Cuando haya ancho |
 | 5 | `@capacitor/preferences`, `@capacitor/share`, biometría | S-M c/u | Medio | Sin apuro, evaluar una por una |
+| 6 | Endurecer `env(safe-area-inset-*)` con fallback `var(--safe-area-inset-*, ...)` en `globals.css` | S | Bajo | No bloqueante, WebView <140 es minoría en 2026 |
 
 ---
 
