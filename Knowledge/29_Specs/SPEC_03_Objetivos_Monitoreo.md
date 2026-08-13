@@ -56,7 +56,7 @@ preguntas para el dueño, en este orden de importancia:
   [[05_API/SPEC_HungerBar_Alimentacion]].
 - Alerta visual ≥2h de atraso + color continuo de la barra (v1.1). Ver
   [[05_API/SPEC_HungerBar_Alertas]].
-- Motor Matemático v2 (102 features, Evidence Engine 78.8% accuracy held-out) existe y
+- Motor Matemático v2 (102 features, Evidence Engine 80.0% accuracy held-out, en vivo) existe y
   está calibrado, pero **no está portado a producción** — la barra usa un clasificador de
   reglas simples (v1, decisión B' documentada), no el motor real.
 

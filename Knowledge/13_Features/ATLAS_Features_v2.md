@@ -227,7 +227,7 @@ revisar en próxima regeneración de esta tabla). `autocorr_lag5`, `initial_slop
 Pero el fix real **no fue este ajuste de pesos** — fue normalizar antes de sumar y
 calcular los pesos desde los datos en vez de a mano. Ver
 [[11_ModelosIA/MODEL_EvidenceEngine]] — el motor legado (aunque se le agreguen estas 3
-features) acierta 51.5%, el normalizado 78.8%.
+features) acierta 58.4%, el normalizado 80.0% (recalculado en vivo 2026-08-13).
 
 ---
 

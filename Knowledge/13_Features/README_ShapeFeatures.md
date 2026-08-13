@@ -92,8 +92,8 @@ score = evidence_score(feats, comp_stats)
 ```
 
 - Mejor discriminador: `tpl_doble_rampa` (7.69σ Alimentación vs Servido)
-- Calibrado sobre 496 anotaciones (2026-08-10)
-- Accuracy held-out validada: 78.8% (antes del fix: 49.6%)
+- Calibrado sobre 527 anotaciones (recalculado en vivo 2026-08-13, antes: 496 el 2026-08-10)
+- Accuracy held-out validada: 80.0% (antes del fix normalizador: 58.4%)
 - Ver [[11_ModelosIA/MODEL_EvidenceEngine]] para pesos y fórmula completa
 
 ---

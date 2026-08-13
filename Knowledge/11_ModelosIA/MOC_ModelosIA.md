@@ -25,7 +25,7 @@ related:
 | Documento | Versión | Estado | Descripción |
 |-----------|---------|--------|-------------|
 | [[13_Features/README_ShapeFeatures]] | v2 | Activo | 102 features en 15 familias (F00–F14) — numpy/scipy only |
-| [[MODEL_EvidenceEngine]] | v2 (2026-08-10) | Activo | Normalización + pesos calculados desde los datos sobre las 102 features — 78.8% accuracy held-out (antes: 49.6%, peor que adivinar). Mejor: `tpl_doble_rampa` 7.69σ |
+| [[MODEL_EvidenceEngine]] | v2 (2026-08-10, recalculado 2026-08-13) | Activo | Normalización + pesos calculados desde los datos sobre las 102 features — 80.0% accuracy held-out en vivo (antes del fix: 58.4%, peor que adivinar). Mejor: `tpl_doble_rampa` 7.69σ |
 
 ## Modelos futuros / en planificación
 

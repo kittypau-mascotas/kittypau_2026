@@ -177,7 +177,7 @@ Las siguientes variables DEBEN estar configuradas para que la app funcione:
 | Componente | Estado |
 |---|---|
 | `shape_features_v2.py` | ✅ 102 features en 15 familias (F00–F14) |
-| Evidence Engine | ✅ Corregido 2026-08-10 — normalización z-score + pesos calculados desde datos. Accuracy held-out: 78.8% (antes 49.6%, peor que el baseline trivial) |
+| Evidence Engine | ✅ Corregido 2026-08-10 — normalización z-score + pesos calculados desde datos. Accuracy held-out: **80.0%** (recalculada en vivo 2026-08-13 sobre 527 anot., antes 58.4% sin normalizar) — ver [[11_ModelosIA/MODEL_EvidenceEngine]] |
 | Anotaciones KPCL0034 | 496 cerradas en snapshot v2.4 (2026-08-11) — **527 en vivo** en `anotaciones_av2.csv` sin snapshot formal aún (alim=262 / serv=58 / ruido=207) |
 | Separabilidad A/S mejor feature (`tpl_doble_rampa`) | ✅ 7.69σ (v2.3) |
 | Auditoría motor↔humano | 88/496 (17.7%) discrepancias ≥85% confianza — pendiente de revisión manual, sin corrección automática |

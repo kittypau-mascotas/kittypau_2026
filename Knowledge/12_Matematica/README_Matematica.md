@@ -194,9 +194,10 @@ score_cat = softmax(Σ w_cat(fᵢ) × fᵢ_norm)            para cat ∈ {alim, 
 ```
 
 Antes los pesos `wᵢ` se elegían a mano y se aplicaban sobre `fᵢ` sin normalizar — con
-496 anotaciones acertaba 49.6% (peor que adivinar la clase mayoritaria). Normalizando y
+527 anotaciones acertaba 58.4% (peor que adivinar la clase mayoritaria). Normalizando y
 calculando los pesos desde `comp_stats_v2.json` (discriminante tipo Fisher, sobre las 102
-features): 78.8% held-out.
+features): 80.0% held-out (recalculado en vivo 2026-08-13, ver
+[[11_ModelosIA/MODEL_EvidenceEngine]]).
 
 ---
 

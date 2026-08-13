@@ -5,7 +5,7 @@ type: model
 status: active
 owner: Mauro
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-13
 tags:
   - modelo
   - evidence-engine
@@ -69,12 +69,24 @@ score = evidence_score(feats, comp_stats)
 
 Split 80/20, pesos calculados **solo con el 80%** (train), evaluado en el 20% nunca visto:
 
-| Versión | Accuracy held-out |
-|---|---|
-| Motor legado (`EVIDENCE_WEIGHTS`, 23 features a mano, sin normalizar) | 51.5% |
-| **Motor normalizado + pesos calculados (102 features)** | **78.8%** |
+| Versión | Medido 2026-08-10 (496 anot.) | Medido 2026-08-13 (527 anot.) |
+|---|---|---|
+| Motor legado (`EVIDENCE_WEIGHTS`, 23 features a mano, sin normalizar) | 51.5% | 58.4% |
+| **Motor normalizado + pesos calculados (102 features)** | 77.8%¹ | **80.0%** |
 
-Con todos los datos (496 anotaciones, sin held-out): 81.1%.
+¹ El número del 2026-08-10 aparece como 77.8% en el comentario de
+`tests/test_evidence_engine.py` (fuente autoritativa — es lo que el propio piso del test
+documenta) pero como 78.8% en varios documentos de Knowledge escritos ese mismo día —
+inconsistencia de transcripción entre docs, no una re-medición distinta. No se investigó
+cuál de las dos fue la cifra real originalmente; queda resuelta por el número recalculado
+el 2026-08-13, que es el que manda de ahora en adelante.
+
+**Desde 2026-08-13 ya no es un número estático:** `app_anotacion_av2.py` (Tab 5 — Motor
+Matemático) lo recalcula en vivo con `_evidence_engine_accuracy_cached()` (mismo método,
+seed=42, ttl=1h) cada vez que cambian las anotaciones, así no vuelve a quedar
+desactualizado en la UI. Ver [[14_Experimentos/EXP_AlphaV2_AppArq]].
+
+Con todos los datos (527 anotaciones, sin held-out): 80.5%.
 
 Test de regresión permanente:
 `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/tests/test_evidence_engine.py`
