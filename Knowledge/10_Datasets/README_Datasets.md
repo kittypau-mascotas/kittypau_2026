@@ -40,12 +40,14 @@ está en `.gitignore` vía `Docs/11_Data/**/*.csv`, así que no hay historial gi
 cuales **167 959** matchean el UUID de KPCL0034 Mayo–Jun (`3a460074...`) — vs. las 94 588
 documentadas.
 
-> ✅ **Resuelto 2026-08-13:** el device dominante `3c1c6705…` (821 785 filas, 75,7% del
-> archivo) es **KPCL0036, el bebedero** — confirmado por Mauro. No es un sensor mal
-> configurado floodeando lecturas: reporta a una cadencia real de ~1,16s (15–25× más
-> rápido que KPCL0034), lo que explica el volumen sin que implique más uso. Ver
-> [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §2.2–§2.3 para el diagnóstico completo
-> (incluye una anomalía de hardware sin resolver: 9,09% de lecturas en exactamente `0`).
+> ✅ Resuelto 2026-08-13 (mañana), ⚠️ **corregido esa misma tarde:** el device dominante
+> `3c1c6705…` (821 785 filas, 75,7% del archivo) se identificó primero como "KPCL0036, el
+> bebedero" — resultó ser un error: ese UUID está **retirado**, y el código legible
+> "KPCL0036" se reasignó desde el 17-jul-2026 a otra mascota, no relacionada. El bebedero
+> real de Bandida es **KPCL0035** (`0dc601c0-1533-40c5-b606-6d89eb2d4042`), confirmado por
+> Mauro contra la tabla `devices` de Supabase. Detalle completo — incluyendo si `3c1c6705…`
+> es o no el mismo hardware físico que luego pasó a ser KPCL0035 — en el banner de
+> corrección al inicio de [[29_Specs/SPEC_07_Investigacion_Hidratacion]].
 
 **No parece ser corrupción reciente:** una memoria de sesión de hace ~45 días ya registraba
 "Filas KPCL0034: ~154 857" para este mismo archivo — el número coincide exacto con lo medido
@@ -186,16 +188,21 @@ python revisar_anotaciones_v2.py
 
 ---
 
-## Dataset de hidratación (KPCL0036) — separado, en construcción
+## Dataset de hidratación (KPCL0035) — separado, en construcción
 
-Desde 2026-08-13 existe `fase_0_ruido/data_agua/candidatos_agua.csv` (393 candidatos: 223
-bajada/57%, 159 subida/40%, 11 mixto/3%), generado por el mismo `01_genera_candidatos.py`
-de esta página vía `KITTYPAU_DEVICE_PROFILE=KPCL0036` — parametrización descrita en
+Desde 2026-08-13 existe `fase_0_ruido/data_agua/candidatos_agua.csv` (**288 candidatos**:
+217 bajada/75%, 69 subida/24%, 2 mixto/1%; período 25-may→13-ago-2026, 104.573 lecturas),
+generado por el mismo `01_genera_candidatos.py` de esta página vía
+`KITTYPAU_DEVICE_PROFILE=KPCL0035` — parametrización descrita en
 [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §5.1/§7. **No es un fork**: mismo código,
 carpeta de datos distinta (`data_agua/` vs. `data/`), nunca se mezclan. Todavía sin
 anotaciones manuales ni `umbrales_agua.json` calibrado — ver SPEC_07 §7 para el roadmap
 completo. No agregar filas de agua a las tablas de esta página; su esquema y estado viven
 en el índice propio [[00_INDICE_AV2_AGUA]].
+
+> **Nota:** el device se identificó primero (erróneamente) como KPCL0036 la mañana del
+> 2026-08-13, corregido a KPCL0035 esa misma tarde — ver banner de corrección al inicio de
+> [[29_Specs/SPEC_07_Investigacion_Hidratacion]] para la historia completa.
 
 ## Ver también
 
@@ -204,5 +211,5 @@ en el índice propio [[00_INDICE_AV2_AGUA]].
 - [[14_Experimentos/EXP_AlphaV2_AppArq]] — app que lee estos archivos
 - [[13_Features/README_ShapeFeatures]] — features extraídas de los candidatos
 - [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — línea de investigación de hidratación
-  (KPCL0036), datasets/parámetros propios, no mezclar con los de esta página (comida)
+  (KPCL0035), datasets/parámetros propios, no mezclar con los de esta página (comida)
 - [[00_INDICE_AV2_AGUA]] — índice de artefactos generados para hidratación

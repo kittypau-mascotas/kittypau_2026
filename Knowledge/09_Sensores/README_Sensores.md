@@ -96,8 +96,9 @@ Ambos UUIDs se filtran en el pipeline para obtener la señal completa de KPCL003
 | ID | Tipo | Estado |
 |---|---|---|
 | KPCL0031, KPCL0033 | food_bowl | Activos, usuarios reales |
-| KPCL0035 | food_bowl | DHT11 en lugar de AHT10 — payload igual |
-| KPCL0036 | **water_bowl (bebedero)** ✅ confirmado 2026-08-13 | UUID `3c1c6705-636d-4770-bdcf-21aa6f7225a5`. Esta fila decía `food_bowl` — corregido: 3 fuentes independientes (`07_AUDITORIA_KPCL0036_ERROR_PESO.md`, `README.md` raíz, `GLOSARIO_GAMMA.md`) lo documentan como bebedero desde abril 2026; el `device_type=comedero` que aparece en exports recientes es una reclasificación posterior del hardware (reutilizado en pruebas comparativas), no su rol original. Tiene 821.785 lecturas crudas (más que KPCL0034) pero con una anomalía de voltaje/spikes documentada, sin resolver. Detalle completo en [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §2.2–§2.3 |
+| KPCL0034 | food_bowl (comedero) — **de Bandida** | UUID `3a460074-e7c3-41bf-ae5a-a011445f927a`. Apagado desde 23-jul-2026, no ha vuelto a reportar |
+| KPCL0035 | **water_bowl (bebedero) — de Bandida** ✅ confirmado por Mauro 2026-08-13 | UUID `0dc601c0-1533-40c5-b606-6d89eb2d4042` (DHT11 en lugar de AHT10 — payload igual). Creado el mismo minuto que KPCL0034 (25-may-2026), se apagó junto con él el 23-jul-2026 pero se reconectó solo el 10-ago-2026 y sigue activo. Detalle completo en [[29_Specs/SPEC_07_Investigacion_Hidratacion]] (banner de corrección al inicio) |
+| KPCL0036 | food_bowl — **NO es de Bandida** ⚠️ | UUID `7573c1d6-25bf-4ad2-89eb-7f29a1313c5a`, pertenece a otra mascota ("pasturri", otro dueño) desde el 17-jul-2026. **No confundir con el UUID retirado `3c1c6705-636d-4770-bdcf-21aa6f7225a5`**, que tuvo este mismo código "KPCL0036" hasta esa fecha y que las fuentes de abril/mayo 2026 (`07_AUDITORIA_KPCL0036_ERROR_PESO.md`, `README.md` raíz, `GLOSARIO_GAMMA.md`) documentan como bebedero — ese device está retirado, ya no existe en la tabla `devices` de Supabase. Ver [[29_Specs/SPEC_07_Investigacion_Hidratacion]] para la historia completa de esta confusión |
 | KPCL0037, KPCL0038, KPCL0040, KPCL0041 | food_bowl | Activos |
 
 ---

@@ -26,10 +26,10 @@ related:
 **Archivo:** `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`
 
 > **2026-08-13 — parametrizada por `DEVICE_PROFILES`** (perfil `KPCL0034` activo, perfil
-> `KPCL0036`/agua registrado pero inerte) y auditada por certeza matemática/redundancia/
-> rendimiento — ver "Auditoría 2026-08-13" más abajo y
-> [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §5.1 para el diseño completo del
-> parametrizado.
+> `KPCL0035`/agua — el bebedero real, corregido desde `KPCL0036` esa misma tarde —
+> registrado pero inerte) y auditada por certeza matemática/redundancia/rendimiento — ver
+> "Auditoría 2026-08-13" más abajo y [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §5.1
+> para el diseño completo del parametrizado.
 
 ## Principio fundamental
 

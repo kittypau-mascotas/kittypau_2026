@@ -85,8 +85,8 @@ READINGS_CSV      = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 
 # ─── Perfiles de dispositivo ──────────────────────────────────────────────────
-# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1.
-# KPCL0036 (agua) está registrado como DATOS EN REPOSO — no es seleccionable
+# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1/§2.2.
+# KPCL0035 (agua) está registrado como DATOS EN REPOSO — no es seleccionable
 # todavía. Activarlo hoy rompería la app: 53 literales "alimentacion" /
 # "ciclo_servido_alimento" hardcodeados como llaves de CATEGORIAS y comparaciones
 # de DataFrame a lo largo del archivo (no solo en la definición de CATEGORIAS),
@@ -94,12 +94,16 @@ READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 # indirección de nombres de categoría es un paso propio, todavía pendiente —
 # ver SPEC_07 §5.1 "Corrección importante". Hasta entonces _ACTIVE_PROFILE
 # sigue hardcodeado abajo. Cero cambio de comportamiento para KPCL0034.
+#
+# ⚠️ Corrección 2026-08-13: el bebedero de Bandida es KPCL0035, no KPCL0036 (ese
+# código se reasignó a otra mascota — otro dueño — el 17-jul-2026). Confirmado
+# por Mauro contra la tabla `devices` de Supabase — ver SPEC_07 §2.2.
 DEVICE_PROFILES: dict[str, dict] = {
     "KPCL0034": {
         "device_code": "KPCL0034",
         "uuids": {
             "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
-            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
+            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026 — apagado desde 23-jul-2026
         },
         "candidatos_csv": DATA_DIR / "candidatos_av2.csv",
         "anotaciones_csv": DATA_DIR / "anotaciones_av2.csv",
@@ -108,10 +112,10 @@ DEVICE_PROFILES: dict[str, dict] = {
         "comp_stats_json": DATA_DIR / "comp_stats_v2.json",
         "cache_parquet": DATA_DIR / "_cache_lecturas_30s.parquet",
     },
-    "KPCL0036": {
-        "device_code": "KPCL0036",
+    "KPCL0035": {
+        "device_code": "KPCL0035",
         "uuids": {
-            "3c1c6705-636d-4770-bdcf-21aa6f7225a5",  # bebedero, confirmado 2026-08-13
+            "0dc601c0-1533-40c5-b606-6d89eb2d4042",  # bebedero, confirmado por Mauro 2026-08-13
         },
         "candidatos_csv": DATA_DIR_AGUA / "candidatos_agua.csv",
         "anotaciones_csv": DATA_DIR_AGUA / "anotaciones_agua.csv",

@@ -49,26 +49,31 @@ READINGS_CSV      = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 
 # ─── Perfiles de dispositivo ──────────────────────────────────────────────────
-# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1 — paso 3 del
-# roadmap: agrega el perfil KPCL0036 (agua). Este script no usa CATEGORIAS/
-# METAS_AV2 (esos solo existen en app_anotacion_av2.py), así que activar el
-# perfil agua acá es seguro — no dispara el problema de las ~50 claves de
-# categoría hardcodeadas documentado en el spec.
+# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1/§2.2 — paso 3 del
+# roadmap: agrega el perfil de agua. Este script no usa CATEGORIAS/METAS_AV2 (esos
+# solo existen en app_anotacion_av2.py), así que activar el perfil agua acá es
+# seguro — no dispara el problema de las ~50 claves de categoría hardcodeadas
+# documentado en el spec.
+#
+# ⚠️ Corrección 2026-08-13: el bebedero de Bandida es KPCL0035, no KPCL0036. El
+# código "KPCL0036" se reasignó el 17-jul-2026 a otra mascota (otro dueño) — ver
+# SPEC_07 §2.2 para el detalle completo de la confusión y cómo se resolvió
+# (confirmado por Mauro contra la tabla `devices` de Supabase).
 DEVICE_PROFILES: dict[str, dict] = {
     "KPCL0034": {
         "device_code": "KPCL0034",
         "uuids": {
             "9510a455-b0e9-4932-8be1-03976d31228a",  # Abril 2026
-            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026
+            "3a460074-e7c3-41bf-ae5a-a011445f927a",  # Mayo-Junio 2026 — apagado desde 23-jul-2026
         },
         "candidatos_csv": DATA_DIR / "candidatos_av2.csv",
         "ciclos_csv": DATA_DIR / "ciclos_servido_alimento.csv",
         "umbrales_json": CONFIG_DIR / "umbrales.json",
     },
-    "KPCL0036": {
-        "device_code": "KPCL0036",
+    "KPCL0035": {
+        "device_code": "KPCL0035",
         "uuids": {
-            "3c1c6705-636d-4770-bdcf-21aa6f7225a5",  # bebedero, confirmado SPEC_07 §2.2
+            "0dc601c0-1533-40c5-b606-6d89eb2d4042",  # bebedero, confirmado por Mauro 2026-08-13
         },
         "candidatos_csv": DATA_DIR_AGUA / "candidatos_agua.csv",
         "ciclos_csv": DATA_DIR_AGUA / "ciclos_servido_hidratacion.csv",
@@ -78,7 +83,7 @@ DEVICE_PROFILES: dict[str, dict] = {
 
 # Perfil activo: "KPCL0034" por defecto (sin cambio de comportamiento). Se puede
 # generar candidatos de otro perfil sin tocar el default con, por ejemplo:
-#   KITTYPAU_DEVICE_PROFILE=KPCL0036 python 01_genera_candidatos.py
+#   KITTYPAU_DEVICE_PROFILE=KPCL0035 python 01_genera_candidatos.py
 _ACTIVE_PROFILE = os.environ.get("KITTYPAU_DEVICE_PROFILE", "KPCL0034")
 _ACTIVE = DEVICE_PROFILES[_ACTIVE_PROFILE]
 

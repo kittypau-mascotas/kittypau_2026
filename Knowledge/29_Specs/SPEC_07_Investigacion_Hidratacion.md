@@ -7,7 +7,12 @@ owner: Mauro
 created: 2026-08-13
 updated: 2026-08-13
 confirmado_por_mauro:
-  - "KPCL0036 (device_id 3c1c6705-636d-4770-bdcf-21aa6f7225a5) es el bebedero — 2026-08-13"
+  - "⚠️ SUPERADO — ver corrección abajo: KPCL0036 (device_id 3c1c6705-636d-4770-bdcf-21aa6f7225a5)
+    es el bebedero — 2026-08-13 (mañana)"
+  - "✅ VIGENTE — corrige lo anterior: el bebedero real de Bandida es KPCL0035 (device_id
+    0dc601c0-1533-40c5-b606-6d89eb2d4042). El código \"KPCL0036\" se reasignó el 17-jul-2026
+    a otra mascota (\"pasturri\", otro dueño) — confirmado contra la tabla `devices` de
+    Supabase — 2026-08-13 (tarde)"
   - "Taxonomía de anotación de agua = misma que comida (hidratacion/servido/ruido +
     ciclos_servido_hidratacion), calcada 1:1 — 2026-08-13"
   - "app_anotacion_av2.py se parametriza por perfil de dispositivo (DEVICE_PROFILES) en
@@ -43,6 +48,60 @@ related:
 
 ---
 
+## ⚠️ Corrección crítica (2026-08-13, tarde) — el bebedero es KPCL0035, no KPCL0036
+
+Todo lo que este documento dice sobre **"KPCL0036 es el bebedero"** (§0 punto 2, §2.2,
+§2.3, frontmatter) fue confirmado por Mauro **en la mañana** del 2026-08-13 y ejecutado
+(pasos 2 y 3 del roadmap, §7) — pero resultó estar basado en una identidad de device que
+ya no es la correcta. Se detectó y corrigió **esa misma tarde**, a partir de una pregunta
+de Mauro sobre por qué el gráfico general no mostraba data nueva.
+
+**Qué pasó:** el código legible "KPCL0036" es una etiqueta que Supabase reasigna a
+distintos `device_id` (UUID) físicos a lo largo del tiempo — no es una identidad estable.
+El UUID `3c1c6705-636d-4770-bdcf-21aa6f7225a5` (el que analizamos en §2.2/§2.3, con la
+cadencia rápida de ~1,16s) fue en su momento el bebedero de Bandida, pero es un device
+**retirado** — ya no existe en la tabla `devices` de Supabase. El código "KPCL0036" se
+reasignó el **17-jul-2026** a un UUID nuevo (`7573c1d6-25bf-4ad2-89eb-7f29a1313c5a`) que
+pertenece a **otra mascota, "pasturri" (perro), de otro dueño** — nada que ver con Bandida.
+
+**La identidad real, confirmada por Mauro contra la tabla `devices` de Supabase:**
+
+| Código | UUID actual | Dueño | Rol |
+|---|---|---|---|
+| KPCL0034 | `3a460074-e7c3-41bf-ae5a-a011445f927a` | 🐱 Bandida | Comedero — apagado desde 23-jul-2026 |
+| **KPCL0035** | **`0dc601c0-1533-40c5-b606-6d89eb2d4042`** | 🐱 Bandida | **Bebedero — confirmado por Mauro 2026-08-13** |
+| KPCL0036 | `7573c1d6-25bf-4ad2-89eb-7f29a1313c5a` | 🐕 pasturri (otro dueño) | Irrelevante para esta investigación |
+
+KPCL0034 y KPCL0035 se crearon en Supabase el mismo minuto (25-may-2026 01:51/01:52) y se
+apagaron juntos el 23-jul-2026 (30 min de diferencia) — consistente con estar en la misma
+ubicación física. KPCL0035 se reconectó solo el 10-ago-2026 y sigue activo; KPCL0034 no ha
+vuelto a reportar.
+
+**Qué ya se corrigió (2026-08-13, tarde):**
+- `01_genera_candidatos.py` / `revisar_anotaciones_v2.py` / `app_anotacion_av2.py`:
+  perfil `"KPCL0036"` renombrado a `"KPCL0035"`, UUID actualizado.
+- `supabase_client.py`: agregado `KPCL0035_UUIDS` + `BANDIDA_UUIDS`, el sync incremental
+  ahora trae ambos devices de Bandida (antes solo traía KPCL0034).
+- `data_agua/candidatos_agua.csv` regenerado desde cero con datos reales de KPCL0035:
+  **288 candidatos** (217 bajada/75%, 69 subida/24%, 2 mixto/1%; período 25-may → 13-ago
+  2026, 104.573 lecturas) — reemplaza los 393 candidatos generados por error contra
+  KPCL0036 (que en realidad eran de abril-mayo, del device viejo retirado).
+
+**Qué queda sin resolver:** el UUID retirado `3c1c6705...` — ¿es realmente el mismo
+bebedero físico que luego pasó a ser KPCL0035 (reemplazo de hardware/reprovisioning), o es
+un device distinto? Las fechas encajan (el viejo termina 5-may, KPCL0035 empieza 25-may),
+pero no está confirmado. Mientras tanto, el perfil de agua usa **solo** el UUID de
+KPCL0035 — los datos de abril-mayo del UUID retirado quedan fuera hasta confirmar la
+continuidad.
+
+El resto de este documento (§0 punto 2 en adelante, §2.2, §2.3) queda **como registro
+histórico de la investigación** — se explica cómo llegamos a la conclusión errónea, útil
+para no repetir el mismo error de razonamiento (confiar en el código legible en vez de
+cruzar contra la tabla `devices` con el UUID). No usar esos números/UUID para trabajo
+nuevo — usar siempre la tabla de arriba.
+
+---
+
 ## 0. Resumen ejecutivo
 
 1. **El motor matemático (`shape_features_v2.py`) y el proceso (candidatos → anotación →
@@ -51,14 +110,11 @@ related:
    recalibrar.** Comer y beber son físicamente distintos en cómo afectan el peso del bowl:
    evaporación (deriva lenta y continua, no un evento discreto), lengüetazos vs. mordiscos,
    splash mecánico, dinámica de rellenado. Ver §3.
-2. **✅ Confirmado por Mauro (2026-08-13): KPCL0036 es el bebedero.** No hay dataset
-   *limpio* de hidratación, pero sí hay **821.785 lecturas crudas reales**, cubriendo solo
-   **27 días** (8-abr → 5-may 2026) a una cadencia real de **~1,16s** — 15–25× más rápida
-   que comida, razón real de por qué tiene más filas con menos días de cobertura. La señal
-   central se ve real (mediana 313g, rango físico plausible), pero 9,09% de las lecturas
-   caen en exactamente `0` sin explicación confirmada, y hay una anomalía de hardware
-   documentada (spikes/deriva por voltaje bajo). **Ground truth manual: 1 sola sesión de
-   hidratación anotada en todo el histórico** — comida partió de 40+ por categoría. Ver §2.
+2. **⚠️ SUPERADO — ver corrección arriba.** ~~Confirmado por Mauro (2026-08-13): KPCL0036
+   es el bebedero.~~ El bebedero real es **KPCL0035**
+   (`0dc601c0-1533-40c5-b606-6d89eb2d4042`). El análisis de señal de esta sección (821.785
+   lecturas, cadencia 1,16s, 9,09% en 0) corresponde al UUID `3c1c6705...`, retirado — no
+   se ha repetido todavía sobre KPCL0035. Ver §2.
 3. **✅ Revisado (2026-08-13): `app_anotacion_av2.py` tiene un seam angosto y limpio para
    volverse multi-dispositivo.** Leído el código real: hay **un solo lugar** donde filtra
    por device (`df1[df1["device_id"].isin(KPCL0034_UUIDS)]`) y un bloque de ~10 constantes
@@ -147,7 +203,14 @@ devices): `water_ml` y `flow_rate` están en NULL en el 100% de las filas, sin e
 Ningún device de los 8 UUIDs presentes en estos dos archivos ha reportado jamás un valor
 en esas columnas.
 
-### 2.2 — KPCL0036 es el bebedero (confirmado) — y tiene más data que el comedero
+### 2.2 — [⚠️ registro histórico, superado] "KPCL0036 es el bebedero" — y tiene más data que el comedero
+
+> **Esta sección quedó desactualizada la tarde del mismo día en que se escribió** — ver la
+> corrección al inicio del documento. El UUID `3c1c6705...` analizado acá es un device
+> retirado; el código "KPCL0036" hoy pertenece a otra mascota. El bebedero real de Bandida
+> es **KPCL0035** (`0dc601c0-1533-40c5-b606-6d89eb2d4042`). Se conserva el análisis debajo
+> como registro de cómo se llegó a la conclusión errónea (basada en volumen de datos +
+> `device_type`, sin cruzar contra la tabla `devices` por UUID).
 
 Resuelve una pregunta abierta sin cerrar en [[10_Datasets/README_Datasets]] ("Mauro
 debería confirmar contra Supabase qué es exactamente ese device dominante", refiriéndose
@@ -202,7 +265,13 @@ poco confiable como bebedero) — no borra su rol original ni sus ~800K lecturas
 hay. El diagnóstico de calidad de señal que el paso 4 de §7 proponía como primer paso
 técnico **se adelantó parcialmente en esta sesión** — ver §2.3.
 
-### 2.3 — Diagnóstico real de la señal de KPCL0036 (adelanto del futuro paso de auditoría, §7)
+### 2.3 — [⚠️ registro histórico, superado] Diagnóstico de señal del UUID retirado `3c1c6705...`
+
+> Igual que §2.2: este diagnóstico es del device retirado, no de KPCL0035 (el bebedero
+> real). Sirve como referencia de metodología (cómo se audita cadencia/% en cero) para
+> repetir sobre KPCL0035 cuando corresponda — pero los números concretos de abajo no
+> describen el bebedero actual.
+
 
 Corrido sobre las 821.785 filas de `kpcl0036_sin_batera_actual.csv` (`row_source=reading`).
 Todavía es solo diagnóstico — no se generó ningún candidato ni se tocó `fase_0_ruido/`.
@@ -418,10 +487,10 @@ DEVICE_PROFILES = {
         "categorias": CATEGORIAS_COMIDA,              # dict actual, renombrado
         "metas": {"alimentacion": 40, "servido": 20, "ruido": 30},
     },
-    "KPCL0036": {                                   # agua — nuevo
-        "device_code": "KPCL0036",
+    "KPCL0035": {                                   # agua — nuevo (corregido 2026-08-13, ver banner arriba)
+        "device_code": "KPCL0035",
         "rol": "hidratacion",
-        "uuids": {"3c1c6705-636d-4770-bdcf-21aa6f7225a5"},
+        "uuids": {"0dc601c0-1533-40c5-b606-6d89eb2d4042"},
         "data_dir": DATA_DIR_AGUA,                    # data_agua/ (nuevo)
         "candidatos_csv": "candidatos_agua.csv",
         "anotaciones_csv": "anotaciones_agua.csv",
@@ -484,11 +553,13 @@ antes. Dos caminos, a decidir en el paso 3 del roadmap (§7), no ahora:
 No se resuelve acá — es una decisión real con trade-offs, se toma en el paso 3 de §7 cuando
 se agregue el perfil de agua, no en el paso 2 (que no la necesita).
 
-**Estado 2026-08-13 (cierre del paso 3):** el perfil `KPCL0036` ya está en `DEVICE_PROFILES`
-(paso 3, §7) pero **inerte** en `app_anotacion_av2.py` — `_ACTIVE_PROFILE` sigue hardcodeado
-a `"KPCL0034"` precisamente por esto. **Paso 3b, estipulado y pendiente** (pausado a pedido
-de Mauro para primero hacer una pasada de calidad general sobre `app_anotacion_av2.py` — ver
-§7 tabla, fila 3b, y la sección nueva "Pausa: calidad de `app_anotacion_av2.py`" si existe):
+**Estado 2026-08-13 (cierre del paso 3, corregido esa misma tarde):** el perfil
+`KPCL0035` (renombrado desde `KPCL0036` — ver banner de corrección al inicio) ya está en
+`DEVICE_PROFILES` (paso 3, §7) pero **inerte** en `app_anotacion_av2.py` —
+`_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` precisamente por esto. **Paso 3b,
+estipulado y pendiente** (pausado a pedido de Mauro para primero hacer una pasada de
+calidad general sobre `app_anotacion_av2.py` — ver §7 tabla, fila 3b, y la sección nueva
+"Pausa: calidad de `app_anotacion_av2.py`" si existe):
 
 - **Alcance:** reemplazar las ~53 apariciones literales de `"alimentacion"` /
   `"ciclo_servido_alimento"` como llave/comparación (no las de docstrings/comentarios) por
@@ -504,7 +575,7 @@ de Mauro para primero hacer una pasada de calidad general sobre `app_anotacion_a
   headless + comparación SHA-256 del perfil `KPCL0034` contra el baseline antes/después
   (cero cambio de comportamiento para comida) + `tests/` 16/16.
 - **Al completarlo:** recién ahí activar el selector de perfil en la UI (`st.sidebar.selectbox`
-  propuesto arriba) y habilitar `_ACTIVE_PROFILE = "KPCL0036"` como opción real, no volver a
+  propuesto arriba) y habilitar `_ACTIVE_PROFILE = "KPCL0035"` como opción real, no volver a
   dejarlo hardcodeado.
 
 ### 5.2 — Taxonomía de anotación para agua — ✅ confirmada por Mauro (2026-08-13)
@@ -561,7 +632,10 @@ referencias deja rutas rotas documentadas).
 
 ## 7. Roadmap de ejecución
 
-> Estado: **paso 3 hecho y verificado (2026-08-13)**, en el sub-alcance seguro descrito abajo.
+> Estado: **paso 3 hecho y verificado (2026-08-13)**, en el sub-alcance seguro descrito abajo
+> — **corregido esa misma tarde**: el device de agua era `KPCL0036` por error, es
+> `KPCL0035` (ver banner de corrección al inicio del documento; `candidatos_agua.csv`
+> regenerado con el device correcto, 288 candidatos reales).
 > **Roadmap pausado a pedido de Mauro (2026-08-13)** — antes de seguir con el paso 3b
 > (indirección de categorías, ver §5.1) se hace una pasada de calidad general sobre
 > `app_anotacion_av2.py` (documentación en línea, gráficos de resultados, eliminar
@@ -573,10 +647,10 @@ referencias deja rutas rotas documentadas).
 |---|---|---|
 | 1 | ~~Confirmar con Mauro las preguntas restantes de §8~~ — preguntas 1 y 4 resueltas; 2, 3, 5 no bloquean el paso 2 | — |
 | 2 | ✅ **Hecho 2026-08-13.** `DEVICE_PROFILES` introducido en `app_anotacion_av2.py`, `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` (§5.1), solo perfil `KPCL0034`. Verificación real, no solo "corrí los tests": (a) `python -m py_compile` en los 3 archivos — OK; (b) `streamlit.testing.v1.AppTest` — la app corre headless sin excepciones; (c) las 8 rutas/UUIDs derivadas del perfil son byte-idénticas a las literales de antes; (d) **ambos scripts corridos end-to-end, código original vs. refactorizado, sobre los mismos datos — `candidatos_av2.csv`, `comp_stats_v2.json` y `features_anotaciones_v2.csv` salieron con SHA-256 idéntico**; (e) `tests/` 16/16 passed antes y después. Los archivos de datos regenerados durante la prueba se restauraron a su estado exacto previo (no se dejó nada regenerado de más — `anotaciones_av2.csv`, que tenía anotación en curso sin commitear, no se tocó en ningún momento). Encontrado y documentado en el camino: la app tiene **53 apariciones literales** de `"alimentacion"`/`"ciclo_servido_alimento"` como nombre de categoría (no solo rutas) — no afecta este paso (una sola clave, no cambia), pero sí al paso 3, ver nota en §5.1. | 1 |
-| 3 | ✅ **Hecho 2026-08-13 (sub-alcance seguro).** Perfil `KPCL0036` agregado a `DEVICE_PROFILES` en los 3 archivos. En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0036`, generaron `data_agua/candidatos_agua.csv` real (821.785 filas KPCL0036 leídas → 393 candidatos: 223 bajada/57%, 159 subida/40%, 11 mixto/3%; duración media 10,0 min; Δpeso medio +2,3g). En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `Docs/09_Investigacion/Ciclo Alpha v2/00_INDICE_AV2_AGUA.md`. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
-| 3b | Resolver la indirección de nombres de categoría en `app_anotacion_av2.py` (§5.1) para poder activar `_ACTIVE_PROFILE="KPCL0036"` sin romper — bloqueante para poder *ver* los datos de agua en la UI, no para seguir generando candidatos por script | 3 |
-| 4 | Aislar `3c1c6705…` (KPCL0036) en `readings.csv`/`readings_rows.csv` + diagnóstico de calidad de señal — parcialmente ya hecho en §2.3 de este spec, falta graficar la serie completa para explicar la cadencia de 1,16s y el 9,09% en `0` (§8 pregunta 2) | 3b |
-| 5 | ~~Con el perfil `KPCL0036` seleccionable en la app: adaptar `01_genera_candidatos.py` para generar `candidatos_agua.csv`~~ — **adelantado al paso 3**: el script ya genera `candidatos_agua.csv` real vía env var, sin necesitar selector de UI. Queda pendiente **validar** que `RESAMPLE_TARGET_S=30`/`GAP_CUTOFF_S=300` (heredados de comida) sean correctos para agua antes de darlos por buenos (ver §3) | 3b |
+| 3 | ✅ **Hecho 2026-08-13, corregido esa misma tarde (ver banner al inicio).** Perfil de agua agregado a `DEVICE_PROFILES` en los 3 archivos — inicialmente como `"KPCL0036"` (error, corregido a **`"KPCL0035"`**, el bebedero real). En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0035`, generaron `data_agua/candidatos_agua.csv` real (104.573 filas KPCL0035 leídas, período 25-may→13-ago-2026 → **288 candidatos**: 217 bajada/75%, 69 subida/24%, 2 mixto/1%) — reemplaza los 393 candidatos generados por error contra KPCL0036 esa mañana. En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `Docs/09_Investigacion/Ciclo Alpha v2/00_INDICE_AV2_AGUA.md`. `supabase_client.py` ampliado (`BANDIDA_UUIDS`) para que el sync incremental traiga KPCL0035 además de KPCL0034. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
+| 3b | Resolver la indirección de nombres de categoría en `app_anotacion_av2.py` (§5.1) para poder activar `_ACTIVE_PROFILE="KPCL0035"` sin romper — bloqueante para poder *ver* los datos de agua en la UI, no para seguir generando candidatos por script | 3 |
+| 4 | Diagnóstico de calidad de señal de KPCL0035 (cadencia, % en cero, rango de peso — mismo método usado en §2.3 sobre el UUID retirado, repetir sobre el device correcto) + decidir si el UUID retirado `3c1c6705...` es el mismo bebedero físico (continuidad histórica, sin confirmar — ver banner de corrección) | 3b |
+| 5 | ~~Con el perfil de agua seleccionable en la app: adaptar `01_genera_candidatos.py` para generar `candidatos_agua.csv`~~ — **adelantado al paso 3**: el script ya genera `candidatos_agua.csv` real vía env var, sin necesitar selector de UI. Queda pendiente **validar** que `RESAMPLE_TARGET_S=30`/`GAP_CUTOFF_S=300` (heredados de comida) sean correctos para agua antes de darlos por buenos (ver §3) | 3b |
 | 6 | Anotar manualmente en `hidratacion`/`servido`/`ruido` desde la misma app (taxonomía confirmada, §5.2) — meta mínima análoga a comida: no arrancar clasificación automática con menos anotaciones de las que exige el propio historial del proyecto por categoría (Alpha v2 partió con metas de 40/30/20, terminó con 400+; agua parte de 1 anotación real hoy, ver §2.3) | 5 |
 | 7 | `shape_features_v2.py` — **sin cambios**, se importa tal cual; correr `revisar_anotaciones_v2.py` (ya parametrizado en el paso 2) sobre el perfil agua → genera `comp_stats_agua.json`. Familias 🟢/🟡 quedan calibradas automáticamente; F12–F14 quedan débiles hasta tener suficientes anotaciones — normal, no bloqueante | 6 |
 | 8 | Calibrar `umbrales_agua.json` (mismo mecanismo que `03_recalibrar_umbrales.py`, parametrizado) | 7 |
@@ -588,8 +662,10 @@ referencias deja rutas rotas documentadas).
 ## 8. Preguntas abiertas — necesitan decisión de Mauro antes de ejecutar
 
 1. ~~¿Existe un device `water_bowl`/`bebedero` real con datos?~~ **✅ Resuelto
-   2026-08-13 — sí: KPCL0036 (`3c1c6705…`), 821.785 lecturas.** Era la pregunta que más
-   cambiaba el plan; el roadmap de §7 ya la asume resuelta.
+   2026-08-13 — sí: KPCL0035 (`0dc601c0…`), 104.573 lecturas (25-may→13-ago-2026).**
+   (Primero se identificó mal como KPCL0036 esa misma mañana — corregido esa tarde, ver
+   banner al inicio del documento.) Era la pregunta que más cambiaba el plan; el roadmap
+   de §7 ya la asume resuelta con el device correcto.
 2. **Con el diagnóstico de §2.3 ya hecho: ¿arrancar la anotación manual igual, o primero
    resolver las dos anomalías sin explicar (cadencia de 1,16s y el 9,09% de lecturas en
    `0`)?** No son bloqueantes técnicos — se puede anotar igual sobre la señal cruda — pero
@@ -617,12 +693,12 @@ referencias deja rutas rotas documentadas).
 - [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] — por qué `_sims_agua = 70.0` nunca debe
   portarse a producción tal cual
 - [[10_Datasets/README_Datasets]] — de donde sale la pregunta abierta sobre el device
-  dominante `3c1c6705…`, resuelta en §2.2 de este documento
-- [[09_Sensores/README_Sensores]] — roster de devices; lista KPCL0036 como `food_bowl`
-  "usado en pruebas comparativas", desactualizado a la luz de §2.2 de este documento
-  (confirmado como bebedero) — candidato a corrección cuando se retome este spec
+  dominante `3c1c6705…`, identidad histórica corregida por el banner al inicio de este documento
+- [[09_Sensores/README_Sensores]] — roster de devices, actualizado 2026-08-13 con la
+  identidad real (KPCL0035 = bebedero, KPCL0036 = otra mascota)
 - [[13_Features/README_ShapeFeatures]] — las 15 familias del Motor Matemático de comida
 - `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` — el pipeline a parametrizar por
   dispositivo (§5), no a duplicar
-- `Docs/09_Investigacion/07_AUDITORIA_KPCL0036_ERROR_PESO.md` — el diagnóstico original de
-  la anomalía de KPCL0036 cuando todavía era el bebedero documentado
+- `Docs/09_Investigacion/07_AUDITORIA_KPCL0036_ERROR_PESO.md` — diagnóstico histórico de
+  abril/mayo 2026, sobre el UUID retirado `3c1c6705…` que en ese momento tenía el código
+  "KPCL0036" — no confundir con el KPCL0036 actual (otra mascota, ver banner al inicio)

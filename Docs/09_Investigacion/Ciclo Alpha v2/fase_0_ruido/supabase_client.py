@@ -29,8 +29,20 @@ ROWS_CSV     = DATA_DIR / "readings_rows.csv"  # dinámico — solo append
 
 KPCL0034_UUIDS = [
     "9510a455-b0e9-4932-8be1-03976d31228a",   # Abril 2026
-    "3a460074-e7c3-41bf-ae5a-a011445f927a",   # Mayo-Junio 2026
+    "3a460074-e7c3-41bf-ae5a-a011445f927a",   # Mayo-Junio 2026 — comedero, apagado desde 23-jul-2026
 ]
+
+# Confirmado por Mauro 2026-08-13: KPCL0035 es el bebedero de Bandida (no KPCL0036 —
+# ese código se reasignó el 17-jul-2026 a otra mascota, "pasturri", otro dueño). Creado
+# en Supabase el mismo minuto que KPCL0034 (25-may-2026). Se apagó junto con KPCL0034 el
+# 23-jul-2026 pero se reconectó solo el 10-ago-2026 — sigue activo.
+KPCL0035_UUIDS = [
+    "0dc601c0-1533-40c5-b606-6d89eb2d4042",   # Mayo 2026 → presente — bebedero
+]
+
+# UUIDs a sincronizar desde Supabase: todo el hogar de Bandida (comida + agua).
+# NO incluye KPCL0036 (3c1c6705.../7573c1d6...) — es de otra mascota, otro dueño.
+BANDIDA_UUIDS = KPCL0034_UUIDS + KPCL0035_UUIDS
 
 _PAGE = 1000   # filas por página en paginación REST
 
@@ -117,15 +129,16 @@ def _pg_connect():
 # ── Timestamp de corte (lee solo las columnas mínimas del CSV) ─────────────────
 def get_max_ingested_at() -> pd.Timestamp | None:
     """
-    Lee device_id + ingested_at de ambos CSVs locales y devuelve el max de KPCL0034.
-    No carga el dataset completo en memoria.
+    Lee device_id + ingested_at de ambos CSVs locales y devuelve el max de todo el
+    hogar de Bandida (comida KPCL0034 + agua KPCL0035). No carga el dataset completo
+    en memoria.
     """
     max_ts: pd.Timestamp | None = None
     for csv_path in [READINGS_CSV, ROWS_CSV]:
         if not csv_path.exists():
             continue
         df = pd.read_csv(csv_path, usecols=["device_id", "ingested_at"], low_memory=False)
-        sub = df[df["device_id"].isin(KPCL0034_UUIDS)]
+        sub = df[df["device_id"].isin(BANDIDA_UUIDS)]
         if sub.empty:
             continue
         ts = pd.to_datetime(sub["ingested_at"], format="ISO8601", utc=True)
@@ -232,7 +245,7 @@ def _sync_via_pg(since_iso: str, progress_cb=None) -> pd.DataFrame:
                 ORDER BY ingested_at
                 LIMIT %s OFFSET %s
                 """,
-                (list(KPCL0034_UUIDS), since_iso, _PAGE, offset),   # uuid cast en SQL
+                (list(BANDIDA_UUIDS), since_iso, _PAGE, offset),   # uuid cast en SQL
             )
             batch = cur.fetchall()
             all_rows.extend(batch)
@@ -258,7 +271,7 @@ def _sync_via_rest(since_iso: str, progress_cb=None) -> pd.DataFrame:
         resp = (
             client.table("readings")
             .select(_COLS_SYNC)
-            .in_("device_id", KPCL0034_UUIDS)
+            .in_("device_id", BANDIDA_UUIDS)
             .gt("ingested_at", since_iso)
             .order("ingested_at")
             .range(offset, offset + _PAGE - 1)

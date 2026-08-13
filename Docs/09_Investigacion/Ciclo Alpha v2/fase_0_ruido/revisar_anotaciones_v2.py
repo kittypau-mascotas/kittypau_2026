@@ -34,9 +34,12 @@ READINGS_CSV    = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 
 # ─── Perfiles de dispositivo ──────────────────────────────────────────────────
-# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1 — paso 3 del
-# roadmap: agrega el perfil KPCL0036 (agua). "cats" son las categorías reales
-# de `categoria` en el CSV de anotaciones de ese perfil (§5.2 del spec).
+# Ver Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md §5.1/§2.2 — paso 3 del
+# roadmap: agrega el perfil de agua. "cats" son las categorías reales de
+# `categoria` en el CSV de anotaciones de ese perfil (§5.2 del spec).
+#
+# ⚠️ Corrección 2026-08-13: el bebedero de Bandida es KPCL0035, no KPCL0036 (ese
+# código se reasignó a otra mascota el 17-jul-2026) — ver SPEC_07 §2.2.
 DEVICE_PROFILES: dict[str, dict] = {
     "KPCL0034": {
         "device_code": "KPCL0034",
@@ -49,10 +52,10 @@ DEVICE_PROFILES: dict[str, dict] = {
         "out_stats": DATA_DIR / "comp_stats_v2.json",
         "cats": ["alimentacion", "servido", "ruido"],
     },
-    "KPCL0036": {
-        "device_code": "KPCL0036",
+    "KPCL0035": {
+        "device_code": "KPCL0035",
         "uuids": {
-            "3c1c6705-636d-4770-bdcf-21aa6f7225a5",  # bebedero, confirmado SPEC_07 §2.2
+            "0dc601c0-1533-40c5-b606-6d89eb2d4042",  # bebedero, confirmado por Mauro 2026-08-13
         },
         "anotaciones_csv": DATA_DIR_AGUA / "anotaciones_agua.csv",
         "out_features": DATA_DIR_AGUA / "features_anotaciones_agua.csv",
