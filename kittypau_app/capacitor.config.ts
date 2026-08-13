@@ -42,6 +42,15 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_kittypau",
       iconColor: "#ebb6a8",
     },
+    // Edge-to-edge obligatorio en Android 16 (targetSdk 36, ver
+    // Knowledge/29_Specs/SPEC_06_Mobile_APK_2026.md A1) — SystemBars
+    // reemplaza el opt-out viejo, no hay forma de volver al comportamiento
+    // pre-edge-to-edge. "LIGHT" = íconos/texto oscuros, para el fondo claro
+    // de marca (#f6dbd6) — la app no tiene modo oscuro todavía.
+    SystemBars: {
+      insetsHandling: "css",
+      style: "LIGHT",
+    },
   },
 };
 
