@@ -1315,6 +1315,7 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                     # Limpiar solo las cachés afectadas (no st.cache_data.clear() global)
                     load_comp_stats.clear()
                     _evidence_ventana_cached.clear()
+                    _evidence_engine_accuracy_cached.clear()
                     if hay_raw:
                         build_chart.clear()
                         build_comparison_chart.clear()
@@ -5843,7 +5844,10 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
 
         # ── Primera alerta activa ────────────────────────────────────────
         _j_alert = next((msg for msg, cond in [
-            (f"🍽️ Plato casi vacío ({_kp_peso_act:.0f} g). Rellenar pronto.",
+            # ponytail: (_kp_peso_act or 0) evita TypeError cuando no hay lecturas
+            # (df_lec None/vacío) — el f-string se evalúa siempre al construir la
+            # lista, aunque `cond` sea False y el mensaje nunca se use.
+            (f"🍽️ Plato casi vacío ({(_kp_peso_act or 0):.0f} g). Rellenar pronto.",
              bool(_kp_peso_act) and _j_hunger < 25),
             (f"⏱️ Lleva {_j_elapsed:.1f} h sin comer — superó P75 habitual ({_j_p75int:.1f} h).",
              _j_clock < 15 and len(_kp_alim) >= 3),
