@@ -394,6 +394,66 @@ def _calcular_features_v2_cached(valores: np.ndarray, resample_s: float) -> dict
     return _extraer_v2(valores, resample_s=resample_s)
 
 
+@st.cache_data(ttl=3600, show_spinner=False,
+                hash_funcs={pd.DataFrame: lambda _: _csv_max_mtime()})
+def _evidence_engine_accuracy_cached(df_lec: pd.DataFrame) -> dict | None:
+    """
+    Recalcula EN VIVO la accuracy held-out del Evidence Engine (mismo método que
+    tests/test_evidence_engine.py: split 80/20 seed=42, pesos calculados solo con
+    el 80% train). Reemplaza el texto "Accuracy validada: 77.8%" que quedó
+    hardcodeado desde el 2026-08-10 con 496 anotaciones — se desactualiza cada vez
+    que se anota de más. `df_lec` solo se usa para el hash de caché (mtime); el
+    cálculo real lee `features_anotaciones_v2.csv`/`comp_stats_v2.json` en disco.
+    ttl=3600 porque recorrer ~500+ filas con evidence_score() no es gratis y estos
+    archivos solo cambian tras correr `revisar_anotaciones_v2.py`, no en cada rerun.
+
+    ponytail: nombre de archivo "features_anotaciones_v2.csv" fijo, no viene de
+    DEVICE_PROFILES (esa clave no existe ahí todavía). Inofensivo mientras
+    _ACTIVE_PROFILE siga hardcodeado a KPCL0034 (ver §5.1/§3b de SPEC_07) — agregar
+    "features_csv" al perfil cuando se active el perfil de agua.
+    """
+    _features_csv = COMP_STATS_JSON.parent / "features_anotaciones_v2.csv"
+    if not _features_csv.exists():
+        return None
+    df_feat = pd.read_csv(_features_csv)
+    meta_cols = {"id_anotacion", "id_candidato", "t_inicio", "t_fin", "categoria", "notas", "n_lecturas"}
+    feat_cols = [c for c in df_feat.columns if c not in meta_cols]
+
+    def _accuracy(df, cs_dict_) -> float:
+        correct = 0
+        for _, row in df.iterrows():
+            feats = {c: row[c] for c in feat_cols if pd.notna(row[c])}
+            if evidence_score(feats, cs_dict_)["prediccion"] == row["categoria"]:
+                correct += 1
+        return correct / len(df) if len(df) else 0.0
+
+    rng = np.random.RandomState(42)
+    idx = df_feat.index.to_numpy().copy()
+    rng.shuffle(idx)
+    n_test = int(len(idx) * 0.2)
+    test_df, train_df = df_feat.loc[idx[:n_test]], df_feat.loc[idx[n_test:]]
+
+    cs_train: dict = {}
+    for c in feat_cols:
+        cs_train[c] = {}
+        for cat in ("alimentacion", "servido", "ruido"):
+            vals = pd.to_numeric(train_df[train_df["categoria"] == cat][c], errors="coerce").dropna()
+            if len(vals):
+                cs_train[c][cat] = {"n": int(len(vals)), "mean": float(vals.mean()), "std": float(vals.std())}
+
+    correct_legado = 0
+    for _, row in df_feat.iterrows():
+        feats = {c: row[c] for c in feat_cols if pd.notna(row[c])}
+        if evidence_score(feats, None)["prediccion"] == row["categoria"]:
+            correct_legado += 1
+
+    return {
+        "n_total":     len(df_feat),
+        "acc_held_out": _accuracy(test_df, cs_train),
+        "acc_legado":   correct_legado / len(df_feat) if len(df_feat) else 0.0,
+    }
+
+
 def load_candidatos() -> pd.DataFrame | None:
     if not CANDIDATOS_CSV.exists():
         return None
@@ -609,6 +669,42 @@ def _batch_metricas(df_lec: pd.DataFrame, cats_dfs: dict) -> dict:
                 if (m := calcular_metricas(df_lec, r["t_inicio"], r["t_fin"]))]
         for cat_k, df_c in cats_dfs.items()
     }
+
+
+def _separacion_sigma(mu_a: float, sd_a: float, mu_b: float, sd_b: float) -> float:
+    """Separación en σ pooled entre dos categorías: |µ_a − µ_b| / √((σ_a² + σ_b²)/2)."""
+    return abs(mu_a - mu_b) / max(((sd_a**2 + sd_b**2) / 2) ** 0.5, 1e-6)
+
+
+def _top_discriminative_features(cs_dict: dict, n: int = 8) -> list[dict]:
+    """
+    Recalcula EN VIVO — desde comp_stats_v2.json, no hardcodeado — qué features separan
+    mejor 'alimentacion' de 'servido' y de 'ruido'. Usado por Panel de Features y Motor
+    Matemático para evitar mantener dos listas de "top features" a mano (quedaban
+    desactualizadas cada vez que se re-anotaba). Reemplaza texto tipeado con σ fijas.
+    """
+    rows = []
+    for fname, cat_stats in (cs_dict or {}).items():
+        st_a = cat_stats.get("alimentacion", {})
+        st_s = cat_stats.get("servido", {})
+        st_r = cat_stats.get("ruido", {})
+        if not (st_a and st_s and st_r):
+            continue
+        mu_a, sd_a, n_a = st_a.get("mean", 0) or 0, st_a.get("std", 1) or 1, st_a.get("n", 0)
+        mu_s, sd_s, n_s = st_s.get("mean", 0) or 0, st_s.get("std", 1) or 1, st_s.get("n", 0)
+        mu_r, sd_r, n_r = st_r.get("mean", 0) or 0, st_r.get("std", 1) or 1, st_r.get("n", 0)
+        sep_as = _separacion_sigma(mu_a, sd_a, mu_s, sd_s)
+        sep_ar = _separacion_sigma(mu_a, sd_a, mu_r, sd_r)
+        rows.append({
+            "feature": fname,
+            "familia": cat_stats.get("familia", REGISTRY.get(fname, {}).get("familia", "—")) if _MOTOR_V2_OK else "—",
+            "sep_as": sep_as,
+            "sep_ar": sep_ar,
+            "sep_max": max(sep_as, sep_ar),
+            "n_alim": n_a, "n_serv": n_s, "n_ruido": n_r,
+        })
+    rows.sort(key=lambda r: r["sep_max"], reverse=True)
+    return rows[:n]
 
 
 # Filtro de intervalos entre comidas: < 20 min = probable misma comida partida en dos,
@@ -1698,7 +1794,8 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                                 "Alto = la señal cambia de dirección muchas veces por muestra.\n"
                                 "Empírico: alim ≈ 0.67 (Bandida come en bocados, hay muchos cambios), "
                                 "serv ≈ 0.45, ruido ≈ 0.23.\n"
-                                "Separación alim/ruido: 3.68σ — el mejor separador de esas dos categorías. "
+                                "Separación alim/ruido recalculada en vivo en 📊 Panel de Features (sección "
+                                "'Resumen — features más discriminativas'), no un σ fijo acá. "
                                 "ZCR bajo con amplitud alta = ruido típico (pocas oscilaciones pero grandes)."
                             ),
                         )
@@ -2261,30 +2358,44 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                 if k in df_anot["categoria"].values and k != "ciclo_servido_alimento"
             }
             if cats_con_data:
-                st.markdown("#### Comparación entre categorías")
+                st.markdown("#### 🎯 Resumen — Comparación entre categorías")
                 st.caption(
-                    "Media ± desv. estándar de cada variable sobre todas las anotaciones. "
-                    "**Valores de referencia empíricos (421 anotaciones):**\n"
-                    "- Duración: alim ≈ 6.0 min · serv ≈ 1.5 min · ruido ≈ 3.8 min\n"
-                    "- Δpeso: alim ≈ −8 g (baja) · serv ≈ +35 g (sube) · ruido ≈ ±3 g (oscila)\n"
-                    "- Monotonía: alim ≈ −0.20 · serv ≈ +0.32 · ruido ≈ −0.005\n"
-                    "- R²: alim ≈ 0.61 · serv ≈ 0.73 · ruido ≈ 0.24\n"
-                    "Una diferencia de >2σ entre columnas indica un buen discriminador para el detector."
+                    "Media ± desv. estándar de cada variable, recalculada en vivo sobre las anotaciones "
+                    f"actuales ({', '.join(f'{CATEGORIAS[k][0]}={len(v)}' for k, v in cats_con_data.items())}). "
+                    "**Guía de lectura:** una diferencia grande entre columnas (ej. Δpeso muy negativo en alim "
+                    "y muy positivo en serv) indica un buen discriminador. Una diferencia pequeña = las categorías "
+                    "se solapan en esa variable → esa variable sola no es suficiente para clasificar."
                 )
 
                 _pb2.progress(30, "🔢 Calculando métricas por categoría…")
                 _mets_comp = _batch_metricas(df_lec, cats_con_data)
                 rows = []
+                _sep_resumen = []  # (var_lbl, sep_as) para destacar el mejor discriminador — calculado en vivo
                 for var_key, var_lbl in VARIABLES_DETECTOR:
                     row = {"Variable": var_lbl}
+                    _stats_var = {}
                     for cat_k, mets in _mets_comp.items():
                         vals = [m[var_key] for m in mets if m and var_key in m]
                         if vals:
                             mu, sd = float(np.mean(vals)), float(np.std(vals))
                             row[CATEGORIAS[cat_k][0]] = f"{mu:+.2f} ± {sd:.2f}"
+                            _stats_var[cat_k] = (mu, sd)
                         else:
                             row[CATEGORIAS[cat_k][0]] = "—"
                     rows.append(row)
+                    if "alimentacion" in _stats_var and "servido" in _stats_var:
+                        _mu_a, _sd_a = _stats_var["alimentacion"]
+                        _mu_s, _sd_s = _stats_var["servido"]
+                        _sep_resumen.append((var_lbl, _separacion_sigma(_mu_a, _sd_a, _mu_s, _sd_s)))
+
+                if _sep_resumen:
+                    _sep_resumen.sort(key=lambda x: x[1], reverse=True)
+                    _best_lbl, _best_sep = _sep_resumen[0]
+                    st.info(
+                        f"📐 **Mejor discriminador (alim. vs. servido) ahora mismo: `{_best_lbl}` "
+                        f"con {_best_sep:.1f}σ de separación** — recalculado con las anotaciones actuales, "
+                        "no un valor fijo."
+                    )
 
                 df_comp = pd.DataFrame(rows).set_index("Variable")
                 st.dataframe(df_comp, width="stretch")
@@ -2805,13 +2916,48 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
         st.subheader("📊 Panel de Features — distribuciones y separabilidad")
         _t4_n_anot = cs_n_alim + cs_n_serv + cs_n_ruido
         st.caption(
-            f"Compara las distribuciones de features entre categorías y calibra los umbrales del detector. "
-            f"**Las features más discriminativas** (según {_t4_n_anot or '421'} anotaciones) son las de la familia F12 (templates canónicos): "
-            "`tpl_doble_rampa` separa alimentación vs. servido en **7.63σ**, "
-            "`tpl_sigmoide` en **6.03σ**, y `sim_alimentacion`/`sim_servido` en **5.80σ**. "
-            "Fuera de templates, `time_to_min_s` tiene 3.59σ y `entropy_permutation` tiene 3.73σ (mejor A/R: 2.94σ). "
-            "Features con <1σ de separación (ej. `stat_skewness`, `power_ratio_low`) aportan poco por sí solas."
+            "Compara las distribuciones de features entre categorías y calibra los umbrales del detector."
         )
+
+        # ── Resumen — qué separa mejor cada categoría, recalculado en vivo ────
+        st.markdown("#### 🎯 Resumen — features más discriminativas")
+        _top_feats = _top_discriminative_features(cs_dict, n=8)
+        if not _top_feats:
+            st.caption("`comp_stats_v2.json` no encontrado o vacío — presiona **🔄 Actualizar Todo**.")
+        else:
+            st.caption(
+                f"Recalculado en vivo desde **{_t4_n_anot} anotaciones actuales** (alim={cs_n_alim} · "
+                f"serv={cs_n_serv} · ruido={cs_n_ruido}) — no son números fijos, cambian si vuelves a "
+                "anotar y regenerar `comp_stats_v2.json`. Separación en σ pooled: "
+                "`|µ_A − µ_B| / √((σ_A² + σ_B²)/2)`. **>3σ = discrimina muy bien; <1σ = las categorías "
+                "se solapan** y esa feature sola no sirve para clasificar."
+            )
+            _fig_top = go.Figure()
+            _fig_top.add_trace(go.Bar(
+                y=[r["feature"] for r in _top_feats][::-1],
+                x=[r["sep_as"] for r in _top_feats][::-1],
+                name="Alim. vs Servido", orientation="h",
+                marker_color="#f97316", opacity=0.85,
+            ))
+            _fig_top.add_trace(go.Bar(
+                y=[r["feature"] for r in _top_feats][::-1],
+                x=[r["sep_ar"] for r in _top_feats][::-1],
+                name="Alim. vs Ruido", orientation="h",
+                marker_color="#ef4444", opacity=0.85,
+            ))
+            _fig_top.add_vline(x=3.0, line_dash="dash", line_color="rgba(0,180,90,0.5)", line_width=1.5)
+            _fig_top.update_layout(
+                height=300, barmode="group",
+                title=dict(text="Top 8 features por separación máxima (σ)",
+                           font=dict(color=_DARK["font_color"], size=12)),
+                xaxis=dict(title="σ pooled", gridcolor=_DARK["grid_color"],
+                           tickfont=dict(color=_DARK["tick_color"])),
+                yaxis=dict(tickfont=dict(color=_DARK["tick_color"], size=10)),
+                plot_bgcolor=_DARK["plot_bgcolor"], paper_bgcolor=_DARK["paper_bgcolor"],
+                margin=dict(l=140, r=20, t=40, b=40),
+                legend=dict(orientation="h", y=-0.15, font=dict(color=_DARK["tick_color"])),
+            )
+            st.plotly_chart(_fig_top, width="stretch")
 
         # ── Umbrales de detección (colapsado) ─────────────────────────────
         u = umbrales
@@ -3442,20 +3588,27 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
 
                 # ── Evidence Engine ────────────────────────────────────────
                 st.markdown("---")
-                st.markdown("#### Predicción — Evidence Engine")
+                st.markdown("#### 🎯 Predicción — Evidence Engine")
                 _ev_n_anot = cs_n_alim + cs_n_serv + cs_n_ruido
                 st.caption(
                     f"El Evidence Engine normaliza (z-score) cada feature contra "
-                    f"{_ev_n_anot or '496'} anotaciones (alim={cs_n_alim} · serv={cs_n_serv} · ruido={cs_n_ruido}) "
+                    f"**{_ev_n_anot} anotaciones actuales** (alim={cs_n_alim} · serv={cs_n_serv} · ruido={cs_n_ruido}) "
                     "y calcula el peso de cada una directamente de los datos (discriminante tipo Fisher, "
                     "las ~100 features de `comp_stats_v2.json`) — no son números elegidos a mano. "
                     "Fórmula: para cada categoría se acumula `Σ(w_i × feature_i_normalizada)`, con un prior leve "
                     "de +0.5 hacia 'ruido'. Luego se aplica **softmax** para convertir los scores en probabilidades "
                     "(suman 100 %). **Cómo interpretar los scores:** Score Alim. > 70 % = el motor está bastante "
-                    "seguro de que Bandida comió. Score < 50 % en todas = caso ambiguo, revisar manualmente. "
-                    "Accuracy validada fuera de muestra: 77.8% (antes de normalizar: 49.6%, peor que adivinar "
-                    "siempre 'alimentación')."
+                    "seguro de que Bandida comió. Score < 50 % en todas = caso ambiguo, revisar manualmente."
                 )
+                _ev_acc = _evidence_engine_accuracy_cached(df_lec)
+                if _ev_acc:
+                    st.caption(
+                        f"📐 **Accuracy fuera de muestra (recalculada ahora, {_ev_acc['n_total']} anotaciones, "
+                        f"split 80/20 seed=42): {_ev_acc['acc_held_out']:.1%}** — vs. {_ev_acc['acc_legado']:.1%} "
+                        "del motor legado sin normalizar (peor que adivinar siempre 'alimentación'). "
+                        "No es un número fijo: se recalcula cada vez que cambian las anotaciones "
+                        "(caché de 1h). Piso mínimo aceptado por `tests/test_evidence_engine.py`: 65%."
+                    )
                 ev = evidence_score(feats_v2, cs_dict)
                 eg1, eg2, eg3, eg4 = st.columns(4)
                 col_pred = {
@@ -3568,15 +3721,16 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
                 st.markdown("---")
                 st.markdown("#### Cuadro comparativo — todas las features × categoría")
                 _cs_total = cs_n_alim + cs_n_serv + cs_n_ruido
+                _top_ar = sorted(_top_discriminative_features(cs_dict, n=50), key=lambda r: r["sep_ar"], reverse=True)[:4]
                 st.caption(
                     "Compara el valor del candidato con los promedios empíricos de cada categoría "
-                    f"(basados en **{_cs_total} anotaciones** del Ciclo Alpha v2).  \n"
+                    f"(basados en **{_cs_total} anotaciones actuales** del Ciclo Alpha v2).  \n"
                     "**🟢 Verde** = el candidato está dentro de µ ± 1σ de esa categoría (valor 'normal' para esa clase).  \n"
                     "**sep_AS** = separación Alim/Serv en σ pooled: `|µ_A − µ_S| / √((σ_A² + σ_S²)/2)`. "
                     "**>3σ** = feature muy discriminativa; **<1σ** = las categorías se solapan en esa feature.  \n"
-                    "**sep_AR** = separación Alim/Ruido. Las features con alto sep_AR ayudan a distinguir "
-                    "alimentaciones de falsos positivos. Top: `d1_frac_neg` (4.08σ), `zcr` (3.68σ), "
-                    "`entropy_permutation` (3.05σ), `entropy_shannon` (2.65σ)."
+                    "**sep_AR** = separación Alim/Ruido — ayuda a distinguir alimentaciones de falsos positivos. "
+                    + ("Top ahora mismo: " + ", ".join(f"`{r['feature']}` ({r['sep_ar']:.2f}σ)" for r in _top_ar) + "."
+                       if _top_ar else "")
                 )
 
                 # Estadísticas cargadas dinámicamente desde comp_stats_v2.json
@@ -3603,8 +3757,8 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
                     n_s  = st_s.get("n", 0)
                     n_r  = st_r.get("n", 0)
 
-                    sep_as = abs(mu_a - mu_s) / max((sd_a + sd_s) / 2, 1e-6)
-                    sep_ar = abs(mu_a - mu_r) / max((sd_a + sd_r) / 2, 1e-6)
+                    sep_as = _separacion_sigma(mu_a, sd_a, mu_s, sd_s)
+                    sep_ar = _separacion_sigma(mu_a, sd_a, mu_r, sd_r)
 
                     comp_rows.append({
                         "Feature":                    fname,
@@ -4163,8 +4317,8 @@ Detecta cambios de nivel de forma muy sensible incluso con señales ruidosas.
                     "Frecuencia histórica de eventos de alimentación por franja horaria (hora Santiago). "
                     "**Cómo se usa para predecir:** dado el momento actual, el modelo busca la franja de alta probabilidad "
                     "más cercana hacia el futuro (ponderando por probabilidad histórica y proximidad temporal). "
-                    "**Horas pico empíricas de Bandida** (basado en 209 eventos): típicamente ~07:00, ~13:00, ~19:00 "
-                    "y un snack nocturno ocasional ~02:00 — refleja la rutina del dueño. "
+                    f"Horas pico calculadas ahora sobre los **{n_alim_ev} eventos** de alimentación anotados — "
+                    "ver las 3 franjas más frecuentes justo abajo, recalculadas en vivo. "
                     "Si el histograma cambia significativamente respecto a meses anteriores, "
                     "puede indicar un cambio en la rutina del hogar."
                 )

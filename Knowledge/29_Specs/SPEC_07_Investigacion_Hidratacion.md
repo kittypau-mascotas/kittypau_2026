@@ -484,6 +484,29 @@ antes. Dos caminos, a decidir en el paso 3 del roadmap (§7), no ahora:
 No se resuelve acá — es una decisión real con trade-offs, se toma en el paso 3 de §7 cuando
 se agregue el perfil de agua, no en el paso 2 (que no la necesita).
 
+**Estado 2026-08-13 (cierre del paso 3):** el perfil `KPCL0036` ya está en `DEVICE_PROFILES`
+(paso 3, §7) pero **inerte** en `app_anotacion_av2.py` — `_ACTIVE_PROFILE` sigue hardcodeado
+a `"KPCL0034"` precisamente por esto. **Paso 3b, estipulado y pendiente** (pausado a pedido
+de Mauro para primero hacer una pasada de calidad general sobre `app_anotacion_av2.py` — ver
+§7 tabla, fila 3b, y la sección nueva "Pausa: calidad de `app_anotacion_av2.py`" si existe):
+
+- **Alcance:** reemplazar las ~53 apariciones literales de `"alimentacion"` /
+  `"ciclo_servido_alimento"` como llave/comparación (no las de docstrings/comentarios) por
+  `CAT_PRINCIPAL` / `CAT_CICLO` derivados de `ACTIVE["rol"]` / `ACTIVE["cat_ciclo"]`.
+- **Camino recomendado:** **(a) indirección quirúrgica** — es el fix de causa raíz (Ponytail:
+  "fix de bug = causa raíz, no síntoma"; un guard en la fuente, no un parche). La opción (b)
+  ahorra el trabajo pero deja `anotaciones_agua.csv` diciendo `alimentacion` en la columna
+  `categoria` con una etiqueta de UI que dice "Hidratación" — inconsistente para cualquiera
+  que lea el CSV crudo, viola la promesa de §5.2. Se descarta.
+- **Método:** no es un reemplazo global de texto — cada uno de los ~53 sitios se revisa
+  individualmente (algunos son docstrings o nombres de variable genéricos que no deben
+  tocarse). Mismo patrón de verificación ya usado en el paso 2/3: `py_compile` + `AppTest`
+  headless + comparación SHA-256 del perfil `KPCL0034` contra el baseline antes/después
+  (cero cambio de comportamiento para comida) + `tests/` 16/16.
+- **Al completarlo:** recién ahí activar el selector de perfil en la UI (`st.sidebar.selectbox`
+  propuesto arriba) y habilitar `_ACTIVE_PROFILE = "KPCL0036"` como opción real, no volver a
+  dejarlo hardcodeado.
+
 ### 5.2 — Taxonomía de anotación para agua — ✅ confirmada por Mauro (2026-08-13)
 
 Mismas categorías que comida, calcadas 1:1. Verificado contra los datos reales de comida
@@ -538,7 +561,13 @@ referencias deja rutas rotas documentadas).
 
 ## 7. Roadmap de ejecución
 
-> Estado: **paso 3 hecho y verificado (2026-08-13)**, en el sub-alcance seguro descrito abajo. Pasos 4+ siguen sin ejecutar.
+> Estado: **paso 3 hecho y verificado (2026-08-13)**, en el sub-alcance seguro descrito abajo.
+> **Roadmap pausado a pedido de Mauro (2026-08-13)** — antes de seguir con el paso 3b
+> (indirección de categorías, ver §5.1) se hace una pasada de calidad general sobre
+> `app_anotacion_av2.py` (documentación en línea, gráficos de resultados, eliminar
+> redundancia) que no toca la lógica de datos. Ver
+> [[14_Experimentos/EXP_AlphaV2_AppArq]] para esa iniciativa una vez documentada. Pasos 3b+
+> de este spec siguen sin ejecutar.
 
 | # | Paso | Depende de |
 |---|---|---|
