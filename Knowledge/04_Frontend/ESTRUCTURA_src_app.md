@@ -76,7 +76,8 @@ Layout propio: `(app)/layout.tsx` (13 líneas) — envuelve todo en `<AppDataPro
 | `dispositivos/` | — | **sin `page.tsx`** | `/dispositivos` (raíz) da 404 real. Solo existe para agrupar el subpath `nuevo/`. |
 | `dispositivos/nuevo/` | `/dispositivos/nuevo` | 274 líneas | Alta manual de un KPCL a una mascota existente (código `KPCLxxxx`, tipo comida/agua). |
 | `registro/` | `/registro` | 21 líneas | **Solo redirect** a `/login?register=1`. El flujo real de alta de cuenta+mascota+dispositivo (`RegistroFlow`, 4 pasos) vive en `(public)/login/_components/`, no acá — ver nota de reorganización más abajo. |
-| `admin/` | `/admin` | 4043 líneas | Panel administrador — el `page.tsx` más grande de toda la app. Dashboard con métricas, salud del sistema, dispositivos, mascotas. |
+| `admin/` | `/admin` | 3799 líneas (bajando — extracción por componentes en curso, ver [[29_Specs/SPEC_02_UIUX_Mejoras]] A-C1) | Panel administrador — sigue siendo el `page.tsx` más grande de toda la app. Dashboard con métricas, salud del sistema, dispositivos, mascotas. |
+| `admin/_components/` | — | — | `section-status-card.tsx`, `avisos-criticos-card.tsx`, `kpi-ejecutivos-card.tsx`, `modelos-negocio-card.tsx` — batch 1 de la extracción de `admin/page.tsx`, mismo patrón que `today/_components/` (cálculo queda en el page.tsx, el componente solo renderiza). |
 | `admin/demo-ingresos/` | `/admin/demo-ingresos` | 148 líneas | Lista de leads capturados desde `/demo` (tabla con email, mascota, primer/último visto, contador). |
 | `admin/javo/` | `/admin/javo` | 368 líneas | Panel interno de seguimiento de proyectos (bridge/firmware/app/docs) — no es data de mascotas, es tracking de trabajo técnico ("Javo" = apodo del proyecto). |
 
@@ -168,11 +169,10 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
   `322eb94` (migración "onboarding" → "Registro Kittypau") para no romper una APK ya
   instalada que aún llamara a la URL vieja. Costo de mantenerlo es cero (1 línea):
   **se deja**, no se elimina.
-- **`(app)/admin/page.tsx`** (4043 líneas) es ahora el monolito más grande de la app,
-  más que `today/page.tsx` (2468) y `login/page.tsx` (1977). Evaluado y agregado como
-  ítem A-C1 en [[29_Specs/SPEC_02_UIUX_Mejoras]] — estructura ya inspeccionada (~15
-  secciones delimitadas por `<h2>`, mismo patrón extraíble que `today/`), pero
-  **dejado de lado a propósito por Mauro**, no priorizar sin pedido explícito.
+- **`(app)/admin/page.tsx`** sigue siendo el monolito más grande de la app (3799 líneas,
+  bajando), más que `today/page.tsx` (2493) y `login/page.tsx` (1977). Extracción por
+  componentes **en curso** desde el 2026-08-12 (batch 1/N hecho) — ver
+  [[29_Specs/SPEC_02_UIUX_Mejoras]] ítem A-C1 para el plan de los batches siguientes.
 - **`(app)/inicio`**: el nombre sugiere "dashboard" pero es 100% redirect a `/today`.
   `README_Frontend.md` lo listaba como "Dashboard principal" — corregido.
 - Carpetas `_components`/`_lib` privadas ya confirmadas correctamente ubicadas tras

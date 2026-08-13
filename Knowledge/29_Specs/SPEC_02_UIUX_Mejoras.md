@@ -5,7 +5,7 @@ type: spec
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-12
 tags:
   - spec
   - ux
@@ -53,7 +53,65 @@ tips específicos por pantalla, reusando el mismo componente modal de `/today`.
 | I9 | SSIDs de WiFi solo en `localStorage`, se pierden en reinstall de la APK | Pérdida de datos de configuración — requiere migración de schema (persistir en `devices`) | M |
 | L-C1 | `/login` sigue siendo un monolito de ~1924 líneas | Mantenibilidad — no bloquea usuario final | XL |
 | L-C3 | SVG del gato como string gigante inline con `dangerouslySetInnerHTML` en `/login` | Mantenibilidad, no seguridad (contenido estático propio) | M |
-| A-C1 | `/admin` es un monolito de ~4043 líneas — el más grande de la app, mayor que `/login` (L-C1) y `/today` antes de su extracción | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final. Estructura ya inspeccionada: ~15 secciones delimitadas por `<h2>` (Salud del sistema, Integridad de datos, Infraestructura, Tablas y Vistas, Uso KPCL, etc.), cada una con su propio fetch/estado local — mismo patrón que hizo segura la extracción de `today/_components/`. **Evaluado 2026-08-11, dejado de lado a propósito por Mauro — no priorizar sin pedido explícito.** | XL |
+| A-C1 | `/admin` monolito, ver desarrollo completo abajo — **en curso, batch 1/N hecho 2026-08-12** | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final | XL |
+
+### A-C1 — `/admin` monolito: extracción por componentes EN CURSO
+
+> Estaba "dejado de lado a propósito" desde el 2026-08-11 — Mauro pidió explícitamente
+> avanzar el 2026-08-12 (contexto: reducir el costo de tokens de sesiones futuras que
+> tocan este archivo). **No es un cambio de una sola vez** — 4043 líneas con cálculos
+> financieros de por medio, se hace en lotes chicos con validación entre cada uno, mismo
+> método que ya funcionó para `today/_components/`.
+
+**Arquitectura real (importante para quien siga esto):** a diferencia de `/today`/`/bowl`
+(fetches independientes por sección), `/admin` es **un solo fetch grande**
+(`GET /api/admin/overview`) que llena ~24 slices de estado. Cada sección de la UI lee un
+`useMemo` que ya viene pre-calculado desde ese estado compartido — así que la extracción es
+"mover JSX + pasar el memo ya calculado como prop" (mismo patrón que `DayNightTimelineCard`
+de `/today`), **no** "extraer fetch + estado propio" (eso hubiera sido más simple pero no es
+lo que hay acá).
+
+**Hecho — batch 1/N (commit `97852f0`, 2026-08-12):** 4043 → 3799 líneas.
+- `admin/_components/section-status-card.tsx` — card ok/warning/critical, compartida por
+  5 secciones (Operación, Auditoría, Infraestructura, Finanzas, Tests).
+- `avisos-criticos-card.tsx` — botón de health-check (el fetch real quedó en `page.tsx`
+  como `runHealthCheck`, ya no inline en el `onClick`) + lista de alertas.
+- `kpi-ejecutivos-card.tsx` — grilla de 5 stat cards, trivial.
+- `modelos-negocio-card.tsx` — 3 caminos de negocio + escalamiento + valorización SaaS +
+  3 cards de fase.
+
+Validado: type-check, lint, build limpios. **No verificado visualmente** — `/admin` sigue
+bloqueado por [[29_Specs/SPEC_01_Errores_Prioritarios]] E2 (ambas cuentas de prueba
+redirigen a `/today`). El type-check da confianza de que los props calzan, pero no
+reemplaza verlo renderizado — priorizar resolver E2 antes o durante el batch 2 si se puede.
+
+**Pendiente — secciones que siguen inline en `page.tsx`, en el orden en que aparecen**
+(el comentario-mapa al inicio del archivo tiene el detalle actualizado a cada commit):
+
+1. "1) Operación del Servicio" — usa `SectionStatusCard` (ya importado), simple.
+2. "Resumen de Finanzas" — **la más densa del archivo**: breakdown de costos, selector de
+   KPCL con tabla de componentes por unidad, break-even. Múltiples `useMemo` financieros
+   (`selectedKpclCost`, `selectedKpclRuntimeSim`, `kpclRuntimeByDevice`,
+   `kpclFinancialRows`, `financeSectionStatus`) — tratar con más cuidado que el batch 1,
+   son cálculos de plata reales.
+3. "Continuidad KPCL" — el gráfico SVG custom (`continuityChart`, el `useMemo` más largo
+   del archivo, ~160 líneas). Candidato a extraer el SVG completo con `continuityChart` ya
+   calculado como única prop.
+4. "Tablas y Vistas (Uso Aproximado)" — no leída todavía en detalle.
+5. "2) Auditoría e Integridad de Datos" + "Estado de registro" + "Registros pendientes
+   recientes" — usa `auditSectionStatus`, `registrationSummary`. **Candidato fuerte para
+   el batch 2**, parece acotado.
+6. "3) Infraestructura y Telemetría" + "Estado de bridges" + "Estado KPCL
+   (online/offline)" — usa `infraSectionStatus`, `bridges`, `kpclDevices`. **Otro
+   candidato fuerte para el batch 2**, junto con el punto 5.
+7. "Suite de Tests Admin" — usa `testsSectionStatus`, `runAllAdminTests` (ya es una
+   función standalone, no inline).
+8. "Resumen de incidentes (24h)", "Panel de acciones", "Audit events en línea" — no
+   leídas todavía en detalle (después de la línea ~2500 del archivo original).
+
+**Próximo paso sugerido:** batch 2 = puntos 5 y 6 (Auditoría + Infraestructura) — parecen
+las secciones más independientes que quedan, dejar Finanzas (punto 2) y el gráfico de
+Continuidad (punto 3) para el final por ser las de mayor cuidado.
 
 ---
 
