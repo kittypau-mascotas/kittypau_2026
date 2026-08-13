@@ -1,5 +1,29 @@
 ﻿"use client";
 
+/**
+ * Mapa del archivo (agregado 2026-08-12, ~1900 líneas — flagueado como
+ * monolito L-C1 en Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md, XL, sin
+ * priorizar). Grepear el nombre, no el número de línea.
+ *
+ * - Estado: login (email/password) + registro standalone (`showRegister`,
+ *   `register*`) + reset de password (`showReset`) + una demo animada tipo
+ *   easter-egg del gato con diálogo tipeado (todo lo que empieza con
+ *   `trial`/`dialogCat`/`isTrialDialog*` — grande, no está relacionado con
+ *   auth real, es marketing/onboarding).
+ * - Handlers: `onSubmit` (login), `onRegister`, `resendConfirmation`,
+ *   `sendReset`, `handleTrialMuteToggle`.
+ * - JSX (`return (` ~L1192): formulario de login. Dos `<AnimatePresence>`:
+ *   uno para el modal de registro (`RegistroFlow`, importado de
+ *   `./_components/registro-flow.tsx` — NO está definido acá), otro para
+ *   el modal de demo/trial con el gato animado.
+ * - Warnings de lint conocidos y no arreglados acá (ver `git log` /
+ *   `npm run lint`): variables del trial dialog sin usar,
+ *   `react-hooks/exhaustive-deps` en un par de hooks — no tocar sin
+ *   entender que `eslint --fix` en este archivo puede corromper
+ *   `eslint-disable` legítimos si `reportUnusedDisableDirectives` no está
+ *   desactivado en `eslint.config.mjs` (ya lo está, ver commit `9128ad0`).
+ */
+
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { CSSProperties, FormEvent, MouseEvent } from "react";

@@ -1,5 +1,37 @@
 "use client";
 
+/**
+ * Mapa del archivo (agregado 2026-08-12 para no tener que releer las ~2500
+ * líneas cada vez — grepear el nombre de la sección, no confiar en el
+ * número de línea, que va a correrse). Ver también
+ * Knowledge/04_Frontend/ESTRUCTURA_src_app.md.
+ *
+ * - Tipos + helpers puros a nivel de módulo (fuera del componente): desde
+ *   `hungerBarColor` hasta `isAuthoritativeFoodDeviceCode` — formato de
+ *   fechas/timestamps, cálculo de sesiones desde audit_events,
+ *   `buildWellnessState` (misma función que usan las cards de Alimentación/
+ *   Hidratación).
+ * - `export default function TodayPage`: arranca el componente.
+ *   - Estado + fetch inicial de pets/devices/readings.
+ *   - `useMqttLive` — lecturas en vivo por WebSocket, sección "Live readings
+ *     directo desde HiveMQ".
+ *   - `primaryPet` — resolución de la mascota activa.
+ *   - `hungerBar` (fetch propio a `/api/pets/:id/hunger-bar`) +
+ *     `useHungerBarPushAlert` — turno de la notificación push, ver
+ *     Knowledge/05_API/SPEC_HungerBar_Alertas.md.
+ *   - Efecto "Cargar audit_events" — sesiones de inicio/término
+ *     alimentación/hidratación, alimenta bowlHistorySessions/
+ *     waterHistorySessions y por lo tanto bowlWellness/waterWellness.
+ *   - "Diagnóstico rápido (SPEC_02 U2)" — bowlDiagnostics/waterDiagnostics,
+ *     ver `@/lib/device-diagnostics`.
+ *   - "Hunger Bar — reemplaza el medidor de combustible" — cálculos para el
+ *     bar de Comida del panel Barras Sims.
+ *   - JSX: `#today-hero` (Barras Sims — ⚠️ widget sensible, ver
+ *     `barras-sims-card.tsx`), `#today-bowls` (cards Alimentación/
+ *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard` y
+ *     `OnboardingGuideModal` (ambos extraídos a `today/_components/`).
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";

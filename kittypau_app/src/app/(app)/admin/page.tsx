@@ -1,5 +1,30 @@
 ﻿"use client";
 
+/**
+ * Mapa del archivo (agregado 2026-08-12 — es el page.tsx más grande de la
+ * app, ~4000 líneas). Grepear el texto del `<h2>` para saltar directo a
+ * una sección, no confiar en el número de línea. Ver evaluación completa
+ * en Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md ítem A-C1 (extracción por
+ * componentes evaluada y **dejada de lado a propósito por Mauro** — no
+ * tocar la estructura sin pedido explícito, esto es solo un mapa de
+ * lectura).
+ *
+ * Secciones (`<h2>`, en orden de aparición):
+ * "Avisos críticos" → "KPI ejecutivos" → "Modelos de Negocio" →
+ * "1) Operación del Servicio" → "Resumen de Finanzas" → "Finanzas" →
+ * "Continuidad KPCL" → "Tablas y Vistas (Uso Aproximado)" →
+ * "2) Auditoría e Integridad de Datos" → "Estado de registro" →
+ * "Registros pendientes recientes" → "3) Infraestructura y Telemetría" →
+ * "Estado de bridges" → "Estado KPCL (online/offline)" →
+ * "Suite de Tests Admin" → "Resumen de incidentes (24h)" →
+ * "Panel de acciones" → "Audit events en línea".
+ *
+ * Antes de esas secciones (todo a nivel de módulo, fuera del componente):
+ * helpers de formato (`formatAgo`, `eventBadge`, `formatLastSeenShort`,
+ * `formatClp`, `formatJpy`), `SectionStatusCard` (único componente
+ * auxiliar del archivo), `resolveKpclCatalog`.
+ */
+
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
