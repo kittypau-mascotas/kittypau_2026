@@ -5,7 +5,7 @@ type: spec
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-13
 tags:
   - spec
   - seguridad
@@ -30,16 +30,20 @@ related:
 
 ## 🟡 CVEs de la toolchain de Android (no de la app web)
 
-21 paquetes con severidad alta/crítica (`tar`, `handlebars`, `@xmldom/xmldom`, `mergexml`,
-`ip-address`, `sharp`, `tmp`, `ws`, `js-yaml`, `lodash`, `minimatch`, `nanoid`, `picomatch`,
-`postcss`, `flatted`, `brace-expansion`, `uuid`, `yaml`) llegan todos vía `@capacitor/cli`,
-`@capacitor/assets`, `@trapezedev/project` (build de la APK) o `eslint-plugin-sonarjs`
-(lint, dev-only). No corren en el servidor Next.js ni en el browser del usuario — riesgo de
-cadena de suministro del build, no de la app en producción.
+> ✅ **Parcial (2026-08-13):** `npm audit fix` (sin `--force`) corrido — 26 → 9
+> vulnerabilidades (2 moderate, 6 high, 1 critical). Solo tocó `package-lock.json` (ningún
+> bump de versión declarada en `package.json`), type-check/lint/build limpios después.
+> Corrida dos veces, idempotente en 9 — confirma que el resto sí depende de que
+> `@capacitor/cli`/`@trapezedev/project` publiquen versiones con las transitivas
+> (`tar`, `uuid` vía `sharp`, `xcode`) parchadas, como ya se sospechaba.
 
-**Fix:** `npm audit fix` (sin `--force`) resuelve una parte; el resto requiere esperar a que
-`@capacitor/cli`/`@trapezedev/project` publiquen versiones con las dependencias
-transitivas parchadas. Revisar cada 1-2 meses, no urgente.
+Las 9 que quedan (`sharp` sin fix upstream, `tar`/`uuid` anidados bajo
+`@capacitor/assets`/`@trapezedev/project`) llegan todas vía `@capacitor/cli`,
+`@capacitor/assets`, `@trapezedev/project` (build de la APK). No corren en el servidor
+Next.js ni en el browser del usuario — riesgo de cadena de suministro del build, no de la
+app en producción.
+
+**Sigue pendiente:** esperar releases upstream. Revisar cada 1-2 meses, no urgente.
 
 **Esfuerzo:** S. **Impacto:** Bajo/medio.
 
@@ -55,11 +59,18 @@ transitivas parchadas. Revisar cada 1-2 meses, no urgente.
 Nota: el Python de investigación (`fase_0_ruido/tests/`) sí tenía tests reales antes que el
 lado TypeScript — ya no es el único lugar del proyecto con ese rigor.
 
+> ✅ **Hecho (2026-08-13):** `src/lib/utils/api.test.ts` — 13 tests sobre
+> `parseListResponse` y `resolveDevicePowerState` (incluye el caso borde que motivó la
+> función: SPEC_01 E4, columnas `device_state`/`status` contradictorias). Primer test de
+> integración real de una API route: `src/app/api/devices/[id]/tare/route.test.ts` — 4
+> casos (401 sin auth, 404 device ajeno, 200 happy path, 500 si falla el insert), Supabase
+> mockeado con `vi.mock` + builder encadenable mínimo. 23/23 tests pasan en total.
+
 **Sigue pendiente — orden de bajo a alto esfuerzo:**
-1. Tests unitarios de `lib/utils/api.ts` (`parseListResponse`, `resolveDevicePowerState`).
-2. 1-2 tests de integración de API routes críticas (`/api/pets/[id]/hunger-bar`,
-   `/api/devices/[id]/tare`).
-3. E2E con Playwright para el flujo de login + `/today`.
+1. Test de integración de `/api/pets/[id]/hunger-bar` — más complejo que `tare` (pagina
+   `readings`, corre `computeHungerBar` real); no se hizo en esta pasada, el patrón de
+   mock de Supabase de `tare/route.test.ts` es reusable como punto de partida.
+2. E2E con Playwright para el flujo de login + `/today`.
 
 **Esfuerzo:** S-M incremental por punto. **Impacto:** Alto a mediano plazo — sin esto, cada
 cambio en páginas grandes como `today/page.tsx` sigue siendo mayormente a ciegas fuera de la
@@ -104,9 +115,9 @@ la señal-ruido del schema.
 | # | Fix | Esfuerzo | Impacto |
 |---|-----|----------|---------|
 | 1 | Persistir estado del bridge en disco | M | Medio |
-| 2 | `npm audit fix` en dependencias de Capacitor/Android | S | Bajo/medio |
+| 2 | `npm audit fix` en dependencias de Capacitor/Android — ✅ parcial 2026-08-13 (26→9), resto depende de releases upstream | S | Bajo/medio |
 | 3 | Decidir `breeds`/`pet_breeds`, `DROP sensor_readings` | XS | Bajo |
-| 4 | Tests unitarios `lib/utils/api.ts` + integración de API routes críticas | S-M | Medio |
+| 4 | Tests unitarios `lib/utils/api.ts` + integración de API routes críticas — ✅ hecho 2026-08-13 (`api.test.ts` + `tare/route.test.ts`), falta `hunger-bar` | S-M | Medio |
 
 ---
 

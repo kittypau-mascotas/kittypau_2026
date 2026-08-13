@@ -134,15 +134,19 @@ estado en `/bowl`, pero nada dispara push todavía; sería la misma extensión d
 
 ---
 
-## Pilar 4 — Confianza en los datos: 🟡 bien resuelto en un lugar, ausente en el resto
+## Pilar 4 — Confianza en los datos: 🟢 generalizado, verificado en código (2026-08-13)
 
-Ver desarrollo completo en [[29_Specs/SPEC_02_UIUX_Mejoras]] U2. Resumen para este spec: el
-panel "Diagnóstico rápido" de `/bowl` (Conexión/Energía/Firmware + acciones recomendadas)
-es exactamente lo que un producto de monitoreo necesita para que el usuario confíe en lo
-que ve — y hoy solo vive en una pantalla. `/today` y `/pet` muestran "N/D" o "Sin evidencia
-real" sin ese mismo nivel de explicación. Un producto de monitoreo que no distingue entre
-"tu mascota no comió" y "tu sensor no está reportando" pierde la confianza del usuario en
-el primer falso negativo.
+> ✅ **Hecho (2026-08-12, verificado contra código 2026-08-13):** `<DiagnosticoRapidoCard>`
+> (origen: panel "Diagnóstico rápido" de `/bowl`, Conexión/Energía/Firmware + acciones
+> recomendadas) ya está generalizado a `/today` y `/pet`, con una instancia por tipo de
+> dispositivo (`Diagnóstico rápido · Comedero` / `· Bebedero`) cuando el pet tiene ese
+> device asociado. Ver [[29_Specs/SPEC_02_UIUX_Mejoras]] U2 y
+> `@/app/_components/diagnostico-rapido-card.tsx`. Esta sección decía "pendiente" en una
+> versión anterior de este doc — quedó desactualizada respecto a SPEC_02, corregido acá.
+
+Sigue sin ese nivel de explicación cualquier card que muestre "N/D"/"Sin evidencia real"
+fuera de las secciones que ya usan `DiagnosticoRapidoCard` — no se auditó pantalla por
+pantalla si queda algún estado degradado suelto sin ese contexto.
 
 ---
 

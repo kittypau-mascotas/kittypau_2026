@@ -5,7 +5,7 @@ type: spec
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-12
+updated: 2026-08-13
 tags:
   - spec
   - ux
@@ -33,27 +33,26 @@ related:
 > `/today` (debajo de Alimentación/Hidratación, fuera de "Barras Sims") y `/pet` (junto a
 > "Platos asociados"). Ver [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]].
 
-### U3 — El modal "MODO GUÍA" de onboarding en `/today` es un buen patrón sin continuación
-
-`/today` tiene un modal de bienvenida con tips + `Completar registro`. Es un modal aislado
-en una sola pantalla: `/pet`, `/bowl` y `/story` no tienen su propio tip de bienvenida
-contextual, así que un usuario nuevo que llega directo a `/pet` (ej. desde un link
-compartido) no recibe la misma guía.
-
-**Propuesta:** generalizar a un patrón `<OnboardingTip screen="pet|bowl|story">` con 1-2
-tips específicos por pantalla, reusando el mismo componente modal de `/today`.
+> ✅ **U3 hecho (2026-08-13):** `<OnboardingTip screen="pet|bowl|story">` generalizado
+> (`@/app/_components/onboarding-tip.tsx`), inspirado en el modal "Modo guía" de `/today`
+> pero self-contained (decide solo si mostrarse, vía `localStorage` con clave
+> `kittypau_tip_seen_<screen>` independiente por pantalla — no reusa `kittypau_guide_seen`
+> de `/today`). Wireado con 1-2 tips reales por pantalla en `/pet`, `/bowl` y `/story`.
 
 ---
 
 ## Deuda de UX pendiente
 
+> ✅ **I2 hecho (2026-08-13):** `<PageLoadingSkeleton>` (`@/app/_components/`, `animate-pulse`
+> de Tailwind, sin librería nueva) reemplaza el texto plano de loading en `/bowl`,
+> `/settings` y `/pet`. `role="status"` + label accesible para lectores de pantalla.
+
 | # | Qué | Por qué importa | Esfuerzo |
 |---|---|---|---|
-| I2 | Loading en texto plano (`"Cargando estado..."`) sin skeleton en `/bowl`, `/settings`, `/pet` | Se siente más lento de lo que es | M |
 | I9 | SSIDs de WiFi solo en `localStorage`, se pierden en reinstall de la APK | Pérdida de datos de configuración — requiere migración de schema (persistir en `devices`) | M |
 | L-C1 | `/login` sigue siendo un monolito de ~1924 líneas | Mantenibilidad — no bloquea usuario final | XL |
 | L-C3 | SVG del gato como string gigante inline con `dangerouslySetInnerHTML` en `/login` | Mantenibilidad, no seguridad (contenido estático propio) | M |
-| A-C1 | `/admin` monolito, ver desarrollo completo abajo — **en curso, batch 1/N hecho 2026-08-12** | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final | XL |
+| A-C1 | `/admin` monolito, ver desarrollo completo abajo — **en curso, batch 2/N hecho 2026-08-13** | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final | XL |
 
 ### A-C1 — `/admin` monolito: extracción por componentes EN CURSO
 
@@ -83,7 +82,20 @@ lo que hay acá).
 Validado: type-check, lint, build limpios. **No verificado visualmente** — `/admin` sigue
 bloqueado por [[29_Specs/SPEC_01_Errores_Prioritarios]] E2 (ambas cuentas de prueba
 redirigen a `/today`). El type-check da confianza de que los props calzan, pero no
-reemplaza verlo renderizado — priorizar resolver E2 antes o durante el batch 2 si se puede.
+reemplaza verlo renderizado — priorizar resolver E2 sigue pendiente.
+
+**Hecho — batch 2/N (2026-08-13):** 3799 → 3555 líneas.
+- `auditoria-card.tsx` — "2) Auditoría e Integridad de Datos" + "Estado de registro" +
+  "Registros pendientes recientes" (`auditSectionStatus`, `registrationSummary` como
+  props). `formatAgo` duplicado adentro a propósito, mismo patrón que
+  `section-status-card.tsx`.
+- `infraestructura-card.tsx` — "3) Infraestructura y Telemetría" + "Estado de bridges" +
+  "Estado KPCL (online/offline)" (`infraSectionStatus`, `infraExpanded`, `bridges`,
+  `kpclDevices` como props). `infraExpanded` sigue viniendo del `page.tsx` porque también
+  gatea "Tablas y Vistas", que no es parte de este extracto.
+
+Mismo **no verificado visualmente** que el batch 1 (bloqueado por E2) — type-check, lint y
+build limpios sí lo cubren.
 
 **Pendiente — secciones que siguen inline en `page.tsx`, en el orden en que aparecen**
 (el comentario-mapa al inicio del archivo tiene el detalle actualizado a cada commit):
@@ -92,26 +104,20 @@ reemplaza verlo renderizado — priorizar resolver E2 antes o durante el batch 2
 2. "Resumen de Finanzas" — **la más densa del archivo**: breakdown de costos, selector de
    KPCL con tabla de componentes por unidad, break-even. Múltiples `useMemo` financieros
    (`selectedKpclCost`, `selectedKpclRuntimeSim`, `kpclRuntimeByDevice`,
-   `kpclFinancialRows`, `financeSectionStatus`) — tratar con más cuidado que el batch 1,
-   son cálculos de plata reales.
+   `kpclFinancialRows`, `financeSectionStatus`) — tratar con más cuidado que los batches
+   anteriores, son cálculos de plata reales.
 3. "Continuidad KPCL" — el gráfico SVG custom (`continuityChart`, el `useMemo` más largo
    del archivo, ~160 líneas). Candidato a extraer el SVG completo con `continuityChart` ya
    calculado como única prop.
 4. "Tablas y Vistas (Uso Aproximado)" — no leída todavía en detalle.
-5. "2) Auditoría e Integridad de Datos" + "Estado de registro" + "Registros pendientes
-   recientes" — usa `auditSectionStatus`, `registrationSummary`. **Candidato fuerte para
-   el batch 2**, parece acotado.
-6. "3) Infraestructura y Telemetría" + "Estado de bridges" + "Estado KPCL
-   (online/offline)" — usa `infraSectionStatus`, `bridges`, `kpclDevices`. **Otro
-   candidato fuerte para el batch 2**, junto con el punto 5.
-7. "Suite de Tests Admin" — usa `testsSectionStatus`, `runAllAdminTests` (ya es una
+5. "Suite de Tests Admin" — usa `testsSectionStatus`, `runAllAdminTests` (ya es una
    función standalone, no inline).
-8. "Resumen de incidentes (24h)", "Panel de acciones", "Audit events en línea" — no
+6. "Resumen de incidentes (24h)", "Panel de acciones", "Audit events en línea" — no
    leídas todavía en detalle (después de la línea ~2500 del archivo original).
 
-**Próximo paso sugerido:** batch 2 = puntos 5 y 6 (Auditoría + Infraestructura) — parecen
-las secciones más independientes que quedan, dejar Finanzas (punto 2) y el gráfico de
-Continuidad (punto 3) para el final por ser las de mayor cuidado.
+**Próximo paso sugerido:** batch 3 = punto 5 (Suite de Tests Admin), parece la más acotada
+que queda — dejar Finanzas (punto 2) y Continuidad (punto 3) para el final por ser las de
+mayor cuidado.
 
 ---
 
