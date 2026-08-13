@@ -6,6 +6,7 @@ import { getValidAccessToken, signOutSession } from "@/lib/auth/token";
 import { chileCompactDatetime } from "@/lib/time/chile";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { syncSelectedDevice } from "@/lib/runtime/selection-sync";
+import { isWaterDeviceRole } from "@/lib/device-role";
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
@@ -560,7 +561,9 @@ export default function BowlPage() {
     if (!selectedDevice) return;
     setConfigPetId(selectedDevice.pet_id ?? "");
     setConfigDeviceType(
-      selectedDevice.device_type === "water_bowl" ? "water_bowl" : "food_bowl",
+      isWaterDeviceRole(selectedDevice.device_id, selectedDevice.device_type)
+        ? "water_bowl"
+        : "food_bowl",
     );
     setConfigSaveStatus(null);
     try {
@@ -1630,7 +1633,9 @@ export default function BowlPage() {
                       {d.device_id}
                     </span>
                     <span className="ml-2 text-xs text-slate-500">
-                      {d.device_type === "water_bowl" ? "Bebedero" : "Comedero"}
+                      {isWaterDeviceRole(d.device_id, d.device_type)
+                        ? "Bebedero"
+                        : "Comedero"}
                     </span>
                   </div>
                   <button

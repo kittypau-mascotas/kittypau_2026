@@ -7,6 +7,7 @@ import {
 } from "../../../_utils";
 import { supabaseServer } from "@/lib/supabase/server";
 import { computeHungerBar, type ReadingPoint } from "@/lib/hunger-bar";
+import { isFoodDeviceRole } from "@/lib/device-role";
 
 // GET /api/pets/:id/hunger-bar
 // Barra de hambre calculada on-demand sobre `readings` — sin tabla intermedia.
@@ -54,18 +55,23 @@ export async function GET(
   // Puede haber más de un comedero "active" para la misma mascota (migración
   // allow_two_active_devices_per_pet) — se desambigua tomando el que reportó
   // lecturas más recientemente.
-  const FOOD_DEVICE_TYPES = ["food_bowl", "comedero", "comedero_cam"];
+  // Filtro en JS (no en SQL) vía isFoodDeviceRole: algunos device_id conocidos
+  // reportan device_type incorrecto desde el firmware (ver
+  // Knowledge/29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos.md — KPCL0035
+  // es bebedero pero su firmware dice "comedero" en cada heartbeat) — un filtro
+  // SQL por device_type solo no puede excluirlos, hace falta el override.
   const { data: candidateDevices, error: deviceError } = await supabaseServer
     .from("devices")
-    .select("id, last_seen")
+    .select("id, device_id, device_type, last_seen")
     .eq("pet_id", petId)
-    .in("device_type", FOOD_DEVICE_TYPES)
     .eq("status", "active")
-    .order("last_seen", { ascending: false, nullsFirst: false })
-    .limit(1);
+    .order("last_seen", { ascending: false, nullsFirst: false });
   if (deviceError)
     return apiError(req, 500, "SUPABASE_ERROR", deviceError.message);
-  const device = candidateDevices?.[0] ?? null;
+  const device =
+    (candidateDevices ?? []).find((d) =>
+      isFoodDeviceRole(d.device_id, d.device_type),
+    ) ?? null;
   if (!device) {
     logRequestEnd(req, startedAt, 200, { pet_id: petId, device: "none" });
     return NextResponse.json({

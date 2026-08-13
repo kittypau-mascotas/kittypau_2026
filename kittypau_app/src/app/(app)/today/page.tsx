@@ -46,6 +46,7 @@ import {
   syncSelectedPet,
 } from "@/lib/runtime/selection-sync";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
+import { isFoodDeviceRole, isWaterDeviceRole } from "@/lib/device-role";
 import {
   getConnectionHint,
   getActionNotes,
@@ -1015,16 +1016,16 @@ export default function TodayPage() {
       (device) =>
         (device.device_id ?? "").toUpperCase() === expectedFoodDeviceCode,
     ) ??
-    petDevices.find(
-      (device) =>
-        (device.device_type ?? "").toLowerCase().includes("comedero") ||
-        (device.device_type ?? "").toLowerCase().includes("food"),
+    // isFoodDeviceRole reconoce el override de SPEC_08 (device_id específicos cuyo
+    // device_type reportado por el firmware no es confiable) antes de caer a
+    // clasificar por substring de device_type — ver src/lib/device-role.ts.
+    petDevices.find((device) =>
+      isFoodDeviceRole(device.device_id, device.device_type),
     ) ??
     petDevices.find(
       (device) =>
         device.device_id?.toUpperCase().includes("KPCL") &&
-        !(device.device_type ?? "").toLowerCase().includes("bebedero") &&
-        !(device.device_type ?? "").toLowerCase().includes("water"),
+        !isWaterDeviceRole(device.device_id, device.device_type),
     ) ??
     primaryDevice;
   const baseWaterDevice =
@@ -1034,10 +1035,8 @@ export default function TodayPage() {
     ) ??
     petDevices.find((device) => {
       const id = (device.device_id ?? "").toUpperCase();
-      const type = (device.device_type ?? "").toLowerCase();
       return (
-        type.includes("bebedero") ||
-        type.includes("water") ||
+        isWaterDeviceRole(device.device_id, device.device_type) ||
         id.includes("KPBW") ||
         id.includes("KPW")
       );
