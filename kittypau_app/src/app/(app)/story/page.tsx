@@ -11,6 +11,7 @@ import {
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
+import OnboardingTip from "@/app/_components/onboarding-tip";
 import { parseListResponse } from "@/lib/utils/api";
 
 type ApiPet = {
@@ -373,6 +374,15 @@ export default function StoryPage() {
 
   return (
     <main className="page-shell">
+      <OnboardingTip
+        screen="story"
+        title="Historia del día"
+        intro="Acá se arma solo, con las comidas y bebidas que detectó el sensor."
+        tips={[
+          "Consejo: desliza para revisar los eventos de alimentación e hidratación del día.",
+          "Consejo: si algo falta, puede ser que el sensor todavía no tenga suficientes datos — no significa que no pasó.",
+        ]}
+      />
       <div className="page-header">
         <div>
           <p className="eyebrow">Diario automático</p>

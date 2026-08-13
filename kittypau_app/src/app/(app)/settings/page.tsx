@@ -10,6 +10,7 @@ import {
 import Alert from "@/app/_components/alert";
 import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
+import PageLoadingSkeleton from "@/app/_components/page-loading-skeleton";
 
 type ApiProfile = {
   id: string;
@@ -223,9 +224,7 @@ export default function SettingsPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">
-          Cargando ajustes...
-        </div>
+        <PageLoadingSkeleton label="Cargando ajustes..." />
       ) : !state.profile ? (
         <EmptyState
           title="No se encontró tu perfil."

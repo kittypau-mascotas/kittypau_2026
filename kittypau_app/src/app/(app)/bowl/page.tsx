@@ -11,6 +11,8 @@ import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import AccessibleModal from "@/app/_components/accessible-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
+import PageLoadingSkeleton from "@/app/_components/page-loading-skeleton";
+import OnboardingTip from "@/app/_components/onboarding-tip";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
@@ -973,6 +975,15 @@ export default function BowlPage() {
 
   return (
     <main className="page-shell">
+      <OnboardingTip
+        screen="bowl"
+        title="Comedero y bebedero"
+        intro="Acá controlás cada dispositivo: conexión, batería y la báscula."
+        tips={[
+          "Consejo: usa “Tarar báscula” cuando cambies el plato vacío, para recalibrar el peso base.",
+          "Consejo: el Diagnóstico rápido resume conexión, energía y firmware de un vistazo.",
+        ]}
+      />
       {state.error && (
         <Alert
           variant="error"
@@ -991,9 +1002,7 @@ export default function BowlPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">
-          Cargando estado...
-        </div>
+        <PageLoadingSkeleton label="Cargando estado del comedero y bebedero..." />
       ) : state.devices.length === 0 ? (
         <EmptyState
           title="No hay dispositivos vinculados."

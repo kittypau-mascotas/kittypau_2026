@@ -11,6 +11,8 @@ import EmptyState from "@/app/_components/empty-state";
 import OperationalActionsCard from "@/app/_components/operational-actions-card";
 import HungerBarCard from "@/app/_components/hunger-bar-card";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
+import PageLoadingSkeleton from "@/app/_components/page-loading-skeleton";
+import OnboardingTip from "@/app/_components/onboarding-tip";
 import { scheduleHungerBarAlert } from "@/lib/hooks/useHungerBarPushAlert";
 import {
   parseListResponse,
@@ -375,6 +377,15 @@ export default function PetPage() {
 
   return (
     <main className="page-shell">
+      <OnboardingTip
+        screen="pet"
+        title="Perfil de tu mascota"
+        intro="Acá ves su barra de hambre, el diagnóstico del sensor y los platos asociados."
+        tips={[
+          "Consejo: la Barra de hambre te dice cuánto falta para la próxima comida esperada.",
+          "Consejo: el Diagnóstico rápido distingue si el problema es tu mascota o el sensor.",
+        ]}
+      />
       <div className="page-header">
         <div>
           <p className="eyebrow">Perfil conductual</p>
@@ -403,15 +414,10 @@ export default function PetPage() {
       )}
 
       {state.isLoading ? (
-        <div className="surface-card freeform-rise px-6 py-6">
-          <p className="text-sm font-semibold text-slate-900">
-            Cargando perfil y lecturas recientes...
-          </p>
-          <p className="mt-1 text-sm text-slate-500">
-            Estamos armando la ficha de tu mascota y vinculando el último
-            historial disponible.
-          </p>
-        </div>
+        <PageLoadingSkeleton
+          label="Cargando perfil y lecturas recientes... Estamos armando la ficha de tu mascota y vinculando el último historial disponible."
+          lines={4}
+        />
       ) : state.pets.length === 0 ? (
         <EmptyState
           title="Aún no tienes mascotas registradas."
