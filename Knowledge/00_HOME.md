@@ -23,6 +23,8 @@ tags:
 Este proyecto se trabaja desde dos máquinas distintas, cada una con su propia sesión de
 Claude Code sobre el mismo repo remoto (`github.com/kittypau-mascotas/kittypau_2026`) —
 protocolo completo de sincronización en [[19_DevOps/README_DevOps]] § "Trabajo en 2 PCs".
+**Qué le toca a cada PC ahora mismo:** [[19_DevOps/PENDIENTES_POR_PC]] — archivo vivo,
+leerlo apenas se hace `pull` al empezar sesión.
 
 | PC | Identidad git | Ruta raíz del repo |
 |---|---|---|

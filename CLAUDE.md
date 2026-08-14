@@ -118,6 +118,8 @@ Estas reglas tienen prioridad máxima y **nunca** son candidatas a simplificaci�
 - `Knowledge/29_Specs/` es el canal de handoff entre sesiones/máquinas — si algo queda
   bloqueado por falta de acceso físico o una decisión pendiente, documentarlo ahí, no
   dejarlo solo en el chat.
+- **`Knowledge/19_DevOps/PENDIENTES_POR_PC.md`** — archivo vivo, qué tarea le toca a cada
+  máquina ahora mismo. Leerlo después de cada `pull`, actualizarlo antes de cada `push`.
 - Nunca commitear secretos (`.env*`, `settings.local.json`) — ya pasó dos veces. Revisar
   `git status` antes de un `git add` amplio.
 - Reglas completas: `Knowledge/19_DevOps/README_DevOps.md` § "Trabajo en 2 PCs".

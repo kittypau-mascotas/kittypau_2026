@@ -20,6 +20,7 @@ related:
   - [[29_Specs/SPEC_06_Mobile_APK_2026]]
   - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
   - [[29_Specs/README_Specs]]
+  - [[19_DevOps/PENDIENTES_POR_PC]]
 ---
 
 # DevOps — Deploy, CI/CD, Infraestructura
@@ -196,6 +197,13 @@ acceso (en la PC de Mauro) lo ejecute. **Formalizar este patrón**: si una sesi�
 terminar algo por falta de acceso/decisión pendiente, lo deja como spec nuevo o actualiza
 uno existente — no un comentario suelto que se pierde entre sesiones.
 
+**4.1. [[19_DevOps/PENDIENTES_POR_PC]] es el resumen ejecutivo de la regla 4** — mismo
+espíritu, pero sin tener que releer cada spec entero para saber "¿qué me toca a mí, en esta
+máquina, ahora mismo?". Es un archivo vivo: **actualizarlo en cada sesión**, apenas se hace
+`pull` (leerlo) y antes de cada `push` (tachar lo hecho, sumar lo nuevo). Si un ítem de ahí
+queda desactualizado respecto al spec que referencia, gana el spec — este archivo es un
+índice, no la fuente de verdad.
+
 **5. Antes de cada `push`, revisar el diff real** — `git log origin/main..HEAD` y
 `git diff origin/main..HEAD --stat` — para confirmar que lo que se sube es lo esperado,
 sobre todo después de una sesión larga de Claude Code con muchos archivos tocados.
@@ -250,14 +258,15 @@ pushear nada. En orden:
 5. Revisá git status final antes de cualquier git add — si aparece algo que huela a
    secreto (.env*, settings.local.json, tokens, passwords en texto plano), avisame en vez
    de agregarlo.
-6. Leé Knowledge/00_HOME.md y Knowledge/29_Specs/README_Specs.md para entender qué está
-   pendiente ahora mismo — en particular fijate si SPEC_09 (bridge/firmware) sigue
-   pendiente: ese spec es un handoff explícito para la sesión CON acceso físico a la
-   Raspberry Pi (192.168.100.119) y a la red OTA del firmware — si estás en esa PC y tenés
-   ese acceso, es candidato directo a ejecutar ahora.
-7. Dame un resumen: qué se sincronizó, qué quedó pendiente, y si hay algo de SPEC_09 (o
-   cualquier otro spec marcado "requiere acceso real") que ahora sí sea ejecutable desde
-   esta máquina. No pushees a main sin que yo lo confirme.
+6. Leé Knowledge/19_DevOps/PENDIENTES_POR_PC.md — te dice directo qué te toca a vos en esta
+   máquina específica, sin releer cada spec entero. Si algo de la lista de "esta PC" ya no
+   aplica (cambió el acceso, ya se hizo desde la otra máquina, etc.), decímelo.
+7. Dame un resumen: qué se sincronizó, qué quedó pendiente, y qué de
+   Knowledge/19_DevOps/PENDIENTES_POR_PC.md es ejecutable ahora desde esta máquina. No
+   pushees a main sin que yo lo confirme.
+8. Antes de terminar la sesión (si se hizo algún cambio real): actualizá
+   Knowledge/19_DevOps/PENDIENTES_POR_PC.md — mové a "✅ Completado recientemente" lo que se
+   cerró, agregá lo nuevo que haya aparecido, antes del push final.
 ```
 
 ### CI/CD — actualizado 2026-08-12: ahora sí corre tests
