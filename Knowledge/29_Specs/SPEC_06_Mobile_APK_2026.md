@@ -18,6 +18,7 @@ related:
   - [[04_Frontend/README_Frontend]]
   - [[05_API/SPEC_HungerBar_Alertas]]
   - [[19_DevOps/README_DevOps]]
+  - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
 ---
 
 # SPEC 06 — Modernización del APK móvil
@@ -120,6 +121,64 @@ valor):
 
 ---
 
+## 🔵 Gap real: emparejamiento físico del device (WiFi) y alta en la app, desconectados
+
+> Encontrado 2026-08-14 revisando `dispositivos/nuevo/page.tsx` contra
+> [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] (captive portal del firmware) — no es
+> hipotético, es el flujo real hoy.
+>
+> **Distinto de [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]]:** esto es
+> conectividad (device↔router, primera vez que un KPCL sin WiFi se conecta a internet).
+> SPEC_10 es propiedad (device↔usuario, elegir cuál de los devices ya online vincular a tu
+> cuenta) — ese es el que Mauro priorizó el 2026-08-14 porque corre hoy en `registro-flow.tsx`
+> con testers reales. Esta sección de acá importa recién cuando haya clientes nuevos
+> provisionando hardware propio, no antes.
+
+**Flujo actual, en dos partes que no se hablan entre sí:**
+
+1. **Firmware:** un KPCL sin WiFi conocido levanta un AP `AIoTChile-KPCLxxxx`
+   (`captive_portal.cpp:151-152`) y sirve un formulario en `192.168.4.1` para cargar la red
+   del hogar — **fuera de la app**, en el browser del teléfono, conectado manualmente a esa
+   red desde Ajustes del sistema.
+2. **App:** `dispositivos/nuevo/page.tsx` solo hace un `POST /api/devices` con
+   `device_id`/`device_type`/`pet_id` — asume que el device **ya** está online y publicando
+   por MQTT. No hay paso intermedio, no verifica que el device efectivamente llegó a
+   conectarse, y redirige a `/bowl` a los 1.2s sin chequear nada (línea 126).
+
+**Lo que ya existe y SÍ sirve** (no reinventar): `/bowl` tiene UI de gestión de WiFi
+(`handleAddWifi`/`handleRemoveWifi`, `api/devices/[id]/wifi/route.ts`) — pero es para
+**agregar una red de respaldo a un device que ya está online**, viaja por
+`device_commands` → bridge → MQTT, que solo le llega al device si ya tiene conexión. No
+sirve para el primer emparejamiento (device sin ninguna red configurada todavía).
+
+**Qué falta, concretamente:**
+
+1. **Guiar el paso 1 desde la app**, no reemplazarlo — Android 10+ no deja que una app
+   conecte el teléfono a una red WiFi arbitraria en silencio (API `WifiManager.enableNetwork`
+   removida; `WifiNetworkSuggestion`/`ConnectivityManager.requestNetwork` requieren APIs más
+   nuevas y no garantizan que el usuario efectivamente conmute). El patrón realista es un
+   deep link a Ajustes WiFi del sistema (`Settings.Panel.ACTION_WIFI` vía un intent nativo,
+   no hay plugin oficial de Capacitor para esto — evaluar `@capacitor-community/*` o un
+   plugin custom mínimo) con instrucciones en pantalla ("conectate a `AIoTChile-KPCLxxxx`,
+   volvé acá cuando termines").
+2. **Cerrar el loop de verificación** — después del `POST /api/devices`, no redirigir a
+   ciegas: pollear `devices.last_seen`/`device_state` (mismo indicador 🟢🔴⚫ que ya usa el
+   resto de la app, ver `CLAUDE.md`) unos segundos y mostrar "esperando que el dispositivo se
+   conecte..." en vez de asumir éxito. Si no llega a conectar en un plazo razonable (ej. 60s),
+   decir explícitamente "no detectamos el dispositivo" en vez de dejar al usuario con un
+   `/bowl` que simplemente no muestra datos.
+
+**No es una feature grande de golpe** — el punto 2 (polling + feedback honesto) es bajo
+esfuerzo y ya sigue el patrón de indicador de estado que existe en toda la app. El punto 1
+(deep link a WiFi settings) es más chico de lo que suena pero requiere confirmar si hace
+falta un plugin nativo o alcanza con `Intent.ACTION_VIEW`/settings scheme desde Capacitor.
+
+**Esfuerzo:** S (punto 2, polling) + S-M (punto 1, deep link + investigar plugin).
+**Impacto:** Medio-alto — es la primera impresión de cualquier usuario nuevo con hardware
+real, y hoy no tiene ningún feedback si el emparejamiento físico falla.
+
+---
+
 ## 🎨 Qué espera un usuario de una app móvil bien hecha en 2026
 
 Filtrado a lo que aplica a un **WebView híbrido**, no a una app 100% nativa:
@@ -178,6 +237,7 @@ autorizar la conexión del dispositivo (USB o inalámbrica) — no hay forma de 
 | 4 | `@capacitor/haptics` | XS | Bajo/medio | Cuando haya ancho |
 | 5 | `@capacitor/preferences`, `@capacitor/share`, biometría | S-M c/u | Medio | Sin apuro, evaluar una por una |
 | 6 | Endurecer `env(safe-area-inset-*)` con fallback `var(--safe-area-inset-*, ...)` en `globals.css` | S | Bajo | No bloqueante, WebView <140 es minoría en 2026 |
+| 7 | Cerrar el gap de emparejamiento físico WiFi ↔ alta en la app (`dispositivos/nuevo`) — ver sección dedicada arriba | S (polling) + S-M (deep link) | Medio-alto | Sin apuro pero es la primera experiencia con hardware real |
 
 ---
 
