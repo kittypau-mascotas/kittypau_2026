@@ -27,7 +27,7 @@
         "@modelcontextprotocol/server-memory"
       ],
       "env": {
-        "MEMORY_FILE_PATH": "C:/Kittypau/GitHub_KP/kittypau_2026/Knowledge/.mcp_memory.json"
+        "MEMORY_FILE_PATH": "<TU_RUTA_ABSOLUTA_AL_REPO>/Knowledge/.mcp_memory.json"
       },
       "windowsHide": true
     },
