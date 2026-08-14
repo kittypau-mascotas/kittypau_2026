@@ -41,6 +41,40 @@ el patrón de la regla 9 de [[19_DevOps/README_DevOps]] sobre `.mcp.json`
 no muestra ese archivo como modificado. Las dos PCs quedaron identificadas y con el MCP de
 `memory` funcional localmente en cada una, sin pisarse entre sí.
 
+### 📶 La PC de Mauro es móvil — redes conocidas (confirmar en cada sesión, no asumir)
+
+A diferencia de la de Javier, la PC de Mauro **se mueve entre ubicaciones distintas** —
+casa de Javier, la red de Mauro (VTR), y potencialmente otras. Qué dispositivos del
+ecosistema (Raspberry del bridge, KPCL0035, etc.) son alcanzables **depende de a cuál red
+está conectada la sesión en ese momento**, no es fijo. Tabla de lo confirmado hasta ahora:
+
+| Red (SSID) | Subred | Alcanzable desde ahí | Confirmado |
+|---|---|---|---|
+| `Suarez_Mujica_891_5G` | `192.168.100.x` | Raspberry del bridge (`192.168.100.119`) — SSH confirmado, `hostname`/`uname -a` verificados | 2026-08-14 (PC de Mauro, en casa de Javier) |
+| `VTR-2736410_2g` | `192.168.0.x` | KPCL0035 (`192.168.0.8`) — IP confirmada contra `devices.wifi_ip` en Supabase | 2026-08-14 (documentado como "red de Mauro" en [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]) |
+
+> `Suarez_Mujica_891`/`SuarezMujica891` está además hardcodeada como red de fallback en el
+> firmware (`wifi_manager.cpp`) — no es coincidencia, es la red donde vive físicamente al
+> menos parte del hardware (la Raspberry, confirmado; probablemente algún KPCL también).
+
+**Instrucción para cualquier sesión de Claude Code en la PC de Mauro: si la red actual no
+está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.**
+
+```
+1. Identificar la red actual:
+   - Windows: netsh wlan show interfaces (SSID) + ipconfig (IP/subred)
+2. Probar reachability de los objetivos conocidos del ecosistema:
+   - ping 192.168.100.119   (Raspberry del bridge)
+   - ping 192.168.0.8        (KPCL0035 — puede haber cambiado, re-confirmar contra
+                               devices.wifi_ip en Supabase si responde)
+3. Agregar una fila nueva a esta tabla en Knowledge/00_HOME.md con: SSID, subred, qué
+   respondió y qué no, fecha. No sobreescribir filas anteriores — cada red es un dato
+   permanente del ecosistema, no algo que cambie.
+4. Si algo responde al ping pero se va a usar para SSH/comandos reales, verificar identidad
+   real antes de confiar (hostname + uname -a para la Raspberry, o el equivalente que
+   corresponda) — mismo criterio que ya se aplicó el 2026-08-14, no asumir por el ping solo.
+```
+
 ---
 
 ## ⚡ Referencia rápida (lo que se busca seguido)
