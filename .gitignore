@@ -176,6 +176,9 @@ Docs/09_Investigacion/**/*.pkl
 
 # Worktrees de Claude
 .claude/worktrees/
+
+# Config local de Claude Code (puede contener credenciales)
+.claude/settings.local.json
 Docs/09_Investigacion/kpcl0036_sin_batera_actual.csv
 Docs/11_Data/2026/readings.csv
 Docs/11_Data/2026/readings_rows.csv
