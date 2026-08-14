@@ -42,6 +42,16 @@ related:
 > `config.h` y `platformio.ini` no tienen commits desde que se escribió este spec. **El fix
 > de §1.1/§1.2 sigue sin aplicar.**
 
+> ⚠️ **Bloqueante nuevo, no técnico (2026-08-14, PC de Mauro, 2 intentos separados):** la
+> conexión SSH funciona y la identidad de la Raspberry está confirmada dos veces
+> (`hostname`/`uname -a`), pero el permission classifier de Claude Code **bloquea la
+> acción de escribir el fix + reiniciar el servicio** en las dos ocasiones que se intentó
+> — con password y con key, en sesiones distintas. No se tocó nada en la Pi en ningún
+> intento (el script aborta antes de escribir si el permiso se deniega). **Requiere que
+> Mauro autorice la regla de Bash para esta acción específica, o que alguien ejecute el
+> deploy manualmente** con las credenciales de `.env.local` — no es algo que una sesión de
+> Claude Code pueda resolver por su cuenta insistiendo.
+
 ### ⚠️ Hallazgo mayor (PC de Javier, por SSH real): el deploy NO es `git pull` — es manual
 
 `/home/kittypau/kittypau-bridge` **no tiene `.git`**. No es un clone del repo — es una
