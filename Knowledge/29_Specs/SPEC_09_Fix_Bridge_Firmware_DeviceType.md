@@ -34,13 +34,15 @@ related:
 
 ---
 
-## -1. Tareas para ejecutar desde la PC de Mauro (verificado 2026-08-14 desde la PC de Javier)
+## -1. Tareas para ejecutar desde la PC de Mauro (2026-08-14 — confirmado de forma independiente por 2 sesiones)
 
-Una sesión en la PC de Javier **se conectó de verdad por SSH a la Raspberry** (no solo
-ping) y confirmó cosas importantes que cambian cómo ejecutar este spec — leer antes de
-tocar nada:
+> Dos sesiones distintas verificaron esto por separado el mismo día y llegaron a la misma
+> conclusión desde ángulos diferentes: una (PC de Javier) se conectó de verdad por SSH a la
+> Raspberry; la otra (PC de Mauro) confirmó por `git log` que `bridge/src/index.js`,
+> `config.h` y `platformio.ini` no tienen commits desde que se escribió este spec. **El fix
+> de §1.1/§1.2 sigue sin aplicar.**
 
-### ⚠️ Hallazgo mayor: el deploy real NO es `git pull` — es manual
+### ⚠️ Hallazgo mayor (PC de Javier, por SSH real): el deploy NO es `git pull` — es manual
 
 `/home/kittypau/kittypau-bridge` **no tiene `.git`**. No es un clone del repo — es una
 carpeta con `bridge.js` + `processor.js` sueltos, más una serie de backups manuales
@@ -80,26 +82,37 @@ de §1.1 ahora mismo a mano si hay apuro.
 ### ✅ SSH ya funciona sin password (hecho 2026-08-14 desde la PC de Javier)
 
 Se generó una key ed25519 (`~/.ssh/kittypau_bridge` en la PC de Javier) y se agregó a
-`~/.ssh/authorized_keys` de la Pi — probado, conecta sin pedir password. La Raspberry
-**es reachable desde la red de Javier también**, no solo la de Mauro (corrección: la nota
-anterior decía "solo alcanzable desde la red de Mauro" — eso es cierto para el firmware
-KPCL0035 por WiFi, NO para la Raspberry, que respondió ping/SSH directo desde acá).
+`~/.ssh/authorized_keys` de la Pi — probado, conecta sin pedir password. **Esto ya resuelve
+la recomendación de migrar a SSH key** que se había anotado por separado — no queda
+pendiente, queda ejecutada de un lado. La Raspberry **es reachable desde la red de Javier
+también**, no solo la de Mauro (corrección: una nota anterior decía "solo alcanzable desde
+la red de Mauro" — eso es cierto para el firmware KPCL0035 por WiFi, NO para la Raspberry,
+que respondió ping/SSH directo desde la PC de Javier).
 
 **Para Mauro:** generar tu propia key (`ssh-keygen -t ed25519 -f ~/.ssh/kittypau_bridge`),
-conectarte una vez con la password de `.env.local` de Javier para agregar tu clave pública a
+conectarte una vez con la password (ver abajo) para agregar tu clave pública a
 `~/.ssh/authorized_keys` de la Pi, y de ahí en más ninguna sesión de Claude Code en tu PC
 necesita la password de nuevo.
 
-**IP de OTA para KPCL0035 — confirmada, pero puede volver a cambiar:** el
-`upload_port = 192.168.100.95` de `platformio.ini` está desactualizado. IP real verificada
-contra `devices.wifi_ip` en Supabase el 2026-08-14: **`192.168.0.8`** (red
-`VTR-2736410_2g`, la de la casa de Mauro — KPCL0035 vive físicamente ahí, solo alcanzable
-desde esa red). **No asumir que sigue siendo esa IP** sin re-confirmar contra Supabase el
-mismo día del OTA — ver detalle en §1.2.d.
+**Credenciales del bridge:** viven en `.env.local` (gitignoreado, nunca en el repo) como
+`BRIDGE_SSH_HOST` / `BRIDGE_SSH_USER` / `BRIDGE_SSH_PASSWORD` / `BRIDGE_SSH_KEY` /
+`BRIDGE_SSH_PATH`. Se pasan por fuera de git (no por este doc, no por ningún commit) —
+pedirlas directamente si no las tenés ya en tu copia local.
 
-**Orden sugerido al ejecutar desde la PC de Mauro:** decidir git-real vs. edición manual
-para el bridge (arriba) → aplicar §1.1 → §1.2 (firmware OTA, con la IP re-confirmada) →
-resto del checklist de §7.
+**IP de OTA para KPCL0035 — confirmada por ambas sesiones, pero puede volver a cambiar:** el
+`upload_port = 192.168.100.95` de `platformio.ini` está desactualizado (no respondió al
+verificar). IP real verificada contra `devices.wifi_ip` en Supabase el 2026-08-14, y
+confirmada por estar en la red de Mauro: **`192.168.0.8`** (red `VTR-2736410_2g` — KPCL0035
+vive físicamente ahí, solo alcanzable desde esa red). **No asumir que sigue siendo esa IP**
+sin re-confirmar contra Supabase el mismo día del OTA — ver detalle en §1.2.d.
+
+**Orden sugerido al ejecutar desde la PC de Mauro:**
+1. Decidir git-real vs. edición manual para el bridge (ver hallazgo de arriba) — no
+   bloqueante, se puede aplicar el fix a mano igual si hay apuro.
+2. §1.1 — deploy del override en el bridge (por SSH, con key si ya la configuraste, o con
+   la password de `.env.local`).
+3. §1.2 — fix de firmware + OTA a KPCL0035, con la IP `192.168.0.8` re-confirmada el día del OTA.
+4. Resto del checklist de §7, en el orden que ya está.
 
 ---
 
