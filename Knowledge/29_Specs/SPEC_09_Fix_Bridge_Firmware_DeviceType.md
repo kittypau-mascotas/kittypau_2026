@@ -402,8 +402,16 @@ sin un motivo concreto para tocarlo (YAGNI).
 
 ## 7. Checklist de cierre
 
-- [ ] §1.1 bridge override deployado y verificado (device_type no vuelve a `comedero`)
-- [ ] §1.2 firmware reflasheado y verificado (STATUS reporta `bebedero`)
+- [x] §1.1 bridge override deployado y verificado (device_type no vuelve a `comedero`) —
+      ✅ **hecho 2026-08-14, desde la PC de Javier, con autorización explícita.** Backup
+      (`bridge.js.bak_pre_spec09_devicetype_override_20260814`) → edit local → `node --check`
+      dos veces (local y en la Pi, antes de reemplazar) → swap → `systemctl restart` →
+      verificado contra Supabase 2 veces con `last_seen` avanzando entre chequeos:
+      `device_type` se mantuvo en `water_bowl`, no revirtió. El bug de SPEC_08 está resuelto
+      en la fuente, no solo parcheado en `kittypau_app`.
+- [ ] §1.2 firmware reflasheado y verificado (STATUS reporta `bebedero`) — sigue pendiente,
+      requiere OTA físico desde la red de Mauro (no bloqueante ahora que §1.1 ya corrige el
+      dato en Supabase; §1.2 es la corrección definitiva de raíz, no urgente en el mismo día)
 - [ ] §2 reportado a Mauro con conteo real de filas afectadas, esperar decisión antes de UPDATE
 - [ ] §3.1 `rejectUnauthorized` corregido y conexión MQTT confirmada estable
 - [ ] §3.2 decisión de Mauro registrada (mantener o migrar credenciales)

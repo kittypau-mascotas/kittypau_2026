@@ -272,10 +272,14 @@ mismo bug. Queda pendiente, sin ejecutar (decisión de Mauro, no bloqueante):
 
 1. **Corregir la causa raíz real (firmware/bridge):**
    - (a) Reconfigurar/reflashear el firmware físico de KPCL0035 para que se identifique
-     como bebedero — requiere acceso físico al hardware.
-   - (b) Agregar un override equivalente en `bridge/src/index.js` para que no pise
-     `device_type` en devices ya clasificados manualmente — toca el bridge que corre contra
-     hardware real, "verificar dos veces" aplica.
+     como bebedero — requiere acceso físico al hardware. **Sigue pendiente** (requiere OTA
+     desde la red de Mauro) — ver [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §1.2.
+   - (b) **✅ Hecho (2026-08-14).** Se agregó `DEVICE_TYPE_MANUAL_OVERRIDE` en
+     `bridge/src/index.js` (deployado directo en la Raspberry, con backup previo,
+     verificación de sintaxis y confirmación en Supabase de que `device_type` de KPCL0035
+     se mantiene en `water_bowl` sin revertir) — la causa raíz a nivel de bridge ya está
+     corregida, no solo parcheada en `kittypau_app`. Detalle completo en
+     [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §7.
 2. **KPCL0034 sigue apagado (hardware, no software)** — este spec no lo arregla. Ver
    [[29_Specs/SPEC_07_Investigacion_Hidratacion]] para el diagnóstico de la caída conjunta
    del 23-jul.

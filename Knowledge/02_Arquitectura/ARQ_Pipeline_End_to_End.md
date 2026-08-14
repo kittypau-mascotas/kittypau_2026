@@ -527,8 +527,8 @@ rompería ese flujo específico en producción móvil.
 
 | # | Item | Dónde está el detalle | Estado |
 |---|---|---|---|
-| 1 | `DEVICE_TYPE` sin guard en firmware — origen de todo el bug de identidad KPCL0035 | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §1.2 | Pendiente, requiere OTA físico |
-| 2 | Bridge pisa `device_type` con el valor crudo del firmware, `DEVICE_TYPE_MAP` es código muerto | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §1.1 | Pendiente, requiere deploy en la Pi |
+| 1 | `DEVICE_TYPE` sin guard en firmware — origen físico del bug de identidad KPCL0035 | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §1.2 | Pendiente, requiere OTA físico desde la red de Mauro — no urgente, §2 ya mitiga el síntoma en Supabase |
+| 2 | Bridge pisaba `device_type` con el valor crudo del firmware | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §1.1/§7 | ✅ **Resuelto 2026-08-14** — override deployado y verificado en producción (`device_type` de KPCL0035 estable en `water_bowl`) |
 | 3 | `processor.js:129` hereda el mismo bug — sesiones de KPCL0035 mal etiquetadas como `'food'` | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §2 | Pendiente, corrige hacia adelante solo (histórico requiere decisión) |
 | 4 | **DB analytics no resuelve DNS — probablemente eliminada** | Este documento, §3.2 (hallazgo nuevo) | **No reportado en ningún spec — verificar dashboard de Supabase** |
 | 5 | `admin_roles` vacía — migración semilla apunta a email inexistente | [[29_Specs/SPEC_01_Errores_Prioritarios]] E2 | Fix identificado, no aplicado (pendiente confirmación) |
