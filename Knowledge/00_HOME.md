@@ -118,6 +118,7 @@ tags:
 - [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] — bug crítico: KPCL0035 (bebedero) reportaba `device_type='comedero'`, rompía Hunger Bar/`/bowl`/`/today` — causa raíz en firmware/bridge, fix aplicado como override en `kittypau_app`
 - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] — handoff para cerrar SPEC_08 en la fuente (bridge + firmware, requiere acceso a Raspberry/OTA) + hallazgo nuevo en `processor.js` + mejoras de seguridad
 - [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] — vincular dispositivo en el registro debe mostrar la lista real de `devices` (Supabase), no pedir tipear un código — pre-lanzamiento la lista es acotada y conocida
+- [[29_Specs/SPEC_11_Resumen_Consumo_Today]] — totales de comida/agua día/semana/mes en `/today`: el bridge ya calcula todo (`pet_sessions`/`pet_daily_summary`), falta solo el consumidor de UI — sección nueva, fuera de "Barras Sims"
 
 ---
 
