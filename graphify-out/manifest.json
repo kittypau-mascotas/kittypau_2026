@@ -1,0 +1,992 @@
+{
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\build.gradle": {
+    "mtime": 1776972326.3514597,
+    "ast_hash": "82cf277b3d067a56db975fd01420e51a",
+    "semantic_hash": "82cf277b3d067a56db975fd01420e51a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\capacitor.build.gradle": {
+    "mtime": 1773801687.3110797,
+    "ast_hash": "105662834be5747ac4cd3419ce62b5f3",
+    "semantic_hash": "105662834be5747ac4cd3419ce62b5f3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\androidTest\\java\\com\\getcapacitor\\myapp\\ExampleInstrumentedTest.java": {
+    "mtime": 1773801687.3170652,
+    "ast_hash": "c777a4127ae7213f7da22c4105bdfeab",
+    "semantic_hash": "c777a4127ae7213f7da22c4105bdfeab"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\assets\\capacitor.config.json": {
+    "mtime": 1773674130.9058423,
+    "ast_hash": "991f5e75338bee25b5ee6ee444a3e09e",
+    "semantic_hash": "991f5e75338bee25b5ee6ee444a3e09e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\assets\\capacitor.plugins.json": {
+    "mtime": 1773674131.0544412,
+    "ast_hash": "e206194b0774511a721ceedf0cabdd43",
+    "semantic_hash": "e206194b0774511a721ceedf0cabdd43"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\assets\\public\\cordova.js": {
+    "mtime": 1773674131.0810344,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\assets\\public\\cordova_plugins.js": {
+    "mtime": 1773674131.0836344,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\java\\com\\kittypau\\app\\MainActivity.java": {
+    "mtime": 1773801687.3219364,
+    "ast_hash": "9a6b296de1ab1e09961d4c04807c0a5a",
+    "semantic_hash": "9a6b296de1ab1e09961d4c04807c0a5a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\test\\java\\com\\getcapacitor\\myapp\\ExampleUnitTest.java": {
+    "mtime": 1773801687.478716,
+    "ast_hash": "3f8a2768101e4de10f606ea4516fd339",
+    "semantic_hash": "3f8a2768101e4de10f606ea4516fd339"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\build.gradle": {
+    "mtime": 1773801687.4797144,
+    "ast_hash": "8792aee1a19a1995c21a686f1b67f5a8",
+    "semantic_hash": "8792aee1a19a1995c21a686f1b67f5a8"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\capacitor-cordova-android-plugins\\build.gradle": {
+    "mtime": 1773674131.0932724,
+    "ast_hash": "56ee1e41ba80b64df15915bd7c40d6df",
+    "semantic_hash": "56ee1e41ba80b64df15915bd7c40d6df"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\capacitor-cordova-android-plugins\\cordova.variables.gradle": {
+    "mtime": 1773674131.0932724,
+    "ast_hash": "8ccd69ac09ef80b05c393964b2f6e349",
+    "semantic_hash": "8ccd69ac09ef80b05c393964b2f6e349"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\capacitor.settings.gradle": {
+    "mtime": 1773801687.483284,
+    "ast_hash": "ab063b482f497a195dbcd3344a43c47a",
+    "semantic_hash": "ab063b482f497a195dbcd3344a43c47a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\gradlew": {
+    "mtime": 1773801687.4873044,
+    "ast_hash": "acf9007174811a6ebb9c43febccbcf37",
+    "semantic_hash": "acf9007174811a6ebb9c43febccbcf37"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\settings.gradle": {
+    "mtime": 1773801687.4882977,
+    "ast_hash": "c609df618dbeec637255380c9f707ccf",
+    "semantic_hash": "c609df618dbeec637255380c9f707ccf"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\variables.gradle": {
+    "mtime": 1773801687.4892995,
+    "ast_hash": "afd9ab33acb5fc6a59a977b76b274297",
+    "semantic_hash": "afd9ab33acb5fc6a59a977b76b274297"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\capacitor.config.ts": {
+    "mtime": 1776972613.6903267,
+    "ast_hash": "f32665345cbe2444e4246517766a3365",
+    "semantic_hash": "f32665345cbe2444e4246517766a3365"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\eslint.config.mjs": {
+    "mtime": 1772480171.3290348,
+    "ast_hash": "6c4307ffa009658f5c97f5629094c0c2",
+    "semantic_hash": "6c4307ffa009658f5c97f5629094c0c2"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\next.config.ts": {
+    "mtime": 1779818738.9878676,
+    "ast_hash": "3300a28e828f0881fac69b0130706c19",
+    "semantic_hash": "3300a28e828f0881fac69b0130706c19"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\package.json": {
+    "mtime": 1779818739.009625,
+    "ast_hash": "e704c3794cca1fec31b9c3dea404cbd0",
+    "semantic_hash": "e704c3794cca1fec31b9c3dea404cbd0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\postcss.config.mjs": {
+    "mtime": 1772480171.341252,
+    "ast_hash": "481fac0fdecd70e1821cc30b86030c1a",
+    "semantic_hash": "481fac0fdecd70e1821cc30b86030c1a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\scripts\\test-webhook.ps1": {
+    "mtime": 1772480171.460028,
+    "ast_hash": "76e0a603ff98f0402020b2ca88cfc0aa",
+    "semantic_hash": "76e0a603ff98f0402020b2ca88cfc0aa"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\_components\\app-nav.tsx": {
+    "mtime": 1779818739.0148199,
+    "ast_hash": "ec40c48468d995e7107495b8886eb4cf",
+    "semantic_hash": "ec40c48468d995e7107495b8886eb4cf"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\admin\\demo-ingresos\\page.tsx": {
+    "mtime": 1773801687.5416706,
+    "ast_hash": "4b8098642e88680b3083d3b104ee5f8b",
+    "semantic_hash": "4b8098642e88680b3083d3b104ee5f8b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\admin\\javo\\page.tsx": {
+    "mtime": 1772652362.5061412,
+    "ast_hash": "f8cf9b52e03f295900bdbce101899462",
+    "semantic_hash": "f8cf9b52e03f295900bdbce101899462"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\admin\\page.tsx": {
+    "mtime": 1775161246.524598,
+    "ast_hash": "477f30f7c715d1e2a89f99ae2570f9cb",
+    "semantic_hash": "477f30f7c715d1e2a89f99ae2570f9cb"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\bowl\\page.tsx": {
+    "mtime": 1779818739.0209157,
+    "ast_hash": "655a4518b4187cd2cf917d5cda9c8bf6",
+    "semantic_hash": "655a4518b4187cd2cf917d5cda9c8bf6"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\dispositivos\\nuevo\\page.tsx": {
+    "mtime": 1779818739.0268579,
+    "ast_hash": "d63ef5b13b7c9c3fcdf4ab9a6e879fcb",
+    "semantic_hash": "d63ef5b13b7c9c3fcdf4ab9a6e879fcb"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\inicio\\page.tsx": {
+    "mtime": 1779818739.0298407,
+    "ast_hash": "529c112302bd77d2fe6bdebe33be12a5",
+    "semantic_hash": "529c112302bd77d2fe6bdebe33be12a5"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\layout.tsx": {
+    "mtime": 1773801687.5477085,
+    "ast_hash": "e8fd8118f2f5a09306d29d6d4cffe746",
+    "semantic_hash": "e8fd8118f2f5a09306d29d6d4cffe746"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\pet\\page.tsx": {
+    "mtime": 1776972613.6943495,
+    "ast_hash": "eb6a0efff0557552b79e43c07f947661",
+    "semantic_hash": "eb6a0efff0557552b79e43c07f947661"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\registro\\_components\\registro-flow.tsx": {
+    "mtime": 1776364118.4709907,
+    "ast_hash": "8ddbdd7df78cf609190e8d87740c1775",
+    "semantic_hash": "8ddbdd7df78cf609190e8d87740c1775"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\registro\\page.tsx": {
+    "mtime": 1772480171.4720814,
+    "ast_hash": "d02edd7749dba763567eb79dcc3b8866",
+    "semantic_hash": "d02edd7749dba763567eb79dcc3b8866"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\settings\\page.tsx": {
+    "mtime": 1779818739.0328612,
+    "ast_hash": "43ed903e17079f7526fe1eb189484eb4",
+    "semantic_hash": "43ed903e17079f7526fe1eb189484eb4"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\story\\page.tsx": {
+    "mtime": 1779818739.038443,
+    "ast_hash": "1b888060eb08c91f8df1b7c736b460c7",
+    "semantic_hash": "1b888060eb08c91f8df1b7c736b460c7"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\today\\DayCycleChart.tsx": {
+    "mtime": 1777431814.8046298,
+    "ast_hash": "11ed85272a26606247a652342c598e7b",
+    "semantic_hash": "11ed85272a26606247a652342c598e7b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\today\\page.tsx": {
+    "mtime": 1779818739.042753,
+    "ast_hash": "13cba9f1dcb06984ab918524c66b747a",
+    "semantic_hash": "13cba9f1dcb06984ab918524c66b747a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(app)\\today\\useDayCycleData.ts": {
+    "mtime": 1777431814.8403556,
+    "ast_hash": "bb067b40cb54df6c7aa13a0865344380",
+    "semantic_hash": "bb067b40cb54df6c7aa13a0865344380"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\404\\page.tsx": {
+    "mtime": 1773801687.557509,
+    "ast_hash": "f82a55c5170a4ba30091b68645d68382",
+    "semantic_hash": "f82a55c5170a4ba30091b68645d68382"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\client-demo\\page.tsx": {
+    "mtime": 1777473290.5582342,
+    "ast_hash": "087495323635107ffb4927def59169c5",
+    "semantic_hash": "087495323635107ffb4927def59169c5"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\demo\\page.tsx": {
+    "mtime": 1777477635.5524433,
+    "ast_hash": "db9133a06ea78a694ed5c75117f5c89f",
+    "semantic_hash": "db9133a06ea78a694ed5c75117f5c89f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\error\\page.tsx": {
+    "mtime": 1773801687.5595067,
+    "ast_hash": "f204ae11305ef736a683e2b035c38d4c",
+    "semantic_hash": "f204ae11305ef736a683e2b035c38d4c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\login\\page.tsx": {
+    "mtime": 1779818739.0457506,
+    "ast_hash": "2acda17323b9648b015518123fc3492c",
+    "semantic_hash": "2acda17323b9648b015518123fc3492c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\register\\page.tsx": {
+    "mtime": 1775161246.629383,
+    "ast_hash": "2924abfbfa3c2e27fb6dfa98d3a4d0d9",
+    "semantic_hash": "2924abfbfa3c2e27fb6dfa98d3a4d0d9"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\reset\\page.tsx": {
+    "mtime": 1776364118.4851606,
+    "ast_hash": "1c9ec262b8021fcb23d6709592ba8fd3",
+    "semantic_hash": "1c9ec262b8021fcb23d6709592ba8fd3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\(public)\\test\\page.tsx": {
+    "mtime": 1777473290.5683513,
+    "ast_hash": "e2c415ffaf3e0a51f876c4a0c60e8b9f",
+    "semantic_hash": "e2c415ffaf3e0a51f876c4a0c60e8b9f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\alert.tsx": {
+    "mtime": 1779818739.048135,
+    "ast_hash": "74010a660c5276dc474c910f99a5ac98",
+    "semantic_hash": "74010a660c5276dc474c910f99a5ac98"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\empty-state.tsx": {
+    "mtime": 1772480171.4829867,
+    "ast_hash": "f4ba4c607f4b04aeaa1db85155a24e43",
+    "semantic_hash": "f4ba4c607f4b04aeaa1db85155a24e43"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\kittypau-error-screen.tsx": {
+    "mtime": 1779818739.0504348,
+    "ast_hash": "b4b1ca7475362c49e4517ef1edf1ea8d",
+    "semantic_hash": "b4b1ca7475362c49e4517ef1edf1ea8d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\native-apk-mode.tsx": {
+    "mtime": 1776972326.3871002,
+    "ast_hash": "fba34aa499f2c67e08e47657a381e887",
+    "semantic_hash": "fba34aa499f2c67e08e47657a381e887"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\native-thanks-notification.tsx": {
+    "mtime": 1773801687.5665119,
+    "ast_hash": "b597e83f41a10c36cb069e31c97f955f",
+    "semantic_hash": "b597e83f41a10c36cb069e31c97f955f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\operational-actions-card.tsx": {
+    "mtime": 1775161246.6390488,
+    "ast_hash": "96321157d4a7040867c24ae27c6f3dee",
+    "semantic_hash": "96321157d4a7040867c24ae27c6f3dee"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\parallax-root.tsx": {
+    "mtime": 1773801687.567512,
+    "ast_hash": "6e1020c4eb595ff63e6117194cdf740b",
+    "semantic_hash": "6e1020c4eb595ff63e6117194cdf740b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\route-loading-overlay.tsx": {
+    "mtime": 1777473290.5717337,
+    "ast_hash": "d4808ffbab3cfa09ef6c39ea4b35ca31",
+    "semantic_hash": "d4808ffbab3cfa09ef6c39ea4b35ca31"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_components\\social-links.tsx": {
+    "mtime": 1779818739.0544546,
+    "ast_hash": "9387535e3b14baad2b1cecc9bbb17df4",
+    "semantic_hash": "9387535e3b14baad2b1cecc9bbb17df4"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\_data\\cat-copy.motion.json": {
+    "mtime": 1773801687.5746107,
+    "ast_hash": "38cb6e87729c51495d604695a67862ae",
+    "semantic_hash": "38cb6e87729c51495d604695a67862ae"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\_audit.ts": {
+    "mtime": 1772480171.4850297,
+    "ast_hash": "e252bcb556fd511cf41d613a0dfc7ef1",
+    "semantic_hash": "e252bcb556fd511cf41d613a0dfc7ef1"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\_cache.ts": {
+    "mtime": 1772480171.486466,
+    "ast_hash": "c6a04516ec9a5b0ba0abc8df3adbf465",
+    "semantic_hash": "c6a04516ec9a5b0ba0abc8df3adbf465"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\_rate-limit.ts": {
+    "mtime": 1772480171.4869783,
+    "ast_hash": "54d53537499dbecf5f8e5ea0138cecae",
+    "semantic_hash": "54d53537499dbecf5f8e5ea0138cecae"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\_utils.ts": {
+    "mtime": 1773801687.5766125,
+    "ast_hash": "b723878494c7140653740fbe36f8551b",
+    "semantic_hash": "b723878494c7140653740fbe36f8551b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\account\\type\\route.ts": {
+    "mtime": 1779818739.056782,
+    "ast_hash": "c0ca7ac372c4a9cc0010880d2ee0ca09",
+    "semantic_hash": "c0ca7ac372c4a9cc0010880d2ee0ca09"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\_permissions.ts": {
+    "mtime": 1775161246.6437123,
+    "ast_hash": "d975bd80d34273d269be6b674672418b",
+    "semantic_hash": "d975bd80d34273d269be6b674672418b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\access\\route.ts": {
+    "mtime": 1775161246.6487334,
+    "ast_hash": "053cd4f7fa0eb3e9ddb7e5f77c01a231",
+    "semantic_hash": "053cd4f7fa0eb3e9ddb7e5f77c01a231"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\demo-ingresos\\route.ts": {
+    "mtime": 1775161246.6541796,
+    "ast_hash": "b47c7245dab3c91c3cc79f4f30dc1614",
+    "semantic_hash": "b47c7245dab3c91c3cc79f4f30dc1614"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\finance\\kpcl-catalog\\route.ts": {
+    "mtime": 1775161246.6614826,
+    "ast_hash": "a40d228c8aac259be9f093fafcdf354a",
+    "semantic_hash": "a40d228c8aac259be9f093fafcdf354a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\health-check\\route.ts": {
+    "mtime": 1775161246.6677291,
+    "ast_hash": "ef355c8b880e75bbd89726ee9d99698f",
+    "semantic_hash": "ef355c8b880e75bbd89726ee9d99698f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\overview\\route.ts": {
+    "mtime": 1775161246.675786,
+    "ast_hash": "bcdf0778a410cebc722189ce1c18a939",
+    "semantic_hash": "bcdf0778a410cebc722189ce1c18a939"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\admin\\tests\\run-all\\route.ts": {
+    "mtime": 1775161246.6829355,
+    "ast_hash": "6ed91248e4e87b0cb0b10d0951be6ee6",
+    "semantic_hash": "6ed91248e4e87b0cb0b10d0951be6ee6"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\analytics\\daily\\route.ts": {
+    "mtime": 1777431814.8794813,
+    "ast_hash": "22f6ddce2bb4868bb3d2ace02e8ee8c0",
+    "semantic_hash": "22f6ddce2bb4868bb3d2ace02e8ee8c0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\analytics\\sessions\\route.ts": {
+    "mtime": 1777431814.904297,
+    "ast_hash": "80ee4700546a9dad7e1badab51b5fa38",
+    "semantic_hash": "80ee4700546a9dad7e1badab51b5fa38"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\auth\\login\\route.ts": {
+    "mtime": 1779818739.0603096,
+    "ast_hash": "1580bf38e96a1370c586e2a7f286d39d",
+    "semantic_hash": "1580bf38e96a1370c586e2a7f286d39d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\bridge\\health-check\\route.ts": {
+    "mtime": 1776367133.948112,
+    "ast_hash": "5325abc4f86d6e9b0fc482743fff3aed",
+    "semantic_hash": "5325abc4f86d6e9b0fc482743fff3aed"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\bridge\\heartbeat\\route.ts": {
+    "mtime": 1772480171.4992447,
+    "ast_hash": "a4eeb0804734723bf6f24245098aca30",
+    "semantic_hash": "a4eeb0804734723bf6f24245098aca30"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\chatbot-gato\\route.ts": {
+    "mtime": 1776364118.4864168,
+    "ast_hash": "9a78c5dd9d1cad4ca596a7f48543f932",
+    "semantic_hash": "9a78c5dd9d1cad4ca596a7f48543f932"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\demo\\ingreso\\route.ts": {
+    "mtime": 1777473290.5742152,
+    "ast_hash": "d79637a35772e94ce8417ad84766c82e",
+    "semantic_hash": "d79637a35772e94ce8417ad84766c82e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\category\\route.ts": {
+    "mtime": 1776364118.4874141,
+    "ast_hash": "67d9235853813bd5f20254e0b3cd7ca9",
+    "semantic_hash": "67d9235853813bd5f20254e0b3cd7ca9"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\events\\route.ts": {
+    "mtime": 1777431837.1043758,
+    "ast_hash": "22dd42fd8f7ef75185fbf3f0c96974ea",
+    "semantic_hash": "22dd42fd8f7ef75185fbf3f0c96974ea"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\interval\\route.ts": {
+    "mtime": 1775161250.3592448,
+    "ast_hash": "2ebd545dbb3a1d33573eb298bcc1e0c3",
+    "semantic_hash": "2ebd545dbb3a1d33573eb298bcc1e0c3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\route.ts": {
+    "mtime": 1779818739.0619867,
+    "ast_hash": "ff447207b4e233a53e451cf120be9a29",
+    "semantic_hash": "ff447207b4e233a53e451cf120be9a29"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\sessions\\route.ts": {
+    "mtime": 1779818739.0648382,
+    "ast_hash": "76a6cc60a99aef7a754bd790082ba7fe",
+    "semantic_hash": "76a6cc60a99aef7a754bd790082ba7fe"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\tare\\route.ts": {
+    "mtime": 1773837821.1948192,
+    "ast_hash": "a0ac713959fd05a2a18abb49bb9dc8d5",
+    "semantic_hash": "a0ac713959fd05a2a18abb49bb9dc8d5"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\[id]\\wifi\\route.ts": {
+    "mtime": 1773920526.1836252,
+    "ast_hash": "d2660791779a343b0aa61eb8f8287022",
+    "semantic_hash": "d2660791779a343b0aa61eb8f8287022"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\devices\\route.ts": {
+    "mtime": 1773943209.5890377,
+    "ast_hash": "502bca5dc135786f55ba0c12d091f510",
+    "semantic_hash": "502bca5dc135786f55ba0c12d091f510"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\mqtt\\webhook\\route.ts": {
+    "mtime": 1775161246.725525,
+    "ast_hash": "9ddc9242d85f781c6504796026e0dea3",
+    "semantic_hash": "9ddc9242d85f781c6504796026e0dea3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\onboarding\\status\\route.ts": {
+    "mtime": 1772480171.5075793,
+    "ast_hash": "066453657dfc8e94610d8daef9b2e5de",
+    "semantic_hash": "066453657dfc8e94610d8daef9b2e5de"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\pets\\[id]\\route.ts": {
+    "mtime": 1773846518.5397978,
+    "ast_hash": "b482378dc4c348061377fe737f1204b8",
+    "semantic_hash": "b482378dc4c348061377fe737f1204b8"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\pets\\route.ts": {
+    "mtime": 1773801687.6240816,
+    "ast_hash": "4703f18de18e39ff8cad3e49311a5ca6",
+    "semantic_hash": "4703f18de18e39ff8cad3e49311a5ca6"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\profiles\\route.ts": {
+    "mtime": 1773801687.6250896,
+    "ast_hash": "6b99797912ae6e98f8d2aa9d4c052fd7",
+    "semantic_hash": "6b99797912ae6e98f8d2aa9d4c052fd7"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\readings\\bucketed\\route.ts": {
+    "mtime": 1773923699.2445781,
+    "ast_hash": "9df62fc036b0ffd0b4da30af82db1f19",
+    "semantic_hash": "9df62fc036b0ffd0b4da30af82db1f19"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\readings\\route.ts": {
+    "mtime": 1777431814.9357562,
+    "ast_hash": "ec7aa967612a3d6985b47a1f113c933a",
+    "semantic_hash": "ec7aa967612a3d6985b47a1f113c933a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\api\\registro\\status\\route.ts": {
+    "mtime": 1772480171.514605,
+    "ast_hash": "94b2d6d909017e473856882c0ba3b824",
+    "semantic_hash": "94b2d6d909017e473856882c0ba3b824"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\error.tsx": {
+    "mtime": 1773801687.6270843,
+    "ast_hash": "00987c0ba19e317696367c87806dee24",
+    "semantic_hash": "00987c0ba19e317696367c87806dee24"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\global-error.tsx": {
+    "mtime": 1773801687.6270843,
+    "ast_hash": "385ec7ddfbc017758b34270dd2a85b35",
+    "semantic_hash": "385ec7ddfbc017758b34270dd2a85b35"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\layout.tsx": {
+    "mtime": 1773801687.6337855,
+    "ast_hash": "77cadaacf6f45acc0dbf16955aee5ae1",
+    "semantic_hash": "77cadaacf6f45acc0dbf16955aee5ae1"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\loading.tsx": {
+    "mtime": 1773801687.6337855,
+    "ast_hash": "819521fc67c686c96f735febdfdb3a99",
+    "semantic_hash": "819521fc67c686c96f735febdfdb3a99"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\manifest.ts": {
+    "mtime": 1773801687.6351423,
+    "ast_hash": "6761bd65dd565a7e51a28c1e6df0c4fe",
+    "semantic_hash": "6761bd65dd565a7e51a28c1e6df0c4fe"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\not-found.tsx": {
+    "mtime": 1773801687.6364498,
+    "ast_hash": "66f55fab33a250ad1c7843ac518a5c71",
+    "semantic_hash": "66f55fab33a250ad1c7843ac518a5c71"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\app\\page.tsx": {
+    "mtime": 1776972326.393457,
+    "ast_hash": "46909ddd3055600a8df729f313a5f877",
+    "semantic_hash": "46909ddd3055600a8df729f313a5f877"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\client.ts": {
+    "mtime": 1776364118.4907296,
+    "ast_hash": "705808b2c32e2eaf3b79fdd148b0807c",
+    "semantic_hash": "705808b2c32e2eaf3b79fdd148b0807c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\demo-block-prompts.ts": {
+    "mtime": 1776364118.4917262,
+    "ast_hash": "baab71a9c5c49536ce887455770fa065",
+    "semantic_hash": "baab71a9c5c49536ce887455770fa065"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\demo-context.ts": {
+    "mtime": 1776364118.4928625,
+    "ast_hash": "84738a41c0da4fb76185a6534a0076f1",
+    "semantic_hash": "84738a41c0da4fb76185a6534a0076f1"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\dialog-profile.ts": {
+    "mtime": 1776364118.4939454,
+    "ast_hash": "2dccffdf73ab6a840a396b672bce3c99",
+    "semantic_hash": "2dccffdf73ab6a840a396b672bce3c99"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\hf.ts": {
+    "mtime": 1777473290.5804913,
+    "ast_hash": "bfd24fda80e9475f6b9924e1b2595a37",
+    "semantic_hash": "bfd24fda80e9475f6b9924e1b2595a37"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\inicio-block-prompts.ts": {
+    "mtime": 1776364118.4985337,
+    "ast_hash": "8cc137eb3bf12db19b7d7eb9537b828d",
+    "semantic_hash": "8cc137eb3bf12db19b7d7eb9537b828d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\inicio-context.ts": {
+    "mtime": 1776364118.499546,
+    "ast_hash": "a25ba15f1486708752fa16f215e367f5",
+    "semantic_hash": "a25ba15f1486708752fa16f215e367f5"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\login-context.ts": {
+    "mtime": 1777473290.5829642,
+    "ast_hash": "dc6e6219d7f189dd99b0169a2317e3f4",
+    "semantic_hash": "dc6e6219d7f189dd99b0169a2317e3f4"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\personality-canon.ts": {
+    "mtime": 1776364118.5005596,
+    "ast_hash": "292bdaca36f3df2c0ba478277565581f",
+    "semantic_hash": "292bdaca36f3df2c0ba478277565581f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\product-context.ts": {
+    "mtime": 1776364118.5020285,
+    "ast_hash": "aabc0f1bdee0f6c220c97d9c55564c0b",
+    "semantic_hash": "aabc0f1bdee0f6c220c97d9c55564c0b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\runtime.ts": {
+    "mtime": 1776364118.503086,
+    "ast_hash": "ad2de3323ececd02e74c0e155baa0769",
+    "semantic_hash": "ad2de3323ececd02e74c0e155baa0769"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\trial-rpg-dialog-dock.tsx": {
+    "mtime": 1776364118.5040865,
+    "ast_hash": "ead3642ae438ba1fb98a37308002cf64",
+    "semantic_hash": "ead3642ae438ba1fb98a37308002cf64"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\chatbot-gato\\trial-rpg-dialog.tsx": {
+    "mtime": 1776364118.5050921,
+    "ast_hash": "cf4521311a40ee0f5a0bd485b63f2628",
+    "semantic_hash": "cf4521311a40ee0f5a0bd485b63f2628"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\auth\\auth-fetch.ts": {
+    "mtime": 1779658137.249766,
+    "ast_hash": "f57333f3301a6ec623fb3309b3e5eb24",
+    "semantic_hash": "f57333f3301a6ec623fb3309b3e5eb24"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\battery\\contract.ts": {
+    "mtime": 1775161246.747336,
+    "ast_hash": "32e8bccadcfac16ac79918ecf28798f1",
+    "semantic_hash": "32e8bccadcfac16ac79918ecf28798f1"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\charts\\index.tsx": {
+    "mtime": 1777431840.3054307,
+    "ast_hash": "08774173debcc0e5859b43e8266bc57c",
+    "semantic_hash": "08774173debcc0e5859b43e8266bc57c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\context\\app-context.tsx": {
+    "mtime": 1773845774.370154,
+    "ast_hash": "6473b934338722ead2fe5348849b62d0",
+    "semantic_hash": "6473b934338722ead2fe5348849b62d0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\errors\\kittypau-error.ts": {
+    "mtime": 1773801687.6440885,
+    "ast_hash": "d800411a0a995c44f91d1538a8277ce2",
+    "semantic_hash": "d800411a0a995c44f91d1538a8277ce2"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\finance\\kpcl-catalog.ts": {
+    "mtime": 1772480171.5297546,
+    "ast_hash": "32791d0854f0ef3b76523f1761a60a4c",
+    "semantic_hash": "32791d0854f0ef3b76523f1761a60a4c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\hooks\\useMqttLive.ts": {
+    "mtime": 1776379813.8766336,
+    "ast_hash": "f6c95854b339d54923073a5e855c41d4",
+    "semantic_hash": "f6c95854b339d54923073a5e855c41d4"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\observability\\reading-gaps.ts": {
+    "mtime": 1775161246.760731,
+    "ast_hash": "776ea31ca4af46c854436f92ec9bf3da",
+    "semantic_hash": "776ea31ca4af46c854436f92ec9bf3da"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\runtime\\app-flavor.ts": {
+    "mtime": 1773801687.6471665,
+    "ast_hash": "a61fa213efceeea2ebb1e61e664ad1ec",
+    "semantic_hash": "a61fa213efceeea2ebb1e61e664ad1ec"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\runtime\\selection-sync.ts": {
+    "mtime": 1776364118.5081844,
+    "ast_hash": "3dc8bf91ad662fe58608ebb6b7a19000",
+    "semantic_hash": "3dc8bf91ad662fe58608ebb6b7a19000"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\supabase\\analytics.ts": {
+    "mtime": 1776379813.954461,
+    "ast_hash": "3a0c27e30479de0f1fa96369a39a6036",
+    "semantic_hash": "3a0c27e30479de0f1fa96369a39a6036"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\supabase\\browser.ts": {
+    "mtime": 1779818739.0672643,
+    "ast_hash": "63023cdfeb063684166e4ae5c25ef133",
+    "semantic_hash": "63023cdfeb063684166e4ae5c25ef133"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\supabase\\server.ts": {
+    "mtime": 1779818739.069263,
+    "ast_hash": "b025f7cf5c678a42dd5843ad302a83f8",
+    "semantic_hash": "b025f7cf5c678a42dd5843ad302a83f8"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\supabase\\user-server.ts": {
+    "mtime": 1779818739.0702622,
+    "ast_hash": "15aaba1116e10ef4c77e5e4a3715838b",
+    "semantic_hash": "15aaba1116e10ef4c77e5e4a3715838b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\time\\chile.ts": {
+    "mtime": 1777431814.9545183,
+    "ast_hash": "841188608aae8fe537aaf37a23ab2a26",
+    "semantic_hash": "841188608aae8fe537aaf37a23ab2a26"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\lib\\ui\\battery-status-icon.tsx": {
+    "mtime": 1777431837.1143265,
+    "ast_hash": "90fd1d14e6d7f753e1ce075de3874d65",
+    "semantic_hash": "90fd1d14e6d7f753e1ce075de3874d65"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\proxy.ts": {
+    "mtime": 1775161246.783084,
+    "ast_hash": "62361690f6e7fb0e26ae0ac5b972fe89",
+    "semantic_hash": "62361690f6e7fb0e26ae0ac5b972fe89"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\src\\types\\mqtt.d.ts": {
+    "mtime": 1775161246.795086,
+    "ast_hash": "22417d09046ff8b3c4a21332fd2e61ea",
+    "semantic_hash": "22417d09046ff8b3c4a21332fd2e61ea"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\tsconfig.json": {
+    "mtime": 1773801687.6546204,
+    "ast_hash": "fd6e6671b881e795d637e2b4e89aece6",
+    "semantic_hash": "fd6e6671b881e795d637e2b4e89aece6"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\bridge\\package.json": {
+    "mtime": 1772652362.438654,
+    "ast_hash": "e5fb643b256445d8e4fd1c888b726c3e",
+    "semantic_hash": "e5fb643b256445d8e4fd1c888b726c3e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\bridge\\src\\index.js": {
+    "mtime": 1777431837.081758,
+    "ast_hash": "2b07275ec4928494857ac79bfe2475c8",
+    "semantic_hash": "2b07275ec4928494857ac79bfe2475c8"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\bridge\\src\\processor.js": {
+    "mtime": 1776972613.6888015,
+    "ast_hash": "2c42b2f9072ff204250f057e9fb27245",
+    "semantic_hash": "2c42b2f9072ff204250f057e9fb27245"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\include\\config.h": {
+    "mtime": 1775161246.451104,
+    "ast_hash": "ef8aec895cf6978e0be5604c9b3f0c8a",
+    "semantic_hash": "ef8aec895cf6978e0be5604c9b3f0c8a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\camera_manager.cpp": {
+    "mtime": 1777473290.5263126,
+    "ast_hash": "366fba0a1cb4b5a87bd74daf62cec92f",
+    "semantic_hash": "366fba0a1cb4b5a87bd74daf62cec92f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\camera_manager.h": {
+    "mtime": 1772652362.450092,
+    "ast_hash": "692f659cfc0be232538bb5a4b69b1157",
+    "semantic_hash": "692f659cfc0be232538bb5a4b69b1157"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\led_indicator.cpp": {
+    "mtime": 1772652362.4525404,
+    "ast_hash": "7346249f958c8a4d5be538bc92867c69",
+    "semantic_hash": "7346249f958c8a4d5be538bc92867c69"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\led_indicator.h": {
+    "mtime": 1772652362.4525404,
+    "ast_hash": "4b34306a52561e5c5088482f776911eb",
+    "semantic_hash": "4b34306a52561e5c5088482f776911eb"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\main.cpp": {
+    "mtime": 1777473290.5278232,
+    "ast_hash": "7c7d9284c6cef4a9d7a833ab8a9ad3bd",
+    "semantic_hash": "7c7d9284c6cef4a9d7a833ab8a9ad3bd"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\mqtt_manager.cpp": {
+    "mtime": 1772652362.455544,
+    "ast_hash": "251626965c0b9763468b88151e4ce6bb",
+    "semantic_hash": "251626965c0b9763468b88151e4ce6bb"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\mqtt_manager.h": {
+    "mtime": 1772652362.4565878,
+    "ast_hash": "9e6bcda6fbff760d9089ed006d688f27",
+    "semantic_hash": "9e6bcda6fbff760d9089ed006d688f27"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\sensors.cpp": {
+    "mtime": 1772652362.457582,
+    "ast_hash": "cff655cf7c585c511f3d2c43faa711aa",
+    "semantic_hash": "cff655cf7c585c511f3d2c43faa711aa"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\sensors.h": {
+    "mtime": 1772652362.4585857,
+    "ast_hash": "41b2eb654989831dda4a7f86405531cb",
+    "semantic_hash": "41b2eb654989831dda4a7f86405531cb"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\wifi_manager.cpp": {
+    "mtime": 1772652362.459586,
+    "ast_hash": "0ad4526ab206b7f07eb0ba7c31f5f60e",
+    "semantic_hash": "0ad4526ab206b7f07eb0ba7c31f5f60e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\wifi_manager.h": {
+    "mtime": 1772652362.4605794,
+    "ast_hash": "b6cacd992e8aec660bd712c997888552",
+    "semantic_hash": "b6cacd992e8aec660bd712c997888552"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\gen_portal.py": {
+    "mtime": 1773854697.1637642,
+    "ast_hash": "db7b98a77853f1f2a84c2e929d791c2d",
+    "semantic_hash": "db7b98a77853f1f2a84c2e929d791c2d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\include\\config.h": {
+    "mtime": 1777434902.0753462,
+    "ast_hash": "14ed4c0b1e09a6fe5c5e9a67595a88a9",
+    "semantic_hash": "14ed4c0b1e09a6fe5c5e9a67595a88a9"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\captive_portal.cpp": {
+    "mtime": 1773854691.9735775,
+    "ast_hash": "197dc10a84cd8a9442b72e358912eede",
+    "semantic_hash": "197dc10a84cd8a9442b72e358912eede"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\captive_portal.h": {
+    "mtime": 1773848425.4078724,
+    "ast_hash": "dd6a0a26087f8f3cff49835f153497f4",
+    "semantic_hash": "dd6a0a26087f8f3cff49835f153497f4"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\led_indicator.cpp": {
+    "mtime": 1773854026.5721047,
+    "ast_hash": "42d064b67562218d2cb90337c0cacfb2",
+    "semantic_hash": "42d064b67562218d2cb90337c0cacfb2"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\led_indicator.h": {
+    "mtime": 1773854010.6401355,
+    "ast_hash": "5ae93dcbf8ebb63dee4be293cce60561",
+    "semantic_hash": "5ae93dcbf8ebb63dee4be293cce60561"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\main.cpp": {
+    "mtime": 1777431837.0893059,
+    "ast_hash": "7597c89079c30fbc705787dba4b39a40",
+    "semantic_hash": "7597c89079c30fbc705787dba4b39a40"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\mqtt_manager.cpp": {
+    "mtime": 1775161250.3106334,
+    "ast_hash": "84dd05f016dc27fd84451d2651247784",
+    "semantic_hash": "84dd05f016dc27fd84451d2651247784"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\mqtt_manager.h": {
+    "mtime": 1772652362.4671667,
+    "ast_hash": "9e6bcda6fbff760d9089ed006d688f27",
+    "semantic_hash": "9e6bcda6fbff760d9089ed006d688f27"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\sensors.cpp": {
+    "mtime": 1777434902.077613,
+    "ast_hash": "f6ebe4f14ce739f0f22257aaac6c2d70",
+    "semantic_hash": "f6ebe4f14ce739f0f22257aaac6c2d70"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\sensors.h": {
+    "mtime": 1777431837.0923092,
+    "ast_hash": "203be4dde9b96871e1dd92bbbd43f2a7",
+    "semantic_hash": "203be4dde9b96871e1dd92bbbd43f2a7"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\wifi_manager.cpp": {
+    "mtime": 1773853696.8798783,
+    "ast_hash": "bf468649784cd3b6f20a747dcc7e1304",
+    "semantic_hash": "bf468649784cd3b6f20a747dcc7e1304"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\wifi_manager.h": {
+    "mtime": 1772652362.470699,
+    "ast_hash": "b6cacd992e8aec660bd712c997888552",
+    "semantic_hash": "b6cacd992e8aec660bd712c997888552"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\README.md": {
+    "mtime": 1772480171.3290348,
+    "ast_hash": "9162add00befbcdb432430f405c4ad8d",
+    "semantic_hash": "9162add00befbcdb432430f405c4ad8d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\android\\app\\src\\main\\assets\\public\\index.html": {
+    "mtime": 1773671933.9257364,
+    "ast_hash": "1505c035062fa7a584637c569814b2c0",
+    "semantic_hash": "1505c035062fa7a584637c569814b2c0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\capacitor_www\\index.html": {
+    "mtime": 1773801687.4902983,
+    "ast_hash": "1505c035062fa7a584637c569814b2c0",
+    "semantic_hash": "1505c035062fa7a584637c569814b2c0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\bridge\\README.md": {
+    "mtime": 1772480171.325006,
+    "ast_hash": "0173a50c4266f8f9c8b1b32228956f48",
+    "semantic_hash": "0173a50c4266f8f9c8b1b32228956f48"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\Hitos-Pendientes_javier.md": {
+    "mtime": 1772652362.4406576,
+    "ast_hash": "ccfb0c9f8ce924127b89c26eeb777ba5",
+    "semantic_hash": "ccfb0c9f8ce924127b89c26eeb777ba5"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\MANUAL_USUARIO_javier.md": {
+    "mtime": 1772652362.442698,
+    "ast_hash": "014f45cd8c98317323724ad732fe7b45",
+    "semantic_hash": "014f45cd8c98317323724ad732fe7b45"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\Topicos_javier.md": {
+    "mtime": 1772652362.4439013,
+    "ast_hash": "c322c3d8517e8ca3b87ed75a67897e77",
+    "semantic_hash": "c322c3d8517e8ca3b87ed75a67897e77"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp32cam\\src\\certs\\README.txt": {
+    "mtime": 1772652362.4515314,
+    "ast_hash": "a529c254e1480cf30380260b02837387",
+    "semantic_hash": "a529c254e1480cf30380260b02837387"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\README_BH1750_BATTERY.md": {
+    "mtime": 1777431837.0827618,
+    "ast_hash": "e9c0d2ab3f0a2ed218186a36618a847e",
+    "semantic_hash": "e9c0d2ab3f0a2ed218186a36618a847e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\iot_firmware\\javier_1a\\firmware-esp8266\\src\\certs\\README.txt": {
+    "mtime": 1772652362.4644175,
+    "ast_hash": "4fa13bed89f7204ce2c9f6c79ed4886f",
+    "semantic_hash": "4fa13bed89f7204ce2c9f6c79ed4886f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\Captura de pantalla 2026-05-28 125852.png": {
+    "mtime": 1779987559.079684,
+    "ast_hash": "b4d7d2cee775c5ac9f233ad3cf46e868",
+    "semantic_hash": "b4d7d2cee775c5ac9f233ad3cf46e868"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\avatar_1.png": {
+    "mtime": 1772480171.35387,
+    "ast_hash": "f66d8bfe2c325789b5533d5dee09a981",
+    "semantic_hash": "f66d8bfe2c325789b5533d5dee09a981"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\avatar_2.png": {
+    "mtime": 1772480171.3578818,
+    "ast_hash": "0c377a2b3b5ce7f1ad83280945024779",
+    "semantic_hash": "0c377a2b3b5ce7f1ad83280945024779"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\avatar_3.png": {
+    "mtime": 1772480171.3604224,
+    "ast_hash": "25f7b912c863261ae7786d3fa4e0033b",
+    "semantic_hash": "25f7b912c863261ae7786d3fa4e0033b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\avatar_5.png": {
+    "mtime": 1772480171.3656485,
+    "ast_hash": "2e21e405bc670b63a2cfcafb126dc25d",
+    "semantic_hash": "2e21e405bc670b63a2cfcafb126dc25d"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\file.svg": {
+    "mtime": 1772480171.3656485,
+    "ast_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71",
+    "semantic_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\fondo.png": {
+    "mtime": 1772679951.1338747,
+    "ast_hash": "6ff702415778dea99f3d85f454e1cb5c",
+    "semantic_hash": "6ff702415778dea99f3d85f454e1cb5c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\fondo_backup_pre_prueba1.png": {
+    "mtime": 1776972326.3760092,
+    "ast_hash": "6ff702415778dea99f3d85f454e1cb5c",
+    "semantic_hash": "6ff702415778dea99f3d85f454e1cb5c"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\globe.svg": {
+    "mtime": 1772480171.3656485,
+    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
+    "semantic_hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\ChatGPT Image 21 feb 2026, 19_24_48.png": {
+    "mtime": 1772679951.1480267,
+    "ast_hash": "6531be4a67e6145cc89cb693d1ed302f",
+    "semantic_hash": "6531be4a67e6145cc89cb693d1ed302f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\bandida.png": {
+    "mtime": 1772480171.3798096,
+    "ast_hash": "450b3fd8386f99c76ba22634a9469b1b",
+    "semantic_hash": "450b3fd8386f99c76ba22634a9469b1b"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\cat_awake_copy.svg": {
+    "mtime": 1773801687.507728,
+    "ast_hash": "f3f2708236ec5cc09a24bdfbe12acd4f",
+    "semantic_hash": "f3f2708236ec5cc09a24bdfbe12acd4f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\giphy.gif": {
+    "mtime": 1777473290.5435524,
+    "ast_hash": "0a4c4de43cd686aef1d54ef51cddda48",
+    "semantic_hash": "0a4c4de43cd686aef1d54ef51cddda48"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\green_water_full.png": {
+    "mtime": 1772679951.1632652,
+    "ast_hash": "155543ded0903a4630a4bf9ac648ff71",
+    "semantic_hash": "155543ded0903a4630a4bf9ac648ff71"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\icono_agua.png": {
+    "mtime": 1773801687.5191262,
+    "ast_hash": "2a042cf51419933b4f1045b7775ece5f",
+    "semantic_hash": "2a042cf51419933b4f1045b7775ece5f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\icono_comida.png": {
+    "mtime": 1773801687.5376399,
+    "ast_hash": "e9a8ba791a7ffa2f6a44588655cf954f",
+    "semantic_hash": "e9a8ba791a7ffa2f6a44588655cf954f"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\nervous-not.gif": {
+    "mtime": 1777473290.5523763,
+    "ast_hash": "9b6f00fb11b540a78795524b4ccc4fbf",
+    "semantic_hash": "9b6f00fb11b540a78795524b4ccc4fbf"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\pink_empty.png": {
+    "mtime": 1772480171.3932195,
+    "ast_hash": "bbdea04b8cd40e12343c63b9ef0153c3",
+    "semantic_hash": "bbdea04b8cd40e12343c63b9ef0153c3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\pink_food_full.png": {
+    "mtime": 1772480171.404956,
+    "ast_hash": "2f76b484e989ec8c82ce6f896d3486b0",
+    "semantic_hash": "2f76b484e989ec8c82ce6f896d3486b0"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\pink_food_medium.png": {
+    "mtime": 1772480171.428909,
+    "ast_hash": "750b1bee7216a9ac9e878dbf6482db57",
+    "semantic_hash": "750b1bee7216a9ac9e878dbf6482db57"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\pink_water_full.png": {
+    "mtime": 1772480171.4383216,
+    "ast_hash": "40744fe90c1d91d239007f9135eff6d7",
+    "semantic_hash": "40744fe90c1d91d239007f9135eff6d7"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\illustrations\\pink_water_medium.png": {
+    "mtime": 1772480171.4487312,
+    "ast_hash": "ce3f613c52c095bdacfe4e97076fd543",
+    "semantic_hash": "ce3f613c52c095bdacfe4e97076fd543"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\logo.jpg": {
+    "mtime": 1772679951.166062,
+    "ast_hash": "18efc7f73bc283a9a76b2ddf52c83ba9",
+    "semantic_hash": "18efc7f73bc283a9a76b2ddf52c83ba9"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\logo_carga.jpg": {
+    "mtime": 1772480171.4529204,
+    "ast_hash": "9faa7a1038220862634211d9f240113a",
+    "semantic_hash": "9faa7a1038220862634211d9f240113a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\next.svg": {
+    "mtime": 1772480171.4539587,
+    "ast_hash": "8e061864f388b47f33a1c3780831193e",
+    "semantic_hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\pet_profile.jpeg": {
+    "mtime": 1772480171.4569583,
+    "ast_hash": "b4dcec0ccf8739302b2c2761b2dbfe88",
+    "semantic_hash": "b4dcec0ccf8739302b2c2761b2dbfe88"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\vercel.svg": {
+    "mtime": 1772480171.4580178,
+    "ast_hash": "c0af2f507b369b085b35ef4bbe3bcf1e",
+    "semantic_hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\public\\window.svg": {
+    "mtime": 1772480171.4590325,
+    "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": "a2760511c65806022ad20adf74370ff3"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\resources\\icon.jpg": {
+    "mtime": 1773801687.5376399,
+    "ast_hash": "9faa7a1038220862634211d9f240113a",
+    "semantic_hash": "9faa7a1038220862634211d9f240113a"
+  },
+  "C:\\Kittypau\\GitHub_KP\\kittypau_2026\\kittypau_app\\resources\\splash.jpg": {
+    "mtime": 1773801687.539652,
+    "ast_hash": "9faa7a1038220862634211d9f240113a",
+    "semantic_hash": "9faa7a1038220862634211d9f240113a"
+  }
+}

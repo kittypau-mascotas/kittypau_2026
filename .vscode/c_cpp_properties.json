@@ -1,0 +1,65 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "PlatformIO-ESP8266",
+      "intelliSenseMode": "gcc-x64",
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "defines": [
+        "PLATFORMIO=60100",
+        "ARDUINO=10805",
+        "ARDUINO_ARCH_ESP8266",
+        "ESP8266"
+      ],
+      "includePath": [
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/include",
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/src",
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/.pio/libdeps/nodemcuv2/**",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif8266/libraries/**",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif8266/variants/nodemcu"
+      ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/include",
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/src",
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp8266/.pio/libdeps/nodemcuv2/**",
+          "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",
+          "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif8266/libraries/**"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      }
+    },
+    {
+      "name": "PlatformIO-ESP32CAM",
+      "intelliSenseMode": "gcc-x64",
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "defines": [
+        "PLATFORMIO=60100",
+        "ARDUINO=10805",
+        "ARDUINO_ARCH_ESP32",
+        "ESP32"
+      ],
+      "includePath": [
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/include",
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/src",
+        "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/.pio/libdeps/**",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/cores/esp32",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/libraries/**",
+        "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/variants/**"
+      ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/include",
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/src",
+          "${workspaceFolder}/iot_firmware/javier_1a/firmware-esp32cam/.pio/libdeps/**",
+          "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/cores/esp32",
+          "${env:USERPROFILE}/.platformio/packages/framework-arduinoespressif32/libraries/**"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      }
+    }
+  ]
+}
