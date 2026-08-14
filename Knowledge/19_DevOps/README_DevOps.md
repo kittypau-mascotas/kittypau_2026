@@ -214,6 +214,24 @@ con merge/rebase normal, nunca forzar.
 ("Ramas obsoletas"). Cada vez que una rama de handoff (regla 3) se mergea, borrarla en el
 mismo momento (`git push origin --delete <rama>` + `git branch -d <rama>` local).
 
+**9. Archivos trackeados con valores que difieren por máquina (`.mcp.json`) — placeholder
+en git + `skip-worktree` local** — pasó en la práctica el 2026-08-14: `MEMORY_FILE_PATH`
+del server `memory` en `.mcp.json` tenía la ruta absoluta de la PC de Javier hardcodeada y
+commiteada; la sesión de la PC de Mauro tuvo que sobreescribirla a mano para que el MCP de
+memory conectara — y ese cambio, si se commiteaba, le rompía la ruta a Javier de vuelta.
+**Patrón correcto, ya aplicado:**
+1. En git queda un placeholder (`<TU_RUTA_ABSOLUTA_AL_REPO>/Knowledge/.mcp_memory.json`) —
+   mismo criterio que ya usaba `GITHUB_PERSONAL_ACCESS_TOKEN: "<TU_GITHUB_PAT>"` en el mismo
+   archivo, no es un patrón nuevo.
+2. Cada máquina, **una vez**, corre `git update-index --skip-worktree .mcp.json` — le dice a
+   git que deje de trackear cambios locales a ese archivo (`git status`/`git add .` dejan de
+   verlo).
+3. Recién ahí edita `.mcp.json` local con su ruta real. Queda funcional en esa máquina y
+   nunca vuelve a aparecer en un diff ni se commitea por accidente.
+Revertir con `git update-index --no-skip-worktree .mcp.json` si hace falta volver a
+trackearlo. **Pendiente en la PC de Javier:** aplicar los mismos 3 pasos — su próximo `pull`
+va a traer el placeholder en vez de su ruta real hasta que lo haga.
+
 #### Prompt reusable — sincronizar/unificar una sesión de Claude Code con `origin/main`
 
 Para pegar al arrancar una sesión en cualquiera de las 2 PCs cuando puede haber trabajo
