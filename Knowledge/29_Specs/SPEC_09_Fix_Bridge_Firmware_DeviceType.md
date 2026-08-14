@@ -89,10 +89,20 @@ también**, no solo la de Mauro (corrección: una nota anterior decía "solo alc
 la red de Mauro" — eso es cierto para el firmware KPCL0035 por WiFi, NO para la Raspberry,
 que respondió ping/SSH directo desde la PC de Javier).
 
-**Para Mauro:** generar tu propia key (`ssh-keygen -t ed25519 -f ~/.ssh/kittypau_bridge`),
-conectarte una vez con la password (ver abajo) para agregar tu clave pública a
-`~/.ssh/authorized_keys` de la Pi, y de ahí en más ninguna sesión de Claude Code en tu PC
-necesita la password de nuevo.
+**✅ Hecho y re-verificado desde la PC de Mauro (2026-08-14, dos veces — la segunda a
+pedido explícito de confirmar identidad antes de confiar en la primera):** key generada,
+agregada a `authorized_keys`, y conexión re-confirmada con `hostname` (`kittypau-bridge`) +
+`uname -a` (firma real de kernel Raspberry Pi, `rpt-rpi-v7 armv7l`) — es la Raspberry real,
+no otro equipo en la red.
+
+**Hallazgo de red, no menor:** la PC de Mauro **no está en una red fija** — la sesión que
+verificó esto estaba conectada a WiFi `Suarez_Mujica_891_5G` (IP `192.168.100.40/24`,
+**misma subred que la Raspberry**, por eso el SSH funciona directo sin routing), **no** a
+`VTR-2736410_2g` (`192.168.0.x`, donde vive KPCL0035). Tabla de rutas confirma **cero ruta
+a `192.168.0.0/24`** desde esa conexión. Consecuencia práctica: **§1.1 (bridge) y §1.2 (OTA
+a KPCL0035) pueden necesitar que la PC de Mauro esté conectada a redes distintas según el
+momento** — no asumir que "estar en la red de Mauro" alcanza para las dos tareas sin
+confirmar a cuál de las dos redes está conectada la sesión que va a ejecutar cada una.
 
 **Credenciales del bridge:** viven en `.env.local` (gitignoreado, nunca en el repo) como
 `BRIDGE_SSH_HOST` / `BRIDGE_SSH_USER` / `BRIDGE_SSH_PASSWORD` / `BRIDGE_SSH_KEY` /
