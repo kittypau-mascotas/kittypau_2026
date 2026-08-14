@@ -114,6 +114,33 @@ sin re-confirmar contra Supabase el mismo día del OTA — ver detalle en §1.2.
 3. §1.2 — fix de firmware + OTA a KPCL0035, con la IP `192.168.0.8` re-confirmada el día del OTA.
 4. Resto del checklist de §7, en el orden que ya está.
 
+### División de tareas OTA/firmware entre las 2 PCs (2026-08-14)
+
+`iot_firmware/javier_1a/` — el propio nombre de carpeta ya lo dice — sugiere que Javier
+tiene el setup de firmware (toolchain PlatformIO, y probablemente acceso físico/USB a
+hardware KPCL) más establecido que Mauro. Separar qué es ejecutable desde dónde, en vez de
+asumir que "acceso a OTA" es lo mismo en las 2 PCs:
+
+**Ejecutable desde cualquiera de las 2 PCs (solo requiere el repo + PlatformIO, sin red
+especial ni hardware):**
+- §1.2.a — guardar `DEVICE_TYPE` con `#ifndef` en `config.h`.
+- §1.2.b — agregar el `build_flags` de `DEVICE_TYPE` al env `ota_kpcl0035` en `platformio.ini`.
+- §1.2.c — `pio run -e ota_kpcl0035` (compilar sin subir) para confirmar que compila limpio.
+
+**Requiere alcance de red real al device (confirmado hoy solo desde la red de Mauro):**
+- §1.2.d/e — el OTA real a KPCL0035 (`192.168.0.8`, red `VTR-2736410_2g`) — documentado en
+  esta sesión como alcanzable **solo desde la red de Mauro**, no desde la de Javier. Si eso
+  cambió o es incompleto (ej. Javier sí llega por VPN, o hay otro KPCL en su red — el
+  `platformio.ini` también tiene `[env:ota_kpcl0036]` con IP propia), **confirmarlo desde la
+  sesión de Javier antes de asumir que el OTA de KPCL0035 es tarea exclusiva de Mauro.**
+
+**Pendiente de investigar — no asumido, tarea explícita para la sesión de Javier:** qué
+acceso físico/de red tiene Javier hoy con los dispositivos KPCL (USB directo a alguna
+placa, otra red WiFi con otros KPCL, etc.) que Mauro no tiene, y si es replicable desde la
+PC de Mauro (¿hace falta estar en una red específica? ¿un cable USB? ¿nada, ya está
+disponible y no se usó?). Documentar la respuesta acá mismo, en esta subsección, para que
+quede la división de tareas real y no una asumida.
+
 ---
 
 ## 0. Contexto — no re-investigar, ya está confirmado
