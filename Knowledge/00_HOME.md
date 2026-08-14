@@ -18,6 +18,44 @@ tags:
 
 ---
 
+## 💻 Entorno de trabajo — 2 PCs (Mauro + Javier)
+
+Este proyecto se trabaja desde dos máquinas distintas, cada una con su propia sesión de
+Claude Code sobre el mismo repo remoto (`github.com/kittypau-mascotas/kittypau_2026`) —
+protocolo completo de sincronización en [[19_DevOps/README_DevOps]] § "Trabajo en 2 PCs".
+
+| PC | Identidad git | Ruta raíz del repo |
+|---|---|---|
+| **Mauro** (esta sesión la identificó, 2026-08-14) | `Mauro Curcuma` | `D:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq` |
+| **Javier** | — | `C:\Kittypau\GitHub_KP\kittypau_2026` (inferido del valor original de `MEMORY_FILE_PATH` en `.mcp.json`, antes de reemplazarlo por un placeholder el 2026-08-14 — **sin confirmar desde su propia sesión todavía**, ver instrucción abajo) |
+
+> El nombre de carpeta local difiere entre PCs (`kittypau_2026_hivemq` vs `kittypau_2026`) —
+> normal, cada clone puede tener su propio nombre de carpeta local. Lo que importa es que
+> ambas apunten al mismo remoto — confirmar con `git remote -v` si hay dudas.
+
+### Instrucción para la próxima sesión de Claude Code en la PC de Javier
+
+Pegar esto al arrancar sesión ahí, para dejar la vinculación entre las 2 PCs completa y
+verificada de los dos lados:
+
+```
+Confirmá la ruta raíz real de este repo en esta máquina (pwd) y actualizá la fila "Javier"
+de la tabla en Knowledge/00_HOME.md § "Entorno de trabajo — 2 PCs" con el valor real y la
+identidad de git de esta máquina (hoy la ruta está inferida, no confirmada desde acá).
+
+Después, aplicá el patrón de la regla 9 de Knowledge/19_DevOps/README_DevOps.md §
+"Trabajo en 2 PCs" sobre .mcp.json (el placeholder de MEMORY_FILE_PATH que dejó la PC de
+Mauro el 2026-08-14 te va a romper el MCP de memory hasta que hagas esto):
+1. git update-index --skip-worktree .mcp.json
+2. Editá tu .mcp.json local con tu ruta real de MEMORY_FILE_PATH (la que tenías antes de
+   que se reemplazara por el placeholder)
+3. Confirmá con git status que el archivo ya no aparece como modificado
+
+Avisale a Mauro cuando esté listo.
+```
+
+---
+
 ## ⚡ Referencia rápida (lo que se busca seguido)
 
 - **Cuentas de prueba, project ID Supabase:** [[20_Testing/README_Testing]] § Cuentas de prueba
