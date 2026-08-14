@@ -177,11 +177,17 @@ la cuenta real de cada uno en su máquina (no una cuenta compartida). Los commit
 Code ya se coautorean (`Co-Authored-By: Claude ...`) — mantenerlo, da trazabilidad de qué
 hizo el humano vs. el agente.
 
-**2. Regla no-negociable: `git pull` antes de arrancar cualquier sesión de Claude Code** —
-ya es el hábito reflejo ("sincronizate con el main" al inicio de esta sesión); formalizarlo
-evita que una sesión trabaje horas sobre una base vieja y después el merge sea doloroso.
-Si hay cambios locales sin commitear al hacer pull, la sesión debe `git stash -u` antes,
-nunca descartar trabajo en progreso sin preguntar (ver Git Safety Protocol de Claude Code).
+**2. Regla no-negociable (2026-08-14, reforzada a pedido de Javier): cualquier `git pull` o
+`git push` en este repo pasa por el prompt reusable de más abajo, en el orden exacto en que
+está escrito** — sin excepción, sin importar qué tan chico parezca el cambio. No es solo
+"`pull` antes de arrancar sesión" — aplica a **cada** pull y **cada** push, en cualquier
+momento de la sesión, no solo al principio. Ya es el hábito reflejo ("sincronizate con el
+main" al inicio de esta sesión); formalizarlo evita que una sesión trabaje horas sobre una
+base vieja, que el merge sea doloroso, o que se pisen cambios de la otra PC sin darse
+cuenta. Si hay cambios locales sin commitear al hacer pull, la sesión debe `git stash -u`
+antes, nunca descartar trabajo en progreso sin preguntar (ver Git Safety Protocol de Claude
+Code). Este mismo protocolo ya está espejado en `CLAUDE.md` § "Trabajo en 2 PCs" — si un
+día se actualiza acá, actualizarlo ahí también, no dejar que diverjan.
 
 **3. Trunk-based con commits chicos, no ramas de larga vida** — dado el tamaño del equipo
 (2 personas), mantener el patrón actual (commits directos a `main`, frecuentes) para

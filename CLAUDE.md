@@ -113,16 +113,31 @@ Estas reglas tienen prioridad máxima y **nunca** son candidatas a simplificaci�
 - El RAG en Supabase es para la app de usuarios finales, no para sesiones Claude.
 
 ### Trabajo en 2 PCs (Javier + Mauro)
-- Este repo se trabaja desde dos máquinas distintas. **Siempre `git pull` antes de tocar
-  código o Knowledge/** — no asumir que el estado local está al día.
+
+> **No-negociable: antes de CUALQUIER `git pull` o `git push` en este repo — sin excepción,
+> sin importar qué tan chico parezca el cambio — leer primero
+> `Knowledge/19_DevOps/README_DevOps.md` § "Trabajo en 2 PCs" y seguir el prompt reusable de
+> ahí en el orden exacto en que está escrito.** No correr `git pull`/`git push` "a mano" sin
+> pasar por ese protocolo primero — es lo que evita pisar trabajo de la otra PC, perder
+> stash, o commitear un secreto (ya pasó dos veces antes de que existiera esta regla).
+
+Orden correcto, resumido (el detalle completo con los comandos exactos está en
+`Knowledge/19_DevOps/README_DevOps.md`, no lo dupliques de memoria — leelo cada vez):
+1. `git status` — ver qué hay antes de tocar nada.
+2. Si hay cambios sin commitear: `git stash push -u` (nunca descartar sin preguntar).
+3. `git fetch origin` + merge/rebase seguro (nunca `reset --hard` ni force-push).
+4. Restaurar el stash si había, resolver conflictos si aparecen.
+5. Revisar `git status` final antes de `git add` — nada de `.env*`/`settings.local.json`.
+6. Leer `Knowledge/19_DevOps/PENDIENTES_POR_PC.md` — qué le toca a esta máquina ahora mismo.
+7. Recién ahí, hacer el trabajo pedido.
+8. Antes del `push`: actualizar `PENDIENTES_POR_PC.md` (mover lo hecho a "Completado", sumar
+   lo nuevo) y revisar `git log origin/main..HEAD` para confirmar que el diff es el esperado.
+
 - `Knowledge/29_Specs/` es el canal de handoff entre sesiones/máquinas — si algo queda
   bloqueado por falta de acceso físico o una decisión pendiente, documentarlo ahí, no
   dejarlo solo en el chat.
-- **`Knowledge/19_DevOps/PENDIENTES_POR_PC.md`** — archivo vivo, qué tarea le toca a cada
-  máquina ahora mismo. Leerlo después de cada `pull`, actualizarlo antes de cada `push`.
-- Nunca commitear secretos (`.env*`, `settings.local.json`) — ya pasó dos veces. Revisar
-  `git status` antes de un `git add` amplio.
-- Reglas completas: `Knowledge/19_DevOps/README_DevOps.md` § "Trabajo en 2 PCs".
+- Reglas completas y el prompt reusable exacto: `Knowledge/19_DevOps/README_DevOps.md` §
+  "Trabajo en 2 PCs".
 
 ---
 
