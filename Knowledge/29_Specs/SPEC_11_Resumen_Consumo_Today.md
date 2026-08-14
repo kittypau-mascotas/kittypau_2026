@@ -115,6 +115,52 @@ contexto de dónde sale.
 
 ---
 
+## 2.1 — 10 métricas adicionales de consumo de alimento
+
+Pedido de Mauro (2026-08-14): sumar ~10 métricas más sobre el cálculo de consumo de
+alimento. Mismo estándar que el resto de este spec y que
+[[29_Specs/SPEC_04_Metricas_Today_Investigacion]]: **cada una cita de qué campo/estadística
+real sale, ninguna introduce una constante nueva sin medir.** Todas usan datos que ya se
+están calculando (`pet_sessions`/`pet_daily_summary`) o estadísticas ya calibradas y
+documentadas en [[05_API/SPEC_HungerBar_Alimentacion]] §0.1 sobre 254 comidas reales de
+KPCL0034 — cero investigación nueva requerida.
+
+⚠️ **Caveat de datos antes de implementar:** `pet_sessions.duration_sec` está en el
+`SELECT` de `api/analytics/sessions/route.ts` pero **no se encontró en el objeto que
+`processor.js` inserta** (`processor.js:192-207` no lo asigna explícitamente). No se pudo
+confirmar en esta sesión si es una columna generada en la DB (el schema de la analytics DB
+no está versionado en este repo, ver [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]])
+o si simplemente llega `null` siempre — mismo patrón que el hallazgo ya documentado de
+`skipped_meals` (§4). **Las métricas #1 y #2 de abajo calculan duración como `session_end −
+session_start` en vez de confiar en `duration_sec`** — ambos timestamps sí están
+garantizados (`processor.js` los asigna siempre), evita depender del campo sin confirmar.
+
+| # | Métrica | Fuente / fórmula | Por qué está respaldada |
+|---|---|---|---|
+| 1 | **Duración promedio por comida** | `avg(session_end − session_start)` sobre `pet_sessions` con `session_type='food'` del período | Campo ya calculado por `processor.js`, solo falta promediar |
+| 2 | **Velocidad de consumo (g/min)** | `grams_consumed / ((session_end − session_start) en min)`, promediado por sesión | Combina dos campos ya reales — ratio derivado, no constante nueva |
+| 3 | **Comidas hoy vs. su patrón medido** | `food_sessions` de hoy vs. mediana real **4** (rango 1-6) de [[05_API/SPEC_HungerBar_Alimentacion]] §0.1 | Usa la mediana ya calibrada sobre 254 comidas anotadas — no un número inventado nuevo |
+| 4 | **¿Comió en su horario habitual?** | Hora de `session_start` de hoy vs. horas pico reales medidas: 19h, 05h, 16h, 10h, 17h, 06h, 07h, 09h ([[05_API/SPEC_HungerBar_Alimentacion]] §0.1) | Mismas horas pico ya medidas y documentadas, reusadas tal cual |
+| 5 | **Consistencia del intervalo entre comidas** | Intervalo real de hoy vs. IQR medido (P25=3.8h / P75=8.27h) — "dentro de lo típico" si cae en el rango | Mismo IQR ya calibrado que usa el clamp de display de la Hunger Bar |
+| 6 | **Racha de días con actividad detectada** | Días consecutivos con `food_sessions > 0` en `pet_daily_summary`, contando hacia atrás desde hoy | Conteo directo sobre un campo ya real, sin inventar umbral |
+| 7 | **Regularidad del consumo diario** | Desviación estándar (o coeficiente de variación) de `total_food_grams` sobre los últimos N días | Estadística estándar sobre un campo ya real — sin constante nueva |
+| 8 | **% de comidas dentro del rango que definió el dueño** | `grams_consumed` de cada sesión vs. `pet.food_normal_min_g`/`food_normal_max_g` | Mismos campos que ya usa `applyCustomLimits()` en `story/page.tsx` — reuso directo, cero cálculo nuevo |
+| 9 | **Comida más grande / más chica del período** | `max(grams_consumed)` / `min(grams_consumed)` sobre `pet_sessions` del período | Extremos de un campo ya real |
+| 10 | **Tendencia semana vs. semana anterior** | `(Σtotal_food_grams semana actual − Σtotal_food_grams semana previa) / semana previa × 100` | Resta/porcentaje sobre sumas ya reales de `pet_daily_summary` — mismo patrón que "semana"/"mes" ya definido en §2 |
+
+**Todas caen en el mismo "Grupo A" de SPEC_04** (respaldadas, portables) porque a diferencia
+de Hambre/Saciedad/Apetito (que sí requieren la taxonomía de investigación completa), estas
+diez son agregaciones/estadísticas directas sobre campos que el bridge **ya está
+escribiendo en producción** — no dependen de anotaciones nuevas ni de Motor v2.
+
+**Presentación sugerida:** no las 10 como barras — mezclar formatos según el tipo de dato
+(#1/#2/#9 como stat simple con unidad; #3/#4/#5/#8 como comparación contra el patrón, ej.
+"4 de las ~4 comidas habituales" o "dentro de su horario habitual"; #6 como racha tipo
+streak; #7/#10 como indicador de tendencia con flecha). Mismo principio de copy honesto del
+§2: cada una con su fórmula en tooltip.
+
+---
+
 ## 3. Qué NO hace falta construir
 
 - Nueva tabla en Supabase — `pet_daily_summary` ya cubre día/semana/mes por agregación.
