@@ -134,12 +134,23 @@ especial ni hardware):**
   `platformio.ini` también tiene `[env:ota_kpcl0036]` con IP propia), **confirmarlo desde la
   sesión de Javier antes de asumir que el OTA de KPCL0035 es tarea exclusiva de Mauro.**
 
-**Pendiente de investigar — no asumido, tarea explícita para la sesión de Javier:** qué
-acceso físico/de red tiene Javier hoy con los dispositivos KPCL (USB directo a alguna
-placa, otra red WiFi con otros KPCL, etc.) que Mauro no tiene, y si es replicable desde la
-PC de Mauro (¿hace falta estar en una red específica? ¿un cable USB? ¿nada, ya está
-disponible y no se usó?). Documentar la respuesta acá mismo, en esta subsección, para que
-quede la división de tareas real y no una asumida.
+**✅ Investigado (2026-08-14, sesión de Javier) — respuesta real, no asumida:**
+
+- **USB directo: no.** Revisados los puertos COM de la PC de Javier (`Get-PnpDevice -Class
+  Ports`) — solo hay puertos Bluetooth virtuales y uno de Intel AMT. **Ningún adaptador
+  USB-serie tipo CP2102/CH340** (el que trae el NodeMCU v3) está conectado ahora mismo. Sin
+  placa físicamente enchufada acá.
+- **Red: sí hay algo, parcial.** La PC de Javier está en la misma subred `192.168.100.x` que
+  la Raspberry del bridge (confirmado por SSH exitoso, ver arriba). La IP de OTA
+  documentada para KPCL0036 (`upload_port = 192.168.100.96` en `[env:ota_kpcl0036]`) **está
+  en esa misma subred** — pero no respondió al ping (`Destination host unreachable`), mismo
+  patrón de IP vieja por DHCP que ya se confirmó con KPCL0035. No se puede afirmar "Javier
+  llega a KPCL0036" con esto — solo que, **si** algún KPCL estuviera online en esa subred con
+  una IP vigente, sería alcanzable por OTA desde acá. No confirmado con un device real vivo.
+- **Conclusión para la división de tareas:** hoy, el OTA real de firmware (§1.2.d/e) sigue
+  siendo tarea de la PC de Mauro — ni USB ni una IP viva confirman acceso desde la PC de
+  Javier a ningún KPCL ahora mismo. Lo único que la PC de Javier aporta de más es la subred
+  compartida con la Raspberry (útil para el fix del bridge, §1.1, no para firmware).
 
 ---
 

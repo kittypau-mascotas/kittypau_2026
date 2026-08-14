@@ -27,32 +27,19 @@ protocolo completo de sincronización en [[19_DevOps/README_DevOps]] § "Trabajo
 | PC | Identidad git | Ruta raíz del repo |
 |---|---|---|
 | **Mauro** (esta sesión la identificó, 2026-08-14) | `Mauro Curcuma` | `D:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq` |
-| **Javier** | — | `C:\Kittypau\GitHub_KP\kittypau_2026` (inferido del valor original de `MEMORY_FILE_PATH` en `.mcp.json`, antes de reemplazarlo por un placeholder el 2026-08-14 — **sin confirmar desde su propia sesión todavía**, ver instrucción abajo) |
+| **Javier** (confirmado desde su propia sesión, 2026-08-14) | `Jeivous` (`239365173+Jeivous@users.noreply.github.com`) | `C:\Kittypau\GitHub_KP\kittypau_2026` — confirmado con `pwd`, coincide con lo inferido |
 
 > El nombre de carpeta local difiere entre PCs (`kittypau_2026_hivemq` vs `kittypau_2026`) —
 > normal, cada clone puede tener su propio nombre de carpeta local. Lo que importa es que
 > ambas apunten al mismo remoto — confirmar con `git remote -v` si hay dudas.
 
-### Instrucción para la próxima sesión de Claude Code en la PC de Javier
+### ✅ Vinculación entre las 2 PCs completa (2026-08-14, confirmada de los dos lados)
 
-Pegar esto al arrancar sesión ahí, para dejar la vinculación entre las 2 PCs completa y
-verificada de los dos lados:
-
-```
-Confirmá la ruta raíz real de este repo en esta máquina (pwd) y actualizá la fila "Javier"
-de la tabla en Knowledge/00_HOME.md § "Entorno de trabajo — 2 PCs" con el valor real y la
-identidad de git de esta máquina (hoy la ruta está inferida, no confirmada desde acá).
-
-Después, aplicá el patrón de la regla 9 de Knowledge/19_DevOps/README_DevOps.md §
-"Trabajo en 2 PCs" sobre .mcp.json (el placeholder de MEMORY_FILE_PATH que dejó la PC de
-Mauro el 2026-08-14 te va a romper el MCP de memory hasta que hagas esto):
-1. git update-index --skip-worktree .mcp.json
-2. Editá tu .mcp.json local con tu ruta real de MEMORY_FILE_PATH (la que tenías antes de
-   que se reemplazara por el placeholder)
-3. Confirmá con git status que el archivo ya no aparece como modificado
-
-Avisale a Mauro cuando esté listo.
-```
+Javier confirmó su fila de la tabla desde su propia sesión (`pwd` + `git config`) y aplicó
+el patrón de la regla 9 de [[19_DevOps/README_DevOps]] sobre `.mcp.json`
+(`git update-index --skip-worktree` + `MEMORY_FILE_PATH` real local) — su `git status` ya
+no muestra ese archivo como modificado. Las dos PCs quedaron identificadas y con el MCP de
+`memory` funcional localmente en cada una, sin pisarse entre sí.
 
 ---
 
