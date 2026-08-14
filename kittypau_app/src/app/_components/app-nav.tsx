@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
 import { signOutSession } from "@/lib/auth/token";
 import { useAppData } from "@/lib/context/app-context";
+import { DEVICE_ONLINE_THRESHOLD_MS } from "@/lib/device-diagnostics";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 
 type NavItem = {
@@ -221,7 +222,7 @@ export default function AppNav() {
     if (!selectedDevice?.last_seen) return false;
     const lastSeen = Date.parse(selectedDevice.last_seen);
     if (!Number.isFinite(lastSeen) || !nowMs) return false;
-    return nowMs - lastSeen < 15 * 60 * 1000;
+    return nowMs - lastSeen < DEVICE_ONLINE_THRESHOLD_MS;
   })();
 
   if (pathname?.startsWith("/registro") || pathname?.startsWith("/admin")) {

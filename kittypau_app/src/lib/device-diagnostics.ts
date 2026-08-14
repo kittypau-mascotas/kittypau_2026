@@ -9,6 +9,15 @@ import { formatBatterySourceLabel } from "@/lib/battery/contract";
 
 export type DiagnosticStatusTone = "ok" | "warn" | "muted";
 
+/**
+ * Umbral único de "dispositivo en línea" — compartido entre el punto de
+ * conexión del sidebar (app-nav.tsx) y getStatusSummary() de acá. Antes eran
+ * dos literales distintos (15min vs 30min) y podían contradecirse: el
+ * sidebar mostraba "sin conexión" mientras la card de estado seguía en
+ * verde (U5, Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md).
+ */
+export const DEVICE_ONLINE_THRESHOLD_MS = 15 * 60 * 1000;
+
 export function batteryHealthLabel(level: number | null): string {
   if (level === null || Number.isNaN(level)) return "Sin datos";
   if (level <= 15) return "Crítica";
@@ -35,7 +44,9 @@ export function getStatusSummary(params: {
   if (!params.hasDevice) return { label: "Sin datos", tone: "muted" };
   const last = params.lastSeen ? new Date(params.lastSeen).getTime() : null;
   const offline =
-    last === null || Number.isNaN(last) || Date.now() - last > 30 * 60 * 1000;
+    last === null ||
+    Number.isNaN(last) ||
+    Date.now() - last > DEVICE_ONLINE_THRESHOLD_MS;
   if (offline) return { label: "Atención", tone: "warn" };
   if (params.batteryLevel !== null && params.batteryLevel <= 15) {
     return { label: "Crítico", tone: "warn" };
