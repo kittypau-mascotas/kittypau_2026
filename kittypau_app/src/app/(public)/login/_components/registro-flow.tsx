@@ -26,6 +26,12 @@ type Pet = {
   photo_url?: string | null;
 };
 
+type Comuna = {
+  value: string;
+  label: string;
+  provincia: string;
+};
+
 type RegistroFlowProps = {
   mode?: "page" | "modal";
   onClose?: () => void;
@@ -107,6 +113,45 @@ const AVATAR_OPTIONS = [
   { id: "avatar-4", label: "Avatar 4", url: "/avatar_5.png" },
 ];
 
+const PROVINCIA_SANTIAGO: Comuna[] = [
+  { value: "cerrillos", label: "Cerrillos", provincia: "Santiago" },
+  { value: "cerro_navia", label: "Cerro Navia", provincia: "Santiago" },
+  { value: "conchali", label: "Conchalí", provincia: "Santiago" },
+  { value: "el_bosque", label: "El Bosque", provincia: "Santiago" },
+  { value: "estacion_central", label: "Estación Central", provincia: "Santiago" },
+  { value: "huechuraba", label: "Huechuraba", provincia: "Santiago" },
+  { value: "independencia", label: "Independencia", provincia: "Santiago" },
+  { value: "la_cisterna", label: "La Cisterna", provincia: "Santiago" },
+  { value: "la_florida", label: "La Florida", provincia: "Santiago" },
+  { value: "la_granja", label: "La Granja", provincia: "Santiago" },
+  { value: "la_pintana", label: "La Pintana", provincia: "Santiago" },
+  { value: "la_reina", label: "La Reina", provincia: "Santiago" },
+  { value: "las_condes", label: "Las Condes", provincia: "Santiago" },
+  { value: "lo_barnechea", label: "Lo Barnechea", provincia: "Santiago" },
+  { value: "lo_espejo", label: "Lo Espejo", provincia: "Santiago" },
+  { value: "lo_prado", label: "Lo Prado", provincia: "Santiago" },
+  { value: "macul", label: "Macul", provincia: "Santiago" },
+  { value: "maipu", label: "Maipú", provincia: "Santiago" },
+  { value: "nunoa", label: "Ñuñoa", provincia: "Santiago" },
+  {
+    value: "pedro_aguirre_cerda",
+    label: "Pedro Aguirre Cerda",
+    provincia: "Santiago",
+  },
+  { value: "penalolen", label: "Peñalolén", provincia: "Santiago" },
+  { value: "providencia", label: "Providencia", provincia: "Santiago" },
+  { value: "pudahuel", label: "Pudahuel", provincia: "Santiago" },
+  { value: "quilicura", label: "Quilicura", provincia: "Santiago" },
+  { value: "quinta_normal", label: "Quinta Normal", provincia: "Santiago" },
+  { value: "recoleta", label: "Recoleta", provincia: "Santiago" },
+  { value: "renca", label: "Renca", provincia: "Santiago" },
+  { value: "san_joaquin", label: "San Joaquín", provincia: "Santiago" },
+  { value: "san_miguel", label: "San Miguel", provincia: "Santiago" },
+  { value: "san_ramon", label: "San Ramón", provincia: "Santiago" },
+  { value: "santiago", label: "Santiago", provincia: "Santiago" },
+  { value: "vitacura", label: "Vitacura", provincia: "Santiago" },
+];
+
 export default function RegistroFlow({
   mode = "page",
   onClose,
@@ -147,7 +192,7 @@ export default function RegistroFlow({
   const [profileForm, setProfileForm] = useState({
     user_name: "",
     city: "",
-    country: "",
+    country: "Chile",
     notification_channel: "email",
     is_owner: true,
     owner_name: "",
@@ -190,7 +235,7 @@ export default function RegistroFlow({
   const profileValidation = useMemo(() => {
     const issues: string[] = [];
     if (!profileForm.user_name.trim()) issues.push("Nombre requerido.");
-    if (!profileForm.city.trim()) issues.push("Ciudad requerida.");
+    if (!profileForm.city.trim()) issues.push("Comuna requerida.");
     if (!profileForm.country.trim()) issues.push("País requerido.");
     if (!selectedAvatar) issues.push("Avatar requerido.");
     if (!profileForm.is_owner && !profileForm.owner_name.trim()) {
@@ -898,19 +943,18 @@ export default function RegistroFlow({
               </FieldCard>
 
               <FieldCard
-                label="Ciudad"
-                tooltip="Úsalo para personalizar alertas."
+                label="Comuna"
+                tooltip="Usaremos tu comuna para pilotos, soporte y futuras alertas locales."
                 required
-                help="Úsalo para personalizar alertas."
+                help="Provincia de Santiago."
                 error={
                   showProfileHints && !profileForm.city.trim()
-                    ? "Indica tu ciudad para personalizar alertas."
+                    ? "Selecciona tu comuna."
                     : null
                 }
               >
-                <input
+                <select
                   className={inputClass(!profileForm.city.trim())}
-                  placeholder="Ciudad"
                   value={profileForm.city}
                   onChange={(event) =>
                     setProfileForm((prev) => ({
@@ -918,7 +962,14 @@ export default function RegistroFlow({
                       city: event.target.value,
                     }))
                   }
-                />
+                >
+                  <option value="">Selecciona comuna</option>
+                  {PROVINCIA_SANTIAGO.map((comuna) => (
+                    <option key={comuna.value} value={comuna.value}>
+                      {comuna.label}
+                    </option>
+                  ))}
+                </select>
               </FieldCard>
 
               <FieldCard
