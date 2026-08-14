@@ -37,6 +37,7 @@ related:
 | [[29_Specs/SPEC_06_Mobile_APK_2026]] | ¿Qué necesita el APK móvil para seguir siendo publicable y sentirse actual en 2026 — Android 16, plugins, UX nativa? |
 | [[29_Specs/SPEC_07_Investigacion_Hidratacion]] | ¿Cómo se reorganiza `Docs/09_Investigacion` y qué hace falta para replicar el pipeline de comida (`fase_0_ruido/`) del lado de hidratación, sin perder ni romper nada? |
 | [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] | ¿El dispositivo de comida y el de agua están tipificados correctamente en `kittypau_app` (Hunger Bar, `/bowl`, `/today`)? — no: bug real encontrado y corregido, causa raíz en firmware/bridge |
+| [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] | Handoff para cerrar la causa raíz de SPEC_08 en bridge/firmware (con acceso real) + hallazgo nuevo (`processor.js` hereda el bug) + mejoras de seguridad y deuda técnica ejecutables ahora |
 
 ## Cómo se relacionan entre sí
 

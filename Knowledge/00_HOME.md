@@ -116,6 +116,7 @@ tags:
 - [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16 (deadline 31/08/2026), plugins Capacitor recomendados, UX móvil 2026
 - [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — reorganización de `Docs/09_Investigacion` + roadmap para replicar el pipeline de comida del lado de agua
 - [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] — bug crítico: KPCL0035 (bebedero) reportaba `device_type='comedero'`, rompía Hunger Bar/`/bowl`/`/today` — causa raíz en firmware/bridge, fix aplicado como override en `kittypau_app`
+- [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] — handoff para cerrar SPEC_08 en la fuente (bridge + firmware, requiere acceso a Raspberry/OTA) + hallazgo nuevo en `processor.js` + mejoras de seguridad
 
 ---
 
