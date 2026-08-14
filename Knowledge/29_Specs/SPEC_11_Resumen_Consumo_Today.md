@@ -18,9 +18,22 @@ related:
   - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
   - [[29_Specs/SPEC_04_Metricas_Today_Investigacion]]
   - [[07_MQTT/README_MQTT]]
+  - [[02_Arquitectura/ARQ_Pipeline_End_to_End]]
+  - [[29_Specs/SPEC_12_Recrear_Analytics_DB]]
 ---
 
 # SPEC 11 — Resumen de consumo (día/semana/mes) en `/today`
+
+> ⚠️ **Bloqueante confirmado (2026-08-14, sesión siguiente):** la premisa de §0 ("el
+> pipeline ya corre en producción ahora mismo") ya no se cumple — el proyecto Supabase de
+> analytics (`spfonxnyprjqxcxaqsbe`, donde viven `pet_sessions`/`pet_daily_summary`) **fue
+> eliminado a propósito por Mauro** (consumía mucho storage en el plan Free). Detectado
+> primero por DNS (`NXDOMAIN` en dos resolvers independientes) y confirmado contra la
+> Management API (el proyecto ya no aparece ni pausado ni activo en la cuenta) — detalle en
+> [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2. **No implementar la UI de este spec
+> hasta ejecutar [[29_Specs/SPEC_12_Recrear_Analytics_DB]]** — ese spec ya tiene el schema
+> exacto, el checklist de reconexión (3 lugares) y un plan de retención para no repetir el
+> mismo problema de storage.
 
 > Pedido de Mauro (2026-08-14): mostrar en `/today` cuánta comida/agua al día, semana y mes,
 > total de servidos, cuánto peso/ml por servido, promedios — la mayor cantidad de data real

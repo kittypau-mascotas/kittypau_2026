@@ -5,7 +5,7 @@ type: architecture
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-14
 tags:
   - arquitectura
   - stack
@@ -47,22 +47,23 @@ related:
 
 ```
 [Hardware KPCL]
-      │ MQTT publish
+      │ MQTT publish (TLS)
       ▼
 [HiveMQ Cloud]
-      │ WebSocket / Bridge
+      │ suscripción wildcard
       ▼
 [Raspberry Pi Zero 2W — Bridge]
-      │ HTTP POST
-      ▼
-[Next.js API Routes en Vercel]
-      │ insert
+      │ supabase-js, service_role key (bypass RLS) — escritura DIRECTA, no vía Next.js
       ▼
 [Supabase — PostgreSQL + Auth + Realtime]
-      │ query / realtime
+      │ query (RLS) vía Next.js API Routes
       ▼
 [App Web / APK Android]
 ```
+
+> Corregido 2026-08-14: el bridge escribe directo a Supabase con `service_role key`, **no**
+> pasa por las API Routes de Next.js — ese salto no existe. Detalle completo, con las 6
+> capas y las dos bases de datos, en [[02_Arquitectura/ARQ_Pipeline_End_to_End]].
 
 ---
 
@@ -139,6 +140,7 @@ Ver contrato completo en [[05_API/README_API]].
 
 ## Ver también
 
+- [[02_Arquitectura/ARQ_Pipeline_End_to_End]] — mapa de integración detallado, las 6 capas trazadas con citas de código real
 - [[02_Arquitectura/MOC_Arquitectura]]
 - [[07_MQTT/README_MQTT]]
 - [[06_BaseDatos/README_BaseDatos]]

@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-12
+updated: 2026-08-14
 tags:
   - devops
   - vercel
@@ -18,6 +18,8 @@ related:
   - [[04_Frontend/README_Frontend]]
   - [[07_MQTT/README_MQTT]]
   - [[29_Specs/SPEC_06_Mobile_APK_2026]]
+  - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
+  - [[29_Specs/README_Specs]]
 ---
 
 # DevOps — Deploy, CI/CD, Infraestructura
@@ -120,8 +122,12 @@ sudo systemctl restart kittypau-bridge
 # Logs en tiempo real
 sudo journalctl -u kittypau-bridge -f
 
-# Actualizar código
-cd /home/pi/kittypau-bridge && git pull && sudo systemctl restart kittypau-bridge
+# Actualizar código — ⚠️ corregido 2026-08-14, confirmado por SSH real:
+# /home/kittypau/kittypau-bridge NO tiene .git — "git pull" no funciona ahí.
+# El deploy real es manual (editar/copiar bridge.js + guardar un .bak antes).
+# Ver Knowledge/29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType.md §-1 para el detalle
+# y la recomendación de convertirlo en un clone real de git.
+sudo systemctl restart kittypau-bridge
 ```
 
 ---
@@ -129,9 +135,12 @@ cd /home/pi/kittypau-bridge && git pull && sudo systemctl restart kittypau-bridg
 ## GitHub
 
 ```
-Repo: kittypau_2026_hivemq
+Repo: kittypau_2026
 Branch principal: main (= producción)
 ```
+
+> Nombre de repo corregido 2026-08-14 — `kittypau_2026_hivemq` era el nombre viejo, ya no
+> coincide con el directorio real ni con lo que dice `git remote -v`.
 
 ### Convención de commits
 
@@ -145,6 +154,93 @@ refactor(scope): descripción corta
 Ejemplos recientes:
 - `fix(app): corregir login, pestañas y data para demo BIG12`
 - `docs(corfo): agregar formulario completo y video pitch`
+
+### Trabajo en 2 PCs (Javier + Mauro) con Claude Code en cada uno — protocolo
+
+> Agregado 2026-08-14, a pedido de Javier. **No existe un mecanismo técnico para que dos
+> sesiones de Claude Code en dos máquinas distintas se "vinculen" en vivo entre sí** —cada
+> una es un proceso local, sin canal directo a la otra. El vínculo real es indirecto y ya
+> existe: **el repo de git + el vault de `Knowledge/`**, que ambas sesiones leen y escriben.
+> Formalizar cómo se usa ese vínculo es lo que sigue — no es una herramienta nueva, es una
+> forma ordenada de usar lo que ya hay.
+>
+> **Ya hay precedente real de esto en el repo** — ramas remotas `feat/javo-mauro`,
+> `feat/mauro-curcuma`, y una rama puente `test/fusion-main-javo-mauro-2026-03-02` muestran
+> que ya se intentó (y funcionó, hasta cierto punto) un patrón de trabajo paralelo +
+> fusión. Las reglas de abajo formalizan ese patrón en vez de inventar uno nuevo, y agregan
+> las salvaguardas que faltaron (ver `main_sanitized`, evidencia de que hubo que limpiar
+> secretos de la historia al menos una vez antes de hoy).
+
+**1. Cada persona, su propia identidad de git** — `git config user.name`/`user.email` con
+la cuenta real de cada uno en su máquina (no una cuenta compartida). Los commits de Claude
+Code ya se coautorean (`Co-Authored-By: Claude ...`) — mantenerlo, da trazabilidad de qué
+hizo el humano vs. el agente.
+
+**2. Regla no-negociable: `git pull` antes de arrancar cualquier sesión de Claude Code** —
+ya es el hábito reflejo ("sincronizate con el main" al inicio de esta sesión); formalizarlo
+evita que una sesión trabaje horas sobre una base vieja y después el merge sea doloroso.
+Si hay cambios locales sin commitear al hacer pull, la sesión debe `git stash -u` antes,
+nunca descartar trabajo en progreso sin preguntar (ver Git Safety Protocol de Claude Code).
+
+**3. Trunk-based con commits chicos, no ramas de larga vida** — dado el tamaño del equipo
+(2 personas), mantener el patrón actual (commits directos a `main`, frecuentes) para
+cambios chicos/documentación. **Usar una rama corta solo para cambios grandes o riesgosos**
+(tocan bridge/firmware/schema de DB/flujo de auth) — mismo espíritu que
+`feat/javo-mauro`/`test/fusion-...` ya usados antes, pero con el compromiso de mergear y
+borrar la rama en días, no dejarla viva semanas (ver deuda de "ramas obsoletas" abajo).
+
+**4. `Knowledge/29_Specs/` es el protocolo de handoff entre sesiones/máquinas** — ya pasó
+hoy en la práctica: [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] es literalmente un
+handoff escrito por una sesión sin acceso físico al bridge, para que la sesión con ese
+acceso (en la PC de Mauro) lo ejecute. **Formalizar este patrón**: si una sesión no puede
+terminar algo por falta de acceso/decisión pendiente, lo deja como spec nuevo o actualiza
+uno existente — no un comentario suelto que se pierde entre sesiones.
+
+**5. Antes de cada `push`, revisar el diff real** — `git log origin/main..HEAD` y
+`git diff origin/main..HEAD --stat` — para confirmar que lo que se sube es lo esperado,
+sobre todo después de una sesión larga de Claude Code con muchos archivos tocados.
+
+**6. Nunca commitear secretos — ya pasó una vez (`main_sanitized` lo confirma) y otra vez
+hoy** (`.claude/settings.local.json` con credenciales de Supabase, detectado por GitHub
+push protection antes de llegar a `main` — ver historial de esta sesión). Antes de un
+`git add` amplio, revisar `git status` y el contenido de cualquier archivo `.env*` o
+`settings.local.json` que aparezca.
+
+**7. Sin `git push --force` a `main`** — con dos personas pusheando a la misma rama, un
+force-push puede pisar el trabajo de la otra sesión sin aviso. Si hay conflicto, resolver
+con merge/rebase normal, nunca forzar.
+
+**8. Ramas obsoletas — limpiar, no acumular** — ver ítem de deuda técnica más abajo
+("Ramas obsoletas"). Cada vez que una rama de handoff (regla 3) se mergea, borrarla en el
+mismo momento (`git push origin --delete <rama>` + `git branch -d <rama>` local).
+
+#### Prompt reusable — sincronizar/unificar una sesión de Claude Code con `origin/main`
+
+Para pegar al arrancar una sesión en cualquiera de las 2 PCs cuando puede haber trabajo
+divergente (commits locales sin pushear, ramas de handoff sin mergear, etc.):
+
+```
+Sincronizá este repo con origin/main de forma segura y dejame un reporte claro antes de
+pushear nada. En orden:
+
+1. git status, git log --oneline -10, y git branch -a — reportá qué hay: cambios sin
+   commitear, commits locales no pusheados, ramas locales/remotas que no sean main.
+2. Si hay cambios sin commitear: git stash push -u (nunca descartar sin preguntar).
+3. git fetch origin, después mergeá o rebaseá main de la forma más segura (mismo criterio
+   que el Git Safety Protocol: nunca reset --hard ni force-push sin confirmación explícita).
+4. Si el stash tenía algo, restauralo y avisame si hay conflictos.
+5. Revisá git status final antes de cualquier git add — si aparece algo que huela a
+   secreto (.env*, settings.local.json, tokens, passwords en texto plano), avisame en vez
+   de agregarlo.
+6. Leé Knowledge/00_HOME.md y Knowledge/29_Specs/README_Specs.md para entender qué está
+   pendiente ahora mismo — en particular fijate si SPEC_09 (bridge/firmware) sigue
+   pendiente: ese spec es un handoff explícito para la sesión CON acceso físico a la
+   Raspberry Pi (192.168.100.119) y a la red OTA del firmware — si estás en esa PC y tenés
+   ese acceso, es candidato directo a ejecutar ahora.
+7. Dame un resumen: qué se sincronizó, qué quedó pendiente, y si hay algo de SPEC_09 (o
+   cualquier otro spec marcado "requiere acceso real") que ahora sí sea ejecutable desde
+   esta máquina. No pushees a main sin que yo lo confirme.
+```
 
 ### CI/CD — actualizado 2026-08-12: ahora sí corre tests
 

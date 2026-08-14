@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-12
+updated: 2026-08-14
 tags:
   - home
   - navegacion
@@ -27,6 +27,7 @@ tags:
 - **Los 3 `page.tsx` más grandes** tienen un comentario-mapa al principio del archivo (grepear el nombre de sección, no releer todo): `admin/page.tsx` (~4000 líneas, extracción evaluada y **dejada de lado a propósito**), `today/page.tsx` (~2500), `login/page.tsx` (~1900, sin priorizar)
 - **Fórmula del Hunger Bar:** [[05_API/SPEC_HungerBar_Alimentacion]] — alertas/push: [[05_API/SPEC_HungerBar_Alertas]]
 - **Qué queda pendiente ahora mismo:** [[29_Specs/README_Specs]] (backlog vivo, se poda solo con lo ya implementado)
+- **⚠️ La DB de analytics (`pet_sessions`/`pet_daily_summary`) parece haber sido eliminada** (DNS no resuelve, verificado 2026-08-14) — bloquea `/story` y [[29_Specs/SPEC_11_Resumen_Consumo_Today]]. Ver [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2
 
 ---
 
@@ -42,6 +43,7 @@ tags:
 ## Sistema
 
 - [[02_Arquitectura/README_Arquitectura]] — Stack completo y flujo de datos
+- [[02_Arquitectura/ARQ_Pipeline_End_to_End]] — Firmware → Bridge → 2 DBs Supabase → Backend → Frontend → App móvil, las 6 capas trazadas como una sola cadena, con hallazgo crítico: DB de analytics no resuelve DNS
 - [[02_Arquitectura/MOC_Arquitectura]] — Mapa de todos los componentes
 - [[03_Backend/README_Backend]] — Supabase, Edge Functions, API Routes
 - [[04_Frontend/README_Frontend]] — App Next.js + Capacitor Android
@@ -118,7 +120,8 @@ tags:
 - [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] — bug crítico: KPCL0035 (bebedero) reportaba `device_type='comedero'`, rompía Hunger Bar/`/bowl`/`/today` — causa raíz en firmware/bridge, fix aplicado como override en `kittypau_app`
 - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] — handoff para cerrar SPEC_08 en la fuente (bridge + firmware, requiere acceso a Raspberry/OTA) + hallazgo nuevo en `processor.js` + mejoras de seguridad
 - [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] — vincular dispositivo en el registro debe mostrar la lista real de `devices` (Supabase), no pedir tipear un código — pre-lanzamiento la lista es acotada y conocida
-- [[29_Specs/SPEC_11_Resumen_Consumo_Today]] — totales de comida/agua día/semana/mes en `/today`: el bridge ya calcula todo (`pet_sessions`/`pet_daily_summary`), falta solo el consumidor de UI — sección nueva, fuera de "Barras Sims"
+- [[29_Specs/SPEC_11_Resumen_Consumo_Today]] — totales de comida/agua día/semana/mes en `/today` — ⚠️ premisa en duda: la DB de origen (`pet_sessions`/`pet_daily_summary`) parece eliminada, ver [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2
+- [[29_Specs/SPEC_12_Recrear_Analytics_DB]] — confirmado por Mauro: la DB de analytics se eliminó a propósito (consumía mucho storage) — schema exacto + checklist de reconexión + plan de retención, listo para ejecutar cuando se decida
 
 ---
 

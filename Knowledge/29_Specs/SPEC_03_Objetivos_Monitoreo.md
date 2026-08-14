@@ -5,7 +5,7 @@ type: spec
 status: draft
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-12
+updated: 2026-08-14
 tags:
   - spec
   - producto
@@ -157,7 +157,7 @@ pantalla si queda algún estado degradado suelto sin ese contexto.
 | Alimentación | 🟢 Real, calibrado, en producción | Falta portar el Evidence Engine completo (v2) y agrupar picoteo |
 | Hidratación | 🔴 No investigado | Falta una "fase_0" de investigación de agua — no es tarea de ingeniería de producto, es de investigación primero |
 | Alertas | 🟢 Comida: visual + push. Sin cubrir: hidratación, salud del dispositivo | Push de comida no verificado en APK real; hidratación bloqueada por el gap del pilar 2 |
-| Confianza en los datos | 🟡 Buen patrón aislado en `/bowl` | Falta generalizar el "Diagnóstico rápido" a `/today` y `/pet` |
+| Confianza en los datos | 🟢 Generalizado a `/today` y `/pet` (ver Pilar 4 arriba, 2026-08-13) | Falta auditar estados degradados sueltos fuera de `DiagnosticoRapidoCard` |
 
 **La app hoy cumple su promesa de "monitoreo de alimentación" de forma razonable. No cumple
 todavía su promesa de "monitoreo de hidratación" — ahí la brecha es de investigación, no

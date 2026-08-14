@@ -26,6 +26,9 @@
         "-y",
         "@modelcontextprotocol/server-memory"
       ],
+      "env": {
+        "MEMORY_FILE_PATH": "C:/Kittypau/GitHub_KP/kittypau_2026/Knowledge/.mcp_memory.json"
+      },
       "windowsHide": true
     },
     "sequential-thinking": {

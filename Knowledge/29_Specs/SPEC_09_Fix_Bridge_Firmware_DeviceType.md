@@ -34,6 +34,75 @@ related:
 
 ---
 
+## -1. Tareas para ejecutar desde la PC de Mauro (verificado 2026-08-14 desde la PC de Javier)
+
+Una sesión en la PC de Javier **se conectó de verdad por SSH a la Raspberry** (no solo
+ping) y confirmó cosas importantes que cambian cómo ejecutar este spec — leer antes de
+tocar nada:
+
+### ⚠️ Hallazgo mayor: el deploy real NO es `git pull` — es manual
+
+`/home/kittypau/kittypau-bridge` **no tiene `.git`**. No es un clone del repo — es una
+carpeta con `bridge.js` + `processor.js` sueltos, más una serie de backups manuales
+(`bridge.js.bak`, `.bak2`, `.bak3`, `.bak4_pre_dedup_fix_20260723`). Alguien viene editando
+`bridge.js` directo en la Pi (o subiéndolo por `scp`) y guardando una copia `.bak` antes de
+cada cambio — nunca hubo un `git clone` ahí. **Esto invalida el `cd .../kittypau-bridge &&
+git pull && npm install && sudo systemctl restart kittypau-bridge` de §1.1 tal como está
+escrito** — no hay repo del que hacer pull.
+
+**Estado real del código desplegado (diff hecho línea por línea contra `bridge/src/index.js`
+del repo, normalizando line-endings):**
+- El bridge corriendo es **v3.1, no v3.2** — su propio header lo dice. Diferencia real y
+  activa: **sigue escribiendo a la tabla `sensor_readings` en cada `SENSORS`** — la que
+  todos los docs (incluido [[06_BaseDatos/README_BaseDatos]] y
+  [[02_Arquitectura/ARQ_Pipeline_End_to_End]], escritos hoy mismo antes de este hallazgo)
+  asumían "retirada desde v3.2, nadie la lee". Falso para lo que corre en producción hoy.
+- **La línea 355 (el bug de `device_type`, el corazón de este spec) es byte-idéntica entre
+  lo desplegado y el repo** — el fix de §1.1 sigue siendo 100% válido y aplicable, este
+  hallazgo no lo invalida, solo cambia CÓMO se aplica (no hay `git pull`, hay que editar/
+  copiar el archivo directo).
+- `processor.js` desplegado es casi idéntico al del repo — única diferencia real:
+  `todayDateString()` usa `new Date().toISOString().slice(0,10)` (UTC) en vez de
+  `America/Santiago` — bug de bucketing de fecha, menor mientras la DB de analytics siga
+  eliminada (ver [[29_Specs/SPEC_12_Recrear_Analytics_DB]]), pero recordar corregirlo si se
+  recrea esa DB.
+- RAM de la Pi ajustada: 425Mi total, ~80Mi libres, **con swap activo (141Mi en uso)** —
+  confirma que [[29_Specs/SPEC_05_Optimizacion_Tecnica]] tiene razón en preocuparse por el
+  estado en memoria del bridge. `sudo` funciona sin password.
+
+**Recomendación para quien ejecute esto:** antes de aplicar el fix de §1.1, evaluar
+convertir `/home/kittypau/kittypau-bridge` en un clone real de git (`git init` +
+`git remote add origin` + commitear el estado actual como baseline, o clonar limpio y
+migrar el `.env`) — así el próximo fix sí se puede hacer con `git pull`, en vez de repetir
+el patrón manual de `.bak`. Es una mejora de una sola vez, no bloqueante para aplicar el fix
+de §1.1 ahora mismo a mano si hay apuro.
+
+### ✅ SSH ya funciona sin password (hecho 2026-08-14 desde la PC de Javier)
+
+Se generó una key ed25519 (`~/.ssh/kittypau_bridge` en la PC de Javier) y se agregó a
+`~/.ssh/authorized_keys` de la Pi — probado, conecta sin pedir password. La Raspberry
+**es reachable desde la red de Javier también**, no solo la de Mauro (corrección: la nota
+anterior decía "solo alcanzable desde la red de Mauro" — eso es cierto para el firmware
+KPCL0035 por WiFi, NO para la Raspberry, que respondió ping/SSH directo desde acá).
+
+**Para Mauro:** generar tu propia key (`ssh-keygen -t ed25519 -f ~/.ssh/kittypau_bridge`),
+conectarte una vez con la password de `.env.local` de Javier para agregar tu clave pública a
+`~/.ssh/authorized_keys` de la Pi, y de ahí en más ninguna sesión de Claude Code en tu PC
+necesita la password de nuevo.
+
+**IP de OTA para KPCL0035 — confirmada, pero puede volver a cambiar:** el
+`upload_port = 192.168.100.95` de `platformio.ini` está desactualizado. IP real verificada
+contra `devices.wifi_ip` en Supabase el 2026-08-14: **`192.168.0.8`** (red
+`VTR-2736410_2g`, la de la casa de Mauro — KPCL0035 vive físicamente ahí, solo alcanzable
+desde esa red). **No asumir que sigue siendo esa IP** sin re-confirmar contra Supabase el
+mismo día del OTA — ver detalle en §1.2.d.
+
+**Orden sugerido al ejecutar desde la PC de Mauro:** decidir git-real vs. edición manual
+para el bridge (arriba) → aplicar §1.1 → §1.2 (firmware OTA, con la IP re-confirmada) →
+resto del checklist de §7.
+
+---
+
 ## 0. Contexto — no re-investigar, ya está confirmado
 
 [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] encontró que `KPCL0035` (el
@@ -88,10 +157,17 @@ if (data.device_type) {
 }
 ```
 
-Deploy en la Raspberry:
+Deploy en la Raspberry — ⚠️ **no es `git pull`, ver §-1 arriba.** Flujo real (manual, hasta
+que se migre a un clone de git):
 ```bash
-cd /home/kittypau/kittypau-bridge
-git pull && npm install
+# 1. Backup antes de tocar nada (mismo patrón que ya usan los .bak existentes)
+cp /home/kittypau/kittypau-bridge/bridge.js /home/kittypau/kittypau-bridge/bridge.js.bak_$(date +%Y%m%d)
+
+# 2. Copiar el bridge.js actualizado (con el override de arriba aplicado) a la Pi —
+#    por scp desde la máquina que tiene el archivo corregido, o editar directo con nano/vim
+#    por SSH. El archivo destino es bridge.js suelto, NO bridge/src/index.js.
+
+# 3. Reiniciar el servicio
 sudo systemctl restart kittypau-bridge
 ```
 Nota (ya documentada en [[29_Specs/SPEC_05_Optimizacion_Tecnica]]): el restart borra
@@ -119,9 +195,12 @@ b. `platformio.ini`, agregar a `[env:ota_kpcl0035]`:
 
 c. Compilar sin subir primero: `pio run -e ota_kpcl0035` — confirmar que compila limpio.
 
-d. **Verificar la IP antes de flashear** — `upload_port = 192.168.100.95` en el archivo
-   puede estar desactualizada (DHCP). Confirmar contra `devices.wifi_ip` en Supabase o el
-   log del bridge antes de subir a ciegas.
+d. **✅ Confirmado desactualizada (2026-08-14)** — `upload_port = 192.168.100.95` en el
+   archivo es vieja. IP real vía `devices.wifi_ip` (Supabase, `last_seen` de hace minutos al
+   momento de esta consulta): **`192.168.0.8`**, red `VTR-2736410_2g` — subred distinta por
+   completo a la del archivo (`192.168.100.x` → `192.168.0.x`), confirma el cambio por DHCP.
+   **Volver a confirmar la IP justo antes de flashear** — puede haber cambiado de nuevo
+   desde esta fecha, no asumir que sigue siendo `192.168.0.8` sin re-chequear.
 
 e. OTA real: `pio run -e ota_kpcl0035 -t upload`. Confirmar en el próximo `STATUS` que
    `device_type` llega como `"bebedero"`.
@@ -135,6 +214,13 @@ necesite `bebedero`) vuelve a pisar `device_type` sin que el override lo cubra s
 ---
 
 ## 2. P0.5 — Hallazgo nuevo: el analytics processor hereda el mismo bug
+
+> ⚠️ **Actualización 2026-08-14 (sesión siguiente):** antes de auditar cuántas filas de
+> `pet_sessions` están mal etiquetadas (ver checklist más abajo), confirmar que la DB de
+> analytics sigue existiendo — `spfonxnyprjqxcxaqsbe.supabase.co` no resolvía DNS al
+> momento de esa sesión (verificado con dos resolvers). Puede ser que el proyecto haya sido
+> eliminado, en cuyo caso no hay filas que auditar ni corregir — hay que recrear el proyecto
+> primero. Detalle completo en [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2.
 
 **No estaba en el alcance de SPEC_08** porque esa sesión no leyó `bridge/src/processor.js`
 (el override en `kittypau_app` no lo toca — son dos deployables distintos).
@@ -261,6 +347,7 @@ sin un motivo concreto para tocarlo (YAGNI).
 
 ## Ver también
 
+- [[02_Arquitectura/ARQ_Pipeline_End_to_End]] — las 6 capas trazadas end-to-end, incluye el hallazgo de la DB de analytics caída
 - [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] — de donde sale este spec
 - [[29_Specs/SPEC_05_Optimizacion_Tecnica]] — deuda técnica de bridge ya perfilada
 - [[07_MQTT/README_MQTT]] — arquitectura del bridge y payloads MQTT

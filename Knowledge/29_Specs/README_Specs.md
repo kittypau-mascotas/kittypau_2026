@@ -5,7 +5,7 @@ type: spec
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-11
+updated: 2026-08-14
 tags:
   - specs
   - roadmap
@@ -39,7 +39,8 @@ related:
 | [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] | ¿El dispositivo de comida y el de agua están tipificados correctamente en `kittypau_app` (Hunger Bar, `/bowl`, `/today`)? — no: bug real encontrado y corregido, causa raíz en firmware/bridge |
 | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] | Handoff para cerrar la causa raíz de SPEC_08 en bridge/firmware (con acceso real) + hallazgo nuevo (`processor.js` hereda el bug) + mejoras de seguridad y deuda técnica ejecutables ahora |
 | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | ¿Por qué vincular un dispositivo pide tipear un código a ciegas si ya conocemos la lista real de todos los dispositivos (pre-lanzamiento)? — cambiar a elegir de una lista, con hallazgo colateral de riesgo de filas duplicadas en `devices` |
-| [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | ¿Podemos mostrar totales de comida/agua por día/semana/mes en `/today`? — el pipeline ya existe (bridge → `pet_sessions`/`pet_daily_summary`), solo falta un consumidor de UI, fuera del panel "Barras Sims" |
+| [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | ¿Podemos mostrar totales de comida/agua por día/semana/mes en `/today`? — bloqueado por SPEC_12 (la DB de origen fue eliminada) |
+| [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | La DB de analytics fue eliminada a propósito (confirmado por Mauro, consumía mucho storage) — schema exacto + checklist de reconexión + plan de retención, listos para ejecutar cuando se decida |
 
 ## Cómo se relacionan entre sí
 

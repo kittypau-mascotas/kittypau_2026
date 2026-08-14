@@ -5,7 +5,7 @@ type: spec
 status: ejecutado
 owner: Mauro
 created: 2026-08-13
-updated: 2026-08-13
+updated: 2026-08-14
 confirmado_por_mauro:
   - "KPCL0034 = comida, KPCL0035 = agua, ambos de Bandida; KPCL0036 = otra mascota — 2026-08-13"
 tags:
@@ -279,9 +279,16 @@ mismo bug. Queda pendiente, sin ejecutar (decisión de Mauro, no bloqueante):
 2. **KPCL0034 sigue apagado (hardware, no software)** — este spec no lo arregla. Ver
    [[29_Specs/SPEC_07_Investigacion_Hidratacion]] para el diagnóstico de la caída conjunta
    del 23-jul.
-3. **Auditar si hay más mascotas/dispositivos con el mismo problema** — esta sesión solo
-   verificó Bandida (KPCL0034/KPCL0035). No se revisó si KPCL0036 (pasturri) o cualquier
-   otro hogar tiene la misma ambigüedad de firmware.
+3. **✅ Auditado (2026-08-14):** consultada la tabla `devices` completa vía
+   `SUPABASE_SERVICE_ROLE_KEY` (ya disponible en `.env.local`) — **solo 4 dispositivos
+   existen en todo el proyecto**, y **Bandida es la única mascota con más de un
+   dispositivo** (KPCL0034 + KPCL0035, ambos `device_type='comedero'`, el bug ya conocido).
+   Los otros 2 dispositivos (KPCL0036/pasturri, y uno adicional sin `last_seen` de otro
+   pet_id) son el único device de su mascota — sin un segundo device del mismo
+   `device_type` con el que confundirse, no hay ambigüedad posible para ellos hoy. **No hay
+   más mascotas afectadas por este bug ahora mismo** — pero cualquier hogar nuevo que
+   registre 2 dispositivos con firmware mal configurado (mismo síntoma que KPCL0035)
+   reproduciría el mismo problema, ver punto 1.
 
 ---
 

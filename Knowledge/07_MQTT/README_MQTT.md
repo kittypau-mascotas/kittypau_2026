@@ -5,7 +5,7 @@ type: backend
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-08-14
 tags:
   - mqtt
   - hivemq
@@ -144,12 +144,16 @@ Un dispositivo pasa a **Offline** si no hay STATUS en > 3 minutos.
 # Estado
 sudo systemctl status kittypau-bridge
 journalctl -u kittypau-bridge -f
-
-# Actualizar
-cd /home/kittypau/kittypau-bridge
-git pull && npm install
-sudo systemctl restart kittypau-bridge
 ```
+
+> ⚠️ **Corregido 2026-08-14 (confirmado por SSH real, no por suposición):**
+> `/home/kittypau/kittypau-bridge` **no es un `git clone`** — no tiene `.git`. El deploy es
+> manual: alguien edita/copia `bridge.js` directo en la Pi y guarda una copia `.bak` antes
+> (`bridge.js.bak`, `.bak2`, `.bak3`, `.bak4_pre_dedup_fix_20260723`). El comando
+> `git pull && npm install && sudo systemctl restart` que este doc tenía **no funciona ahí**
+> — no hay repo del que hacer pull. Ver
+> [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §-1 para el detalle completo y la
+> recomendación de convertirlo en un clone real.
 
 ### Variables de entorno del bridge
 
@@ -165,22 +169,25 @@ sudo systemctl restart kittypau-bridge
 
 ### Versiones del bridge
 
-| Versión | Cambio principal |
-|---|---|
-| v3.2 | Retira escritura a `sensor_readings` (tabla compat obsoleta) — **versión canónica activa** |
-| v3.1 | Registra `kpcl_prendido`/`kpcl_apagado` en `audit_events` |
-| v3.0 | Integra `processor.js` — sesiones + escritura analytics DB |
-| v2.6 | Schema unificado |
-| v2.4 | Upsert `bridge_heartbeats` y `bridge_status_live` |
-| v2.3 | Publica status de la RPi (KPBR0001) cada 60s via MQTT |
-| v2.2 | Registra cambios de IP en `ip_history` (JSONB) de devices |
-| v2.0 | Mapeo de campos: weight→weight_grams, temp→temperature, hum→humidity |
+| Versión | Cambio principal | ¿Desplegada en la Pi hoy? |
+|---|---|---|
+| v3.2 | Retira escritura a `sensor_readings` (tabla compat obsoleta) — versión canónica **del repo git** | 🔴 No — ver corrección abajo |
+| v3.1 | Registra `kpcl_prendido`/`kpcl_apagado` en `audit_events` | ✅ Sí — esta es la que corre de verdad |
+| v3.0 | Integra `processor.js` — sesiones + escritura analytics DB | ✅ Sí (heredado, sigue en v3.1) |
+| v2.6 | Schema unificado | ✅ Sí |
+| v2.4 | Upsert `bridge_heartbeats` y `bridge_status_live` | ✅ Sí |
+| v2.3 | Publica status de la RPi (KPBR0001) cada 60s via MQTT | ✅ Sí |
+| v2.2 | Registra cambios de IP en `ip_history` (JSONB) de devices | ✅ Sí |
+| v2.0 | Mapeo de campos: weight→weight_grams, temp→temperature, hum→humidity | ✅ Sí |
 
-> ⚠️ **Inconsistencia de versiones en el código** (deuda técnica M1):  
-> El `bridge/package.json` dice `"version": "2.4.0"` — nunca se actualizó.  
-> El `console.log` en `index.js` línea 44 dice `"Kittypau Bridge v3.0"` — está desactualizado.  
-> La versión canónica correcta es **v3.2** (documentada en el encabezado del archivo y en Knowledge).  
-> Impacto: confunde en logs de systemd y diagnóstico remoto en la Raspberry Pi.
+> ⚠️ **Corregido 2026-08-14 — el "Resuelto" anterior estaba mal, comparaba las cosas
+> equivocadas.** La nota vieja decía que `bridge/package.json` (del repo) y el
+> `console.log` de `index.js` (del repo) ya coincidían en "3.2.0" — cierto, pero irrelevante:
+> **el `package.json` real en la Raspberry dice `"1.0.0"`** (nunca actualizado desde
+> 2026-03-04) y el `bridge.js` desplegado se identifica a sí mismo como v3.1 en el header
+> pero v3.0 en el `console.log` — la inconsistencia real está en producción, no en el repo.
+> Confirmado por SSH directo, no por lectura de código solamente. Detalle completo en
+> [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §-1.
 
 ---
 
@@ -201,6 +208,7 @@ sudo systemctl restart kittypau-bridge
 
 ## Ver también
 
+- [[02_Arquitectura/ARQ_Pipeline_End_to_End]] — las 6 capas del sistema trazadas end-to-end (firmware→bridge→DBs→backend→frontend→móvil)
 - [[02_Arquitectura/ADR_001_MQTT_vs_HTTP]] — decisión HiveMQ vs REST
 - [[08_ESP32/README_ESP32]] — firmware que publica los mensajes
 - [[06_BaseDatos/README_BaseDatos]] — tablas donde el bridge escribe
