@@ -34,6 +34,34 @@ related:
 
 ---
 
+## -1. Tareas para ejecutar desde la PC de Mauro (2026-08-14)
+
+> Verificado desde otra máquina el 2026-08-14: el fix de §1.1/§1.2 **sigue sin aplicar** —
+> `bridge/src/index.js`, `config.h` y `platformio.ini` no tienen commits desde que se
+> escribió este spec, y `git log` lo confirma. Sigue siendo la tarea real.
+
+**Credenciales del bridge:** viven en `.env.local` (gitignoreado, nunca en el repo) como
+`BRIDGE_SSH_HOST` / `BRIDGE_SSH_USER` / `BRIDGE_SSH_PASSWORD` / `BRIDGE_SSH_PATH`. Se pasan
+por fuera de git (no por este doc, no por ningún commit) — pedirlas directamente si no las
+tenés ya en tu copia local.
+
+**IP de OTA actualizada para KPCL0035:** la de `platformio.ini` (`192.168.100.95`) no
+respondió al verificar — está desactualizada (DHCP). **IP real, red de Mauro:
+`192.168.0.8`.** Usar esta en `upload_port` de `[env:ota_kpcl0035]` antes de intentar el
+`pio run -e ota_kpcl0035 -t upload` de §1.2.e — no la del archivo.
+
+**Orden sugerido:**
+1. §1.1 — deploy del override en el bridge (por SSH, con las credenciales de arriba).
+2. §1.2 — fix de firmware + OTA a KPCL0035, con la IP `192.168.0.8`.
+3. Resto del checklist (§7), en el orden que ya está.
+
+**Recomendación aparte, no bloqueante:** migrar la auth del bridge de password compartida
+por `.env.local` a SSH key — evita que la credencial tenga que repasarse a mano cada vez
+que alguien nuevo necesita acceso, y reduce la superficie si un `.env.local` se filtra por
+error humano (compartido por el canal equivocado, por ejemplo).
+
+---
+
 ## 0. Contexto — no re-investigar, ya está confirmado
 
 [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] encontró que `KPCL0035` (el
