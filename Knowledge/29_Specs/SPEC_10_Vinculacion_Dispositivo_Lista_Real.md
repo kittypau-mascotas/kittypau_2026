@@ -29,6 +29,46 @@ related:
 > acotada de lo que ya existe en `devices` de Supabase. El paso debe mostrar esa lista,
 > no pedir que se tipee un código a ciegas.
 
+## 🔴 Hallazgo crítico (2026-08-15, sesión siguiente): `devices.owner_id` es NOT NULL sin default — el auto-registro del bridge nunca pudo funcionar
+
+Encontrado probando el flujo en vivo: al intentar insertar un device de prueba sin dueño
+(para probar `GET /api/devices/available` con un resultado real), Postgres lo rechazó:
+
+```
+psycopg2.errors.NotNullViolation: null value in column "owner_id" of relation "devices"
+```
+
+Confirmado contra el schema real y contra la migración original
+(`supabase/migrations/20260208134653_apply_schema_update.sql:67`):
+`owner_id uuid not null references public.profiles(id)` — **sin default, desde el día 1**.
+
+**Esto invalida la premisa central de este spec** (§0 de SPEC_09: "el bridge los
+auto-registra la primera vez que reportan por MQTT... con `owner_id = null`"):
+`bridge/src/index.js` → `ensureDeviceExists()` inserta un device nuevo sin `owner_id` —
+esa escritura **siempre falla** contra la constraint real (capturada por el `catch`,
+logueada como `[SUPABASE] Error auto-registrando`, la fila nunca se crea). No es un bug
+nuevo introducido hoy — está así desde que se escribió esa función.
+
+**Por qué no se había notado:** los 4 devices reales del proyecto (KPCL0002, KPCL0034,
+KPCL0035, KPCL0036) fueron aprovisionados **manualmente en la DB con `owner_id` ya
+seteado** (confirmado también en SPEC_08 §6.3 para KPCL0034/35) — nunca pasaron por el
+camino de auto-registro del bridge, así que el bug jamás se disparó en la práctica hasta
+que se intentó a propósito.
+
+**Consecuencia para este spec:** el trabajo de hoy (`claim_device_for_pet`,
+`GET /api/devices/available`, `<DevicePicker>`) es correcto y está verificado (RPC
+probado en producción, UI probada en vivo) — pero **la lista de "disponibles para
+vincular" no va a tener resultados reales nunca**, mientras el bridge no pueda crear
+devices sin dueño. No se corrige acá — es un cambio de arquitectura real (¿`owner_id`
+pasa a ser nullable? ¿se usa un owner "sistema" placeholder para `factory`?) que necesita
+decisión de Mauro, no un fix de una línea.
+
+**No confundir con [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]** — ese spec ya
+tiene una lista de pendientes del bridge (§-1, "Pendientes en la PC de Javier" en
+[[19_DevOps/PENDIENTES_POR_PC]]); este hallazgo es nuevo, no estaba en esa lista.
+
+---
+
 ## ✅ Ejecutado (2026-08-15)
 
 **§4, verificación previa (resultado real, no el supuesto del spec):**

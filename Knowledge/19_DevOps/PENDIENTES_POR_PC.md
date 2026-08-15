@@ -69,6 +69,7 @@ técnica particular.
 
 | # | Tarea | Spec | Nota |
 |---|---|---|---|
+| 0 | 🔴 **Nuevo (2026-08-15):** `devices.owner_id` NOT NULL sin default rompe el auto-registro del bridge de raíz — `ensureDeviceExists()` nunca pudo crear un device sin dueño. Decidir: ¿`owner_id` pasa a nullable, o se usa un owner "sistema" placeholder para `device_state='factory'`? | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Decisión de arquitectura — bloquea que SPEC_10 tenga resultados reales alguna vez |
 | 1 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
 | 2 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
 
