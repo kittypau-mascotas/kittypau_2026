@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getValidAccessToken } from "@/lib/auth/token";
 import Alert from "@/app/_components/alert";
+import DevicePicker from "@/app/_components/device-picker";
 
 type ApiPet = { id: string; name: string; type?: string | null };
 
@@ -13,8 +14,6 @@ const DEVICE_TYPES = [
   { value: "water_bowl", label: "Plato de agua" },
 ];
 
-const DEVICE_CODE_RE = /^KPCL\d{4}$/;
-
 export default function NuevoDispositivoPage() {
   const router = useRouter();
 
@@ -22,18 +21,13 @@ export default function NuevoDispositivoPage() {
   const [loadingPets, setLoadingPets] = useState(true);
   const [petsError, setPetsError] = useState<string | null>(null);
 
-  const [deviceCode, setDeviceCode] = useState("");
+  const [deviceUuid, setDeviceUuid] = useState("");
   const [deviceType, setDeviceType] = useState<string>("food_bowl");
   const [petId, setPetId] = useState<string>("");
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-  const codeError =
-    deviceCode.length > 0 && !DEVICE_CODE_RE.test(deviceCode)
-      ? "Debe tener el formato KPCL seguido de 4 dígitos (ej: KPCL0051)"
-      : null;
 
   useEffect(() => {
     let mounted = true;
@@ -74,7 +68,7 @@ export default function NuevoDispositivoPage() {
   }, []);
 
   const canSubmit =
-    DEVICE_CODE_RE.test(deviceCode) &&
+    deviceUuid.length > 0 &&
     deviceType.length > 0 &&
     petId.length > 0 &&
     !submitting;
@@ -100,7 +94,7 @@ export default function NuevoDispositivoPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          device_id: deviceCode.toUpperCase(),
+          device_uuid: deviceUuid,
           device_type: deviceType,
           pet_id: petId,
         }),
@@ -167,30 +161,20 @@ export default function NuevoDispositivoPage() {
           Datos del dispositivo
         </h2>
         <p className="mt-1 text-sm text-slate-500">
-          Ingresa el código impreso en tu dispositivo Kittypau (ej: KPCL0051).
+          Elegí el dispositivo de la lista de equipos ya conectados y sin dueño
+          todavía.
         </p>
 
-        <form onSubmit={(e) => void handleSubmit(e)} className="mt-5 grid gap-5">
+        <form
+          onSubmit={(e) => void handleSubmit(e)}
+          className="mt-5 grid gap-5"
+        >
           <label className="text-sm text-slate-600">
-            Código del dispositivo
-            <input
-              className={`mt-2 w-full rounded-[var(--radius)] border px-3 py-2 text-sm uppercase tracking-widest text-slate-800 ${
-                codeError
-                  ? "border-rose-400 bg-rose-50"
-                  : "border-slate-200 bg-white"
-              }`}
-              placeholder="KPCL0000"
-              value={deviceCode}
-              onChange={(e) => setDeviceCode(e.target.value.toUpperCase())}
-              maxLength={8}
-              autoComplete="off"
-              spellCheck={false}
+            Dispositivo
+            <DevicePicker
+              value={deviceUuid}
+              onChange={(id) => setDeviceUuid(id)}
             />
-            {codeError && (
-              <span className="mt-1 block text-xs text-rose-600">
-                {codeError}
-              </span>
-            )}
           </label>
 
           <label className="text-sm text-slate-600">
@@ -261,12 +245,12 @@ export default function NuevoDispositivoPage() {
 
       <section className="surface-card freeform-rise px-6 py-5">
         <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-400">
-          ¿Dónde encuentro el código?
+          ¿No aparece tu dispositivo?
         </h2>
         <p className="mt-2 text-sm text-slate-500">
-          El código está impreso en la etiqueta inferior del dispositivo con el
-          formato <span className="font-mono font-semibold text-slate-700">KPCL0000</span>.
-          Si no lo ves, revisa el empaque original.
+          Solo aparecen acá los dispositivos que ya se conectaron a internet al
+          menos una vez y todavía no tienen dueño. Si el tuyo es nuevo,
+          conectalo primero a tu WiFi.
         </p>
       </section>
     </main>

@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
   }
   let body: {
     pet_id?: string;
-    device_id?: string;
+    device_uuid?: string;
     device_type?: string;
     status?: string;
     battery_level?: number;
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
   const payload = {
     owner_id: user.id,
     pet_id: body?.pet_id ?? null,
-    device_id: body?.device_id,
+    device_uuid: body?.device_uuid,
     device_type: body?.device_type,
     status: body?.status ?? "active",
     battery_level: body?.battery_level ?? null,
@@ -197,21 +197,27 @@ export async function POST(req: NextRequest) {
     return apiError(req, 400, "INVALID_PET_ID", "pet_id must be a string");
   }
 
-  if (!payload.device_id || !payload.device_type || !payload.pet_id) {
+  if (!payload.device_uuid || !payload.device_type || !payload.pet_id) {
     return apiError(
       req,
       400,
       "MISSING_FIELDS",
-      "device_id, device_type, and pet_id are required",
+      "device_uuid, device_type, and pet_id are required",
     );
   }
 
-  if (!/^KPCL\d{4}$/.test(payload.device_id)) {
+  // SPEC_10: se vincula un device que ya existe (elegido de una lista), no
+  // se tipea un código a ciegas — validamos formato UUID, no KPCL0000.
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      payload.device_uuid,
+    )
+  ) {
     return apiError(
       req,
       400,
-      "INVALID_DEVICE_CODE",
-      "device_id must match KPCL0000 format",
+      "INVALID_DEVICE_UUID",
+      "device_uuid must be a valid UUID",
     );
   }
 
@@ -251,10 +257,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { data, error } = await supabaseServer.rpc("link_device_to_pet", {
+  const { data, error } = await supabaseServer.rpc("claim_device_for_pet", {
     p_owner_id: user.id,
     p_pet_id: payload.pet_id,
-    p_device_id: payload.device_id,
+    p_device_uuid: payload.device_uuid,
     p_device_type: payload.device_type,
     p_status: payload.status,
     p_battery_level: payload.battery_level,
@@ -269,54 +275,12 @@ export async function POST(req: NextRequest) {
     if (lower.includes("forbidden")) {
       return apiError(req, 403, "FORBIDDEN", "Forbidden");
     }
-    if (lower.includes("idx_devices_active_per_pet")) {
-      await supabaseServer
-        .from("devices")
-        .update({ status: "inactive" })
-        .eq("pet_id", payload.pet_id)
-        .eq("status", "active");
-
-      const retry = await supabaseServer.rpc("link_device_to_pet", {
-        p_owner_id: user.id,
-        p_pet_id: payload.pet_id,
-        p_device_id: payload.device_id,
-        p_device_type: payload.device_type,
-        p_status: payload.status,
-        p_battery_level: payload.battery_level,
-      });
-
-      if (retry.error || !retry.data) {
-        return apiError(
-          req,
-          500,
-          "SUPABASE_ERROR",
-          retry.error?.message ?? "RPC failed",
-        );
-      }
-
-      await logAudit({
-        event_type: "device_created",
-        actor_id: user.id,
-        entity_type: "device",
-        entity_id: retry.data.id,
-        payload: { device_id: retry.data.device_id, pet_id: retry.data.pet_id },
-      });
-
-      if (payload.plate_weight_grams !== null) {
-        await supabase
-          .from("devices")
-          .update({ plate_weight_grams: payload.plate_weight_grams })
-          .eq("id", retry.data.id)
-          .eq("owner_id", user.id);
-      }
-
-      logRequestEnd(req, startedAt, 201, { device_id: retry.data.id });
-      return NextResponse.json(
-        {
-          ...retry.data,
-          plate_weight_grams: payload.plate_weight_grams,
-        },
-        { status: 201 },
+    if (lower.includes("device not available")) {
+      return apiError(
+        req,
+        409,
+        "DEVICE_NOT_AVAILABLE",
+        "Este dispositivo ya fue vinculado por otra cuenta",
       );
     }
     return apiError(req, 500, "SUPABASE_ERROR", message);

@@ -10,6 +10,7 @@ import {
   setTokens,
 } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import DevicePicker from "@/app/_components/device-picker";
 
 type RegistroStatus = {
   userStep: string | null;
@@ -118,7 +119,11 @@ const PROVINCIA_SANTIAGO: Comuna[] = [
   { value: "cerro_navia", label: "Cerro Navia", provincia: "Santiago" },
   { value: "conchali", label: "Conchalí", provincia: "Santiago" },
   { value: "el_bosque", label: "El Bosque", provincia: "Santiago" },
-  { value: "estacion_central", label: "Estación Central", provincia: "Santiago" },
+  {
+    value: "estacion_central",
+    label: "Estación Central",
+    provincia: "Santiago",
+  },
   { value: "huechuraba", label: "Huechuraba", provincia: "Santiago" },
   { value: "independencia", label: "Independencia", provincia: "Santiago" },
   { value: "la_cisterna", label: "La Cisterna", provincia: "Santiago" },
@@ -207,7 +212,8 @@ export default function RegistroFlow({
 
   const [deviceForm, setDeviceForm] = useState({
     pet_id: "",
-    device_id: "",
+    device_uuid: "",
+    device_id: "", // solo display (código legible del device elegido, ver DevicePicker)
     device_type: "food_bowl" as "food_bowl" | "water_bowl",
     plate_weight_grams: "",
   });
@@ -261,10 +267,8 @@ export default function RegistroFlow({
   const deviceValidation = useMemo(() => {
     const issues: string[] = [];
     if (!deviceForm.pet_id) issues.push("Selecciona una mascota.");
-    if (!deviceForm.device_id.trim()) {
-      issues.push("Código de dispositivo requerido.");
-    } else if (!/^KPCL\d{4}$/.test(deviceForm.device_id.trim())) {
-      issues.push("Código debe ser KPCL0000.");
+    if (!deviceForm.device_uuid) {
+      issues.push("Selecciona un dispositivo de la lista.");
     }
     if (!deviceForm.device_type.trim())
       issues.push("Tipo de dispositivo requerido.");
@@ -705,7 +709,9 @@ export default function RegistroFlow({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...deviceForm,
+          pet_id: deviceForm.pet_id,
+          device_uuid: deviceForm.device_uuid,
+          device_type: deviceForm.device_type,
           plate_weight_grams: Number(deviceForm.plate_weight_grams),
           status: "active",
         }),
@@ -1333,7 +1339,8 @@ export default function RegistroFlow({
               </span>
             </div>
             <p className="mt-3 text-xs text-slate-500">
-              Usa el código KPCL0000 impreso en el plato.
+              Elegí el dispositivo de la lista de equipos ya conectados y sin
+              dueño todavía.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <FieldCard
@@ -1366,31 +1373,26 @@ export default function RegistroFlow({
               </FieldCard>
 
               <FieldCard
-                label="Código"
-                tooltip="Formato esperado: KPCL0000."
+                label="Dispositivo"
+                tooltip="Dispositivos ya conectados a internet, sin dueño todavía."
                 required
-                help="Formato esperado: KPCL0000."
+                help="Dispositivos ya conectados a internet, sin dueño todavía."
                 error={
-                  showDeviceHints &&
-                  (!deviceForm.device_id.trim() ||
-                    !/^KPCL\d{4}$/.test(deviceForm.device_id.trim()))
-                    ? "Ingresa un código válido KPCL0000."
+                  showDeviceHints && !deviceForm.device_uuid
+                    ? "Selecciona un dispositivo de la lista."
                     : null
                 }
               >
-                <input
-                  className={inputClass(
-                    !deviceForm.device_id.trim() ||
-                      !/^KPCL\d{4}$/.test(deviceForm.device_id.trim()),
-                  )}
-                  placeholder="Código KPCL0000"
-                  value={deviceForm.device_id}
-                  onChange={(event) =>
+                <DevicePicker
+                  value={deviceForm.device_uuid}
+                  onChange={(id, device) =>
                     setDeviceForm((prev) => ({
                       ...prev,
-                      device_id: event.target.value.toUpperCase(),
+                      device_uuid: id,
+                      device_id: device?.device_id ?? "",
                     }))
                   }
+                  className={inputClass(!deviceForm.device_uuid)}
                 />
               </FieldCard>
 

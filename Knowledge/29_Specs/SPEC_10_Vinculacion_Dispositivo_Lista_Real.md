@@ -2,10 +2,10 @@
 id: spec_10_vinculacion_dispositivo_lista_real
 title: SPEC 10 — Vincular dispositivo eligiendo de la lista real (Supabase), no tipeando un código
 type: spec
-status: draft
+status: ejecutado
 owner: Mauro
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-08-15
 tags:
   - spec
   - registro
@@ -28,6 +28,45 @@ related:
 > nuevos**, la lista de dispositivos no es infinita ni desconocida — es la lista real y
 > acotada de lo que ya existe en `devices` de Supabase. El paso debe mostrar esa lista,
 > no pedir que se tipee un código a ciegas.
+
+## ✅ Ejecutado (2026-08-15)
+
+**§4, verificación previa (resultado real, no el supuesto del spec):**
+- `device_id` **sí** tiene constraint único (`devices_device_code_key`) — sobrevivió el
+  rename desde `device_code`. El riesgo real de §1 era "insert falla con error genérico
+  de Postgres", no "fila duplicada silenciosa". Confirmado sin duplicados existentes.
+- **Los 4 dispositivos reales tienen `owner_id` asignado hoy** — la lista "disponibles
+  para vincular" sale vacía ahora mismo. Ya estaba previsto (§2.2, mensaje explícito) —
+  no bloquea el build, pero no se pudo probar el flujo de punta a punta con un device
+  real libre en esta sesión, solo el guard de error (UUID inexistente → "Device not
+  available", verificado contra producción).
+- **Hallazgo nuevo, no estaba en el spec original:** un 3er lugar con el mismo patrón
+  de input libre — `bowl/page.tsx` → "Agregar dispositivo" (`handleAddDevice`). Mismo
+  backend (`POST /api/devices`), así que el fix de backend ya lo cubre; se agregó a la UI
+  también.
+
+**Backend:**
+- `claim_device_for_pet` (nueva función SQL, `supabase/migrations/20260815160047_...sql`)
+  — `UPDATE ... WHERE id = p_device_uuid AND owner_id IS NULL`, mismo guard anti-carrera
+  que proponía §2.3. No se tocó `link_device_to_pet` (queda sin consumidores nuevos, no
+  se borró — sin motivo concreto para tocarla).
+- `GET /api/devices/available` — lista `id, device_id, device_type, device_state,
+  last_seen` con `owner_id is null`, auth de cualquier usuario logueado (no solo admin).
+- `POST /api/devices` — migrado de `device_id` (texto, INSERT) a `device_uuid` (UUID,
+  vía `claim_device_for_pet`). Se sacó la rama de retry sobre
+  `idx_devices_active_per_pet` — ese índice se dropeó en abril
+  (`20260407220000_allow_two_active_devices_per_pet.sql`), la rama era código muerto.
+
+**Frontend:**
+- `app/_components/device-picker.tsx` — `<select>` compartido, reusa
+  `DEVICE_ONLINE_THRESHOLD_MS` de `lib/device-diagnostics.ts` (no se inventó un umbral
+  nuevo), indicador 🟢🔴⚫ como texto en cada `<option>` (un `<select>` nativo no puede
+  renderizar HTML de color dentro de `<option>`).
+- Los 3 lugares (`registro-flow.tsx` paso 3, `dispositivos/nuevo/page.tsx`,
+  `bowl/page.tsx`) reemplazaron su `<input>` de código por `<DevicePicker>`.
+
+**Verificado:** `tsc --noEmit`, `eslint`, `next build` limpios. RPC probado en vivo contra
+producción con un UUID inexistente — confirma el mensaje de error correcto.
 
 ---
 

@@ -70,8 +70,7 @@ técnica particular.
 | # | Tarea | Spec | Nota |
 |---|---|---|---|
 | 1 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
-| 2 | `SPEC_10` — reemplazar el input de texto libre por un `<select>` de dispositivos reales al vincular | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Código puro en `kittypau_app` |
-| 3 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
+| 2 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
 
 ---
 
@@ -79,6 +78,7 @@ técnica particular.
 
 | Fecha | Qué | Quién | Spec |
 |---|---|---|---|
+| 2026-08-15 | `SPEC_10` — vincular dispositivo por lista real: `claim_device_for_pet` (RPC nueva, UPDATE por UUID), `GET /api/devices/available`, `<DevicePicker>` compartido en los 3 lugares con el patrón (registro-flow.tsx, dispositivos/nuevo/page.tsx, y `bowl/page.tsx` — hallazgo nuevo, no estaba en el spec original) | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] |
 | 2026-08-15 | `SPEC_01 E2` — `admin_roles`: `javomauro.contacto@gmail.com` (cuenta nueva) es `owner_admin` activo; `javier.dayne@gmail.com` desactivado (no borrado) a pedido de Mauro. 2 migraciones nuevas versionadas | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
 | 2026-08-15 | `SPEC_01 E8` — `device_bowl_sessions` recreada con el schema correcto (`DROP`+reaplicar migración completa, tabla tenía 0 filas); tabla de anomalías, 2 funciones y la vista que nunca se habían creado ya existen | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
 | 2026-08-15 | `/admin` batch 3/N — `tests-admin-card.tsx` extraído ("Suite de Tests Admin"), `page.tsx` 3555→3291 líneas. `tsc`/`eslint`/`build` limpios | PC de Mauro | [[29_Specs/SPEC_02_UIUX_Mejoras]] |

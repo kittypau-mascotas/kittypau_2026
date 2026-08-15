@@ -14,6 +14,7 @@ import AccessibleModal from "@/app/_components/accessible-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import PageLoadingSkeleton from "@/app/_components/page-loading-skeleton";
 import OnboardingTip from "@/app/_components/onboarding-tip";
+import DevicePicker from "@/app/_components/device-picker";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import { buildSeries, ChartCard } from "@/lib/charts";
 import { parseListResponse, resolveDevicePowerState } from "@/lib/utils/api";
@@ -205,7 +206,7 @@ export default function BowlPage() {
     null,
   );
   const [showAddDevice, setShowAddDevice] = useState(false);
-  const [addDeviceCode, setAddDeviceCode] = useState("");
+  const [addDeviceUuid, setAddDeviceUuid] = useState("");
   const [addDevicePetId, setAddDevicePetId] = useState("");
   const [addDeviceType, setAddDeviceType] = useState<
     "food_bowl" | "water_bowl"
@@ -740,7 +741,7 @@ export default function BowlPage() {
   };
 
   const handleOpenAddDevice = async () => {
-    setAddDeviceCode("");
+    setAddDeviceUuid("");
     setAddDeviceType("water_bowl");
     setAddDeviceStatus(null);
     setAddDeviceError(null);
@@ -763,7 +764,7 @@ export default function BowlPage() {
   };
 
   const handleAddDevice = async () => {
-    if (!addDeviceCode.trim() || !addDevicePetId || isAddingDevice) return;
+    if (!addDeviceUuid || !addDevicePetId || isAddingDevice) return;
     setIsAddingDevice(true);
     setAddDeviceStatus(null);
     setAddDeviceError(null);
@@ -777,7 +778,7 @@ export default function BowlPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          device_id: addDeviceCode.trim().toUpperCase(),
+          device_uuid: addDeviceUuid,
           pet_id: addDevicePetId,
           device_type: addDeviceType,
           status: "active",
@@ -1684,15 +1685,12 @@ export default function BowlPage() {
 
             <div className="mb-3">
               <label className="mb-1 block text-xs font-medium text-slate-600">
-                Código del dispositivo
+                Dispositivo
               </label>
-              <input
-                type="text"
-                value={addDeviceCode}
-                onChange={(e) => setAddDeviceCode(e.target.value.toUpperCase())}
-                placeholder="KPCL0000"
-                autoCapitalize="characters"
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-300 focus:border-violet-400 focus:outline-none"
+              <DevicePicker
+                value={addDeviceUuid}
+                onChange={(id) => setAddDeviceUuid(id)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-violet-400 focus:outline-none"
               />
             </div>
 
@@ -1738,9 +1736,7 @@ export default function BowlPage() {
             <button
               type="button"
               onClick={() => void handleAddDevice()}
-              disabled={
-                isAddingDevice || !addDeviceCode.trim() || !addDevicePetId
-              }
+              disabled={isAddingDevice || !addDeviceUuid || !addDevicePetId}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
             >
               {isAddingDevice ? (
