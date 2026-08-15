@@ -2529,14 +2529,16 @@ body {
   }
 }
 
-/* Escritorio ancho pero bajo (zoom/DPI alto, laptop chico) — el layout
-   lg:flex-row ya no necesita apilarse, pero el formulario (inputs, botón)
-   no puede achicarse más allá de un tamaño usable. Primero se achica lo
-   decorativo con clamp(); si la altura sigue sin alcanzar, se oculta la
-   columna de ilustración — mismo criterio que la app ya aplica en el
-   breakpoint <640px de ancho (ver arriba). overflow-y:auto de .login-bg
-   queda como red de seguridad, no como mecanismo principal. */
-@media (min-width: 1024px) and (max-height: 780px) {
+/* Escritorio ancho pero MUY bajo (zoom/DPI alto, ventana chica a propósito) —
+   ojo, NO usar un umbral parecido al alto típico de un notebook (768px con
+   toolbar/marcadores deja ~650-700px de ventana real, eso debe verse
+   completo): estos dos breakpoints solo deben tocar casos genuinamente
+   angostos, no el uso normal de la mayoría de las laptops. Primero se
+   achica lo decorativo con clamp(); si la altura sigue sin alcanzar, se
+   oculta la columna de ilustración — mismo criterio que la app ya aplica
+   en el breakpoint <640px de ancho (ver arriba). overflow-y:auto de
+   .login-bg queda como red de seguridad, no como mecanismo principal. */
+@media (min-width: 1024px) and (max-height: 640px) {
   .login-bg .relative.mx-auto {
     gap: clamp(8px, 2dvh, 24px);
     padding-block: clamp(4px, 1dvh, 16px);
@@ -2568,7 +2570,7 @@ body {
 /* Umbral más bajo aún: ni achicando lo decorativo entra el formulario
    completo. Se oculta la ilustración (igual que <640px de ancho) y la
    card de login queda centrada sola. */
-@media (min-width: 1024px) and (max-height: 700px) {
+@media (min-width: 1024px) and (max-height: 560px) {
   .login-hero-column {
     display: none;
   }
