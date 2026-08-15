@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-08-15
 tags:
   - devops
   - colaboracion
@@ -69,11 +69,9 @@ técnica particular.
 
 | # | Tarea | Spec | Nota |
 |---|---|---|---|
-| 1 | `SPEC_01 E2` — insertar la fila en `admin_roles` para `javier.dayne@gmail.com` (fix ya identificado, migración lista) | [[29_Specs/SPEC_01_Errores_Prioritarios]] | Decisión — escribe en DB de producción |
-| 2 | `SPEC_01 E8` — decidir `ALTER TABLE` vs `DROP`+recrear `device_bowl_sessions` (schema roto, 0 filas, bajo impacto) | [[29_Specs/SPEC_01_Errores_Prioritarios]] | Decisión + ejecución |
-| 3 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
-| 4 | `SPEC_10` — reemplazar el input de texto libre por un `<select>` de dispositivos reales al vincular | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Código puro en `kittypau_app` |
-| 5 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #3 (`SPEC_12`) |
+| 1 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
+| 2 | `SPEC_10` — reemplazar el input de texto libre por un `<select>` de dispositivos reales al vincular | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Código puro en `kittypau_app` |
+| 3 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
 
 ---
 
@@ -81,6 +79,9 @@ técnica particular.
 
 | Fecha | Qué | Quién | Spec |
 |---|---|---|---|
+| 2026-08-15 | `SPEC_01 E2` — `admin_roles`: `javomauro.contacto@gmail.com` (cuenta nueva) es `owner_admin` activo; `javier.dayne@gmail.com` desactivado (no borrado) a pedido de Mauro. 2 migraciones nuevas versionadas | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
+| 2026-08-15 | `SPEC_01 E8` — `device_bowl_sessions` recreada con el schema correcto (`DROP`+reaplicar migración completa, tabla tenía 0 filas); tabla de anomalías, 2 funciones y la vista que nunca se habían creado ya existen | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
+| 2026-08-15 | `/admin` batch 3/N — `tests-admin-card.tsx` extraído ("Suite de Tests Admin"), `page.tsx` 3555→3291 líneas. `tsc`/`eslint`/`build` limpios | PC de Mauro | [[29_Specs/SPEC_02_UIUX_Mejoras]] |
 | 2026-08-14 | `SPEC_09 §1.1` — override de `device_type` deployado y verificado en el bridge de producción (backup, syntax check, restart, confirmado 2 veces contra Supabase) | PC de Javier, autorizado por Javier | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] |
 | 2026-08-14 | SSH por key configurado y funcional en ambas PCs a la Raspberry del bridge | Javier + Mauro | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] §-1 |
 | 2026-08-14 | Identidad de las 2 PCs confirmada en `00_HOME.md` (git identity, ruta, redes conocidas) | Javier + Mauro | [[00_HOME]] |

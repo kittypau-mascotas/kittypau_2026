@@ -54,6 +54,7 @@ está conectada la sesión en ese momento**, no es fijo. Tabla de lo confirmado 
 |---|---|---|---|
 | `Suarez_Mujica_891_5G` | `192.168.100.x` | Raspberry del bridge (`192.168.100.119`) — SSH confirmado, `hostname`/`uname -a` verificados | 2026-08-14 (PC de Mauro, en casa de Javier) |
 | `VTR-2736410_2g` | `192.168.0.x` | KPCL0035 (`192.168.0.8`) — IP confirmada contra `devices.wifi_ip` en Supabase | 2026-08-14 (documentado como "red de Mauro" en [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]) |
+| `Dhaka 5G` | `192.168.100.x` (IP local `.127`) | **Confirmado sin alcance a la Raspberry** — `192.168.100.119` no responde ping (re-verificado 2026-08-15). Tampoco se ven `Suarez_Mujica_891_5G` ni `VTR-2736410_2g` como redes visibles desde acá — no es un problema de contraseña, la ubicación física no tiene ruta a ninguna de las dos. Mismo rango `192.168.100.x` que `Suarez_Mujica_891_5G` pero **no es la misma red física** (rango privado común, no implica alcance compartido). Nota (corregida tras `git pull` de esta misma sesión): SPEC_09 §1.1 (fix del bridge) **ya no depende de esta red** — se cerró desde la PC de Javier el 2026-08-14 (`a6466e0`). Solo **§1.2 (OTA de firmware a KPCL0035)** sigue requiriendo la red de Mauro/Javier, no esta ubicación | 2026-08-14, re-confirmado 2026-08-15 (PC de Mauro) |
 
 > `Suarez_Mujica_891`/`SuarezMujica891` está además hardcodeada como red de fallback en el
 > firmware (`wifi_manager.cpp`) — no es coincidencia, es la red donde vive físicamente al

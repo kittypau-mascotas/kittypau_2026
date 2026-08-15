@@ -97,6 +97,14 @@ reemplaza verlo renderizado — priorizar resolver E2 sigue pendiente.
 Mismo **no verificado visualmente** que el batch 1 (bloqueado por E2) — type-check, lint y
 build limpios sí lo cubren.
 
+**Hecho — batch 3/N (2026-08-15):** 3555 → 3291 líneas.
+- `admin/_components/tests-admin-card.tsx` — "Suite de Tests Admin" completa: catálogo
+  (`ADMIN_TEST_CATALOG`, se movió acá, ya no vive en `page.tsx`), botón de ejecución,
+  tabla de última corrida, historial persistido. `testsSectionStatus`/`runAllAdminTests`
+  siguen en `page.tsx` como props (mismo patrón que los batches anteriores).
+
+Validado: `tsc --noEmit`, `eslint`, `next build` — los 3 limpios.
+
 **Pendiente — secciones que siguen inline en `page.tsx`, en el orden en que aparecen**
 (el comentario-mapa al inicio del archivo tiene el detalle actualizado a cada commit):
 
@@ -110,13 +118,11 @@ build limpios sí lo cubren.
    del archivo, ~160 líneas). Candidato a extraer el SVG completo con `continuityChart` ya
    calculado como única prop.
 4. "Tablas y Vistas (Uso Aproximado)" — no leída todavía en detalle.
-5. "Suite de Tests Admin" — usa `testsSectionStatus`, `runAllAdminTests` (ya es una
-   función standalone, no inline).
-6. "Resumen de incidentes (24h)", "Panel de acciones", "Audit events en línea" — no
+5. "Resumen de incidentes (24h)", "Panel de acciones", "Audit events en línea" — no
    leídas todavía en detalle (después de la línea ~2500 del archivo original).
 
-**Próximo paso sugerido:** batch 3 = punto 5 (Suite de Tests Admin), parece la más acotada
-que queda — dejar Finanzas (punto 2) y Continuidad (punto 3) para el final por ser las de
+**Próximo paso sugerido:** de las que quedan, "Tablas y Vistas" (punto 4) parece la más
+acotada — dejar Finanzas (punto 2) y Continuidad (punto 3) para el final por ser las de
 mayor cuidado.
 
 ---
