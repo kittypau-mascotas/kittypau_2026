@@ -219,7 +219,6 @@ export default function RegistroFlow({
     has_health_condition: "" as "" | "true" | "false",
     health_notes: "",
   });
-  const [showPetDetails, setShowPetDetails] = useState(false);
 
   const [deviceForm, setDeviceForm] = useState({
     pet_id: "",
@@ -272,6 +271,26 @@ export default function RegistroFlow({
     const issues: string[] = [];
     if (!petForm.name.trim()) issues.push("Nombre de mascota requerido.");
     if (!petForm.type.trim()) issues.push("Tipo de mascota requerido.");
+    const weight = Number(petForm.weight_kg);
+    if (!petForm.weight_kg.trim()) {
+      issues.push("Peso requerido.");
+    } else if (!Number.isFinite(weight) || weight <= 0 || weight > 50) {
+      issues.push("Peso debe estar entre 0 y 50 kg.");
+    }
+    if (!petForm.size) issues.push("Tamaño requerido.");
+    if (!petForm.age_range) issues.push("Edad requerida.");
+    if (!petForm.is_neutered) issues.push("Indica si está esterilizado/a.");
+    if (!petForm.has_neuter_tattoo)
+      issues.push("Indica si tiene tatuaje de esterilización.");
+    if (!petForm.has_microchip) issues.push("Indica si tiene microchip.");
+    if (!petForm.has_health_condition) {
+      issues.push("Indica si tiene alguna condición de salud.");
+    } else if (
+      petForm.has_health_condition === "true" &&
+      !petForm.health_notes.trim()
+    ) {
+      issues.push("Describe la condición de salud.");
+    }
     return { ok: issues.length === 0, issues };
   }, [petForm]);
 
@@ -1160,7 +1179,9 @@ export default function RegistroFlow({
               </span>
             </div>
             <p className="mt-3 text-xs text-slate-500">
-              Necesitamos nombre y tipo para personalizar las historias.
+              Completa el perfil completo de tu mascota — nos ayuda a
+              personalizar las historias y a entender mejor su alimentación e
+              hidratación.
             </p>
             <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
               <div className="flex flex-wrap items-center gap-4">
@@ -1323,180 +1344,240 @@ export default function RegistroFlow({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setShowPetDetails((prev) => !prev)}
-              className="mt-4 text-xs font-semibold text-primary underline underline-offset-2"
-            >
-              {showPetDetails
-                ? "Ocultar detalles adicionales"
-                : "+ Agregar más detalles (opcional)"}
-            </button>
-
-            {showPetDetails && (
-              <div className="mt-3 grid gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Físico
-                  </p>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-3">
-                    <FieldCard
-                      label="Peso (kg)"
-                      tooltip="Ayuda a calibrar porciones normales."
+            <div className="mt-4 grid gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Físico
+                </p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                  <FieldCard
+                    label="Peso (kg)"
+                    tooltip="Ayuda a calibrar porciones normales."
+                    required
+                    error={
+                      showPetHints && !petForm.weight_kg.trim()
+                        ? "Ingresa el peso."
+                        : null
+                    }
+                  >
+                    <input
+                      type="number"
+                      min={0}
+                      max={50}
+                      step="0.1"
+                      className={inputClass(!petForm.weight_kg.trim())}
+                      placeholder="Ej: 4.5"
+                      value={petForm.weight_kg}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          weight_kg: event.target.value,
+                        }))
+                      }
+                    />
+                  </FieldCard>
+                  <FieldCard
+                    label="Tamaño"
+                    required
+                    error={
+                      showPetHints && !petForm.size
+                        ? "Selecciona el tamaño."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.size)}
+                      value={petForm.size}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          size: event.target.value,
+                        }))
+                      }
                     >
-                      <input
-                        type="number"
-                        min={0}
-                        max={50}
-                        step="0.1"
-                        className={inputClass(false)}
-                        placeholder="Ej: 4.5"
-                        value={petForm.weight_kg}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            weight_kg: event.target.value,
-                          }))
-                        }
-                      />
-                    </FieldCard>
-                    <FieldCard label="Tamaño">
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.size}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            size: event.target.value,
-                          }))
-                        }
-                      >
-                        <option value="">Sin especificar</option>
-                        <option value="pequeno">Pequeño</option>
-                        <option value="mediano">Mediano</option>
-                        <option value="grande">Grande</option>
-                        <option value="gigante">Gigante</option>
-                      </select>
-                    </FieldCard>
-                    <FieldCard label="Edad">
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.age_range}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            age_range: event.target.value,
-                          }))
-                        }
-                      >
-                        <option value="">Sin especificar</option>
-                        <option value="cachorro">Cachorro</option>
-                        <option value="adulto">Adulto</option>
-                        <option value="senior">Senior</option>
-                      </select>
-                    </FieldCard>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    Salud
-                  </p>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-3">
-                    <FieldCard label="¿Esterilizado/a?">
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.is_neutered}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            is_neutered: event.target
-                              .value as typeof prev.is_neutered,
-                          }))
-                        }
-                      >
-                        <option value="">No sé / prefiero no decir</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                      </select>
-                    </FieldCard>
-                    <FieldCard label="¿Tatuaje de esterilización?">
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.has_neuter_tattoo}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            has_neuter_tattoo: event.target
-                              .value as typeof prev.has_neuter_tattoo,
-                          }))
-                        }
-                      >
-                        <option value="">No sé / prefiero no decir</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                      </select>
-                    </FieldCard>
-                    <FieldCard label="¿Tiene microchip?">
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.has_microchip}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            has_microchip: event.target
-                              .value as typeof prev.has_microchip,
-                          }))
-                        }
-                      >
-                        <option value="">No sé / prefiero no decir</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                      </select>
-                    </FieldCard>
-                  </div>
-                  <div className="mt-3">
-                    <FieldCard
-                      label="¿Tiene alguna condición de salud?"
-                      tooltip="Ej: alergias, enfermedad crónica, dieta especial."
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="pequeno">Pequeño</option>
+                      <option value="mediano">Mediano</option>
+                      <option value="grande">Grande</option>
+                      <option value="gigante">Gigante</option>
+                    </select>
+                  </FieldCard>
+                  <FieldCard
+                    label="Edad"
+                    required
+                    error={
+                      showPetHints && !petForm.age_range
+                        ? "Selecciona la edad."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.age_range)}
+                      value={petForm.age_range}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          age_range: event.target.value,
+                        }))
+                      }
                     >
-                      <select
-                        className={inputClass(false)}
-                        value={petForm.has_health_condition}
-                        onChange={(event) =>
-                          setPetForm((prev) => ({
-                            ...prev,
-                            has_health_condition: event.target
-                              .value as typeof prev.has_health_condition,
-                          }))
-                        }
-                      >
-                        <option value="">No sé / prefiero no decir</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                      </select>
-                    </FieldCard>
-                    {petForm.has_health_condition === "true" ? (
-                      <div className="mt-3">
-                        <FieldCard label="Detalle de la condición">
-                          <textarea
-                            className="min-h-[80px] w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                            placeholder="Ej: alergia alimentaria, requiere dieta baja en sodio..."
-                            value={petForm.health_notes}
-                            onChange={(event) =>
-                              setPetForm((prev) => ({
-                                ...prev,
-                                health_notes: event.target.value,
-                              }))
-                            }
-                          />
-                        </FieldCard>
-                      </div>
-                    ) : null}
-                  </div>
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="cachorro">Cachorro</option>
+                      <option value="adulto">Adulto</option>
+                      <option value="senior">Senior</option>
+                    </select>
+                  </FieldCard>
                 </div>
               </div>
-            )}
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Salud
+                </p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                  <FieldCard
+                    label="¿Esterilizado/a?"
+                    required
+                    error={
+                      showPetHints && !petForm.is_neutered
+                        ? "Selecciona una opción."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.is_neutered)}
+                      value={petForm.is_neutered}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          is_neutered: event.target
+                            .value as typeof prev.is_neutered,
+                        }))
+                      }
+                    >
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="true">Sí</option>
+                      <option value="false">No</option>
+                    </select>
+                  </FieldCard>
+                  <FieldCard
+                    label="¿Tatuaje de esterilización?"
+                    required
+                    error={
+                      showPetHints && !petForm.has_neuter_tattoo
+                        ? "Selecciona una opción."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.has_neuter_tattoo)}
+                      value={petForm.has_neuter_tattoo}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          has_neuter_tattoo: event.target
+                            .value as typeof prev.has_neuter_tattoo,
+                        }))
+                      }
+                    >
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="true">Sí</option>
+                      <option value="false">No</option>
+                    </select>
+                  </FieldCard>
+                  <FieldCard
+                    label="¿Tiene microchip?"
+                    required
+                    error={
+                      showPetHints && !petForm.has_microchip
+                        ? "Selecciona una opción."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.has_microchip)}
+                      value={petForm.has_microchip}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          has_microchip: event.target
+                            .value as typeof prev.has_microchip,
+                        }))
+                      }
+                    >
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="true">Sí</option>
+                      <option value="false">No</option>
+                    </select>
+                  </FieldCard>
+                </div>
+                <div className="mt-3">
+                  <FieldCard
+                    label="¿Tiene alguna condición de salud?"
+                    tooltip="Ej: alergias, enfermedad crónica, dieta especial."
+                    required
+                    error={
+                      showPetHints && !petForm.has_health_condition
+                        ? "Selecciona una opción."
+                        : null
+                    }
+                  >
+                    <select
+                      className={inputClass(!petForm.has_health_condition)}
+                      value={petForm.has_health_condition}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          has_health_condition: event.target
+                            .value as typeof prev.has_health_condition,
+                        }))
+                      }
+                    >
+                      <option value="" disabled>
+                        Selecciona
+                      </option>
+                      <option value="true">Sí</option>
+                      <option value="false">No</option>
+                    </select>
+                  </FieldCard>
+                  {petForm.has_health_condition === "true" ? (
+                    <div className="mt-3">
+                      <FieldCard
+                        label="Detalle de la condición"
+                        required
+                        error={
+                          showPetHints && !petForm.health_notes.trim()
+                            ? "Describe la condición."
+                            : null
+                        }
+                      >
+                        <textarea
+                          className="min-h-[80px] w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                          placeholder="Ej: alergia alimentaria, requiere dieta baja en sodio..."
+                          value={petForm.health_notes}
+                          onChange={(event) =>
+                            setPetForm((prev) => ({
+                              ...prev,
+                              health_notes: event.target.value,
+                            }))
+                          }
+                        />
+                      </FieldCard>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
 
             <button
               type="button"
