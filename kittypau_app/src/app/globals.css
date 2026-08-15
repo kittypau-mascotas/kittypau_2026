@@ -1117,7 +1117,11 @@ body {
     radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
     linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
   overflow-x: hidden;
-  overflow-y: hidden;
+  /* ponytail: antes era `hidden` — si el contenido (tagline + card + botón
+     demo) supera 100dvh en una ventana angosta/con zoom, quedaba cortado
+     sin forma de verlo. `auto` deja scrollear en vez de perder acceso al
+     contenido; mismo criterio que ya aplica el breakpoint <1024px de abajo. */
+  overflow-y: auto;
 }
 
 .login-ui-font :where(
