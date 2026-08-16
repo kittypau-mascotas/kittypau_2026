@@ -440,23 +440,28 @@ export default function PetPage() {
     return (await res.json()) as ApiPet;
   };
 
-  const uploadPetPhoto = async (file: File) => {
+  // Tamaño máximo y overwrite-sin-versiones son reglas ya documentadas en
+  // Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md § 7 "Estrategia de fotos" — el path
+  // determinístico (por petId, no un nombre random) es lo que hace que upsert:true
+  // realmente reemplace la foto anterior en vez de acumular archivos huérfanos.
+  const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+  const uploadPetPhoto = async (petId: string, file: File) => {
+    if (file.size > MAX_PHOTO_BYTES) {
+      throw new Error("La foto no puede pesar más de 5 MB.");
+    }
     const supabase = getSupabaseBrowser();
     if (!supabase) {
       throw new Error("Faltan variables públicas de Supabase en el entorno.");
     }
     const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const random =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const path = `pets/${random}.${ext}`;
+    const path = `pets/${petId}.${ext}`;
     const { error } = await supabase.storage
       .from("kittypau-photos")
       .upload(path, file, { upsert: true, contentType: file.type });
     if (error) throw new Error(error.message);
-    return supabase.storage.from("kittypau-photos").getPublicUrl(path).data
-      .publicUrl;
+    // cache-bust: mismo path siempre, sin esto el navegador podría seguir
+    // mostrando la foto vieja desde caché tras reemplazarla.
+    return `${supabase.storage.from("kittypau-photos").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
   };
 
   const loadDevices = async (token: string) => {
@@ -706,7 +711,10 @@ export default function PetPage() {
                         setPhotoMessage(null);
                         setIsUploadingPhoto(true);
                         try {
-                          const url = await uploadPetPhoto(file);
+                          const url = await uploadPetPhoto(
+                            selectedPet.id,
+                            file,
+                          );
                           const token = await getValidAccessToken();
                           if (!token) throw new Error("Sesión inválida.");
                           const updated = await savePet(token, selectedPet.id, {

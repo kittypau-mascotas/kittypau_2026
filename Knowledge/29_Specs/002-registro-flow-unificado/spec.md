@@ -626,8 +626,8 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   3. **Datos invisibles**: `sex`, `size`, `is_neutered`, `has_neuter_tattoo`,
      `has_microchip`, `microchip_number`, `birth_date`/`intake_date` se piden (varios
      obligatorios) en el register flow pero no aparecían en ningún lado de `/pet`. Se agregó
-     un bloque "Identificación" a "Editar perfil" (mismo patrón que "Límites de consumo
-     normal") con los 8 campos, precargados desde lo ya declarado al registrar.
+     un bloque "Identificación" — ver evolución más abajo, terminó fusionado dentro de la
+     propia tarjeta "Mascota seleccionada" en vez de quedar en "Editar perfil".
 - **Bug de coherencia — Origen legado no reconocido (2026-08-17)**, reportado por Mauro con
   un caso real: Bandida (`pets.origin = "Adoptado"`) no aparecía reflejada en Origen y
   Hábitat. Verificado contra producción: 5 mascotas reales/QA tienen `origin` con texto
@@ -642,3 +642,38 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   la persona confirma explícitamente con "Guardar sección de Origen y Hábitat", nunca
   automáticamente. Reproducido y verificado con una mascota QA con `origin = "Adoptado"`
   (mismo valor que Bandida) antes y después del fix.
+- **"No tiene sentido que no pueda editar los datos aquí" (2026-08-17)**, a pedido del
+  usuario tras ver el bloque de Identificación como solo-lectura. Evolucionó en 2 pasos:
+  1. El bloque pasó a ser un `<form>` editable (Sexo/Peso/Tamaño/Edad/Esterilizado/
+     Microchip+número) con su propio botón "Guardar" — inicialmente como tarjeta aparte
+     debajo de "Mascota seleccionada". Guarda con un payload acotado a esos 7 campos (no
+     el `editPayload` completo) para no interferir con cambios sueltos a medio hacer en el
+     formulario de "Editar perfil", aunque ambos leen/escriben el mismo estado
+     `editPayload` (ya precargado desde el mount, no hace falta abrir nada primero).
+  2. A pedido explícito del usuario, se fusionó dentro de la misma `<section>` que
+     "Mascota seleccionada" (separador `border-t` en vez de tarjeta aparte).
+  "Editar perfil" quedó con Nombre/Actividad/Fecha de nacimiento-llegada/Tatuaje de
+  esterilización/Límites de consumo — el resto vive arriba para evitar el mismo doble
+  registro ya corregido con Origen.
+- **Foto de la mascota (2026-08-17)**: `photo_url` ya existía en el schema/API (se pide en
+  el register flow) pero `/pet` no tenía forma de verla ni cambiarla — mismo hueco que
+  `living_environment`. Se agregó avatar circular (o inicial si no hay foto) + "Cambiar
+  foto" en la tarjeta "Mascota seleccionada", que sube a Supabase Storage
+  (`kittypau-photos/pets/{petId}.{ext}`) y guarda `photo_url` de inmediato. Al revisar
+  contra `DOC_MAESTRO_DOMINIO.md` § 7 (auditoría "sin problemas" pedida por Mauro), se
+  ajustó para cumplir 2 de las 3 reglas ya documentadas que faltaban: límite de 5 MB y
+  overwrite real (path por `petId`, no random, ver data-model.md). Sigue faltando la
+  compresión del lado del cliente — declarado como gap, no implementado.
+- **Hero de `/today` — info de la mascota (2026-08-17)**: mostraba
+  `Gato · adoptado_refugio · mediano · adulto · 4 kg` pegado al lado de la foto en una
+  sola línea truncada (max-width angosto), con valores de enum crudos sin decir qué
+  representaba cada uno. Se corrigió en varios pasos, todos a pedido explícito del
+  usuario:
+  1. Cada dato pasa a tener etiqueta y valor humanizado (`Origen: Adoptado en refugio`,
+     `Tamaño: Mediano`, etc.) — mapas locales `ORIGIN_LABELS`/`SIZE_LABELS`/`AGE_LABELS`
+     en `today/page.tsx` (mismos labels que `ORIGEN_OPTIONS` de `/pet`; un origin legado
+     no reconocido se muestra tal cual, mismo criterio que el fix de Bandida).
+  2. La info pasa de estar al lado de la foto a una fila completa debajo de la foto+
+     nombre, sin truncar.
+  3. Nombre debajo de la foto (antes al lado) y foto agrandada de 96px a 128px.
+  4. Nombre centrado respecto a la foto, características centradas respecto al nombre.

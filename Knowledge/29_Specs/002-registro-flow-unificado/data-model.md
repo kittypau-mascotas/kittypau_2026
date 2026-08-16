@@ -45,6 +45,19 @@ llenaba** (ni el register flow, ni "Editar perfil" en /pet) — quedaba siempre 
 nueva sección Origen y Hábitat es el primer `<select>` real que la escribe (curado: `<select>`
 de tipo de vivienda, no texto libre — ver Assumptions para las fuentes).
 
+**photo_url (columna existente, sin cambio de tipo)**: mismo hueco que `living_environment`
+— se pedía en el register flow (`registro-flow.tsx`, sube a Supabase Storage
+`kittypau-photos/`) pero `/pet` no tenía forma de verla ni cambiarla después. 2026-08-17:
+`pet/page.tsx` agrega avatar + "Cambiar foto" en "Mascota seleccionada", que sube al mismo
+bucket/carpeta y guarda `photo_url` de inmediato. Ajustado para cumplir
+`DOC_MAESTRO_DOMINIO.md` § 7 "Estrategia de fotos": límite de 5 MB validado antes de subir,
+y path determinístico por `petId` (`pets/{petId}.{ext}`, no un nombre random) para que
+`upsert:true` reemplace la foto anterior de verdad en vez de acumular archivos huérfanos
+en el bucket — con cache-bust (`?v=timestamp`) para que el navegador no muestre la versión
+vieja tras el reemplazo. **Gap pendiente, no implementado**: § 7 pide compresión del lado
+del cliente antes de subir — esta versión sube el archivo tal cual (con el límite de 5 MB
+como único control), sin el cropper que sí tiene el register flow.
+
 ### Forma de `health_profile` (claves esperadas, todas opcionales)
 
 **Actualizado 2026-08-17**: `alergias`, `medicamentos`, `tratamientos`, `cirugias` y `vacunas`
