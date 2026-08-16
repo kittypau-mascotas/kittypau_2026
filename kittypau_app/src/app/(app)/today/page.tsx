@@ -2307,7 +2307,7 @@ export default function TodayPage() {
           >
             <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
               <div className="today-hero-pet flex min-w-0 flex-col gap-2">
-                <div className="flex min-w-0 items-center gap-3 md:gap-4">
+                <div className="flex min-w-0 items-start gap-3 md:gap-4">
                   <Link
                     href="/pet"
                     className="inline-flex"
@@ -2374,7 +2374,7 @@ export default function TodayPage() {
                 {/* Debajo de la foto, con etiqueta ("Origen: Adoptado en refugio")
                     en vez de valores crudos pegados con · (se truncaba y no decía
                     qué era cada dato — corregido 2026-08-17). */}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 md:text-sm">
+                <div className="flex flex-col gap-1 text-xs text-slate-500 md:text-sm">
                   {petMeta.length ? (
                     petMeta.map((item) => (
                       <span key={item.label}>
