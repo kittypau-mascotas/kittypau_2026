@@ -2,7 +2,7 @@
 
 **Devices involucrados:** KPCL0034 (food_bowl) · KPCL0036 (water_bowl)  
 **Tipo de experimento:** Prueba de descarga libre de batería sin cargador conectado  
-**Artefacto de datos:** [`kpcl0034_kpcl0036_prueba_sincargador.csv`](Dashboard_KPCL/kpcl0034_kpcl0036_prueba_sincargador.csv) (~63 MB)  
+**Artefacto de datos:** [`kpcl0034_kpcl0036_prueba_sincargador.csv`](kpcl0034_kpcl0036_prueba_sincargador.csv) (~63 MB)  
 **Propósito de este documento:** Diagnóstico canónico del experimento compartido y registro de los hallazgos por device.
 
 ---
@@ -43,7 +43,7 @@ Este experimento se realizó para caracterizar el comportamiento de ambos device
 
 ## Artefacto de datos
 
-### [`kpcl0034_kpcl0036_prueba_sincargador.csv`](Dashboard_KPCL/kpcl0034_kpcl0036_prueba_sincargador.csv)
+### [`kpcl0034_kpcl0036_prueba_sincargador.csv`](kpcl0034_kpcl0036_prueba_sincargador.csv)
 
 **Tamaño:** ~63 MB  
 **Formato:** CSV con columna `device_code` para distinguir entre KPCL0034 y KPCL0036.
@@ -101,11 +101,11 @@ Este experimento se realizó para caracterizar el comportamiento de ambos device
 - Similar a KPCL0034: ~50% de lecturas con `clock_invalid = True`.
 
 #### Anomalías detectadas en el peso
-- Se identificaron anomalías en la curva de peso de KPCL0036 relacionadas con el estado de la batería. Ver documento específico: [`AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`](AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md).
+- Se identificaron anomalías en la curva de peso de KPCL0036 relacionadas con el estado de la batería. Ver documento específico: [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md).
 - Estas anomalías generaron lecturas de peso que no correspondían al contenido real del bowl.
 
 #### Eventos de conectividad
-- Se detectaron duplicados en `device_offline_detected` / `device_online_detected` en `public.audit_events` durante el período, atribuibles a la race condition conocida en el health-check. Ver [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) sección Fuente 4.
+- Se detectaron duplicados en `device_offline_detected` / `device_online_detected` en `public.audit_events` durante el período, atribuibles a la race condition conocida en el health-check. Ver [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md) sección Fuente 4.
 
 ---
 
@@ -163,9 +163,9 @@ Este experimento se realizó para caracterizar el comportamiento de ambos device
 
 | Documento / Archivo | Relación |
 |---|---|
-| [`kpcl0034_kpcl0036_prueba_sincargador.csv`](Dashboard_KPCL/kpcl0034_kpcl0036_prueba_sincargador.csv) | Datos brutos del experimento |
-| [`kpcl0034_sin_batera_actual.csv`](Dashboard_KPCL/kpcl0034_sin_batera_actual.csv) | Export filtrado de KPCL0034 (cubre este período) |
-| [`kpcl0036_sin_batera_actual.csv`](Dashboard_KPCL/kpcl0036_sin_batera_actual.csv) | Export filtrado de KPCL0036 (cubre este período) |
-| [`AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`](AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md) | Diagnóstico específico de la anomalía de peso en KPCL0036 |
-| [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) | Reglas de clasificación de eventos (Fuente 4: health-check) |
+| [`kpcl0034_kpcl0036_prueba_sincargador.csv`](kpcl0034_kpcl0036_prueba_sincargador.csv) | Datos brutos del experimento |
+| [`kpcl0034_sin_batera_actual.csv`](kpcl0034_sin_batera_actual.csv) | Export filtrado de KPCL0034 (cubre este período) |
+| [`kpcl0036_sin_batera_actual.csv`](kpcl0036_sin_batera_actual.csv) | Export filtrado de KPCL0036 (cubre este período) |
+| [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico específico de la anomalía de peso en KPCL0036 |
+| [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md) | Reglas de clasificación de eventos (Fuente 4: health-check) |
 | `bridge/src/index.js` | Bridge que procesa los datos de ambos devices |

@@ -437,3 +437,64 @@ línea al mismo destino.
 
 Verificado tras los cambios: `py_compile` de los 5 scripts de `fase_0_ruido/` tocados en
 esta sesión + `pytest tests/` → 16/16.
+
+## 11. Cuarto addendum (2026-08-16) — reorganización física real
+
+> Pedido de Mauro: "aplica la reorganizacion de investigacion, como un profesional,
+> ordenando todo lo relacionado con la investigacion, resultados, documentos etc." — §10
+> solo había corregido documentación y rutas; este addendum mueve archivos físicamente.
+
+### Movimientos ejecutados
+
+**Dentro de `Ciclo Alpha v2/fase_0_ruido/`** (separar docs y resultados de los scripts
+activos, sin tocar `data/`, `data_agua/`, `config/`, `tests/` ni los `.py` — todo lo que
+`app_anotacion_av2.py` lee en runtime queda intacto):
+- `Documentacion/` — nueva subcarpeta: `ARQUITECTURA_APP.md`, `ACTUALIZACION_DATA.md`,
+  `HISTORIAL_RESULTADOS.md`, `RECOPILACION_DATOS_APP.md`. `README.md` queda en la raíz
+  de `fase_0_ruido/` como puerta de entrada (no se movió — perdería su función de
+  landing page del folder).
+- `Resultados/` — nueva subcarpeta: `benchmark_data_abril_mayo_junio/` completa.
+
+**En la raíz de `Investigacion/`** (los 8 docs sueltos `01`–`08` no eran un grupo
+homogéneo — se enrutó cada uno a donde realmente pertenece en vez de amontonarlos en una
+carpeta genérica):
+- `01_GUIA_DASHBOARD_KPCL.md`, `06_AUDITORIA_SIN_CARGADOR.md`,
+  `07_AUDITORIA_KPCL0036_ERROR_PESO.md` → `Dashboard_KPCL/` (documentan ese toolkit
+  específicamente, ya estaban cross-linkeados hacia ahí).
+- `03_ML_PREDICCION_ALIMENTACION.md` (dice literalmente "especificación original del
+  Ciclo Alpha") y `05_ANALISIS_COLAB_KPCL0034_07052026.md` (documenta un script que vive
+  en `Ciclo Alpha/`) → `Ciclo Alpha/`.
+- `02_REGLAS_EVENTOS_ALIMENTACION.md`, `04_OPERATIVIZACION_SESIONES_SUPABASE.md`,
+  `08_REGISTRO_EVENTOS_2026-04-16.md` — **quedan en la raíz**: son reglas canónicas de
+  eventos que aplican cross-cycle (Alpha y Alpha v2 ambas las usan), moverlas a un ciclo
+  específico las habría representado mal.
+
+### Bugs encontrados y corregidos de paso (pre-existentes, no causados por este addendum)
+
+- **12 links rotos sistémicos en `README.md`**: el texto visible decía `Ciclo Alpha/...`
+  pero el href seguía apuntando a `Data Science/...` — una carpeta que no existe desde
+  antes de esta sesión (aparente rename histórico donde se actualizó el texto pero nunca
+  el href). Corregido con reemplazo mecánico `Data%20Science/` → `Ciclo%20Alpha/` en los
+  12 casos, verificados contra el árbol real.
+- 2 links cruzados entre `06_AUDITORIA_SIN_CARGADOR.md` y `07_AUDITORIA_KPCL0036_ERROR_PESO.md`
+  usaban nombres de archivo viejos que ya no existen
+  (`AUDITORIA_KPCL0036_ERROR_PESO_SIN_BATERIA.md`,
+  `AUDITORIA_KPCL0034_KPCL0036_PRUEBA_SIN_CARGADOR.md`) — corregidos a los nombres reales
+  (`07_AUDITORIA_KPCL0036_ERROR_PESO.md`, `06_AUDITORIA_SIN_CARGADOR.md`).
+- 1 link a `REGLAS_EVENTOS_ALIMENTACION.md` sin el prefijo `02_` — corregido.
+- **No corregidos** (fuera de alcance, ambiguos): 3 referencias a `Data Science/README.md`
+  y `Data Science/fase_2_dataset/README.md` en `07_AUDITORIA_KPCL0036_ERROR_PESO.md` — no
+  quedó claro a qué archivo real corresponden hoy, no se adivinó. Tampoco la extensión
+  `COMO_EJECUTAR.md` vs. el archivo real `COMO_EJECUTAR.py` en
+  `Ciclo Alpha/fase_4_visualizacion/` — problema de contenido preexistente, distinto al
+  de esta reorganización.
+
+### Referencias actualizadas
+
+`Investigacion/README.md` (múltiples secciones), `fase_0_ruido/README.md`,
+`shape_features_v2.py` (2 comentarios), los 3 docs movidos a `Dashboard_KPCL/`, los 2
+movidos a `Ciclo Alpha/`, y en `Knowledge/`: `RESULT_AlphaV2_Snapshots.md` (link real),
+`ESTADO_ACTUAL.md`, `MOC_Experimentos.md`, `MOC_Resultados.md` (menciones de ruta).
+
+Verificado: `py_compile` de los 6 scripts de `fase_0_ruido/`, `streamlit run --headless`
+→ HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16.

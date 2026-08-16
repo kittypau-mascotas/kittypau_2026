@@ -3,9 +3,9 @@
 Este documento explica como abrir, usar y mantener el dashboard interactivo de
 `KPCL0034` y `KPCL0036`, que vive en esta carpeta:
 
-- [`plot_kpcl_experimento.py`](Dashboard_KPCL/plot_kpcl_experimento.py)
-- [`serve_kpcl_dashboard.py`](Dashboard_KPCL/serve_kpcl_dashboard.py)
-- [`kpcl_pruebas_eventos.html`](Dashboard_KPCL/kpcl_pruebas_eventos.html)
+- [`plot_kpcl_experimento.py`](plot_kpcl_experimento.py)
+- [`serve_kpcl_dashboard.py`](serve_kpcl_dashboard.py)
+- [`kpcl_pruebas_eventos.html`](kpcl_pruebas_eventos.html)
 
 ## KPCL - Analisis de peso y eventos
 
@@ -258,7 +258,7 @@ Comportamiento del dashboard:
 
 Si quieres inspeccionar la salida generada, abre:
 
-- [`kpcl_pruebas_eventos.html`](Dashboard_KPCL/kpcl_pruebas_eventos.html)
+- [`kpcl_pruebas_eventos.html`](kpcl_pruebas_eventos.html)
 
 Ese archivo ya incorpora:
 

@@ -11,12 +11,12 @@
 > Este documento describe la especificación original del Ciclo Alpha (α-01 a α-10). El proyecto pasó por tres ciclos y fue reestructurado:
 >
 > - **Ciclo Alpha cerrado** — 10 experimentos completados. Mejor resultado: α-06 con F1 activo = 0.7619, F1 alim = 0.7606.
-> - **Ciclo Gamma y Ciclo Delta archivados** — Gamma (multi-modelo supervisado) y Delta (no supervisado) fueron explorados y archivados el 2026-06-23. Todos los aprendizajes están documentados en [`Ciclo Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md).
+> - **Ciclo Gamma y Ciclo Delta archivados** — Gamma (multi-modelo supervisado) y Delta (no supervisado) fueron explorados y archivados el 2026-06-23. Todos los aprendizajes están documentados en [`Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md).
 > - **Próximo: Ciclo Alpha v2** — rediseño completo con detección de eventos por segmentos (change-point detection). El problema de clasificación per-reading fue identificado como la limitación fundamental de los 3 ciclos anteriores.
 >
 > Para el estado actual del proyecto, consultar:
-> - [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) — diagnóstico completo y nueva dirección
-> - [`Ciclo Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md) — todo lo aprendido en Gamma y Delta
+> - [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](../ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) — diagnóstico completo y nueva dirección
+> - [`Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md) — todo lo aprendido en Gamma y Delta
 >
 > Las secciones siguientes son referencia histórica del Ciclo Alpha.
 

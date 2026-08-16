@@ -29,7 +29,7 @@ related:
 
 | Resultado | Origen |
 |-----------|--------|
-| Benchmark data Abril-Mayo-Jun | `benchmark_data_abril_mayo_junio/` en fase_0_ruido |
+| Benchmark data Abril-Mayo-Jun | `fase_0_ruido/Resultados/benchmark_data_abril_mayo_junio/` |
 | Snapshot v2.2 (alim=209) | Pendiente de `revisar_anotaciones_v2.py` |
 
 ---

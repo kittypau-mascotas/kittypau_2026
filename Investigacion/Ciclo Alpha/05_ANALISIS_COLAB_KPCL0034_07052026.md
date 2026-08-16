@@ -3,7 +3,7 @@
 **Autor:** Mauro Curcuma  
 **Entorno:** Google Colab  
 **Fecha del análisis:** 2026-05-07  
-**Script:** [`Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`](Ciclo%20Alpha/colab_analisis_kpcl0034_07052026.py)  
+**Script:** [`colab_analisis_kpcl0034_07052026.py`](colab_analisis_kpcl0034_07052026.py)  
 **Fuente de datos:** Google Drive → `Analisis de Datos/Data Raw/Data abril 2026/kittypau_full_07-05-2026_csv/`
 
 ---
@@ -296,7 +296,7 @@ with open("kpcl0034_dashboard_colab.html", "w", encoding="utf-8") as f:
 
 | Archivo | Descripción |
 |---|---|
-| [`Data Science/colab_analisis_kpcl0034_07052026.py`](Data%20Science/colab_analisis_kpcl0034_07052026.py) | Script completo del análisis |
+| [`colab_analisis_kpcl0034_07052026.py`](colab_analisis_kpcl0034_07052026.py) | Script completo del análisis |
 | [`Data Science/colab_fase1_fase2_pipeline.py`](Data%20Science/colab_fase1_fase2_pipeline.py) | Pipeline ML de Colab (fases 1 y 2) |
 | [`Data Science/Reporte_Sesion_2026-04-26.md`](Data%20Science/Reporte_Sesion_2026-04-26.md) | Reporte de la sesión que precedió a este análisis |
 | [`REGISTRO_EVENTOS_KPCL0034_2026-04-16.md`](REGISTRO_EVENTOS_KPCL0034_2026-04-16.md) | Registro del backfill inicial de eventos |

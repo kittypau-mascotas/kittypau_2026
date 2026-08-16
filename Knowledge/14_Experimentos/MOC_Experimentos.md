@@ -51,5 +51,5 @@ related:
 - [x] EXP_AlphaV2_AppArq con frontmatter
 - [x] SPEC_07 (hidratación) con frontmatter y decisiones confirmadas registradas
 - [ ] Experimentos Alpha v1 documentados
-- [ ] Benchmark data documentado (`benchmark_data_abril_mayo_junio/`)
+- [ ] Benchmark data documentado (`fase_0_ruido/Resultados/benchmark_data_abril_mayo_junio/`)
 - [ ] EXP propio para hidratación una vez exista el perfil agua (paso 3+ de SPEC_07)

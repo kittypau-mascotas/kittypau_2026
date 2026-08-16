@@ -840,7 +840,7 @@ _reg("idx_shape_noise",    "F14_compuestos", "fractal × lempel_ziv", (0, 1e6), 
 
 # Pesos calibrados en ~304 anotaciones (separación en σ entre categorías).
 # Recalibrado 2026-08-10 contra 496 anotaciones (alim=254/serv=55/ruido=187) —
-# ver 09_Investigacion/Ciclo Alpha v2/fase_0_ruido/RECOPILACION_DATOS_APP.md §12:
+# ver Investigacion/Ciclo Alpha v2/fase_0_ruido/Documentacion/RECOPILACION_DATOS_APP.md §12:
 # agregados tpl_doble_rampa (mejor discriminador del motor, 7.69σ A/S, no estaba
 # usado en clasificación pese a estar calculado), d1_frac_neg (mejor discriminador
 # A/R, 3.22σ) y entropy_shannon (3.69σ A/S, 2.43σ A/R). Removido tpl_plateau
@@ -900,7 +900,7 @@ EVIDENCE_WEIGHTS: dict[str, tuple[float, float, float]] = {
 # Normalizando (z-score pooled) y calculando los pesos directamente desde
 # comp_stats_v2.json (discriminante tipo Fisher, sobre las 102 features, no solo
 # las 26 elegidas a mano) la accuracy sube a 77.8% en un 20% de datos nunca
-# usados para calcular los pesos. Ver RECOPILACION_DATOS_APP.md §12.
+# usados para calcular los pesos. Ver Documentacion/RECOPILACION_DATOS_APP.md §12.
 #
 # EVIDENCE_WEIGHTS queda como fallback legado si no hay comp_stats disponible
 # (cold start sin `comp_stats_v2.json` aún generado).

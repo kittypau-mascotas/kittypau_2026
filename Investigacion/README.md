@@ -14,7 +14,7 @@
 >
 > **Para entender la app antes de tocarla, en este orden:**
 > 1. **[Ciclo Alpha v2/fase_0_ruido/README.md](Ciclo%20Alpha%20v2/fase_0_ruido/README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
-> 2. **[Ciclo Alpha v2/fase_0_ruido/ARQUITECTURA_APP.md](Ciclo%20Alpha%20v2/fase_0_ruido/ARQUITECTURA_APP.md)** — arquitectura técnica interna
+> 2. **[Ciclo Alpha v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md](Ciclo%20Alpha%20v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md)** — arquitectura técnica interna
 > 3. **[Ciclo Alpha v2/08_APP_ANOTACION_AV2.md](Ciclo%20Alpha%20v2/08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
 > 4. **[Ciclo Alpha v2/04_MATEMATICA_SHAPE_FEATURES.md](Ciclo%20Alpha%20v2/04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
 > 5. **[Ciclo Alpha v2/APRENDIZAJES_CONSOLIDADOS.md](Ciclo%20Alpha%20v2/APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
@@ -221,7 +221,7 @@ python Investigacion/Dashboard_KPCL/serve_kpcl_dashboard.py
 
 **Tamaño:** ~63 MB  
 **Contenido:** Snapshot bruto combinado de KPCL0034 y KPCL0036 durante el experimento sin cargador. Incluye columna `device_code` para distinguir entre devices.  
-**Propósito:** Experimento compartido para validar comportamiento de batería en descarga libre. Ver [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md) para el diagnóstico completo.
+**Propósito:** Experimento compartido para validar comportamiento de batería en descarga libre. Ver [`06_AUDITORIA_SIN_CARGADOR.md`](Dashboard_KPCL/06_AUDITORIA_SIN_CARGADOR.md) para el diagnóstico completo.
 
 ---
 
@@ -273,7 +273,7 @@ python Investigacion/Dashboard_KPCL/serve_kpcl_dashboard.py
 
 ### Documentación técnica
 
-#### [`01_GUIA_DASHBOARD_KPCL.md`](01_GUIA_DASHBOARD_KPCL.md)
+#### [`01_GUIA_DASHBOARD_KPCL.md`](Dashboard_KPCL/01_GUIA_DASHBOARD_KPCL.md)
 
 Guía operativa paso a paso para usar el dashboard. Incluye:
 - Flujo completo de apertura (lanzador → servidor → navegador)
@@ -295,7 +295,7 @@ Especificación canónica de las reglas de detección y categorización. Incluye
 
 ---
 
-#### [`03_ML_PREDICCION_ALIMENTACION.md`](03_ML_PREDICCION_ALIMENTACION.md)
+#### [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo%20Alpha/03_ML_PREDICCION_ALIMENTACION.md)
 
 Especificación completa del problema de ML. Incluye:
 - Formulación del problema (segmentación de 3 estados: baseline / inicio_alimentacion / post_alimentacion)
@@ -321,8 +321,8 @@ Documentación de la implementación SQL/API en Supabase. Incluye:
 
 ### Análisis Colab (export 07-05-2026)
 
-- [`05_ANALISIS_COLAB_KPCL0034_07052026.md`](05_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
-- [`Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`](Data%20Science/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
+- [`05_ANALISIS_COLAB_KPCL0034_07052026.md`](Ciclo%20Alpha/05_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
+- [`Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`](Ciclo%20Alpha/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
 
 ### Datos históricos — `Data_2026/`
 
@@ -357,8 +357,8 @@ Dump PostgreSQL completo (52 MB). Permite restaurar el estado completo de la bas
 | Archivo | Descripción | Estado |
 |---|---|---|
 | [`08_REGISTRO_EVENTOS_2026-04-16.md`](08_REGISTRO_EVENTOS_2026-04-16.md) | Bitácora del backfill inicial de 49 eventos manuales de KPCL0034 | ✅ Disponible |
-| [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md) | Diagnóstico del experimento compartido sin cargador | ✅ Disponible |
-| [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico del historial de peso anómalo sin batería en KPCL0036 | ✅ Disponible |
+| [`06_AUDITORIA_SIN_CARGADOR.md`](Dashboard_KPCL/06_AUDITORIA_SIN_CARGADOR.md) | Diagnóstico del experimento compartido sin cargador | ✅ Disponible |
+| [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](Dashboard_KPCL/07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico del historial de peso anómalo sin batería en KPCL0036 | ✅ Disponible |
 | `SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql` | SQL canónico de exportación del tramo de experimento | ⏳ Pendiente |
 | `refresh_kpcl_experimento.py` | Script de descarga histórica desde Supabase | ⏳ Pendiente |
 | `SQL_VALIDACION_KPCL0036_TARE_FILL.sql` | Validación SQL de secuencia tare/llenado en KPCL0036 | ⏳ Pendiente |
@@ -483,7 +483,7 @@ Descarga datos desde Supabase y genera tres artefactos parquet.
 
 ---
 
-### Fase 2 — Dataset ([`Ciclo Alpha/fase_2_dataset/`](Data%20Science/fase_2_dataset/))
+### Fase 2 — Dataset ([`Ciclo Alpha/fase_2_dataset/`](Ciclo%20Alpha/fase_2_dataset/))
 
 Construye el dataset supervisado con features de ingeniería temporal y split cronológico.
 
@@ -535,7 +535,7 @@ Construye el dataset supervisado con features de ingeniería temporal y split cr
 
 ---
 
-### Fase 3 — Modelos ([`Ciclo Alpha/fase_3_modelos/`](Data%20Science/fase_3_modelos/))
+### Fase 3 — Modelos ([`Ciclo Alpha/fase_3_modelos/`](Ciclo%20Alpha/fase_3_modelos/))
 
 Entrena y evalúa dos variantes del modelo de detección.
 
@@ -565,7 +565,7 @@ Sistema: Windows / PowerShell
 
 ---
 
-### Fase 4 — Visualización y evaluación ([`Ciclo Alpha/fase_4_visualizacion/`](Data%20Science/fase_4_visualizacion/))
+### Fase 4 — Visualización y evaluación ([`Ciclo Alpha/fase_4_visualizacion/`](Ciclo%20Alpha/fase_4_visualizacion/))
 
 Herramientas de anotación y evaluación final sobre el test set reservado.
 
@@ -573,15 +573,15 @@ Herramientas de anotación y evaluación final sobre el test set reservado.
 
 | Archivo | Propósito |
 |---|---|
-| [`app_anotacion.py`](Data%20Science/fase_4_visualizacion/app_anotacion.py) | App Streamlit para visualizar la serie temporal y agregar anotaciones manuales nuevas |
-| [`COMO_EJECUTAR.md`](Data%20Science/fase_4_visualizacion/COMO_EJECUTAR.md) | Instrucciones para lanzar la app en localhost |
+| [`app_anotacion.py`](Ciclo%20Alpha/fase_4_visualizacion/app_anotacion.py) | App Streamlit para visualizar la serie temporal y agregar anotaciones manuales nuevas |
+| [`COMO_EJECUTAR.md`](Ciclo%20Alpha/fase_4_visualizacion/COMO_EJECUTAR.md) | Instrucciones para lanzar la app en localhost |
 | `data/new_annotations.csv` | Nuevas anotaciones locales del usuario (se fusionan en Fase 1 via `04_extract_events.py`) |
 
 **Inferencia en producción:**
 
 | Archivo | Propósito |
 |---|---|
-| [`inferencia_kpcl0034.py`](Data%20Science/inferencia_kpcl0034.py) | Script de inferencia completo: carga modelos Exp 06, preprocesa, predice y genera dashboard HTML |
+| [`inferencia_kpcl0034.py`](Ciclo%20Alpha/inferencia_kpcl0034.py) | Script de inferencia completo: carga modelos Exp 06, preprocesa, predice y genera dashboard HTML |
 | `sesiones_detectadas.csv` | Sesiones detectadas en la última corrida (output generado) |
 | `inferencia_kpcl0034.html` | Dashboard interactivo: curva de peso + bandas GT (▼) vs ML (▲) + probabilidad Modelo A |
 
@@ -883,15 +883,15 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 4. [`02_REGLAS_EVENTOS_ALIMENTACION.md`](02_REGLAS_EVENTOS_ALIMENTACION.md) — reglas canónicas de etiquetado
 
 ### Para ejecutar o extender el pipeline ML
-5. [`Ciclo Alpha/README.md`](Data%20Science/README.md) — guía de ejecución Fase 1→4
-6. [`Ciclo Alpha/experiments/README.md`](Data%20Science/experiments/README.md) — índice de experimentos con hitos
-7. [`Ciclo Alpha/experiments/exp_07_inferencia_mayo_junio.md`](Data%20Science/experiments/exp_07_inferencia_mayo_junio.md) — experimento activo ★
-8. [`Ciclo Alpha/02_PREPARACION_NUEVA_INGESTA.md`](Data%20Science/02_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
+5. [`Ciclo Alpha/README.md`](Ciclo%20Alpha/README.md) — guía de ejecución Fase 1→4
+6. [`Ciclo Alpha/experiments/README.md`](Ciclo%20Alpha/experiments/README.md) — índice de experimentos con hitos
+7. [`Ciclo Alpha/experiments/exp_07_inferencia_mayo_junio.md`](Ciclo%20Alpha/experiments/exp_07_inferencia_mayo_junio.md) — experimento activo ★
+8. [`Ciclo Alpha/02_PREPARACION_NUEVA_INGESTA.md`](Ciclo%20Alpha/02_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
 
 ### Para categorizar sesiones manualmente
-9. [`01_GUIA_DASHBOARD_KPCL.md`](01_GUIA_DASHBOARD_KPCL.md) — cómo usar el dashboard visual
-10. [`Ciclo Alpha/fase_4_visualizacion/COMO_EJECUTAR.md`](Data%20Science/fase_4_visualizacion/COMO_EJECUTAR.md) — app Streamlit de anotación
+9. [`01_GUIA_DASHBOARD_KPCL.md`](Dashboard_KPCL/01_GUIA_DASHBOARD_KPCL.md) — cómo usar el dashboard visual
+10. [`Ciclo Alpha/fase_4_visualizacion/COMO_EJECUTAR.md`](Ciclo%20Alpha/fase_4_visualizacion/COMO_EJECUTAR.md) — app Streamlit de anotación
 
 ### Para entender los datos
 11. [`Data_2026/README.md`](Data_2026/README.md) — índice de dumps disponibles y alertas de calidad
-12. [`03_ML_PREDICCION_ALIMENTACION.md`](03_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
+12. [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo%20Alpha/03_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
