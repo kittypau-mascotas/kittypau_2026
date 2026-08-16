@@ -155,6 +155,71 @@ const VACUNA_OPTIONS_GATO = [
   { value: "otra", label: "Otra" },
 ] as const;
 
+// Marcas de alimento vendidas en Chile (spec 002, mejora 2026-08-17) — investigadas por
+// segmento (económico / premium nacional / premium-super premium / biológicamente
+// apropiado), separadas por especie porque varias marcas tienen líneas de nombre
+// distinto para perro y gato (Master Dog vs. Master Cat, Champion Dog vs. Champion Cat).
+// Fuentes citadas en spec.md § Assumptions — no es un catálogo oficial (el SAG no
+// mantiene uno público tipo AAFCO), es la lista de marcas/líneas reales que se venden
+// en tiendas chilenas (Lider, Falabella, Best for Pets, Club de Perros y Gatos, etc.).
+const MARCA_OPTIONS_PERRO = [
+  {
+    group: "Económico",
+    options: ["Master Dog", "Dog Chow", "Pedigree"],
+  },
+  {
+    group: "Premium nacional",
+    options: ["Champion Dog", "Excellent"],
+  },
+  {
+    group: "Premium / Super Premium",
+    options: [
+      "Purina One",
+      "Pro Plan",
+      "Royal Canin",
+      "Hill's",
+      "Eukanuba",
+      "Advance",
+      "Nutrience",
+      "Bravery",
+      "Brit Care",
+    ],
+  },
+  {
+    group: "Biológicamente apropiado (grain-free)",
+    options: ["Orijen", "Acana", "Taste of the Wild"],
+  },
+] as const;
+
+const MARCA_OPTIONS_GATO = [
+  {
+    group: "Económico",
+    options: ["Master Cat", "Cat Chow", "Whiskas", "Felix"],
+  },
+  {
+    group: "Premium nacional",
+    options: ["Champion Cat", "Excellent"],
+  },
+  {
+    group: "Premium / Super Premium",
+    options: [
+      "Purina One",
+      "Pro Plan",
+      "Royal Canin",
+      "Hill's",
+      "Eukanuba",
+      "Advance",
+      "Nutrience",
+      "Bravery",
+      "Brit Care",
+    ],
+  },
+  {
+    group: "Biológicamente apropiado (grain-free)",
+    options: ["Orijen", "Acana"],
+  },
+] as const;
+
 function CheckboxOptionGroup({
   options,
   selected,
@@ -1299,6 +1364,7 @@ export default function PetPage() {
                     setFeedingForm({
                       tipo_alimento: String(profile.tipo_alimento ?? ""),
                       marca: String(profile.marca ?? ""),
+                      marca_otra: String(profile.marca_otra ?? ""),
                       formula: String(profile.formula ?? ""),
                       cantidad_diaria_g: String(
                         profile.cantidad_diaria_g ?? "",
@@ -1382,10 +1448,9 @@ export default function PetPage() {
 
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="block text-xs text-slate-500">
-                      Marca
-                      <input
-                        type="text"
-                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      Marca — vendidas en Chile
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
                         value={feedingForm.marca ?? ""}
                         onChange={(event) =>
                           setFeedingForm((prev) => ({
@@ -1393,7 +1458,36 @@ export default function PetPage() {
                             marca: event.target.value,
                           }))
                         }
-                      />
+                      >
+                        <option value="">Selecciona</option>
+                        {(selectedPet.type === "dog"
+                          ? MARCA_OPTIONS_PERRO
+                          : MARCA_OPTIONS_GATO
+                        ).map((group) => (
+                          <optgroup key={group.group} label={group.group}>
+                            {group.options.map((marca) => (
+                              <option key={marca} value={marca}>
+                                {marca}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                        <option value="otra">Otra</option>
+                      </select>
+                      {feedingForm.marca === "otra" ? (
+                        <input
+                          type="text"
+                          placeholder="¿Cuál?"
+                          className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={feedingForm.marca_otra ?? ""}
+                          onChange={(event) =>
+                            setFeedingForm((prev) => ({
+                              ...prev,
+                              marca_otra: event.target.value,
+                            }))
+                          }
+                        />
+                      ) : null}
                     </label>
                     <label className="block text-xs text-slate-500">
                       Fórmula / variedad

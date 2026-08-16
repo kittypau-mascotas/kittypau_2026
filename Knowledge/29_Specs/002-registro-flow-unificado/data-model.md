@@ -67,10 +67,19 @@ comparten `antirrabica` (única vacuna obligatoria por ley en Chile).
 
 ### Forma de `feeding_profile` (claves esperadas, todas opcionales)
 
+**Actualizado 2026-08-17**: `marca` pasa de texto libre a un `<select>` con las marcas
+reales que se venden en Chile, agrupadas por segmento (económico / premium nacional /
+premium-super premium / biológicamente apropiado) y **separadas por especie** (`marca`
+guarda el nombre elegido tal cual, `marca_otra` el texto libre si eligió "otra") — ver
+`spec.md` § Assumptions para las fuentes citadas. No es un catálogo oficial (el SAG no
+mantiene una base de datos pública tipo AAFCO con fichas nutricionales por producto) — es
+la lista de marcas/líneas reales confirmadas en tiendas chilenas.
+
 ```json
 {
   "tipo_alimento": "seco | humedo | mixto",
-  "marca": "texto libre",
+  "marca": "Royal Canin | ... | otra",
+  "marca_otra": "texto libre si eligió 'otra'",
   "formula": "texto libre",
   "cantidad_diaria_g": 180,
   "comidas_dia": 3,

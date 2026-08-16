@@ -544,3 +544,21 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
     habitual (dermatológico, dental, fisioterapia, oncológico, manejo de enfermedad crónica),
     con "otro" siempre disponible. Declarado explícitamente como el más débil de los 5 en
     términos de respaldo por fuente — a revisar si Mauro tiene mejor criterio de dominio acá.
+- **Marcas de alimento (Ficha Detallada — Alimentación), investigadas 2026-08-17** (a pedido
+  explícito de Mauro). Marco normativo confirmado: el SAG regula alimentos para mascotas en
+  Chile vía Decreto N° 4/2016 (Reglamento de Alimentos para Animales) y exige cumplir la
+  NCh2546.Of2019 — pero **no mantiene un catálogo público tipo AAFCO** con ficha nutricional
+  por marca/producto; por eso el campo "Marca" lista nombres de marca/línea, no
+  especificaciones nutricionales por producto (esas solo están en la etiqueta de cada
+  fabricante). Lista de marcas confirmada por búsqueda web contra tiendas y sitios oficiales
+  chilenos reales (Lider, Falabella, Best for Pets, Club de Perros y Gatos, Champion Dog/Cat
+  oficial, Purina Chile oficial) — no inventada:
+  - Económico: Master Dog/Cat, Dog Chow/Cat Chow, Pedigree, Whiskas, Felix.
+  - Premium nacional: Champion Dog/Cat, Excellent (línea Purina).
+  - Premium / Super Premium: Purina One, Pro Plan, Royal Canin, Hill's, Eukanuba, Advance,
+    Nutrience, Bravery, Brit Care.
+  - Biológicamente apropiado (grain-free, alta proteína): Orijen, Acana, Taste of the Wild
+    (perro).
+  - Separado por especie (`type` perro/gato) porque varias marcas usan nombre de línea
+    distinto para cada una (Master Dog vs. Master Cat, Champion Dog vs. Champion Cat) — ver
+    `data-model.md`. "Otra" siempre disponible con texto libre.
