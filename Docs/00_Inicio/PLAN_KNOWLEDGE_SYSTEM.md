@@ -122,8 +122,8 @@ Solo navegación. Ningún contenido técnico. Un enlace por área.
 |-----------|-----------|---------------|--------------|
 | 🔴 Alta | `Docs/00_Inicio/FUENTE_DE_VERDAD.md` | `01_Proyecto/` | `README_Proyecto.md` |
 | 🔴 Alta | `Docs/01_Arquitectura/ARQUITECTURA_PROYECTO.md` | `02_Arquitectura/` | `README_Arquitectura.md` |
-| 🔴 Alta | `Docs/09_Investigacion/.../ACTUALIZACION_DATA.md` | `14_Experimentos/` | `EXP_AlphaV2_Pipeline.md` |
-| 🔴 Alta | `Docs/09_Investigacion/.../HISTORIAL_RESULTADOS.md` | `15_Resultados/` | `RESULT_AlphaV2_Snapshots.md` |
+| 🔴 Alta | `09_Investigacion/.../ACTUALIZACION_DATA.md` | `14_Experimentos/` | `EXP_AlphaV2_Pipeline.md` |
+| 🔴 Alta | `09_Investigacion/.../HISTORIAL_RESULTADOS.md` | `15_Resultados/` | `RESULT_AlphaV2_Snapshots.md` |
 | 🔴 Alta | `shape_features_v2.py` (doc) | `13_Features/` | `README_ShapeFeatures.md` |
 | 🟡 Media | `Docs/07_MQTT/` | `07_MQTT/` | `README_MQTT.md` |
 | 🟡 Media | `Docs/04_Base_de_Datos/` | `06_BaseDatos/` | `README_BaseDatos.md` |

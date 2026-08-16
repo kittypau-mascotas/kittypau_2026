@@ -1,42 +1,20 @@
----
-id: exp_alphav2_pipeline
-title: "EXP: Alpha v2 — Pipeline de Anotación y Motor Matemático"
-type: experiment
-status: active
-owner: Mauro
-created: 2026-06-28
-updated: 2026-06-29
-tags:
-  - experimento
-  - alpha-v2
-  - pipeline
-  - motor-v2
-  - anotacion
-related:
-  - [[00_HOME]]
-  - [[13_Features/README_ShapeFeatures]]
-  - [[15_Resultados/RESULT_AlphaV2_Snapshots]]
-  - [[10_Datasets/README_Datasets]]
----
+# Flujo de Actualización de Data — Alpha v2
 
-# EXP: Alpha v2 — Pipeline de Anotación y Motor Matemático
-
-**Estado:** Activo  
-**Período:** 2026-04-08 → presente  
-**Dispositivo:** KPCL0034 "Bandida" (food bowl)
+Documentación del botón **🔄 Actualizar Todo** y el pipeline de regeneración de artefactos.
 
 ---
 
 ## Botón "🔄 Actualizar Todo"
 
-Ubicado en el encabezado de `app_anotacion_av2.py`.
+Ubicado en el encabezado de `app_anotacion_av2.py`, a la derecha del título.
 
 **Qué hace:**
+
 1. Detecta si hay datos nuevos comparando timestamps de archivos (sin cargar los CSV)
 2. Si no hay nada nuevo → muestra aviso `"Sin datos nuevos — los artefactos ya están al día"`
 3. Si hay CSV más nuevo que los candidatos → corre `01_genera_candidatos.py`
 4. Siempre recalcula features si hay anotaciones más nuevas que el JSON de stats → corre `revisar_anotaciones_v2.py`
-5. Limpia el caché de Streamlit y recarga la app
+5. Limpia el cache de Streamlit (`st.cache_data.clear()`) y recarga la app
 
 **Lógica de detección:**
 
@@ -54,8 +32,8 @@ Ubicado en el encabezado de `app_anotacion_av2.py`.
 kittypau_2026_hivemq/
 │
 ├── Docs/11_Data/2026/                          ← DATA CRUDA (INPUT)
-│   ├── readings.csv                            ← Abril 2026 (KPCL0034 UUID 1)  ← NUNCA TOCAR
-│   └── readings_rows.csv                       ← Mayo-Jun 2026 (KPCL0034 UUID 2)  ← append-only
+│   ├── readings.csv                            ← Abril 2026 (KPCL0034 UUID 1)
+│   └── readings_rows.csv                       ← Mayo-Jun 2026 (KPCL0034 UUID 2)
 │
 └── 09_Investigacion/Ciclo Alpha v2/fase_0_ruido/
     │
@@ -73,10 +51,10 @@ kittypau_2026_hivemq/
         ├── features_anotaciones_v2.csv         ← 102 features × anotación (regenerado por Script 2)
         ├── comp_stats_v2.json                  ← µ/σ/n por feature y categoría (regenerado por Script 2)
         ├── ciclos_servido_alimento.csv         ← Ciclos manuales de servido/alimento (Tab 7/8)
-        └── backups/                            ← Backups diarios automáticos
+        └── backups/                            ← Backups diarios automáticos (generados por la app)
 ```
 
-### UUIDs de KPCL0034 "Bandida"
+### UUIDs de KPCL0034 "Bandida" (food bowl)
 
 ```python
 KPCL0034_UUIDS = {
@@ -85,9 +63,11 @@ KPCL0034_UUIDS = {
 }
 ```
 
+Todos los scripts filtran por estos UUIDs antes de procesar.
+
 ---
 
-## Pipeline completo
+## Pipeline completo (paso a paso)
 
 ```
 [Nueva data en readings_rows.csv]
@@ -123,11 +103,16 @@ KPCL0034_UUIDS = {
    Corre Script 2 si hay anotaciones nuevas
    load_comp_stats() recarga comp_stats_v2.json en memoria
    st.cache_data.clear() + st.rerun()
+            │
+            ▼
+   [Tab 5 Motor Matemático — cuadro comparativo actualizado]
+   COMP_STATS = cs_dict   ← 102 features desde JSON (ya no hardcodeado)
+   Caption: "X anotaciones" ← dinámico (cs_n_alim + cs_n_serv + cs_n_ruido)
 ```
 
 ---
 
-## Estado de artefactos al 2026-06-28
+## Estado al 2026-06-28
 
 | Artefacto | Estado |
 |-----------|--------|
@@ -138,42 +123,8 @@ KPCL0034_UUIDS = {
 | `features_anotaciones_v2.csv` | 417 filas × 109 cols (4 pendientes de regenerar) |
 | `comp_stats_v2.json` | 102 features · basado en 417 anotaciones |
 
-> **Pendiente:** correr `revisar_anotaciones_v2.py` (o botón "🔄 Actualizar Todo") para cerrar
-> snapshot v2.2 con alim=209.
-
----
-
-## Categorías de anotación
-
-| Categoría | Emoji | Color | Descripción |
-|-----------|-------|-------|-------------|
-| `alimentacion` | 🍽️ | `#00b45a` | Bandida comiendo |
-| `servido` | 🫙 | `#1e64ff` | Llenado del plato |
-| `ruido` | ⚡ | `#ef4444` | Falsa actividad (descartado) |
-| `ciclo_servido_alimento` | 🟡 | `#facc15` | Ciclo completo servido+alimento |
-
----
-
-## Lanzar la app
-
-```powershell
-cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido"
-python -m streamlit run app_anotacion_av2.py
-```
-
-### Tabs de la app (lazy loading)
-
-| Tab | Nombre | Función |
-|-----|--------|---------|
-| 0 | 🌐 Vista Global | Serie temporal completa con bandas de anotaciones |
-| 1 | 🔍 Revisar Candidatos | Anotar candidatos (cola, slider, formulario) |
-| 2 | 📏 Analizar Curva | Estadísticas y distribuciones por categoría |
-| 3 | 🔄 Comparar Curvas | Spaghetti overlay de curvas del mismo tipo |
-| 4 | 📊 Panel de Features | Reglas emergentes y outliers por candidato |
-| 5 | 🧮 Motor Matemático | 102 features v2 + Evidence Engine + Feature Atlas |
-| 6 | 📋 Anotaciones | Lista completa guardada localmente |
-| 7 | 🕐 Próxima Comida | Predictor estadístico (intervalos + modelo circadiano) |
-| 8 | 🐱 Kittypau | Dashboard de bienestar Bandida (10 indicadores Sims) |
+> **Pendiente:** correr `revisar_anotaciones_v2.py` (o botón "🔄 Actualizar Todo") para actualizar
+> features y comp_stats con las 4 anotaciones nuevas (alim pasó de 205→209).
 
 ---
 
@@ -181,19 +132,15 @@ python -m streamlit run app_anotacion_av2.py
 
 | Función | Línea aprox. | Descripción |
 |---------|-------------|-------------|
-| `load_comp_stats()` | ~126 | Lee `comp_stats_v2.json`. Devuelve `(dict, n_alim, n_serv, n_ruido)` |
+| `load_comp_stats()` | ~126 | Lee `comp_stats_v2.json` con cache. Devuelve `(dict, n_alim, n_serv, n_ruido)` |
 | `_necesita_actualizacion()` | ~143 | Compara mtimes. Devuelve `(hay_raw_nueva, hay_anot_nuevas)` |
-| `load_lecturas()` | ~180 | Lee y resamplea ambos CSV (3 capas de caché) |
+| `load_lecturas()` | ~180 | Lee y resamplea ambos CSV (cacheado) |
 | `load_candidatos()` | ~207 | Lee `candidatos_av2.csv` |
 | `load_anotaciones()` | ~218 | Lee `anotaciones_av2.csv` |
-| `_ciclo_composicion_cards()` | ~507 | 3 tarjetas HTML de composición de ciclo |
-| `_batch_metricas()` | ~551 | Pre-computa métricas por categoría |
-| `_intervalos_validos_alim()` | ~560 | Intervalos entre alimentaciones filtrados |
 
 ---
 
 ## Ver también
 
-- [[15_Resultados/RESULT_AlphaV2_Snapshots]]
-- [[13_Features/README_ShapeFeatures]]
-- [[10_Datasets/README_Datasets]]
+- [HISTORIAL_RESULTADOS.md](HISTORIAL_RESULTADOS.md) — snapshots históricos de métricas por ingesta
+- [shape_features_v2.py](shape_features_v2.py) — Motor Matemático v2, 102 features en 15 familias

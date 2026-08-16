@@ -1,6 +1,6 @@
 ---
 id: spec_07_investigacion_hidratacion
-title: SPEC 07 — Reorganización de Docs/09_Investigacion + roadmap para investigar hidratación
+title: SPEC 07 — Reorganización de 09_Investigacion + roadmap para investigar hidratación
 type: spec
 status: draft
 owner: Mauro
@@ -36,7 +36,7 @@ related:
   - [[14_Experimentos/MOC_Experimentos]]
 ---
 
-# SPEC 07 — Reorganización de Docs/09_Investigacion + roadmap para investigar hidratación
+# SPEC 07 — Reorganización de 09_Investigacion + roadmap para investigar hidratación
 
 > Encargo de Mauro (2026-08-13): replicar todo lo hecho para el plato de comida
 > ([[29_Specs/SPEC_03_Objetivos_Monitoreo]] Pilar 2 ya lo marcaba como el gap más grande de
@@ -127,10 +127,10 @@ nuevo — usar siempre la tabla de arriba.
 
 ---
 
-## 1. Mapa actual de `Docs/09_Investigacion/` (verificado en esta sesión)
+## 1. Mapa actual de `09_Investigacion/` (verificado en esta sesión)
 
 ```
-Docs/09_Investigacion/
+09_Investigacion/
 ├── README.md, _MOC.md, GLOSARIO.md, EXPERIMENT_TRACKER.md,
 │   ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md, 01–08_*.md    ← docs de la era Ciclo Alpha v1
 ├── plot_kpcl_experimento.py, serve_kpcl_dashboard.py,
@@ -411,7 +411,7 @@ umbral se inventa sin datos reales detrás.
 > el código/UI ya no se duplica.
 
 ```
-Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/
+09_Investigacion/Ciclo Alpha v2/fase_0_ruido/
 ├── app_anotacion_av2.py          ← MISMO archivo, parametrizado por perfil (§5.1)
 ├── 01_genera_candidatos.py       ← ídem — recibe perfil de dispositivo
 ├── revisar_anotaciones_v2.py     ← ídem
@@ -433,7 +433,7 @@ Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/
 Documentación (fuera de `fase_0_ruido/`, sin riesgo de tocar código):
 
 ```
-Docs/09_Investigacion/Ciclo Alpha v2/
+09_Investigacion/Ciclo Alpha v2/
 ├── 00_INDICE_AV2.md              ← SIN CAMBIOS — sigue siendo 100% comida
 └── 00_INDICE_AV2_AGUA.md         ← NUEVO — MOC propio para hidratación, no se mezcla con el de comida
 ```
@@ -614,7 +614,7 @@ vocabulario de las 3 categorías de destino en la anotación manual.
 
 | Ítem | Propuesta | Riesgo | Nota |
 |---|---|---|---|
-| `Ciclo Alpha/` (carpeta completa) | **No renombrar.** Reforzar el README interno con un banner de estado archivado si no lo tiene ya tan explícito como `_MOC.md` | Bajo si solo se edita el README; Alto si se renombra la carpeta (rompe rutas relativas literales usadas en `Docs/09_Investigacion/README.md`, `_MOC.md` y varios docs de Knowledge) | Verificar primero cuántos enlaces relativos apuntan a `Ciclo Alpha/...` antes de tocar nada estructural |
+| `Ciclo Alpha/` (carpeta completa) | **No renombrar.** Reforzar el README interno con un banner de estado archivado si no lo tiene ya tan explícito como `_MOC.md` | Bajo si solo se edita el README; Alto si se renombra la carpeta (rompe rutas relativas literales usadas en `09_Investigacion/README.md`, `_MOC.md` y varios docs de Knowledge) | Verificar primero cuántos enlaces relativos apuntan a `Ciclo Alpha/...` antes de tocar nada estructural |
 | Docs sueltos de raíz (`README.md`, `GLOSARIO.md`, `EXPERIMENT_TRACKER.md`, `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`, `01_`–`08_*.md`) | Mover a una subcarpeta explícita tipo `_legacy_ciclo_alpha_v1/` y dejar en la raíz un `README.md` corto y nuevo que apunte a `Ciclo Alpha v2/` (comida) y `Ciclo Alpha v2/00_INDICE_AV2_AGUA.md` (agua) como los índices activos | Medio — son referenciados desde varios lados (`_MOC.md`, posiblemente Knowledge/) | Requiere grep completo de referencias antes de mover, y actualizarlas todas en el mismo cambio — no es un renombre suelto |
 | `plot_kpcl_experimento.py`, `serve_kpcl_dashboard.py`, `abrir_kpcl_dashboard.ps1`, `kpcl_pruebas_eventos.html`, `kpcl0034_*.csv`, `kpcl0036_*.csv` | **No mover sin confirmar con Mauro si el dashboard sigue en uso** — no hay evidencia de que esté deprecado, solo que su documentación vive en el README "legacy" | — | Ver §8 pregunta 3 |
 | `Power Bi_Supabase/kittypau_supabase_2026.pbix` | Sin cambios hasta confirmar propósito — no tiene README propio | — | Ver §8 pregunta 5 |
@@ -647,7 +647,7 @@ referencias deja rutas rotas documentadas).
 |---|---|---|
 | 1 | ~~Confirmar con Mauro las preguntas restantes de §8~~ — preguntas 1 y 4 resueltas; 2, 3, 5 no bloquean el paso 2 | — |
 | 2 | ✅ **Hecho 2026-08-13.** `DEVICE_PROFILES` introducido en `app_anotacion_av2.py`, `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` (§5.1), solo perfil `KPCL0034`. Verificación real, no solo "corrí los tests": (a) `python -m py_compile` en los 3 archivos — OK; (b) `streamlit.testing.v1.AppTest` — la app corre headless sin excepciones; (c) las 8 rutas/UUIDs derivadas del perfil son byte-idénticas a las literales de antes; (d) **ambos scripts corridos end-to-end, código original vs. refactorizado, sobre los mismos datos — `candidatos_av2.csv`, `comp_stats_v2.json` y `features_anotaciones_v2.csv` salieron con SHA-256 idéntico**; (e) `tests/` 16/16 passed antes y después. Los archivos de datos regenerados durante la prueba se restauraron a su estado exacto previo (no se dejó nada regenerado de más — `anotaciones_av2.csv`, que tenía anotación en curso sin commitear, no se tocó en ningún momento). Encontrado y documentado en el camino: la app tiene **53 apariciones literales** de `"alimentacion"`/`"ciclo_servido_alimento"` como nombre de categoría (no solo rutas) — no afecta este paso (una sola clave, no cambia), pero sí al paso 3, ver nota en §5.1. | 1 |
-| 3 | ✅ **Hecho 2026-08-13, corregido esa misma tarde (ver banner al inicio).** Perfil de agua agregado a `DEVICE_PROFILES` en los 3 archivos — inicialmente como `"KPCL0036"` (error, corregido a **`"KPCL0035"`**, el bebedero real). En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0035`, generaron `data_agua/candidatos_agua.csv` real (104.573 filas KPCL0035 leídas, período 25-may→13-ago-2026 → **288 candidatos**: 217 bajada/75%, 69 subida/24%, 2 mixto/1%) — reemplaza los 393 candidatos generados por error contra KPCL0036 esa mañana. En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `Docs/09_Investigacion/Ciclo Alpha v2/00_INDICE_AV2_AGUA.md`. `supabase_client.py` ampliado (`BANDIDA_UUIDS`) para que el sync incremental traiga KPCL0035 además de KPCL0034. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
+| 3 | ✅ **Hecho 2026-08-13, corregido esa misma tarde (ver banner al inicio).** Perfil de agua agregado a `DEVICE_PROFILES` en los 3 archivos — inicialmente como `"KPCL0036"` (error, corregido a **`"KPCL0035"`**, el bebedero real). En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0035`, generaron `data_agua/candidatos_agua.csv` real (104.573 filas KPCL0035 leídas, período 25-may→13-ago-2026 → **288 candidatos**: 217 bajada/75%, 69 subida/24%, 2 mixto/1%) — reemplaza los 393 candidatos generados por error contra KPCL0036 esa mañana. En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `09_Investigacion/Ciclo Alpha v2/00_INDICE_AV2_AGUA.md`. `supabase_client.py` ampliado (`BANDIDA_UUIDS`) para que el sync incremental traiga KPCL0035 además de KPCL0034. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
 | 3b | Resolver la indirección de nombres de categoría en `app_anotacion_av2.py` (§5.1) para poder activar `_ACTIVE_PROFILE="KPCL0035"` sin romper — bloqueante para poder *ver* los datos de agua en la UI, no para seguir generando candidatos por script | 3 |
 | 4 | Diagnóstico de calidad de señal de KPCL0035 (cadencia, % en cero, rango de peso — mismo método usado en §2.3 sobre el UUID retirado, repetir sobre el device correcto) + decidir si el UUID retirado `3c1c6705...` es el mismo bebedero físico (continuidad histórica, sin confirmar — ver banner de corrección) | 3b |
 | 5 | ~~Con el perfil de agua seleccionable en la app: adaptar `01_genera_candidatos.py` para generar `candidatos_agua.csv`~~ — **adelantado al paso 3**: el script ya genera `candidatos_agua.csv` real vía env var, sin necesitar selector de UI. Queda pendiente **validar** que `RESAMPLE_TARGET_S=30`/`GAP_CUTOFF_S=300` (heredados de comida) sean correctos para agua antes de darlos por buenos (ver §3) | 3b |
@@ -697,8 +697,8 @@ referencias deja rutas rotas documentadas).
 - [[09_Sensores/README_Sensores]] — roster de devices, actualizado 2026-08-13 con la
   identidad real (KPCL0035 = bebedero, KPCL0036 = otra mascota)
 - [[13_Features/README_ShapeFeatures]] — las 15 familias del Motor Matemático de comida
-- `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` — el pipeline a parametrizar por
+- `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` — el pipeline a parametrizar por
   dispositivo (§5), no a duplicar
-- `Docs/09_Investigacion/07_AUDITORIA_KPCL0036_ERROR_PESO.md` — diagnóstico histórico de
+- `09_Investigacion/07_AUDITORIA_KPCL0036_ERROR_PESO.md` — diagnóstico histórico de
   abril/mayo 2026, sobre el UUID retirado `3c1c6705…` que en ese momento tenía el código
   "KPCL0036" — no confundir con el KPCL0036 actual (otra mascota, ver banner al inicio)

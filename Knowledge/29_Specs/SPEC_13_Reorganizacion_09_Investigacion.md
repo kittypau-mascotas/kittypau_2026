@@ -1,0 +1,220 @@
+---
+id: spec_13_reorganizacion_09_investigacion
+title: SPEC 13 — Saca 09_Investigacion/ de Docs/ a la raíz del repo
+type: spec
+status: ejecutado
+owner: Mauro
+created: 2026-08-17
+updated: 2026-08-17
+confirmado_por_mauro:
+  - "Destino confirmado: raíz del repo (kittypau_2026_hivemq/09_Investigacion), no una
+    carpeta hermana nueva — 2026-08-17"
+tags:
+  - spec
+  - investigacion
+  - reorganizacion
+  - fase_0_ruido
+  - filesystem
+related:
+  - [[00_HOME]]
+  - [[29_Specs/README_Specs]]
+  - [[29_Specs/SPEC_07_Investigacion_Hidratacion]]
+  - [[14_Experimentos/EXP_AlphaV2_AppArq]]
+  - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
+  - [[13_Features/README_ShapeFeatures]]
+  - [[11_ModelosIA/MODEL_EvidenceEngine]]
+  - [[05_API/SPEC_HungerBar_Alimentacion]]
+---
+
+# SPEC 13 — Saca `09_Investigacion/` de `Docs/` a la raíz del repo
+
+> Pedido de Mauro (2026-08-17): sacar `Docs/09_Investigacion/` a la raíz del repo
+> (`kittypau_2026_hivemq/09_Investigacion/`), revisando primero qué sirve — sobre todo
+> `fase_0_ruido/` (donde vive la mayor parte de la investigación y los resultados) — y
+> verificando que todo lo que usa `app_anotacion_av2.py` (resultados + dependencias) siga
+> funcionando en la ubicación nueva.
+
+---
+
+## 0. Qué se hizo (resumen ejecutivo)
+
+1. Inventario de `Docs/09_Investigacion/` completo: 363 archivos trackeados por git,
+   además de contenido gitignorado (`venv/`, `node_modules/`, CSVs/parquets grandes).
+2. Movida la carpeta completa a la raíz del repo — **una sola excepción** (§3).
+3. Corregidas las rutas relativas hacia `Docs/11_Data/2026/` (`readings.csv`/
+   `readings_rows.csv`, 299 MB, la fuente de verdad histórica — **no se tocó ese archivo
+   ni su ubicación**, solo la forma en que los scripts la encuentran) en los 6 scripts de
+   `fase_0_ruido/` que la referencian.
+4. `app_anotacion_av2.py` verificado funcionando en la ubicación nueva: `py_compile` OK,
+   arranca headless (`streamlit run`) y responde `HTTP 200` + `/_stcore/health` → `ok`,
+   suite `tests/` 16/16 verde (mismo resultado que el baseline histórico).
+5. Actualizadas las referencias a la ruta vieja en 12 archivos de `Knowledge/` + 4 archivos
+   dentro de la propia carpeta movida + `Docs/00_Inicio/PLAN_KNOWLEDGE_SYSTEM.md`.
+
+---
+
+## 1. Inventario previo — qué hay en `Docs/09_Investigacion/`
+
+Estructura de alto nivel (antes de mover):
+
+```
+Docs/09_Investigacion/
+├── 01_GUIA_DASHBOARD_KPCL.md … 08_REGISTRO_EVENTOS_2026-04-16.md  (8 docs sueltos)
+├── README.md, _MOC.md, GLOSARIO.md, EXPERIMENT_TRACKER.md,
+│   ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md
+├── kpcl00*.csv (4 archivos de prueba sueltos) + kpcl_pruebas_eventos.html
+├── plot_kpcl_experimento.py, serve_kpcl_dashboard.py, abrir_kpcl_dashboard.ps1
+├── Ciclo Alpha/          ← ciclo anterior, ARCHIVADO (ver _MOC.md), tiene venv/ propio
+│   └── fase_4_visualizacion/  ← app React/Vite vieja, tiene node_modules/
+├── Ciclo Alpha v2/       ← EL VIGENTE (confirmado por comentario ya existente en
+│   │                        .gitignore: "Ciclo Alpha v2/ es la vigente")
+│   ├── fase_0_ruido/     ← "donde está la gran parte de la investigación y los
+│   │                        resultados" (palabras de Mauro) — contiene
+│   │                        app_anotacion_av2.py, shape_features_v2.py (Motor
+│   │                        Matemático v2), supabase_client.py, tests/, data/, config/
+│   └── experiments/, Exploracion_Gamma_Delta_2026/
+└── Power Bi_Supabase/
+```
+
+`fase_0_ruido/` es, tal como dijo Mauro, la carpeta con más peso real: contiene
+`app_anotacion_av2.py` (la app de anotación Streamlit, Tab 5 del proyecto según
+[[13_Features/README_ShapeFeatures]]), `shape_features_v2.py` (Motor Matemático v2 — 102
+features en 15 familias + Evidence Engine, ver memoria del proyecto), `supabase_client.py`
+(sync incremental), scripts de pipeline (`01_genera_candidatos.py`,
+`02_auditar_discrepancias.py`, `03_recalibrar_umbrales.py`), `tests/` (16 tests), y los
+resultados/datos de trabajo (`data/`, `data_agua/`, `config/`, `benchmark_data_*`).
+
+**Veredicto de la revisión**: todo lo de `Ciclo Alpha v2/` (incluida `fase_0_ruido/`) está
+vigente y en uso activo — es la base de [[29_Specs/SPEC_07_Investigacion_Hidratacion]] (en
+ejecución) y de los specs de features (`shape_features_v2.py` alimenta
+[[11_ModelosIA/MODEL_EvidenceEngine]] y Tab 5 de la app real). `Ciclo Alpha/` (sin "v2") ya
+estaba marcado como archivado antes de este spec (`_MOC.md` interno) — se movió igual
+(nada se descartó), pero no se le hizo la misma verificación funcional profunda que a
+`fase_0_ruido/`.
+
+---
+
+## 2. La dependencia crítica: `Docs/11_Data/2026/`
+
+`app_anotacion_av2.py` y sus scripts hermanos (`01_genera_candidatos.py`,
+`requirements_check.py`, `revisar_anotaciones_v2.py`, `supabase_client.py`) leen
+`readings.csv` (242 MB, **estático — fuente de verdad histórica de abril, nunca se
+modifica**) y `readings_rows.csv` (70 MB, dinámico) desde `Docs/11_Data/2026/`, calculada
+como una ruta relativa (`SCRIPT_DIR.parent.parent.parent`, o `_ROOT` en
+`supabase_client.py`).
+
+**`Docs/11_Data/2026/` NO se movió** — se queda exactamente donde está, por 2 motivos:
+
+1. Es la fuente de verdad histórica (`readings.csv`) — el principio de "nunca
+   truncar/mover/sobreescribir sin motivo" de este proyecto aplica igual a su ubicación.
+2. La referencian también 7 archivos de `Knowledge/` fuera del alcance de este spec
+   (`10_Datasets/README_Datasets.md`, `14_Experimentos/*`, `29_Specs/SPEC_07_*`, etc.) —
+   moverla habría sido un cambio mucho más grande que lo pedido.
+
+Lo que sí cambió: la carpeta `fase_0_ruido/` (y sus hermanas `0A_exploracion/`,
+`0B_deteccion_inactividad/`) subieron un nivel de anidamiento al salir `09_Investigacion/`
+de `Docs/` — las rutas relativas que antes hacían `SCRIPT_DIR.parent.parent.parent` (3
+niveles → `Docs/`) ahora necesitan `SCRIPT_DIR.parent.parent.parent / "Docs"` explícito (3
+niveles → raíz del repo, + `Docs/` de vuelta). `supabase_client.py` usaba un `_ROOT` de 4
+niveles (ya apuntaba explícito a `Docs/11_Data/2026`) — pasó a 3 niveles.
+
+Archivos corregidos (mismo patrón en los 6):
+
+| Archivo | Antes | Después |
+|---|---|---|
+| `app_anotacion_av2.py` | `SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"` | `... / "Docs" / "11_Data" / "2026"` |
+| `01_genera_candidatos.py` | ídem | ídem |
+| `requirements_check.py` | ídem | ídem |
+| `revisar_anotaciones_v2.py` | ídem | ídem |
+| `supabase_client.py` | `_ROOT = SCRIPT_DIR.parent.parent.parent.parent` | `_ROOT = SCRIPT_DIR.parent.parent.parent` |
+| `0A_01_carga_y_cadencia.py`, `0A_02_limpieza.py`, `0B_02_valida_contra_etiquetas.py` | `ROOT / "Docs/09_Investigacion/Ciclo Alpha" / ...` | `ROOT / "09_Investigacion/Ciclo Alpha" / ...` (el `ROOT = parents[4]` ya apuntaba a la raíz del repo — antes era, sin que nadie lo hubiera notado, un off-by-one; con un nivel menos de anidamiento ahora sí es correcto) |
+
+Verificado con Python real (no solo lectura de código): `RAW_DATA_DIR` resuelto desde la
+ubicación nueva encuentra `readings.csv`/`readings_rows.csv` (`.exists() == True` para
+ambos).
+
+---
+
+## 3. Lo único que NO se pudo mover
+
+`Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` — Windows negó el
+acceso al moverlo (probablemente por la profundidad de anidamiento típica de
+`node_modules`, no un archivo en uso: todo lo demás de esa misma carpeta —`venv/` del
+propio `Ciclo Alpha`, mucho más pesado, incluido— se movió sin problema).
+
+- Es de **`Ciclo Alpha`** (el ciclo archivado, sin "v2"), no de `Ciclo Alpha v2` ni de
+  `fase_0_ruido` — no tiene relación con `app_anotacion_av2.py`.
+- Está gitignoreado (`node_modules/` en `.gitignore`) — nunca estuvo trackeado, no hay
+  pérdida de historial.
+- Es 100% regenerable con `npm install` si esa visualización vieja se retoma alguna vez.
+
+**Queda pendiente, no resuelto por este spec**: decidir si se borra manualmente (con
+`Remove-Item -Recurse -Force` una vez que Windows libere el handle, ej. tras reiniciar) o
+si se deja — no se tocó sin confirmación porque no es contenido que haya creado esta
+sesión. `Docs/09_Investigacion/` queda como una carpeta casi vacía con solo ese resto
+adentro.
+
+---
+
+## 4. Verificación de `app_anotacion_av2.py` en la ubicación nueva
+
+Todo ejecutado contra `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` (la ubicación
+nueva), no la vieja:
+
+| Check | Resultado |
+|---|---|
+| `python -m py_compile` sobre los 8 scripts principales de `fase_0_ruido/` (incluye `app_anotacion_av2.py`, `shape_features_v2.py`, `supabase_client.py`) | OK, sin errores de sintaxis |
+| Import de dependencias de terceros (`streamlit`, `pandas`, `numpy`, `plotly`, `scipy`, `pyarrow`) | Las 6 instaladas y resuelven |
+| `RAW_DATA_DIR` resuelto → `readings.csv`/`readings_rows.csv` | Ambos `.exists() == True` |
+| `streamlit run app_anotacion_av2.py --server.headless true` (2 corridas independientes, puertos distintos) | Arranca sin traceback, `Uvicorn server started` |
+| `curl http://localhost:PORT/` | `HTTP 200` |
+| `curl http://localhost:PORT/_stcore/health` | `ok` |
+| `python -m pytest tests/ -q` | **16 passed** (mismo número que el baseline histórico citado en [[29_Specs/SPEC_07_Investigacion_Hidratacion]]) |
+
+No se verificó de la misma forma el resto de `09_Investigacion/` (`Ciclo Alpha` archivado,
+`Power Bi_Supabase`, docs sueltos) — el pedido de Mauro priorizaba explícitamente
+`fase_0_ruido`/`app_anotacion_av2.py`; el resto se movió íntegro (nada se descartó) pero
+sin la misma batería de pruebas funcionales.
+
+---
+
+## 5. Referencias actualizadas fuera de la carpeta movida
+
+12 archivos de `Knowledge/` + `Docs/00_Inicio/PLAN_KNOWLEDGE_SYSTEM.md` mencionaban rutas
+literales `Docs/09_Investigacion/...` (prosa y enlaces relativos markdown) — reemplazo
+mecánico `Docs/09_Investigacion` → `09_Investigacion` en los 13 archivos. Los enlaces
+relativos (ej. `../../../Docs/09_Investigacion/...` desde `Knowledge/05_API/`) no
+necesitaron ajustar la cantidad de `../` — `Knowledge/` no se movió, solo cambió el
+subpath dentro de la raíz del repo.
+
+Lista completa: `00_HOME.md`, `01_Proyecto/ESTADO_ACTUAL.md`,
+`05_API/SPEC_HungerBar_Alimentacion.md`, `11_ModelosIA/MODEL_EvidenceEngine.md`,
+`13_Features/README_ShapeFeatures.md`, `14_Experimentos/EXP_AlphaV2_AppArq.md`,
+`14_Experimentos/EXP_AlphaV2_Pipeline.md`, `15_Resultados/RESULT_AlphaV2_Snapshots.md`,
+`29_Specs/README_Specs.md`, `29_Specs/SPEC_04_Metricas_Today_Investigacion.md`,
+`29_Specs/SPEC_07_Investigacion_Hidratacion.md`, `AUDITORIA_2026_08_11.md`.
+
+---
+
+## 6. Qué NO cambió (a propósito)
+
+- `Docs/11_Data/2026/readings.csv` / `readings_rows.csv` — misma ubicación, mismo
+  contenido, no se tocaron.
+- El contenido de `Ciclo Alpha`, `Ciclo Alpha v2`, `Power Bi_Supabase` — se movió tal cual,
+  nada se editó salvo las rutas listadas en §2 y §5.
+- `.gitignore` — las reglas existentes (`Docs/09_Investigacion/**/*.csv`,
+  `Docs/11_Data/**/*.csv`, `**/venv/`, etc.) siguen aplicando a `Docs/11_Data/` (que sigue
+  ahí); las reglas específicas de `Docs/09_Investigacion/` quedaron apuntando a una ruta
+  que ya no existe — no se limpiaron en este spec (gitignore ya-innecesario no rompe
+  nada, solo queda obsoleto; limpiarlo es una tarea aparte, de bajo riesgo, no crítica).
+
+---
+
+## 7. Siguiente sesión / seguimiento
+
+- Decidir qué hacer con el `node_modules` huérfano en
+  `Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` (§3).
+- Opcional: limpiar las reglas de `.gitignore` que ya apuntan a `Docs/09_Investigacion/`
+  (ahora inexistente) y agregar las nuevas para `09_Investigacion/` en la raíz si hace
+  falta (las reglas de `*.csv`/`*.parquet`/`__pycache__`/`.pytest_cache` genéricas ya
+  cubren rutas nuevas por patrón, pero vale una pasada de confirmación).

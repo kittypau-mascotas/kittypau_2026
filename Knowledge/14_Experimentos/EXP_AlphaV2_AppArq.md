@@ -23,7 +23,7 @@ related:
 
 # Arquitectura — app_anotacion_av2.py
 
-**Archivo:** `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`
+**Archivo:** `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`
 
 > **2026-08-13 — parametrizada por `DEVICE_PROFILES`** (perfil `KPCL0034` activo, perfil
 > `KPCL0035`/agua — el bebedero real, corregido desde `KPCL0036` esa misma tarde —

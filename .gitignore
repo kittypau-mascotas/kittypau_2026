@@ -155,10 +155,11 @@ cat-movement-lab/
 supabase-analytics/
 
 # venvs sueltos y builds locales bajo Docs (rompían el encoding-check al no
-# estar trackeados) — Docs/09_Investigacion/Ciclo Alpha v2/ es la vigente,
+# estar trackeados) — 09_Investigacion/Ciclo Alpha v2/ es la vigente,
 # "Ciclo Alpha" (v1, sin "v2") es legacy.
 **/venv/
 Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/dist/
+09_Investigacion/Ciclo Alpha/fase_4_visualizacion/dist/
 kittypau_app/legacy/
 notebooks/.ipynb_checkpoints/
 
@@ -167,6 +168,11 @@ kpcl0036_error_peso_sinbateria.csv
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv
 Docs/09_Investigacion/**/*.parquet
+# 09_Investigacion/ vive en la raíz del repo desde 2026-08-17 (SPEC 13) — reglas
+# equivalentes a las de Docs/09_Investigacion/ de arriba, para la ubicación nueva.
+09_Investigacion/**/*.csv
+09_Investigacion/**/*.parquet
+09_Investigacion/**/*.pkl
 # Datos grandes
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv

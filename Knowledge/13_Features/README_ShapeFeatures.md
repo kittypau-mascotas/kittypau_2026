@@ -23,7 +23,7 @@ related:
 
 # Motor Matemático v2 — shape_features_v2.py
 
-**Archivo:** `Docs/09_Investigacion/Ciclo Alpha v2/fase_0_ruido/shape_features_v2.py`  
+**Archivo:** `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/shape_features_v2.py`  
 **Features:** 102 en 15 familias (F00–F14)  
 **Dependencias:** numpy, scipy (solo)  
 **Importar:** `from shape_features_v2 import extraer_features, evidence_score`
