@@ -75,6 +75,19 @@ guarda el nombre elegido tal cual, `marca_otra` el texto libre si eligió "otra"
 mantiene una base de datos pública tipo AAFCO con fichas nutricionales por producto) — es
 la lista de marcas/líneas reales confirmadas en tiendas chilenas.
 
+**Actualizado 2026-08-17 (2)**: `formula` (texto libre) se reemplazó por `formula_etapa` +
+`formula_necesidad`. No existe un catálogo público de nombres exactos de línea por marca
+(mismo motivo que `marca` arriba), pero la investigación confirma que **todas** las marcas
+revisadas (Royal Canin, Champion, Pro Plan, Hill's, Master Dog, Bravery, Acana, Orijen —
+fuentes en `spec.md` § Assumptions) organizan sus líneas con las mismas 2 dimensiones:
+etapa de vida (cachorro/adulto/senior/todas las etapas) y necesidad especial (control de
+peso, digestión o piel sensible, urinario, + esterilizado/indoor específico de gato o
+articular específico de perro). `formula_etapa` se precarga con el `age_range` ya declarado
+de la mascota (Registro Básico) si coincide con una de las 3 etapas conocidas — evita
+volver a preguntar un dato que Kittypau ya tiene (mismo principio que las cantidades/
+horarios de alimentación, aunque acá sí se pregunta porque es un dato de la fórmula del
+alimento, no algo que el dispositivo mida).
+
 **Corregido 2026-08-17**: `cantidad_diaria_g`, `comidas_dia` y `horarios` se sacaron de este
 objeto — no se le preguntan a la persona. Son exactamente lo que Kittypau mide con el
 dispositivo real (comedero/bebedero + sensor de peso); pedirlas como dato autodeclarado
@@ -86,7 +99,8 @@ para cómo ya se derivan de `readings` una vez vinculado el dispositivo.
   "tipo_alimento": "seco | humedo | mixto",
   "marca": "Royal Canin | ... | otra",
   "marca_otra": "texto libre si eligió 'otra'",
-  "formula": "texto libre",
+  "formula_etapa": "cachorro | adulto | senior | todas_las_etapas",
+  "formula_necesidad": "estandar | control_peso | digestion_piel_sensible | urinario | articular (perro) | esterilizado_indoor (gato)",
   "premios": { "aplica": true, "detalle": "texto libre" },
   "restricciones_alimentarias": "texto libre"
 }

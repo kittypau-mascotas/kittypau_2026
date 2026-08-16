@@ -570,3 +570,17 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   - Separado por especie (`type` perro/gato) porque varias marcas usan nombre de línea
     distinto para cada una (Master Dog vs. Master Cat, Champion Dog vs. Champion Cat) — ver
     `data-model.md`. "Otra" siempre disponible con texto libre.
+- **Fórmula/variedad (Ficha Detallada — Alimentación), investigada 2026-08-17**. Igual que
+  con Marca, no existe catálogo público con el nombre exacto de cada línea por producto —
+  pedirlo como texto libre no aportaba estructura real. Se investigó el catálogo oficial de
+  8 marcas (Royal Canin, Champion Dog/Cat, Pro Plan, Hill's Science Diet/Prescription Diet,
+  Master Dog/Cat, Bravery, Acana, Orijen — sitios oficiales `royalcanin.com`, `championdog.cl`,
+  `purina.cl`, `hillspet.com`, más fichas de Lider/Falabella para Master Dog/Cat) y todas,
+  sin excepción, organizan sus líneas con las mismas 2 dimensiones: **etapa de vida**
+  (cachorro/adulto/senior, algunas con "todas las etapas") y **necesidad especial** (control
+  de peso, digestión o piel sensible, urinario — comunes a ambas especies; esterilizado/indoor
+  específico de gato; articular específico de perro senior/raza grande). Se reemplazó el campo
+  de texto libre por 2 `<select>` con esas dimensiones reales en vez de inventar nombres de
+  producto que no se pueden verificar contra una fuente única — ver `data-model.md`.
+  `formula_etapa` se precarga con el `age_range` de Registro Básico si coincide con una de las
+  3 etapas conocidas (evita repreguntar un dato ya declarado).

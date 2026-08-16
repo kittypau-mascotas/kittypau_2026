@@ -220,6 +220,34 @@ const MARCA_OPTIONS_GATO = [
   },
 ] as const;
 
+// ponytail: no existe catálogo público (SAG no mantiene ficha nutricional tipo AAFCO por
+// producto, ver research del usuario en spec.md § Assumptions) — en vez de inventar nombres
+// exactos de línea por marca, se usan las 2 dimensiones reales que TODAS las marcas
+// investigadas comparten (Royal Canin, Champion, Pro Plan, Hill's, Master Dog, Bravery,
+// Acana, Orijen): etapa de vida y necesidad especial. Fuentes en spec.md § Assumptions.
+const ETAPA_OPTIONS = [
+  { value: "cachorro", label: "Cachorro" },
+  { value: "adulto", label: "Adulto" },
+  { value: "senior", label: "Senior" },
+  { value: "todas_las_etapas", label: "Todas las etapas" },
+] as const;
+
+const NECESIDAD_OPTIONS_PERRO = [
+  { value: "estandar", label: "Estándar / mantención" },
+  { value: "control_peso", label: "Control de peso" },
+  { value: "digestion_piel_sensible", label: "Digestión o piel sensible" },
+  { value: "articular", label: "Articular / movilidad" },
+  { value: "urinario", label: "Urinario" },
+] as const;
+
+const NECESIDAD_OPTIONS_GATO = [
+  { value: "estandar", label: "Estándar / mantención" },
+  { value: "control_peso", label: "Control de peso" },
+  { value: "digestion_piel_sensible", label: "Digestión o piel sensible" },
+  { value: "esterilizado_indoor", label: "Esterilizado / indoor" },
+  { value: "urinario", label: "Urinario" },
+] as const;
+
 function CheckboxOptionGroup({
   options,
   selected,
@@ -1361,11 +1389,22 @@ export default function PetPage() {
                       string,
                       unknown
                     >;
+                    const defaultEtapa =
+                      selectedPet.age_range === "cachorro" ||
+                      selectedPet.age_range === "adulto" ||
+                      selectedPet.age_range === "senior"
+                        ? selectedPet.age_range
+                        : "";
                     setFeedingForm({
                       tipo_alimento: String(profile.tipo_alimento ?? ""),
                       marca: String(profile.marca ?? ""),
                       marca_otra: String(profile.marca_otra ?? ""),
-                      formula: String(profile.formula ?? ""),
+                      formula_etapa: String(
+                        profile.formula_etapa ?? defaultEtapa,
+                      ),
+                      formula_necesidad: String(
+                        profile.formula_necesidad ?? "estandar",
+                      ),
                       // ponytail: cantidad_diaria_g/comidas_dia/horarios NO se preguntan
                       // (corregido 2026-08-17) — Kittypau los mide con el dispositivo real,
                       // no se le pide a la persona que los autodeclare. Ver data-model.md.
@@ -1488,26 +1527,48 @@ export default function PetPage() {
                       ) : null}
                     </label>
                     <label className="block text-xs text-slate-500">
-                      Fórmula / variedad
-                      <input
-                        type="text"
-                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                        value={feedingForm.formula ?? ""}
+                      Etapa de vida (fórmula)
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.formula_etapa ?? ""}
                         onChange={(event) =>
                           setFeedingForm((prev) => ({
                             ...prev,
-                            formula: event.target.value,
+                            formula_etapa: event.target.value,
                           }))
                         }
-                      />
+                      >
+                        <option value="">Selecciona</option>
+                        {ETAPA_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Necesidad especial (fórmula)
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.formula_necesidad ?? "estandar"}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            formula_necesidad: event.target.value,
+                          }))
+                        }
+                      >
+                        {(selectedPet.type === "dog"
+                          ? NECESIDAD_OPTIONS_PERRO
+                          : NECESIDAD_OPTIONS_GATO
+                        ).map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                   </div>
-
-                  <p className="rounded-[var(--radius)] border border-slate-200/70 bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
-                    Cantidad diaria, comidas al día y horarios no se preguntan
-                    acá — Kittypau los mide directo con tu dispositivo una vez
-                    vinculado.
-                  </p>
 
                   <div>
                     <p className="text-xs text-slate-500">
