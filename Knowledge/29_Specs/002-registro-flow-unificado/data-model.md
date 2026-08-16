@@ -36,16 +36,29 @@ de 6 valores (`comprado`, `adoptado_refugio`, `rescatado_calle`, `regalado`, `na
 
 ### Forma de `health_profile` (claves esperadas, todas opcionales)
 
+**Actualizado 2026-08-17**: `alergias`, `medicamentos`, `tratamientos`, `cirugias` y `vacunas`
+pasaron de texto libre a **checklist de opciones investigadas contra fuentes veterinarias
+reales de Chile** (cada una con un array de valores + un campo `*_otra` de texto libre para lo
+que no está en la lista) — ver `Knowledge/29_Specs/002-registro-flow-unificado/spec.md` §
+Assumptions para las fuentes citadas. `vacunas` depende de la especie: perro usa
+`sextuple_octuple`/`tos_perreras`, gato usa `triple_felina`/`leucemia_felina` — ambos
+comparten `antirrabica` (única vacuna obligatoria por ley en Chile).
+
 ```json
 {
   "peso_ideal_kg": 4.2,
   "condiciones_diagnosticadas": ["renal", "obesidad"],
   "condiciones_otra": "texto libre si eligió 'otra'",
-  "alergias": "texto libre",
-  "medicamentos": "texto libre",
-  "tratamientos": "texto libre",
-  "cirugias": "texto libre",
-  "vacunas": "texto libre",
+  "alergias": ["pulgas", "ambiental", "alimentaria", "contacto", "otra"],
+  "alergias_otra": "texto libre si eligió 'otra'",
+  "medicamentos": ["antiparasitario", "antibiotico", "antiinflamatorio", "antialergico", "suplemento", "otro"],
+  "medicamentos_otra": "texto libre si eligió 'otro'",
+  "tratamientos": ["dermatologico", "dental", "fisioterapia", "oncologico", "cronico", "otro"],
+  "tratamientos_otra": "texto libre si eligió 'otro'",
+  "cirugias": ["esterilizacion", "dental", "cuerpo_extrano", "ortopedica", "otra"],
+  "cirugias_otra": "texto libre si eligió 'otra'",
+  "vacunas": ["antirrabica", "sextuple_octuple", "tos_perreras"],
+  "vacunas_otra": "texto libre si eligió 'otra'",
   "desparasitacion_ultima_fecha": "2026-06-01",
   "historial_veterinario": "texto libre",
   "ultimo_control_fecha": "2026-07-15"

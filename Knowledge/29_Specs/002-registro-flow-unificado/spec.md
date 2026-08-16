@@ -521,3 +521,26 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   deliberada: a la derecha del campo no es viable en columna única en mobile (rompería el
   layout de una sola columna que pide FR-020). Marcado como simplificación deliberada, no como
   incumplimiento de la guía.
+- **Opciones de la Ficha Detallada — Salud, investigadas 2026-08-17** (a pedido explícito de
+  Mauro: "mejorar con opciones reales" en vez de texto libre). Alergias, Medicamentos,
+  Tratamientos, Cirugías y Vacunas pasan de texto libre a checklist de opciones + "otra/otro"
+  de texto libre — ver `data-model.md` para la forma exacta. Fuentes citadas por búsqueda web
+  (no inventadas):
+  - Alergias más comunes: CuidaPet, Welnia, Club de Perros y Gatos (Chile) — pulgas
+    (dermatitis alérgica), ambiental (ácaros/pólenes/hongos), alimentaria, contacto.
+  - Cirugías más comunes: Vistacumbre, Clínica Raza, Mascotas en Buenas Manos (Chile) —
+    esterilización/castración, extracción dental, cuerpo extraño, ortopédica.
+  - Medicamentos: Petvet, VetBox, VetMontt (Chile) — antiparasitario (categoría más citada,
+    marcas Nexgard/Bravecto/Drontal), antibiótico, antiinflamatorio, antialérgico,
+    suplemento; se listan por categoría clínica, no por marca comercial (las marcas cambian,
+    la categoría no).
+  - Vacunas — **cartilla real del Colegio Médico Veterinario de Chile** (vía CuidaPet):
+    Antirrábica es la **única obligatoria por ley** (perro y gato). Perro: Séxtuple/Óctuple
+    (moquillo, parvovirus, hepatitis, leptospirosis) + Tos de las perreras (opcional). Gato:
+    Triple felina (panleucopenia, calicivirus, herpesvirus) + Leucemia felina/FeLV
+    (opcional). La lista mostrada depende de `type` (perro vs. gato) — no es la misma
+    cartilla para ambos.
+  - Tratamientos: sin una fuente única con un "top 5" claro — se agrupó por categoría clínica
+    habitual (dermatológico, dental, fisioterapia, oncológico, manejo de enfermedad crónica),
+    con "otro" siempre disponible. Declarado explícitamente como el más débil de los 5 en
+    términos de respaldo por fuente — a revisar si Mauro tiene mejor criterio de dominio acá.

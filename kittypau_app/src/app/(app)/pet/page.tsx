@@ -89,6 +89,119 @@ const defaultState: LoadState = {
   readings: [],
 };
 
+// Opciones de la Ficha Detallada — Salud (spec 002, mejora 2026-08-16). Investigadas
+// contra fuentes veterinarias reales de Chile en vez de inventadas — ver research.md /
+// conversación del spec 002 para las fuentes citadas.
+const ALERGIA_OPTIONS = [
+  { value: "pulgas", label: "Pulgas (dermatitis alérgica)" },
+  { value: "ambiental", label: "Ambiental (ácaros, pólenes, hongos)" },
+  { value: "alimentaria", label: "Alimentaria" },
+  { value: "contacto", label: "Contacto (aseo, plantas, etc.)" },
+  { value: "otra", label: "Otra" },
+] as const;
+
+const MEDICAMENTO_OPTIONS = [
+  {
+    value: "antiparasitario",
+    label: "Antiparasitario (pulgas/garrapatas/gusanos)",
+  },
+  { value: "antibiotico", label: "Antibiótico" },
+  { value: "antiinflamatorio", label: "Antiinflamatorio / analgésico" },
+  { value: "antialergico", label: "Antialérgico" },
+  { value: "suplemento", label: "Suplemento (vitaminas, articular, etc.)" },
+  { value: "otro", label: "Otro" },
+] as const;
+
+const TRATAMIENTO_OPTIONS = [
+  { value: "dermatologico", label: "Dermatológico" },
+  { value: "dental", label: "Dental" },
+  { value: "fisioterapia", label: "Fisioterapia / rehabilitación" },
+  { value: "oncologico", label: "Oncológico" },
+  {
+    value: "cronico",
+    label: "Manejo de enfermedad crónica (renal, diabetes, cardíaca)",
+  },
+  { value: "otro", label: "Otro" },
+] as const;
+
+const CIRUGIA_OPTIONS = [
+  { value: "esterilizacion", label: "Esterilización / castración" },
+  { value: "dental", label: "Extracción dental" },
+  { value: "cuerpo_extrano", label: "Cuerpo extraño" },
+  { value: "ortopedica", label: "Ortopédica" },
+  { value: "otra", label: "Otra" },
+] as const;
+
+// Cartilla de vacunación real de Chile (Colegio Médico Veterinario) — difiere entre
+// perro y gato, por eso son 2 listas y no una sola genérica.
+const VACUNA_OPTIONS_PERRO = [
+  { value: "antirrabica", label: "Antirrábica (obligatoria por ley en Chile)" },
+  {
+    value: "sextuple_octuple",
+    label:
+      "Séxtuple / Óctuple (moquillo, parvovirus, hepatitis, leptospirosis...)",
+  },
+  { value: "tos_perreras", label: "Tos de las perreras (Bordetella)" },
+  { value: "otra", label: "Otra" },
+] as const;
+
+const VACUNA_OPTIONS_GATO = [
+  { value: "antirrabica", label: "Antirrábica (obligatoria por ley en Chile)" },
+  {
+    value: "triple_felina",
+    label: "Triple felina (panleucopenia, calicivirus, herpesvirus)",
+  },
+  { value: "leucemia_felina", label: "Leucemia felina (FeLV)" },
+  { value: "otra", label: "Otra" },
+] as const;
+
+function CheckboxOptionGroup({
+  options,
+  selected,
+  onToggle,
+  showOtherInput,
+  otherText,
+  onOtherTextChange,
+  otherPlaceholder = "Detalle",
+}: {
+  options: readonly { value: string; label: string }[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  showOtherInput: boolean;
+  otherText: string;
+  onOtherTextChange: (text: string) => void;
+  otherPlaceholder?: string;
+}) {
+  return (
+    <div>
+      <div className="flex flex-wrap gap-3">
+        {options.map((option) => (
+          <label
+            key={option.value}
+            className="flex items-center gap-1.5 text-xs text-slate-700"
+          >
+            <input
+              type="checkbox"
+              checked={selected.includes(option.value)}
+              onChange={() => onToggle(option.value)}
+            />
+            {option.label}
+          </label>
+        ))}
+      </div>
+      {showOtherInput ? (
+        <input
+          type="text"
+          placeholder={otherPlaceholder}
+          className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+          value={otherText}
+          onChange={(event) => onOtherTextChange(event.target.value)}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 const formatTimestamp = (value: string) => chileCompactDatetime(value);
 
 const toRoundedSensorValue = (
@@ -112,8 +225,23 @@ export default function PetPage() {
   const [showHealth, setShowHealth] = useState(false);
   const [healthForm, setHealthForm] = useState<Record<string, string>>({});
   const [healthConditions, setHealthConditions] = useState<string[]>([]);
+  const [healthAllergies, setHealthAllergies] = useState<string[]>([]);
+  const [healthMedications, setHealthMedications] = useState<string[]>([]);
+  const [healthTreatments, setHealthTreatments] = useState<string[]>([]);
+  const [healthSurgeries, setHealthSurgeries] = useState<string[]>([]);
+  const [healthVaccines, setHealthVaccines] = useState<string[]>([]);
   const [isSavingHealth, setIsSavingHealth] = useState(false);
   const [healthMessage, setHealthMessage] = useState<string | null>(null);
+
+  const toggleInList = (
+    list: string[],
+    value: string,
+    setList: (next: string[]) => void,
+  ) => {
+    setList(
+      list.includes(value) ? list.filter((v) => v !== value) : [...list, value],
+    );
+  };
 
   const [showFeeding, setShowFeeding] = useState(false);
   const [feedingForm, setFeedingForm] = useState<Record<string, string>>({});
@@ -798,11 +926,15 @@ export default function PetPage() {
                     setHealthForm({
                       peso_ideal_kg: String(profile.peso_ideal_kg ?? ""),
                       condiciones_otra: String(profile.condiciones_otra ?? ""),
-                      alergias: String(profile.alergias ?? ""),
-                      medicamentos: String(profile.medicamentos ?? ""),
-                      tratamientos: String(profile.tratamientos ?? ""),
-                      cirugias: String(profile.cirugias ?? ""),
-                      vacunas: String(profile.vacunas ?? ""),
+                      alergias_otra: String(profile.alergias_otra ?? ""),
+                      medicamentos_otra: String(
+                        profile.medicamentos_otra ?? "",
+                      ),
+                      tratamientos_otra: String(
+                        profile.tratamientos_otra ?? "",
+                      ),
+                      cirugias_otra: String(profile.cirugias_otra ?? ""),
+                      vacunas_otra: String(profile.vacunas_otra ?? ""),
                       desparasitacion_ultima_fecha: String(
                         profile.desparasitacion_ultima_fecha ?? "",
                       ),
@@ -813,11 +945,16 @@ export default function PetPage() {
                         profile.ultimo_control_fecha ?? "",
                       ),
                     });
+                    const asList = (value: unknown): string[] =>
+                      Array.isArray(value) ? (value as string[]) : [];
                     setHealthConditions(
-                      Array.isArray(profile.condiciones_diagnosticadas)
-                        ? (profile.condiciones_diagnosticadas as string[])
-                        : [],
+                      asList(profile.condiciones_diagnosticadas),
                     );
+                    setHealthAllergies(asList(profile.alergias));
+                    setHealthMedications(asList(profile.medicamentos));
+                    setHealthTreatments(asList(profile.tratamientos));
+                    setHealthSurgeries(asList(profile.cirugias));
+                    setHealthVaccines(asList(profile.vacunas));
                   }}
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                 >
@@ -838,6 +975,11 @@ export default function PetPage() {
                         health_profile: {
                           ...healthForm,
                           condiciones_diagnosticadas: healthConditions,
+                          alergias: healthAllergies,
+                          medicamentos: healthMedications,
+                          tratamientos: healthTreatments,
+                          cirugias: healthSurgeries,
+                          vacunas: healthVaccines,
                         },
                         health_profile_completed_at: new Date().toISOString(),
                       });
@@ -925,32 +1067,160 @@ export default function PetPage() {
                     ) : null}
                   </div>
 
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {(
-                      [
-                        ["alergias", "Alergias"],
-                        ["medicamentos", "Medicamentos"],
-                        ["tratamientos", "Tratamientos"],
-                        ["cirugias", "Cirugías"],
-                        ["vacunas", "Vacunas"],
-                        ["historial_veterinario", "Historial veterinario"],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <label key={key} className="block text-xs text-slate-500">
-                        {label}
-                        <textarea
-                          className="mt-1 min-h-[60px] w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                          value={healthForm[key] ?? ""}
-                          onChange={(event) =>
-                            setHealthForm((prev) => ({
-                              ...prev,
-                              [key]: event.target.value,
-                            }))
-                          }
-                        />
-                      </label>
-                    ))}
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Alergias — más comunes en Chile
+                    </p>
+                    <div className="mt-1">
+                      <CheckboxOptionGroup
+                        options={ALERGIA_OPTIONS}
+                        selected={healthAllergies}
+                        onToggle={(value) =>
+                          toggleInList(
+                            healthAllergies,
+                            value,
+                            setHealthAllergies,
+                          )
+                        }
+                        showOtherInput={healthAllergies.includes("otra")}
+                        otherText={healthForm.alergias_otra ?? ""}
+                        onOtherTextChange={(text) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            alergias_otra: text,
+                          }))
+                        }
+                        otherPlaceholder="Detalle de la alergia"
+                      />
+                    </div>
                   </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Medicamentos — más recetados en Chile
+                    </p>
+                    <div className="mt-1">
+                      <CheckboxOptionGroup
+                        options={MEDICAMENTO_OPTIONS}
+                        selected={healthMedications}
+                        onToggle={(value) =>
+                          toggleInList(
+                            healthMedications,
+                            value,
+                            setHealthMedications,
+                          )
+                        }
+                        showOtherInput={healthMedications.includes("otro")}
+                        otherText={healthForm.medicamentos_otra ?? ""}
+                        onOtherTextChange={(text) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            medicamentos_otra: text,
+                          }))
+                        }
+                        otherPlaceholder="Detalle del medicamento"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Tratamientos — más comunes en Chile
+                    </p>
+                    <div className="mt-1">
+                      <CheckboxOptionGroup
+                        options={TRATAMIENTO_OPTIONS}
+                        selected={healthTreatments}
+                        onToggle={(value) =>
+                          toggleInList(
+                            healthTreatments,
+                            value,
+                            setHealthTreatments,
+                          )
+                        }
+                        showOtherInput={healthTreatments.includes("otro")}
+                        otherText={healthForm.tratamientos_otra ?? ""}
+                        onOtherTextChange={(text) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            tratamientos_otra: text,
+                          }))
+                        }
+                        otherPlaceholder="Detalle del tratamiento"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Cirugías — más comunes en Chile
+                    </p>
+                    <div className="mt-1">
+                      <CheckboxOptionGroup
+                        options={CIRUGIA_OPTIONS}
+                        selected={healthSurgeries}
+                        onToggle={(value) =>
+                          toggleInList(
+                            healthSurgeries,
+                            value,
+                            setHealthSurgeries,
+                          )
+                        }
+                        showOtherInput={healthSurgeries.includes("otra")}
+                        otherText={healthForm.cirugias_otra ?? ""}
+                        onOtherTextChange={(text) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            cirugias_otra: text,
+                          }))
+                        }
+                        otherPlaceholder="Detalle de la cirugía"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Vacunas — cuadro de vacunación de Chile (Colegio Médico
+                      Veterinario)
+                    </p>
+                    <div className="mt-1">
+                      <CheckboxOptionGroup
+                        options={
+                          selectedPet.type === "dog"
+                            ? VACUNA_OPTIONS_PERRO
+                            : VACUNA_OPTIONS_GATO
+                        }
+                        selected={healthVaccines}
+                        onToggle={(value) =>
+                          toggleInList(healthVaccines, value, setHealthVaccines)
+                        }
+                        showOtherInput={healthVaccines.includes("otra")}
+                        otherText={healthForm.vacunas_otra ?? ""}
+                        onOtherTextChange={(text) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            vacunas_otra: text,
+                          }))
+                        }
+                        otherPlaceholder="Detalle de la vacuna"
+                      />
+                    </div>
+                  </div>
+
+                  <label className="block text-xs text-slate-500">
+                    Historial veterinario
+                    <textarea
+                      className="mt-1 min-h-[60px] w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      value={healthForm.historial_veterinario ?? ""}
+                      onChange={(event) =>
+                        setHealthForm((prev) => ({
+                          ...prev,
+                          historial_veterinario: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
 
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="block text-xs text-slate-500">
