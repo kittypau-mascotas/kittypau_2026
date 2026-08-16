@@ -1,0 +1,17 @@
+{
+  "classes": [
+    "alimentacion",
+    "servido",
+    "reposo"
+  ],
+  "encoding": {
+    "alimentacion": 0,
+    "servido": 1,
+    "reposo": 2
+  },
+  "inverse_encoding": {
+    "0": "alimentacion",
+    "1": "servido",
+    "2": "reposo"
+  }
+}

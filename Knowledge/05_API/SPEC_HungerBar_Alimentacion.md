@@ -25,7 +25,7 @@ related:
 > v4 — post 3 rondas de discovery técnico + implementación v1 en producción.
 
 > **Principio rector:** todo lo aprendido en
-> `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` (taxonomía `alimentacion`/
+> `Investigacion/Ciclo Alpha v2/fase_0_ruido/` (taxonomía `alimentacion`/
 > `servido`/`ruido` con rangos medidos, Motor v2/Evidence Engine calibrado contra 417
 > anotaciones reales, estadísticas de KPCL0034) está **al servicio de cómo funciona la
 > barra** — no es contexto histórico aparte. Ninguna constante o regla nueva en
@@ -308,7 +308,7 @@ proximaComida = t_inicio(ultimaComida) + intervalH horas
   válidos.
 
   Filtro de outliers para calcular esta mediana histórica — **ya resuelto**, reusa las
-  constantes de módulo corregidas en [`app_anotacion_av2.py:574-575`](../../../09_Investigacion/Ciclo%20Alpha%20v2/fase_0_ruido/app_anotacion_av2.py):
+  constantes de módulo corregidas en [`app_anotacion_av2.py:574-575`](../../../Investigacion/Ciclo%20Alpha%20v2/fase_0_ruido/app_anotacion_av2.py):
   `MIN_INTERVALO_H = 0.33` (20 min, descarta comida partida en dos) y
   `MAX_INTERVALO_H = 36.0` (descarta gaps de datos/ausencia del dueño). El endpoint de
   producción debe reusar estos mismos valores, no redefinir un clamp propio para este
@@ -417,6 +417,6 @@ producción (monitorear `sampleSize` y `usingFallback` por mascota).
 - [[13_Features/README_ShapeFeatures]] — `shape_features_v2.py`
 - [[06_BaseDatos/README_BaseDatos]] — `readings`, `devices`, `device_bowl_sessions`
 - [[05_API/README_API]] — convenciones de endpoints
-- `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py` — tab Predictor
+- `Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py` — tab Predictor
   de Próxima Comida (fuente de la mediana 5.78h/IQR 4.47h), `NameError` de `t_starts`
   corregido 2026-08-10

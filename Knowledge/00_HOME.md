@@ -179,7 +179,7 @@ está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.*
 - [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] — qué métricas de `fase_0_ruido` están respaldadas para llevar a `/today`
 - [[29_Specs/SPEC_05_Optimizacion_Tecnica]] — seguridad (CVEs de Next.js), rate limiting, testing, duplicación de código, bridge
 - [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16 (deadline 31/08/2026), plugins Capacitor recomendados, UX móvil 2026
-- [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — reorganización de `09_Investigacion` + roadmap para replicar el pipeline de comida del lado de agua
+- [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — reorganización de `Investigacion` + roadmap para replicar el pipeline de comida del lado de agua
 - [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] — bug crítico: KPCL0035 (bebedero) reportaba `device_type='comedero'`, rompía Hunger Bar/`/bowl`/`/today` — causa raíz en firmware/bridge, fix aplicado como override en `kittypau_app`
 - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] — handoff para cerrar SPEC_08 en la fuente (bridge + firmware, requiere acceso a Raspberry/OTA) + hallazgo nuevo en `processor.js` + mejoras de seguridad
 - [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] — vincular dispositivo en el registro debe mostrar la lista real de `devices` (Supabase), no pedir tipear un código — pre-lanzamiento la lista es acotada y conocida

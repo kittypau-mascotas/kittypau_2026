@@ -35,7 +35,7 @@ related:
 | [[29_Specs/SPEC_04_Metricas_Today_Investigacion]] | ¿Qué métricas nuevas en `/today` están respaldadas por la investigación de `fase_0_ruido`, y cuáles no? |
 | [[29_Specs/SPEC_05_Optimizacion_Tecnica]] | ¿Qué hay que arreglar/optimizar que no se ve navegando la app — seguridad, tests, duplicación, bridge? |
 | [[29_Specs/SPEC_06_Mobile_APK_2026]] | ¿Qué necesita el APK móvil para seguir siendo publicable y sentirse actual en 2026 — Android 16, plugins, UX nativa? |
-| [[29_Specs/SPEC_07_Investigacion_Hidratacion]] | ¿Cómo se reorganiza `09_Investigacion` y qué hace falta para replicar el pipeline de comida (`fase_0_ruido/`) del lado de hidratación, sin perder ni romper nada? |
+| [[29_Specs/SPEC_07_Investigacion_Hidratacion]] | ¿Cómo se reorganiza `Investigacion` y qué hace falta para replicar el pipeline de comida (`fase_0_ruido/`) del lado de hidratación, sin perder ni romper nada? |
 | [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] | ¿El dispositivo de comida y el de agua están tipificados correctamente en `kittypau_app` (Hunger Bar, `/bowl`, `/today`)? — no: bug real encontrado y corregido, causa raíz en firmware/bridge |
 | [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]] | Handoff para cerrar la causa raíz de SPEC_08 en bridge/firmware (con acceso real) + hallazgo nuevo (`processor.js` hereda el bug) + mejoras de seguridad y deuda técnica ejecutables ahora |
 | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | ¿Por qué vincular un dispositivo pide tipear un código a ciegas si ya conocemos la lista real de todos los dispositivos (pre-lanzamiento)? — cambiar a elegir de una lista, con hallazgo colateral de riesgo de filas duplicadas en `devices` |
@@ -65,7 +65,7 @@ saber si responde a un gap real de producto o es una curiosidad de investigació
 audiencia.
 
 **SPEC 07 es aparte de esta cadena** — desarrolla en profundidad el Pilar 2 (Hidratación)
-de SPEC 03, pero vive del lado de `09_Investigacion/` (reorganización de carpetas +
+de SPEC 03, pero vive del lado de `Investigacion/` (reorganización de carpetas +
 roadmap de investigación), no del lado de `kittypau_app`. Léelo si el próximo paso es
 "empezar a investigar hidratación", no si el próximo paso es tocar código de producto.
 

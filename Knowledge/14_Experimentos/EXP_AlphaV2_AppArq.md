@@ -23,7 +23,7 @@ related:
 
 # Arquitectura — app_anotacion_av2.py
 
-**Archivo:** `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`
+**Archivo:** `Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`
 
 > **2026-08-13 — parametrizada por `DEVICE_PROFILES`** (perfil `KPCL0034` activo, perfil
 > `KPCL0035`/agua — el bebedero real, corregido desde `KPCL0036` esa misma tarde —
@@ -185,7 +185,7 @@ Esto garantiza que **solo el tab activo ejecuta su código** en cada rerun de St
 ## Cómo lanzar la app
 
 ```powershell
-cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido"
+cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Investigacion\Ciclo Alpha v2\fase_0_ruido"
 streamlit run app_anotacion_av2.py
 ```
 

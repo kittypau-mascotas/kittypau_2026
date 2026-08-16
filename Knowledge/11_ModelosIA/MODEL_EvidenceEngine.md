@@ -22,7 +22,7 @@ related:
 # MODEL — Evidence Engine
 
 > Clasificador `alimentacion` / `servido` / `ruido` sobre segmentos de peso del comedero.
-> Vive en `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/shape_features_v2.py`.
+> Vive en `Investigacion/Ciclo Alpha v2/fase_0_ruido/shape_features_v2.py`.
 > Estadística clásica (discriminante lineal tipo Fisher + softmax) — sin IA/ML.
 
 ---
@@ -89,7 +89,7 @@ desactualizado en la UI. Ver [[14_Experimentos/EXP_AlphaV2_AppArq]].
 Con todos los datos (527 anotaciones, sin held-out): 80.5%.
 
 Test de regresión permanente:
-`09_Investigacion/Ciclo Alpha v2/fase_0_ruido/tests/test_evidence_engine.py`
+`Investigacion/Ciclo Alpha v2/fase_0_ruido/tests/test_evidence_engine.py`
 — corre en cada cambio, falla si la accuracy held-out cae bajo 65% o si el motor
 normalizado deja de superar claramente al legado.
 

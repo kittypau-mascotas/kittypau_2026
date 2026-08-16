@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2100" viewBox="0 0 1400 2100">
+  <defs>
+    <style>
+      .bg { fill: #070707; }
+      .card { fill: #ffffff; stroke: #d6d6d6; stroke-width: 2; }
+      .card3 { fill: #ffffff; stroke: #12a07a; stroke-width: 4; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 22px; letter-spacing: 1px; fill: #444; }
+      .big { font-family: Arial, Helvetica, sans-serif; font-size: 38px; fill: #161616; }
+      .metric { font-family: Arial, Helvetica, sans-serif; font-size: 26px; fill: #444; }
+      .value { font-family: Arial, Helvetica, sans-serif; font-size: 26px; fill: #444; text-anchor: end; }
+      .value-green { font-family: Arial, Helvetica, sans-serif; font-size: 26px; fill: #178f6e; text-anchor: end; }
+      .value-red { font-family: Arial, Helvetica, sans-serif; font-size: 26px; fill: #c43333; text-anchor: end; }
+      .pill1 { fill: #f5f2ea; }
+      .pill2 { fill: #f8e9c7; }
+      .pill3 { fill: #daf2ec; }
+      .pillText { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #7a6d5e; }
+      .pillText2 { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #9b6a15; }
+      .pillText3 { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #1e7e67; }
+      .badge { fill: #38a481; }
+      .badgeText { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #0c523e; }
+      .section { font-family: Arial, Helvetica, sans-serif; font-size: 30px; fill: #3e3e3e; font-weight: 700; letter-spacing: 1px; }
+      .legend { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #444; }
+      .grid { stroke: #666; stroke-width: 2; opacity: 0.65; }
+      .axisLabel { font-family: Arial, Helvetica, sans-serif; font-size: 16px; fill: #666; }
+      .tableHead { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #6b6b6b; font-weight: 700; }
+      .tableCell { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #222; }
+      .tableCellMuted { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #444; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1400" height="1800"/>
+
+  <!-- Cards -->
+  <rect class="card" x="20" y="20" width="420" height="460" rx="18"/>
+  <rect class="card" x="490" y="20" width="420" height="460" rx="18"/>
+  <rect class="card3" x="960" y="20" width="420" height="460" rx="18"/>
+
+  <rect class="badge" x="1120" y="20" width="260" height="44" rx="12"/>
+  <text x="1250" y="48" text-anchor="middle" class="badgeText">Mejor resultado</text>
+
+  <!-- Card 1 -->
+  <text x="48" y="70" class="title">EXPERIMENTO 1</text>
+  <text x="48" y="122" class="big">Línea base</text>
+  <text x="48" y="230" class="metric">F1 activo</text>
+  <text x="410" y="230" class="value">0.000</text>
+  <text x="48" y="282" class="metric">AUC-ROC</text>
+  <text x="410" y="282" class="value">0.810</text>
+  <line x1="46" y1="320" x2="412" y2="320" stroke="#ddd" stroke-width="2"/>
+  <text x="48" y="372" class="metric">Macro F1</text>
+  <text x="410" y="372" class="value">0.569</text>
+  <text x="48" y="424" class="metric">F1 alimentacion</text>
+  <text x="410" y="424" class="value">0.398</text>
+  <text x="48" y="476" class="metric">F1 servido</text>
+  <text x="410" y="476" class="value">0.333</text>
+  <rect class="pill1" x="48" y="500" width="210" height="40" rx="20"/>
+  <text x="153" y="527" text-anchor="middle" class="pillText">Sin threshold tuning</text>
+
+  <!-- Card 2 -->
+  <text x="518" y="70" class="title">EXPERIMENTO 2</text>
+  <text x="518" y="122" class="big">Threshold + rebalanceo</text>
+  <text x="518" y="230" class="metric">F1 activo</text>
+  <text x="880" y="230" class="value-green">0.555 +0.555</text>
+  <text x="518" y="282" class="metric">AUC-ROC</text>
+  <text x="880" y="282" class="value-green">0.902 +0.092</text>
+  <line x1="516" y1="320" x2="882" y2="320" stroke="#ddd" stroke-width="2"/>
+  <text x="518" y="372" class="metric">Macro F1</text>
+  <text x="880" y="372" class="value-green">0.637 +0.068</text>
+  <text x="518" y="424" class="metric">F1 alimentacion</text>
+  <text x="880" y="424" class="value-green">0.522 +0.124</text>
+  <text x="518" y="476" class="metric">F1 servido</text>
+  <text x="880" y="476" class="value-green">0.400 +0.067</text>
+  <rect class="pill2" x="518" y="500" width="138" height="40" rx="20"/>
+  <text x="587" y="527" text-anchor="middle" class="pillText2">Threshold 0.42</text>
+
+  <!-- Card 3 -->
+  <text x="988" y="70" class="title">EXPERIMENTO 3</text>
+  <text x="988" y="122" class="big">Features + servido x3</text>
+  <text x="988" y="230" class="metric">F1 activo</text>
+  <text x="1350" y="230" class="value-green">0.560 +0.005</text>
+  <text x="988" y="282" class="metric">AUC-ROC</text>
+  <text x="1350" y="282" class="value-red">0.880 -0.022</text>
+  <line x1="986" y1="320" x2="1352" y2="320" stroke="#ddd" stroke-width="2"/>
+  <text x="988" y="372" class="metric">Macro F1</text>
+  <text x="1350" y="372" class="value-green">0.671 +0.034</text>
+  <text x="988" y="424" class="metric">F1 alimentacion</text>
+  <text x="1350" y="424" class="value-green">0.526 +0.004</text>
+  <text x="988" y="476" class="metric">F1 servido</text>
+  <text x="1350" y="476" class="value-green">0.500 +0.100</text>
+  <rect class="pill3" x="988" y="500" width="258" height="40" rx="20"/>
+  <text x="1117" y="527" text-anchor="middle" class="pillText3">Threshold 0.37 · 12 features</text>
+
+  <!-- Section title -->
+  <text x="20" y="620" class="section">EVOLUCION DE METRICAS — MODELO A Y MODELO B</text>
+
+  <!-- Legend -->
+  <rect x="10" y="658" width="18" height="18" fill="#6b5fe0"/>
+  <text x="40" y="673" class="legend">F1 activo (A)</text>
+  <rect x="176" y="658" width="18" height="18" fill="#b8b0ff"/>
+  <text x="206" y="673" class="legend">AUC-ROC (A)</text>
+  <rect x="360" y="658" width="18" height="18" fill="#2bb58f"/>
+  <text x="390" y="673" class="legend">Macro F1 (B)</text>
+  <rect x="540" y="658" width="18" height="18" fill="#bdf1e0"/>
+  <text x="570" y="673" class="legend">F1 servido (B)</text>
+
+  <!-- Chart area -->
+  <line x1="20" y1="840" x2="1380" y2="840" class="grid"/>
+  <line x1="20" y1="1000" x2="1380" y2="1000" class="grid"/>
+  <line x1="20" y1="1160" x2="1380" y2="1160" class="grid"/>
+  <line x1="20" y1="1320" x2="1380" y2="1320" class="grid"/>
+  <line x1="20" y1="1480" x2="1380" y2="1480" class="grid"/>
+  <line x1="20" y1="1640" x2="1380" y2="1640" class="grid"/>
+
+  <text x="6" y="1518" class="axisLabel">0.0</text>
+  <text x="6" y="1358" class="axisLabel">0.2</text>
+  <text x="6" y="1198" class="axisLabel">0.4</text>
+  <text x="6" y="1038" class="axisLabel">0.6</text>
+  <text x="6" y="878" class="axisLabel">0.8</text>
+  <text x="6" y="718" class="axisLabel">1.0</text>
+
+  <!-- x labels -->
+  <text x="70" y="1710" class="axisLabel">Exp 1</text>
+  <text x="675" y="1710" class="axisLabel">Exp 2</text>
+  <text x="1280" y="1710" class="axisLabel">Exp 3</text>
+
+  <!-- F1 activo (A) -->
+  <polyline fill="none" stroke="#6b5fe0" stroke-width="6" points="70,1640 675,1200 1280,1190"/>
+  <circle cx="70" cy="1640" r="13" fill="#6b5fe0"/>
+  <circle cx="675" cy="1200" r="13" fill="#6b5fe0"/>
+  <circle cx="1280" cy="1190" r="13" fill="#6b5fe0"/>
+
+  <!-- AUC-ROC (A) -->
+  <polyline fill="none" stroke="#b8b0ff" stroke-width="6" stroke-dasharray="10 8" points="70,1300 675,770 1280,860"/>
+  <path d="M70 1300 l14 14 l-14 14 l-14 -14 z" fill="#b8b0ff"/>
+  <path d="M675 770 l14 14 l-14 14 l-14 -14 z" fill="#b8b0ff"/>
+  <path d="M1280 860 l14 14 l-14 14 l-14 -14 z" fill="#b8b0ff"/>
+
+  <!-- Macro F1 (B) -->
+  <polyline fill="none" stroke="#2bb58f" stroke-width="6" points="70,1335 675,1254 1280,1168"/>
+  <circle cx="70" cy="1335" r="13" fill="#2bb58f"/>
+  <circle cx="675" cy="1254" r="13" fill="#2bb58f"/>
+  <circle cx="1280" cy="1168" r="13" fill="#2bb58f"/>
+
+  <!-- F1 servido (B) -->
+  <polyline fill="none" stroke="#bdf1e0" stroke-width="6" stroke-dasharray="8 8" points="70,1380 675,1320 1280,1240"/>
+  <circle cx="70" cy="1380" r="13" fill="#bdf1e0"/>
+  <circle cx="675" cy="1320" r="13" fill="#bdf1e0"/>
+  <circle cx="1280" cy="1240" r="13" fill="#bdf1e0"/>
+
+  <!-- Section title -->
+  <text x="20" y="1760" class="section">ESTADO VS UMBRALES DE FASE 4</text>
+
+  <!-- Table -->
+  <text x="22" y="1820" class="tableHead">METRICA</text>
+  <text x="500" y="1820" class="tableHead">EXP 1</text>
+  <text x="650" y="1820" class="tableHead">EXP 2</text>
+  <text x="800" y="1820" class="tableHead">EXP 3</text>
+  <text x="970" y="1820" class="tableHead">UMBRAL FASE 4</text>
+  <text x="1195" y="1820" class="tableHead">ESTADO</text>
+
+  <line x1="20" y1="1840" x2="1380" y2="1840" stroke="#333" stroke-width="1"/>
+  <text x="22" y="1868" class="tableCell">Modelo A — F1 activo</text>
+  <text x="520" y="1868" class="tableCellMuted">0.000</text>
+  <text x="670" y="1868" class="tableCellMuted">0.555</text>
+  <text x="820" y="1868" class="tableCellMuted">0.560</text>
+  <text x="990" y="1868" class="tableCellMuted">0.70</text>
+  <text x="1190" y="1868" class="tableCell" fill="#b04646">Falla</text>
+
+  <text x="22" y="1908" class="tableCell">Modelo A — AUC-ROC</text>
+  <text x="520" y="1908" class="tableCellMuted">0.810</text>
+  <text x="670" y="1908" class="tableCellMuted">0.902</text>
+  <text x="820" y="1908" class="tableCellMuted">0.880</text>
+  <text x="990" y="1908" class="tableCellMuted">0.85</text>
+  <text x="1190" y="1908" class="tableCell" fill="#0c7660">OK</text>
+
+  <text x="22" y="1948" class="tableCell">Modelo B — Macro F1</text>
+  <text x="520" y="1948" class="tableCellMuted">0.569</text>
+  <text x="670" y="1948" class="tableCellMuted">0.637</text>
+  <text x="820" y="1948" class="tableCellMuted">0.671</text>
+  <text x="990" y="1948" class="tableCellMuted">0.60</text>
+  <text x="1190" y="1948" class="tableCell" fill="#0c7660">OK</text>
+
+  <text x="22" y="1988" class="tableCell">Modelo B — F1 alimentacion</text>
+  <text x="520" y="1988" class="tableCellMuted">0.398</text>
+  <text x="670" y="1988" class="tableCellMuted">0.522</text>
+  <text x="820" y="1988" class="tableCellMuted">0.526</text>
+  <text x="990" y="1988" class="tableCellMuted">0.65</text>
+  <text x="1190" y="1988" class="tableCell" fill="#b04646">Falla</text>
+
+  <text x="22" y="2028" class="tableCell">Modelo B — F1 servido</text>
+  <text x="520" y="2028" class="tableCellMuted">0.333</text>
+  <text x="670" y="2028" class="tableCellMuted">0.400</text>
+  <text x="820" y="2028" class="tableCellMuted">0.500</text>
+  <text x="990" y="2028" class="tableCellMuted">—</text>
+  <text x="1190" y="2028" class="tableCell" fill="#6d6d6d">Referencia</text>
+</svg>

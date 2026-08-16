@@ -185,7 +185,7 @@ Las siguientes variables DEBEN estar configuradas para que la app funcione:
 | Modelo ML en producción | 🔴 Pendiente — motor matemático no está en la app Next.js todavía, solo en la app Streamlit de investigación |
 
 > Detalle completo del historial de snapshots: [[15_Resultados/RESULT_AlphaV2_Snapshots]] y
-> `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/HISTORIAL_RESULTADOS.md` (fuente canónica).
+> `Investigacion/Ciclo Alpha v2/fase_0_ruido/HISTORIAL_RESULTADOS.md` (fuente canónica).
 
 ---
 

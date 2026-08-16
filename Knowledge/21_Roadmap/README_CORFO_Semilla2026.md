@@ -21,7 +21,7 @@ related:
 # CORFO Semilla Inicia 2026 — Región Metropolitana
 
 **Última verificación:** 2026-05-26 (vs. PDFs oficiales)  
-**Docs fuente:** `Docs/10_Postulaciones_Fondos/2026/CORFO_SEMILLA_INICIA_2026/`
+**Docs fuente:** `Postulaciones_Fondos/2026/CORFO_SEMILLA_INICIA_2026/`
 
 ---
 

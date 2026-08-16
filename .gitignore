@@ -168,13 +168,17 @@ kpcl0036_error_peso_sinbateria.csv
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv
 Docs/09_Investigacion/**/*.parquet
-# 09_Investigacion/ y 11_Data/ viven en la raíz del repo desde 2026-08-17 (SPEC 13) —
+# 09_Investigacion/ y 11_Data/ vivieron en la raíz del repo desde 2026-08-17 (SPEC 13) —
 # reglas equivalentes a las de Docs/09_Investigacion//Docs/11_Data de arriba, para
-# las ubicaciones nuevas.
+# las ubicaciones nuevas. 09_Investigacion/ se renombró a Investigacion/ el 2026-08-16
+# (SPEC 13 addendum) — reglas de abajo cubren el nombre actual, estas quedan stale.
 09_Investigacion/**/*.csv
 09_Investigacion/**/*.parquet
 09_Investigacion/**/*.pkl
 11_Data/**/*.csv
+Investigacion/**/*.csv
+Investigacion/**/*.parquet
+Investigacion/**/*.pkl
 # Datos grandes
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv

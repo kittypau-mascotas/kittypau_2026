@@ -31,7 +31,7 @@ ejecuta `revisar_anotaciones_v2.py`.
 
 ## Tabla Resumen
 
-> Fuente canónica de este historial: [`fase_0_ruido/HISTORIAL_RESULTADOS.md`](../../09_Investigacion/Ciclo%20Alpha%20v2/fase_0_ruido/HISTORIAL_RESULTADOS.md)
+> Fuente canónica de este historial: [`fase_0_ruido/HISTORIAL_RESULTADOS.md`](../../Investigacion/Ciclo%20Alpha%20v2/fase_0_ruido/HISTORIAL_RESULTADOS.md)
 > — la app y sus scripts escriben ahí directamente. Esta tabla es un espejo resumido
 > para navegación rápida desde el vault; ante conflicto, gana el doc de `fase_0_ruido`.
 

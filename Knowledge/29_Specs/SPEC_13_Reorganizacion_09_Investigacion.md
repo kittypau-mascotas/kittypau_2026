@@ -5,12 +5,16 @@ type: spec
 status: ejecutado
 owner: Mauro
 created: 2026-08-17
-updated: 2026-08-17
+updated: 2026-08-16
 confirmado_por_mauro:
   - "Destino confirmado: raíz del repo (kittypau_2026_hivemq/09_Investigacion), no una
     carpeta hermana nueva — 2026-08-17"
   - "'ok' — confirma mover los 2 bloqueantes (11_Data + PDF huérfano de Postulaciones
     Fondos) antes de borrar Docs/, mismo patrón que 09_Investigacion — 2026-08-17 (tarde)"
+  - "Nombres nuevos 'Investigacion'/'Postulaciones_Fondos' (sin prefijo numérico) y
+    alcance 'a fondo: reestructurar todo (dime el criterio)' — 2026-08-16. Criterio
+    propuesto (agrupar toolkit KPCL en Dashboard_KPCL/) confirmado con 'Sí, procedé' —
+    2026-08-16."
 tags:
   - spec
   - investigacion
@@ -296,3 +300,90 @@ Solo lo confirmado seguro de borrar: `00_Inicio` → `08_Equipo` (158 archivos, 
 de archivos reales (`09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/`
 huérfano del §3, y `Postulaciones Fondos/` ya sin el PDF). **`Docs/` queda listo para
 borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloqueantes.
+
+## 9. Segundo addendum (2026-08-16) — Rename + orden a fondo
+
+> Pedido de Mauro: "renombra estas carpeta y ordena su contenido" sobre
+> `09_Investigacion/` y `10_Postulaciones_Fondos/` (ya en la raíz del repo por §0/§8).
+> Confirmado vía pregunta: nombres nuevos `Investigacion`/`Postulaciones_Fondos` (sin
+> prefijo numérico, igual que el resto de las carpetas raíz — `Knowledge`, `bridge`,
+> `iot_firmware`, etc.) y alcance "a fondo: reestructurar todo" con el criterio a
+> proponer por Claude antes de tocar nada.
+
+### Criterio propuesto y confirmado
+
+1. Agrupar los 9 archivos sueltos del "toolkit dashboard KPCL" en una carpeta propia
+   `Dashboard_KPCL/`: `plot_kpcl_experimento.py`, `serve_kpcl_dashboard.py`,
+   `abrir_kpcl_dashboard.ps1`, `kpcl_pruebas_eventos.html` y los 5 CSV
+   (`kpcl0034_full_eventos.csv`, `kpcl0034_kpcl0036_prueba_sincargador.csv`,
+   `kpcl0034_sin_batera_actual.csv`, `kpcl0036_sin_batera_actual.csv`,
+   `kpcl0036_sin_bateria_20200101_0000utc_a_1924utc.csv`). El propio `README.md` de la
+   carpeta ya los documentaba como una unidad operativa cohesiva (sección "Inventario
+   completo de archivos"), así que agruparlos no inventa estructura nueva.
+2. Los 8 docs numerados (`01_GUIA...` a `08_REGISTRO...`) + `README.md` / `GLOSARIO.md`
+   / `EXPERIMENT_TRACKER.md` / `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md` / `_MOC.md` quedan
+   en la raíz de `Investigacion/` — son la documentación "maestra" del ecosistema, el
+   README ya los trata así.
+3. `Ciclo Alpha/`, `Ciclo Alpha v2/` y `Power Bi_Supabase/` no se tocan — ya son unidades
+   autocontenidas (activo/archivado explícito, documentado en su propio `_MOC.md`).
+4. `Postulaciones_Fondos/` no se reestructura — ya está ordenada por año (`2025/`,
+   `2026/`), criterio evaluado como suficiente en §8.
+
+### Qué se hizo
+
+1. **Bloqueante previo encontrado y resuelto**: el primer intento de mover
+   `09_Investigacion/Ciclo Alpha v2` falló por "acceso denegado" — diagnosticado
+   aislando por subcarpeta (mismo patrón que el `node_modules` de §3): esta vez la causa
+   fue distinta, 4 procesos `streamlit run app_anotacion_av2.py` (puertos 8595-8598)
+   quedaron corriendo en segundo plano desde verificaciones de sesiones anteriores de
+   este mismo hilo de trabajo, con un lock sobre `fase_0_ruido/`. Terminados con
+   `Stop-Process -Force`, después el move funcionó sin problema.
+2. `09_Investigacion/plot_kpcl_experimento.py`, `serve_kpcl_dashboard.py`,
+   `abrir_kpcl_dashboard.ps1`, `kpcl_pruebas_eventos.html` (trackeados en git) →
+   `Dashboard_KPCL/` vía `git mv`. Los 5 CSV (gitignorados, nunca trackeados) →
+   `Dashboard_KPCL/` vía `mv` normal.
+3. Rutas relativas en el toolkit KPCL — **no requirieron cambio de código**: al mover los
+   scripts un nivel más adentro (`Investigacion/Dashboard_KPCL/`), dos rutas que ya
+   estaban rotas desde antes de esta sesión (arrastradas de la era `Docs/investigacion/`,
+   nunca corregidas cuando `09_Investigacion` salió de `Docs/` en §0) quedaron
+   correctas por coincidencia de profundidad: `ENV_FILE = ROOT.parent.parent /
+   ".env.local"` en `plot_kpcl_experimento.py` y `$repoRoot = Resolve-Path (Join-Path
+   $scriptDir '..\..')` en `abrir_kpcl_dashboard.ps1` — antes apuntaban un nivel arriba
+   de la raíz del repo (nunca notado, no bloqueante porque nadie corrió el refresh
+   completo), ahora resuelven bien. Verificado explícitamente con `Path.resolve()`.
+4. Referencias mecánicas actualizadas: links relativos `[texto](archivo)` → `[texto]
+   (Dashboard_KPCL/archivo)` en `README.md`, `01_GUIA_DASHBOARD_KPCL.md`,
+   `06_AUDITORIA_SIN_CARGADOR.md`, `07_AUDITORIA_KPCL0036_ERROR_PESO.md`; y el string
+   embebido `Docs/investigacion/<script>.py` (impreso en consola / en el HTML generado)
+   corregido a `Investigacion/Dashboard_KPCL/<script>.py` en `serve_kpcl_dashboard.py`,
+   `plot_kpcl_experimento.py` (JS template) y el `kpcl_pruebas_eventos.html` ya generado.
+   **Cuidado detectado y revertido**: un primer reemplazo mecánico demasiado amplio
+   (`Docs/investigacion/` → `Investigacion/Dashboard_KPCL/` sin filtrar) corrompió por
+   error referencias no relacionadas a `Docs/investigacion/Data Science/...` y
+   `Docs/investigacion/Ciclo Alpha/inferencia_*.py` (rutas viejas, ya stale antes de esta
+   sesión, fuera de alcance) en `README.md`, `instructivo.md` y
+   `COMO_EJECUTAR_GAMMA.md` — detectado con `git diff` antes de commitear, revertido a la
+   ruta original stale (no se "arregla" lo que no se pidió tocar).
+5. `09_Investigacion/` → `Investigacion/`, `10_Postulaciones_Fondos/` →
+   `Postulaciones_Fondos/` (rename a nivel raíz del repo).
+6. Rutas relativas en `fase_0_ruido/` (`SCRIPT_DIR.parent.parent.parent`,
+   `parents[4]`) — **no requirieron cambio**: el rename no cambia la profundidad de
+   anidamiento, solo el nombre de un segmento. Verificado con `Path.resolve()` +
+   `.exists() == True` sobre `RAW_DATA_DIR`.
+7. `.gitignore`: agregadas reglas `Investigacion/**/*.csv|*.parquet|*.pkl` (equivalentes
+   a las viejas `09_Investigacion/**/*` de §2, que quedan stale sin romper nada).
+   Verificado con `git check-ignore` sobre los 5 CSV de `Dashboard_KPCL/` antes de
+   cualquier `git add`. Sin reglas dedicadas para `10_Postulaciones_Fondos` (no existían).
+8. Re-verificado `app_anotacion_av2.py` en `Investigacion/`: `py_compile` OK (7 scripts),
+   `streamlit run` headless → `HTTP 200` + `/_stcore/health` → `ok`, `pytest tests/` →
+   16/16 (mismo baseline de siempre).
+9. `git add -A -- 09_Investigacion Investigacion Postulaciones_Fondos .gitignore` (con
+   pathspec explícito, sin tocar el resto del working tree) → git detectó 403 renames
+   limpios + 1 modificado (`.gitignore`). Confirmado con `git status` que las
+   eliminaciones no relacionadas de `Docs/` (pendientes en el working tree desde antes de
+   esta sesión, fuera de este spec) quedaron sin stagear.
+
+### Qué NO cambió
+
+`Ciclo Alpha/`, `Ciclo Alpha v2/` (salvo el rename del padre), `Power Bi_Supabase/`,
+`Postulaciones_Fondos/2025|2026/` — mismo contenido interno, sin reestructurar.

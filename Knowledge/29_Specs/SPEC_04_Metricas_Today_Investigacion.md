@@ -171,4 +171,4 @@ primero (ver nota al inicio del documento).
 - [[05_API/SPEC_HungerBar_Alimentacion]] — precedente exacto de este mismo proceso, ya implementado
 - [[13_Features/README_ShapeFeatures]] — familias F00–F14, base de M2
 - [[15_Resultados/RESULT_AlphaV2_Snapshots]] — snapshot v2.4, fuente de M3 (auditoría de discrepancias)
-- `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py` — Tab 8 "Kittypau", líneas ~4660-4840, fuente de todas las fórmulas de este spec
+- `Investigacion/Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py` — Tab 8 "Kittypau", líneas ~4660-4840, fuente de todas las fórmulas de este spec
