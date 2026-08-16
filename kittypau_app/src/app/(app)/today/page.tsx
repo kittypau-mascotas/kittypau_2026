@@ -993,15 +993,55 @@ export default function TodayPage() {
       : primaryPet?.type === "cat"
         ? "Gato"
         : null;
+  // Antes se mostraba el valor crudo del enum (ej. "adoptado_refugio", "mediano")
+  // pegado con · en una sola línea al lado de la foto, sin decir qué representa cada
+  // uno — se truncaba y no se entendía. Ahora cada dato lleva su etiqueta (ver /pet
+  // ORIGEN_OPTIONS, mismos labels) y va debajo de la foto con espacio de sobra.
+  // ponytail: si un origin es legado (no está en el mapa, ver bug de Bandida en
+  // spec 002), se muestra el texto crudo tal cual en vez de "sin datos" — mismo
+  // criterio de nunca ocultar un dato ya declarado.
+  const ORIGIN_LABELS: Record<string, string> = {
+    comprado: "Comprado",
+    adoptado_refugio: "Adoptado en refugio",
+    rescatado_calle: "Rescatado de la calle",
+    regalado: "Regalado / donado",
+    nacido_en_casa: "Nació en casa",
+    otro: "Otro origen",
+  };
+  const SIZE_LABELS: Record<string, string> = {
+    pequeno: "Pequeño",
+    mediano: "Mediano",
+    grande: "Grande",
+  };
+  const AGE_LABELS: Record<string, string> = {
+    cachorro: "Cachorro",
+    adulto: "Adulto",
+    senior: "Senior",
+  };
   const petMeta = [
-    petTypeLabel,
-    primaryPet?.origin ?? null,
-    primaryPet?.size ?? null,
-    primaryPet?.age_range ?? null,
-    typeof primaryPet?.weight_kg === "number"
-      ? `${primaryPet.weight_kg} kg`
+    petTypeLabel ? { label: "Tipo", value: petTypeLabel } : null,
+    primaryPet?.origin
+      ? {
+          label: "Origen",
+          value: ORIGIN_LABELS[primaryPet.origin] ?? primaryPet.origin,
+        }
       : null,
-  ].filter(Boolean) as string[];
+    primaryPet?.size
+      ? {
+          label: "Tamaño",
+          value: SIZE_LABELS[primaryPet.size] ?? primaryPet.size,
+        }
+      : null,
+    primaryPet?.age_range
+      ? {
+          label: "Edad",
+          value: AGE_LABELS[primaryPet.age_range] ?? primaryPet.age_range,
+        }
+      : null,
+    typeof primaryPet?.weight_kg === "number"
+      ? { label: "Peso", value: `${primaryPet.weight_kg} kg` }
+      : null,
+  ].filter(Boolean) as { label: string; value: string }[];
   const primaryDevice =
     petDevices.find((device) => device.id === selectedDeviceId) ??
     petDevices.find(
@@ -2266,23 +2306,23 @@ export default function TodayPage() {
             className="today-hero surface-card freeform-rise px-4 py-3 md:px-6 md:py-3"
           >
             <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
-              <div className="today-hero-pet flex min-w-0 items-center gap-3 md:gap-4">
-                <Link
-                  href="/pet"
-                  className="inline-flex"
-                  title="Ajustar foto"
-                  aria-label="Ajustar foto"
-                >
-                  <Image
-                    src={primaryPet?.photo_url || "/pet_profile.jpeg"}
-                    alt={`Foto de ${petLabel}`}
-                    width={128}
-                    height={128}
-                    unoptimized
-                    className="h-24 w-24 rounded-full border border-slate-200 object-cover"
-                  />
-                </Link>
-                <div className="flex min-w-0 flex-col gap-1">
+              <div className="today-hero-pet flex min-w-0 flex-col gap-2">
+                <div className="flex min-w-0 items-center gap-3 md:gap-4">
+                  <Link
+                    href="/pet"
+                    className="inline-flex"
+                    title="Ajustar foto"
+                    aria-label="Ajustar foto"
+                  >
+                    <Image
+                      src={primaryPet?.photo_url || "/pet_profile.jpeg"}
+                      alt={`Foto de ${petLabel}`}
+                      width={128}
+                      height={128}
+                      unoptimized
+                      className="h-24 w-24 rounded-full border border-slate-200 object-cover"
+                    />
+                  </Link>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -2330,11 +2370,23 @@ export default function TodayPage() {
                       </svg>
                     </button>
                   </div>
-                  <p className="truncate text-xs text-slate-500 md:text-sm">
-                    {petMeta.length
-                      ? petMeta.join(" · ")
-                      : "Sin datos de registro"}
-                  </p>
+                </div>
+                {/* Debajo de la foto, con etiqueta ("Origen: Adoptado en refugio")
+                    en vez de valores crudos pegados con · (se truncaba y no decía
+                    qué era cada dato — corregido 2026-08-17). */}
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 md:text-sm">
+                  {petMeta.length ? (
+                    petMeta.map((item) => (
+                      <span key={item.label}>
+                        {item.label}:{" "}
+                        <span className="font-medium text-slate-700">
+                          {item.value}
+                        </span>
+                      </span>
+                    ))
+                  ) : (
+                    <span>Sin datos de registro</span>
+                  )}
                 </div>
               </div>
 
