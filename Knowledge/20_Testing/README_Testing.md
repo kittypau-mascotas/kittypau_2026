@@ -41,7 +41,19 @@ related:
 > lo que dejaba un link roto en [[18_UI/README_UI]]. **Sin re-verificar en vivo desde hace
 > tiempo** — confirmar contra Supabase antes de asumir que sigue exacto si pasó mucho tiempo.
 
-- **Proyecto Supabase:** `zjdyhpntftgaynchqwfk` (`kplantaiot's Org`, plan Free)
+- **Proyecto Supabase:** `zjdyhpntftgaynchqwfk` (`kplantaiot's Org`) — **confirmado correcto
+  2026-08-16**, con evidencia directa: coincide con el dashboard real de Mauro (mismas tablas
+  `finance_purchases`/`device_commands`, misma última migración `species_thresholds`), y es el
+  valor real de `NEXT_PUBLIC_SUPABASE_URL` en `kittypau_app/.env.local` (el archivo que Next.js
+  realmente lee — Next.js carga env vars desde la raíz de la app, no desde la raíz del repo).
+  ⚠️ Corrección de una corrección: antes de esto anoté acá por error `zgwqtzazvkjkfocxnxsh` —
+  ese ref viene de `NEXT_PUBLIC_SUPABASE_URL` en el `.env.local` de la **raíz del repo**
+  (archivo distinto, no el que usa la app), y **ese dominio no existe** (`NXDOMAIN`
+  confirmado por `nslookup`) — es un valor erróneo/obsoleto en ese archivo suelto, no un
+  proyecto real. La migración de columnas de mascota (spec 002) sí se aplicó al proyecto
+  correcto (`zjdyhpntftgaynchqwfk`) porque el script usó `DATABASE_URL`, cuya credencial de
+  pooler sí apuntaba bien — el error fue solo en mi lectura/explicación posterior, no en la
+  escritura real a la base.
 
 | Vista | Quién | Email | Password |
 |---|---|---|---|
@@ -49,16 +61,62 @@ related:
 | Tester | kittypau | `kittypau.mascotas@gmail.com` | `prueba1234` |
 | Tester / Admin | Javier | `javier.dayne@gmail.com` | `prueba1234` |
 | Cliente real | (no implementado aún) | — | — |
+| **Prueba reutilizable (registro/onboarding)** | Mauro, para probar el flujo de registro repetidas veces | `frentecalamari@gmail.com` | (la define quien la registra en cada prueba) |
 
 | Pet | Tipo | Owner | Devices |
 |---|---|---|---|
 | Bandida | Gato — datos reales | kittypau.mascotas | KPCL0034, KPCL0035 |
 | Amanda | Perro | kittypau.mascotas | Sin device |
+| mascota_1 | (a definir) | frentecalamari@gmail.com | KPCL9001 *(confirmado, no creado todavía)* |
 
 Bandida (KPCL0034) es el animal tester principal — todos los datos reales usados para
 calibrar Hunger Bar/Motor Matemático vienen de ahí. Routing post-login
 (`/api/account/type`): `admin`→`/admin`, `tester`/`client`→`/today`. Testers hardcodeados en
 código, extensible vía `TESTER_EMAILS` (CSV) en env.
+
+### `frentecalamari@gmail.com` — convención permanente de correo de pruebas (spec 002 en adelante)
+
+**Cualquier email que contenga `frentecalamari` es un usuario de prueba** — convención
+establecida por Mauro el 2026-08-16, vale para esta y toda sesión futura. No se limita a la
+dirección exacta: aplica también a variantes con `+tag` de Gmail
+(`frentecalamari+loquesea@gmail.com`), que Gmail entrega igual en la bandeja de
+`frentecalamari@gmail.com` pero que Supabase trata como cuentas distintas (no chocan con el
+constraint de email único) — esto permite registrar de nuevo sin tener que borrar la cuenta
+anterior cada vez, con un `+tag` distinto por corrida de prueba si hace falta.
+
+**Qué implica esta convención**: se usa para probar cualquier correo transaccional real
+(confirmación de registro y los que se agreguen después — ver
+[[05_API/SPEC_Correos_Transaccionales]]) contra un inbox real que Mauro puede revisar, y se
+sigue avanzando con el registro/onboarding con normalidad — no hay ningún bypass ni lógica
+especial en el código de la app para este email (no se agregó, y no correspondía agregarlo:
+sería una puerta trasera de autenticación en producción). El comportamiento especial vive
+solo en la convención de uso (Mauro/Claude saben que es descartable) y en la técnica de
+`+tag` de Gmail — no en `kittypau_app`.
+
+**Persona de prueba activa** (usuario_1 / mascota_1 / KPCL9001, definida 2026-08-16):
+
+- **Tu Nombre (perfil de usuario)**: `usuario_1`
+- **Nombre de mascota**: `mascota_1`
+- **Dispositivo**: **`KPCL9001`** (`dispositivo_1` no cumplía
+  `devices_device_id_format_check`, `^KPCL\d{4}$`; no hay columna de "nombre amigable" en
+  `devices`, `device_id` es el único identificador). Libre, no colisiona con hardware real
+  (`KPCL0002`/`KPCL0034`/`KPCL0035`/`KPCL9036`). No creado todavía en Supabase.
+
+**Estado confirmado 2026-08-16**: correo de confirmación de registro probado end-to-end con
+éxito (asunto/cuerpo personalizados con `usuario_1`/`mascota_1`, botón funcional) — ver
+[[05_API/SPEC_Correos_Transaccionales]] § "Probado en producción". Cuentas de prueba previas
+(creadas antes de que el toggle "Confirm email" quedara activo) se borraron vía Admin API
+antes de la prueba final — no queda ninguna cuenta a medio registrar bajo este email al cierre
+de esta sesión.
+
+**Autocompletado del registro (agregado 2026-08-16)**: al escribir cualquier email que
+contenga `frentecalamari` en el paso 1 del registro, la app autocompleta Tu Nombre, Nombre de
+Mascota, Comuna y Contraseña con los valores de esta persona de prueba (`usuario_1`/
+`mascota_1`/`santiago`/`Usuario1Kittypau!`), y al llegar al paso Mascota autocompleta también
+Tipo/Peso/Tamaño/Edad/Esterilización. **No es un bypass de autenticación** — la cuenta sigue
+pasando por `signUp` + confirmación de correo real igual que cualquier otra, solo se precargan
+campos de perfil. Vive en `login/page.tsx` (constante `TEST_ACCOUNT_EMAIL_MARKER`) y
+`registro-flow.tsx` (prop `isTestAccount`), marcado con comentario `ponytail:` en el código.
 
 ---
 

@@ -1,0 +1,105 @@
+# Data Model: Registro unificado
+
+Todas las entidades ya existen (`public.profiles`, `public.pets`,
+`supabase/migrations/20260208134653_apply_schema_update.sql`). Este documento solo cubre lo que
+cambia: columnas nuevas (aditivas, `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, nunca se elimina
+ni renombra una columna existente) y las reglas de negocio que las gobiernan.
+
+## `public.profiles` — sin cambios de schema
+
+El paso 1 fusionado deja de **enviar** `country`, `notification_channel`, `is_owner`,
+`owner_name`, `phone_number` desde el formulario (FR-011) — pero esas columnas **no se
+eliminan** de la tabla: perfiles ya existentes que las tengan cargadas las conservan intactas
+(Principio "nunca truncar/sobreescribir sin motivo" aplicado por analogía al Principio IV). Si
+en el futuro se decide eliminarlas de la base, es una decisión aparte, fuera de este spec.
+
+## `public.pets` — columnas nuevas (aditivas)
+
+| Columna | Tipo | Nullable | Notas |
+|---|---|---|---|
+| `sex` | `text` | sí | `'macho' \| 'hembra' \| 'no_estoy_seguro'` — validado en la API, sin `CHECK` constraint en DB (mismo patrón que `origin`, que hoy es `text` libre sin `CHECK`). |
+| `microchip_number` | `text` | sí | Opcional incluso si `has_microchip = true` (FR-018) — nunca `NOT NULL`. |
+| `birth_date` | `date` | sí | Se usa cuando `origin` indica que la fecha de nacimiento se conoce (comprado, nació en casa — ver spec § Assumptions, lista de Origen). |
+| `intake_date` | `date` | sí | Se usa cuando `origin` indica que la fecha de nacimiento exacta no se conoce (adoptado, rescatado, regalado, otro). Mutuamente excluyente con `birth_date` a nivel de UI (FR-019), no se fuerza con `CHECK` en DB — ambas quedan nullable por si en el futuro se quiere permitir ambas. |
+| `health_profile` | `jsonb` | sí, default `'{}'::jsonb` | Ficha Detallada — Salud. Claves libres (ver "Forma de `health_profile`" abajo). |
+| `feeding_profile` | `jsonb` | sí, default `'{}'::jsonb` | Ficha Detallada — Alimentación. Claves libres (ver "Forma de `feeding_profile`" abajo). |
+| `health_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Salud pendiente. Se setea al guardar explícitamente esa sección (research.md #3). |
+| `feeding_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Alimentación pendiente. Mismo mecanismo. |
+
+**Regla derivada (no es columna, se calcula)**: `pet_detail_pending = health_profile_completed_at
+IS NULL OR feeding_profile_completed_at IS NULL` — es la condición exacta de FR-027 (círculo
+rojo si falta Salud O Alimentación).
+
+**Origin (columna existente, sin cambio de tipo)**: sigue siendo `text` libre — la lista curada
+de 6 valores (`comprado`, `adoptado_refugio`, `rescatado_calle`, `regalado`, `nacido_en_casa`,
+`otro`) es una validación de aplicación (API + `<select>`), no un `CHECK` de DB, igual que hoy.
+
+### Forma de `health_profile` (claves esperadas, todas opcionales)
+
+```json
+{
+  "peso_ideal_kg": 4.2,
+  "condiciones_diagnosticadas": ["renal", "obesidad"],
+  "condiciones_otra": "texto libre si eligió 'otra'",
+  "alergias": "texto libre",
+  "medicamentos": "texto libre",
+  "tratamientos": "texto libre",
+  "cirugias": "texto libre",
+  "vacunas": "texto libre",
+  "desparasitacion_ultima_fecha": "2026-06-01",
+  "historial_veterinario": "texto libre",
+  "ultimo_control_fecha": "2026-07-15"
+}
+```
+
+### Forma de `feeding_profile` (claves esperadas, todas opcionales)
+
+```json
+{
+  "tipo_alimento": "seco | humedo | mixto",
+  "marca": "texto libre",
+  "formula": "texto libre",
+  "cantidad_diaria_g": 180,
+  "comidas_dia": 3,
+  "horarios": "texto libre",
+  "premios": { "aplica": true, "detalle": "texto libre" },
+  "restricciones_alimentarias": "texto libre"
+}
+```
+
+*(Estas formas son un contrato de aplicación, no un schema de DB — al ser `jsonb`, agregar una
+clave nueva en el futuro no requiere migración, solo actualizar este documento y el código que
+la lee/escribe.)*
+
+## Migración
+
+Un solo archivo aditivo en `supabase/migrations/`, siguiendo la convención de nombre
+`YYYYMMDDHHMMSS_descripcion.sql` ya usada en el repo:
+
+```sql
+alter table public.pets
+  add column if not exists sex text,
+  add column if not exists microchip_number text,
+  add column if not exists birth_date date,
+  add column if not exists intake_date date,
+  add column if not exists health_profile jsonb not null default '{}'::jsonb,
+  add column if not exists feeding_profile jsonb not null default '{}'::jsonb,
+  add column if not exists health_profile_completed_at timestamptz,
+  add column if not exists feeding_profile_completed_at timestamptz;
+```
+
+**Requiere confirmación explícita de Mauro antes de aplicarse en producción** (Principio III) —
+se ejecuta como tarea de implementación aparte, no automáticamente al escribir este plan.
+
+## Tipos TypeScript afectados (duplicados localmente, patrón ya existente en el repo)
+
+El tipo `Pet` está declarado localmente en varios archivos (`registro-flow.tsx`,
+`pet/page.tsx`, `dispositivos/nuevo/page.tsx`, `bowl/page.tsx`, `today/page.tsx`,
+`story/page.tsx`) — no hay un tipo compartido único hoy, así que este plan sigue el mismo
+patrón (agregar los campos nuevos donde cada archivo los necesite) en vez de introducir una
+unificación no pedida (fuera de alcance de este spec, violaría el Principio I si se hace de
+paso). Los archivos que necesitan los campos nuevos para este feature: `registro-flow.tsx`
+(escribir), `pet/page.tsx` (leer y escribir Ficha Detallada), `app-nav.tsx` (leer
+`*_completed_at` para el círculo rojo — hoy `app-nav.tsx` no tiene tipo `Pet` propio, consume
+`devices`/`petName` de `useAppData`; se necesita exponer ahí los 2 timestamps o un booleano
+derivado, ver `contracts/pets-api.md`).

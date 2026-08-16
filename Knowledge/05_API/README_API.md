@@ -135,6 +135,14 @@ POST /api/devices
 
 ---
 
+## Correos transaccionales
+
+Ver [[05_API/SPEC_Correos_Transaccionales]] — catálogo completo (asunto + cuerpo + variables)
+de los correos que Kittypau envía vía Supabase Auth. Empieza con la confirmación de registro
+(`Confirm signup`, personalizada con nombre de usuario + nombre de mascota).
+
+---
+
 ## Ver también
 
 - [[03_Backend/README_Backend]] — implementación y módulos

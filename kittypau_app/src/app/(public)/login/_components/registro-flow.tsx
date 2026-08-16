@@ -25,9 +25,13 @@ type Pet = {
   name: string;
   type: string;
   photo_url?: string | null;
+  sex?: string | null;
+  microchip_number?: string | null;
+  birth_date?: string | null;
+  intake_date?: string | null;
 };
 
-type Comuna = {
+export type Comuna = {
   value: string;
   label: string;
   provincia: string;
@@ -37,8 +41,17 @@ type RegistroFlowProps = {
   mode?: "page" | "modal";
   onClose?: () => void;
   onProgress?: (step: number) => void;
+  // Notifica qué paso (1/2/3) tiene un error activo de guardado, o null si ninguno —
+  // usado por el stepper de page.tsx para mostrar un ícono de alerta en el paso.
+  onStepError?: (step: number | null) => void;
   forcedStep?: number | null;
   onDeviceTypeChange?: (deviceType: "food_bowl" | "water_bowl") => void;
+  // Nombre de mascota ya capturado en el paso 1 fusionado (Usuario) — spec 002 FR-013.
+  // Precarga petForm.name para que la persona no lo vuelva a escribir.
+  initialPetName?: string;
+  // Convención de cuenta de prueba (Knowledge/20_Testing/README_Testing.md) — cuando es
+  // true, precarga también el resto del Registro Básico de mascota con datos de prueba.
+  isTestAccount?: boolean;
 };
 
 type TooltipIconProps = {
@@ -107,14 +120,14 @@ const defaultStatus: RegistroStatus = {
 
 const STORAGE_BUCKET = "kittypau-photos";
 const MAX_PHOTO_MB = 5;
-const AVATAR_OPTIONS = [
+export const AVATAR_OPTIONS = [
   { id: "avatar-1", label: "Avatar 1", url: "/avatar_1.png" },
   { id: "avatar-2", label: "Avatar 2", url: "/avatar_2.png" },
   { id: "avatar-3", label: "Avatar 3", url: "/avatar_3.png" },
   { id: "avatar-4", label: "Avatar 4", url: "/avatar_5.png" },
 ];
 
-const PROVINCIA_SANTIAGO: Comuna[] = [
+export const PROVINCIA_SANTIAGO: Comuna[] = [
   { value: "cerrillos", label: "Cerrillos", provincia: "Santiago" },
   { value: "cerro_navia", label: "Cerro Navia", provincia: "Santiago" },
   { value: "conchali", label: "Conchalí", provincia: "Santiago" },
@@ -163,6 +176,9 @@ export default function RegistroFlow({
   onProgress,
   forcedStep = null,
   onDeviceTypeChange,
+  onStepError,
+  initialPetName,
+  isTestAccount = false,
 }: RegistroFlowProps) {
   const isModal = mode === "modal";
   const router = useRouter();
@@ -176,6 +192,11 @@ export default function RegistroFlow({
   const [profileError, setProfileError] = useState<string | null>(null);
   const [petError, setPetError] = useState<string | null>(null);
   const [deviceError, setDeviceError] = useState<string | null>(null);
+
+  useEffect(() => {
+    onStepError?.(profileError ? 1 : petError ? 2 : deviceError ? 3 : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileError, petError, deviceError]);
   const [showProfileHints, setShowProfileHints] = useState(false);
   const [showPetHints, setShowPetHints] = useState(false);
   const [showDeviceHints, setShowDeviceHints] = useState(false);
@@ -205,9 +226,9 @@ export default function RegistroFlow({
   });
 
   const [petForm, setPetForm] = useState({
-    name: "",
+    name: initialPetName ?? "",
     type: "cat",
-    origin: "rescatado",
+    origin: "rescatado_calle",
     // Perfil extendido (opcional) — respaldado 1:1 por columnas ya existentes
     // en `pets` y ya validadas por POST /api/pets; solo faltaba pedirlas acá.
     weight_kg: "",
@@ -218,7 +239,33 @@ export default function RegistroFlow({
     has_microchip: "" as "" | "true" | "false",
     has_health_condition: "" as "" | "true" | "false",
     health_notes: "",
+    // Registro Básico ampliado (spec 002 User Story 4)
+    sex: "" as "" | "macho" | "hembra" | "no_estoy_seguro",
+    microchip_number: "",
+    birth_date: "",
+    intake_date: "",
   });
+
+  useEffect(() => {
+    if (!isTestAccount) return;
+    // Convención de cuenta de prueba (Knowledge/20_Testing/README_Testing.md) — precarga
+    // el resto del Registro Básico para poder probar el flujo sin tipear nada. Valores
+    // fijos elegidos como "razonables para una mascota de prueba", documentados ahí mismo.
+    setPetForm((prev) => ({
+      ...prev,
+      type: "cat",
+      origin: "rescatado_calle",
+      weight_kg: "4",
+      size: "mediano",
+      age_range: "adulto",
+      is_neutered: "true",
+      has_neuter_tattoo: "false",
+      has_microchip: "false",
+      has_health_condition: "false",
+      sex: "hembra",
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTestAccount]);
 
   const [deviceForm, setDeviceForm] = useState({
     pet_id: "",
@@ -271,6 +318,7 @@ export default function RegistroFlow({
     const issues: string[] = [];
     if (!petForm.name.trim()) issues.push("Nombre de mascota requerido.");
     if (!petForm.type.trim()) issues.push("Tipo de mascota requerido.");
+    if (!petForm.sex) issues.push("Indica el sexo de tu mascota.");
     const weight = Number(petForm.weight_kg);
     if (!petForm.weight_kg.trim()) {
       issues.push("Peso requerido.");
@@ -712,6 +760,10 @@ export default function RegistroFlow({
           health_notes: petForm.health_notes.trim() || null,
           photo_url: petPhotoUrl,
           pet_onboarding_step: "pet_profile",
+          sex: petForm.sex || null,
+          microchip_number: petForm.microchip_number.trim() || null,
+          birth_date: petForm.birth_date || null,
+          intake_date: petForm.intake_date || null,
         }),
       });
 
@@ -792,15 +844,25 @@ export default function RegistroFlow({
   };
 
   if (isLoading) {
+    // Skeleton screen en vez de texto plano (rescate #5 de la guía de barras de
+    // progreso) — misma forma aproximada del formulario que está por aparecer, mejor
+    // percepción de velocidad que "Cargando registro...".
     return (
       <div
-        className={
-          isModal
-            ? "px-2 py-4 text-sm text-slate-500"
-            : "min-h-screen bg-white px-6 py-12 text-sm text-slate-500"
-        }
+        className={isModal ? "px-2 py-4" : "min-h-screen bg-white px-6 py-12"}
+        aria-live="polite"
+        aria-busy="true"
       >
-        Cargando registro...
+        <span className="sr-only">Cargando registro...</span>
+        <div className="animate-pulse space-y-4" aria-hidden="true">
+          <div className="h-3 w-32 rounded bg-slate-200" />
+          <div className="h-11 w-full rounded-[var(--radius)] bg-slate-100" />
+          <div className="h-3 w-24 rounded bg-slate-200" />
+          <div className="h-11 w-full rounded-[var(--radius)] bg-slate-100" />
+          <div className="h-3 w-28 rounded bg-slate-200" />
+          <div className="h-11 w-full rounded-[var(--radius)] bg-slate-100" />
+          <div className="h-11 w-full rounded-[var(--radius)] bg-slate-200" />
+        </div>
       </div>
     );
   }
@@ -1295,12 +1357,12 @@ export default function RegistroFlow({
               </FieldCard>
 
               <FieldCard
-                label="Tipo"
+                label="Especie"
                 tooltip="Gato o perro."
                 required
                 error={
                   showPetHints && !petForm.type.trim()
-                    ? "Selecciona el tipo de mascota."
+                    ? "Selecciona la especie."
                     : null
                 }
               >
@@ -1319,6 +1381,45 @@ export default function RegistroFlow({
                 </select>
               </FieldCard>
 
+              <FieldCard
+                label="Sexo"
+                required
+                error={
+                  showPetHints && !petForm.sex
+                    ? "Indica el sexo de tu mascota."
+                    : null
+                }
+              >
+                <div className="flex flex-col gap-2">
+                  {(
+                    [
+                      { value: "macho", label: "Macho" },
+                      { value: "hembra", label: "Hembra" },
+                      { value: "no_estoy_seguro", label: "No estoy seguro" },
+                    ] as const
+                  ).map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 text-sm text-slate-700"
+                    >
+                      <input
+                        type="radio"
+                        name="pet-sex"
+                        value={option.value}
+                        checked={petForm.sex === option.value}
+                        onChange={() =>
+                          setPetForm((prev) => ({
+                            ...prev,
+                            sex: option.value,
+                          }))
+                        }
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </FieldCard>
+
               <div className="sm:col-span-2">
                 <FieldCard
                   label="Origen"
@@ -1332,14 +1433,69 @@ export default function RegistroFlow({
                       setPetForm((prev) => ({
                         ...prev,
                         origin: event.target.value,
+                        // Limpia la fecha ya ingresada si cambia el tipo de fecha
+                        // esperada (FR-019) — evita guardar una fecha en el campo
+                        // equivocado si la persona cambia de opinión sobre el Origen.
+                        birth_date: "",
+                        intake_date: "",
                       }))
                     }
                   >
-                    <option value="comprado">Comprado</option>
-                    <option value="rescatado">Rescatado</option>
-                    <option value="llego_solo">Llegó solo</option>
-                    <option value="regalado">Regalado</option>
+                    <option value="comprado">
+                      Comprado (criador o tienda)
+                    </option>
+                    <option value="adoptado_refugio">
+                      Adoptado en refugio o protectora
+                    </option>
+                    <option value="rescatado_calle">
+                      Rescatado de la calle
+                    </option>
+                    <option value="regalado">Regalado / donado</option>
+                    <option value="nacido_en_casa">
+                      Nació en casa (camada propia)
+                    </option>
+                    <option value="otro">Otro</option>
                   </select>
+                </FieldCard>
+              </div>
+
+              <div className="sm:col-span-2">
+                <FieldCard
+                  label={
+                    petForm.origin === "comprado" ||
+                    petForm.origin === "nacido_en_casa"
+                      ? "Fecha de nacimiento"
+                      : "Fecha de llegada / adopción"
+                  }
+                  tooltip="Opcional — se conserva la que corresponda según el Origen elegido."
+                  help="Opcional."
+                >
+                  {petForm.origin === "comprado" ||
+                  petForm.origin === "nacido_en_casa" ? (
+                    <input
+                      type="date"
+                      className={inputClass(false)}
+                      value={petForm.birth_date}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          birth_date: event.target.value,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <input
+                      type="date"
+                      className={inputClass(false)}
+                      value={petForm.intake_date}
+                      onChange={(event) =>
+                        setPetForm((prev) => ({
+                          ...prev,
+                          intake_date: event.target.value,
+                        }))
+                      }
+                    />
+                  )}
                 </FieldCard>
               </div>
             </div>
@@ -1521,6 +1677,27 @@ export default function RegistroFlow({
                     </select>
                   </FieldCard>
                 </div>
+                {petForm.has_microchip === "true" ? (
+                  <div className="mt-3">
+                    <FieldCard
+                      label="Número de microchip"
+                      tooltip="Opcional — agrégalo si lo tenés a mano."
+                      help="Opcional, nunca bloquea el registro (FR-018)."
+                    >
+                      <input
+                        className={inputClass(false)}
+                        placeholder="Ej: 981000012345678"
+                        value={petForm.microchip_number}
+                        onChange={(event) =>
+                          setPetForm((prev) => ({
+                            ...prev,
+                            microchip_number: event.target.value,
+                          }))
+                        }
+                      />
+                    </FieldCard>
+                  </div>
+                ) : null}
                 <div className="mt-3">
                   <FieldCard
                     label="¿Tiene alguna condición de salud?"
@@ -1577,6 +1754,18 @@ export default function RegistroFlow({
                   ) : null}
                 </div>
               </div>
+            </div>
+
+            <div className="mt-4 rounded-[calc(var(--radius)-8px)] border border-slate-200/70 bg-white/80 px-4 py-3 text-xs text-slate-600">
+              <p className="font-semibold text-slate-700">
+                Después de esto: Salud y Alimentación
+              </p>
+              <p className="mt-1">
+                Con esto ya podés seguir — el detalle de salud y alimentación de{" "}
+                {petForm.name.trim() || "tu mascota"} se completa cuando quieras
+                desde el menú &quot;Mascota&quot;. Te lo vamos a recordar hasta
+                que lo completes.
+              </p>
             </div>
 
             <button

@@ -23,6 +23,15 @@ const ALLOWED_PET_STEP = new Set([
   "pet_health",
   "pet_confirm",
 ]);
+const ALLOWED_SEX = new Set(["macho", "hembra", "no_estoy_seguro"]);
+const ALLOWED_ORIGIN = new Set([
+  "comprado",
+  "adoptado_refugio",
+  "rescatado_calle",
+  "regalado",
+  "nacido_en_casa",
+  "otro",
+]);
 
 function normalizeString(value: unknown): string | null | undefined {
   if (value === undefined) return undefined;
@@ -34,7 +43,7 @@ function normalizeString(value: unknown): string | null | undefined {
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const startedAt = startRequestTimer(req);
   const auth = await getUserClient(req);
@@ -46,14 +55,9 @@ export async function PATCH(
   const rateKey = `${getRateKeyFromRequest(req, user.id)}:pets_patch`;
   const rate = await checkRateLimit(rateKey, 30, 60_000);
   if (!rate.ok) {
-    return apiError(
-      req,
-      429,
-      "RATE_LIMITED",
-      "Too many requests",
-      undefined,
-      { "Retry-After": String(rate.retryAfter) }
-    );
+    return apiError(req, 429, "RATE_LIMITED", "Too many requests", undefined, {
+      "Retry-After": String(rate.retryAfter),
+    });
   }
   const { id: petId } = await context.params;
 
@@ -86,8 +90,16 @@ export async function PATCH(
       req,
       400,
       "INVALID_PET_STEP",
-      "Invalid pet_onboarding_step"
+      "Invalid pet_onboarding_step",
     );
+  }
+
+  if (body.sex && !ALLOWED_SEX.has(String(body.sex))) {
+    return apiError(req, 400, "INVALID_SEX", "Invalid sex");
+  }
+
+  if (body.origin && !ALLOWED_ORIGIN.has(String(body.origin))) {
+    return apiError(req, 400, "INVALID_ORIGIN", "Invalid origin");
   }
 
   if (body.weight_kg !== undefined && typeof body.weight_kg !== "number") {
@@ -100,17 +112,39 @@ export async function PATCH(
         req,
         400,
         "WEIGHT_OUT_OF_RANGE",
-        "weight_kg must be between 0 and 50"
+        "weight_kg must be between 0 and 50",
       );
     }
   }
 
-  for (const key of ["food_normal_min_g", "food_normal_max_g", "water_normal_min_ml", "water_normal_max_ml"] as const) {
-    if (body[key] !== undefined && body[key] !== null && typeof body[key] !== "number") {
-      return apiError(req, 400, "INVALID_LIMIT", `${key} must be a number or null`);
+  for (const key of [
+    "food_normal_min_g",
+    "food_normal_max_g",
+    "water_normal_min_ml",
+    "water_normal_max_ml",
+  ] as const) {
+    if (
+      body[key] !== undefined &&
+      body[key] !== null &&
+      typeof body[key] !== "number"
+    ) {
+      return apiError(
+        req,
+        400,
+        "INVALID_LIMIT",
+        `${key} must be a number or null`,
+      );
     }
-    if (typeof body[key] === "number" && ((body[key] as number) < 0 || (body[key] as number) > 10000)) {
-      return apiError(req, 400, "LIMIT_OUT_OF_RANGE", `${key} must be between 0 and 10000`);
+    if (
+      typeof body[key] === "number" &&
+      ((body[key] as number) < 0 || (body[key] as number) > 10000)
+    ) {
+      return apiError(
+        req,
+        400,
+        "LIMIT_OUT_OF_RANGE",
+        `${key} must be between 0 and 10000`,
+      );
     }
   }
 
@@ -151,6 +185,14 @@ export async function PATCH(
     "food_normal_max_g",
     "water_normal_min_ml",
     "water_normal_max_ml",
+    "sex",
+    "microchip_number",
+    "birth_date",
+    "intake_date",
+    "health_profile",
+    "feeding_profile",
+    "health_profile_completed_at",
+    "feeding_profile_completed_at",
   ];
 
   for (const key of allowedFields) {
@@ -170,6 +212,10 @@ export async function PATCH(
     "alone_time",
     "health_notes",
     "photo_url",
+    "sex",
+    "microchip_number",
+    "birth_date",
+    "intake_date",
   ]) {
     if (key in updatePayload) {
       updatePayload[key] = normalizeString(updatePayload[key]);

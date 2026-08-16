@@ -88,6 +88,7 @@ está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.*
 - **El JS se despliega solo con cada push a `main` (Vercel), los recursos nativos del APK NO** (plugins, íconos, permisos) — necesitan un APK nuevo compilado e instalado. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]]
 - **Los 3 `page.tsx` más grandes** tienen un comentario-mapa al principio del archivo (grepear el nombre de sección, no releer todo): `admin/page.tsx` (~4000 líneas, extracción evaluada y **dejada de lado a propósito**), `today/page.tsx` (~2500), `login/page.tsx` (~1900, sin priorizar)
 - **Fórmula del Hunger Bar:** [[05_API/SPEC_HungerBar_Alimentacion]] — alertas/push: [[05_API/SPEC_HungerBar_Alertas]]
+- **Correos transaccionales (asunto + cuerpo + variables):** [[05_API/SPEC_Correos_Transaccionales]] — empieza con la confirmación de registro personalizada
 - **Qué queda pendiente ahora mismo:** [[29_Specs/README_Specs]] (backlog vivo, se poda solo con lo ya implementado)
 - **⚠️ La DB de analytics (`pet_sessions`/`pet_daily_summary`) parece haber sido eliminada** (DNS no resuelve, verificado 2026-08-14) — bloquea `/story` y [[29_Specs/SPEC_11_Resumen_Consumo_Today]]. Ver [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2
 

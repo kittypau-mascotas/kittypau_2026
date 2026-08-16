@@ -38,6 +38,14 @@ type ApiPet = {
   food_normal_max_g?: number | null;
   water_normal_min_ml?: number | null;
   water_normal_max_ml?: number | null;
+  sex?: string | null;
+  microchip_number?: string | null;
+  birth_date?: string | null;
+  intake_date?: string | null;
+  health_profile?: Record<string, unknown> | null;
+  feeding_profile?: Record<string, unknown> | null;
+  health_profile_completed_at?: string | null;
+  feeding_profile_completed_at?: string | null;
 };
 
 type ApiDevice = {

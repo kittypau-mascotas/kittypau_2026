@@ -42,8 +42,20 @@ import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 import { resolveAuthenticatedPath, setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
-import RegistroFlow from "./_components/registro-flow";
+import RegistroFlow, {
+  AVATAR_OPTIONS,
+  PROVINCIA_SANTIAGO,
+} from "./_components/registro-flow";
 import SocialLinks from "@/app/_components/social-links";
+
+// ponytail: convención de cuenta de prueba (Knowledge/20_Testing/README_Testing.md § convención
+// permanente) — cualquier email que contenga esto autocompleta el registro con los datos ya
+// definidos para la persona de prueba, para poder probar el flujo repetidas veces sin tipear
+// nada. No es un bypass de auth: la cuenta sigue pasando por signUp + confirmación de correo
+// real como cualquier otra, solo se precargan campos de perfil. Techo: si esto necesitara
+// cubrir más de un email de prueba, pasar a un Set/env var en vez de un string suelto.
+const TEST_ACCOUNT_EMAIL_MARKER = "frentecalamari";
+const TEST_ACCOUNT_PASSWORD = "Usuario1Kittypau!";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -63,13 +75,45 @@ export default function LoginPage() {
     "account",
   );
   const [freshRegisterIntent, setFreshRegisterIntent] = useState(false);
+  // Paso 1 "Usuario" fusionado (spec 002 FR-011): Avatar, Tu Nombre, Nombre de tu
+  // Mascota, Comuna se capturan acá — antes vivían en el paso 2 de RegistroFlow.
+  const [registerAvatar, setRegisterAvatar] = useState<string | null>(
+    AVATAR_OPTIONS[0]?.url ?? null,
+  );
+  const [registerUserName, setRegisterUserName] = useState("");
+  const [registerPetName, setRegisterPetName] = useState("");
+  const [registerCity, setRegisterCity] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  // Separado de `registerEmail.includes(...)` porque también se marca al retomar una
+  // sesión ya confirmada (el campo `registerEmail` local se pierde en una pestaña nueva,
+  // ver los 4 flujos de resume más abajo) — sin esto, el prefill del paso Mascota no
+  // sobreviviría a un reload tras hacer clic en el link de confirmación.
+  const [isTestAccountEmail, setIsTestAccountEmail] = useState(false);
+
+  useEffect(() => {
+    const matches = registerEmail
+      .toLowerCase()
+      .includes(TEST_ACCOUNT_EMAIL_MARKER);
+    if (!matches) return;
+    setIsTestAccountEmail(true);
+    setRegisterUserName("usuario_1");
+    setRegisterPetName("mascota_1");
+    setRegisterCity("santiago");
+    setRegisterAvatar(AVATAR_OPTIONS[0]?.url ?? null);
+    setRegisterPassword(TEST_ACCOUNT_PASSWORD);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registerEmail]);
   const [registerShowPassword, setRegisterShowPassword] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [registroProgress, setRegistroProgress] = useState(1);
+  // Qué paso del stepper (1/2/3) tiene un error activo de guardado — null si ninguno.
+  const [stepErrorAt, setStepErrorAt] = useState<number | null>(null);
+  // Mensaje si el submit tarda más de lo normal (rescate #6) — no se toca isRegistering
+  // en sí, solo agrega feedback si se pasa de 5s.
+  const [isRegisteringSlow, setIsRegisteringSlow] = useState(false);
   const [manualRegistroStep, setManualRegistroStep] = useState<number | null>(
     null,
   );
@@ -124,26 +168,30 @@ export default function LoginPage() {
   const registerModalRef = useRef<HTMLDivElement | null>(null);
   const bowlAudioRef = useRef<HTMLAudioElement | null>(null);
   const registerTitle = useMemo(
-    () => (registerStep === "account" ? "Crear cuenta" : "Registro Kittypau"),
+    () => (registerStep === "account" ? "Usuario" : "Registro Kittypau"),
     [registerStep],
   );
 
+  // 3 pasos (spec 002 FR-005): 1 Usuario (cuenta+perfil fusionados) → 2 Mascota →
+  // 3 Kittypau (antes "Dispositivo"). RegistroFlow sigue numerando sus propios pasos
+  // internos 1-4 (research.md #1: se reutiliza tal cual la máquina de estados
+  // existente) — acá solo se colapsa esa numeración a 3 posiciones visibles, ya que
+  // el paso interno 1 "Usuario" de RegistroFlow queda auto-saltado (el perfil ya se
+  // guardó en onRegister antes de llegar a "registro").
   const activeRegistroStep = manualRegistroStep ?? registroProgress;
   const modalStep =
-    registerStep === "account" ? 1 : Math.min(4, activeRegistroStep + 1);
+    registerStep === "account" ? 1 : Math.min(3, activeRegistroStep);
   const realRegistroStep = Math.min(4, Math.max(1, registroProgress));
 
   const accountCompleted =
     Boolean(confirmedEmail) || registerConfirmed || registerStep === "registro";
-  const userCompleted = registerStep === "registro" && realRegistroStep >= 2;
   const petCompleted = registerStep === "registro" && realRegistroStep >= 3;
   const deviceCompleted = registerStep === "registro" && realRegistroStep >= 4;
 
   const completedMap: Record<number, boolean> = {
     1: accountCompleted,
-    2: userCompleted,
-    3: petCompleted,
-    4: deviceCompleted,
+    2: petCompleted,
+    3: deviceCompleted,
   };
 
   const heroBowlCycle = [
@@ -549,36 +597,66 @@ export default function LoginPage() {
     stopTrialDialogAudio,
   ]);
 
-  const stepMeta = useMemo(
-    () => [
-      { label: "Cuenta" },
-      { label: "Usuario" },
-      { label: "Mascota" },
-      { label: "Dispositivo" },
-    ],
-    [],
-  );
+  // 3 posiciones (spec 002 FR-005/FR-007): Usuario, Mascota, y la marca Kittypau en
+  // vez del texto "Dispositivo".
+  // Una vez que la cuenta ya quedó creada (registerStep === "registro"), los pasos 1 y 2
+  // muestran el nombre real de la persona y de la mascota en vez del texto genérico
+  // "Usuario"/"Mascota" — ya se capturaron ambos en el paso 1 fusionado (FR-011).
+  const stepMeta = useMemo(() => {
+    const nameKnown = registerStep === "registro";
+    return [
+      {
+        label:
+          nameKnown && registerUserName.trim()
+            ? registerUserName.trim()
+            : "Usuario",
+      },
+      {
+        label:
+          nameKnown && registerPetName.trim()
+            ? registerPetName.trim()
+            : "Mascota",
+      },
+      { label: "Kittypau", isBrand: true },
+    ];
+  }, [registerStep, registerUserName, registerPetName]);
 
   const onStepperClick = (targetStep: number) => {
-    if (targetStep <= 1) {
-      setRegisterStep("account");
-      setManualRegistroStep(null);
+    if (registerStep !== "registro") {
+      // Todavía en el paso 1 (cuenta + perfil fusionados) — no hay a dónde navegar.
       return;
     }
-    setRegisterStep("registro");
-    setManualRegistroStep(Math.min(3, Math.max(1, targetStep - 1)));
+    // Los pasos internos de RegistroFlow (2=Mascota, 3=Dispositivo) ya coinciden con
+    // la numeración visible de 3 pasos — no hace falta offset.
+    setManualRegistroStep(Math.min(3, Math.max(2, targetStep)));
   };
+
+  // Línea conectora progresiva (rescate #1/#2 de la guía de barras de progreso): se
+  // rellena de a un tramo por paso completado, en vez de ser una línea fija decorativa.
+  const completedStepCount = Object.values(completedMap).filter(Boolean).length;
+  const trackFillPercent =
+    stepMeta.length > 1
+      ? Math.min(100, (completedStepCount / (stepMeta.length - 1)) * 100)
+      : 0;
 
   const stepperContent = (
     <div className="login-stepper2" aria-label="Progreso del registro">
-      <div className="login-stepper2-track" aria-hidden="true" />
+      <div className="login-stepper2-track" aria-hidden="true">
+        <div
+          className="login-stepper2-track-fill"
+          style={{ width: `${trackFillPercent}%` }}
+        />
+      </div>
       {stepMeta.map((step, idx) => {
         const number = idx + 1;
-        const state = completedMap[number]
-          ? "done"
-          : number === modalStep
-            ? "active"
-            : "todo";
+        const hasError = stepErrorAt === number;
+        const state = hasError
+          ? "error"
+          : completedMap[number]
+            ? "done"
+            : number === modalStep
+              ? "active"
+              : "todo";
         return (
           <button
             key={step.label}
@@ -588,9 +666,34 @@ export default function LoginPage() {
             aria-current={number === modalStep ? "step" : undefined}
           >
             <span className="login-step2-dot" aria-hidden="true">
-              {completedMap[number] ? "✓" : number}
+              {hasError ? (
+                "⚠"
+              ) : step.isBrand && !completedMap[number] ? (
+                <Image
+                  src="/logo_carga.jpg"
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-full w-full rounded-full object-cover"
+                  draggable={false}
+                />
+              ) : completedMap[number] ? (
+                "✓"
+              ) : (
+                number
+              )}
             </span>
-            <span className="login-step2-label">{step.label}</span>
+            <span
+              className={`login-step2-label ${
+                step.isBrand
+                  ? `login-step2-label-brand brand-title ${
+                      modalStep >= 2 ? "login-step2-label-brand-fast" : ""
+                    }`
+                  : ""
+              }`}
+            >
+              {step.label}
+            </span>
           </button>
         );
       })}
@@ -638,6 +741,18 @@ export default function LoginPage() {
         refreshToken: session.refresh_token,
       });
       setConfirmedEmail(session.user?.email ?? null);
+      // FR-013: recupera el nombre de mascota desde user_metadata (sobrevive a un
+      // reload/pestaña nueva tras confirmar el correo, cuando el estado local ya se
+      // perdió) para que RegistroFlow lo siga precargando.
+      const resumedPetName = session.user?.user_metadata?.pet_name;
+      if (typeof resumedPetName === "string" && resumedPetName) {
+        setRegisterPetName(resumedPetName);
+      }
+      if (
+        session.user?.email?.toLowerCase().includes(TEST_ACCOUNT_EMAIL_MARKER)
+      ) {
+        setIsTestAccountEmail(true);
+      }
 
       // If we're inside the registration popup, jump to step 2+.
       if (showRegister && registerStep === "account" && !freshRegisterIntent) {
@@ -679,6 +794,15 @@ export default function LoginPage() {
           refreshToken: session.refresh_token,
         });
         setConfirmedEmail(session.user?.email ?? null);
+        const resumedPetName = session.user?.user_metadata?.pet_name;
+        if (typeof resumedPetName === "string" && resumedPetName) {
+          setRegisterPetName(resumedPetName);
+        }
+        if (
+          session.user?.email?.toLowerCase().includes(TEST_ACCOUNT_EMAIL_MARKER)
+        ) {
+          setIsTestAccountEmail(true);
+        }
 
         setRegisterStep("registro");
         setManualRegistroStep(null);
@@ -716,6 +840,17 @@ export default function LoginPage() {
           accessToken: data.session.access_token,
           refreshToken: data.session.refresh_token,
         });
+        const resumedPetName = data.session.user?.user_metadata?.pet_name;
+        if (typeof resumedPetName === "string" && resumedPetName) {
+          setRegisterPetName(resumedPetName);
+        }
+        if (
+          data.session.user?.email
+            ?.toLowerCase()
+            .includes(TEST_ACCOUNT_EMAIL_MARKER)
+        ) {
+          setIsTestAccountEmail(true);
+        }
 
         setShowRegister(true);
         setFreshRegisterIntent(false);
@@ -777,6 +912,17 @@ export default function LoginPage() {
           refreshToken: data.session.refresh_token,
         });
         setConfirmedEmail(data.session.user?.email ?? null);
+        const resumedPetName = data.session.user?.user_metadata?.pet_name;
+        if (typeof resumedPetName === "string" && resumedPetName) {
+          setRegisterPetName(resumedPetName);
+        }
+        if (
+          data.session.user?.email
+            ?.toLowerCase()
+            .includes(TEST_ACCOUNT_EMAIL_MARKER)
+        ) {
+          setIsTestAccountEmail(true);
+        }
 
         setShowRegister(true);
         setFreshRegisterIntent(false);
@@ -915,6 +1061,15 @@ export default function LoginPage() {
     setIsSubmitting(false);
   };
 
+  useEffect(() => {
+    if (!isRegistering) {
+      setIsRegisteringSlow(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setIsRegisteringSlow(true), 5000);
+    return () => window.clearTimeout(timer);
+  }, [isRegistering]);
+
   const onRegister = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setRegisterError(null);
@@ -926,6 +1081,18 @@ export default function LoginPage() {
     }
     if (registerPassword.length < 8) {
       setRegisterError("La contraseña debe tener al menos 8 caracteres.");
+      setIsRegistering(false);
+      return;
+    }
+    // FR-012: sin estos 2 datos no se crea la cuenta — personalizan el correo
+    // de confirmación (asunto + contenido, ver Knowledge/29_Specs/002-.../research.md #4).
+    if (!registerUserName.trim() || !registerPetName.trim()) {
+      setRegisterError("Ingresa tu nombre y el de tu mascota para continuar.");
+      setIsRegistering(false);
+      return;
+    }
+    if (!registerCity.trim()) {
+      setRegisterError("Selecciona tu comuna para continuar.");
       setIsRegistering(false);
       return;
     }
@@ -944,6 +1111,13 @@ export default function LoginPage() {
       password: registerPassword,
       options: {
         emailRedirectTo: `${siteUrl}/login?register=1&verified=1`,
+        // Consumido por la plantilla de correo de Supabase vía {{ .Data.user_name }} /
+        // {{ .Data.pet_name }} (research.md #4) — requiere la plantilla editada en el
+        // dashboard (T002, pendiente/manual, no bloquea este código).
+        data: {
+          user_name: registerUserName.trim(),
+          pet_name: registerPetName.trim(),
+        },
       },
     });
 
@@ -955,7 +1129,7 @@ export default function LoginPage() {
 
     if (!data.session?.access_token) {
       setRegisterError(
-        "Revisa tu correo (y spam) para confirmar la cuenta antes de continuar. Cuando confirmes, volverás aquí y pasaremos automáticamente al paso Usuario.",
+        "Revisa tu correo (y spam) para confirmar la cuenta antes de continuar. Cuando confirmes, volverás aquí y pasaremos automáticamente al paso Mascota.",
       );
       setIsRegistering(false);
       return;
@@ -965,6 +1139,30 @@ export default function LoginPage() {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
     });
+
+    // Guarda de una vez el perfil de usuario con lo ya capturado acá (Avatar, Nombre,
+    // Comuna) — evita repetir una pantalla "Usuario" separada dentro de RegistroFlow.
+    // Si falla, no bloquea el registro: RegistroFlow igual permite completarlo después.
+    try {
+      await fetch("/api/profiles", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${data.session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_name: registerUserName.trim(),
+          city: registerCity,
+          photo_url: registerAvatar,
+          user_onboarding_step: "pet_profile",
+        }),
+      });
+    } catch {
+      // ponytail: sin retry — RegistroFlow deriva el paso real desde el status del
+      // servidor, así que si esto falla la persona simplemente ve el paso Usuario
+      // (comportamiento previo a esta fusión, no un estado roto nuevo).
+    }
+
     setConfirmedEmail(data.session.user?.email ?? null);
     setFreshRegisterIntent(false);
     setRegisterStep("registro");
@@ -1029,7 +1227,15 @@ export default function LoginPage() {
   const isLoginValid = isEmailValid && isPasswordValid;
   const isRegisterEmailValid = registerEmail.includes("@");
   const isRegisterPasswordValid = registerPassword.length >= 8;
-  const isRegisterValid = isRegisterEmailValid && isRegisterPasswordValid;
+  // FR-012: la cuenta no se crea hasta tener Nombre y Nombre de Mascota (personalizan
+  // el correo de confirmación) — Avatar y Comuna ya eran requeridos antes de la fusión.
+  const isRegisterValid =
+    isRegisterEmailValid &&
+    isRegisterPasswordValid &&
+    Boolean(registerAvatar) &&
+    registerUserName.trim().length > 0 &&
+    registerPetName.trim().length > 0 &&
+    registerCity.trim().length > 0;
   const canReset = Boolean(resetEmail || email);
 
   const openRegister = () => {
@@ -1641,7 +1847,7 @@ export default function LoginPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="login-register-pill text-xs font-semibold">
-                        Paso {modalStep} / 4
+                        Paso {modalStep} / 3
                       </span>
                       <button
                         type="button"
@@ -1672,53 +1878,153 @@ export default function LoginPage() {
                 >
                   {registerStep === "account" ? (
                     <form
-                      className="space-y-4"
+                      className="flex flex-col gap-4"
                       onSubmit={onRegister}
                       aria-busy={isRegistering}
                     >
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="reg-email"
-                            className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
-                          >
-                            Email
-                          </label>
-                          <input
-                            id="reg-email"
-                            type="email"
-                            placeholder="tu@email.com"
-                            value={registerEmail}
-                            onChange={(event) =>
-                              setRegisterEmail(event.target.value)
-                            }
-                            className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                          />
+                      <div className="space-y-2">
+                        <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                          Elige tu avatar
+                        </span>
+                        <div className="grid grid-cols-4 gap-3">
+                          {AVATAR_OPTIONS.map((avatar) => {
+                            const isActive = registerAvatar === avatar.url;
+                            return (
+                              <button
+                                key={avatar.id}
+                                type="button"
+                                onClick={() => setRegisterAvatar(avatar.url)}
+                                className={`h-12 w-12 overflow-hidden rounded-full border sm:h-[72px] sm:w-[72px] ${
+                                  isActive
+                                    ? "border-rose-300 ring-2 ring-rose-200"
+                                    : "border-slate-200"
+                                }`}
+                                aria-pressed={isActive}
+                              >
+                                <img
+                                  src={avatar.url}
+                                  alt={avatar.label}
+                                  className="h-full w-full object-cover"
+                                />
+                              </button>
+                            );
+                          })}
                         </div>
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="reg-password"
-                            className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
-                          >
-                            Contraseña
-                          </label>
-                          <input
-                            id="reg-password"
-                            type={registerShowPassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            value={registerPassword}
-                            onChange={(event) =>
-                              setRegisterPassword(event.target.value)
-                            }
-                            className="h-11 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                          />
-                          {registerPassword.length > 0 &&
-                          !isRegisterPasswordValid ? (
-                            <p className="text-[11px] text-rose-600">
-                              Debe tener 8 caracteres o más.
-                            </p>
-                          ) : null}
-                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="reg-user-name"
+                          className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                        >
+                          Tu nombre
+                        </label>
+                        <input
+                          id="reg-user-name"
+                          type="text"
+                          placeholder="Tu nombre"
+                          autoComplete="name"
+                          value={registerUserName}
+                          onChange={(event) =>
+                            setRegisterUserName(event.target.value)
+                          }
+                          className="h-12 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-base text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="reg-pet-name"
+                          className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                        >
+                          Nombre de tu mascota
+                        </label>
+                        <input
+                          id="reg-pet-name"
+                          type="text"
+                          placeholder="Nombre de tu mascota"
+                          value={registerPetName}
+                          onChange={(event) =>
+                            setRegisterPetName(event.target.value)
+                          }
+                          className="h-12 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-base text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <p className="text-[11px] text-slate-500">
+                          Usaremos tu nombre y el de tu mascota para
+                          personalizar el correo de confirmación.
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="reg-city"
+                          className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                        >
+                          Comuna
+                        </label>
+                        <select
+                          id="reg-city"
+                          value={registerCity}
+                          onChange={(event) =>
+                            setRegisterCity(event.target.value)
+                          }
+                          className="h-12 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-base text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          <option value="" disabled>
+                            Selecciona comuna
+                          </option>
+                          {PROVINCIA_SANTIAGO.map((comuna) => (
+                            <option key={comuna.value} value={comuna.value}>
+                              {comuna.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="reg-email"
+                          className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                        >
+                          Email
+                        </label>
+                        <input
+                          id="reg-email"
+                          type="email"
+                          placeholder="tu@email.com"
+                          autoComplete="email"
+                          value={registerEmail}
+                          onChange={(event) =>
+                            setRegisterEmail(event.target.value)
+                          }
+                          className="h-12 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-base text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        {registerEmail.length > 0 && !isRegisterEmailValid ? (
+                          <p className="text-[11px] text-rose-600">
+                            Ingresa un email válido.
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="reg-password"
+                          className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500"
+                        >
+                          Contraseña
+                        </label>
+                        <input
+                          id="reg-password"
+                          type={registerShowPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          autoComplete="new-password"
+                          value={registerPassword}
+                          onChange={(event) =>
+                            setRegisterPassword(event.target.value)
+                          }
+                          className="h-12 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-base text-slate-900 outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        {registerPassword.length > 0 &&
+                        !isRegisterPasswordValid ? (
+                          <p className="text-[11px] text-rose-600">
+                            Debe tener 8 caracteres o más.
+                          </p>
+                        ) : null}
                       </div>
                       <label className="flex items-center gap-2 text-xs text-slate-500">
                         <input
@@ -1730,11 +2036,6 @@ export default function LoginPage() {
                         />
                         Mostrar contraseña
                       </label>
-                      {registerEmail.length > 0 && !isRegisterEmailValid ? (
-                        <p className="text-[11px] text-rose-600">
-                          Ingresa un email válido.
-                        </p>
-                      ) : null}
                       {registerError ? (
                         <p
                           className="rounded-[var(--radius)] border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"
@@ -1746,13 +2047,19 @@ export default function LoginPage() {
                       <button
                         type="submit"
                         disabled={isRegistering || !isRegisterValid}
-                        className="h-11 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                        className="login-submit-button h-12 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
                       >
-                        {isRegistering ? "Creando..." : "Continuar"}
+                        {isRegistering ? "Creando..." : "Crear mi cuenta"}
                       </button>
                       {isRegistering ? (
-                        <p className="text-[11px] text-slate-500">
-                          Creando cuenta...
+                        <p
+                          className="text-[11px] text-slate-500"
+                          role="status"
+                          aria-live="polite"
+                        >
+                          {isRegisteringSlow
+                            ? "Esto está tardando más de lo esperado — revisá tu conexión."
+                            : "Creando cuenta..."}
                         </p>
                       ) : null}
                       <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
@@ -1780,6 +2087,9 @@ export default function LoginPage() {
                       mode="modal"
                       onClose={closeRegister}
                       forcedStep={manualRegistroStep}
+                      initialPetName={registerPetName}
+                      isTestAccount={isTestAccountEmail}
+                      onStepError={setStepErrorAt}
                       onProgress={(step) => {
                         setRegistroProgress(step);
                         if (

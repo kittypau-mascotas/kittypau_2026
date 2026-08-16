@@ -31,6 +31,7 @@ type Device = {
 type AppData = {
   profile: Profile | null;
   petName: string | null;
+  petDetailPending: boolean;
   devices: Device[];
   accountType: "admin" | "tester" | "client";
   isAdmin: boolean;
@@ -40,6 +41,7 @@ type AppData = {
 const AppDataContext = createContext<AppData>({
   profile: null,
   petName: null,
+  petDetailPending: false,
   devices: [],
   accountType: "client",
   isAdmin: false,
@@ -54,6 +56,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>({
     profile: null,
     petName: null,
+    petDetailPending: false,
     devices: [],
     accountType: "client",
     isAdmin: false,
@@ -135,10 +138,18 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
             typeof window !== "undefined"
               ? window.localStorage.getItem("kittypau_pet_name")
               : null;
+          // ponytail: multi-mascota fuera de alcance (spec 002 § Edge Cases) — se usa
+          // siempre pets[0], igual que ya hace petName.
+          const petDetailPending =
+            pets.length > 0
+              ? !pets[0]?.health_profile_completed_at ||
+                !pets[0]?.feeding_profile_completed_at
+              : false;
 
           setData({
             profile,
             petName: pets[0]?.name ?? storedPetName ?? null,
+            petDetailPending,
             devices,
             accountType,
             isAdmin: Boolean(accountPayload?.is_admin),

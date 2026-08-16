@@ -12,6 +12,15 @@ import { checkRateLimit, getRateKeyFromRequest } from "../_rate-limit";
 export const runtime = "edge";
 
 const ALLOWED_TYPE = new Set(["cat", "dog"]);
+const ALLOWED_SEX = new Set(["macho", "hembra", "no_estoy_seguro"]);
+const ALLOWED_ORIGIN = new Set([
+  "comprado",
+  "adoptado_refugio",
+  "rescatado_calle",
+  "regalado",
+  "nacido_en_casa",
+  "otro",
+]);
 const ALLOWED_PET_STATE = new Set([
   "created",
   "completed_profile",
@@ -133,6 +142,10 @@ export async function POST(req: NextRequest) {
     photo_url: body?.photo_url ?? null,
     pet_state: body?.pet_state ?? "device_pending",
     pet_onboarding_step: body?.pet_onboarding_step ?? null,
+    sex: body?.sex ?? null,
+    microchip_number: body?.microchip_number ?? null,
+    birth_date: body?.birth_date ?? null,
+    intake_date: body?.intake_date ?? null,
   };
 
   payload.name = normalizeString(payload.name);
@@ -145,6 +158,10 @@ export async function POST(req: NextRequest) {
   payload.alone_time = normalizeString(payload.alone_time);
   payload.health_notes = normalizeString(payload.health_notes);
   payload.photo_url = normalizeString(payload.photo_url);
+  payload.sex = normalizeString(payload.sex);
+  payload.microchip_number = normalizeString(payload.microchip_number);
+  payload.birth_date = normalizeString(payload.birth_date);
+  payload.intake_date = normalizeString(payload.intake_date);
 
   if (!payload.name || !payload.type) {
     return apiError(req, 400, "MISSING_FIELDS", "name and type are required");
@@ -152,6 +169,14 @@ export async function POST(req: NextRequest) {
 
   if (!ALLOWED_TYPE.has(String(payload.type))) {
     return apiError(req, 400, "INVALID_TYPE", "Invalid type");
+  }
+
+  if (payload.sex && !ALLOWED_SEX.has(String(payload.sex))) {
+    return apiError(req, 400, "INVALID_SEX", "Invalid sex");
+  }
+
+  if (payload.origin && !ALLOWED_ORIGIN.has(String(payload.origin))) {
+    return apiError(req, 400, "INVALID_ORIGIN", "Invalid origin");
   }
 
   if (body?.weight_kg !== undefined && typeof body.weight_kg !== "number") {
