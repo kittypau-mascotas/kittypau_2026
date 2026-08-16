@@ -1366,11 +1366,9 @@ export default function PetPage() {
                       marca: String(profile.marca ?? ""),
                       marca_otra: String(profile.marca_otra ?? ""),
                       formula: String(profile.formula ?? ""),
-                      cantidad_diaria_g: String(
-                        profile.cantidad_diaria_g ?? "",
-                      ),
-                      comidas_dia: String(profile.comidas_dia ?? ""),
-                      horarios: String(profile.horarios ?? ""),
+                      // ponytail: cantidad_diaria_g/comidas_dia/horarios NO se preguntan
+                      // (corregido 2026-08-17) — Kittypau los mide con el dispositivo real,
+                      // no se le pide a la persona que los autodeclare. Ver data-model.md.
                       premios_aplica: premios.aplica ? "true" : "false",
                       premios_detalle: String(premios.detalle ?? ""),
                       restricciones_alimentarias: String(
@@ -1503,54 +1501,13 @@ export default function PetPage() {
                         }
                       />
                     </label>
-                    <label className="block text-xs text-slate-500">
-                      Cantidad diaria (g)
-                      <input
-                        type="number"
-                        min="0"
-                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                        value={feedingForm.cantidad_diaria_g ?? ""}
-                        onChange={(event) =>
-                          setFeedingForm((prev) => ({
-                            ...prev,
-                            cantidad_diaria_g: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
-                    <label className="block text-xs text-slate-500">
-                      Comidas al día
-                      <input
-                        type="number"
-                        min="0"
-                        max="10"
-                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                        value={feedingForm.comidas_dia ?? ""}
-                        onChange={(event) =>
-                          setFeedingForm((prev) => ({
-                            ...prev,
-                            comidas_dia: event.target.value,
-                          }))
-                        }
-                      />
-                    </label>
                   </div>
 
-                  <label className="block text-xs text-slate-500">
-                    Horarios habituales
-                    <input
-                      type="text"
-                      placeholder="Ej: 8am y 8pm"
-                      className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                      value={feedingForm.horarios ?? ""}
-                      onChange={(event) =>
-                        setFeedingForm((prev) => ({
-                          ...prev,
-                          horarios: event.target.value,
-                        }))
-                      }
-                    />
-                  </label>
+                  <p className="rounded-[var(--radius)] border border-slate-200/70 bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
+                    Cantidad diaria, comidas al día y horarios no se preguntan
+                    acá — Kittypau los mide directo con tu dispositivo una vez
+                    vinculado.
+                  </p>
 
                   <div>
                     <p className="text-xs text-slate-500">

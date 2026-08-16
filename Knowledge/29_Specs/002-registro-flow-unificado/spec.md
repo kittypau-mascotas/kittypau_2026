@@ -198,11 +198,19 @@ pendiente.
 - Tipo de alimento (seco / húmedo / mixto)
 - Marca
 - Fórmula / variedad
-- Cantidad diaria recomendada (gramos)
-- Número de comidas al día
-- Horarios habituales
 - Premios / snacks (sí/no + detalle)
 - Restricciones alimentarias
+
+**Corregido 2026-08-17 (a pedido explícito de Mauro): Cantidad diaria (gramos), Número de
+comidas al día y Horarios habituales NO se preguntan.** Son exactamente el dato que Kittypau
+existe para medir con el dispositivo real (comedero/bebedero + sensor de peso) — pedírselo a
+la persona sería reemplazar una medición real por una autodeclarada, justo lo contrario del
+objetivo del producto. Esos 3 valores se derivan de las lecturas reales (`readings`,
+sesiones de alimentación) una vez que el dispositivo está vinculado — ver
+`Knowledge/05_API/SPEC_HungerBar_Alimentacion.md` para cómo ya se calculan hoy. Error de
+diseño del propio autor de este spec (no de Mauro) — se pidieron como texto libre en la
+primera versión de la Ficha Detallada sin pensar en esta distinción; corregido apenas se
+notó.
 
 *(Curación respecto a la lista original de Mauro: "Peso actual" ya vive en el Registro Básico
 — no se duplica en Salud, solo se agrega "Peso ideal". "Cantidad de alimento por comida" se

@@ -75,15 +75,18 @@ guarda el nombre elegido tal cual, `marca_otra` el texto libre si eligió "otra"
 mantiene una base de datos pública tipo AAFCO con fichas nutricionales por producto) — es
 la lista de marcas/líneas reales confirmadas en tiendas chilenas.
 
+**Corregido 2026-08-17**: `cantidad_diaria_g`, `comidas_dia` y `horarios` se sacaron de este
+objeto — no se le preguntan a la persona. Son exactamente lo que Kittypau mide con el
+dispositivo real (comedero/bebedero + sensor de peso); pedirlas como dato autodeclarado
+contradice el objetivo del producto. Ver `Knowledge/05_API/SPEC_HungerBar_Alimentacion.md`
+para cómo ya se derivan de `readings` una vez vinculado el dispositivo.
+
 ```json
 {
   "tipo_alimento": "seco | humedo | mixto",
   "marca": "Royal Canin | ... | otra",
   "marca_otra": "texto libre si eligió 'otra'",
   "formula": "texto libre",
-  "cantidad_diaria_g": 180,
-  "comidas_dia": 3,
-  "horarios": "texto libre",
   "premios": { "aplica": true, "detalle": "texto libre" },
   "restricciones_alimentarias": "texto libre"
 }
