@@ -29,7 +29,21 @@ related:
 > acotada de lo que ya existe en `devices` de Supabase. El paso debe mostrar esa lista,
 > no pedir que se tipee un código a ciegas.
 
-## 🔴 Hallazgo crítico (2026-08-15, sesión siguiente): `devices.owner_id` es NOT NULL sin default — el auto-registro del bridge nunca pudo funcionar
+## ✅ Resuelto de raíz (2026-08-16): `devices.owner_id` ya es nullable
+
+`alter table public.devices alter column owner_id drop not null;` aplicado en producción.
+`bridge/src/index.js` → `ensureDeviceExists()` ya insertaba devices nuevos sin `owner_id`
+tal cual estaba escrito — no hizo falta tocar código del bridge, solo la constraint.
+
+**Caso real usado para probarlo:** KPCL0036 (72K lecturas, mascota "pasturri" de Javier,
+online desde el 17-jul) se renombró a `KPCL9036` (preserva el historial completo — la FK
+de `readings` es por UUID, no por el código de texto) para liberar el código `KPCL0036`.
+**Pendiente de cerrar:** el bridge cachea en memoria (`knownDevices`, `Set`) qué devices ya
+vio — no va a auto-registrar `KPCL0036` como fila nueva sin dueño hasta que el proceso
+reinicie (`sudo systemctl restart kittypau-bridge`, ver
+[[19_DevOps/PENDIENTES_POR_PC]] #0).
+
+### 🔴 Hallazgo crítico original (2026-08-15) — contexto de por qué era necesario
 
 Encontrado probando el flujo en vivo: al intentar insertar un device de prueba sin dueño
 (para probar `GET /api/devices/available` con un resultado real), Postgres lo rechazó:

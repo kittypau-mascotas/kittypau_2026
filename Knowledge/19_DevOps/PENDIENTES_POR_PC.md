@@ -69,7 +69,7 @@ técnica particular.
 
 | # | Tarea | Spec | Nota |
 |---|---|---|---|
-| 0 | 🔴 **Nuevo (2026-08-15):** `devices.owner_id` NOT NULL sin default rompe el auto-registro del bridge de raíz — `ensureDeviceExists()` nunca pudo crear un device sin dueño. Decidir: ¿`owner_id` pasa a nullable, o se usa un owner "sistema" placeholder para `device_state='factory'`? | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Decisión de arquitectura — bloquea que SPEC_10 tenga resultados reales alguna vez |
+| 0 | 🔴 **Nuevo (2026-08-16):** `sudo systemctl restart kittypau-bridge` en la Raspberry — el fix de `owner_id` nullable ya está aplicado en la DB (✅ ver Completado), pero el bridge cachea en memoria (`knownDevices`, `Set` en `bridge/src/index.js:57`) qué devices ya conoce y no vuelve a chequear la DB para un código ya visto. KPCL0036 (renombrado a `KPCL9036` para preservar el historial de Javier) no se va a auto-registrar como fila nueva sin dueño hasta que el proceso reinicie | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Requiere red de Javier o Mauro (misma que SPEC_09 §1.1) |
 | 1 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
 | 2 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
 
@@ -79,6 +79,7 @@ técnica particular.
 
 | Fecha | Qué | Quién | Spec |
 |---|---|---|---|
+| 2026-08-16 | `devices.owner_id` pasa a nullable (`alter table ... drop not null`) — cierra de raíz el bug que impedía el auto-registro de devices sin dueño. KPCL0036 (72K lecturas, mascota "pasturri" de Javier) renombrado a `KPCL9036` para preservar el historial y liberar el código; falta el restart del bridge (ver Pendiente #0) para que el auto-registro realmente cree la fila nueva | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] |
 | 2026-08-15 | `SPEC_10` — vincular dispositivo por lista real: `claim_device_for_pet` (RPC nueva, UPDATE por UUID), `GET /api/devices/available`, `<DevicePicker>` compartido en los 3 lugares con el patrón (registro-flow.tsx, dispositivos/nuevo/page.tsx, y `bowl/page.tsx` — hallazgo nuevo, no estaba en el spec original) | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] |
 | 2026-08-15 | `SPEC_01 E2` — `admin_roles`: `javomauro.contacto@gmail.com` (cuenta nueva) es `owner_admin` activo; `javier.dayne@gmail.com` desactivado (no borrado) a pedido de Mauro. 2 migraciones nuevas versionadas | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
 | 2026-08-15 | `SPEC_01 E8` — `device_bowl_sessions` recreada con el schema correcto (`DROP`+reaplicar migración completa, tabla tenía 0 filas); tabla de anomalías, 2 funciones y la vista que nunca se habían creado ya existen | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_01_Errores_Prioritarios]] |
