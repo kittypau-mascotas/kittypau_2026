@@ -27,6 +27,8 @@ en el futuro se decide eliminarlas de la base, es una decisión aparte, fuera de
 | `feeding_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Alimentación pendiente. Mismo mecanismo. |
 | `origin_habitat_profile` | `jsonb` | sí, default `'{}'::jsonb` | **Nuevo 2026-08-17.** Ficha Detallada — Origen y Hábitat. Solo lo que no tiene columna propia (ver "Forma de `origin_habitat_profile`" abajo) — `origin` y `living_environment` (ambas ya existentes) se siguen escribiendo directo, no se duplican acá. |
 | `origin_habitat_completed_at` | `timestamptz` | sí | `NULL` = sección Origen y Hábitat pendiente. Mismo mecanismo que Salud/Alimentación. |
+| `breeds` | `text[]` | no, default `'{}'::text[]` | **Nuevo 2026-08-17.** Ya documentado en `DOC_MAESTRO_DOMINIO.md` § 1 ("editable, máximo 3, quiltro excluyente") pero nunca implementado hasta ahora. Validado en la API: máx. 3 valores, cada uno debe estar en el set curado según `type` (perro/gato), `mestizo_quiltro`/`domestico_pelo_corto` es excluyente con el resto (si está presente, debe ser el único elemento). |
+| `coat_length` | `text` | sí | **Nuevo 2026-08-17.** `'corto' \| 'largo' \| 'sin_pelo'` — validado en la API, sin `CHECK` (mismo patrón que `sex`/`origin`). |
 
 **Regla derivada (no es columna, se calcula)**: `pet_detail_pending = health_profile_completed_at
 IS NULL OR feeding_profile_completed_at IS NULL OR origin_habitat_completed_at IS NULL` — versión
@@ -191,6 +193,44 @@ alter table public.pets
 (Principio III), igual que la migración anterior. El código de `/pet` y las rutas de la API ya
 están listos para estas 2 columnas; hasta que se aplique la migración, guardar la sección
 "Origen y Hábitat" falla con un error de Supabase (columna inexistente).
+
+**Nuevo 2026-08-17 (2)** — tercer archivo aditivo, mismo patrón, para razas/pelo
+(`supabase/migrations/20260816160000_pet_breeds_coat_weight.sql`), aplicado y verificado en
+producción:
+
+```sql
+alter table public.pets
+  add column if not exists breeds text[] not null default '{}'::text[],
+  add column if not exists coat_length text;
+```
+
+### Razas curadas (register flow + `/pet` + API — mismos valores en los 3 lugares)
+
+Fuentes: Registro Nacional de Mascotas 2025 vía CuidaPet/BioBioChile/T13/Meganoticias
+(perro); Meganoticias/vetparquevespucio/supergatunos (gato) — ver spec.md § Assumptions.
+
+- **Perro**: `mestizo_quiltro` (excluyente), `poodle`, `yorkshire_terrier`, `dachshund`,
+  `pastor_aleman`, `chihuahua`, `fox_terrier`, `bulldog_frances`, `pug`,
+  `pitbull_terrier_americano`, `otra`.
+- **Gato**: `domestico_pelo_corto` (excluyente), `persa`, `siames`, `maine_coon`, `bengali`,
+  `exotico_pelo_corto`, `british_shorthair`, `esfinge`, `otra`.
+- **Pelo**: `corto`, `largo`, `sin_pelo`.
+
+`otra` es solo un checkbox marcador, sin campo de texto libre asociado (a diferencia del
+patrón `*_otra` usado en Salud/Alimentación/Origen) — simplificación deliberada, `breeds` es
+`text[]` plano sin un lugar natural para una nota por elemento; declarado como tal, no
+descubierto por accidente.
+
+### Peso por especie (fix, no columna nueva)
+
+`weight_kg` se validaba 0–50 kg genérico para ambas especies (dejaba pasar, ej., un gato de
+45 kg) — ya documentado en `DOC_MAESTRO_DOMINIO.md` § 1 ("weight_kg en rango por especie")
+pero nunca implementado. Ahora: perro 0.5–90 kg (cubre desde razas toy hasta gigantes tipo
+San Bernardo/Mastín), gato 0.5–15 kg (cubre desde gatito hasta Maine Coon grande con margen
+para sobrepeso). Validado en ambas rutas de la API (`POST /api/pets` usa `payload.type` del
+body; `PATCH /api/pets/[id]` lee `pet.type` de la fila existente porque `type` es
+inmutable y no viaja en el body) y reflejado como `min`/`max` en los `<input type="number">`
+del register flow y de "Identificación básica" en `/pet`.
 
 ## Tipos TypeScript afectados (duplicados localmente, patrón ya existente en el repo)
 

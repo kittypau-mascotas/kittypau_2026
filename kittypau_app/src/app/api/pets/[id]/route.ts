@@ -32,6 +32,33 @@ const ALLOWED_ORIGIN = new Set([
   "nacido_en_casa",
   "otro",
 ]);
+// Mismas listas/fuentes que pets/route.ts (POST) — ver comentario ahí.
+const ALLOWED_BREEDS_DOG = new Set([
+  "mestizo_quiltro",
+  "poodle",
+  "yorkshire_terrier",
+  "dachshund",
+  "pastor_aleman",
+  "chihuahua",
+  "fox_terrier",
+  "bulldog_frances",
+  "pug",
+  "pitbull_terrier_americano",
+  "otra",
+]);
+const ALLOWED_BREEDS_CAT = new Set([
+  "domestico_pelo_corto",
+  "persa",
+  "siames",
+  "maine_coon",
+  "bengali",
+  "exotico_pelo_corto",
+  "british_shorthair",
+  "esfinge",
+  "otra",
+]);
+const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
+const ALLOWED_COAT_LENGTH = new Set(["corto", "largo", "sin_pelo"]);
 
 function normalizeString(value: unknown): string | null | undefined {
   if (value === undefined) return undefined;
@@ -39,6 +66,29 @@ function normalizeString(value: unknown): string | null | undefined {
   if (typeof value !== "string") return value as string;
   const trimmed = value.trim();
   return trimmed.length ? trimmed : null;
+}
+
+function weightRangeFor(type: unknown): [number, number] {
+  if (type === "dog") return [0.5, 90];
+  if (type === "cat") return [0.5, 15];
+  return [0, 50];
+}
+
+function validateBreeds(breeds: unknown, type: unknown): string | null {
+  if (breeds === undefined || breeds === null) return null;
+  if (!Array.isArray(breeds)) return "breeds must be an array";
+  if (breeds.length > 3) return "breeds must have at most 3 items";
+  const allowed = type === "dog" ? ALLOWED_BREEDS_DOG : ALLOWED_BREEDS_CAT;
+  for (const b of breeds) {
+    if (typeof b !== "string" || !allowed.has(b)) return `invalid breed: ${b}`;
+  }
+  if (
+    breeds.some((b) => MIXED_BREED_VALUES.has(b as string)) &&
+    breeds.length > 1
+  ) {
+    return "mestizo/doméstico es excluyente con otras razas";
+  }
+  return null;
 }
 
 export async function PATCH(
@@ -105,16 +155,11 @@ export async function PATCH(
   if (body.weight_kg !== undefined && typeof body.weight_kg !== "number") {
     return apiError(req, 400, "INVALID_WEIGHT", "weight_kg must be a number");
   }
+  // Rango completo (por especie) se valida más abajo, después de leer pet.type — acá
+  // solo se descarta lo que ni siquiera es un número.
 
-  if (typeof body.weight_kg === "number") {
-    if (body.weight_kg < 0 || body.weight_kg > 50) {
-      return apiError(
-        req,
-        400,
-        "WEIGHT_OUT_OF_RANGE",
-        "weight_kg must be between 0 and 50",
-      );
-    }
+  if (body.coat_length && !ALLOWED_COAT_LENGTH.has(String(body.coat_length))) {
+    return apiError(req, 400, "INVALID_COAT_LENGTH", "Invalid coat_length");
   }
 
   for (const key of [
@@ -150,7 +195,7 @@ export async function PATCH(
 
   const { data: pet, error: petError } = await supabase
     .from("pets")
-    .select("id, user_id")
+    .select("id, user_id, type")
     .eq("id", petId)
     .single();
 
@@ -160,6 +205,23 @@ export async function PATCH(
 
   if (pet.user_id !== user.id) {
     return apiError(req, 403, "FORBIDDEN", "Forbidden");
+  }
+
+  if (typeof body.weight_kg === "number") {
+    const [min, max] = weightRangeFor(pet.type);
+    if (body.weight_kg < min || body.weight_kg > max) {
+      return apiError(
+        req,
+        400,
+        "WEIGHT_OUT_OF_RANGE",
+        `weight_kg must be between ${min} and ${max} for this type`,
+      );
+    }
+  }
+
+  const breedsError = validateBreeds(body.breeds, pet.type);
+  if (breedsError) {
+    return apiError(req, 400, "INVALID_BREEDS", breedsError);
   }
 
   const updatePayload: Record<string, unknown> = {};
@@ -195,6 +257,8 @@ export async function PATCH(
     "feeding_profile_completed_at",
     "origin_habitat_profile",
     "origin_habitat_completed_at",
+    "breeds",
+    "coat_length",
   ];
 
   for (const key of allowedFields) {
@@ -218,6 +282,7 @@ export async function PATCH(
     "microchip_number",
     "birth_date",
     "intake_date",
+    "coat_length",
   ]) {
     if (key in updatePayload) {
       updatePayload[key] = normalizeString(updatePayload[key]);

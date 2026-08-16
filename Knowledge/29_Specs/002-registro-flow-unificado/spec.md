@@ -677,3 +677,26 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
      nombre, sin truncar.
   3. Nombre debajo de la foto (antes al lado) y foto agrandada de 96px a 128px.
   4. Nombre centrado respecto a la foto, características centradas respecto al nombre.
+- **Razas + pelo + peso por especie (2026-08-17)**, a pedido explícito de Mauro tras la
+  auditoría "revisa que no existan problemas" — 2 gaps preexistentes (documentados en
+  `DOC_MAESTRO_DOMINIO.md` §§ 1, nunca implementados) más un pedido nuevo:
+  1. **`breeds`** (razas, máx. 3, quiltro excluyente): investigadas las razas más comunes
+     en Chile — perro vía Registro Nacional de Mascotas 2025 (mestizo/quiltro lidera con
+     205.501 inscripciones de 2.113.739 perros totales, seguido de poodle, yorkshire
+     terrier, dachshund, pastor alemán, chihuahua, fox terrier, bulldog francés, pug, pit
+     bull terrier americano — fuentes: `cuidapet.cl/post/ranking-razas-de-perro-chile`,
+     `biobiochile.cl` 2025-07-07, `t13.cl` (2 notas), `meganoticias.cl` 2025-03-06);
+     gato vía notas veterinarias chilenas (doméstico de pelo corto/mestizo es el más
+     común, seguido de persa, siamés, maine coon, bengalí, exótico de pelo corto, british
+     shorthair, esfinge — fuentes: `meganoticias.cl/calidad-de-vida/339072`,
+     `vetparquevespucio.cl`, `supergatunos.cl`). Implementado en register flow (opcional,
+     no bloquea) y en "Identificación básica" de `/pet` — mismos valores en los 2 lugares
+     y en la validación de la API (`text[]`, máx. 3, set curado por especie,
+     `mestizo_quiltro`/`domestico_pelo_corto` excluyente con el resto).
+  2. **`coat_length`** (pelo: corto/largo/sin pelo) — campo nuevo pedido junto con razas,
+     mismo patrón (register flow + `/pet`, opcional).
+  3. **`weight_kg` por especie** — el rango 0-50kg genérico (documentado como gap en la
+     auditoría anterior) pasa a ser perro 0.5-90kg / gato 0.5-15kg, validado en ambas
+     rutas de la API y reflejado en los `<input min/max>` de ambos formularios.
+  Migración aditiva aplicada y verificada en producción con autorización de Mauro
+  ("sí, solucionalo"). Ver data-model.md para el detalle técnico completo.

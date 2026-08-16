@@ -36,12 +36,70 @@ const ALLOWED_PET_STEP = new Set([
   "pet_health",
   "pet_confirm",
 ]);
+// Razas más comunes en Chile según Registro Nacional de Mascotas 2025 (CuidaPet,
+// BioBioChile, T13, Meganoticias) y notas veterinarias de razas de gato (Meganoticias,
+// vetparquevespucio, supergatunos) — ver spec 002 § Assumptions para las fuentes citadas.
+// mestizo_quiltro/domestico_pelo_corto son la opción "sin raza definida" — excluyente con
+// el resto (Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md § 1: "quiltro excluyente").
+const ALLOWED_BREEDS_DOG = new Set([
+  "mestizo_quiltro",
+  "poodle",
+  "yorkshire_terrier",
+  "dachshund",
+  "pastor_aleman",
+  "chihuahua",
+  "fox_terrier",
+  "bulldog_frances",
+  "pug",
+  "pitbull_terrier_americano",
+  "otra",
+]);
+const ALLOWED_BREEDS_CAT = new Set([
+  "domestico_pelo_corto",
+  "persa",
+  "siames",
+  "maine_coon",
+  "bengali",
+  "exotico_pelo_corto",
+  "british_shorthair",
+  "esfinge",
+  "otra",
+]);
+const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
+const ALLOWED_COAT_LENGTH = new Set(["corto", "largo", "sin_pelo"]);
 
 function normalizeString(value: unknown): string | null {
   if (value === undefined || value === null) return null;
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed.length ? trimmed : null;
+}
+
+// Rango de peso realista por especie — antes era 0-50kg genérico (dejaba pasar, ej., un
+// gato de 45kg). Perro cubre desde razas toy (Chihuahua ~1kg) hasta gigantes (San
+// Bernardo/Mastín ~90kg); gato cubre desde gatito hasta Maine Coon adulto grande (~12kg)
+// con margen (~15kg) para casos de sobrepeso reales.
+function weightRangeFor(type: unknown): [number, number] {
+  if (type === "dog") return [0.5, 90];
+  if (type === "cat") return [0.5, 15];
+  return [0, 50];
+}
+
+function validateBreeds(breeds: unknown, type: unknown): string | null {
+  if (breeds === undefined || breeds === null) return null;
+  if (!Array.isArray(breeds)) return "breeds must be an array";
+  if (breeds.length > 3) return "breeds must have at most 3 items";
+  const allowed = type === "dog" ? ALLOWED_BREEDS_DOG : ALLOWED_BREEDS_CAT;
+  for (const b of breeds) {
+    if (typeof b !== "string" || !allowed.has(b)) return `invalid breed: ${b}`;
+  }
+  if (
+    breeds.some((b) => MIXED_BREED_VALUES.has(b as string)) &&
+    breeds.length > 1
+  ) {
+    return "mestizo/doméstico es excluyente con otras razas";
+  }
+  return null;
 }
 
 export async function GET(req: NextRequest) {
@@ -146,6 +204,8 @@ export async function POST(req: NextRequest) {
     microchip_number: body?.microchip_number ?? null,
     birth_date: body?.birth_date ?? null,
     intake_date: body?.intake_date ?? null,
+    breeds: Array.isArray(body?.breeds) ? body.breeds : [],
+    coat_length: body?.coat_length ?? null,
   };
 
   payload.name = normalizeString(payload.name);
@@ -162,6 +222,7 @@ export async function POST(req: NextRequest) {
   payload.microchip_number = normalizeString(payload.microchip_number);
   payload.birth_date = normalizeString(payload.birth_date);
   payload.intake_date = normalizeString(payload.intake_date);
+  payload.coat_length = normalizeString(payload.coat_length);
 
   if (!payload.name || !payload.type) {
     return apiError(req, 400, "MISSING_FIELDS", "name and type are required");
@@ -184,14 +245,27 @@ export async function POST(req: NextRequest) {
   }
 
   if (typeof body?.weight_kg === "number") {
-    if (body.weight_kg < 0 || body.weight_kg > 50) {
+    const [min, max] = weightRangeFor(payload.type);
+    if (body.weight_kg < min || body.weight_kg > max) {
       return apiError(
         req,
         400,
         "WEIGHT_OUT_OF_RANGE",
-        "weight_kg must be between 0 and 50",
+        `weight_kg must be between ${min} and ${max} for this type`,
       );
     }
+  }
+
+  const breedsError = validateBreeds(payload.breeds, payload.type);
+  if (breedsError) {
+    return apiError(req, 400, "INVALID_BREEDS", breedsError);
+  }
+
+  if (
+    payload.coat_length &&
+    !ALLOWED_COAT_LENGTH.has(String(payload.coat_length))
+  ) {
+    return apiError(req, 400, "INVALID_COAT_LENGTH", "Invalid coat_length");
   }
 
   if (payload.pet_state && !ALLOWED_PET_STATE.has(String(payload.pet_state))) {
