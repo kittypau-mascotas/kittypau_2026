@@ -659,6 +659,57 @@ export default function PetPage() {
                     </span>
                   ) : null}
                 </div>
+                {/* Lo básico que ya se preguntó en el register flow, visible acá sin
+                    tener que abrir "Editar perfil" (pedido explícito del usuario
+                    2026-08-17) — solo lectura, se edita desde "Editar perfil". */}
+                <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500 sm:grid-cols-3">
+                  <span>
+                    Sexo:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.sex ?? "sin datos"}
+                    </span>
+                  </span>
+                  <span>
+                    Peso:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.weight_kg
+                        ? `${selectedPet.weight_kg} kg`
+                        : "sin datos"}
+                    </span>
+                  </span>
+                  <span>
+                    Tamaño:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.size ?? "sin datos"}
+                    </span>
+                  </span>
+                  <span>
+                    Edad:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.age_range ?? "sin datos"}
+                    </span>
+                  </span>
+                  <span>
+                    Esterilizado/a:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.is_neutered === true
+                        ? "Sí"
+                        : selectedPet?.is_neutered === false
+                          ? "No"
+                          : "sin datos"}
+                    </span>
+                  </span>
+                  <span>
+                    Microchip:{" "}
+                    <span className="text-slate-700">
+                      {selectedPet?.has_microchip === true
+                        ? (selectedPet.microchip_number ?? "Sí")
+                        : selectedPet?.has_microchip === false
+                          ? "No"
+                          : "sin datos"}
+                    </span>
+                  </span>
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 {state.pets.length > 1 && (
