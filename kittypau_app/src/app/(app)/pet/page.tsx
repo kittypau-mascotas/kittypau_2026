@@ -107,6 +107,19 @@ export default function PetPage() {
   const [editMessage, setEditMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Ficha Detallada — Salud y Alimentación (spec 002 User Story 6). Se guardan por
+  // sección, cada una con su propio botón — no hay un solo "guardar todo".
+  const [showHealth, setShowHealth] = useState(false);
+  const [healthForm, setHealthForm] = useState<Record<string, string>>({});
+  const [healthConditions, setHealthConditions] = useState<string[]>([]);
+  const [isSavingHealth, setIsSavingHealth] = useState(false);
+  const [healthMessage, setHealthMessage] = useState<string | null>(null);
+
+  const [showFeeding, setShowFeeding] = useState(false);
+  const [feedingForm, setFeedingForm] = useState<Record<string, string>>({});
+  const [isSavingFeeding, setIsSavingFeeding] = useState(false);
+  const [feedingMessage, setFeedingMessage] = useState<string | null>(null);
+
   const loadPets = async (token: string) => {
     const res = await fetch(`/api/pets`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -760,6 +773,493 @@ export default function PetPage() {
                 {editMessage ? <span>{editMessage}</span> : null}
               </div>
             </form>
+          ) : null}
+
+          {selectedPet ? (
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Salud
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {selectedPet.health_profile_completed_at
+                      ? "Completa — podés actualizarla cuando quieras."
+                      : "Pendiente — completala cuando quieras, no bloquea nada."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowHealth((prev) => !prev);
+                    setHealthMessage(null);
+                    const profile = (selectedPet.health_profile ??
+                      {}) as Record<string, unknown>;
+                    setHealthForm({
+                      peso_ideal_kg: String(profile.peso_ideal_kg ?? ""),
+                      condiciones_otra: String(profile.condiciones_otra ?? ""),
+                      alergias: String(profile.alergias ?? ""),
+                      medicamentos: String(profile.medicamentos ?? ""),
+                      tratamientos: String(profile.tratamientos ?? ""),
+                      cirugias: String(profile.cirugias ?? ""),
+                      vacunas: String(profile.vacunas ?? ""),
+                      desparasitacion_ultima_fecha: String(
+                        profile.desparasitacion_ultima_fecha ?? "",
+                      ),
+                      historial_veterinario: String(
+                        profile.historial_veterinario ?? "",
+                      ),
+                      ultimo_control_fecha: String(
+                        profile.ultimo_control_fecha ?? "",
+                      ),
+                    });
+                    setHealthConditions(
+                      Array.isArray(profile.condiciones_diagnosticadas)
+                        ? (profile.condiciones_diagnosticadas as string[])
+                        : [],
+                    );
+                  }}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                >
+                  {showHealth ? "Cerrar" : "Completar Salud"}
+                </button>
+              </div>
+
+              {showHealth ? (
+                <form
+                  className="mt-4 space-y-4"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    const token = await getValidAccessToken();
+                    if (!token) return;
+                    setIsSavingHealth(true);
+                    try {
+                      const updated = await savePet(token, selectedPet.id, {
+                        health_profile: {
+                          ...healthForm,
+                          condiciones_diagnosticadas: healthConditions,
+                        },
+                        health_profile_completed_at: new Date().toISOString(),
+                      });
+                      setState((prev) => ({
+                        ...prev,
+                        pets: prev.pets.map((pet) =>
+                          pet.id === updated.id ? updated : pet,
+                        ),
+                      }));
+                      setHealthMessage("Sección de Salud guardada.");
+                      setShowHealth(false);
+                    } catch (err) {
+                      setHealthMessage(
+                        err instanceof Error
+                          ? err.message
+                          : "No se pudo guardar.",
+                      );
+                    } finally {
+                      setIsSavingHealth(false);
+                    }
+                  }}
+                >
+                  <label className="block text-xs text-slate-500">
+                    Peso ideal (kg)
+                    <input
+                      type="number"
+                      min="0"
+                      max="50"
+                      step="0.1"
+                      className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      value={healthForm.peso_ideal_kg ?? ""}
+                      onChange={(event) =>
+                        setHealthForm((prev) => ({
+                          ...prev,
+                          peso_ideal_kg: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Condiciones de salud diagnosticadas
+                    </p>
+                    <div className="mt-1 flex flex-wrap gap-3">
+                      {[
+                        { value: "renal", label: "Renal" },
+                        { value: "diabetes", label: "Diabetes" },
+                        { value: "obesidad", label: "Obesidad" },
+                        { value: "cardiaca", label: "Cardíaca" },
+                        { value: "otra", label: "Otra" },
+                      ].map((option) => (
+                        <label
+                          key={option.value}
+                          className="flex items-center gap-1.5 text-xs text-slate-700"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={healthConditions.includes(option.value)}
+                            onChange={(event) =>
+                              setHealthConditions((prev) =>
+                                event.target.checked
+                                  ? [...prev, option.value]
+                                  : prev.filter((v) => v !== option.value),
+                              )
+                            }
+                          />
+                          {option.label}
+                        </label>
+                      ))}
+                    </div>
+                    {healthConditions.includes("otra") ? (
+                      <input
+                        type="text"
+                        placeholder="Detalle de la condición"
+                        className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={healthForm.condiciones_otra ?? ""}
+                        onChange={(event) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            condiciones_otra: event.target.value,
+                          }))
+                        }
+                      />
+                    ) : null}
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {(
+                      [
+                        ["alergias", "Alergias"],
+                        ["medicamentos", "Medicamentos"],
+                        ["tratamientos", "Tratamientos"],
+                        ["cirugias", "Cirugías"],
+                        ["vacunas", "Vacunas"],
+                        ["historial_veterinario", "Historial veterinario"],
+                      ] as const
+                    ).map(([key, label]) => (
+                      <label key={key} className="block text-xs text-slate-500">
+                        {label}
+                        <textarea
+                          className="mt-1 min-h-[60px] w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={healthForm[key] ?? ""}
+                          onChange={(event) =>
+                            setHealthForm((prev) => ({
+                              ...prev,
+                              [key]: event.target.value,
+                            }))
+                          }
+                        />
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="block text-xs text-slate-500">
+                      Última desparasitación
+                      <input
+                        type="date"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={healthForm.desparasitacion_ultima_fecha ?? ""}
+                        onChange={(event) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            desparasitacion_ultima_fecha: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Último control veterinario
+                      <input
+                        type="date"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={healthForm.ultimo_control_fecha ?? ""}
+                        onChange={(event) =>
+                          setHealthForm((prev) => ({
+                            ...prev,
+                            ultimo_control_fecha: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <button
+                      type="submit"
+                      disabled={isSavingHealth}
+                      className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                    >
+                      {isSavingHealth
+                        ? "Guardando..."
+                        : "Guardar sección de Salud"}
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+              {healthMessage ? (
+                <p className="mt-2 text-xs text-slate-500">{healthMessage}</p>
+              ) : null}
+            </section>
+          ) : null}
+
+          {selectedPet ? (
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Alimentación
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {selectedPet.feeding_profile_completed_at
+                      ? "Completa — podés actualizarla cuando quieras."
+                      : "Pendiente — completala cuando quieras, no bloquea nada."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFeeding((prev) => !prev);
+                    setFeedingMessage(null);
+                    const profile = (selectedPet.feeding_profile ??
+                      {}) as Record<string, unknown>;
+                    const premios = (profile.premios ?? {}) as Record<
+                      string,
+                      unknown
+                    >;
+                    setFeedingForm({
+                      tipo_alimento: String(profile.tipo_alimento ?? ""),
+                      marca: String(profile.marca ?? ""),
+                      formula: String(profile.formula ?? ""),
+                      cantidad_diaria_g: String(
+                        profile.cantidad_diaria_g ?? "",
+                      ),
+                      comidas_dia: String(profile.comidas_dia ?? ""),
+                      horarios: String(profile.horarios ?? ""),
+                      premios_aplica: premios.aplica ? "true" : "false",
+                      premios_detalle: String(premios.detalle ?? ""),
+                      restricciones_alimentarias: String(
+                        profile.restricciones_alimentarias ?? "",
+                      ),
+                    });
+                  }}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                >
+                  {showFeeding ? "Cerrar" : "Completar Alimentación"}
+                </button>
+              </div>
+
+              {showFeeding ? (
+                <form
+                  className="mt-4 space-y-4"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    const token = await getValidAccessToken();
+                    if (!token) return;
+                    setIsSavingFeeding(true);
+                    try {
+                      const {
+                        premios_aplica,
+                        premios_detalle,
+                        ...restFeeding
+                      } = feedingForm;
+                      const updated = await savePet(token, selectedPet.id, {
+                        feeding_profile: {
+                          ...restFeeding,
+                          premios: {
+                            aplica: premios_aplica === "true",
+                            detalle: premios_detalle ?? "",
+                          },
+                        },
+                        feeding_profile_completed_at: new Date().toISOString(),
+                      });
+                      setState((prev) => ({
+                        ...prev,
+                        pets: prev.pets.map((pet) =>
+                          pet.id === updated.id ? updated : pet,
+                        ),
+                      }));
+                      setFeedingMessage("Sección de Alimentación guardada.");
+                      setShowFeeding(false);
+                    } catch (err) {
+                      setFeedingMessage(
+                        err instanceof Error
+                          ? err.message
+                          : "No se pudo guardar.",
+                      );
+                    } finally {
+                      setIsSavingFeeding(false);
+                    }
+                  }}
+                >
+                  <label className="block text-xs text-slate-500">
+                    Tipo de alimento
+                    <select
+                      className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                      value={feedingForm.tipo_alimento ?? ""}
+                      onChange={(event) =>
+                        setFeedingForm((prev) => ({
+                          ...prev,
+                          tipo_alimento: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Selecciona</option>
+                      <option value="seco">Seco</option>
+                      <option value="humedo">Húmedo</option>
+                      <option value="mixto">Mixto</option>
+                    </select>
+                  </label>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="block text-xs text-slate-500">
+                      Marca
+                      <input
+                        type="text"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.marca ?? ""}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            marca: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Fórmula / variedad
+                      <input
+                        type="text"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.formula ?? ""}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            formula: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Cantidad diaria (g)
+                      <input
+                        type="number"
+                        min="0"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.cantidad_diaria_g ?? ""}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            cantidad_diaria_g: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Comidas al día
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.comidas_dia ?? ""}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            comidas_dia: event.target.value,
+                          }))
+                        }
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block text-xs text-slate-500">
+                    Horarios habituales
+                    <input
+                      type="text"
+                      placeholder="Ej: 8am y 8pm"
+                      className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      value={feedingForm.horarios ?? ""}
+                      onChange={(event) =>
+                        setFeedingForm((prev) => ({
+                          ...prev,
+                          horarios: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      ¿Recibe premios/snacks?
+                    </p>
+                    <div className="mt-1 flex gap-4">
+                      {(["true", "false"] as const).map((value) => (
+                        <label
+                          key={value}
+                          className="flex items-center gap-1.5 text-xs text-slate-700"
+                        >
+                          <input
+                            type="radio"
+                            name="premios-aplica"
+                            checked={feedingForm.premios_aplica === value}
+                            onChange={() =>
+                              setFeedingForm((prev) => ({
+                                ...prev,
+                                premios_aplica: value,
+                              }))
+                            }
+                          />
+                          {value === "true" ? "Sí" : "No"}
+                        </label>
+                      ))}
+                    </div>
+                    {feedingForm.premios_aplica === "true" ? (
+                      <input
+                        type="text"
+                        placeholder="Detalle de premios/snacks"
+                        className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                        value={feedingForm.premios_detalle ?? ""}
+                        onChange={(event) =>
+                          setFeedingForm((prev) => ({
+                            ...prev,
+                            premios_detalle: event.target.value,
+                          }))
+                        }
+                      />
+                    ) : null}
+                  </div>
+
+                  <label className="block text-xs text-slate-500">
+                    Restricciones alimentarias
+                    <textarea
+                      className="mt-1 min-h-[60px] w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      value={feedingForm.restricciones_alimentarias ?? ""}
+                      onChange={(event) =>
+                        setFeedingForm((prev) => ({
+                          ...prev,
+                          restricciones_alimentarias: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <button
+                      type="submit"
+                      disabled={isSavingFeeding}
+                      className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                    >
+                      {isSavingFeeding
+                        ? "Guardando..."
+                        : "Guardar sección de Alimentación"}
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+              {feedingMessage ? (
+                <p className="mt-2 text-xs text-slate-500">{feedingMessage}</p>
+              ) : null}
+            </section>
           ) : null}
 
           <section className="surface-card freeform-rise px-6 py-5">

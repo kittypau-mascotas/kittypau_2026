@@ -2791,7 +2791,10 @@ body {
 .login-register-body-registro {
   padding: 10px 14px 14px;
   background: linear-gradient(180deg, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 0%, #ffffff 100%);
-  overflow-y: hidden;
+  /* spec 002 US3: antes solo scrolleaba <640px (mobile) — con columna única (US5) el
+     contenido es más alto también en tablet/laptop, así que el scroll de respaldo se
+     generaliza a todos los tamaños en vez de cortar contenido fuera de mobile. */
+  overflow-y: auto;
 }
 
 /* Scrollbar con colores Kittypau (thumb draggable + wheel/touch scroll). */
@@ -2843,8 +2846,9 @@ body {
   }
 
   .login-register-body-registro {
+    /* overflow-y ya es auto sin condición de ancho (ver regla base) — acá solo queda
+       el padding más chico para mobile. */
     padding: 12px;
-    overflow-y: auto;
   }
 
   .login-register-modal-registro {

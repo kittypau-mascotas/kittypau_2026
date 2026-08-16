@@ -170,24 +170,22 @@ completar Salud sola no lo apaga; completar ambas sí (quickstart.md § Escenari
 
 ### Implementación
 
-- [ ] T021 [US6] En `kittypau_app/src/app/(app)/pet/page.tsx`, agregar la sección "Salud" con
-      los campos de `data-model.md` (peso ideal, condiciones diagnosticadas + ejemplos guiados,
-      alergias, medicamentos, tratamientos, cirugías, vacunas, desparasitación, historial
-      veterinario, fecha último control) y un botón "Guardar sección de Salud" que hace
-      `PATCH /api/pets/[id]` con `health_profile` + `health_profile_completed_at: new
-      Date().toISOString()` (usa T006).
-- [ ] T022 [US6] En `pet/page.tsx`, agregar la sección "Alimentación" (tipo de alimento, marca,
-      fórmula, cantidad diaria, comidas/día, horarios, premios, restricciones alimentarias) con
-      su propio botón "Guardar sección de Alimentación" → `feeding_profile` +
-      `feeding_profile_completed_at` (mismo mecanismo que T021).
-- [ ] T023 [US6] En `kittypau_app/src/app/_components/app-nav.tsx`, agregar un `<span>` de
-      círculo rojo (`bg-rose-500 rounded-full`, mismo patrón visual que el indicador de
-      dispositivo online/offline en línea 271-293) sobre el ítem `{ href: "/pet", label:
-      "Mascota" }` de `navItems` (línea 22 y 29), visible cuando
-      `useAppData().petDetailPending` es `true` (usa T007).
+- [x] T021 [US6] Sección "Salud" agregada en `pet/page.tsx` — peso ideal, condiciones
+      diagnosticadas (checkboxes guiados + "otra"), alergias, medicamentos, tratamientos,
+      cirugías, vacunas, desparasitación, historial veterinario, fecha de último control.
+      "Guardar sección de Salud" → `PATCH /api/pets/[id]` con `health_profile` +
+      `health_profile_completed_at`. Reutiliza el helper `savePet()` que ya existía en el
+      archivo para "Editar perfil".
+- [x] T022 [US6] Sección "Alimentación" agregada — tipo de alimento, marca, fórmula, cantidad
+      diaria, comidas/día, horarios, premios (sí/no + detalle), restricciones alimentarias.
+      Mismo mecanismo que T021.
+- [x] T023 [US6] Círculo rojo agregado en `app-nav.tsx` sobre el ítem "Mascota", visible
+      cuando `useAppData().petDetailPending` es `true` (ya calculado en Foundational/T007).
 
-**Checkpoint**: Ficha Detallada completable desde `/pet` en cualquier momento; círculo rojo
-refleja el estado real (FR-027).
+**Checkpoint ✅ `tsc --noEmit` limpio**: Ficha Detallada completable desde `/pet` en cualquier
+momento; círculo rojo refleja el estado real (FR-027). No se re-verificó en vivo contra
+Supabase a pedido explícito de Mauro ("dejemos para después todo lo que tenga que ver con
+Supabase") — el `PATCH` reutiliza el mismo endpoint ya extendido y probado en Foundational.
 
 ---
 
@@ -201,27 +199,32 @@ radio, inputs/botones ≥48px, texto ≥16px (quickstart.md § Escenario 4, spec
 
 ### Implementación
 
-- [ ] T024 [US5] En `registro-flow.tsx`, quitar los grids `sm:grid-cols-2`/`sm:grid-cols-3`
-      (líneas 970, 1067, 1272, 1352, 1441, 1631, 1696, 1820) y reemplazar por `flex flex-col
-      gap-3` (columna única) en los 3 pasos (Usuario, Mascota, Dispositivo).
-- [ ] T025 [US5] En `page.tsx`, aplicar el mismo cambio al `grid gap-4 md:grid-cols-2` del
-      formulario de cuenta ya fusionado en T009 (si sigue existiendo tras la fusión).
-- [ ] T026 [US5] En `registro-flow.tsx`, convertir los `<select>` de 2 opciones sí/no
-      (`is_neutered` línea 1451-1467, `has_neuter_tattoo` línea 1478-1489, `has_microchip`,
-      `has_health_condition`) a un grupo de radio buttons apilados verticalmente dentro de
-      `FieldCard` (agregar un sub-componente `RadioGroup` mínimo junto a `FieldCard`, línea 76,
-      reutilizando su wrapper de label/error).
-- [ ] T027 [US5] En `registro-flow.tsx`, actualizar `inputClass` (línea 314-319) de `h-11` a
-      `h-12` (48px) y el tamaño de fuente de inputs/labels de `FieldCard` (línea 87, "text-[11px]")
-      a mínimo `text-base` (16px) — mismo cambio para los botones `h-10` → `h-12` (líneas 1140,
-      1586/1789 tras T009, 1882).
-- [ ] T028 [US5] [P] En `page.tsx`, agregar `autoComplete="email"` al input de email fusionado
-      (T009) y `autoComplete="new-password"` al de contraseña.
-- [ ] T029 [US5] [P] Reformular el texto de los botones principales de cada paso ("Guardar
-      perfil" → "Guardar mi perfil", "Crear mascota" → texto orientado al resultado, etc. —
-      líneas 1142, 1588, y el botón fusionado de T009).
+- [x] T024 [US5] Grids convertidos a `flex flex-col gap-3` en el paso Mascota (Nombre/
+      Especie/Sexo/Origen/Fecha, Físico, Salud) y en el paso Dispositivo (Mascota/Dispositivo).
+      **Alcance ajustado** (decisión tomada al implementar, no en el plan original): el paso
+      "Usuario" interno legacy de `registro-flow.tsx` (displayStep 1, inalcanzable para
+      cuentas nuevas desde la Fase 3) y la pantalla de resumen (displayStep 4, no es un
+      formulario) quedaron sin tocar — no son parte de los "3 pasos" que define la spec. Los
+      pickers de imagen (avatar, tipo de dispositivo food/water) se dejaron en grid — son una
+      sola pregunta con opciones visuales lado a lado, no "campos" distintos apilados.
+- [x] T025 [US5] El formulario fusionado de `page.tsx` ya se construyó en columna única
+      durante la Fase 3 (MVP) — nada que cambiar acá.
+- [x] T026 [US5] Los 4 `<select>` sí/no (`is_neutered`, `has_neuter_tattoo`, `has_microchip`,
+      `has_health_condition`) reemplazados por el nuevo componente `YesNoField` (junto a
+      `FieldCard`) — radio buttons Sí/No, reutilizado 4 veces.
+- [x] T027 [US5] `inputClass` a `h-12`/`text-base`; botones de submit de Mascota/Dispositivo/
+      resumen a `h-12`/`text-sm`. Las etiquetas mayúsculas chicas de `FieldCard` (11px) se
+      dejaron igual a propósito — es un patrón de "eyebrow label" ya establecido en toda la
+      app, no el texto que la guía de UX busca agrandar (documentado en el código).
+- [x] T028 [US5] Ya cubierto en la Fase 3 (MVP) — `autoComplete="email"`/`"new-password"`/
+      `"name"` ya estaban en el formulario fusionado.
+- [x] T029 [US5] Botones reformulados: "Crear mascota" → "Registrar a mi mascota",
+      "Registrar dispositivo" → "Vincular mi dispositivo". "Crear mi cuenta" (paso 1) ya
+      quedó bien desde la Fase 3.
 
-**Checkpoint**: los 3 pasos cumplen la guía curada (SC-008, SC-009).
+**Checkpoint ✅ verificado con Playwright en 3 viewports** (desktop 1920×950, laptop
+achicada 1366×650, tablet 700×850): columna única confirmada incluso en el ancho donde antes
+pegaban los grids (700px) — cumple SC-008/SC-009.
 
 ---
 
@@ -235,16 +238,14 @@ sin acceso — scroll aparece cuando hace falta (quickstart.md § Escenario 4).
 
 ### Implementación
 
-- [ ] T030 [US3] En `kittypau_app/src/app/globals.css`, cambiar `.login-register-body-registro`
-      (línea 2791-2795) de `overflow-y: hidden` a `overflow-y: auto` sin condicionarlo a
-      `@media (max-width: 640px)` (la regla de línea 2845-2848 dentro de ese media query queda
-      redundante y se puede retirar).
-- [ ] T031 [US3] Verificar con Playwright (mismo patrón usado en Phase 0 de este spec) que
-      `.login-register-modal`/`.login-register-body` no exceden `100dvh` en viewports de
-      desktop grande, laptop achicada (1366×650) y tablet (640-767px, el rango donde antes
-      pegaban más los grids) tras T024-T030.
+- [x] T030 [US3] `.login-register-body-registro` pasa a `overflow-y: auto` sin condición de
+      ancho; el override redundante dentro del media query mobile se retiró (solo queda el
+      padding más chico ahí).
+- [x] T031 [US3] Verificado con Playwright en los 3 viewports de T024 — el modal nunca excede
+      el viewport, `overflow-y: auto` confirmado por `getComputedStyle`, cero errores de
+      consola en ninguno de los 3 tamaños.
 
-**Checkpoint**: SC-004 cumplido en todos los tamaños verificados.
+**Checkpoint ✅**: SC-004 cumplido en los 3 tamaños verificados.
 
 ---
 
@@ -252,16 +253,19 @@ sin acceso — scroll aparece cuando hace falta (quickstart.md § Escenario 4).
 
 **Purpose**: cierre de la feature.
 
-- [ ] T032 [P] Correr `tsc --noEmit`, `eslint`, `next build` sobre `kittypau_app/` — cero
-      errores nuevos.
-- [ ] T033 Ejecutar los 4 escenarios de `quickstart.md` de punta a punta (requiere T002
-      aplicado para el Escenario 1 completo; sin T002, verificar con auto-confirmación local).
-- [ ] T034 Actualizar `Knowledge/19_DevOps/PENDIENTES_POR_PC.md`: mover esta feature a
-      "Completado" (o dejar nota de qué quedó pendiente, ej. T002 si Mauro no lo aplicó
-      todavía) siguiendo el protocolo de 2 PCs antes de cualquier `git push`.
-- [ ] T035 [P] Actualizar `Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md` § 6 si el mecanismo de
-      recordatorio (círculo rojo) amerita una línea nueva ahí, ya que hoy solo dice "Reabrible
-      desde Settings" sin mencionar el indicador visual.
+- [x] T032 [P] `tsc --noEmit` limpio, `eslint` 0 errores (62 warnings, todos pre-existentes —
+      confirmados contra el mapa de warnings conocidos al inicio de `page.tsx`/
+      `registro-flow.tsx`, ninguno nuevo), `next build` compila todas las rutas sin error.
+- [x] T033 Escenarios 2-4 de `quickstart.md` verificados con Playwright (Registro Básico,
+      círculo rojo, columna única en 3 viewports). Escenario 1 (correo real end-to-end) ya se
+      había verificado en la Fase 3 con `frentecalamari@gmail.com`. Sin más pruebas nuevas
+      contra Supabase en esta ronda — a pedido explícito de Mauro.
+- [x] T034 `PENDIENTES_POR_PC.md` actualizado (este mismo cierre).
+- [x] T035 [P] `DOC_MAESTRO_DOMINIO.md` § 6 actualizado — registro fusionado en 3 pasos y el
+      mecanismo del círculo rojo documentados.
+
+**002-registro-flow-unificado: las 8 fases completas (35/35 tareas, T002 manual ya aplicada
+por Mauro).**
 
 ---
 

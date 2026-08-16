@@ -110,6 +110,52 @@ function FieldCard({
   );
 }
 
+type YesNoFieldProps = {
+  label: string;
+  tooltip?: string;
+  name: string;
+  value: "" | "true" | "false";
+  onChange: (value: "true" | "false") => void;
+  showHint: boolean;
+};
+
+// Radio Sí/No reutilizado 4 veces en el paso Mascota (US5: reemplaza los <select> de
+// 2 opciones — más rápido de leer y de tocar que un desplegable, ver spec 002 FR-021).
+function YesNoField({
+  label,
+  tooltip,
+  name,
+  value,
+  onChange,
+  showHint,
+}: YesNoFieldProps) {
+  return (
+    <FieldCard
+      label={label}
+      tooltip={tooltip}
+      required
+      error={showHint && !value ? "Selecciona una opción." : null}
+    >
+      <div className="flex gap-4">
+        {(["true", "false"] as const).map((option) => (
+          <label
+            key={option}
+            className="flex items-center gap-1.5 text-sm text-slate-700"
+          >
+            <input
+              type="radio"
+              name={name}
+              checked={value === option}
+              onChange={() => onChange(option)}
+            />
+            {option === "true" ? "Sí" : "No"}
+          </label>
+        ))}
+      </div>
+    </FieldCard>
+  );
+}
+
 const defaultStatus: RegistroStatus = {
   userStep: null,
   hasPet: false,
@@ -359,8 +405,13 @@ export default function RegistroFlow({
     return { ok: issues.length === 0, issues };
   }, [deviceForm]);
 
+  // h-12/text-base (spec 002 FR-022/FR-023): 44px/14px quedaban justo debajo de los
+  // mínimos táctil (48px) y tipográfico (16px, evita además el auto-zoom de iOS en
+  // inputs). Las etiquetas en mayúscula chica de FieldCard quedan igual a propósito —
+  // es un patrón de "eyebrow label" deliberado y ya establecido en toda la app, no el
+  // texto que la guía busca agrandar (ese es el valor que la persona escribe/lee).
   const inputClass = (hasError: boolean) =>
-    `h-11 rounded-[var(--radius)] border px-4 text-sm text-slate-900 outline-none ${
+    `h-12 rounded-[var(--radius)] border px-4 text-base text-slate-900 outline-none ${
       hasError
         ? "border-rose-300 bg-rose-50/40 focus:ring-2 focus:ring-rose-200"
         : "border-border bg-white/90 focus:ring-2 focus:ring-ring"
@@ -1331,7 +1382,7 @@ export default function RegistroFlow({
                 <p className="mt-3 text-xs text-rose-600">{photoError}</p>
               ) : null}
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 flex flex-col gap-3">
               <FieldCard
                 label="Nombre"
                 tooltip="Nombre que verás en el feed."
@@ -1505,7 +1556,7 @@ export default function RegistroFlow({
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Físico
                 </p>
-                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                <div className="mt-2 flex flex-col gap-3">
                   <FieldCard
                     label="Peso (kg)"
                     tooltip="Ayuda a calibrar porciones normales."
@@ -1594,88 +1645,37 @@ export default function RegistroFlow({
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Salud
                 </p>
-                <div className="mt-2 grid gap-3 sm:grid-cols-3">
-                  <FieldCard
+                <div className="flex flex-col gap-3">
+                  <YesNoField
                     label="¿Esterilizado/a?"
-                    required
-                    error={
-                      showPetHints && !petForm.is_neutered
-                        ? "Selecciona una opción."
-                        : null
+                    name="pet-is-neutered"
+                    value={petForm.is_neutered}
+                    showHint={showPetHints}
+                    onChange={(value) =>
+                      setPetForm((prev) => ({ ...prev, is_neutered: value }))
                     }
-                  >
-                    <select
-                      className={inputClass(!petForm.is_neutered)}
-                      value={petForm.is_neutered}
-                      onChange={(event) =>
-                        setPetForm((prev) => ({
-                          ...prev,
-                          is_neutered: event.target
-                            .value as typeof prev.is_neutered,
-                        }))
-                      }
-                    >
-                      <option value="" disabled>
-                        Selecciona
-                      </option>
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
-                  </FieldCard>
-                  <FieldCard
+                  />
+                  <YesNoField
                     label="¿Tatuaje de esterilización?"
-                    required
-                    error={
-                      showPetHints && !petForm.has_neuter_tattoo
-                        ? "Selecciona una opción."
-                        : null
+                    name="pet-neuter-tattoo"
+                    value={petForm.has_neuter_tattoo}
+                    showHint={showPetHints}
+                    onChange={(value) =>
+                      setPetForm((prev) => ({
+                        ...prev,
+                        has_neuter_tattoo: value,
+                      }))
                     }
-                  >
-                    <select
-                      className={inputClass(!petForm.has_neuter_tattoo)}
-                      value={petForm.has_neuter_tattoo}
-                      onChange={(event) =>
-                        setPetForm((prev) => ({
-                          ...prev,
-                          has_neuter_tattoo: event.target
-                            .value as typeof prev.has_neuter_tattoo,
-                        }))
-                      }
-                    >
-                      <option value="" disabled>
-                        Selecciona
-                      </option>
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
-                  </FieldCard>
-                  <FieldCard
+                  />
+                  <YesNoField
                     label="¿Tiene microchip?"
-                    required
-                    error={
-                      showPetHints && !petForm.has_microchip
-                        ? "Selecciona una opción."
-                        : null
+                    name="pet-has-microchip"
+                    value={petForm.has_microchip}
+                    showHint={showPetHints}
+                    onChange={(value) =>
+                      setPetForm((prev) => ({ ...prev, has_microchip: value }))
                     }
-                  >
-                    <select
-                      className={inputClass(!petForm.has_microchip)}
-                      value={petForm.has_microchip}
-                      onChange={(event) =>
-                        setPetForm((prev) => ({
-                          ...prev,
-                          has_microchip: event.target
-                            .value as typeof prev.has_microchip,
-                        }))
-                      }
-                    >
-                      <option value="" disabled>
-                        Selecciona
-                      </option>
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
-                  </FieldCard>
+                  />
                 </div>
                 {petForm.has_microchip === "true" ? (
                   <div className="mt-3">
@@ -1699,34 +1699,19 @@ export default function RegistroFlow({
                   </div>
                 ) : null}
                 <div className="mt-3">
-                  <FieldCard
+                  <YesNoField
                     label="¿Tiene alguna condición de salud?"
                     tooltip="Ej: alergias, enfermedad crónica, dieta especial."
-                    required
-                    error={
-                      showPetHints && !petForm.has_health_condition
-                        ? "Selecciona una opción."
-                        : null
+                    name="pet-health-condition"
+                    value={petForm.has_health_condition}
+                    showHint={showPetHints}
+                    onChange={(value) =>
+                      setPetForm((prev) => ({
+                        ...prev,
+                        has_health_condition: value,
+                      }))
                     }
-                  >
-                    <select
-                      className={inputClass(!petForm.has_health_condition)}
-                      value={petForm.has_health_condition}
-                      onChange={(event) =>
-                        setPetForm((prev) => ({
-                          ...prev,
-                          has_health_condition: event.target
-                            .value as typeof prev.has_health_condition,
-                        }))
-                      }
-                    >
-                      <option value="" disabled>
-                        Selecciona
-                      </option>
-                      <option value="true">Sí</option>
-                      <option value="false">No</option>
-                    </select>
-                  </FieldCard>
+                  />
                   {petForm.has_health_condition === "true" ? (
                     <div className="mt-3">
                       <FieldCard
@@ -1772,9 +1757,9 @@ export default function RegistroFlow({
               type="button"
               onClick={savePet}
               disabled={isSavingPet || !petValidation.ok}
-              className="mt-4 h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+              className="mt-4 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
             >
-              {isSavingPet ? "Guardando..." : "Crear mascota"}
+              {isSavingPet ? "Guardando..." : "Registrar a mi mascota"}
             </button>
             {isSavingPet ? (
               <p className="mt-2 text-[11px] text-slate-500">
@@ -1817,7 +1802,7 @@ export default function RegistroFlow({
               Elegí el dispositivo de la lista de equipos ya conectados y sin
               dueño todavía.
             </p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 flex flex-col gap-3">
               <FieldCard
                 label="Mascota"
                 tooltip="Selecciona la mascota a vincular."
@@ -1975,9 +1960,9 @@ export default function RegistroFlow({
               type="button"
               onClick={saveDevice}
               disabled={isSavingDevice || !deviceValidation.ok}
-              className="mt-4 h-10 rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+              className="mt-4 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
             >
-              {isSavingDevice ? "Guardando..." : "Registrar dispositivo"}
+              {isSavingDevice ? "Guardando..." : "Vincular mi dispositivo"}
             </button>
             {isSavingDevice ? (
               <p className="mt-2 text-[11px] text-slate-500">
@@ -2068,7 +2053,7 @@ export default function RegistroFlow({
             ) : null}
             <Link
               href={entryPath}
-              className="mt-4 inline-flex h-10 items-center rounded-[var(--radius)] bg-primary px-4 text-xs font-semibold text-primary-foreground"
+              className="mt-4 inline-flex h-12 items-center rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
             >
               Continuar al dashboard
             </Link>

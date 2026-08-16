@@ -35,7 +35,8 @@ const clientNavItems: NavItem[] = [{ href: "/inicio", label: "Inicio" }];
 export default function AppNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { profile, petName, devices, accountType, isAdmin } = useAppData();
+  const { profile, petName, petDetailPending, devices, accountType, isAdmin } =
+    useAppData();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoOwnerName, setDemoOwnerName] = useState<string | null>(null);
   const [demoPetName, setDemoPetName] = useState<string | null>(null);
@@ -401,13 +402,23 @@ export default function AppNav() {
               ? pathname?.startsWith("/demo") && item.demoMenu === demoMenu
               : pathname === item.href ||
                 (item.href !== "/today" && pathname?.startsWith(item.href));
+            // Círculo rojo (spec 002 FR-017/FR-027, User Story 6) mientras la Ficha
+            // Detallada de la mascota (Salud o Alimentación) siga sin completar.
+            const showPendingBadge = item.href === "/pet" && petDetailPending;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`app-nav-link ${isActive ? "is-active" : ""}`}
+                className={`app-nav-link relative ${isActive ? "is-active" : ""}`}
               >
                 {item.label}
+                {showPendingBadge ? (
+                  <span
+                    className="absolute -right-1.5 -top-1 h-2.5 w-2.5 rounded-full bg-rose-500"
+                    title="Falta completar Salud o Alimentación de tu mascota"
+                    aria-label="Pendiente: completar Salud o Alimentación"
+                  />
+                ) : null}
               </Link>
             );
           })}

@@ -156,6 +156,23 @@ related:
 | `device_link` | `pet_health` |
 | `completed` | `pet_confirm` |
 
+**Registro fusionado en 3 pasos (2026-08-16, spec
+[[29_Specs/002-registro-flow-unificado/spec]])**: el paso "Usuario" del popup de registro
+fusiona la creación de cuenta (email/contraseña) con el perfil — ya no son 2 pasos separados.
+El tercer paso ("Dispositivo") se marca en el stepper con el logo y wordmark de la marca en
+vez del texto "Dispositivo". La verificación de correo se confirma en el mismo popup: al
+crear la cuenta, Supabase exige confirmar el email (cuando el toggle "Confirm email" está
+activo) con un correo personalizado (asunto y cuerpo incluyen el nombre de la persona y el de
+su mascota — ver [[05_API/SPEC_Correos_Transaccionales]]).
+
+**Ficha Detallada de mascota — recordatorio persistente**: el Registro Básico (obligatorio,
+durante el registro) no incluye el historial de salud ni el detalle de alimentación — esos dos
+temas (Salud, Alimentación) se completan por separado, en cualquier momento, desde la página
+`/pet`. Mientras cualquiera de las 2 secciones quede sin guardar, el ítem "Mascota" del menú
+principal muestra un **círculo rojo de notificación** (mismo patrón que usan apps de mensajería
+para avisos pendientes) — desaparece recién cuando ambas secciones están guardadas. No bloquea
+nada, es solo un recordatorio visual.
+
 ---
 
 ## 7. Estrategia de fotos
