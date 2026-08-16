@@ -55,6 +55,14 @@ El ladder se aplica *después* de entender el problema, no en lugar de ello. Lee
 - El diff más corto que funciona gana — pero solo una vez que entiendes el problema.
 - Solicitud compleja → enviar la versión lazy y cuestionarla en la misma respuesta.
 - Marcar simplificaciones deliberadas con comentario `ponytail:` que nombra el techo y el path de upgrade.
+- **Cambios quirúrgicos** (agregado 2026-08-16, derivado de las 4 reglas de Karpathy que
+  circularon como `CLAUDE.md` viral en GitHub — 3 de 4 ya estaban cubiertas por este mismo
+  archivo, esta era la única que faltaba): al tocar código existente, tocar solo lo esencial
+  para la tarea pedida. No reformatear código adyacente, no "mejorar" estilo que no se pidió
+  tocar, no refactorizar algo que ya funciona solo porque se abrió el archivo. Mantener el
+  estilo ya existente aunque no sea el que elegirías de cero. Si tus cambios dejan código
+  muerto, borrar ese — no código muerto preexistente no relacionado con la tarea (eso es una
+  tarea aparte, a proponer, no a hacer de paso).
 
 ### Output
 

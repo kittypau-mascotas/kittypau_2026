@@ -1,21 +1,22 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 → 1.2.0
-- Modified principles: n/a (no principio renombrado o redefinido)
+- Version change: 1.2.0 → 1.3.0
+- Modified principles: I. Ponytail — se agrega la regla "Cambios quirúrgicos"
+  (no reformatear/refactorizar código adyacente no relacionado con la tarea
+  pedida; mantener el estilo existente; borrar solo el código muerto que los
+  propios cambios generaron). No redefine nada existente de forma
+  incompatible — expande guía ya vigente. Bump MINOR.
 - Added sections: n/a
-- Modified sections: "Convivencia con Knowledge/29_Specs/" — agrega regla
-  operacional MUST: toda feature de spec-kit vive físicamente dentro de
-  Knowledge/29_Specs/<NNN>-<slug>/, nunca en specs/ (default de la
-  herramienta, no usado en este proyecto). Bump MINOR (expansión material
-  de guía existente, no redefine nada de forma incompatible).
+- Modified sections: n/a (fuera del Principio I)
 - Removed sections: none
+- Origen del cambio: comparación con las 4 reglas del `CLAUDE.md` viral de
+  Karpathy (GitHub, mayo 2026) — 3 de 4 ya estaban cubiertas por este
+  documento (Simplicity First = Principio I ya existente; Goal-Driven
+  Execution = ya cubierto estructuralmente por el flujo spec-kit). Solo
+  "Surgical Changes" era una regla genuinamente nueva.
 - Deferred TODOs:
-  - TODO(RATIFICATION_DATE): sin cambios respecto a v1.1.0 — se mantiene
+  - TODO(RATIFICATION_DATE): sin cambios respecto a v1.2.0 — se mantiene
     2026-08-16 como fecha de ratificación formal.
-- Nota de aplicación real: la feature 001-admin-tablas-vistas se creó por
-  error en specs/ (default de la herramienta, antes de esta enmienda) y se
-  movió manualmente a Knowledge/29_Specs/001-admin-tablas-vistas/ el mismo
-  día — esta enmienda documenta la regla para que no se repita.
 - Fuente: CLAUDE.md (raíz del repo) — este documento transcribe reglas ya
   vigentes, no introduce políticas nuevas. Cualquier cambio de fondo debe
   hacerse primero en CLAUDE.md y reflejarse acá después, no al revés.
@@ -38,7 +39,12 @@ entender el problema completo (leer la tarea y el código real de punta a punta)
 lugar de eso. Sin abstracciones no solicitadas (sin interface para una sola implementación,
 sin factory para un producto, sin config para un valor que nunca cambia). Eliminación sobre
 adición. Simplificaciones deliberadas se marcan con un comentario `ponytail:` que nombra el
-techo y el path de upgrade.
+techo y el path de upgrade. **Cambios quirúrgicos**: al tocar código existente, tocar solo
+lo esencial para la tarea pedida — no reformatear código adyacente, no refactorizar algo que
+ya funciona solo porque se abrió el archivo, mantener el estilo existente aunque no sea el
+que se elegiría de cero. Código muerto: borrar solo el que los propios cambios generaron, no
+código muerto preexistente no relacionado con la tarea (eso se propone aparte, no se hace de
+paso).
 
 ### II. Fix de Bug = Causa Raíz, No Síntoma
 Antes de editar una función compartida, `grep` todos sus callers. El fix perezoso ES el fix
@@ -144,4 +150,4 @@ operar dentro de estos principios. Complejidad nueva debe justificarse contra el
 (Ponytail) antes de agregarse. Amendments a este documento requieren actualizar primero
 `CLAUDE.md` y luego este archivo en el mismo cambio.
 
-**Version**: 1.2.0 | **Ratified**: 2026-08-16 | **Last Amended**: 2026-08-16
+**Version**: 1.3.0 | **Ratified**: 2026-08-16 | **Last Amended**: 2026-08-16
