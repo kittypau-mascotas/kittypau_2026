@@ -283,8 +283,6 @@ export default function RegistroFlow({
     is_neutered: "" as "" | "true" | "false",
     has_neuter_tattoo: "" as "" | "true" | "false",
     has_microchip: "" as "" | "true" | "false",
-    has_health_condition: "" as "" | "true" | "false",
-    health_notes: "",
     // Registro Básico ampliado (spec 002 User Story 4)
     sex: "" as "" | "macho" | "hembra" | "no_estoy_seguro",
     microchip_number: "",
@@ -307,7 +305,6 @@ export default function RegistroFlow({
       is_neutered: "true",
       has_neuter_tattoo: "false",
       has_microchip: "false",
-      has_health_condition: "false",
       sex: "hembra",
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -377,14 +374,6 @@ export default function RegistroFlow({
     if (!petForm.has_neuter_tattoo)
       issues.push("Indica si tiene tatuaje de esterilización.");
     if (!petForm.has_microchip) issues.push("Indica si tiene microchip.");
-    if (!petForm.has_health_condition) {
-      issues.push("Indica si tiene alguna condición de salud.");
-    } else if (
-      petForm.has_health_condition === "true" &&
-      !petForm.health_notes.trim()
-    ) {
-      issues.push("Describe la condición de salud.");
-    }
     return { ok: issues.length === 0, issues };
   }, [petForm]);
 
@@ -807,8 +796,6 @@ export default function RegistroFlow({
           is_neutered: toBool(petForm.is_neutered),
           has_neuter_tattoo: toBool(petForm.has_neuter_tattoo),
           has_microchip: toBool(petForm.has_microchip),
-          has_health_condition: toBool(petForm.has_health_condition),
-          health_notes: petForm.health_notes.trim() || null,
           photo_url: petPhotoUrl,
           pet_onboarding_step: "pet_profile",
           sex: petForm.sex || null,
@@ -1698,46 +1685,12 @@ export default function RegistroFlow({
                     </FieldCard>
                   </div>
                 ) : null}
-                <div className="mt-3">
-                  <YesNoField
-                    label="¿Tiene alguna condición de salud?"
-                    tooltip="Ej: alergias, enfermedad crónica, dieta especial."
-                    name="pet-health-condition"
-                    value={petForm.has_health_condition}
-                    showHint={showPetHints}
-                    onChange={(value) =>
-                      setPetForm((prev) => ({
-                        ...prev,
-                        has_health_condition: value,
-                      }))
-                    }
-                  />
-                  {petForm.has_health_condition === "true" ? (
-                    <div className="mt-3">
-                      <FieldCard
-                        label="Detalle de la condición"
-                        required
-                        error={
-                          showPetHints && !petForm.health_notes.trim()
-                            ? "Describe la condición."
-                            : null
-                        }
-                      >
-                        <textarea
-                          className="min-h-[80px] w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
-                          placeholder="Ej: alergia alimentaria, requiere dieta baja en sodio..."
-                          value={petForm.health_notes}
-                          onChange={(event) =>
-                            setPetForm((prev) => ({
-                              ...prev,
-                              health_notes: event.target.value,
-                            }))
-                          }
-                        />
-                      </FieldCard>
-                    </div>
-                  ) : null}
-                </div>
+                {/* ponytail: "¿Tiene alguna condición de salud?" se sacó de acá
+                    (corregido 2026-08-17, a pedido del usuario) — la sección Salud de
+                    la Ficha Detallada (/pet) la reemplaza con checkboxes reales
+                    investigados (condiciones/alergias/medicamentos/etc.), no un Sí/No
+                    + texto libre genérico. Preguntarla acá también era un doble
+                    registro cuya respuesta ni siquiera se mostraba después en /pet. */}
               </div>
             </div>
 

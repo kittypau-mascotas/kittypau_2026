@@ -605,3 +605,26 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   - `living_environment` es una columna que ya existía en el schema y en el `allowedFields`
     de `/api/pets` desde antes de este spec, pero ningún formulario la llenaba — quedaba
     siempre `null`. Esta sección es el primer `<select>` real que la escribe.
+- **Auditoría "sin doble registro" (2026-08-17)**, a pedido explícito de Mauro: se comparó
+  cada campo pedido en el register flow contra lo que se ve/edita en `/pet`, buscando
+  preguntas duplicadas y datos que se piden y después quedan invisibles. 3 hallazgos, los 3
+  corregidos con confirmación de Mauro:
+  1. **Origen triple**: se pedía en el register flow (select curado), en "Editar perfil" de
+     `/pet` (`<input>` de texto libre — bug preexistente, podía romper el valor curado) y en
+     la nueva sección Origen y Hábitat (select curado). Se sacó el `<input>` de "Editar
+     perfil" — Origen se edita solo desde Origen y Hábitat ahora; `editPayload.origin` sigue
+     viajando sin cambios en el submit de "Editar perfil" (no se pierde nada, solo deja de
+     ser editable ahí).
+  2. **Salud duplicada y huérfana**: el register flow preguntaba "¿Tiene alguna condición de
+     salud?" (Sí/No + texto libre, obligatorio) — la respuesta (`has_health_condition`/
+     `health_notes`) no se mostraba ni se usaba en ningún lado de `/pet`. La sección Salud
+     de la Ficha Detallada pregunta esencialmente lo mismo con checkboxes reales
+     investigados. Se sacó la pregunta del register flow (deja de ser obligatoria al
+     registrar) — Salud es ahora la única fuente, igual que Alimentación. Las columnas
+     `has_health_condition`/`health_notes` no se eliminan (dato histórico de pets ya
+     registrados, Principio "nunca truncar sin motivo"), solo se dejó de pedir en el form.
+  3. **Datos invisibles**: `sex`, `size`, `is_neutered`, `has_neuter_tattoo`,
+     `has_microchip`, `microchip_number`, `birth_date`/`intake_date` se piden (varios
+     obligatorios) en el register flow pero no aparecían en ningún lado de `/pet`. Se agregó
+     un bloque "Identificación" a "Editar perfil" (mismo patrón que "Límites de consumo
+     normal") con los 8 campos, precargados desde lo ya declarado al registrar.
