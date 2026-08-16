@@ -175,9 +175,12 @@ export const AVATAR_OPTIONS = [
 
 // Razas más comunes en Chile — Registro Nacional de Mascotas 2025 (fuentes: CuidaPet,
 // BioBioChile, T13, Meganoticias) para perro; notas veterinarias chilenas (Meganoticias,
-// vetparquevespucio, supergatunos) para gato. Ver spec 002 § Assumptions. mestizo_quiltro/
-// domestico_pelo_corto son la opción "sin raza definida" — excluyente con el resto
-// (DOC_MAESTRO_DOMINIO.md § 1: "quiltro excluyente"), máximo 3 en total.
+// vetparquevespucio, supergatunos) para gato. Ver spec 002 § Assumptions.
+// mestizo_quiltro/domestico_pelo_corto/domestico_pelo_largo son la opción "sin raza
+// definida" — excluyente con el resto (DOC_MAESTRO_DOMINIO.md § 1: "quiltro
+// excluyente"), máximo 3 en total. El pelo del gato doméstico va en la raza misma
+// (corto/largo — "Domestic Shorthair/Longhair" es categorización estándar en registros
+// felinos) en vez de un campo "Pelo" aparte — corregido 2026-08-17, era redundante.
 const BREED_OPTIONS_DOG = [
   { value: "mestizo_quiltro", label: "Mestizo / quiltro" },
   { value: "poodle", label: "Poodle / caniche" },
@@ -194,6 +197,7 @@ const BREED_OPTIONS_DOG = [
 
 const BREED_OPTIONS_CAT = [
   { value: "domestico_pelo_corto", label: "Doméstico de pelo corto (mestizo)" },
+  { value: "domestico_pelo_largo", label: "Doméstico de pelo largo (mestizo)" },
   { value: "persa", label: "Persa" },
   { value: "siames", label: "Siamés" },
   { value: "maine_coon", label: "Maine Coon" },
@@ -204,14 +208,12 @@ const BREED_OPTIONS_CAT = [
   { value: "otra", label: "Otra" },
 ] as const;
 
-const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
+const MIXED_BREED_VALUES = new Set([
+  "mestizo_quiltro",
+  "domestico_pelo_corto",
+  "domestico_pelo_largo",
+]);
 const MAX_BREEDS = 3;
-
-const COAT_LENGTH_OPTIONS = [
-  { value: "corto", label: "Corto" },
-  { value: "largo", label: "Largo" },
-  { value: "sin_pelo", label: "Sin pelo" },
-] as const;
 
 // Mismo rango que valida la API (/api/pets, /api/pets/[id]) — antes era 0-50kg genérico
 // para ambas especies, dejaba pasar ej. un gato de 45kg.
@@ -336,9 +338,9 @@ export default function RegistroFlow({
     microchip_number: "",
     birth_date: "",
     intake_date: "",
-    // Razas + pelo (2026-08-17) — opcional, no bloquea el registro.
-    coat_length: "",
   });
+  // Razas (2026-08-17) — opcional, no bloquea el registro. El pelo del gato doméstico
+  // vive en la raza misma (ver BREED_OPTIONS_CAT), no en un campo aparte.
   const [petBreeds, setPetBreeds] = useState<string[]>([]);
   const toggleBreed = (value: string) => {
     setPetBreeds((prev) => {
@@ -871,7 +873,6 @@ export default function RegistroFlow({
           birth_date: petForm.birth_date || null,
           intake_date: petForm.intake_date || null,
           breeds: petBreeds,
-          coat_length: petForm.coat_length || null,
         }),
       });
 
@@ -1549,7 +1550,10 @@ export default function RegistroFlow({
                           disabled={
                             !petBreeds.includes(option.value) &&
                             (petBreeds.length >= MAX_BREEDS ||
-                              petBreeds.some((v) => MIXED_BREED_VALUES.has(v)))
+                              (petBreeds.some((v) =>
+                                MIXED_BREED_VALUES.has(v),
+                              ) &&
+                                !MIXED_BREED_VALUES.has(option.value)))
                           }
                           onChange={() => toggleBreed(option.value)}
                         />
@@ -1557,32 +1561,6 @@ export default function RegistroFlow({
                       </label>
                     ))}
                   </div>
-                </FieldCard>
-              </div>
-
-              <div className="sm:col-span-2">
-                <FieldCard
-                  label="Pelo"
-                  tooltip="Ayuda a personalizar cuidados de aseo. Opcional."
-                  help="Opcional."
-                >
-                  <select
-                    className={inputClass(false)}
-                    value={petForm.coat_length}
-                    onChange={(event) =>
-                      setPetForm((prev) => ({
-                        ...prev,
-                        coat_length: event.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">Selecciona</option>
-                    {COAT_LENGTH_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
                 </FieldCard>
               </div>
 

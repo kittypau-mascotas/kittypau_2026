@@ -39,8 +39,11 @@ const ALLOWED_PET_STEP = new Set([
 // Razas más comunes en Chile según Registro Nacional de Mascotas 2025 (CuidaPet,
 // BioBioChile, T13, Meganoticias) y notas veterinarias de razas de gato (Meganoticias,
 // vetparquevespucio, supergatunos) — ver spec 002 § Assumptions para las fuentes citadas.
-// mestizo_quiltro/domestico_pelo_corto son la opción "sin raza definida" — excluyente con
-// el resto (Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md § 1: "quiltro excluyente").
+// mestizo_quiltro/domestico_pelo_corto/domestico_pelo_largo son la opción "sin raza
+// definida" — excluyente con el resto (Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md § 1:
+// "quiltro excluyente"). El pelo del gato doméstico vive en la raza misma
+// (corto/largo — "Domestic Shorthair/Longhair" es categorización estándar en registros
+// felinos), no en un campo "coat_length" aparte — corregido 2026-08-17, era redundante.
 const ALLOWED_BREEDS_DOG = new Set([
   "mestizo_quiltro",
   "poodle",
@@ -56,6 +59,7 @@ const ALLOWED_BREEDS_DOG = new Set([
 ]);
 const ALLOWED_BREEDS_CAT = new Set([
   "domestico_pelo_corto",
+  "domestico_pelo_largo",
   "persa",
   "siames",
   "maine_coon",
@@ -65,8 +69,11 @@ const ALLOWED_BREEDS_CAT = new Set([
   "esfinge",
   "otra",
 ]);
-const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
-const ALLOWED_COAT_LENGTH = new Set(["corto", "largo", "sin_pelo"]);
+const MIXED_BREED_VALUES = new Set([
+  "mestizo_quiltro",
+  "domestico_pelo_corto",
+  "domestico_pelo_largo",
+]);
 
 function normalizeString(value: unknown): string | null {
   if (value === undefined || value === null) return null;
@@ -205,7 +212,6 @@ export async function POST(req: NextRequest) {
     birth_date: body?.birth_date ?? null,
     intake_date: body?.intake_date ?? null,
     breeds: Array.isArray(body?.breeds) ? body.breeds : [],
-    coat_length: body?.coat_length ?? null,
   };
 
   payload.name = normalizeString(payload.name);
@@ -222,7 +228,6 @@ export async function POST(req: NextRequest) {
   payload.microchip_number = normalizeString(payload.microchip_number);
   payload.birth_date = normalizeString(payload.birth_date);
   payload.intake_date = normalizeString(payload.intake_date);
-  payload.coat_length = normalizeString(payload.coat_length);
 
   if (!payload.name || !payload.type) {
     return apiError(req, 400, "MISSING_FIELDS", "name and type are required");
@@ -259,13 +264,6 @@ export async function POST(req: NextRequest) {
   const breedsError = validateBreeds(payload.breeds, payload.type);
   if (breedsError) {
     return apiError(req, 400, "INVALID_BREEDS", breedsError);
-  }
-
-  if (
-    payload.coat_length &&
-    !ALLOWED_COAT_LENGTH.has(String(payload.coat_length))
-  ) {
-    return apiError(req, 400, "INVALID_COAT_LENGTH", "Invalid coat_length");
   }
 
   if (payload.pet_state && !ALLOWED_PET_STATE.has(String(payload.pet_state))) {

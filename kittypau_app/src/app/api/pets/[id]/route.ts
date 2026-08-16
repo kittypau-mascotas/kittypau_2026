@@ -48,6 +48,7 @@ const ALLOWED_BREEDS_DOG = new Set([
 ]);
 const ALLOWED_BREEDS_CAT = new Set([
   "domestico_pelo_corto",
+  "domestico_pelo_largo",
   "persa",
   "siames",
   "maine_coon",
@@ -57,8 +58,11 @@ const ALLOWED_BREEDS_CAT = new Set([
   "esfinge",
   "otra",
 ]);
-const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
-const ALLOWED_COAT_LENGTH = new Set(["corto", "largo", "sin_pelo"]);
+const MIXED_BREED_VALUES = new Set([
+  "mestizo_quiltro",
+  "domestico_pelo_corto",
+  "domestico_pelo_largo",
+]);
 
 function normalizeString(value: unknown): string | null | undefined {
   if (value === undefined) return undefined;
@@ -158,10 +162,6 @@ export async function PATCH(
   // Rango completo (por especie) se valida más abajo, después de leer pet.type — acá
   // solo se descarta lo que ni siquiera es un número.
 
-  if (body.coat_length && !ALLOWED_COAT_LENGTH.has(String(body.coat_length))) {
-    return apiError(req, 400, "INVALID_COAT_LENGTH", "Invalid coat_length");
-  }
-
   for (const key of [
     "food_normal_min_g",
     "food_normal_max_g",
@@ -258,7 +258,6 @@ export async function PATCH(
     "origin_habitat_profile",
     "origin_habitat_completed_at",
     "breeds",
-    "coat_length",
   ];
 
   for (const key of allowedFields) {
@@ -282,7 +281,6 @@ export async function PATCH(
     "microchip_number",
     "birth_date",
     "intake_date",
-    "coat_length",
   ]) {
     if (key in updatePayload) {
       updatePayload[key] = normalizeString(updatePayload[key]);

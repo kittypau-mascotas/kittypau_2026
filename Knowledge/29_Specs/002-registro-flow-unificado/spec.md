@@ -692,11 +692,24 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
      `vetparquevespucio.cl`, `supergatunos.cl`). Implementado en register flow (opcional,
      no bloquea) y en "Identificación básica" de `/pet` — mismos valores en los 2 lugares
      y en la validación de la API (`text[]`, máx. 3, set curado por especie,
-     `mestizo_quiltro`/`domestico_pelo_corto` excluyente con el resto).
-  2. **`coat_length`** (pelo: corto/largo/sin pelo) — campo nuevo pedido junto con razas,
-     mismo patrón (register flow + `/pet`, opcional).
-  3. **`weight_kg` por especie** — el rango 0-50kg genérico (documentado como gap en la
+     `mestizo_quiltro`/`domestico_pelo_corto`/`domestico_pelo_largo` excluyentes entre sí
+     y con el resto).
+  2. **`weight_kg` por especie** — el rango 0-50kg genérico (documentado como gap en la
      auditoría anterior) pasa a ser perro 0.5-90kg / gato 0.5-15kg, validado en ambas
      rutas de la API y reflejado en los `<input min/max>` de ambos formularios.
   Migración aditiva aplicada y verificada en producción con autorización de Mauro
   ("sí, solucionalo"). Ver data-model.md para el detalle técnico completo.
+- **"Esto es una redundancia" — se saca `coat_length` (2026-08-17, mismo día)**: el
+  usuario señaló que el campo "Pelo" separado (corto/largo/sin pelo) era redundante — el
+  pelo del gato doméstico ya es parte del nombre real de la raza. Se agregó
+  `domestico_pelo_largo` como raza distinta (junto al ya existente
+  `domestico_pelo_corto`) — "Domestic Shorthair/Longhair" es categorización estándar en
+  registros felinos, no una invención — y se sacó el campo "Pelo" del register flow y de
+  "Identificación básica" en `/pet`, junto con toda su validación en la API.
+  `mestizo_quiltro`/`domestico_pelo_corto`/`domestico_pelo_largo` quedan excluyentes
+  entre sí (elegir uno reemplaza a los otros 2, no solo bloquea razas específicas — bug
+  encontrado y corregido en el mismo cambio: la condición `disabled` original bloqueaba
+  *todas* las demás opciones, incluidas las mestizas hermanas, cuando debía dejarlas
+  intercambiables entre ellas). La columna `coat_length` queda en el schema sin uso — ver
+  data-model.md, no se hizo `DROP COLUMN` por no ser una migración necesaria (sin dato
+  real de producción, solo mascotas de prueba).

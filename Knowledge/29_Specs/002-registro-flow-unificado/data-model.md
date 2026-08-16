@@ -27,8 +27,18 @@ en el futuro se decide eliminarlas de la base, es una decisión aparte, fuera de
 | `feeding_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Alimentación pendiente. Mismo mecanismo. |
 | `origin_habitat_profile` | `jsonb` | sí, default `'{}'::jsonb` | **Nuevo 2026-08-17.** Ficha Detallada — Origen y Hábitat. Solo lo que no tiene columna propia (ver "Forma de `origin_habitat_profile`" abajo) — `origin` y `living_environment` (ambas ya existentes) se siguen escribiendo directo, no se duplican acá. |
 | `origin_habitat_completed_at` | `timestamptz` | sí | `NULL` = sección Origen y Hábitat pendiente. Mismo mecanismo que Salud/Alimentación. |
-| `breeds` | `text[]` | no, default `'{}'::text[]` | **Nuevo 2026-08-17.** Ya documentado en `DOC_MAESTRO_DOMINIO.md` § 1 ("editable, máximo 3, quiltro excluyente") pero nunca implementado hasta ahora. Validado en la API: máx. 3 valores, cada uno debe estar en el set curado según `type` (perro/gato), `mestizo_quiltro`/`domestico_pelo_corto` es excluyente con el resto (si está presente, debe ser el único elemento). |
-| `coat_length` | `text` | sí | **Nuevo 2026-08-17.** `'corto' \| 'largo' \| 'sin_pelo'` — validado en la API, sin `CHECK` (mismo patrón que `sex`/`origin`). |
+| `breeds` | `text[]` | no, default `'{}'::text[]` | **Nuevo 2026-08-17.** Ya documentado en `DOC_MAESTRO_DOMINIO.md` § 1 ("editable, máximo 3, quiltro excluyente") pero nunca implementado hasta ahora. Validado en la API: máx. 3 valores, cada uno debe estar en el set curado según `type` (perro/gato); `mestizo_quiltro`/`domestico_pelo_corto`/`domestico_pelo_largo` son excluyentes entre sí y con el resto (si alguno está presente, debe ser el único elemento). |
+| `coat_length` | `text` | sí | **Agregada 2026-08-17, eliminada de la UI ese mismo día** (ver nota abajo) — la columna sigue en el schema (aditivo, no se hizo `DROP COLUMN`) pero ningún formulario la escribe. |
+
+**`coat_length` — agregada y sacada de la UI el mismo día (2026-08-17)**: el usuario señaló
+que un campo "Pelo" separado era redundante con Razas — el pelo del gato doméstico ya es
+parte del nombre real de la raza (`domestico_pelo_corto`/`domestico_pelo_largo` — "Domestic
+Shorthair/Longhair" es categorización estándar en registros felinos, no una invención). Se
+sacó el campo "Pelo" del register flow y de "Identificación básica" en `/pet`, y se sacó
+`coat_length` de `allowedFields`/validación en ambas rutas de `/api/pets` — la columna
+queda en el schema (nadie la escribe, pero no se dropeó: no había necesidad de una
+migración destructiva para un campo que nunca tuvo dato real de producción, solo mascotas
+de prueba).
 
 **Regla derivada (no es columna, se calcula)**: `pet_detail_pending = health_profile_completed_at
 IS NULL OR feeding_profile_completed_at IS NULL OR origin_habitat_completed_at IS NULL` — versión
@@ -212,9 +222,9 @@ Fuentes: Registro Nacional de Mascotas 2025 vía CuidaPet/BioBioChile/T13/Megano
 - **Perro**: `mestizo_quiltro` (excluyente), `poodle`, `yorkshire_terrier`, `dachshund`,
   `pastor_aleman`, `chihuahua`, `fox_terrier`, `bulldog_frances`, `pug`,
   `pitbull_terrier_americano`, `otra`.
-- **Gato**: `domestico_pelo_corto` (excluyente), `persa`, `siames`, `maine_coon`, `bengali`,
-  `exotico_pelo_corto`, `british_shorthair`, `esfinge`, `otra`.
-- **Pelo**: `corto`, `largo`, `sin_pelo`.
+- **Gato**: `domestico_pelo_corto` (excluyente), `domestico_pelo_largo` (excluyente,
+  agregada 2026-08-17 para no necesitar un campo "Pelo" aparte), `persa`, `siames`,
+  `maine_coon`, `bengali`, `exotico_pelo_corto`, `british_shorthair`, `esfinge`, `otra`.
 
 `otra` es solo un checkbox marcador, sin campo de texto libre asociado (a diferencia del
 patrón `*_otra` usado en Salud/Alimentación/Origen) — simplificación deliberada, `breeds` es

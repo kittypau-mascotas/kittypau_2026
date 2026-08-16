@@ -35,7 +35,6 @@ type ApiPet = {
   intake_date?: string | null;
   living_environment?: string | null;
   breeds?: string[] | null;
-  coat_length?: string | null;
   health_profile?: Record<string, unknown> | null;
   feeding_profile?: Record<string, unknown> | null;
   origin_habitat_profile?: Record<string, unknown> | null;
@@ -88,7 +87,11 @@ const defaultState: LoadState = {
 // Razas más comunes en Chile (2026-08-17) — mismas fuentes/valores que registro-flow.tsx
 // y las rutas de /api/pets (Registro Nacional de Mascotas 2025 para perro; notas
 // veterinarias chilenas para gato, ver spec.md § Assumptions). mestizo_quiltro/
-// domestico_pelo_corto es "sin raza definida" — excluyente con el resto, máx. 3 en total.
+// domestico_pelo_corto/domestico_pelo_largo es "sin raza definida" — excluyente con el
+// resto, máx. 3 en total. El pelo del gato doméstico va en la raza misma (Doméstico de
+// pelo corto/largo — categorización real, "Domestic Shorthair/Longhair" es estándar en
+// registros felinos) en vez de un campo "Pelo" aparte — corregido 2026-08-17, era
+// redundante (ya perro/gato tienen pelo implícito en cada raza específica).
 const BREED_OPTIONS_DOG = [
   { value: "mestizo_quiltro", label: "Mestizo / quiltro" },
   { value: "poodle", label: "Poodle / caniche" },
@@ -105,6 +108,7 @@ const BREED_OPTIONS_DOG = [
 
 const BREED_OPTIONS_CAT = [
   { value: "domestico_pelo_corto", label: "Doméstico de pelo corto (mestizo)" },
+  { value: "domestico_pelo_largo", label: "Doméstico de pelo largo (mestizo)" },
   { value: "persa", label: "Persa" },
   { value: "siames", label: "Siamés" },
   { value: "maine_coon", label: "Maine Coon" },
@@ -115,14 +119,12 @@ const BREED_OPTIONS_CAT = [
   { value: "otra", label: "Otra" },
 ] as const;
 
-const MIXED_BREED_VALUES = new Set(["mestizo_quiltro", "domestico_pelo_corto"]);
+const MIXED_BREED_VALUES = new Set([
+  "mestizo_quiltro",
+  "domestico_pelo_corto",
+  "domestico_pelo_largo",
+]);
 const MAX_BREEDS = 3;
-
-const COAT_LENGTH_OPTIONS = [
-  { value: "corto", label: "Corto" },
-  { value: "largo", label: "Largo" },
-  { value: "sin_pelo", label: "Sin pelo" },
-] as const;
 
 // Mismo rango que valida la API — antes era un <input type="number"> sin límites,
 // dejaba escribir cualquier peso sin importar la especie.
@@ -912,7 +914,6 @@ export default function PetPage() {
                       age_range: editPayload.age_range,
                       is_neutered: editPayload.is_neutered,
                       breeds: editPayload.breeds,
-                      coat_length: editPayload.coat_length,
                       has_microchip: editPayload.has_microchip,
                       microchip_number: editPayload.microchip_number,
                     });
@@ -1071,58 +1072,39 @@ export default function PetPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <p className="text-xs text-slate-500">
-                      Razas (hasta {MAX_BREEDS})
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-700">
-                      {(selectedPet.type === "dog"
-                        ? BREED_OPTIONS_DOG
-                        : BREED_OPTIONS_CAT
-                      ).map((option) => {
-                        const breeds = editPayload.breeds ?? [];
-                        return (
-                          <label
-                            key={option.value}
-                            className="flex items-center gap-1.5"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={breeds.includes(option.value)}
-                              disabled={
-                                !breeds.includes(option.value) &&
-                                (breeds.length >= MAX_BREEDS ||
-                                  breeds.some((v) => MIXED_BREED_VALUES.has(v)))
-                              }
-                              onChange={() => toggleBreed(option.value)}
-                            />
-                            {option.label}
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <label className="text-xs text-slate-500">
-                    Pelo
-                    <select
-                      className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-                      value={editPayload.coat_length ?? ""}
-                      onChange={(event) =>
-                        setEditPayload((prev) => ({
-                          ...prev,
-                          coat_length: event.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Selecciona</option>
-                      {COAT_LENGTH_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
+                <div className="mt-4">
+                  <p className="text-xs text-slate-500">
+                    Razas (hasta {MAX_BREEDS})
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-700">
+                    {(selectedPet.type === "dog"
+                      ? BREED_OPTIONS_DOG
+                      : BREED_OPTIONS_CAT
+                    ).map((option) => {
+                      const breeds = editPayload.breeds ?? [];
+                      return (
+                        <label
+                          key={option.value}
+                          className="flex items-center gap-1.5"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={breeds.includes(option.value)}
+                            disabled={
+                              !breeds.includes(option.value) &&
+                              (breeds.length >= MAX_BREEDS ||
+                                (breeds.some((v) =>
+                                  MIXED_BREED_VALUES.has(v),
+                                ) &&
+                                  !MIXED_BREED_VALUES.has(option.value)))
+                            }
+                            onChange={() => toggleBreed(option.value)}
+                          />
                           {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
