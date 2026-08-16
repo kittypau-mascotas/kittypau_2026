@@ -28,10 +28,13 @@ type ApiPet = {
   microchip_number?: string | null;
   birth_date?: string | null;
   intake_date?: string | null;
+  living_environment?: string | null;
   health_profile?: Record<string, unknown> | null;
   feeding_profile?: Record<string, unknown> | null;
+  origin_habitat_profile?: Record<string, unknown> | null;
   health_profile_completed_at?: string | null;
   feeding_profile_completed_at?: string | null;
+  origin_habitat_completed_at?: string | null;
 };
 
 type ApiDevice = {
@@ -74,6 +77,45 @@ const defaultState: LoadState = {
   devices: [],
   readings: [],
 };
+
+// Opciones de la Ficha Detallada — Origen y Hábitat (spec 002, mejora 2026-08-17).
+// Origen reusa exactamente los 6 valores del register flow (registro-flow.tsx) — la
+// investigación no encontró un origen real faltante: "hijo/a de otra mascota mía" ya
+// existe como nacido_en_casa (registro-flow.tsx ya lo etiqueta "camada propia"), acá
+// solo se deja el label más explícito. Estado al llegar y Tipo de vivienda no tienen
+// un estándar oficial chileno (SAG regula tenencia responsable — Ley 21.020 "Ley
+// Cholito" — pero no categoriza vivienda ni condición de ingreso); son las categorías
+// reales que sí aparecen consistentemente en fichas de ingreso/adopción de refugios y
+// clínicas (dogin.cl, contrato de adopción tipo SUBDERE) — ver spec.md § Assumptions.
+const ORIGEN_OPTIONS = [
+  { value: "comprado", label: "Comprado (criador o tienda)" },
+  { value: "adoptado_refugio", label: "Adoptado en refugio o protectora" },
+  { value: "rescatado_calle", label: "Rescatado de la calle" },
+  { value: "regalado", label: "Regalado / donado" },
+  {
+    value: "nacido_en_casa",
+    label: "Nació en casa (cría de otra mascota mía)",
+  },
+  { value: "otro", label: "Otro" },
+] as const;
+
+const ESTADO_LLEGADA_OPTIONS = [
+  { value: "buen_estado", label: "Buen estado / saludable" },
+  { value: "delgado_desnutrido", label: "Delgado o desnutrido" },
+  { value: "herido_lesionado", label: "Herido o lesionado" },
+  { value: "con_parasitos", label: "Con parásitos visibles" },
+  { value: "enfermo", label: "Enfermo (necesitó atención inmediata)" },
+  { value: "cria_muy_joven", label: "Cría muy joven (aún dependiente)" },
+  { value: "otro", label: "Otro" },
+] as const;
+
+const VIVIENDA_OPTIONS = [
+  { value: "departamento", label: "Departamento" },
+  { value: "casa_con_patio", label: "Casa con patio" },
+  { value: "casa_sin_patio", label: "Casa sin patio" },
+  { value: "parcela_rural", label: "Parcela / sector rural" },
+  { value: "otro", label: "Otro" },
+] as const;
 
 // Opciones de la Ficha Detallada — Salud (spec 002, mejora 2026-08-16). Investigadas
 // contra fuentes veterinarias reales de Chile en vez de inventadas — ver research.md /
@@ -294,6 +336,20 @@ export default function PetPage() {
   const [editPayload, setEditPayload] = useState<Partial<ApiPet>>({});
   const [editMessage, setEditMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Ficha Detallada — Origen y Hábitat (spec 002, mejora 2026-08-17). Origen y
+  // living_environment son columnas ya existentes (Origen ya se pedía en el register
+  // flow; living_environment existía en el schema/API pero sin ningún <select> que lo
+  // llenara) — esta sección es la primera UI real para ambas, más el jsonb nuevo para
+  // lo que no tenía columna propia (estado al llegar, convivencia).
+  const [showOriginHabitat, setShowOriginHabitat] = useState(false);
+  const [originHabitatForm, setOriginHabitatForm] = useState<
+    Record<string, string>
+  >({});
+  const [isSavingOriginHabitat, setIsSavingOriginHabitat] = useState(false);
+  const [originHabitatMessage, setOriginHabitatMessage] = useState<
+    string | null
+  >(null);
 
   // Ficha Detallada — Salud y Alimentación (spec 002 User Story 6). Se guardan por
   // sección, cada una con su propio botón — no hay un solo "guardar todo".
@@ -898,6 +954,251 @@ export default function PetPage() {
                 {editMessage ? <span>{editMessage}</span> : null}
               </div>
             </form>
+          ) : null}
+
+          {selectedPet ? (
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Origen y Hábitat
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {selectedPet.origin_habitat_completed_at
+                      ? "Completa — podés actualizarla cuando quieras."
+                      : "Pendiente — completala cuando quieras, no bloquea nada."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOriginHabitat((prev) => !prev);
+                    setOriginHabitatMessage(null);
+                    const profile = (selectedPet.origin_habitat_profile ??
+                      {}) as Record<string, unknown>;
+                    setOriginHabitatForm({
+                      origen: selectedPet.origin ?? "",
+                      origen_otro: String(profile.origen_otro ?? ""),
+                      estado_al_llegar: String(profile.estado_al_llegar ?? ""),
+                      estado_al_llegar_otro: String(
+                        profile.estado_al_llegar_otro ?? "",
+                      ),
+                      vivienda: selectedPet.living_environment ?? "",
+                      vivienda_otro: String(profile.vivienda_otro ?? ""),
+                      convive_otras_mascotas: String(
+                        profile.convive_otras_mascotas ?? "",
+                      ),
+                    });
+                  }}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                >
+                  {showOriginHabitat ? "Cerrar" : "Completar Origen y Hábitat"}
+                </button>
+              </div>
+
+              {showOriginHabitat ? (
+                <form
+                  className="mt-4 space-y-4"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    const token = await getValidAccessToken();
+                    if (!token) return;
+                    setIsSavingOriginHabitat(true);
+                    try {
+                      const {
+                        origen,
+                        origen_otro,
+                        vivienda,
+                        vivienda_otro,
+                        ...restProfile
+                      } = originHabitatForm;
+                      const updated = await savePet(token, selectedPet.id, {
+                        origin: origen || null,
+                        living_environment: vivienda || null,
+                        origin_habitat_profile: {
+                          ...restProfile,
+                          origen_otro,
+                          vivienda_otro,
+                        },
+                        origin_habitat_completed_at: new Date().toISOString(),
+                      });
+                      setState((prev) => ({
+                        ...prev,
+                        pets: prev.pets.map((pet) =>
+                          pet.id === updated.id ? updated : pet,
+                        ),
+                      }));
+                      setOriginHabitatMessage(
+                        "Sección de Origen y Hábitat guardada.",
+                      );
+                      setShowOriginHabitat(false);
+                    } catch (err) {
+                      setOriginHabitatMessage(
+                        err instanceof Error
+                          ? err.message
+                          : "No se pudo guardar.",
+                      );
+                    } finally {
+                      setIsSavingOriginHabitat(false);
+                    }
+                  }}
+                >
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="block text-xs text-slate-500">
+                      Origen
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                        value={originHabitatForm.origen ?? ""}
+                        onChange={(event) =>
+                          setOriginHabitatForm((prev) => ({
+                            ...prev,
+                            origen: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Selecciona</option>
+                        {ORIGEN_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {originHabitatForm.origen === "otro" ? (
+                        <input
+                          type="text"
+                          placeholder="¿Cuál?"
+                          className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={originHabitatForm.origen_otro ?? ""}
+                          onChange={(event) =>
+                            setOriginHabitatForm((prev) => ({
+                              ...prev,
+                              origen_otro: event.target.value,
+                            }))
+                          }
+                        />
+                      ) : null}
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Estado al llegar
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                        value={originHabitatForm.estado_al_llegar ?? ""}
+                        onChange={(event) =>
+                          setOriginHabitatForm((prev) => ({
+                            ...prev,
+                            estado_al_llegar: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Selecciona</option>
+                        {ESTADO_LLEGADA_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {originHabitatForm.estado_al_llegar === "otro" ? (
+                        <input
+                          type="text"
+                          placeholder="¿Cuál?"
+                          className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={originHabitatForm.estado_al_llegar_otro ?? ""}
+                          onChange={(event) =>
+                            setOriginHabitatForm((prev) => ({
+                              ...prev,
+                              estado_al_llegar_otro: event.target.value,
+                            }))
+                          }
+                        />
+                      ) : null}
+                    </label>
+                    <label className="block text-xs text-slate-500">
+                      Tipo de vivienda
+                      <select
+                        className="mt-1 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                        value={originHabitatForm.vivienda ?? ""}
+                        onChange={(event) =>
+                          setOriginHabitatForm((prev) => ({
+                            ...prev,
+                            vivienda: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Selecciona</option>
+                        {VIVIENDA_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {originHabitatForm.vivienda === "otro" ? (
+                        <input
+                          type="text"
+                          placeholder="¿Cuál?"
+                          className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                          value={originHabitatForm.vivienda_otro ?? ""}
+                          onChange={(event) =>
+                            setOriginHabitatForm((prev) => ({
+                              ...prev,
+                              vivienda_otro: event.target.value,
+                            }))
+                          }
+                        />
+                      ) : null}
+                    </label>
+                    <div>
+                      <p className="text-xs text-slate-500">
+                        ¿Convive con otras mascotas?
+                      </p>
+                      <div className="mt-1 flex gap-4 text-xs text-slate-700">
+                        {[
+                          { value: "true", label: "Sí" },
+                          { value: "false", label: "No" },
+                        ].map((opt) => (
+                          <label
+                            key={opt.value}
+                            className="flex items-center gap-1.5"
+                          >
+                            <input
+                              type="radio"
+                              name="convive-otras-mascotas"
+                              checked={
+                                originHabitatForm.convive_otras_mascotas ===
+                                opt.value
+                              }
+                              onChange={() =>
+                                setOriginHabitatForm((prev) => ({
+                                  ...prev,
+                                  convive_otras_mascotas: opt.value,
+                                }))
+                              }
+                            />
+                            {opt.label}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                    <button
+                      type="submit"
+                      disabled={isSavingOriginHabitat}
+                      className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                    >
+                      {isSavingOriginHabitat
+                        ? "Guardando..."
+                        : "Guardar sección de Origen y Hábitat"}
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+              {originHabitatMessage ? (
+                <p className="mt-2 text-xs text-slate-500">
+                  {originHabitatMessage}
+                </p>
+              ) : null}
+            </section>
           ) : null}
 
           {selectedPet ? (

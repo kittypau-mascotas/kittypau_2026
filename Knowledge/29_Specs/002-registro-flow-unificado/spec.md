@@ -584,3 +584,24 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
   producto que no se pueden verificar contra una fuente única — ver `data-model.md`.
   `formula_etapa` se precarga con el `age_range` de Registro Básico si coincide con una de las
   3 etapas conocidas (evita repreguntar un dato ya declarado).
+- **Origen y Hábitat (Ficha Detallada, sección nueva), investigada 2026-08-17** (a pedido
+  explícito de Mauro, ubicada arriba de Salud). Origen reusa exactamente los 6 valores del
+  register flow — se investigó puntualmente si faltaba un origen real ("hijo/a de otra
+  mascota mía"), confirmando que `nacido_en_casa` ya lo cubre (registro-flow.tsx ya lo
+  etiqueta "camada propia"; terminología confirmada contra Kennel Club de Chile
+  `kennelclub.cl/crianza` — "camada" = cachorros nacidos de un mismo parto de la hembra). No
+  se agregó un 7º valor, solo se aclaró el label en la nueva sección: "Nació en casa (cría de
+  otra mascota mía)".
+  - Estado al llegar y Tipo de vivienda: no existe estándar oficial chileno — la Ley 21.020
+    "Ley Cholito" (`bcn.cl/leychile`, `chileatiende.gob.cl/fichas/51436`) regula tenencia
+    responsable (microchip, registro, esterilización, vacunación) pero no categoriza
+    condición de ingreso ni tipo de vivienda. Las categorías usadas son las que aparecen
+    consistentemente en fichas de adopción/ingreso reales: contrato de adopción tipo de
+    SUBDERE (`proactiva.subdere.gov.cl`, cubre vivienda/gastos veterinarios/transporte como
+    temas del formulario) y plataformas de adopción chilenas (`dogin.cl/adopciones`,
+    `petfi.io`). Declarado explícitamente como grounded en práctica común, no en normativa
+    oficial — a diferencia de Vacunas (Colegio Médico Veterinario) o Alergias/Medicamentos
+    (fuentes veterinarias citadas arriba).
+  - `living_environment` es una columna que ya existía en el schema y en el `allowedFields`
+    de `/api/pets` desde antes de este spec, pero ningún formulario la llenaba — quedaba
+    siempre `null`. Esta sección es el primer `<select>` real que la escribe.

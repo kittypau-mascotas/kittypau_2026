@@ -25,14 +25,25 @@ en el futuro se decide eliminarlas de la base, es una decisión aparte, fuera de
 | `feeding_profile` | `jsonb` | sí, default `'{}'::jsonb` | Ficha Detallada — Alimentación. Claves libres (ver "Forma de `feeding_profile`" abajo). |
 | `health_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Salud pendiente. Se setea al guardar explícitamente esa sección (research.md #3). |
 | `feeding_profile_completed_at` | `timestamptz` | sí | `NULL` = sección Alimentación pendiente. Mismo mecanismo. |
+| `origin_habitat_profile` | `jsonb` | sí, default `'{}'::jsonb` | **Nuevo 2026-08-17.** Ficha Detallada — Origen y Hábitat. Solo lo que no tiene columna propia (ver "Forma de `origin_habitat_profile`" abajo) — `origin` y `living_environment` (ambas ya existentes) se siguen escribiendo directo, no se duplican acá. |
+| `origin_habitat_completed_at` | `timestamptz` | sí | `NULL` = sección Origen y Hábitat pendiente. Mismo mecanismo que Salud/Alimentación. |
 
 **Regla derivada (no es columna, se calcula)**: `pet_detail_pending = health_profile_completed_at
-IS NULL OR feeding_profile_completed_at IS NULL` — es la condición exacta de FR-027 (círculo
-rojo si falta Salud O Alimentación).
+IS NULL OR feeding_profile_completed_at IS NULL OR origin_habitat_completed_at IS NULL` — versión
+extendida de FR-027 (círculo rojo si falta cualquiera de las 3 secciones).
 
 **Origin (columna existente, sin cambio de tipo)**: sigue siendo `text` libre — la lista curada
 de 6 valores (`comprado`, `adoptado_refugio`, `rescatado_calle`, `regalado`, `nacido_en_casa`,
 `otro`) es una validación de aplicación (API + `<select>`), no un `CHECK` de DB, igual que hoy.
+Investigado de nuevo 2026-08-17 a pedido del usuario buscando un origen faltante ("hijo/a de
+otra mascota mía") — no hace falta un 7º valor: `nacido_en_casa` ya cubre ese caso (registro-
+flow.tsx ya la etiqueta "camada propia"), solo se aclaró el label en la nueva sección de /pet.
+
+**living_environment (columna existente, sin cambio de tipo)**: existía en el schema y en el
+`allowedFields` de ambas rutas de `/api/pets` desde antes, pero **ningún formulario la
+llenaba** (ni el register flow, ni "Editar perfil" en /pet) — quedaba siempre `null`. La
+nueva sección Origen y Hábitat es el primer `<select>` real que la escribe (curado: `<select>`
+de tipo de vivienda, no texto libre — ver Assumptions para las fuentes).
 
 ### Forma de `health_profile` (claves esperadas, todas opcionales)
 
@@ -116,6 +127,24 @@ para cómo ya se derivan de `readings` una vez vinculado el dispositivo.
 clave nueva en el futuro no requiere migración, solo actualizar este documento y el código que
 la lee/escribe.)*
 
+### Forma de `origin_habitat_profile` (claves esperadas, todas opcionales) — nuevo 2026-08-17
+
+Estado al llegar y Tipo de vivienda no tienen estándar oficial chileno (la Ley 21.020 "Ley
+Cholito" regula tenencia responsable — microchip, registro, esterilización — pero no
+categoriza vivienda ni condición de ingreso); son las categorías reales que sí aparecen
+consistentemente en fichas de adopción/ingreso de refugios y clínicas — ver `spec.md` §
+Assumptions para las fuentes citadas.
+
+```json
+{
+  "origen_otro": "texto libre si origin='otro' (origin en sí vive en pets.origin, no acá)",
+  "estado_al_llegar": "buen_estado | delgado_desnutrido | herido_lesionado | con_parasitos | enfermo | cria_muy_joven | otro",
+  "estado_al_llegar_otro": "texto libre si eligió 'otro'",
+  "vivienda_otro": "texto libre si living_environment='otro' (living_environment vive en pets.living_environment, no acá)",
+  "convive_otras_mascotas": "true | false"
+}
+```
+
 ## Migración
 
 Un solo archivo aditivo en `supabase/migrations/`, siguiendo la convención de nombre
@@ -135,6 +164,20 @@ alter table public.pets
 
 **Requiere confirmación explícita de Mauro antes de aplicarse en producción** (Principio III) —
 se ejecuta como tarea de implementación aparte, no automáticamente al escribir este plan.
+
+**Nuevo 2026-08-17** — segundo archivo aditivo, mismo patrón, para Origen y Hábitat
+(`supabase/migrations/20260816140000_origen_habitat_pet_detail.sql`):
+
+```sql
+alter table public.pets
+  add column if not exists origin_habitat_profile jsonb not null default '{}'::jsonb,
+  add column if not exists origin_habitat_completed_at timestamptz;
+```
+
+**Escrito pero NO aplicado a producción todavía — requiere confirmación explícita de Mauro**
+(Principio III), igual que la migración anterior. El código de `/pet` y las rutas de la API ya
+están listos para estas 2 columnas; hasta que se aplique la migración, guardar la sección
+"Origen y Hábitat" falla con un error de Supabase (columna inexistente).
 
 ## Tipos TypeScript afectados (duplicados localmente, patrón ya existente en el repo)
 

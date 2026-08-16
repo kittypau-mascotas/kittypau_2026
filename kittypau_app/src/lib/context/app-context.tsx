@@ -143,7 +143,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           const petDetailPending =
             pets.length > 0
               ? !pets[0]?.health_profile_completed_at ||
-                !pets[0]?.feeding_profile_completed_at
+                !pets[0]?.feeding_profile_completed_at ||
+                !pets[0]?.origin_habitat_completed_at
               : false;
 
           setData({

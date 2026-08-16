@@ -193,6 +193,8 @@ export async function PATCH(
     "feeding_profile",
     "health_profile_completed_at",
     "feeding_profile_completed_at",
+    "origin_habitat_profile",
+    "origin_habitat_completed_at",
   ];
 
   for (const key of allowedFields) {
