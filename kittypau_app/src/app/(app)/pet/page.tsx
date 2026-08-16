@@ -1161,7 +1161,7 @@ export default function PetPage() {
                   }}
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                 >
-                  {showOriginHabitat ? "Cerrar" : "Completar Origen y Hábitat"}
+                  {showOriginHabitat ? "Cerrar ▴" : "Completar ▾"}
                 </button>
               </div>
 
@@ -1425,7 +1425,7 @@ export default function PetPage() {
                   }}
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                 >
-                  {showHealth ? "Cerrar" : "Completar Salud"}
+                  {showHealth ? "Cerrar ▴" : "Completar ▾"}
                 </button>
               </div>
 
@@ -1791,7 +1791,7 @@ export default function PetPage() {
                   }}
                   className="rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                 >
-                  {showFeeding ? "Cerrar" : "Completar Alimentación"}
+                  {showFeeding ? "Cerrar ▴" : "Completar ▾"}
                 </button>
               </div>
 
