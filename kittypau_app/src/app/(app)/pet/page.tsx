@@ -1131,7 +1131,7 @@ export default function PetPage() {
                   </label>
 
                   <div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-medium text-slate-700">
                       Condiciones de salud diagnosticadas
                     </p>
                     <div className="mt-1 flex flex-wrap gap-3">
@@ -1179,8 +1179,8 @@ export default function PetPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500">
-                      Alergias — más comunes en Chile
+                    <p className="text-sm font-medium text-slate-700">
+                      Alergias
                     </p>
                     <div className="mt-1">
                       <CheckboxOptionGroup
@@ -1207,8 +1207,8 @@ export default function PetPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500">
-                      Medicamentos — más recetados en Chile
+                    <p className="text-sm font-medium text-slate-700">
+                      Medicamentos
                     </p>
                     <div className="mt-1">
                       <CheckboxOptionGroup
@@ -1235,8 +1235,8 @@ export default function PetPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500">
-                      Tratamientos — más comunes en Chile
+                    <p className="text-sm font-medium text-slate-700">
+                      Tratamientos
                     </p>
                     <div className="mt-1">
                       <CheckboxOptionGroup
@@ -1263,8 +1263,8 @@ export default function PetPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500">
-                      Cirugías — más comunes en Chile
+                    <p className="text-sm font-medium text-slate-700">
+                      Cirugías
                     </p>
                     <div className="mt-1">
                       <CheckboxOptionGroup
@@ -1291,9 +1291,8 @@ export default function PetPage() {
                   </div>
 
                   <div>
-                    <p className="text-xs text-slate-500">
-                      Vacunas — cuadro de vacunación de Chile (Colegio Médico
-                      Veterinario)
+                    <p className="text-sm font-medium text-slate-700">
+                      Vacunas
                     </p>
                     <div className="mt-1">
                       <CheckboxOptionGroup
