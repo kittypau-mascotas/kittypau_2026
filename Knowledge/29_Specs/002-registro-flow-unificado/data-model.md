@@ -44,20 +44,26 @@ Assumptions para las fuentes citadas. `vacunas` depende de la especie: perro usa
 `sextuple_octuple`/`tos_perreras`, gato usa `triple_felina`/`leucemia_felina` — ambos
 comparten `antirrabica` (única vacuna obligatoria por ley en Chile).
 
+**Actualizado 2026-08-17 (2)**: las 6 listas (`condiciones_diagnosticadas`, `alergias`,
+`medicamentos`, `tratamientos`, `cirugias`, `vacunas`) suman `"ninguna"`/`"ninguno"` como
+primera opción, excluyente con el resto (marcarla limpia las demás; marcar cualquier otra
+la saca a ella) — lógica compartida en `toggleInList` (`pet/page.tsx`), no repetida por
+categoría.
+
 ```json
 {
   "peso_ideal_kg": 4.2,
   "condiciones_diagnosticadas": ["renal", "obesidad"],
   "condiciones_otra": "texto libre si eligió 'otra'",
-  "alergias": ["pulgas", "ambiental", "alimentaria", "contacto", "otra"],
+  "alergias": ["ninguna"] | ["pulgas", "ambiental", "alimentaria", "contacto", "otra"],
   "alergias_otra": "texto libre si eligió 'otra'",
-  "medicamentos": ["antiparasitario", "antibiotico", "antiinflamatorio", "antialergico", "suplemento", "otro"],
+  "medicamentos": ["ninguno"] | ["antiparasitario", "antibiotico", "antiinflamatorio", "antialergico", "suplemento", "otro"],
   "medicamentos_otra": "texto libre si eligió 'otro'",
-  "tratamientos": ["dermatologico", "dental", "fisioterapia", "oncologico", "cronico", "otro"],
+  "tratamientos": ["ninguno"] | ["dermatologico", "dental", "fisioterapia", "oncologico", "cronico", "otro"],
   "tratamientos_otra": "texto libre si eligió 'otro'",
-  "cirugias": ["esterilizacion", "dental", "cuerpo_extrano", "ortopedica", "otra"],
+  "cirugias": ["ninguna"] | ["esterilizacion", "dental", "cuerpo_extrano", "ortopedica", "otra"],
   "cirugias_otra": "texto libre si eligió 'otra'",
-  "vacunas": ["antirrabica", "sextuple_octuple", "tos_perreras"],
+  "vacunas": ["ninguna"] | ["antirrabica", "sextuple_octuple", "tos_perreras"],
   "vacunas_otra": "texto libre si eligió 'otra'",
   "desparasitacion_ultima_fecha": "2026-06-01",
   "historial_veterinario": "texto libre",

@@ -93,6 +93,7 @@ const defaultState: LoadState = {
 // contra fuentes veterinarias reales de Chile en vez de inventadas — ver research.md /
 // conversación del spec 002 para las fuentes citadas.
 const ALERGIA_OPTIONS = [
+  { value: "ninguna", label: "Ninguna" },
   { value: "pulgas", label: "Pulgas (dermatitis alérgica)" },
   { value: "ambiental", label: "Ambiental (ácaros, pólenes, hongos)" },
   { value: "alimentaria", label: "Alimentaria" },
@@ -101,6 +102,7 @@ const ALERGIA_OPTIONS = [
 ] as const;
 
 const MEDICAMENTO_OPTIONS = [
+  { value: "ninguno", label: "Ninguno" },
   {
     value: "antiparasitario",
     label: "Antiparasitario (pulgas/garrapatas/gusanos)",
@@ -113,6 +115,7 @@ const MEDICAMENTO_OPTIONS = [
 ] as const;
 
 const TRATAMIENTO_OPTIONS = [
+  { value: "ninguno", label: "Ninguno" },
   { value: "dermatologico", label: "Dermatológico" },
   { value: "dental", label: "Dental" },
   { value: "fisioterapia", label: "Fisioterapia / rehabilitación" },
@@ -125,6 +128,7 @@ const TRATAMIENTO_OPTIONS = [
 ] as const;
 
 const CIRUGIA_OPTIONS = [
+  { value: "ninguna", label: "Ninguna" },
   { value: "esterilizacion", label: "Esterilización / castración" },
   { value: "dental", label: "Extracción dental" },
   { value: "cuerpo_extrano", label: "Cuerpo extraño" },
@@ -135,6 +139,7 @@ const CIRUGIA_OPTIONS = [
 // Cartilla de vacunación real de Chile (Colegio Médico Veterinario) — difiere entre
 // perro y gato, por eso son 2 listas y no una sola genérica.
 const VACUNA_OPTIONS_PERRO = [
+  { value: "ninguna", label: "Ninguna" },
   { value: "antirrabica", label: "Antirrábica (obligatoria por ley en Chile)" },
   {
     value: "sextuple_octuple",
@@ -146,6 +151,7 @@ const VACUNA_OPTIONS_PERRO = [
 ] as const;
 
 const VACUNA_OPTIONS_GATO = [
+  { value: "ninguna", label: "Ninguna" },
   { value: "antirrabica", label: "Antirrábica (obligatoria por ley en Chile)" },
   {
     value: "triple_felina",
@@ -331,9 +337,20 @@ export default function PetPage() {
     value: string,
     setList: (next: string[]) => void,
   ) => {
-    setList(
-      list.includes(value) ? list.filter((v) => v !== value) : [...list, value],
-    );
+    if (list.includes(value)) {
+      setList(list.filter((v) => v !== value));
+      return;
+    }
+    // "ninguna"/"ninguno" es excluyente con el resto: marcarla limpia las demás
+    // opciones, y marcar cualquier otra opción la saca a ella.
+    if (value === "ninguna" || value === "ninguno") {
+      setList([value]);
+    } else {
+      setList([
+        ...list.filter((v) => v !== "ninguna" && v !== "ninguno"),
+        value,
+      ]);
+    }
   };
 
   const [showFeeding, setShowFeeding] = useState(false);
@@ -1119,6 +1136,7 @@ export default function PetPage() {
                     </p>
                     <div className="mt-1 flex flex-wrap gap-3">
                       {[
+                        { value: "ninguna", label: "Ninguna" },
                         { value: "renal", label: "Renal" },
                         { value: "diabetes", label: "Diabetes" },
                         { value: "obesidad", label: "Obesidad" },
@@ -1132,11 +1150,11 @@ export default function PetPage() {
                           <input
                             type="checkbox"
                             checked={healthConditions.includes(option.value)}
-                            onChange={(event) =>
-                              setHealthConditions((prev) =>
-                                event.target.checked
-                                  ? [...prev, option.value]
-                                  : prev.filter((v) => v !== option.value),
+                            onChange={() =>
+                              toggleInList(
+                                healthConditions,
+                                option.value,
+                                setHealthConditions,
                               )
                             }
                           />
