@@ -9,6 +9,8 @@ updated: 2026-08-17
 confirmado_por_mauro:
   - "Destino confirmado: raíz del repo (kittypau_2026_hivemq/09_Investigacion), no una
     carpeta hermana nueva — 2026-08-17"
+  - "'ok' — confirma mover los 2 bloqueantes (11_Data + PDF huérfano de Postulaciones
+    Fondos) antes de borrar Docs/, mismo patrón que 09_Investigacion — 2026-08-17 (tarde)"
 tags:
   - spec
   - investigacion
@@ -33,6 +35,16 @@ related:
 > `fase_0_ruido/` (donde vive la mayor parte de la investigación y los resultados) — y
 > verificando que todo lo que usa `app_anotacion_av2.py` (resultados + dependencias) siga
 > funcionando en la ubicación nueva.
+
+> ⚠️ **Ampliado 2026-08-17 (tarde)**: Mauro pidió borrar `Docs/` por completo. Antes de
+> eso, auditoría de todo lo que quedaba ahí encontró 2 bloqueantes reales (no
+> documentación — datos/archivos que Knowledge no puede "contener") y se movieron
+> también, mismo patrón: `Docs/11_Data/2026/` (299 MB, `readings.csv`/
+> `readings_rows.csv`) → `11_Data/` en la raíz, y un PDF huérfano de la postulación
+> CORFO → `10_Postulaciones_Fondos/`. Todo lo demás que quedaba en `Docs/` (`00_Inicio`
+> a `08_Equipo`, 158 archivos) se confirmó migrado a `Knowledge/` desde el commit
+> `6843104` (10-jul-2026, sin ediciones desde entonces) — ver §8 para el detalle
+> completo de esta segunda ronda.
 
 ---
 
@@ -198,23 +210,89 @@ Lista completa: `00_HOME.md`, `01_Proyecto/ESTADO_ACTUAL.md`,
 
 ## 6. Qué NO cambió (a propósito)
 
-- `Docs/11_Data/2026/readings.csv` / `readings_rows.csv` — misma ubicación, mismo
-  contenido, no se tocaron.
+- `readings.csv` / `readings_rows.csv` — mismo contenido (verificado: mismo tamaño en
+  bytes antes/después), nunca editados. Sí cambiaron de carpeta contenedora en la ronda
+  de §8 (`Docs/11_Data/` → `11_Data/`) — el archivo en sí, no.
 - El contenido de `Ciclo Alpha`, `Ciclo Alpha v2`, `Power Bi_Supabase` — se movió tal cual,
   nada se editó salvo las rutas listadas en §2 y §5.
-- `.gitignore` — las reglas existentes (`Docs/09_Investigacion/**/*.csv`,
-  `Docs/11_Data/**/*.csv`, `**/venv/`, etc.) siguen aplicando a `Docs/11_Data/` (que sigue
-  ahí); las reglas específicas de `Docs/09_Investigacion/` quedaron apuntando a una ruta
-  que ya no existe — no se limpiaron en este spec (gitignore ya-innecesario no rompe
-  nada, solo queda obsoleto; limpiarlo es una tarea aparte, de bajo riesgo, no crítica).
+- `.gitignore` — las reglas viejas (`Docs/09_Investigacion/**/*.csv`,
+  `Docs/11_Data/**/*.csv`, etc.) quedaron apuntando a rutas que ya no existen — no se
+  limpiaron (gitignore ya-innecesario no rompe nada, solo queda obsoleto; limpiarlo es
+  una tarea aparte, de bajo riesgo, no crítica). Las reglas nuevas si se agregaron (§8).
 
 ---
 
 ## 7. Siguiente sesión / seguimiento
 
 - Decidir qué hacer con el `node_modules` huérfano en
-  `Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` (§3).
-- Opcional: limpiar las reglas de `.gitignore` que ya apuntan a `Docs/09_Investigacion/`
-  (ahora inexistente) y agregar las nuevas para `09_Investigacion/` en la raíz si hace
-  falta (las reglas de `*.csv`/`*.parquet`/`__pycache__`/`.pytest_cache` genéricas ya
-  cubren rutas nuevas por patrón, pero vale una pasada de confirmación).
+  `Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` (§3) — sigue
+  ahí, sin resolver.
+- Confirmar con Mauro que `Docs/` (ahora solo `00_Inicio`–`08_Equipo`, `.obsidian/`, y
+  las 2 carpetas vacías `09_Investigacion/Ciclo Alpha/...` y `Postulaciones Fondos/`) ya
+  está lista para borrarse — ver §8.
+
+---
+
+## 8. Addendum (2026-08-17, tarde) — `11_Data/` y el PDF huérfano de Postulaciones Fondos
+
+Mauro pidió borrar `Docs/` por completo. Antes de autorizarlo, auditoría de todo lo que
+quedaba ahí (ver conversación — no repetida acá en detalle) encontró:
+
+**🔴 Bloqueante 1 — `Docs/11_Data/2026/`** (299 MB: `readings.csv` 242 MB + 242.840.589
+bytes exactos, `readings_rows.csv` 70 MB): es **dato crudo, no documentación** —
+`Knowledge/10_Datasets/README_Datasets.md` *habla de* este dataset, no lo contiene. Es
+además la fuente de verdad histórica (`readings.csv` = "NUNCA modificar, nunca
+sobreescribir, nunca truncar", el no-negociable #1 del proyecto) y los 6 scripts de
+`fase_0_ruido/` corregidos en §2 leen directo desde esta ruta.
+
+**🔴 Bloqueante 2 — `Docs/Postulaciones Fondos/2026/CORFO_SEMILLA_INICIA_2026/
+08_PROTOTIPO_RESPALDO.pdf`** (729 KB): un archivo real de la postulación CORFO,
+trackeado por git, huérfano en una carpeta vieja (con espacio, sin "10_") que nunca se
+migró cuando `Docs/10_Postulaciones_Fondos/` se reorganizó a `10_Postulaciones_Fondos/`
+en la raíz (movido por Mauro directamente, fuera de esta sesión, antes de este
+addendum).
+
+**✅ Confirmado seguro de borrar** (no bloqueante): `Docs/00_Inicio` → `Docs/08_Equipo`
+(158 archivos) — congelados desde el commit `6843104` (10-jul-2026, "Reestructuración
+completa del proyecto y actualización de documentación"), sin ediciones desde entonces.
+`Docs/00_Inicio/PLAN_KNOWLEDGE_SYSTEM.md` documenta la migración completa a `Knowledge/`
+con checklist marcado ✅ para cada documento origen → destino.
+
+### Qué se hizo
+
+1. `Docs/11_Data/` → `11_Data/` (raíz del repo), mismo patrón que §0 punto 2.
+   Verificado: `readings.csv` y `readings_rows.csv` con tamaño en bytes idéntico
+   antes/después del movimiento.
+2. El PDF huérfano → `10_Postulaciones_Fondos/2026/CORFO_SEMILLA_INICIA_2026/
+   08_PROTOTIPO_RESPALDO.pdf` (la estructura que ya existía, creada por Mauro).
+3. Corregidas las rutas relativas hacia `11_Data/2026/` en los mismos 6 scripts del §2 —
+   segunda vuelta, un nivel de anidamiento menos otra vez (`SCRIPT_DIR.parent.parent.parent
+   / "Docs" / "11_Data" / "2026"` → `SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"`,
+   revirtiendo el `"Docs"` que se había agregado en §2 — ahora `11_Data/` es hermana de
+   `09_Investigacion/`, no hace falta).
+4. Re-verificado `app_anotacion_av2.py` en la ubicación nueva: `py_compile` OK, ruta
+   resuelta con `.exists() == True` para ambos CSV, `streamlit run` headless responde
+   `HTTP 200` + `/_stcore/health` → `ok`, `pytest tests/` 16/16.
+5. **Gap de `.gitignore` encontrado y corregido antes de que causara daño**: las reglas
+   de `.gitignore` para `*.csv`/`*.parquet` seguían apuntando a `Docs/11_Data/**` — la
+   ubicación nueva `11_Data/**` no estaba cubierta, así que `readings.csv`/
+   `readings_rows.csv` habrían quedado *trackeables por accidente* en el próximo
+   `git add` (el mismo problema, otra vez, que ya pasó con `anotaciones_av2.csv`/
+   `_cache_lecturas_30s.parquet` en §0). Agregadas reglas equivalentes para `11_Data/**`
+   antes de tocar git.
+6. Referencias a la ruta vieja actualizadas (reemplazo mecánico `Docs/11_Data` →
+   `11_Data`) en `Knowledge/10_Datasets/README_Datasets.md`,
+   `Knowledge/14_Experimentos/EXP_AlphaV2_Pipeline.md`,
+   `Knowledge/15_Resultados/RESULT_AlphaV2_Snapshots.md`,
+   `Knowledge/29_Specs/SPEC_07_Investigacion_Hidratacion.md`,
+   `Knowledge/AUDITORIA_2026_08_11.md`. No se encontraron referencias a
+   `Docs/10_Postulaciones_Fondos`/`Docs/Postulaciones Fondos` en `Knowledge/` (coincide
+   con la prioridad "🟢 Baja" que le había dado `PLAN_KNOWLEDGE_SYSTEM.md`).
+
+### Qué queda en `Docs/` después de este addendum
+
+Solo lo confirmado seguro de borrar: `00_Inicio` → `08_Equipo` (158 archivos, migrados),
+`.obsidian/` (config vieja, superada por `Knowledge/.obsidian/`), y 2 carpetas ya vacías
+de archivos reales (`09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/`
+huérfano del §3, y `Postulaciones Fondos/` ya sin el PDF). **`Docs/` queda listo para
+borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloqueantes.

@@ -168,11 +168,13 @@ kpcl0036_error_peso_sinbateria.csv
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv
 Docs/09_Investigacion/**/*.parquet
-# 09_Investigacion/ vive en la raíz del repo desde 2026-08-17 (SPEC 13) — reglas
-# equivalentes a las de Docs/09_Investigacion/ de arriba, para la ubicación nueva.
+# 09_Investigacion/ y 11_Data/ viven en la raíz del repo desde 2026-08-17 (SPEC 13) —
+# reglas equivalentes a las de Docs/09_Investigacion//Docs/11_Data de arriba, para
+# las ubicaciones nuevas.
 09_Investigacion/**/*.csv
 09_Investigacion/**/*.parquet
 09_Investigacion/**/*.pkl
+11_Data/**/*.csv
 # Datos grandes
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv
@@ -188,6 +190,8 @@ Docs/09_Investigacion/**/*.pkl
 Docs/09_Investigacion/kpcl0036_sin_batera_actual.csv
 Docs/11_Data/2026/readings.csv
 Docs/11_Data/2026/readings_rows.csv
+11_Data/2026/readings.csv
+11_Data/2026/readings_rows.csv
 Docs/09_Investigacion/kpcl0034_kpcl0036_prueba_sincargador.csv
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv

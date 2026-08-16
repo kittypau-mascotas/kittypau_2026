@@ -42,10 +42,10 @@ DATA_DIR      = SCRIPT_DIR / "data"
 DATA_DIR_AGUA = SCRIPT_DIR / "data_agua"
 CONFIG_DIR    = SCRIPT_DIR / "config"
 
-# Datos crudos en Docs/11_Data/2026/ (3 niveles arriba de fase_0_ruido → raíz del
-# repo, tras la reorganización 2026-08-17 que sacó 09_Investigacion/ de Docs/) —
-# compartidos entre perfiles; cada perfil filtra por sus propios UUIDs (abajo).
-RAW_DATA_DIR      = SCRIPT_DIR.parent.parent.parent / "Docs" / "11_Data" / "2026"
+# Datos crudos en 11_Data/2026/ (3 niveles arriba de fase_0_ruido → raíz del repo —
+# 09_Investigacion/ y 11_Data/ salieron de Docs/ el 2026-08-17, ambas quedan hermanas
+# en la raíz) — compartidos entre perfiles; cada perfil filtra por sus propios UUIDs.
+RAW_DATA_DIR      = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 READINGS_CSV      = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 

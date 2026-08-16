@@ -26,8 +26,8 @@ related:
 
 ## ⚠️ Discrepancia sin resolver — tamaño real de `readings.csv` (hallazgo 2026-08-11)
 
-Verificación directa del archivo en disco (`Docs/11_Data/2026/readings.csv`, no versionado —
-está en `.gitignore` vía `Docs/11_Data/**/*.csv`, así que no hay historial git que consultar):
+Verificación directa del archivo en disco (`11_Data/2026/readings.csv`, no versionado —
+está en `.gitignore` vía `11_Data/**/*.csv`, así que no hay historial git que consultar):
 
 | Métrica | Documentado (aquí y en `fase_0_ruido/`) | Medido en vivo 2026-08-11 |
 |---|---|---|

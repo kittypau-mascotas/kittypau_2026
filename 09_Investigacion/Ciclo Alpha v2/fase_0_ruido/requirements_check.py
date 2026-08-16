@@ -48,7 +48,7 @@ except Exception as e:
 
 SCRIPT_DIR   = Path(__file__).parent
 DATA_DIR     = SCRIPT_DIR / "data"
-RAW_DATA_DIR = SCRIPT_DIR.parent.parent.parent / "Docs" / "11_Data" / "2026"
+RAW_DATA_DIR = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 print()
 
 # ─── Datos crudos (Docs/11_Data/2026/) ───────────────────────────────────────

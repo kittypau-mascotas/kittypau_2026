@@ -24,7 +24,7 @@ SCRIPT_DIR   = Path(__file__).parent
 _ROOT        = SCRIPT_DIR.parent.parent.parent   # kittypau_2026_hivemq/ (tras la
 # reorganización 2026-08-17 que sacó 09_Investigacion/ de Docs/, un nivel menos)
 _ENV_FILE    = _ROOT / ".env.local"
-DATA_DIR     = _ROOT / "Docs" / "11_Data" / "2026"
+DATA_DIR     = _ROOT / "11_Data" / "2026"  # salió de Docs/ el 2026-08-17
 READINGS_CSV = DATA_DIR / "readings.csv"       # ESTÁTICO — nunca tocar
 ROWS_CSV     = DATA_DIR / "readings_rows.csv"  # dinámico — solo append
 

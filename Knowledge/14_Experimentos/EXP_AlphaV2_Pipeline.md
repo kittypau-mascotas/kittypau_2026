@@ -53,7 +53,7 @@ Ubicado en el encabezado de `app_anotacion_av2.py`.
 ```
 kittypau_2026_hivemq/
 │
-├── Docs/11_Data/2026/                          ← DATA CRUDA (INPUT)
+├── 11_Data/2026/                          ← DATA CRUDA (INPUT)
 │   ├── readings.csv                            ← Abril 2026 (KPCL0034 UUID 1)  ← NUNCA TOCAR
 │   └── readings_rows.csv                       ← Mayo-Jun 2026 (KPCL0034 UUID 2)  ← append-only
 │

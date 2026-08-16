@@ -389,7 +389,7 @@ umbral se inventa sin datos reales detrás.
   sigue intacto salvo que §5 lo liste explícitamente. Es la fuente de verdad de
   `hunger-bar.ts` en producción (ver [[05_API/SPEC_HungerBar_Alimentacion]] y
   [[29_Specs/SPEC_01_Errores_Prioritarios]] nota permanente sobre `readings.csv`).
-- `Docs/11_Data/2026/readings.csv` (estático, NUNCA modificar) y `readings_rows.csv`
+- `11_Data/2026/readings.csv` (estático, NUNCA modificar) y `readings_rows.csv`
   (append-only) — regla ya vigente en `CLAUDE.md` y en `fase_0_ruido/README.md`. Estos dos
   archivos son compartidos y ya contienen las lecturas de agua (filtradas por otro UUID) —
   no hace falta ni se debe duplicarlos.

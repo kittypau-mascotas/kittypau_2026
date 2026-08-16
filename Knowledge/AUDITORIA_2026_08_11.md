@@ -56,7 +56,7 @@ usuario, no documentación técnica).
 ## 🟠 Documentación mal calculada — `readings.csv` nunca fue "8 024 filas de KPCL0034"
 
 Ver detalle completo en [[10_Datasets/README_Datasets]]. Resumen: el archivo local
-`Docs/11_Data/2026/readings.csv` (gitignoreado, sin historial git) tiene hoy **1 085 889
+`11_Data/2026/readings.csv` (gitignoreado, sin historial git) tiene hoy **1 085 889
 filas y 5 dispositivos distintos**, de las cuales 154 857 son de KPCL0034 — vs. las 8 024
 documentadas en todo el vault. `readings_rows.csv` tiene el mismo patrón (270 001 filas
 totales, 167 959 de KPCL0034, vs. 94 588 documentadas). **No es corrupción reciente**: una

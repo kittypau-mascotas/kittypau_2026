@@ -29,7 +29,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 SCRIPT_DIR      = Path(__file__).parent
 DATA_DIR        = SCRIPT_DIR / "data"
 DATA_DIR_AGUA   = SCRIPT_DIR / "data_agua"
-RAW_DATA_DIR    = SCRIPT_DIR.parent.parent.parent / "Docs" / "11_Data" / "2026"
+RAW_DATA_DIR    = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 READINGS_CSV    = RAW_DATA_DIR / "readings.csv"
 READINGS_ROWS_CSV = RAW_DATA_DIR / "readings_rows.csv"
 

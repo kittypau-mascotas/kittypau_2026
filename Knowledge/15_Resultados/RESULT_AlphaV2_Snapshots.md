@@ -164,7 +164,7 @@ Basado en separación pooled-σ: `sep_AS = |µ_A − µ_S| / √((σ_A² + σ_S�
 Cada vez que se ingesta nueva data y se regeneran los artefactos:
 
 ```bash
-# 1. Reemplazar readings_rows.csv en Docs/11_Data/2026/
+# 1. Reemplazar readings_rows.csv en 11_Data/2026/
 # 2. Regenerar candidatos
 python 01_genera_candidatos.py
 
