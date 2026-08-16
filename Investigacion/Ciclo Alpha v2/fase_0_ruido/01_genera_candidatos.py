@@ -168,7 +168,7 @@ def cargar_lecturas() -> pd.DataFrame:
     for csv_path in [READINGS_CSV, READINGS_ROWS_CSV]:
         assert csv_path.exists(), (
             f"No se encuentra: {csv_path}\n"
-            f"  Verificar que existan los archivos en Docs/11_Data/2026/"
+            f"  Verificar que existan los archivos en 11_Data/2026/"
         )
         df_raw = pd.read_csv(csv_path, low_memory=False)
         mask = df_raw["device_id"].isin(KPCL0034_UUIDS)

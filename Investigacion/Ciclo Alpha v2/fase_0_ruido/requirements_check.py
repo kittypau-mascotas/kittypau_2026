@@ -51,7 +51,7 @@ DATA_DIR     = SCRIPT_DIR / "data"
 RAW_DATA_DIR = SCRIPT_DIR.parent.parent.parent / "11_Data" / "2026"
 print()
 
-# ─── Datos crudos (Docs/11_Data/2026/) ───────────────────────────────────────
+# ─── Datos crudos (11_Data/2026/) ───────────────────────────────────────
 KPCL0034_UUIDS = {
     "9510a455-b0e9-4932-8be1-03976d31228a",
     "3a460074-e7c3-41bf-ae5a-a011445f927a",

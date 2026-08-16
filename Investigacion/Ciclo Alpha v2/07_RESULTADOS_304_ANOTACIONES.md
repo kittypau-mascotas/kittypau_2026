@@ -12,7 +12,7 @@ estado: activo
 
 **Fecha de análisis:** 2026-06-26
 **Script:** `revisar_anotaciones_v2.py`
-**Fuente:** `anotaciones_av2.csv` + lecturas crudas `Docs/11_Data/2026/` (resampled 30s)
+**Fuente:** `anotaciones_av2.csv` + lecturas crudas `11_Data/2026/` (resampled 30s)
 **Output:** `features_anotaciones_v2.csv` (417 × 109), `comp_stats_v2.json`
 
 ---

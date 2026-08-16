@@ -1,54 +1,76 @@
 # Investigación Kittypau — Referencia Maestra
 
-> **🔬 Ciclo Alpha v2 — ACTIVO (documentación técnica detallada):**
-> - **[Ciclo Alpha v2/00_INDICE_AV2.md](Ciclo%20Alpha%20v2/00_INDICE_AV2.md)** ⭐ — MOC principal con fases, objetivos, estructura de archivos
-> - [Ciclo Alpha v2/04_MATEMATICA_SHAPE_FEATURES.md](Ciclo%20Alpha%20v2/04_MATEMATICA_SHAPE_FEATURES.md) — fórmulas completas (monotonía, R², ZCR, similitud coseno)
-> - [Ciclo Alpha v2/06_UMBRALES_Y_REGLAS.md](Ciclo%20Alpha%20v2/06_UMBRALES_Y_REGLAS.md) — `umbrales.json` v1.2, orden del detector
-> - [Ciclo Alpha v2/07_RESULTADOS_304_ANOTACIONES.md](Ciclo%20Alpha%20v2/07_RESULTADOS_304_ANOTACIONES.md) — estadísticas por categoría, separación en σ
-> - [Ciclo Alpha v2/08_APP_ANOTACION_AV2.md](Ciclo%20Alpha%20v2/08_APP_ANOTACION_AV2.md) — app Streamlit (6 tabs, dark theme, correcciones)
+> ## ⭐ El centro de esta carpeta: `app_anotacion_av2.py`
 >
-> **Para agentes IA — leer primero:**
-> Este archivo es el punto de entrada operativo del ecosistema. Documentos maestros:
+> Toda la investigación activa gira en torno a una sola app Streamlit:
+> **[`Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`](Ciclo%20Alpha%20v2/fase_0_ruido/app_anotacion_av2.py)**
+> — motor matemático (102 features, Evidence Engine) + anotación manual + predictor,
+> todo en un solo lugar. Si vas a tocar algo de investigación, probablemente es acá.
+>
+> ```powershell
+> cd "Investigacion\Ciclo Alpha v2\fase_0_ruido"
+> streamlit run app_anotacion_av2.py
+> ```
+>
+> **Para entender la app antes de tocarla, en este orden:**
+> 1. **[Ciclo Alpha v2/fase_0_ruido/README.md](Ciclo%20Alpha%20v2/fase_0_ruido/README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
+> 2. **[Ciclo Alpha v2/fase_0_ruido/ARQUITECTURA_APP.md](Ciclo%20Alpha%20v2/fase_0_ruido/ARQUITECTURA_APP.md)** — arquitectura técnica interna
+> 3. **[Ciclo Alpha v2/08_APP_ANOTACION_AV2.md](Ciclo%20Alpha%20v2/08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
+> 4. **[Ciclo Alpha v2/04_MATEMATICA_SHAPE_FEATURES.md](Ciclo%20Alpha%20v2/04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
+> 5. **[Ciclo Alpha v2/APRENDIZAJES_CONSOLIDADOS.md](Ciclo%20Alpha%20v2/APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
+>
+> **MOC completo de Alpha v2:** [Ciclo Alpha v2/00_INDICE_AV2.md](Ciclo%20Alpha%20v2/00_INDICE_AV2.md) ⭐
+>
+> ---
+>
+> **Documentos maestros de toda la carpeta** (para agentes IA — leer si necesitás contexto más amplio que la app):
 > - **[GLOSARIO.md](GLOSARIO.md)** — devices, features, clases, parámetros globales, convenciones
-> - **[EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha (Exp01–11) con métricas, artefactos y roadmap
-> - **[Ciclo Alpha/experiments/README.md](Ciclo Alpha/experiments/README.md)** — índice de iteraciones ML con hitos y protocolo
-> - **[Ciclo Alpha v2/APRENDIZAJES_CONSOLIDADOS.md](Ciclo Alpha v2/APRENDIZAJES_CONSOLIDADOS.md)** ← **LEER ESTE PARA ALPHA v2** — todos los aprendizajes de Alpha + Gamma + Delta + Exp10-NN en un documento
+> - **[EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha v1 (Exp01–11), histórico
+> - **[ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md)** — por qué se archivó Alpha/Gamma/Delta y nació Alpha v2
 >
-> **Estructura rápida de la carpeta:**
+> **Mapa de la carpeta (estado real, verificado):**
 > ```
-> investigacion/
-> ├── README.md + GLOSARIO.md + EXPERIMENT_TRACKER.md   ← ecosistema maestro (Ciclo Alpha)
-> ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md               ← estado actual y dirección Ciclo Alpha v2
-> ├── 01–08_*.md                                         ← contexto, reglas, auditorías
-> ├── Ciclo Alpha/                                       ← pipeline ML supervisado (Exp01–11, CERRADO)
-> │   ├── experiments/exp_01–11_*.md                    ← iteraciones del modelo
-> │   └── Exploracion_Gamma_Delta_2026/                  ← archivo de Gamma+Delta (exploración 2026-06)
-> │       ├── APRENDIZAJES_GAMMA_DELTA.md               ← aprendizajes de Gamma y Delta
-> │       ├── COMPARACION_ALPHA_GAMMA.md                ← comparación de datos y métricas
-> │       ├── Ciclo Gamma/                               ← pipeline multi-modelo supervisado (archivado)
-> │       └── Ciclo Delta/                               ← pipeline no supervisado (archivado)
-> ├── Ciclo Alpha v2/                                    ← ACTIVO — detección por segmentos
-> │   ├── README.md                                      ← descripción de las 7 fases + constantes
-> │   ├── APRENDIZAJES_CONSOLIDADOS.md                   ← ⭐ MEMORIA DE TODOS LOS CICLOS
-> │   ├── fase_0_ruido/                                  ← PRIMERA FASE — modelo de ruido del sensor
-> │   ├── fase_1_extraccion/ … fase_6_evaluacion/        ← fases pendientes
-> │   └── experiments/README.md                          ← tracker de experimentos v2 + baselines
-> └── Data_2026/[Mes_Año]/                               ← dumps de datos crudos
+> Investigacion/
+> ├── README.md + GLOSARIO.md + EXPERIMENT_TRACKER.md    ← navegación + histórico Ciclo Alpha v1
+> ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                ← por qué existe Alpha v2
+> ├── 01–08_*.md                                          ← reglas canónicas de eventos + auditorías (cross-cycle)
+> ├── Dashboard_KPCL/                                     ← toolkit de visualización operativa (scripts + CSVs + HTML)
+> ├── Power Bi_Supabase/                                  ← informe .pbix (propósito sin confirmar, ver SPEC_07 §8)
+> │
+> ├── Ciclo Alpha v2/                          ⭐ ACTIVO — detección por segmentos, sin ML supervisado
+> │   ├── 00_INDICE_AV2.md                                ← MOC principal de este ciclo
+> │   ├── APRENDIZAJES_CONSOLIDADOS.md                    ← memoria de todos los ciclos previos
+> │   ├── fase_0_ruido/                        ⭐⭐ AQUÍ VIVE app_anotacion_av2.py
+> │   │   ├── app_anotacion_av2.py                        ← LA APP — 8 tabs, motor matemático, anotación
+> │   │   ├── shape_features_v2.py                        ← 102 features en 15 familias + Evidence Engine
+> │   │   ├── 01_genera_candidatos.py / 0A_.../ 0B_.../ 0C_...  ← pipeline de detección de candidatos
+> │   │   ├── data/ (+ backups/)                          ← anotaciones, candidatos, cache — NO tocar a mano
+> │   │   └── tests/                                      ← 16 tests, correr antes de tocar shape_features_v2.py
+> │   └── experiments/README.md                           ← tracker de experimentos v2 + baselines
+> │
+> └── Ciclo Alpha/                              🗄️ CERRADO — pipeline ML supervisado (Exp01–11), Jun 2026
+>     ├── experiments/exp_01–11_*.md                      ← iteraciones del modelo
+>     └── Exploracion_Gamma_Delta_2026/                    ← archivo de Gamma (multi-modelo) + Delta (no supervisado)
 > ```
+>
+> Los datos crudos (`readings.csv`, `readings_rows.csv`) viven en `11_Data/2026/` — hermano de
+> `Investigacion/` en la raíz del repo, no adentro de esta carpeta.
 >
 > **Cómo categorizar un archivo nuevo:** ver sección [Regla de uso de la carpeta](#regla-de-uso-de-la-carpeta) + [EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md) para experimentos.
 
 **Proyecto:** Kittypau — Ecosistema IoT para monitoreo de mascotas  
 **Dispositivos documentados:** KPCL0034 (food_bowl) · KPCL0036 (water_bowl)  
 **Mascota tester:** Bandida  
-**Última actualización:** 2026-06-14
+**Última actualización:** 2026-08-16
 
-Esta carpeta consolida dos líneas de trabajo paralelas e interdependientes:
+Esta carpeta documenta la investigación completa detrás de `app_anotacion_av2.py`: cómo se
+detectan sesiones de alimentación/hidratación desde la curva de peso cruda, sin modelo ML
+supervisado, con un motor matemático de 102 features y anotación manual como ground truth.
+El **Ciclo Alpha** (pipeline ML supervisado, cerrado en junio 2026) y el toolkit
+**Dashboard_KPCL** (visualización operativa) quedan documentados como apoyo/histórico — el
+detalle de cada uno está en sus propias carpetas.
 
-1. **Línea operativa** — Dashboard interactivo para visualizar lecturas de peso/batería y categorizar manualmente sesiones de alimentación, hidratación y servido en tiempo real.
-2. **Línea de Data Science** — Pipeline de ML supervisado de 3 fases (extracción → dataset → modelos) para detectar automáticamente patrones de consumo desde la curva de peso.
-
-La **fuente de verdad** de ambas líneas es `public.audit_events` en Supabase. Todo análisis, entrenamiento o visualización debe derivar de ahí.
+La **fuente de verdad** de todo el ecosistema es `public.audit_events` en Supabase. Todo análisis, entrenamiento o visualización debe derivar de ahí.
 
 ---
 

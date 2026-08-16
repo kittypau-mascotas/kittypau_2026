@@ -387,3 +387,53 @@ borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloque
 
 `Ciclo Alpha/`, `Ciclo Alpha v2/` (salvo el rename del padre), `Power Bi_Supabase/`,
 `Postulaciones_Fondos/2025|2026/` — mismo contenido interno, sin reestructurar.
+
+## 10. Tercer addendum (2026-08-16) — Reorganización centrada en `app_anotacion_av2.py`
+
+> Pedido de Mauro: "revisa la totalidad de investigacion, su contenido, recuerda que el
+> archivo mas importante es app_anotacion_av2, es el centro de la investigacion, organiza
+> todo en relacion a eso, cambia nombres si es necesario, mueve archivos. el objetivo es
+> reordenar todo investigacion para que quede profesional."
+
+### Decisión: qué se renombró/movió y qué no, y por qué
+
+Se auditó el árbol completo de `Investigacion/` (~530 archivos, excluyendo `venv/`,
+`node_modules/`, `__pycache__/`). Conclusión: **la estructura física ya es correcta**
+(`Ciclo Alpha/` = cerrado, `Ciclo Alpha v2/fase_0_ruido/` = donde vive
+`app_anotacion_av2.py`, con fases futuras `fase_2_segmentacion`/`fase_5_modelos` ya
+anticipadas en la convención `fase_N_*` — confirmado en
+`Ciclo Alpha v2/experiments/README.md`). Renombrar `Ciclo Alpha`, `Ciclo Alpha v2` o
+`fase_0_ruido` para "verse más profesional" habría roto la convención de fases ya
+documentada y forzado otra ronda de fixes de rutas relativas en decenas de docs, por una
+ganancia puramente cosmética — **no se hizo**. Tampoco se renombró `Power Bi_Supabase/`:
+su propósito sigue sin confirmar desde SPEC_07 §8 pregunta 5 (sin README propio), no se
+puede nombrar bien algo que no se sabe si sigue en uso.
+
+Lo que sí estaba roto y se corrigió — **9 rutas obsoletas dentro de la documentación del
+propio `app_anotacion_av2.py`**, arrastradas desde antes de esta sesión y nunca barridas en
+las 2 rondas anteriores (que solo tocaron `Knowledge/` y los docs de nivel raíz de
+`Investigacion/`, no los docs internos de `Ciclo Alpha v2/`):
+
+- `Ciclo Alpha v2/fase_0_ruido/README.md` y `ARQUITECTURA_APP.md`: el comando `cd` para
+  lanzar la app apuntaba a `Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido` — una ruta
+  que no existe desde la primera mudanza de este spec. Corregido a
+  `Investigacion\Ciclo Alpha v2\fase_0_ruido`.
+- `README.md` (×2), `ACTUALIZACION_DATA.md`, `HISTORIAL_RESULTADOS.md`,
+  `requirements_check.py`, `01_genera_candidatos.py`, `02_DISPOSITIVO_Y_DATOS.md`,
+  `07_RESULTADOS_304_ANOTACIONES.md`: referencias a `Docs/11_Data/2026/` (ruta pre-§8,
+  cuando `11_Data` todavía vivía bajo `Docs/`) corregidas a `11_Data/2026/`.
+- `05_ANALISIS_COLAB_KPCL0034_07052026.md`: link roto a una carpeta `Data Science/` que
+  nunca existió en esta ubicación — el script real vive en
+  `Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`, corregido.
+
+Reforzada la navegación (sin mover archivos): `README.md` de `Investigacion/` reescrito
+para abrir con `app_anotacion_av2.py` como punto de entrada explícito (antes abría con
+"esta carpeta consolida dos líneas de trabajo" sin mencionar Alpha v2 en absoluto — quedó
+desactualizado desde la migración a Alpha v2 en junio). El diagrama de estructura de
+carpeta también estaba desactualizado (`fase_1_extraccion/…/fase_6_evaluacion/` como si
+existieran, `Data_2026/[Mes_Año]/` que nunca existió con ese nombre, `Dashboard_KPCL/`
+ausente) — reemplazado por el árbol real verificado. `_MOC.md` recibió un puntero de una
+línea al mismo destino.
+
+Verificado tras los cambios: `py_compile` de los 5 scripts de `fase_0_ruido/` tocados en
+esta sesión + `pytest tests/` → 16/16.

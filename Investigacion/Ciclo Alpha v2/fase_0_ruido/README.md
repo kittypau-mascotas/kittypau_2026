@@ -22,7 +22,7 @@ actualizado: 2026-06-28
 ## Lanzar la app
 
 ```powershell
-cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido"
+cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Investigacion\Ciclo Alpha v2\fase_0_ruido"
 streamlit run app_anotacion_av2.py
 ```
 
@@ -48,8 +48,8 @@ Cada tab muestra barra de progreso real 0→100% al cargar.
 
 | Archivo | Ruta | Regla |
 |---------|------|-------|
-| `readings.csv` | `Docs/11_Data/2026/` | **NUNCA modificar.** 8,024 lecturas Abr 2026 |
-| `readings_rows.csv` | `Docs/11_Data/2026/` | Append-only. 94,588 lecturas May–Jun 2026 |
+| `readings.csv` | `11_Data/2026/` | **NUNCA modificar.** 8,024 lecturas Abr 2026 |
+| `readings_rows.csv` | `11_Data/2026/` | Append-only. 94,588 lecturas May–Jun 2026 |
 
 ## Artefactos generados
 

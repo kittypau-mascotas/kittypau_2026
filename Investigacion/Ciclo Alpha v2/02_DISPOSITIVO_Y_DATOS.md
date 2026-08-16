@@ -51,7 +51,7 @@ df_dev = df_raw[df_raw["device_id"].isin(KPCL0034_UUIDS)]
 Los datos se exportan manualmente desde Supabase y se guardan en:
 
 ```
-Docs/11_Data/2026/
+11_Data/2026/
 ├── readings.csv          ← Tabla principal de lecturas
 └── readings_rows.csv     ← Tabla secundaria/complementaria
 ```

@@ -7,6 +7,8 @@ tipo: MOC
 # 🔬 Investigación — Mapa de Contenido
 
 > Análisis de datos, ciclos alpha, auditorías y documentación técnica de KPCL0034/KPCL0036.
+>
+> **Centro de esta carpeta:** [[README]] apunta directo a `Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py` — la app que consolida el motor matemático y la anotación manual.
 
 ---
 

@@ -3,7 +3,7 @@
 **Autor:** Mauro Curcuma  
 **Entorno:** Google Colab  
 **Fecha del análisis:** 2026-05-07  
-**Script:** [`Data Science/colab_analisis_kpcl0034_07052026.py`](Data%20Science/colab_analisis_kpcl0034_07052026.py)  
+**Script:** [`Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`](Ciclo%20Alpha/colab_analisis_kpcl0034_07052026.py)  
 **Fuente de datos:** Google Drive → `Analisis de Datos/Data Raw/Data abril 2026/kittypau_full_07-05-2026_csv/`
 
 ---

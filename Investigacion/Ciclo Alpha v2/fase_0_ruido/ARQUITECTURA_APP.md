@@ -171,7 +171,7 @@ Cada tab muestra una barra de progreso 0→100% durante la carga.
 ## Cómo lanzar la app
 
 ```powershell
-cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido"
+cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Investigacion\Ciclo Alpha v2\fase_0_ruido"
 streamlit run app_anotacion_av2.py
 ```
 
