@@ -2307,7 +2307,7 @@ export default function TodayPage() {
           >
             <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
               <div className="today-hero-pet flex min-w-0 flex-col gap-2">
-                <div className="flex min-w-0 items-start gap-3 md:gap-4">
+                <div className="flex min-w-0 flex-col items-start gap-2">
                   <Link
                     href="/pet"
                     className="inline-flex"
@@ -2317,10 +2317,10 @@ export default function TodayPage() {
                     <Image
                       src={primaryPet?.photo_url || "/pet_profile.jpeg"}
                       alt={`Foto de ${petLabel}`}
-                      width={128}
-                      height={128}
+                      width={160}
+                      height={160}
                       unoptimized
-                      className="h-24 w-24 rounded-full border border-slate-200 object-cover"
+                      className="h-32 w-32 rounded-full border border-slate-200 object-cover"
                     />
                   </Link>
                   <div className="flex items-center gap-2">
