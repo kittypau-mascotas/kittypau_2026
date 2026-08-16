@@ -340,6 +340,14 @@ export default function PetPage() {
   const [editPayload, setEditPayload] = useState<Partial<ApiPet>>({});
   const [editMessage, setEditMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  // Identificación básica (sexo/peso/tamaño/edad/esterilizado/microchip) — editable
+  // directo en la tarjeta "Mascota seleccionada", sin pasar por "Editar perfil"
+  // (pedido explícito del usuario 2026-08-17: "no tiene sentido que no pueda editar
+  // los datos aquí"). Guarda con su propio submit para no interferir con cambios
+  // sueltos que la persona tenga a medio hacer en el formulario de Editar perfil,
+  // aunque ambos comparten el mismo editPayload.
+  const [identityMessage, setIdentityMessage] = useState<string | null>(null);
+  const [isSavingIdentity, setIsSavingIdentity] = useState(false);
 
   // Ficha Detallada — Origen y Hábitat (spec 002, mejora 2026-08-17). Origen y
   // living_environment son columnas ya existentes (Origen ya se pedía en el register
@@ -653,62 +661,6 @@ export default function PetPage() {
                 </p>
                 <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
                   <span>{profileStatus}</span>
-                  {selectedPet?.pet_state ? (
-                    <span className="text-slate-400">
-                      · {selectedPet.pet_state}
-                    </span>
-                  ) : null}
-                </div>
-                {/* Lo básico que ya se preguntó en el register flow, visible acá sin
-                    tener que abrir "Editar perfil" (pedido explícito del usuario
-                    2026-08-17) — solo lectura, se edita desde "Editar perfil". */}
-                <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500 sm:grid-cols-3">
-                  <span>
-                    Sexo:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.sex ?? "sin datos"}
-                    </span>
-                  </span>
-                  <span>
-                    Peso:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.weight_kg
-                        ? `${selectedPet.weight_kg} kg`
-                        : "sin datos"}
-                    </span>
-                  </span>
-                  <span>
-                    Tamaño:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.size ?? "sin datos"}
-                    </span>
-                  </span>
-                  <span>
-                    Edad:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.age_range ?? "sin datos"}
-                    </span>
-                  </span>
-                  <span>
-                    Esterilizado/a:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.is_neutered === true
-                        ? "Sí"
-                        : selectedPet?.is_neutered === false
-                          ? "No"
-                          : "sin datos"}
-                    </span>
-                  </span>
-                  <span>
-                    Microchip:{" "}
-                    <span className="text-slate-700">
-                      {selectedPet?.has_microchip === true
-                        ? (selectedPet.microchip_number ?? "Sí")
-                        : selectedPet?.has_microchip === false
-                          ? "No"
-                          : "sin datos"}
-                    </span>
-                  </span>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -783,6 +735,187 @@ export default function PetPage() {
             </div>
           </section>
 
+          {selectedPet ? (
+            <form
+              className="surface-card freeform-rise px-6 py-5"
+              onSubmit={async (event) => {
+                event.preventDefault();
+                const token = await getValidAccessToken();
+                if (!token) return;
+                setIsSavingIdentity(true);
+                try {
+                  const updated = await savePet(token, selectedPet.id, {
+                    sex: editPayload.sex,
+                    weight_kg: editPayload.weight_kg,
+                    size: editPayload.size,
+                    age_range: editPayload.age_range,
+                    is_neutered: editPayload.is_neutered,
+                    has_microchip: editPayload.has_microchip,
+                    microchip_number: editPayload.microchip_number,
+                  });
+                  setState((prev) => ({
+                    ...prev,
+                    pets: prev.pets.map((pet) =>
+                      pet.id === updated.id ? updated : pet,
+                    ),
+                  }));
+                  setIdentityMessage("Guardado.");
+                } catch (err) {
+                  setIdentityMessage(
+                    err instanceof Error ? err.message : "No se pudo guardar.",
+                  );
+                } finally {
+                  setIsSavingIdentity(false);
+                }
+              }}
+            >
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <label className="text-xs text-slate-500">
+                  Sexo
+                  <select
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.sex ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        sex: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Selecciona</option>
+                    <option value="macho">Macho</option>
+                    <option value="hembra">Hembra</option>
+                    <option value="no_estoy_seguro">No estoy seguro</option>
+                  </select>
+                </label>
+                <label className="text-xs text-slate-500">
+                  Peso (kg)
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.weight_kg ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        weight_kg: Number(event.target.value) || null,
+                      }))
+                    }
+                  />
+                </label>
+                <label className="text-xs text-slate-500">
+                  Tamaño
+                  <select
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.size ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        size: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Selecciona</option>
+                    <option value="pequeno">Pequeño</option>
+                    <option value="mediano">Mediano</option>
+                    <option value="grande">Grande</option>
+                  </select>
+                </label>
+                <label className="text-xs text-slate-500">
+                  Edad
+                  <input
+                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                    value={editPayload.age_range ?? ""}
+                    onChange={(event) =>
+                      setEditPayload((prev) => ({
+                        ...prev,
+                        age_range: event.target.value,
+                      }))
+                    }
+                  />
+                </label>
+                <div>
+                  <p className="text-xs text-slate-500">¿Esterilizado/a?</p>
+                  <div className="mt-2 flex gap-4 text-xs text-slate-700">
+                    {[
+                      { value: true, label: "Sí" },
+                      { value: false, label: "No" },
+                    ].map((opt) => (
+                      <label
+                        key={String(opt.value)}
+                        className="flex items-center gap-1.5"
+                      >
+                        <input
+                          type="radio"
+                          name="edit-is-neutered"
+                          checked={editPayload.is_neutered === opt.value}
+                          onChange={() =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              is_neutered: opt.value,
+                            }))
+                          }
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">¿Tiene microchip?</p>
+                  <div className="mt-2 flex gap-4 text-xs text-slate-700">
+                    {[
+                      { value: true, label: "Sí" },
+                      { value: false, label: "No" },
+                    ].map((opt) => (
+                      <label
+                        key={String(opt.value)}
+                        className="flex items-center gap-1.5"
+                      >
+                        <input
+                          type="radio"
+                          name="edit-has-microchip"
+                          checked={editPayload.has_microchip === opt.value}
+                          onChange={() =>
+                            setEditPayload((prev) => ({
+                              ...prev,
+                              has_microchip: opt.value,
+                            }))
+                          }
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                  {editPayload.has_microchip ? (
+                    <input
+                      type="text"
+                      placeholder="Número de microchip"
+                      className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                      value={editPayload.microchip_number ?? ""}
+                      onChange={(event) =>
+                        setEditPayload((prev) => ({
+                          ...prev,
+                          microchip_number: event.target.value,
+                        }))
+                      }
+                    />
+                  ) : null}
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <button
+                  type="submit"
+                  disabled={isSavingIdentity}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+                >
+                  {isSavingIdentity ? "Guardando..." : "Guardar"}
+                </button>
+                {identityMessage ? <span>{identityMessage}</span> : null}
+              </div>
+            </form>
+          ) : null}
+
           {showEdit && selectedPet ? (
             // <form> real (antes <section> con <input> sueltos) — Enter no guardaba
             // y los password managers no detectaban el formulario (ver SPEC_02 I4).
@@ -838,34 +971,10 @@ export default function PetPage() {
                     }
                   />
                 </label>
-                <label className="text-xs text-slate-500">
-                  Edad
-                  <input
-                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                    value={editPayload.age_range ?? ""}
-                    onChange={(event) =>
-                      setEditPayload((prev) => ({
-                        ...prev,
-                        age_range: event.target.value,
-                      }))
-                    }
-                  />
-                </label>
-                <label className="text-xs text-slate-500">
-                  Peso (kg)
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                    value={editPayload.weight_kg ?? ""}
-                    onChange={(event) =>
-                      setEditPayload((prev) => ({
-                        ...prev,
-                        weight_kg: Number(event.target.value) || null,
-                      }))
-                    }
-                  />
-                </label>
+                {/* ponytail: Edad y Peso se sacaron de acá (corregido 2026-08-17) —
+                    ahora se editan directo en "Identificación" arriba, en la tarjeta
+                    "Mascota seleccionada". Repetirlos acá era el mismo problema de
+                    doble registro que ya se corrigió con Origen. */}
                 <label className="text-xs text-slate-500">
                   Actividad
                   <input
@@ -886,51 +995,15 @@ export default function PetPage() {
                   Origen se edita solo desde ahí ahora; editPayload.origin sigue
                   viajando sin cambios en el submit (no se pierde nada). */}
 
-              {/* Nuevo 2026-08-17: sexo/tamaño/esterilización/microchip/fecha se piden
-                  en el register flow pero no aparecían en ningún lado de /pet después
-                  — quedaban invisibles. Este bloque los hace visibles y editables,
-                  mismo patrón que "Límites de consumo normal" de abajo. */}
+              {/* ponytail: Sexo/Tamaño/Esterilizado/Microchip se movieron al form de
+                  "Identificación" en la tarjeta "Mascota seleccionada" (corregido
+                  2026-08-17) — repetirlos acá era doble registro. Fecha y Tatuaje se
+                  quedan (no están en ningún otro lado). */}
               <div className="mt-5 border-t border-slate-100 pt-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                   Identificación
                 </p>
                 <div className="mt-3 grid gap-4 md:grid-cols-3">
-                  <label className="text-xs text-slate-500">
-                    Sexo
-                    <select
-                      className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-                      value={editPayload.sex ?? ""}
-                      onChange={(event) =>
-                        setEditPayload((prev) => ({
-                          ...prev,
-                          sex: event.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Selecciona</option>
-                      <option value="macho">Macho</option>
-                      <option value="hembra">Hembra</option>
-                      <option value="no_estoy_seguro">No estoy seguro</option>
-                    </select>
-                  </label>
-                  <label className="text-xs text-slate-500">
-                    Tamaño
-                    <select
-                      className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800"
-                      value={editPayload.size ?? ""}
-                      onChange={(event) =>
-                        setEditPayload((prev) => ({
-                          ...prev,
-                          size: event.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Selecciona</option>
-                      <option value="pequeno">Pequeño</option>
-                      <option value="mediano">Mediano</option>
-                      <option value="grande">Grande</option>
-                    </select>
-                  </label>
                   <label className="text-xs text-slate-500">
                     {editPayload.origin === "comprado" ||
                     editPayload.origin === "nacido_en_casa"
@@ -955,35 +1028,6 @@ export default function PetPage() {
                       }
                     />
                   </label>
-                </div>
-                <div className="mt-3 grid gap-4 md:grid-cols-3">
-                  <div>
-                    <p className="text-xs text-slate-500">¿Esterilizado/a?</p>
-                    <div className="mt-2 flex gap-4 text-xs text-slate-700">
-                      {[
-                        { value: true, label: "Sí" },
-                        { value: false, label: "No" },
-                      ].map((opt) => (
-                        <label
-                          key={String(opt.value)}
-                          className="flex items-center gap-1.5"
-                        >
-                          <input
-                            type="radio"
-                            name="edit-is-neutered"
-                            checked={editPayload.is_neutered === opt.value}
-                            onChange={() =>
-                              setEditPayload((prev) => ({
-                                ...prev,
-                                is_neutered: opt.value,
-                              }))
-                            }
-                          />
-                          {opt.label}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
                   <div>
                     <p className="text-xs text-slate-500">
                       ¿Tatuaje de esterilización?
@@ -1014,47 +1058,6 @@ export default function PetPage() {
                         </label>
                       ))}
                     </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500">¿Tiene microchip?</p>
-                    <div className="mt-2 flex gap-4 text-xs text-slate-700">
-                      {[
-                        { value: true, label: "Sí" },
-                        { value: false, label: "No" },
-                      ].map((opt) => (
-                        <label
-                          key={String(opt.value)}
-                          className="flex items-center gap-1.5"
-                        >
-                          <input
-                            type="radio"
-                            name="edit-has-microchip"
-                            checked={editPayload.has_microchip === opt.value}
-                            onChange={() =>
-                              setEditPayload((prev) => ({
-                                ...prev,
-                                has_microchip: opt.value,
-                              }))
-                            }
-                          />
-                          {opt.label}
-                        </label>
-                      ))}
-                    </div>
-                    {editPayload.has_microchip ? (
-                      <input
-                        type="text"
-                        placeholder="Número de microchip"
-                        className="mt-2 w-full rounded-[var(--radius)] border border-slate-200 px-3 py-2 text-sm text-slate-800"
-                        value={editPayload.microchip_number ?? ""}
-                        onChange={(event) =>
-                          setEditPayload((prev) => ({
-                            ...prev,
-                            microchip_number: event.target.value,
-                          }))
-                        }
-                      />
-                    ) : null}
                   </div>
                 </div>
               </div>
