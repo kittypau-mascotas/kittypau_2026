@@ -628,3 +628,17 @@ completar Salud y Alimentación desde `/pet`, y verificar que el círculo desapa
      obligatorios) en el register flow pero no aparecían en ningún lado de `/pet`. Se agregó
      un bloque "Identificación" a "Editar perfil" (mismo patrón que "Límites de consumo
      normal") con los 8 campos, precargados desde lo ya declarado al registrar.
+- **Bug de coherencia — Origen legado no reconocido (2026-08-17)**, reportado por Mauro con
+  un caso real: Bandida (`pets.origin = "Adoptado"`) no aparecía reflejada en Origen y
+  Hábitat. Verificado contra producción: 5 mascotas reales/QA tienen `origin` con texto
+  libre de antes de que existiera el `<select>` curado — Bandida y Amanda (`"Adoptado"`),
+  Benito (`"Casa"`), pasturri (`"adoptado"`), Michi QA (`"rescatado"`) — ninguno calza
+  exacto con los 6 valores del enum, así que el `<select>` los mostraba en blanco
+  ("Selecciona"), ocultando lo que la persona ya había declarado. Corregido en el `onClick`
+  que precarga el formulario: si `pets.origin` no calza con ninguna opción conocida, el
+  `<select>` cae a `"otro"` y el texto original se preserva íntegro en `origen_otro` (nunca
+  se descarta ni se adivina a qué categoría curada corresponde — ver Principio "nunca
+  sobreescribir sin motivo"). El valor real en `pets.origin` solo cambia a `"otro"` cuando
+  la persona confirma explícitamente con "Guardar sección de Origen y Hábitat", nunca
+  automáticamente. Reproducido y verificado con una mascota QA con `origin = "Adoptado"`
+  (mismo valor que Bandida) antes y después del fix.

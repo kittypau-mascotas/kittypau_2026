@@ -1145,9 +1145,22 @@ export default function PetPage() {
                     setOriginHabitatMessage(null);
                     const profile = (selectedPet.origin_habitat_profile ??
                       {}) as Record<string, unknown>;
+                    // Mascotas registradas antes de que Origen fuera un <select>
+                    // curado (ej. "Adoptado", "Casa") tienen valores libres en
+                    // pets.origin que no calzan con ninguna opción — sin este guard,
+                    // el <select> los mostraba en blanco y la persona perdía de vista
+                    // lo que ya había declarado (bug real, ver Bandida/Amanda/Benito/
+                    // pasturri en producción). Se cae a "otro" preservando el texto
+                    // original en origen_otro, nunca se descarta.
+                    const rawOrigin = selectedPet.origin ?? "";
+                    const knownOrigin = ORIGEN_OPTIONS.some(
+                      (opt) => opt.value === rawOrigin,
+                    );
                     setOriginHabitatForm({
-                      origen: selectedPet.origin ?? "",
-                      origen_otro: String(profile.origen_otro ?? ""),
+                      origen: knownOrigin ? rawOrigin : rawOrigin ? "otro" : "",
+                      origen_otro: knownOrigin
+                        ? String(profile.origen_otro ?? "")
+                        : rawOrigin || String(profile.origen_otro ?? ""),
                       estado_al_llegar: String(profile.estado_al_llegar ?? ""),
                       estado_al_llegar_otro: String(
                         profile.estado_al_llegar_otro ?? "",
