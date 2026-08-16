@@ -16,6 +16,7 @@ type ApiPet = {
   name: string;
   type?: string | null;
   origin?: string | null;
+  photo_url?: string | null;
   age_range?: string | null;
   weight_kg?: number | null;
   activity_level?: string | null;
@@ -348,6 +349,11 @@ export default function PetPage() {
   // aunque ambos comparten el mismo editPayload.
   const [identityMessage, setIdentityMessage] = useState<string | null>(null);
   const [isSavingIdentity, setIsSavingIdentity] = useState(false);
+  // Foto de la mascota — photo_url ya existía en el schema/API (se pide al
+  // registrar, ver registro-flow.tsx) pero /pet no tenía forma de verla ni
+  // cambiarla después — mismo hueco que living_environment (2026-08-17).
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoMessage, setPhotoMessage] = useState<string | null>(null);
 
   // Ficha Detallada — Origen y Hábitat (spec 002, mejora 2026-08-17). Origen y
   // living_environment son columnas ya existentes (Origen ya se pedía en el register
@@ -432,6 +438,25 @@ export default function PetPage() {
       );
     }
     return (await res.json()) as ApiPet;
+  };
+
+  const uploadPetPhoto = async (file: File) => {
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      throw new Error("Faltan variables públicas de Supabase en el entorno.");
+    }
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const random =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const path = `pets/${random}.${ext}`;
+    const { error } = await supabase.storage
+      .from("kittypau-photos")
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (error) throw new Error(error.message);
+    return supabase.storage.from("kittypau-photos").getPublicUrl(path).data
+      .publicUrl;
   };
 
   const loadDevices = async (token: string) => {
@@ -650,17 +675,79 @@ export default function PetPage() {
         <>
           <section className="surface-card freeform-rise px-6 py-5">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-slate-500">Mascota seleccionada</p>
-                <p className="text-xl font-semibold text-slate-900">
-                  {selectedPet?.name ?? "Sin mascota"}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {selectedPet?.type ?? "sin tipo"} ·{" "}
-                  {selectedPet?.origin ?? "sin origen"}
-                </p>
-                <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
-                  <span>{profileStatus}</span>
+              <div className="flex items-center gap-4">
+                {/* photo_url ya existía en el schema/register flow, pero /pet no
+                    tenía forma de verla ni cambiarla — mismo hueco que
+                    living_environment (corregido 2026-08-17). */}
+                <div className="flex flex-col items-center gap-1.5">
+                  {selectedPet?.photo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedPet.photo_url}
+                      alt={selectedPet.name}
+                      className="h-16 w-16 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-400">
+                      {selectedPet?.name?.[0]?.toUpperCase() ?? "?"}
+                    </div>
+                  )}
+                  <label className="cursor-pointer text-[10px] font-semibold text-slate-500 underline">
+                    {isUploadingPhoto ? "Subiendo..." : "Cambiar foto"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploadingPhoto || !selectedPet}
+                      onChange={async (event) => {
+                        const file = event.target.files?.[0];
+                        event.target.value = "";
+                        if (!file || !selectedPet) return;
+                        setPhotoMessage(null);
+                        setIsUploadingPhoto(true);
+                        try {
+                          const url = await uploadPetPhoto(file);
+                          const token = await getValidAccessToken();
+                          if (!token) throw new Error("Sesión inválida.");
+                          const updated = await savePet(token, selectedPet.id, {
+                            photo_url: url,
+                          });
+                          setState((prev) => ({
+                            ...prev,
+                            pets: prev.pets.map((pet) =>
+                              pet.id === updated.id ? updated : pet,
+                            ),
+                          }));
+                        } catch (err) {
+                          setPhotoMessage(
+                            err instanceof Error
+                              ? err.message
+                              : "No se pudo subir la foto.",
+                          );
+                        } finally {
+                          setIsUploadingPhoto(false);
+                        }
+                      }}
+                    />
+                  </label>
+                  {photoMessage ? (
+                    <span className="text-[10px] text-rose-600">
+                      {photoMessage}
+                    </span>
+                  ) : null}
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500">Mascota seleccionada</p>
+                  <p className="text-xl font-semibold text-slate-900">
+                    {selectedPet?.name ?? "Sin mascota"}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {selectedPet?.type ?? "sin tipo"} ·{" "}
+                    {selectedPet?.origin ?? "sin origen"}
+                  </p>
+                  <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-600">
+                    <span>{profileStatus}</span>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
