@@ -624,8 +624,10 @@ export default function PetPage() {
   const profileChecklist = useMemo(() => {
     if (!selectedPet) return [];
     const missing: string[] = [];
-    if (!selectedPet.age_range) missing.push("Edad");
-    if (!selectedPet.weight_kg) missing.push("Peso");
+    // ponytail: Edad y Peso NO van acá — el register flow ya los pide como
+    // obligatorios (registro-flow.tsx), así que si faltan es una anomalía de datos,
+    // no algo que haya que "completar" de nuevo en /pet (corregido 2026-08-17, a
+    // pedido del usuario).
     if (!selectedPet.activity_level) missing.push("Actividad");
     if (!selectedPet.origin) missing.push("Origen");
     return missing;
