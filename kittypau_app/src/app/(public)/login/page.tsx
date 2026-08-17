@@ -82,6 +82,12 @@ export default function LoginPage() {
   );
   const [registerUserName, setRegisterUserName] = useState("");
   const [registerPetName, setRegisterPetName] = useState("");
+  // Spec 004 US2: espejo de petPhotoPreview de RegistroFlow (vía onPetPhotoPreviewChange
+  // más abajo) — page.tsx no es dueño de la foto de mascota, solo necesita la URL para
+  // pintarla en el círculo del stepper.
+  const [registerPetPhotoPreview, setRegisterPetPhotoPreview] = useState<
+    string | null
+  >(null);
   const [registerCity, setRegisterCity] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
@@ -111,6 +117,11 @@ export default function LoginPage() {
   const [registroProgress, setRegistroProgress] = useState(1);
   // Qué paso del stepper (1/2/3) tiene un error activo de guardado — null si ninguno.
   const [stepErrorAt, setStepErrorAt] = useState<number | null>(null);
+  // Spec 004: si la foto de un paso (avatar/mascota) falla al cargar en el círculo del
+  // stepper, ese paso cae al check "✓" en vez de mostrar una imagen rota.
+  const [photoLoadFailed, setPhotoLoadFailed] = useState<
+    Record<number, boolean>
+  >({});
   // Mensaje si el submit tarda más de lo normal (rescate #6) — no se toca isRegistering
   // en sí, solo agrega feedback si se pasa de 5s.
   const [isRegisteringSlow, setIsRegisteringSlow] = useState(false);
@@ -676,6 +687,34 @@ export default function LoginPage() {
                   height={32}
                   className="h-full w-full rounded-full object-cover"
                   draggable={false}
+                />
+              ) : number === 1 &&
+                completedMap[1] &&
+                registerAvatar &&
+                !photoLoadFailed[1] ? (
+                // Spec 004 US1: una vez completado el paso 1, el círculo muestra el
+                // avatar elegido en vez del check genérico.
+                <img
+                  src={registerAvatar}
+                  alt="Tu foto de perfil"
+                  onError={() =>
+                    setPhotoLoadFailed((prev) => ({ ...prev, 1: true }))
+                  }
+                  className="h-full w-full rounded-full object-cover"
+                />
+              ) : number === 2 &&
+                completedMap[2] &&
+                registerPetPhotoPreview &&
+                !photoLoadFailed[2] ? (
+                // Spec 004 US2: mismo criterio para el paso 2 con la foto de mascota —
+                // si no se eligió ninguna foto, cae al check "✓" de abajo (FR-003).
+                <img
+                  src={registerPetPhotoPreview}
+                  alt="Foto de tu mascota"
+                  onError={() =>
+                    setPhotoLoadFailed((prev) => ({ ...prev, 2: true }))
+                  }
+                  className="h-full w-full rounded-full object-cover"
                 />
               ) : completedMap[number] ? (
                 "✓"
@@ -2090,6 +2129,7 @@ export default function LoginPage() {
                       initialPetName={registerPetName}
                       isTestAccount={isTestAccountEmail}
                       onStepError={setStepErrorAt}
+                      onPetPhotoPreviewChange={setRegisterPetPhotoPreview}
                       onProgress={(step) => {
                         setRegistroProgress(step);
                         if (

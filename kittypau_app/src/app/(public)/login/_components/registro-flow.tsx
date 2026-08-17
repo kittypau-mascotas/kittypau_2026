@@ -47,6 +47,10 @@ type RegistroFlowProps = {
   onStepError?: (step: number | null) => void;
   forcedStep?: number | null;
   onDeviceTypeChange?: (deviceType: "food_bowl" | "water_bowl") => void;
+  // Notifica la URL de preview de la foto de mascota (o null si no hay ninguna) cada vez
+  // que cambia — usado por el stepper de page.tsx para mostrarla en el círculo del paso 2
+  // una vez completado (spec 004 US2).
+  onPetPhotoPreviewChange?: (url: string | null) => void;
   // Nombre de mascota ya capturado en el paso 1 fusionado (Usuario) — spec 002 FR-013.
   // Precarga petForm.name para que la persona no lo vuelva a escribir.
   initialPetName?: string;
@@ -278,6 +282,7 @@ export default function RegistroFlow({
   forcedStep = null,
   onDeviceTypeChange,
   onStepError,
+  onPetPhotoPreviewChange,
   initialPetName,
   isTestAccount = false,
 }: RegistroFlowProps) {
@@ -519,6 +524,12 @@ export default function RegistroFlow({
   useEffect(() => {
     onDeviceTypeChange?.(deviceForm.device_type);
   }, [deviceForm.device_type, onDeviceTypeChange]);
+
+  // Spec 004 US2: mismo patrón que los 2 useEffect de arriba, para que page.tsx pueda
+  // mostrar la foto de mascota en el círculo del stepper una vez completado el paso 2.
+  useEffect(() => {
+    onPetPhotoPreviewChange?.(petPhotoPreview);
+  }, [petPhotoPreview, onPetPhotoPreviewChange]);
 
   // Antes rechazaba de plano cualquier archivo >MAX_PHOTO_MB antes de llegar al editor
   // de recorte (applyCrop, más abajo) que ya comprimía — pero ese editor es manual y
