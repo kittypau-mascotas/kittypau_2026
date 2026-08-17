@@ -1,35 +1,4 @@
----
-id: exp_alphav2_apparq
-title: Arquitectura — app_anotacion_av2.py
-type: experiment
-status: active
-owner: Mauro
-created: 2026-06-28
-updated: 2026-08-13
-tags:
-  - streamlit
-  - anotacion
-  - cache
-  - alpha-v2
-  - arquitectura
-related:
-  - [[00_HOME]]
-  - [[14_Experimentos/EXP_AlphaV2_Pipeline]]
-  - [[13_Features/README_ShapeFeatures]]
-  - [[10_Datasets/README_Datasets]]
-  - [[29_Specs/SPEC_07_Investigacion_Hidratacion]]
-  - [[11_ModelosIA/MODEL_EvidenceEngine]]
----
-
 # Arquitectura — app_anotacion_av2.py
-
-**Archivo:** `Investigacion/Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py`
-
-> **2026-08-13 — parametrizada por `DEVICE_PROFILES`** (perfil `KPCL0034` activo, perfil
-> `KPCL0035`/agua — el bebedero real, corregido desde `KPCL0036` esa misma tarde —
-> registrado pero inerte) y auditada por certeza matemática/redundancia/rendimiento — ver
-> "Auditoría 2026-08-13" más abajo y [[29_Specs/SPEC_07_Investigacion_Hidratacion]] §5.1
-> para el diseño completo del parametrizado.
 
 ## Principio fundamental
 
@@ -74,6 +43,7 @@ Responsable: `supabase_client.py` → `sync_readings_incremental()`
 - **Qué NO hace**: no se llama nunca de forma automática, sin polling, sin TTL
 
 ### Datos locales (CSV)
+Responsable: funciones en `app_anotacion_av2.py`
 
 | Función | Propósito |
 |---|---|
@@ -97,7 +67,6 @@ Responsable: `supabase_client.py` → `sync_readings_incremental()`
 4. Invalidar cachés específicas:
    - load_comp_stats.clear()
    - _evidence_ventana_cached.clear()
-   - _evidence_engine_accuracy_cached.clear()   (agregado 2026-08-13, ver abajo)
    - build_chart.clear()                    (solo si hay datos nuevos)
    - build_comparison_chart.clear()         (solo si hay datos nuevos)
    - build_global_chart.clear()             (solo si hay datos nuevos)
@@ -141,7 +110,6 @@ Capa 3 — Parseo CSV completo
 | `_calcular_features_v2_cached` | `@st.cache_data(max_entries=500)` | hash por array `.tobytes()` · Tab 5 |
 | `load_comp_stats` | `@st.cache_data` | `.clear()` explícito |
 | `_evidence_ventana_cached` | `@st.cache_data(ttl=300)` | mtime CSV como hash |
-| `_evidence_engine_accuracy_cached` | `@st.cache_data(ttl=3600)` | mtime CSV como hash · `.clear()` explícito · Tab 5 |
 | Loop Tab 7 `deltas_g` | `session_state["_sscache_t7_*"]` | clave = `len(df)_{mtime}` |
 | Loop Tab 8 `_kp_deltas` | `session_state["_sscache_kpe_*"]` | clave = `len(df)_{mtime}` |
 
@@ -157,7 +125,7 @@ Capa 3 — Parseo CSV completo
 | `data/anotaciones_av2.csv` | Escrito por la app (save/delete). Backup diario automático. |
 | `data/comp_stats_v2.json` | Generado por `revisar_anotaciones_v2.py`. |
 | `data/_cache_lecturas_30s.parquet` | Caché regenerable. Se puede borrar sin perder datos. |
-| `config/umbrales.json` | Umbrales del detector. Editable desde Tab 4. |
+| `config/umbrales.json` | Umbrales del detector. Editable desde Tab 5. |
 
 ---
 
@@ -165,6 +133,7 @@ Capa 3 — Parseo CSV completo
 
 La navegación usa `st.radio(horizontal=True, key="tab_nav")` en lugar de `st.tabs()`.
 Esto garantiza que **solo el tab activo ejecuta su código** en cada rerun de Streamlit.
+Cada tab muestra una barra de progreso 0→100% durante la carga.
 
 | Tab | Nombre | Datos que usa | Progreso |
 |---|---|---|---|
@@ -178,7 +147,24 @@ Esto garantiza que **solo el tab activo ejecuta su código** en cada rerun de St
 | 7 | 🕐 Próxima Comida | df_anot + calcular_metricas + df_lec | sí (3 pasos) |
 | 8 | 🐱 Kittypau | df_anot + df_lec + cs_dict + Evidence Engine | sí (3 pasos) |
 
-**La app nunca llama a Supabase desde ningún Tab.**
+**La app nunca llama a Supabase desde ningún Tab.** Cada Tab solo lee datos ya cargados en memoria.
+
+---
+
+## Cómo agregar datos nuevos
+
+1. Presionar **🔄 Actualizar Todo** en la app
+   - Descarga datos nuevos de Supabase → `readings_rows.csv`
+   - Regenera candidatos y features
+   - La app se recarga automáticamente con los datos frescos
+
+2. O manualmente (para desarrollo):
+   ```powershell
+   # Desde el directorio fase_0_ruido/
+   python 01_genera_candidatos.py
+   python revisar_anotaciones_v2.py
+   ```
+   Luego refrescar la app en el browser.
 
 ---
 
@@ -189,58 +175,4 @@ cd "d:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Investigacion\Cic
 streamlit run app_anotacion_av2.py
 ```
 
-No usar `python app_anotacion_av2.py` — genera warnings de ScriptRunContext.
-
----
-
-## Auditoría 2026-08-13 — certeza matemática, redundancia y rendimiento
-
-Pasada de calidad sobre el archivo completo (5900+ líneas), sin tocar Tab 1 (flujo
-protegido) ni el panel Barras Sims dentro de Tab 8 (protegido, ver histórico de reversiones).
-
-**Certeza matemática — números que dejaron de estar hardcodeados:**
-- 4 conteos de "N anotaciones" inconsistentes entre tabs (421/496/209/304) reemplazados
-  por los conteos en vivo (`cs_n_alim`/`cs_n_serv`/`cs_n_ruido`).
-- Fórmula de separación σ inconsistente entre lo documentado en el caption de Motor
-  Matemático (`√((σ_A²+σ_B²)/2)`, pooled) y lo que el código realmente calculaba
-  (`(σ_A+σ_B)/2`, promedio simple) — unificadas en `_separacion_sigma()`.
-- "Accuracy 77.8%" congelada desde 2026-08-10 → recalculada en vivo con
-  `_evidence_engine_accuracy_cached()` (mismo método que
-  `tests/test_evidence_engine.py`: split 80/20 seed=42, ttl=1h). Detalle y números
-  actuales en [[11_ModelosIA/MODEL_EvidenceEngine]].
-- Nuevo helper `_top_discriminative_features()` — generaliza el cálculo sep_AS/sep_AR que
-  Motor Matemático ya hacía inline; reutilizado en Panel de Features para un gráfico de
-  barras en vivo en lugar de una lista de σ tipeada a mano.
-
-**Redundancia eliminada:** 2 bloques de texto estático (Analizar Curva, Próxima Comida)
-que repetían con números viejos lo que una tabla/métrica en vivo, líneas más abajo, ya
-mostraba con datos actuales.
-
-**Bugs encontrados y corregidos:**
-- `_evidence_engine_accuracy_cached()` no estaba en la lista de invalidación del botón
-  "🔄 Actualizar Todo" (bug propio de la misma sesión, corregido antes de commitear).
-- Bug **preexistente** (confirmado ya en `HEAD` antes de esta sesión, no introducido acá):
-  Tab 8 Kittypau crasheaba con `TypeError` si `df_lec` es `None`/vacío (sensor sin
-  lecturas) — un f-string formateaba `_kp_peso_act` sin guard de `None`. Fix de una línea:
-  `(_kp_peso_act or 0)`.
-
-**Rendimiento:** revisado, sin cambios — la capa de carga ya estaba bien optimizada (3
-capas de caché, PyArrow paralelo, mtime como hash barato, invalidación selectiva, único
-`value_counts()` para las métricas de header). Los ~18 `.iterrows()` del archivo operan
-sobre subconjuntos pequeños (ciclos, ventanas de hoy/7 días, por categoría) — no
-justifican vectorizar. Intento de perfilar con `AppTest`+`cProfile` descartado: el tiempo
-medido era polling del harness de test, no trabajo real de la app.
-
-**Verificación aplicada en cada cambio:** `py_compile`, `streamlit.testing.v1.AppTest`
-headless sin excepciones en los 9 tabs, `tests/` 16/16 passed.
-
----
-
-## Ver también
-
-- [[EXP_AlphaV2_Pipeline]] — pipeline completo de datos
-- [[13_Features/README_ShapeFeatures]] — Motor Matemático v2
-- [[13_Features/ATLAS_Features_v2]] — tabla completa de 102 features
-- [[10_Datasets/README_Datasets]] — archivos de datos
-- [[11_ModelosIA/MODEL_EvidenceEngine]] — detalle del Evidence Engine y su accuracy
-- [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — parametrización por `DEVICE_PROFILES`
+**No usar** `python app_anotacion_av2.py` — genera warnings de ScriptRunContext porque Streamlit necesita su propio runner.

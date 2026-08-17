@@ -42,7 +42,7 @@ related:
 > ([[29_Specs/SPEC_03_Objetivos_Monitoreo]] Pilar 2 ya lo marcaba como el gap más grande de
 > producto) pero para el plato de agua — como **línea de investigación separada**, sin
 > perder ni romper nada de lo ya construido, empezando específicamente desde
-> `Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`. Ejecución en curso desde 2026-08-13
+> `Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py`. Ejecución en curso desde 2026-08-13
 > (roadmap §7) — ver estado real por paso en la tabla de §7, no asumir que todo lo descrito
 > en este spec ya está implementado.
 
@@ -137,12 +137,12 @@ Investigacion/
 │   abrir_kpcl_dashboard.ps1, kpcl_pruebas_eventos.html,
 │   kpcl0034_full_eventos.csv, kpcl0034_sin_batera_actual.csv,
 │   kpcl0036_sin_batera_actual.csv                       ← dashboard operativo + CSVs Colab
-├── Power Bi_Supabase/kittypau_supabase_2026.pbix         ← sin README, propósito no documentado
-├── Ciclo Alpha/                                          ← v1, CERRADO (11 exp. LightGBM)
+├── PowerBI_Supabase/kittypau_supabase_2026.pbix         ← sin README, propósito no documentado
+├── Ciclo_Alpha_v1/                                          ← v1, CERRADO (11 exp. LightGBM)
 │   ├── fase_1_extraccion … fase_4_visualizacion, fase_3_nn, experiments/
 │   ├── Exploracion_Gamma_Delta_2026/                     ← Gamma+Delta, ARCHIVADO (151 archivos)
 │   └── venv/                                             ← gitignored, no versionado
-└── Ciclo Alpha v2/                                       ← ACTIVO — detección por segmentos
+└── Ciclo_Alpha_v2/                                       ← ACTIVO — detección por segmentos
     ├── README.md, 00_INDICE_AV2.md … 09_EVOLUCION_MOTOR_MATEMATICO.md,
     │   APRENDIZAJES_CONSOLIDADOS.md
     ├── fase_0_ruido/                                      ← ★ TODO el pipeline real vive acá
@@ -152,7 +152,7 @@ Investigacion/
 
 ### 1.1 — `fase_0_ruido/` es la unidad real de trabajo, no solo "fase 0"
 
-El README de `Ciclo Alpha v2/` planificó 7 fases separadas. En la práctica, **todo el
+El README de `Ciclo_Alpha_v2/` planificó 7 fases separadas. En la práctica, **todo el
 pipeline que funciona hoy vive dentro de `fase_0_ruido/`** — candidatos, anotación,
 features, umbrales, tests — y `fase_1_extraccion/` … `fase_6_evaluacion/` siguen siendo
 placeholders `estado: pendiente` sin un solo script. Esto no es un error a corregir, es
@@ -179,7 +179,7 @@ en una app completa de anotación + análisis"*). **Implicación para agua:** re
 
 ### 1.2 — Qué está versionado vs. qué es basura de disco local
 
-`Ciclo Alpha/venv/` (entorno Python completo) y `Ciclo Alpha/fase_4_visualizacion/node_modules/`+`dist/`
+`Ciclo_Alpha_v1/venv/` (entorno Python completo) y `Ciclo_Alpha_v1/fase_4_visualizacion/node_modules/`+`dist/`
 **ya están en `.gitignore`** (`**/venv/`, `node_modules/`) — no son deuda de git, son
 basura de disco regenerable. Bajo riesgo, baja prioridad, no forman parte de este spec más
 allá de mencionarlo como candidato de limpieza local si Mauro quiere liberar espacio.
@@ -393,9 +393,9 @@ umbral se inventa sin datos reales detrás.
   (append-only) — regla ya vigente en `CLAUDE.md` y en `fase_0_ruido/README.md`. Estos dos
   archivos son compartidos y ya contienen las lecturas de agua (filtradas por otro UUID) —
   no hace falta ni se debe duplicarlos.
-- El resto de `Ciclo Alpha v2/` (docs 00–09, `APRENDIZAJES_CONSOLIDADOS.md`) — quedan como
+- El resto de `Ciclo_Alpha_v2/` (docs 00–09, `APRENDIZAJES_CONSOLIDADOS.md`) — quedan como
   documentación específica del ciclo de comida.
-- `Ciclo Alpha/` (v1) y `Exploracion_Gamma_Delta_2026/` (Gamma+Delta) — contenido
+- `Ciclo_Alpha_v1/` (v1) y `Exploracion_Gamma_Delta_2026/` (Gamma+Delta) — contenido
   archivado, no se edita ni se borra nada; ver §6 para el único cambio propuesto (reforzar
   la señal de "archivado", no mover ni renombrar la carpeta).
 
@@ -411,7 +411,7 @@ umbral se inventa sin datos reales detrás.
 > el código/UI ya no se duplica.
 
 ```
-Investigacion/Ciclo Alpha v2/fase_0_ruido/
+Investigacion/Ciclo_Alpha_v2/fase_0_ruido/
 ├── app_anotacion_av2.py          ← MISMO archivo, parametrizado por perfil (§5.1)
 ├── 01_genera_candidatos.py       ← ídem — recibe perfil de dispositivo
 ├── revisar_anotaciones_v2.py     ← ídem
@@ -433,7 +433,7 @@ Investigacion/Ciclo Alpha v2/fase_0_ruido/
 Documentación (fuera de `fase_0_ruido/`, sin riesgo de tocar código):
 
 ```
-Investigacion/Ciclo Alpha v2/
+Investigacion/Ciclo_Alpha_v2/
 ├── 00_INDICE_AV2.md              ← SIN CAMBIOS — sigue siendo 100% comida
 └── 00_INDICE_AV2_AGUA.md         ← NUEVO — MOC propio para hidratación, no se mezcla con el de comida
 ```
@@ -614,12 +614,12 @@ vocabulario de las 3 categorías de destino en la anotación manual.
 
 | Ítem | Propuesta | Riesgo | Nota |
 |---|---|---|---|
-| `Ciclo Alpha/` (carpeta completa) | **No renombrar.** Reforzar el README interno con un banner de estado archivado si no lo tiene ya tan explícito como `_MOC.md` | Bajo si solo se edita el README; Alto si se renombra la carpeta (rompe rutas relativas literales usadas en `Investigacion/README.md`, `_MOC.md` y varios docs de Knowledge) | Verificar primero cuántos enlaces relativos apuntan a `Ciclo Alpha/...` antes de tocar nada estructural |
-| Docs sueltos de raíz (`README.md`, `GLOSARIO.md`, `EXPERIMENT_TRACKER.md`, `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`, `01_`–`08_*.md`) | Mover a una subcarpeta explícita tipo `_legacy_ciclo_alpha_v1/` y dejar en la raíz un `README.md` corto y nuevo que apunte a `Ciclo Alpha v2/` (comida) y `Ciclo Alpha v2/00_INDICE_AV2_AGUA.md` (agua) como los índices activos | Medio — son referenciados desde varios lados (`_MOC.md`, posiblemente Knowledge/) | Requiere grep completo de referencias antes de mover, y actualizarlas todas en el mismo cambio — no es un renombre suelto |
+| `Ciclo_Alpha_v1/` (carpeta completa) | **No renombrar.** Reforzar el README interno con un banner de estado archivado si no lo tiene ya tan explícito como `_MOC.md` | Bajo si solo se edita el README; Alto si se renombra la carpeta (rompe rutas relativas literales usadas en `Investigacion/README.md`, `_MOC.md` y varios docs de Knowledge) | Verificar primero cuántos enlaces relativos apuntan a `Ciclo_Alpha_v1/...` antes de tocar nada estructural |
+| Docs sueltos de raíz (`README.md`, `GLOSARIO.md`, `EXPERIMENT_TRACKER.md`, `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`, `01_`–`08_*.md`) | Mover a una subcarpeta explícita tipo `_legacy_ciclo_alpha_v1/` y dejar en la raíz un `README.md` corto y nuevo que apunte a `Ciclo_Alpha_v2/` (comida) y `Ciclo_Alpha_v2/00_INDICE_AV2_AGUA.md` (agua) como los índices activos | Medio — son referenciados desde varios lados (`_MOC.md`, posiblemente Knowledge/) | Requiere grep completo de referencias antes de mover, y actualizarlas todas en el mismo cambio — no es un renombre suelto |
 | `plot_kpcl_experimento.py`, `serve_kpcl_dashboard.py`, `abrir_kpcl_dashboard.ps1`, `kpcl_pruebas_eventos.html`, `kpcl0034_*.csv`, `kpcl0036_*.csv` | **No mover sin confirmar con Mauro si el dashboard sigue en uso** — no hay evidencia de que esté deprecado, solo que su documentación vive en el README "legacy" | — | Ver §8 pregunta 3 |
-| `Power Bi_Supabase/kittypau_supabase_2026.pbix` | Sin cambios hasta confirmar propósito — no tiene README propio | — | Ver §8 pregunta 5 |
-| `Ciclo Alpha v2/fase_1_extraccion/` … `fase_6_evaluacion/` | Sin cambios — son placeholders de trabajo futuro legítimo (clasificador automático, validación, integración), no basura | Ninguno | Mencionado acá solo porque el pedido original incluía "detectar carpetas no usadas"; estas están "no usadas" pero no son candidatas a borrar |
-| `Ciclo Alpha/venv/`, `fase_4_visualizacion/node_modules`+`dist/` | Limpieza de disco opcional (ya gitignored, regenerables) | Ninguno para git | No es parte del alcance de este spec, solo se documenta el hallazgo |
+| `PowerBI_Supabase/kittypau_supabase_2026.pbix` | Sin cambios hasta confirmar propósito — no tiene README propio | — | Ver §8 pregunta 5 |
+| `Ciclo_Alpha_v2/fase_1_extraccion/` … `fase_6_evaluacion/` | Sin cambios — son placeholders de trabajo futuro legítimo (clasificador automático, validación, integración), no basura | Ninguno | Mencionado acá solo porque el pedido original incluía "detectar carpetas no usadas"; estas están "no usadas" pero no son candidatas a borrar |
+| `Ciclo_Alpha_v1/venv/`, `fase_4_visualizacion/node_modules`+`dist/` | Limpieza de disco opcional (ya gitignored, regenerables) | Ninguno para git | No es parte del alcance de este spec, solo se documenta el hallazgo |
 
 **Principio general para todo lo anterior:** ningún movimiento de carpeta/archivo se hace
 en el mismo paso que se decide — primero grep de referencias entrantes, después mover,
@@ -647,7 +647,7 @@ referencias deja rutas rotas documentadas).
 |---|---|---|
 | 1 | ~~Confirmar con Mauro las preguntas restantes de §8~~ — preguntas 1 y 4 resueltas; 2, 3, 5 no bloquean el paso 2 | — |
 | 2 | ✅ **Hecho 2026-08-13.** `DEVICE_PROFILES` introducido en `app_anotacion_av2.py`, `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` (§5.1), solo perfil `KPCL0034`. Verificación real, no solo "corrí los tests": (a) `python -m py_compile` en los 3 archivos — OK; (b) `streamlit.testing.v1.AppTest` — la app corre headless sin excepciones; (c) las 8 rutas/UUIDs derivadas del perfil son byte-idénticas a las literales de antes; (d) **ambos scripts corridos end-to-end, código original vs. refactorizado, sobre los mismos datos — `candidatos_av2.csv`, `comp_stats_v2.json` y `features_anotaciones_v2.csv` salieron con SHA-256 idéntico**; (e) `tests/` 16/16 passed antes y después. Los archivos de datos regenerados durante la prueba se restauraron a su estado exacto previo (no se dejó nada regenerado de más — `anotaciones_av2.csv`, que tenía anotación en curso sin commitear, no se tocó en ningún momento). Encontrado y documentado en el camino: la app tiene **53 apariciones literales** de `"alimentacion"`/`"ciclo_servido_alimento"` como nombre de categoría (no solo rutas) — no afecta este paso (una sola clave, no cambia), pero sí al paso 3, ver nota en §5.1. | 1 |
-| 3 | ✅ **Hecho 2026-08-13, corregido esa misma tarde (ver banner al inicio).** Perfil de agua agregado a `DEVICE_PROFILES` en los 3 archivos — inicialmente como `"KPCL0036"` (error, corregido a **`"KPCL0035"`**, el bebedero real). En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0035`, generaron `data_agua/candidatos_agua.csv` real (104.573 filas KPCL0035 leídas, período 25-may→13-ago-2026 → **288 candidatos**: 217 bajada/75%, 69 subida/24%, 2 mixto/1%) — reemplaza los 393 candidatos generados por error contra KPCL0036 esa mañana. En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `Investigacion/Ciclo Alpha v2/00_INDICE_AV2_AGUA.md`. `supabase_client.py` ampliado (`BANDIDA_UUIDS`) para que el sync incremental traiga KPCL0035 además de KPCL0034. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
+| 3 | ✅ **Hecho 2026-08-13, corregido esa misma tarde (ver banner al inicio).** Perfil de agua agregado a `DEVICE_PROFILES` en los 3 archivos — inicialmente como `"KPCL0036"` (error, corregido a **`"KPCL0035"`**, el bebedero real). En `01_genera_candidatos.py` y `revisar_anotaciones_v2.py` — que no tienen el problema de §5.1, solo filtran por UUID — el perfil agua es **funcional**: corridos vía `KITTYPAU_DEVICE_PROFILE=KPCL0035`, generaron `data_agua/candidatos_agua.csv` real (104.573 filas KPCL0035 leídas, período 25-may→13-ago-2026 → **288 candidatos**: 217 bajada/75%, 69 subida/24%, 2 mixto/1%) — reemplaza los 393 candidatos generados por error contra KPCL0036 esa mañana. En `app_anotacion_av2.py` el perfil queda **inerte** — registrado en el dict pero `_ACTIVE_PROFILE` sigue hardcodeado a `"KPCL0034"` — porque activarlo hoy dispara `KeyError` en las ~50 líneas que buscan `CATEGORIAS["alimentacion"]` literal (§5.1); esa indirección es un paso propio, no resuelto todavía. También creados: `data_agua/backups/`, `config/umbrales_agua.json` (placeholder sin calibrar) y `Investigacion/Ciclo_Alpha_v2/00_INDICE_AV2_AGUA.md`. `supabase_client.py` ampliado (`BANDIDA_UUIDS`) para que el sync incremental traiga KPCL0035 además de KPCL0034. Misma verificación rigurosa que el paso 2 en los 3 archivos: `py_compile` OK, `AppTest` headless sin excepciones, `revisar_anotaciones_v2.py` con perfil comida SHA-256 idéntico al baseline, `tests/` 16/16. | 2 |
 | 3b | Resolver la indirección de nombres de categoría en `app_anotacion_av2.py` (§5.1) para poder activar `_ACTIVE_PROFILE="KPCL0035"` sin romper — bloqueante para poder *ver* los datos de agua en la UI, no para seguir generando candidatos por script | 3 |
 | 4 | Diagnóstico de calidad de señal de KPCL0035 (cadencia, % en cero, rango de peso — mismo método usado en §2.3 sobre el UUID retirado, repetir sobre el device correcto) + decidir si el UUID retirado `3c1c6705...` es el mismo bebedero físico (continuidad histórica, sin confirmar — ver banner de corrección) | 3b |
 | 5 | ~~Con el perfil de agua seleccionable en la app: adaptar `01_genera_candidatos.py` para generar `candidatos_agua.csv`~~ — **adelantado al paso 3**: el script ya genera `candidatos_agua.csv` real vía env var, sin necesitar selector de UI. Queda pendiente **validar** que `RESAMPLE_TARGET_S=30`/`GAP_CUTOFF_S=300` (heredados de comida) sean correctos para agua antes de darlos por buenos (ver §3) | 3b |
@@ -681,7 +681,7 @@ referencias deja rutas rotas documentadas).
    2026-08-13 — modo nuevo, vía `DEVICE_PROFILES` en la misma app** (Mauro pidió
    explícitamente que quedara separado por dispositivo dentro de la misma herramienta, con
    las mismas métricas que comida). Diseño completo en §5.1.
-5. **¿Qué es `Power Bi_Supabase/kittypau_supabase_2026.pbix` y sigue en uso?** No tiene
+5. **¿Qué es `PowerBI_Supabase/kittypau_supabase_2026.pbix` y sigue en uso?** No tiene
    documentación propia en la carpeta.
 
 ---
@@ -697,7 +697,7 @@ referencias deja rutas rotas documentadas).
 - [[09_Sensores/README_Sensores]] — roster de devices, actualizado 2026-08-13 con la
   identidad real (KPCL0035 = bebedero, KPCL0036 = otra mascota)
 - [[13_Features/README_ShapeFeatures]] — las 15 familias del Motor Matemático de comida
-- `Investigacion/Ciclo Alpha v2/fase_0_ruido/` — el pipeline a parametrizar por
+- `Investigacion/Ciclo_Alpha_v2/fase_0_ruido/` — el pipeline a parametrizar por
   dispositivo (§5), no a duplicar
 - `Investigacion/07_AUDITORIA_KPCL0036_ERROR_PESO.md` — diagnóstico histórico de
   abril/mayo 2026, sobre el UUID retirado `3c1c6705…` que en ese momento tenía el código

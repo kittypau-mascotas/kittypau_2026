@@ -27,7 +27,7 @@ created: 2026-08-11
 | App en vivo | `npm run dev` en `localhost:3000` + Playwright headless, 2 cuentas reales (tester y la cuenta admin conocida), ~35 capturas de pantalla + extracción de headings/botones/nav |
 | `iot_firmware/`, `kittypau_iot_firmware/`, `kittypau_iot_firmware (antiguo)/` | `find` + lectura de `config.h`, `platformio.ini`, changelog interno, `git log` por archivo |
 | `bridge/src/index.js` | Leído — versión, `DEVICES[]`, mapeo de campos |
-| `Investigacion/Ciclo Alpha v2/fase_0_ruido/` | Leído completo (README, ARQUITECTURA_APP, ACTUALIZACION_DATA, HISTORIAL_RESULTADOS, RECOPILACION_DATOS_APP parcial) + conteo directo de CSVs |
+| `Investigacion/Ciclo_Alpha_v2/fase_0_ruido/` | Leído completo (README, ARQUITECTURA_APP, ACTUALIZACION_DATA, HISTORIAL_RESULTADOS, RECOPILACION_DATOS_APP parcial) + conteo directo de CSVs |
 | `git log`, `git status`, `.gitignore` | Ejecutados |
 | Supabase / GitHub MCP | No usados en esta sesión (no se necesitaron — todo se verificó contra archivos y la app corriendo local) |
 

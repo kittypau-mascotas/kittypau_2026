@@ -156,10 +156,10 @@ enfoque. Ningún modelo per-reading puede aprender la forma de una curva.
 - 71% de las lecturas tienen `clock_invalid=True` → siempre usar `ingested_at`
 
 Todo ese conocimiento está documentado en:
-[`Ciclo Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)
+[`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)
 
 Los archivos completos de Gamma y Delta (scripts, datos, modelos, reportes) están en:
-[`Ciclo Alpha/Exploracion_Gamma_Delta_2026/`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/)
+[`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/)
 
 ---
 
@@ -220,9 +220,9 @@ casi perfecta incluso con reglas simples.
 | 264 sesiones alimentacion etiquetadas | ✅ Disponible | `public.audit_events` (Supabase) |
 | 80 sesiones servido (63 reales + 17 sintéticas) | ✅ Disponible | `public.audit_events` |
 | 134,164 lecturas KPCL0034 (Abril-Junio 2026) | ✅ Disponible | `readings_delta.parquet` |
-| `app_anotacion_gamma.py` (herramienta de anotación) | ✅ Disponible | `Exploracion_Gamma_Delta_2026/Ciclo Gamma/` |
-| Pipeline de extracción Supabase (Fase 1 Alpha) | ✅ Disponible | `Ciclo Alpha/fase_1_extraccion/` |
-| 676 anomalías H/C/U detectadas por Delta | ✅ Referencia | `Exploracion_Gamma_Delta_2026/Ciclo Delta/fase_3_anomalias/` |
+| `app_anotacion_gamma.py` (herramienta de anotación) | ✅ Disponible | `Exploracion_Gamma_Delta_2026/Ciclo_Gamma/` |
+| Pipeline de extracción Supabase (Fase 1 Alpha) | ✅ Disponible | `Ciclo_Alpha_v1/fase_1_extraccion/` |
+| 676 anomalías H/C/U detectadas por Delta | ✅ Referencia | `Exploracion_Gamma_Delta_2026/Ciclo_Delta/fase_3_anomalias/` |
 
 ### Lo que Alpha v2 NO debe repetir
 
@@ -278,7 +278,7 @@ casi perfecta incluso con reglas simples.
    El dataset cubre hasta 2026-06-14. ¿Hay lecturas más recientes sin etiquetar?
 
 3. **¿La `app_anotacion_gamma.py` funciona para anotar servidos nuevos?**
-   Está disponible en `Exploracion_Gamma_Delta_2026/Ciclo Gamma/`. Probarla antes
+   Está disponible en `Exploracion_Gamma_Delta_2026/Ciclo_Gamma/`. Probarla antes
    de iniciar Alpha v2 para tener al menos 100 sesiones de servido reales.
 
 4. **¿El cambio-punto debe ser online (BOCPD) u offline (PELT)?**
@@ -288,4 +288,4 @@ casi perfecta incluso con reglas simples.
 ---
 
 *Para detalles técnicos completos de lo explorado en Gamma y Delta, ver:*  
-*[`Ciclo Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)*
+*[`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)*

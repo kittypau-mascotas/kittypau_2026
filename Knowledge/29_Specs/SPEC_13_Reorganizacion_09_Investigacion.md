@@ -80,16 +80,16 @@ Docs/09_Investigacion/
 │   ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md
 ├── kpcl00*.csv (4 archivos de prueba sueltos) + kpcl_pruebas_eventos.html
 ├── plot_kpcl_experimento.py, serve_kpcl_dashboard.py, abrir_kpcl_dashboard.ps1
-├── Ciclo Alpha/          ← ciclo anterior, ARCHIVADO (ver _MOC.md), tiene venv/ propio
+├── Ciclo_Alpha_v1/          ← ciclo anterior, ARCHIVADO (ver _MOC.md), tiene venv/ propio
 │   └── fase_4_visualizacion/  ← app React/Vite vieja, tiene node_modules/
-├── Ciclo Alpha v2/       ← EL VIGENTE (confirmado por comentario ya existente en
-│   │                        .gitignore: "Ciclo Alpha v2/ es la vigente")
+├── Ciclo_Alpha_v2/       ← EL VIGENTE (confirmado por comentario ya existente en
+│   │                        .gitignore: "Ciclo_Alpha_v2/ es la vigente")
 │   ├── fase_0_ruido/     ← "donde está la gran parte de la investigación y los
 │   │                        resultados" (palabras de Mauro) — contiene
 │   │                        app_anotacion_av2.py, shape_features_v2.py (Motor
 │   │                        Matemático v2), supabase_client.py, tests/, data/, config/
 │   └── experiments/, Exploracion_Gamma_Delta_2026/
-└── Power Bi_Supabase/
+└── PowerBI_Supabase/
 ```
 
 `fase_0_ruido/` es, tal como dijo Mauro, la carpeta con más peso real: contiene
@@ -100,10 +100,10 @@ features en 15 familias + Evidence Engine, ver memoria del proyecto), `supabase_
 `02_auditar_discrepancias.py`, `03_recalibrar_umbrales.py`), `tests/` (16 tests), y los
 resultados/datos de trabajo (`data/`, `data_agua/`, `config/`, `benchmark_data_*`).
 
-**Veredicto de la revisión**: todo lo de `Ciclo Alpha v2/` (incluida `fase_0_ruido/`) está
+**Veredicto de la revisión**: todo lo de `Ciclo_Alpha_v2/` (incluida `fase_0_ruido/`) está
 vigente y en uso activo — es la base de [[29_Specs/SPEC_07_Investigacion_Hidratacion]] (en
 ejecución) y de los specs de features (`shape_features_v2.py` alimenta
-[[11_ModelosIA/MODEL_EvidenceEngine]] y Tab 5 de la app real). `Ciclo Alpha/` (sin "v2") ya
+[[11_ModelosIA/MODEL_EvidenceEngine]] y Tab 5 de la app real). `Ciclo_Alpha_v1/` (sin "v2") ya
 estaba marcado como archivado antes de este spec (`_MOC.md` interno) — se movió igual
 (nada se descartó), pero no se le hizo la misma verificación funcional profunda que a
 `fase_0_ruido/`.
@@ -153,7 +153,7 @@ ambos).
 
 ## 3. Lo único que NO se pudo mover
 
-`Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` — Windows negó el
+`Docs/09_Investigacion/Ciclo_Alpha_v1/fase_4_visualizacion/node_modules/` — Windows negó el
 acceso al moverlo (probablemente por la profundidad de anidamiento típica de
 `node_modules`, no un archivo en uso: todo lo demás de esa misma carpeta —`venv/` del
 propio `Ciclo Alpha`, mucho más pesado, incluido— se movió sin problema).
@@ -174,7 +174,7 @@ adentro.
 
 ## 4. Verificación de `app_anotacion_av2.py` en la ubicación nueva
 
-Todo ejecutado contra `09_Investigacion/Ciclo Alpha v2/fase_0_ruido/` (la ubicación
+Todo ejecutado contra `09_Investigacion/Ciclo_Alpha_v2/fase_0_ruido/` (la ubicación
 nueva), no la vieja:
 
 | Check | Resultado |
@@ -188,7 +188,7 @@ nueva), no la vieja:
 | `python -m pytest tests/ -q` | **16 passed** (mismo número que el baseline histórico citado en [[29_Specs/SPEC_07_Investigacion_Hidratacion]]) |
 
 No se verificó de la misma forma el resto de `09_Investigacion/` (`Ciclo Alpha` archivado,
-`Power Bi_Supabase`, docs sueltos) — el pedido de Mauro priorizaba explícitamente
+`PowerBI_Supabase`, docs sueltos) — el pedido de Mauro priorizaba explícitamente
 `fase_0_ruido`/`app_anotacion_av2.py`; el resto se movió íntegro (nada se descartó) pero
 sin la misma batería de pruebas funcionales.
 
@@ -217,7 +217,7 @@ Lista completa: `00_HOME.md`, `01_Proyecto/ESTADO_ACTUAL.md`,
 - `readings.csv` / `readings_rows.csv` — mismo contenido (verificado: mismo tamaño en
   bytes antes/después), nunca editados. Sí cambiaron de carpeta contenedora en la ronda
   de §8 (`Docs/11_Data/` → `11_Data/`) — el archivo en sí, no.
-- El contenido de `Ciclo Alpha`, `Ciclo Alpha v2`, `Power Bi_Supabase` — se movió tal cual,
+- El contenido de `Ciclo Alpha`, `Ciclo Alpha v2`, `PowerBI_Supabase` — se movió tal cual,
   nada se editó salvo las rutas listadas en §2 y §5.
 - `.gitignore` — las reglas viejas (`Docs/09_Investigacion/**/*.csv`,
   `Docs/11_Data/**/*.csv`, etc.) quedaron apuntando a rutas que ya no existen — no se
@@ -229,10 +229,10 @@ Lista completa: `00_HOME.md`, `01_Proyecto/ESTADO_ACTUAL.md`,
 ## 7. Siguiente sesión / seguimiento
 
 - Decidir qué hacer con el `node_modules` huérfano en
-  `Docs/09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/` (§3) — sigue
+  `Docs/09_Investigacion/Ciclo_Alpha_v1/fase_4_visualizacion/node_modules/` (§3) — sigue
   ahí, sin resolver.
 - Confirmar con Mauro que `Docs/` (ahora solo `00_Inicio`–`08_Equipo`, `.obsidian/`, y
-  las 2 carpetas vacías `09_Investigacion/Ciclo Alpha/...` y `Postulaciones Fondos/`) ya
+  las 2 carpetas vacías `09_Investigacion/Ciclo_Alpha_v1/...` y `Postulaciones Fondos/`) ya
   está lista para borrarse — ver §8.
 
 ---
@@ -297,7 +297,7 @@ con checklist marcado ✅ para cada documento origen → destino.
 
 Solo lo confirmado seguro de borrar: `00_Inicio` → `08_Equipo` (158 archivos, migrados),
 `.obsidian/` (config vieja, superada por `Knowledge/.obsidian/`), y 2 carpetas ya vacías
-de archivos reales (`09_Investigacion/Ciclo Alpha/fase_4_visualizacion/node_modules/`
+de archivos reales (`09_Investigacion/Ciclo_Alpha_v1/fase_4_visualizacion/node_modules/`
 huérfano del §3, y `Postulaciones Fondos/` ya sin el PDF). **`Docs/` queda listo para
 borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloqueantes.
 
@@ -324,7 +324,7 @@ borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloque
    / `EXPERIMENT_TRACKER.md` / `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md` / `_MOC.md` quedan
    en la raíz de `Investigacion/` — son la documentación "maestra" del ecosistema, el
    README ya los trata así.
-3. `Ciclo Alpha/`, `Ciclo Alpha v2/` y `Power Bi_Supabase/` no se tocan — ya son unidades
+3. `Ciclo_Alpha_v1/`, `Ciclo_Alpha_v2/` y `PowerBI_Supabase/` no se tocan — ya son unidades
    autocontenidas (activo/archivado explícito, documentado en su propio `_MOC.md`).
 4. `Postulaciones_Fondos/` no se reestructura — ya está ordenada por año (`2025/`,
    `2026/`), criterio evaluado como suficiente en §8.
@@ -360,7 +360,7 @@ borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloque
    **Cuidado detectado y revertido**: un primer reemplazo mecánico demasiado amplio
    (`Docs/investigacion/` → `Investigacion/Dashboard_KPCL/` sin filtrar) corrompió por
    error referencias no relacionadas a `Docs/investigacion/Data Science/...` y
-   `Docs/investigacion/Ciclo Alpha/inferencia_*.py` (rutas viejas, ya stale antes de esta
+   `Docs/investigacion/Ciclo_Alpha_v1/inferencia_*.py` (rutas viejas, ya stale antes de esta
    sesión, fuera de alcance) en `README.md`, `instructivo.md` y
    `COMO_EJECUTAR_GAMMA.md` — detectado con `git diff` antes de commitear, revertido a la
    ruta original stale (no se "arregla" lo que no se pidió tocar).
@@ -385,7 +385,7 @@ borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloque
 
 ### Qué NO cambió
 
-`Ciclo Alpha/`, `Ciclo Alpha v2/` (salvo el rename del padre), `Power Bi_Supabase/`,
+`Ciclo_Alpha_v1/`, `Ciclo_Alpha_v2/` (salvo el rename del padre), `PowerBI_Supabase/`,
 `Postulaciones_Fondos/2025|2026/` — mismo contenido interno, sin reestructurar.
 
 ## 10. Tercer addendum (2026-08-16) — Reorganización centrada en `app_anotacion_av2.py`
@@ -399,32 +399,32 @@ borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloque
 
 Se auditó el árbol completo de `Investigacion/` (~530 archivos, excluyendo `venv/`,
 `node_modules/`, `__pycache__/`). Conclusión: **la estructura física ya es correcta**
-(`Ciclo Alpha/` = cerrado, `Ciclo Alpha v2/fase_0_ruido/` = donde vive
+(`Ciclo_Alpha_v1/` = cerrado, `Ciclo_Alpha_v2/fase_0_ruido/` = donde vive
 `app_anotacion_av2.py`, con fases futuras `fase_2_segmentacion`/`fase_5_modelos` ya
 anticipadas en la convención `fase_N_*` — confirmado en
-`Ciclo Alpha v2/experiments/README.md`). Renombrar `Ciclo Alpha`, `Ciclo Alpha v2` o
+`Ciclo_Alpha_v2/experiments/README.md`). Renombrar `Ciclo Alpha`, `Ciclo Alpha v2` o
 `fase_0_ruido` para "verse más profesional" habría roto la convención de fases ya
 documentada y forzado otra ronda de fixes de rutas relativas en decenas de docs, por una
-ganancia puramente cosmética — **no se hizo**. Tampoco se renombró `Power Bi_Supabase/`:
+ganancia puramente cosmética — **no se hizo**. Tampoco se renombró `PowerBI_Supabase/`:
 su propósito sigue sin confirmar desde SPEC_07 §8 pregunta 5 (sin README propio), no se
 puede nombrar bien algo que no se sabe si sigue en uso.
 
 Lo que sí estaba roto y se corrigió — **9 rutas obsoletas dentro de la documentación del
 propio `app_anotacion_av2.py`**, arrastradas desde antes de esta sesión y nunca barridas en
 las 2 rondas anteriores (que solo tocaron `Knowledge/` y los docs de nivel raíz de
-`Investigacion/`, no los docs internos de `Ciclo Alpha v2/`):
+`Investigacion/`, no los docs internos de `Ciclo_Alpha_v2/`):
 
-- `Ciclo Alpha v2/fase_0_ruido/README.md` y `ARQUITECTURA_APP.md`: el comando `cd` para
-  lanzar la app apuntaba a `Docs\09_Investigacion\Ciclo Alpha v2\fase_0_ruido` — una ruta
+- `Ciclo_Alpha_v2/fase_0_ruido/README.md` y `ARQUITECTURA_APP.md`: el comando `cd` para
+  lanzar la app apuntaba a `Docs\09_Investigacion\Ciclo_Alpha_v2\fase_0_ruido` — una ruta
   que no existe desde la primera mudanza de este spec. Corregido a
-  `Investigacion\Ciclo Alpha v2\fase_0_ruido`.
+  `Investigacion\Ciclo_Alpha_v2\fase_0_ruido`.
 - `README.md` (×2), `ACTUALIZACION_DATA.md`, `HISTORIAL_RESULTADOS.md`,
   `requirements_check.py`, `01_genera_candidatos.py`, `02_DISPOSITIVO_Y_DATOS.md`,
   `07_RESULTADOS_304_ANOTACIONES.md`: referencias a `Docs/11_Data/2026/` (ruta pre-§8,
   cuando `11_Data` todavía vivía bajo `Docs/`) corregidas a `11_Data/2026/`.
 - `05_ANALISIS_COLAB_KPCL0034_07052026.md`: link roto a una carpeta `Data Science/` que
   nunca existió en esta ubicación — el script real vive en
-  `Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`, corregido.
+  `Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py`, corregido.
 
 Reforzada la navegación (sin mover archivos): `README.md` de `Investigacion/` reescrito
 para abrir con `app_anotacion_av2.py` como punto de entrada explícito (antes abría con
@@ -446,7 +446,7 @@ esta sesión + `pytest tests/` → 16/16.
 
 ### Movimientos ejecutados
 
-**Dentro de `Ciclo Alpha v2/fase_0_ruido/`** (separar docs y resultados de los scripts
+**Dentro de `Ciclo_Alpha_v2/fase_0_ruido/`** (separar docs y resultados de los scripts
 activos, sin tocar `data/`, `data_agua/`, `config/`, `tests/` ni los `.py` — todo lo que
 `app_anotacion_av2.py` lee en runtime queda intacto):
 - `Documentacion/` — nueva subcarpeta: `ARQUITECTURA_APP.md`, `ACTUALIZACION_DATA.md`,
@@ -463,7 +463,7 @@ carpeta genérica):
   específicamente, ya estaban cross-linkeados hacia ahí).
 - `03_ML_PREDICCION_ALIMENTACION.md` (dice literalmente "especificación original del
   Ciclo Alpha") y `05_ANALISIS_COLAB_KPCL0034_07052026.md` (documenta un script que vive
-  en `Ciclo Alpha/`) → `Ciclo Alpha/`.
+  en `Ciclo_Alpha_v1/`) → `Ciclo_Alpha_v1/`.
 - `02_REGLAS_EVENTOS_ALIMENTACION.md`, `04_OPERATIVIZACION_SESIONES_SUPABASE.md`,
   `08_REGISTRO_EVENTOS_2026-04-16.md` — **quedan en la raíz**: son reglas canónicas de
   eventos que aplican cross-cycle (Alpha y Alpha v2 ambas las usan), moverlas a un ciclo
@@ -471,10 +471,10 @@ carpeta genérica):
 
 ### Bugs encontrados y corregidos de paso (pre-existentes, no causados por este addendum)
 
-- **12 links rotos sistémicos en `README.md`**: el texto visible decía `Ciclo Alpha/...`
+- **12 links rotos sistémicos en `README.md`**: el texto visible decía `Ciclo_Alpha_v1/...`
   pero el href seguía apuntando a `Data Science/...` — una carpeta que no existe desde
   antes de esta sesión (aparente rename histórico donde se actualizó el texto pero nunca
-  el href). Corregido con reemplazo mecánico `Data%20Science/` → `Ciclo%20Alpha/` en los
+  el href). Corregido con reemplazo mecánico `Data%20Science/` → `Ciclo_Alpha_v1/` en los
   12 casos, verificados contra el árbol real.
 - 2 links cruzados entre `06_AUDITORIA_SIN_CARGADOR.md` y `07_AUDITORIA_KPCL0036_ERROR_PESO.md`
   usaban nombres de archivo viejos que ya no existen
@@ -486,15 +486,63 @@ carpeta genérica):
   y `Data Science/fase_2_dataset/README.md` en `07_AUDITORIA_KPCL0036_ERROR_PESO.md` — no
   quedó claro a qué archivo real corresponden hoy, no se adivinó. Tampoco la extensión
   `COMO_EJECUTAR.md` vs. el archivo real `COMO_EJECUTAR.py` en
-  `Ciclo Alpha/fase_4_visualizacion/` — problema de contenido preexistente, distinto al
+  `Ciclo_Alpha_v1/fase_4_visualizacion/` — problema de contenido preexistente, distinto al
   de esta reorganización.
 
 ### Referencias actualizadas
 
 `Investigacion/README.md` (múltiples secciones), `fase_0_ruido/README.md`,
 `shape_features_v2.py` (2 comentarios), los 3 docs movidos a `Dashboard_KPCL/`, los 2
-movidos a `Ciclo Alpha/`, y en `Knowledge/`: `RESULT_AlphaV2_Snapshots.md` (link real),
+movidos a `Ciclo_Alpha_v1/`, y en `Knowledge/`: `RESULT_AlphaV2_Snapshots.md` (link real),
 `ESTADO_ACTUAL.md`, `MOC_Experimentos.md`, `MOC_Resultados.md` (menciones de ruta).
 
 Verificado: `py_compile` de los 6 scripts de `fase_0_ruido/`, `streamlit run --headless`
 → HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16.
+
+## 12. Quinto addendum (2026-08-16) — rename completo, sin excepciones de nombre
+
+> Pedido de Mauro: "renombra todo, edita todo, y reorganiza, necesito que quede
+> ordenado" — anula la reserva de §10/§11 sobre no renombrar `Ciclo Alpha`/
+> `Ciclo Alpha v2`/`Power Bi_Supabase` por costo/beneficio; Mauro decide que el costo
+> vale la pena.
+
+### Renombres físicos ejecutados
+
+| Antes | Después |
+|---|---|
+| `Ciclo Alpha/` | `Ciclo_Alpha_v1/` (versión explícita, simétrica con v2) |
+| `Ciclo Alpha v2/` | `Ciclo_Alpha_v2/` |
+| `Ciclo Alpha/Exploracion_Gamma_Delta_2026/Ciclo Gamma/` | `.../Ciclo_Gamma/` |
+| `Ciclo Alpha/Exploracion_Gamma_Delta_2026/Ciclo Delta/` | `.../Ciclo_Delta/` |
+| `Power Bi_Supabase/` | `PowerBI_Supabase/` |
+
+Todas vía `Rename-Item` de PowerShell (sin problemas de lock esta vez — el
+`node_modules/` huérfano que bloqueó un movimiento en §3 ya no existe), seguido de
+`git add -A` con pathspec explícito para que git detecte los 274 renames.
+
+**`fase_0_ruido/` NO se renombró** — sigue siendo la única excepción deliberada. Motivo
+técnico, no solo de costo: `Ciclo_Alpha_v2/experiments/README.md` ya documenta un
+roadmap de fases futuras (`fase_2_segmentacion`, `fase_5_modelos`) que continúan la
+misma convención de nombre. Renombrar `fase_0_ruido` ahora rompería esa secuencia
+documentada antes de que existan las fases siguientes.
+
+### Sweep de referencias
+
+Un script Python con regex recorrió `Investigacion/` + `Knowledge/` (`.md`, `.py`,
+`.ps1`, `.json`, `.html`) reemplazando únicamente ocurrencias **path-like** de los 5
+nombres viejos — el patrón exige que el nombre esté seguido de `/`, `\`, o `%20` (URL
+encoding), para no tocar menciones sueltas en prosa (`"el Ciclo Alpha fue cerrado en
+junio"` sigue diciendo "Ciclo Alpha" como nombre del ciclo, no como ruta — no se tocó
+la prosa, solo las rutas reales). 45 archivos modificados. Verificado con `git status`
+que `Knowledge/.obsidian/graph.json`/`workspace.json` quedaron fuera del `git add`
+(un `git add -A -- Investigacion/ Knowledge/` inicial los había agarrado por error —
+detectado antes del commit, revertido con `git restore --staged`).
+
+Residual verificado con grep dirigido: 0 referencias rotas, salvo una entrada de
+histórico en `Knowledge/.obsidian/workspace.json` (caché de archivos abiertos de
+Obsidian, con una ruta aún más vieja de antes de todo este spec — archivo que nunca se
+toca por regla del proyecto).
+
+Verificado tras el rename: `py_compile` (14 scripts de `fase_0_ruido/` incluyendo
+`0A_`/`0B_`/`0C_`), resolución de `RAW_DATA_DIR` con `.exists() == True`, `streamlit
+run --headless` → HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16.

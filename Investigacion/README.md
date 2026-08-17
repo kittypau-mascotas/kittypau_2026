@@ -3,23 +3,23 @@
 > ## ⭐ El centro de esta carpeta: `app_anotacion_av2.py`
 >
 > Toda la investigación activa gira en torno a una sola app Streamlit:
-> **[`Ciclo Alpha v2/fase_0_ruido/app_anotacion_av2.py`](Ciclo%20Alpha%20v2/fase_0_ruido/app_anotacion_av2.py)**
+> **[`Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py`](Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py)**
 > — motor matemático (102 features, Evidence Engine) + anotación manual + predictor,
 > todo en un solo lugar. Si vas a tocar algo de investigación, probablemente es acá.
 >
 > ```powershell
-> cd "Investigacion\Ciclo Alpha v2\fase_0_ruido"
+> cd "Investigacion\Ciclo_Alpha_v2\fase_0_ruido"
 > streamlit run app_anotacion_av2.py
 > ```
 >
 > **Para entender la app antes de tocarla, en este orden:**
-> 1. **[Ciclo Alpha v2/fase_0_ruido/README.md](Ciclo%20Alpha%20v2/fase_0_ruido/README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
-> 2. **[Ciclo Alpha v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md](Ciclo%20Alpha%20v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md)** — arquitectura técnica interna
-> 3. **[Ciclo Alpha v2/08_APP_ANOTACION_AV2.md](Ciclo%20Alpha%20v2/08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
-> 4. **[Ciclo Alpha v2/04_MATEMATICA_SHAPE_FEATURES.md](Ciclo%20Alpha%20v2/04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
-> 5. **[Ciclo Alpha v2/APRENDIZAJES_CONSOLIDADOS.md](Ciclo%20Alpha%20v2/APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
+> 1. **[Ciclo_Alpha_v2/fase_0_ruido/README.md](Ciclo_Alpha_v2/fase_0_ruido/README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
+> 2. **[Ciclo_Alpha_v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md](Ciclo_Alpha_v2/fase_0_ruido/Documentacion/ARQUITECTURA_APP.md)** — arquitectura técnica interna
+> 3. **[Ciclo_Alpha_v2/08_APP_ANOTACION_AV2.md](Ciclo_Alpha_v2/08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
+> 4. **[Ciclo_Alpha_v2/04_MATEMATICA_SHAPE_FEATURES.md](Ciclo_Alpha_v2/04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
+> 5. **[Ciclo_Alpha_v2/APRENDIZAJES_CONSOLIDADOS.md](Ciclo_Alpha_v2/APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
 >
-> **MOC completo de Alpha v2:** [Ciclo Alpha v2/00_INDICE_AV2.md](Ciclo%20Alpha%20v2/00_INDICE_AV2.md) ⭐
+> **MOC completo de Alpha v2:** [Ciclo_Alpha_v2/00_INDICE_AV2.md](Ciclo_Alpha_v2/00_INDICE_AV2.md) ⭐
 >
 > ---
 >
@@ -35,9 +35,9 @@
 > ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                ← por qué existe Alpha v2
 > ├── 01–08_*.md                                          ← reglas canónicas de eventos + auditorías (cross-cycle)
 > ├── Dashboard_KPCL/                                     ← toolkit de visualización operativa (scripts + CSVs + HTML)
-> ├── Power Bi_Supabase/                                  ← informe .pbix (propósito sin confirmar, ver SPEC_07 §8)
+> ├── PowerBI_Supabase/                                  ← informe .pbix (propósito sin confirmar, ver SPEC_07 §8)
 > │
-> ├── Ciclo Alpha v2/                          ⭐ ACTIVO — detección por segmentos, sin ML supervisado
+> ├── Ciclo_Alpha_v2/                          ⭐ ACTIVO — detección por segmentos, sin ML supervisado
 > │   ├── 00_INDICE_AV2.md                                ← MOC principal de este ciclo
 > │   ├── APRENDIZAJES_CONSOLIDADOS.md                    ← memoria de todos los ciclos previos
 > │   ├── fase_0_ruido/                        ⭐⭐ AQUÍ VIVE app_anotacion_av2.py
@@ -48,7 +48,7 @@
 > │   │   └── tests/                                      ← 16 tests, correr antes de tocar shape_features_v2.py
 > │   └── experiments/README.md                           ← tracker de experimentos v2 + baselines
 > │
-> └── Ciclo Alpha/                              🗄️ CERRADO — pipeline ML supervisado (Exp01–11), Jun 2026
+> └── Ciclo_Alpha_v1/                              🗄️ CERRADO — pipeline ML supervisado (Exp01–11), Jun 2026
 >     ├── experiments/exp_01–11_*.md                      ← iteraciones del modelo
 >     └── Exploracion_Gamma_Delta_2026/                    ← archivo de Gamma (multi-modelo) + Delta (no supervisado)
 > ```
@@ -295,7 +295,7 @@ Especificación canónica de las reglas de detección y categorización. Incluye
 
 ---
 
-#### [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo%20Alpha/03_ML_PREDICCION_ALIMENTACION.md)
+#### [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo_Alpha_v1/03_ML_PREDICCION_ALIMENTACION.md)
 
 Especificación completa del problema de ML. Incluye:
 - Formulación del problema (segmentación de 3 estados: baseline / inicio_alimentacion / post_alimentacion)
@@ -321,8 +321,8 @@ Documentación de la implementación SQL/API en Supabase. Incluye:
 
 ### Análisis Colab (export 07-05-2026)
 
-- [`05_ANALISIS_COLAB_KPCL0034_07052026.md`](Ciclo%20Alpha/05_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
-- [`Ciclo Alpha/colab_analisis_kpcl0034_07052026.py`](Ciclo%20Alpha/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
+- [`05_ANALISIS_COLAB_KPCL0034_07052026.md`](Ciclo_Alpha_v1/05_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
+- [`Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py`](Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
 
 ### Datos históricos — `Data_2026/`
 
@@ -452,9 +452,9 @@ Supabase ──→ Fase 1 (Extracción) ──→ Fase 2 (Dataset) ──→ Fas
                                         └── dataset_meta
 ```
 
-> **Nota:** La carpeta `Ciclo Alpha/` fue renombrada a `Ciclo Alpha/` en Junio 2026. Los scripts y artefactos son los mismos; las rutas a continuación reflejan el nombre actual.
+> **Nota:** La carpeta `Ciclo_Alpha_v1/` fue renombrada a `Ciclo_Alpha_v1/` en Junio 2026. Los scripts y artefactos son los mismos; las rutas a continuación reflejan el nombre actual.
 
-### Fase 1 — Extracción ([`Ciclo Alpha/fase_1_extraccion/`](Ciclo%20Alpha/fase_1_extraccion/))
+### Fase 1 — Extracción ([`Ciclo_Alpha_v1/fase_1_extraccion/`](Ciclo_Alpha_v1/fase_1_extraccion/))
 
 Descarga datos desde Supabase y genera tres artefactos parquet.
 
@@ -483,7 +483,7 @@ Descarga datos desde Supabase y genera tres artefactos parquet.
 
 ---
 
-### Fase 2 — Dataset ([`Ciclo Alpha/fase_2_dataset/`](Ciclo%20Alpha/fase_2_dataset/))
+### Fase 2 — Dataset ([`Ciclo_Alpha_v1/fase_2_dataset/`](Ciclo_Alpha_v1/fase_2_dataset/))
 
 Construye el dataset supervisado con features de ingeniería temporal y split cronológico.
 
@@ -535,7 +535,7 @@ Construye el dataset supervisado con features de ingeniería temporal y split cr
 
 ---
 
-### Fase 3 — Modelos ([`Ciclo Alpha/fase_3_modelos/`](Ciclo%20Alpha/fase_3_modelos/))
+### Fase 3 — Modelos ([`Ciclo_Alpha_v1/fase_3_modelos/`](Ciclo_Alpha_v1/fase_3_modelos/))
 
 Entrena y evalúa dos variantes del modelo de detección.
 
@@ -565,7 +565,7 @@ Sistema: Windows / PowerShell
 
 ---
 
-### Fase 4 — Visualización y evaluación ([`Ciclo Alpha/fase_4_visualizacion/`](Ciclo%20Alpha/fase_4_visualizacion/))
+### Fase 4 — Visualización y evaluación ([`Ciclo_Alpha_v1/fase_4_visualizacion/`](Ciclo_Alpha_v1/fase_4_visualizacion/))
 
 Herramientas de anotación y evaluación final sobre el test set reservado.
 
@@ -573,21 +573,21 @@ Herramientas de anotación y evaluación final sobre el test set reservado.
 
 | Archivo | Propósito |
 |---|---|
-| [`app_anotacion.py`](Ciclo%20Alpha/fase_4_visualizacion/app_anotacion.py) | App Streamlit para visualizar la serie temporal y agregar anotaciones manuales nuevas |
-| [`COMO_EJECUTAR.md`](Ciclo%20Alpha/fase_4_visualizacion/COMO_EJECUTAR.md) | Instrucciones para lanzar la app en localhost |
+| [`app_anotacion.py`](Ciclo_Alpha_v1/fase_4_visualizacion/app_anotacion.py) | App Streamlit para visualizar la serie temporal y agregar anotaciones manuales nuevas |
+| [`COMO_EJECUTAR.md`](Ciclo_Alpha_v1/fase_4_visualizacion/COMO_EJECUTAR.md) | Instrucciones para lanzar la app en localhost |
 | `data/new_annotations.csv` | Nuevas anotaciones locales del usuario (se fusionan en Fase 1 via `04_extract_events.py`) |
 
 **Inferencia en producción:**
 
 | Archivo | Propósito |
 |---|---|
-| [`inferencia_kpcl0034.py`](Ciclo%20Alpha/inferencia_kpcl0034.py) | Script de inferencia completo: carga modelos Exp 06, preprocesa, predice y genera dashboard HTML |
+| [`inferencia_kpcl0034.py`](Ciclo_Alpha_v1/inferencia_kpcl0034.py) | Script de inferencia completo: carga modelos Exp 06, preprocesa, predice y genera dashboard HTML |
 | `sesiones_detectadas.csv` | Sesiones detectadas en la última corrida (output generado) |
 | `inferencia_kpcl0034.html` | Dashboard interactivo: curva de peso + bandas GT (▼) vs ML (▲) + probabilidad Modelo A |
 
 **Ejecutar inferencia:**
 ```powershell
-& C:\Users\Usuario\AppData\Local\Programs\Python\Python311\python.exe "d:/Escritorio/Proyectos/AIoT_Kittypau/kittypau_2026_hivemq/Docs/investigacion/Ciclo Alpha/inferencia_kpcl0034.py"
+& C:\Users\Usuario\AppData\Local\Programs\Python\Python311\python.exe "d:/Escritorio/Proyectos/AIoT_Kittypau/kittypau_2026_hivemq/Docs/investigacion/Ciclo_Alpha_v1/inferencia_kpcl0034.py"
 ```
 
 **Lanzar app de anotación:**
@@ -770,7 +770,7 @@ public.audit_events (Supabase)
 │     serve_kpcl_dashboard.py → servidor con refresh
 │     Categorización: modal en HTML → API → audit_events
 │
-├─► Pipeline ML (Ciclo Alpha/)
+├─► Pipeline ML (Ciclo_Alpha_v1/)
 │     Fase 1: extrae readings + events + sessions
 │     Fase 2: construye dataset supervisado 3 clases
 │     Fase 3: entrena Modelo A (binario) + Modelo B (multiclase)
@@ -870,7 +870,7 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 | Fase 4 — Inferencia | 🔄 En curso | `inferencia_kpcl0034.py` · visual GT vs ML en HTML |
 | Fase 4 — Anotación | 🔄 En curso | `app_anotacion.py` Streamlit · agregando etiquetas de servido |
 
-**Siguiente acción:** Ciclo Alpha v2 — rediseño completo con detección de eventos por segmentos (change-point detection). Ver [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) para la nueva dirección y [`Ciclo Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo%20Alpha/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md) para los aprendizajes de los ciclos anteriores.
+**Siguiente acción:** Ciclo Alpha v2 — rediseño completo con detección de eventos por segmentos (change-point detection). Ver [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) para la nueva dirección y [`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md) para los aprendizajes de los ciclos anteriores.
 
 ---
 
@@ -883,15 +883,15 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 4. [`02_REGLAS_EVENTOS_ALIMENTACION.md`](02_REGLAS_EVENTOS_ALIMENTACION.md) — reglas canónicas de etiquetado
 
 ### Para ejecutar o extender el pipeline ML
-5. [`Ciclo Alpha/README.md`](Ciclo%20Alpha/README.md) — guía de ejecución Fase 1→4
-6. [`Ciclo Alpha/experiments/README.md`](Ciclo%20Alpha/experiments/README.md) — índice de experimentos con hitos
-7. [`Ciclo Alpha/experiments/exp_07_inferencia_mayo_junio.md`](Ciclo%20Alpha/experiments/exp_07_inferencia_mayo_junio.md) — experimento activo ★
-8. [`Ciclo Alpha/02_PREPARACION_NUEVA_INGESTA.md`](Ciclo%20Alpha/02_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
+5. [`Ciclo_Alpha_v1/README.md`](Ciclo_Alpha_v1/README.md) — guía de ejecución Fase 1→4
+6. [`Ciclo_Alpha_v1/experiments/README.md`](Ciclo_Alpha_v1/experiments/README.md) — índice de experimentos con hitos
+7. [`Ciclo_Alpha_v1/experiments/exp_07_inferencia_mayo_junio.md`](Ciclo_Alpha_v1/experiments/exp_07_inferencia_mayo_junio.md) — experimento activo ★
+8. [`Ciclo_Alpha_v1/02_PREPARACION_NUEVA_INGESTA.md`](Ciclo_Alpha_v1/02_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
 
 ### Para categorizar sesiones manualmente
 9. [`01_GUIA_DASHBOARD_KPCL.md`](Dashboard_KPCL/01_GUIA_DASHBOARD_KPCL.md) — cómo usar el dashboard visual
-10. [`Ciclo Alpha/fase_4_visualizacion/COMO_EJECUTAR.md`](Ciclo%20Alpha/fase_4_visualizacion/COMO_EJECUTAR.md) — app Streamlit de anotación
+10. [`Ciclo_Alpha_v1/fase_4_visualizacion/COMO_EJECUTAR.md`](Ciclo_Alpha_v1/fase_4_visualizacion/COMO_EJECUTAR.md) — app Streamlit de anotación
 
 ### Para entender los datos
 11. [`Data_2026/README.md`](Data_2026/README.md) — índice de dumps disponibles y alertas de calidad
-12. [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo%20Alpha/03_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
+12. [`03_ML_PREDICCION_ALIMENTACION.md`](Ciclo_Alpha_v1/03_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
