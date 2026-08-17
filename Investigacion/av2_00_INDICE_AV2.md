@@ -15,7 +15,7 @@ estado: activo
 > [!success] MOTOR MATEMÁTICO v2 IMPLEMENTADO — 2026-06-26
 > `shape_features_v2.py` implementa **~105 features en 15 familias** + **Evidence Engine** + **Clasificador determinístico v1.2**.
 > `app_anotacion_av2.py` actualizado con **Tab 5 — Motor Matemático**: cuadro comparativo empírico (417 anot.), radar, templates, dinámica temporal, Feature Registry.
-> Ver [[09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo.
+> Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo.
 
 ## ¿Qué es el Ciclo Alpha v2?
 
@@ -33,19 +33,19 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 ## Documentos del Ciclo Alpha v2
 
 ### Fundamentos
-- [[01_ARQUITECTURA_PIPELINE]] — Visión general del pipeline, fases y flujo de datos
-- [[02_DISPOSITIVO_Y_DATOS]] — KPCL0034, UUIDs, fuentes de datos, período cubierto
+- [[av2_01_ARQUITECTURA_PIPELINE]] — Visión general del pipeline, fases y flujo de datos
+- [[av2_02_DISPOSITIVO_Y_DATOS]] — KPCL0034, UUIDs, fuentes de datos, período cubierto
 
 ### Fase 0 — Detección y Anotación
-- [[03_DETECCION_SEGMENTOS]] — Cómo `01_genera_candidatos.py` detecta segmentos (ahora con features v2)
-- [[04_MATEMATICA_SHAPE_FEATURES]] — Features clásicas F00: monotonía, R², ZCR, similitud coseno
-- [[09_EVOLUCION_MOTOR_MATEMATICO]] — Motor v2: 105 features en 15 familias + Evidence Engine ✅ Implementado
-- [[05_ANOTACION_Y_CATEGORIAS]] — Workflow de anotación manual y categorías
-- [[08_APP_ANOTACION_AV2]] — La app Streamlit de anotación (7 pestañas)
+- [[av2_03_DETECCION_SEGMENTOS]] — Cómo `01_genera_candidatos.py` detecta segmentos (ahora con features v2)
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Features clásicas F00: monotonía, R², ZCR, similitud coseno
+- [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] — Motor v2: 105 features en 15 familias + Evidence Engine ✅ Implementado
+- [[av2_05_ANOTACION_Y_CATEGORIAS]] — Workflow de anotación manual y categorías
+- [[av2_08_APP_ANOTACION_AV2]] — La app Streamlit de anotación (7 pestañas)
 
 ### Clasificación y Resultados
-- [[06_UMBRALES_Y_REGLAS]] — `umbrales.json` v1.2, reglas del detector
-- [[07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones
+- [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json` v1.2, reglas del detector
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones
 
 ### Documentos previos relacionados
 - [[02_REGLAS_EVENTOS_ALIMENTACION]] — Reglas canónicas de eventos (fuente de verdad)

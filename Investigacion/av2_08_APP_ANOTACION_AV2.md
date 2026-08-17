@@ -7,7 +7,7 @@ estado: activo
 
 # App de Anotación — `app_anotacion_av2.py`
 
-> Ver [[00_INDICE_AV2]] para el índice completo. Ver [[05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[av2_05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
 
 **Archivo:** `fase_0_ruido/app_anotacion_av2.py`
 **Framework:** Streamlit (dark theme personalizado)
@@ -22,9 +22,9 @@ python -m streamlit run app_anotacion_av2.py
 ## Descripción general
 
 La app es la interfaz principal del Ciclo Alpha v2. Permite al operador:
-1. Revisar cada candidato detectado por [[03_DETECCION_SEGMENTOS|`01_genera_candidatos.py`]]
+1. Revisar cada candidato detectado por [[av2_03_DETECCION_SEGMENTOS|`01_genera_candidatos.py`]]
 2. Visualizar la curva de peso con contexto
-3. Ver métricas y [[04_MATEMATICA_SHAPE_FEATURES|shape features]] calculadas automáticamente
+3. Ver métricas y [[av2_04_MATEMATICA_SHAPE_FEATURES|shape features]] calculadas automáticamente
 4. Asignar una categoría (alimentacion / servido / ruido)
 5. Analizar la distribución estadística del dataset anotado
 6. Ajustar y entender los umbrales de detección
@@ -273,7 +273,7 @@ CATEGORIAS = {
 
 ## Ver también
 
-- [[03_DETECCION_SEGMENTOS]] — Generador de candidatos que alimenta la app
-- [[04_MATEMATICA_SHAPE_FEATURES]] — Features visualizadas en Tab 1 y Tab 4
-- [[05_ANOTACION_Y_CATEGORIAS]] — Workflow de uso de la app
-- [[06_UMBRALES_Y_REGLAS]] — Umbrales que se ajustan en Tab 4
+- [[av2_03_DETECCION_SEGMENTOS]] — Generador de candidatos que alimenta la app
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Features visualizadas en Tab 1 y Tab 4
+- [[av2_05_ANOTACION_Y_CATEGORIAS]] — Workflow de uso de la app
+- [[av2_06_UMBRALES_Y_REGLAS]] — Umbrales que se ajustan en Tab 4

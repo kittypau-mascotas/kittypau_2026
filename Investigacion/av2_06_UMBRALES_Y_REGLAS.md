@@ -7,11 +7,11 @@ estado: activo
 
 # Umbrales y Reglas del Detector
 
-> Ver [[00_INDICE_AV2]] para el índice completo. Las reglas se derivan de las [[07_RESULTADOS_304_ANOTACIONES|304 anotaciones]].
+> Ver [[av2_00_INDICE_AV2]] para el índice completo. Las reglas se derivan de las [[av2_07_RESULTADOS_304_ANOTACIONES|304 anotaciones]].
 
 > [!warning] PENDIENTE — Próxima sesión de trabajo
 > El clasificador actual (3 reglas if/else con 6 condiciones) está pensado para evolucionar a un **Evidence Engine**: cada una de las ~200 features futuras aportará evidencia ponderada a las hipótesis alimentacion/servido/ruido, produciendo un score acumulado explicable en lugar de decisiones binarias tempranas. Además, el detector de candidatos se extenderá con CUSUM, PELT y Binary Segmentation para mejorar la detección de bordes.
-> Ver arquitectura completa en [[09_EVOLUCION_MOTOR_MATEMATICO]].
+> Ver arquitectura completa en [[av2_09_EVOLUCION_MOTOR_MATEMATICO]].
 
 **Archivo:** `fase_0_ruido/config/umbrales.json`
 **Versión actual:** 1.2 (2026-06-26)
@@ -44,7 +44,7 @@ estado: activo
 
 ## Sección 1 — Parámetros de Detección
 
-Usados por [[03_DETECCION_SEGMENTOS|`01_genera_candidatos.py`]] para detectar candidatos:
+Usados por [[av2_03_DETECCION_SEGMENTOS|`01_genera_candidatos.py`]] para detectar candidatos:
 
 | Parámetro | Valor | Descripción |
 |---|---|---|
@@ -173,7 +173,7 @@ El detector aplica las reglas **en orden** y se detiene en el primer match:
 
 ## Mejores discriminadores (ranking)
 
-Los features ordenados por poder discriminativo real, según [[07_RESULTADOS_304_ANOTACIONES]]:
+Los features ordenados por poder discriminativo real, según [[av2_07_RESULTADOS_304_ANOTACIONES]]:
 
 | Rank | Feature | Separa | Nota |
 |---|---|---|---|
@@ -205,7 +205,7 @@ Los features ordenados por poder discriminativo real, según [[07_RESULTADOS_304
 
 ## Ver también
 
-- [[04_MATEMATICA_SHAPE_FEATURES]] — Cómo se calculan las shape features
-- [[07_RESULTADOS_304_ANOTACIONES]] — Datos empíricos que fundamentan estos umbrales
-- [[03_DETECCION_SEGMENTOS]] — Sección `deteccion` usada en `01_genera_candidatos.py`
-- [[08_APP_ANOTACION_AV2]] — Ajuste visual de umbrales en Tab 4 de la app
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Cómo se calculan las shape features
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Datos empíricos que fundamentan estos umbrales
+- [[av2_03_DETECCION_SEGMENTOS]] — Sección `deteccion` usada en `01_genera_candidatos.py`
+- [[av2_08_APP_ANOTACION_AV2]] — Ajuste visual de umbrales en Tab 4 de la app

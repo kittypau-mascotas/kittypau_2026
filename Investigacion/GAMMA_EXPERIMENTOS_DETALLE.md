@@ -1107,7 +1107,7 @@ gamma/fase_3_modelos/models/nn/
 |---|---|
 | Experimento anterior | [GAMMA_EXPERIMENTOS_DETALLE.md](GAMMA_EXPERIMENTOS_DETALLE.md) |
 | Tracker | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |
-| Referencia α-10 | `A1_EXPERIMENTOS_DETALLE.md` (referencia histórica) |
+| Referencia α-10 | `av1_EXPERIMENTOS_DETALLE.md` (referencia histórica) |
 
 
 ---

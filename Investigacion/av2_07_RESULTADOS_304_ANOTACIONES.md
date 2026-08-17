@@ -8,7 +8,7 @@ estado: activo
 
 # Resultados — 417 Anotaciones
 
-> Ver [[00_INDICE_AV2]] para el índice completo. Ver [[05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[av2_05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
 
 **Fecha de análisis:** 2026-06-26
 **Script:** `revisar_anotaciones_v2.py`
@@ -189,14 +189,14 @@ Comparando v1.2 (304 anot.) vs v2.0 (417 anot.):
 - `entropy_shannon` es el mejor discriminador de ruido (3.56σ en ambas comparaciones A/S y A/R)
 - `r2_lineal` perdió poder discriminativo A/S (2.4σ → 0.28σ) — con más datos, servido también tiene R² alto
 
-Ver [[06_UMBRALES_Y_REGLAS]] para la tabla completa de cambios entre versiones.
-Ver [[09_EVOLUCION_MOTOR_MATEMATICO]] para el cuadro comparativo completo de las ~105 features v2.
+Ver [[av2_06_UMBRALES_Y_REGLAS]] para la tabla completa de cambios entre versiones.
+Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el cuadro comparativo completo de las ~105 features v2.
 
 ---
 
 ## Ver también
 
-- [[04_MATEMATICA_SHAPE_FEATURES]] — Definición matemática de cada feature
-- [[05_ANOTACION_Y_CATEGORIAS]] — Descripción de las categorías y workflow
-- [[06_UMBRALES_Y_REGLAS]] — Cómo estos resultados se traducen en umbrales
-- [[08_APP_ANOTACION_AV2]] — Tab 4 (Ajustar Umbrales) de la app muestra estas estadísticas
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Definición matemática de cada feature
+- [[av2_05_ANOTACION_Y_CATEGORIAS]] — Descripción de las categorías y workflow
+- [[av2_06_UMBRALES_Y_REGLAS]] — Cómo estos resultados se traducen en umbrales
+- [[av2_08_APP_ANOTACION_AV2]] — Tab 4 (Ajustar Umbrales) de la app muestra estas estadísticas

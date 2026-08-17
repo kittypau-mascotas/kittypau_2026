@@ -142,5 +142,5 @@ Todos los scripts filtran por estos UUIDs antes de procesar.
 
 ## Ver también
 
-- [HISTORIAL_RESULTADOS.md](HISTORIAL_RESULTADOS.md) — snapshots históricos de métricas por ingesta
+- [av2_HISTORIAL_RESULTADOS.md](av2_HISTORIAL_RESULTADOS.md) — snapshots históricos de métricas por ingesta
 - [shape_features_v2.py](shape_features_v2.py) — Motor Matemático v2, 102 features en 15 familias

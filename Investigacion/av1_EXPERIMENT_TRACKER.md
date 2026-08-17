@@ -13,17 +13,17 @@
 
 | ID | Nombre | Fecha | Estado | F1 activo (A) | F1 alim (B) | F1 serv (B) | Threshold A | Datos fuente | Etiquetado | Sesiones train | Archivo |
 |----|--------|-------|--------|:---:|:---:|:---:|:---:|---|:---:|:---:|---|
-| **Exp 01** | Línea base | 2026-04-26 | 🗂️ Histórico | 0.0000 ⛔ | 0.3984 | 0.3333 | 0.50 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_01](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 02** | Threshold + rebalanceo | 2026-04-26 | 🗂️ Histórico | 0.5550 | 0.5223 | 0.4000 | 0.42 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_02](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 03** | Mejor base histórica | 2026-04-26 | 🗂️ Histórico | 0.5600 | 0.5256 | 0.5000 | 0.42 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_03](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 04** | SMOTE + calibración | 2026-04-26 | 🗂️ Histórico | 0.5693 | 0.5488 | 0.4000 | **0.20** | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_04](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 05** | Nueva ingesta Fase 1 | 2026-04-26 | 🗂️ Histórico | 0.5693 | 0.5488 | 0.4000 | 0.20 | CSV Apr 8–May 1 | ✅ manual | 95 alim · 14 serv | [exp_05](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 06** | Dump 07-05-2026 | 2026-06-13 | ✅ Producción | **0.7619** ✅ | **0.7606** ✅ | 0.1395 ⚠️ | 0.20 | CSV Apr 8–May 1 (completo) | ✅ manual | **103 alim · 18 serv** | [exp_06](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 07** | Inferencia Mayo–Jun | 2026-06-14 | ✅ Completado | N/A | N/A | N/A | 0.20 | CSV May 25–Jun 14 | ✅ Anotado retroactivamente (app_anotacion) | N/A — inferencia pura | [exp_07](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 08** | Unificación Mayo-Jun | 2026-06-14 | ✅ Completado | 0.6021 ⚠️ | 0.5778 ⚠️ | **0.2414** ↑ | 0.20 | Apr 8–Jun 14 (combinado) | ✅ manual+retroactivo | **185 alim · 27 serv** | [exp_08](A1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 01** | Línea base | 2026-04-26 | 🗂️ Histórico | 0.0000 ⛔ | 0.3984 | 0.3333 | 0.50 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_01](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 02** | Threshold + rebalanceo | 2026-04-26 | 🗂️ Histórico | 0.5550 | 0.5223 | 0.4000 | 0.42 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_02](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 03** | Mejor base histórica | 2026-04-26 | 🗂️ Histórico | 0.5600 | 0.5256 | 0.5000 | 0.42 | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_03](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 04** | SMOTE + calibración | 2026-04-26 | 🗂️ Histórico | 0.5693 | 0.5488 | 0.4000 | **0.20** | Supabase API · Apr 8–Apr 27 | ✅ manual | 95 alim · 14 serv | [exp_04](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 05** | Nueva ingesta Fase 1 | 2026-04-26 | 🗂️ Histórico | 0.5693 | 0.5488 | 0.4000 | 0.20 | CSV Apr 8–May 1 | ✅ manual | 95 alim · 14 serv | [exp_05](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 06** | Dump 07-05-2026 | 2026-06-13 | ✅ Producción | **0.7619** ✅ | **0.7606** ✅ | 0.1395 ⚠️ | 0.20 | CSV Apr 8–May 1 (completo) | ✅ manual | **103 alim · 18 serv** | [exp_06](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 07** | Inferencia Mayo–Jun | 2026-06-14 | ✅ Completado | N/A | N/A | N/A | 0.20 | CSV May 25–Jun 14 | ✅ Anotado retroactivamente (app_anotacion) | N/A — inferencia pura | [exp_07](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 08** | Unificación Mayo-Jun | 2026-06-14 | ✅ Completado | 0.6021 ⚠️ | 0.5778 ⚠️ | **0.2414** ↑ | 0.20 | Apr 8–Jun 14 (combinado) | ✅ manual+retroactivo | **185 alim · 27 serv** | [exp_08](av1_EXPERIMENTOS_DETALLE.md) |
 | **Exp 09** | Revisión Abril + Unif. | ⏳ TBD | ⏳ Pendiente | — | — | — | 0.20 | Apr re-revisado + May-Jun | ⏳ revisión Abril via app_anotacion (Prep Exp 09) | — | — |
-| **Exp 10-NN** | Benchmark neuronal — 4 arquitecturas | 2026-06-15 | ✅ Completado | 0.6016 ⚠️ (TCN) | 0.4728 ⚠️ (MLP) | **0.3400** ↑ (GRU) | 0.60 (todas) | Exp 09B dataset (30s · 13 features · Apr–Jun) | ✅ manual+retroactivo | 185 alim · 27 serv | [exp_10_nn](A1_EXPERIMENTOS_DETALLE.md) |
-| **Exp 11** | Limpieza features + ground truth Mayo-Jun + ensemble GRU+LGBM | ⏳ TBD | 📋 Planificado | — | — | — (meta ≥ 0.30) | — | Exp 09B + revisión retroactiva 155 sesiones Exp 07 | ⏳ pendiente revisión Línea B | 185+ alim · 27+ serv | [exp_11](A1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 10-NN** | Benchmark neuronal — 4 arquitecturas | 2026-06-15 | ✅ Completado | 0.6016 ⚠️ (TCN) | 0.4728 ⚠️ (MLP) | **0.3400** ↑ (GRU) | 0.60 (todas) | Exp 09B dataset (30s · 13 features · Apr–Jun) | ✅ manual+retroactivo | 185 alim · 27 serv | [exp_10_nn](av1_EXPERIMENTOS_DETALLE.md) |
+| **Exp 11** | Limpieza features + ground truth Mayo-Jun + ensemble GRU+LGBM | ⏳ TBD | 📋 Planificado | — | — | — (meta ≥ 0.30) | — | Exp 09B + revisión retroactiva 155 sesiones Exp 07 | ⏳ pendiente revisión Línea B | 185+ alim · 27+ serv | [exp_11](av1_EXPERIMENTOS_DETALLE.md) |
 
 ---
 
@@ -175,13 +175,13 @@
 
 **Orden de ejecución:** Línea B (datos) → Línea A (features) → Fase 2 → Fase 3 LGBM → Línea C (ensemble).
 
-Ver plan completo en [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md).
+Ver plan completo en [av1_EXPERIMENTOS_DETALLE.md](av1_EXPERIMENTOS_DETALLE.md).
 
 ---
 
 ## Protocolo para Crear un Nuevo Experimento
 
-1. Copiar `A1_EXPERIMENTOS_DETALLE.md` como plantilla
+1. Copiar `av1_EXPERIMENTOS_DETALLE.md` como plantilla
 2. Renombrar a `exp_0N_nombre_corto.md`
 3. Actualizar todas las secciones (objetivo, cambios, datos, parámetros, resultados)
 4. **Añadir fila a la Tabla Maestra** de este archivo

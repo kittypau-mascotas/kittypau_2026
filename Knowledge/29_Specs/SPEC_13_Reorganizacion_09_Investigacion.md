@@ -782,3 +782,47 @@ con los 4 nuevos índices y la nota de los 2 descartes.
 Verificado: `py_compile` (6 scripts core), `streamlit run --headless` → HTTP 200
 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16. Grep dirigido: 0 referencias
 rotas a los 32 nombres eliminados.
+
+## 16. Noveno addendum (2026-08-16) — prefijo uniforme `av1_`/`av2_`
+
+> Pedido de Mauro: "ahora necesito que los documentos tengan el prefijo av1_ y
+> av2_ dependiendo de a que ciclo hacen referencia."
+
+Alpha v1 usaba `A1_` (mayúscula) y Alpha v2 tenía naming inconsistente: 3 docs
+con `AV2_` y 18 sin ningún prefijo (los 11 numerados `00`–`09` + 7 docs internos
+de `fase_0_ruido/`/benchmark). Uniformado todo a minúscula `av1_`/`av2_` — 34
+archivos renombrados (13 `A1_*` → `av1_*`, 3 `AV2_*` → `av2_*`, 18 sin prefijo →
+`av2_*`). Los docs cross-cycle (`README`, `GLOSARIO`, `REGLAS_EVENTOS_*`, etc.),
+Gamma (`GAMMA_`/`EXPERIMENT_TRACKER_GAMMA`/`GLOSARIO_GAMMA`), Delta (`DELTA_`/
+`EXPERIMENT_TRACKER_DELTA`/`GLOSARIO_DELTA`) y KPCL (`KPCL_`) no se tocaron —
+no son específicos de Alpha v1 o v2.
+
+### Gotcha de Windows: rename case-only
+
+3 renames (`AV2_README.md`→`av2_README.md` y 2 más) fallaron en el primer
+intento con "DST YA EXISTE" — NTFS en Windows es case-insensitive por
+default, así que `pathlib.Path.exists()` (y `git mv` directo) ven
+`av2_README.md` como el mismo archivo que `AV2_README.md`, no uno nuevo.
+Resuelto con el patrón estándar de dos pasos: `git mv X.md X_tmp.md` y
+después `git mv X_tmp.md x.md`.
+
+### Sweep de referencias — 2 pasadas
+
+1. Reemplazo de string exacto sobre nombres con `.md` (mismo patrón que §14/§15,
+   ordenado por longitud descendente para evitar que un nombre corto se aplique
+   parcialmente antes de que le toque turno a uno más largo que lo contiene).
+2. **Pasada nueva para wikilinks** (`[[nombre]]` sin extensión `.md`) — la
+   primera pasada no las tocaba porque busca el string con `.md` y los
+   wikilinks no lo llevan. Encontrada en 12 archivos, sobre todo los propios
+   `av2_0N_*.md` que se referencian mucho entre sí (son el MOC del ciclo activo).
+   Detectado con grep dirigido después de la primera pasada, no antes —
+   lección para la próxima vez: siempre revisar wikilinks aparte cuando hay
+   `.md` con estilo Obsidian en el árbol.
+
+`_MOC.md` reescrito con los 34 nombres nuevos (era el archivo con más
+wikilinks stale, se corrigió a mano en vez de confiar en el sweep automático
+para ese caso específico).
+
+Verificado: `py_compile`, `streamlit run --headless` → HTTP 200 + `/_stcore/health`
+→ `ok`, `pytest tests/` → 16/16. Grep dirigido (ambos estilos, `.md` y wikilink):
+0 referencias rotas.

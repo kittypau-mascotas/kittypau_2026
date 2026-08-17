@@ -179,7 +179,7 @@ python fase_4_validacion/scripts/d03_reporte_final.py
 | `GAMMA_INSTRUCTIVO.md` | Guia maestra del ciclo activo (Gamma) |
 | `EXPERIMENT_TRACKER_GAMMA.md` | Estado y metricas de Gamma |
 | `GLOSARIO_GAMMA.md` | Terminos de Gamma |
-| `A1_EXPERIMENT_TRACKER.md` | Tracker historico del Ciclo Alpha |
+| `av1_EXPERIMENT_TRACKER.md` | Tracker historico del Ciclo Alpha |
 | `APRENDIZAJES_GAMMA_DELTA.md` | Comparacion de datos y features Alpha vs Gamma (incluye lo que documentaba COMPARACION_ALPHA_GAMMA.md, discontinuado) |
 | `KPCL_AUDITORIA_SIN_CARGADOR.md` | Referencia para anomalias tipo H |
 | `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md` | Referencia para anomalias tipo H en KPCL0036 |

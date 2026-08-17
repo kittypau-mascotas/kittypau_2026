@@ -38,62 +38,62 @@ Scripts, CSVs y HTML del dashboard viven en [[Dashboard_KPCL]]. Docs:
 
 ---
 
-## 🚀 Ciclo Alpha v2 (sin prefijo, numerado 00–09) — ACTIVO
+## 🚀 Ciclo Alpha v2 (prefijo `av2_`) — ACTIVO
 
 Sistema de detección por segmentos con reglas matemáticas. Sin ML supervisado.
 El código vive en `Ciclo_Alpha_v2/fase_0_ruido/` (`app_anotacion_av2.py` es el
 centro de toda la carpeta).
 
 ### Índice y arquitectura
-- [[00_INDICE_AV2]] — ⭐ MOC principal del Ciclo Alpha v2 (comida)
-- [[00_INDICE_AV2_AGUA]] — MOC propio para hidratación (no se mezcla con comida)
-- [[01_ARQUITECTURA_PIPELINE]] — pipeline completo, fases y flujo de datos
-- [[AV2_README]] — descripción de las fases + constantes del ciclo
-- [[APRENDIZAJES_CONSOLIDADOS]] — ⭐ memoria de Alpha + Gamma + Delta + Exp10-NN, leer antes de escribir código nuevo
+- [[av2_00_INDICE_AV2]] — ⭐ MOC principal del Ciclo Alpha v2 (comida)
+- [[av2_00_INDICE_AV2_AGUA]] — MOC propio para hidratación (no se mezcla con comida)
+- [[av2_01_ARQUITECTURA_PIPELINE]] — pipeline completo, fases y flujo de datos
+- [[av2_README]] — descripción de las fases + constantes del ciclo
+- [[av2_APRENDIZAJES_CONSOLIDADOS]] — ⭐ memoria de Alpha + Gamma + Delta + Exp10-NN, leer antes de escribir código nuevo
 
 ### Datos y detección
-- [[02_DISPOSITIVO_Y_DATOS]] — KPCL0034, UUIDs, fuentes, período cubierto
-- [[03_DETECCION_SEGMENTOS]] — algoritmo de `01_genera_candidatos.py` paso a paso
+- [[av2_02_DISPOSITIVO_Y_DATOS]] — KPCL0034, UUIDs, fuentes, período cubierto
+- [[av2_03_DETECCION_SEGMENTOS]] — algoritmo de `01_genera_candidatos.py` paso a paso
 
 ### Matemática y features
-- [[04_MATEMATICA_SHAPE_FEATURES]] — ⭐ monotonía, R², ZCR, similitud coseno (con fórmulas)
-- [[09_EVOLUCION_MOTOR_MATEMATICO]] — 102 features en 15 familias + Evidence Engine
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — ⭐ monotonía, R², ZCR, similitud coseno (con fórmulas)
+- [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] — 102 features en 15 familias + Evidence Engine
 
 ### Anotación y clasificación
-- [[05_ANOTACION_Y_CATEGORIAS]] — workflow de anotación, categorías
-- [[06_UMBRALES_Y_REGLAS]] — `umbrales.json`, reglas del detector
-- [[07_RESULTADOS_304_ANOTACIONES]] — estadísticas completas, percentiles, separación por categoría
+- [[av2_05_ANOTACION_Y_CATEGORIAS]] — workflow de anotación, categorías
+- [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json`, reglas del detector
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — estadísticas completas, percentiles, separación por categoría
 
 ### App y experimentos
-- [[08_APP_ANOTACION_AV2]] — 8 tabs de la app Streamlit, componentes técnicos
-- [[AV2_EXPERIMENTS_README]] — tracker de experimentos v2 + baselines
+- [[av2_08_APP_ANOTACION_AV2]] — 8 tabs de la app Streamlit, componentes técnicos
+- [[av2_EXPERIMENTS_README]] — tracker de experimentos v2 + baselines
 
 ### Docs internos de `fase_0_ruido/` (el home de `app_anotacion_av2.py`)
-- [[AV2_FASE_0_RUIDO_README]] — cómo lanzar la app, los 8 tabs, qué hace cada uno
-- [[ARQUITECTURA_APP]] — arquitectura técnica interna (caché, responsabilidades por función)
-- [[ACTUALIZACION_DATA]] — pipeline completo y rutas críticas de datos
-- [[HISTORIAL_RESULTADOS]] — snapshots históricos por ingesta de datos (fuente canónica)
-- [[RECOPILACION_DATOS_APP]] — recopilación técnica detallada, motor matemático
-- [[ANALISIS_BENCHMARK]] — benchmark abril-mayo-junio, comparación de modelos
-- `diagnostico_clustering.md` — análisis de clustering sobre el benchmark (referencia, no indexado individualmente)
+- [[av2_FASE_0_RUIDO_README]] — cómo lanzar la app, los 8 tabs, qué hace cada uno
+- [[av2_ARQUITECTURA_APP]] — arquitectura técnica interna (caché, responsabilidades por función)
+- [[av2_ACTUALIZACION_DATA]] — pipeline completo y rutas críticas de datos
+- [[av2_HISTORIAL_RESULTADOS]] — snapshots históricos por ingesta de datos (fuente canónica)
+- [[av2_RECOPILACION_DATOS_APP]] — recopilación técnica detallada, motor matemático
+- [[av2_ANALISIS_BENCHMARK]] — benchmark abril-mayo-junio, comparación de modelos
+- `av2_diagnostico_clustering.md` — análisis de clustering sobre el benchmark (referencia, no indexado individualmente)
 
 ---
 
-## 🧪 Ciclo Alpha v1 (prefijo `A1_`) — CERRADO
+## 🧪 Ciclo Alpha v1 (prefijo `av1_`) — CERRADO
 
 Pipeline ML supervisado LightGBM. 11 experimentos. Archivado en junio 2026.
 Código en `Ciclo_Alpha_v1/`.
 
-- [[A1_README]] — guía de ejecución Fase 1→4
-- [[A1_REFERENCIAS]] — bibliografía de referencia para Data Science y ML
-- [[A1_PREPARACION_NUEVA_INGESTA]] — roadmap Exp 08
-- [[A1_ML_PREDICCION_ALIMENTACION]] — especificación original del problema ML
-- [[A1_REPORTE_SESION_2026-04-26]] — primera sesión de experimentación
-- [[A1_RESUMEN_EXPERIMENTOS_FASE3]] · [[A1_REPORTE_EXPERIMENTOS_FASE3]] — resultados de Fase 3
-- [[A1_ANALISIS_COLAB_KPCL0034_07052026]] — análisis exploratorio en Colab (export mayo 2026)
-- [[A1_EXPERIMENT_TRACKER]] — tabla maestra de experimentos Exp01–11
-- [[A1_EXPERIMENTS_README]] · [[A1_FASE_2_DATASET_README]] · [[A1_FASE_3_MODELOS_README]] — índices de subcarpetas de código
-- [[A1_EXPERIMENTOS_DETALLE]] — bitácora completa de los 12 experimentos (Exp01–11, fusión de los `A1_exp_NN_*.md` individuales)
+- [[av1_README]] — guía de ejecución Fase 1→4
+- [[av1_REFERENCIAS]] — bibliografía de referencia para Data Science y ML
+- [[av1_PREPARACION_NUEVA_INGESTA]] — roadmap Exp 08
+- [[av1_ML_PREDICCION_ALIMENTACION]] — especificación original del problema ML
+- [[av1_REPORTE_SESION_2026-04-26]] — primera sesión de experimentación
+- [[av1_RESUMEN_EXPERIMENTOS_FASE3]] · [[av1_REPORTE_EXPERIMENTOS_FASE3]] — resultados de Fase 3
+- [[av1_ANALISIS_COLAB_KPCL0034_07052026]] — análisis exploratorio en Colab (export mayo 2026)
+- [[av1_EXPERIMENT_TRACKER]] — tabla maestra de experimentos Exp01–11
+- [[av1_EXPERIMENTS_README]] · [[av1_FASE_2_DATASET_README]] · [[av1_FASE_3_MODELOS_README]] — índices de subcarpetas de código
+- [[av1_EXPERIMENTOS_DETALLE]] — bitácora completa de los 12 experimentos (Exp01–11, fusión de los `av1_exp_NN_*.md` individuales)
 
 ---
 

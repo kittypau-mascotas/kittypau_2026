@@ -163,5 +163,5 @@ limit 10;
 | [`ML_PREDICCION_ALIMENTACION.md`](ML_PREDICCION_ALIMENTACION.md) | Cita este lote de 49 eventos como dataset base de la especificación ML |
 | [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) | Define las reglas canónicas de categorización aplicadas en el backfill |
 | [`Data Science/fase_1_extraccion/`](Data%20Science/fase_1_extraccion/) | Pipeline que descarga y reconstruye sesiones desde `audit_events` |
-| [`A1_EXPERIMENTOS_DETALLE.md`](A1_EXPERIMENTOS_DETALLE.md) | Primera corrida ML que usó el dataset derivado de este backfill (ya con 186 eventos) |
+| [`av1_EXPERIMENTOS_DETALLE.md`](av1_EXPERIMENTOS_DETALLE.md) | Primera corrida ML que usó el dataset derivado de este backfill (ya con 186 eventos) |
 | `kittypau_app/src/app/api/devices/[id]/category/route.ts` | API que escribió los eventos en `public.audit_events` |

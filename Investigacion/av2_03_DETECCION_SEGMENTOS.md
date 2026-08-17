@@ -6,7 +6,7 @@ estado: activo
 
 # Fase 0 — Detección de Segmentos
 
-> Ver [[00_INDICE_AV2]] para el índice completo. Ver [[04_SHAPE_FEATURES]] para las features matemáticas calculadas sobre cada segmento.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[04_SHAPE_FEATURES]] para las features matemáticas calculadas sobre cada segmento.
 
 **Script:** `fase_0_ruido/01_genera_candidatos.py`
 **Output:** `fase_0_ruido/data/candidatos_av2.csv` (417 candidatos)
@@ -15,7 +15,7 @@ estado: activo
 
 ## Filosofía
 
-El generador de candidatos usa **umbrales bajos a propósito**: prefiere detectar de más (falsos positivos) antes que perder eventos reales. El operador filtra los falsos positivos en la app de anotación (ver [[05_ANOTACION_Y_CATEGORIAS]]).
+El generador de candidatos usa **umbrales bajos a propósito**: prefiere detectar de más (falsos positivos) antes que perder eventos reales. El operador filtra los falsos positivos en la app de anotación (ver [[av2_05_ANOTACION_Y_CATEGORIAS]]).
 
 > "Todo segmento donde el peso se movió significativamente es un candidato. Que sea alimentación, servido o ruido es decisión del operador."
 
@@ -25,7 +25,7 @@ El generador de candidatos usa **umbrales bajos a propósito**: prefiere detecta
 
 ### Paso 1 — Carga y resampleo
 
-Ver [[02_DISPOSITIVO_Y_DATOS]] para el detalle de carga. El resultado es un DataFrame con columnas `ts` (UTC, cada 30s) y `peso_g` (float, con NaN en gaps).
+Ver [[av2_02_DISPOSITIVO_Y_DATOS]] para el detalle de carga. El resultado es un DataFrame con columnas `ts` (UTC, cada 30s) y `peso_g` (float, con NaN en gaps).
 
 ### Paso 2 — Detección de actividad por ventanas rodantes
 
@@ -194,8 +194,8 @@ etiqueta_audit_ref
 #          12 templates canónicos, dinámica temporal, compuestos
 ```
 
-Ver [[09_EVOLUCION_MOTOR_MATEMATICO]] para la lista completa de features y familias.
-Ver [[04_MATEMATICA_SHAPE_FEATURES]] para el detalle de las 5 features F00 clásicas.
+Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para la lista completa de features y familias.
+Ver [[av2_04_MATEMATICA_SHAPE_FEATURES]] para el detalle de las 5 features F00 clásicas.
 
 ---
 
@@ -220,6 +220,6 @@ Guardado: candidatos_av2.csv
 ## Ver también
 
 - [[04_SHAPE_FEATURES]] — Features matemáticas calculadas por candidato
-- [[05_ANOTACION_Y_CATEGORIAS]] — Siguiente paso: anotar estos candidatos
-- [[06_UMBRALES_Y_REGLAS]] — Parámetros de detección en `umbrales.json`
-- [[02_DISPOSITIVO_Y_DATOS]] — Fuente de datos de entrada
+- [[av2_05_ANOTACION_Y_CATEGORIAS]] — Siguiente paso: anotar estos candidatos
+- [[av2_06_UMBRALES_Y_REGLAS]] — Parámetros de detección en `umbrales.json`
+- [[av2_02_DISPOSITIVO_Y_DATOS]] — Fuente de datos de entrada

@@ -12,7 +12,7 @@ prioridad: alta
 > `shape_features_v2.py` creado con **~105 features en 14 familias** + **Evidence Engine** + **Clasificador determinístico**.
 > `app_anotacion_av2.py` actualizado con **Tab 5 — Motor Matemático**: cuadro comparativo, radar, templates, dinámica temporal, Feature Registry y cálculo en vivo.
 
-Ver [[00_INDICE_AV2]] para el estado actual. Ver [[04_MATEMATICA_SHAPE_FEATURES]] para las features de la v1.
+Ver [[av2_00_INDICE_AV2]] para el estado actual. Ver [[av2_04_MATEMATICA_SHAPE_FEATURES]] para las features de la v1.
 
 ---
 
@@ -213,8 +213,8 @@ Cuando se tengan más anotaciones, regenerar `COMP_STATS` en la app ejecutando:
 
 ## Ver también
 
-- [[04_MATEMATICA_SHAPE_FEATURES]] — Features actuales de la v1 (detalle matemático)
-- [[06_UMBRALES_Y_REGLAS]] — Clasificador determinístico v1.2 (umbrales.json)
-- [[07_RESULTADOS_304_ANOTACIONES]] — Base empírica para calibrar las nuevas features
-- [[03_DETECCION_SEGMENTOS]] — Pipeline de detección de candidatos
-- [[08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit
+- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Features actuales de la v1 (detalle matemático)
+- [[av2_06_UMBRALES_Y_REGLAS]] — Clasificador determinístico v1.2 (umbrales.json)
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Base empírica para calibrar las nuevas features
+- [[av2_03_DETECCION_SEGMENTOS]] — Pipeline de detección de candidatos
+- [[av2_08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit

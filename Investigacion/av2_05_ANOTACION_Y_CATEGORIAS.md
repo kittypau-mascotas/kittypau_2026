@@ -6,7 +6,7 @@ estado: activo
 
 # Anotación Manual y Categorías
 
-> Ver [[00_INDICE_AV2]] para el índice completo. Ver [[08_APP_ANOTACION_AV2]] para la documentación técnica de la app.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[av2_08_APP_ANOTACION_AV2]] para la documentación técnica de la app.
 
 ---
 
@@ -155,7 +155,7 @@ Las metas se superaron ampliamente, dando mayor confianza estadística a los umb
 
 ## Ver también
 
-- [[03_DETECCION_SEGMENTOS]] — Cómo se generan los candidatos a anotar
-- [[08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit
-- [[07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 304 anotaciones
-- [[06_UMBRALES_Y_REGLAS]] — Cómo las anotaciones derivan en umbrales
+- [[av2_03_DETECCION_SEGMENTOS]] — Cómo se generan los candidatos a anotar
+- [[av2_08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 304 anotaciones
+- [[av2_06_UMBRALES_Y_REGLAS]] — Cómo las anotaciones derivan en umbrales

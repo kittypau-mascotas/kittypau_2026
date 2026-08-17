@@ -1,7 +1,7 @@
 # Glosario del Ecosistema Kittypau Investigacion
 
 > Definiciones de todos los términos técnicos usados en esta carpeta.
-> Referencia cruzada con [README.md](README.md) y [A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md).
+> Referencia cruzada con [README.md](README.md) y [av1_EXPERIMENT_TRACKER.md](av1_EXPERIMENT_TRACKER.md).
 
 ---
 
@@ -170,7 +170,7 @@ else:
 | Componente | Formato | Ejemplo |
 |-----------|---------|---------|
 | ID | `Exp NN` (dos dígitos con cero) | `Exp 07` |
-| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `A1_EXPERIMENTOS_DETALLE.md` |
+| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `av1_EXPERIMENTOS_DETALLE.md` |
 | Fecha | ISO 8601 (YYYY-MM-DD) | `2026-06-14` |
 
 ### Estados de Experimento
@@ -220,5 +220,5 @@ else:
 | Fuente | URL / Acceso | Propósito |
 |--------|-------------|---------|
 | Supabase (producción) | Variables de entorno en `.env` | Base de datos con lecturas y eventos |
-| Google Colab | Análisis exploratorio independiente | Ver `A1_ANALISIS_COLAB_KPCL0034_07052026.md` |
+| Google Colab | Análisis exploratorio independiente | Ver `av1_ANALISIS_COLAB_KPCL0034_07052026.md` |
 | Google Drive | CSVs para análisis Colab | `kittypau_full_07-05-2026_csv/` subido manualmente |

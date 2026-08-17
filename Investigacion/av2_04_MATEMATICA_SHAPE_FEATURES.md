@@ -7,12 +7,12 @@ aliases: [Shape Features, Features de Forma, Matemática del Detector]
 
 # Matemática del Detector — Shape Features
 
-> Ver [[00_INDICE_AV2]] para el índice completo.
-> Estas features se calculan en [[03_DETECCION_SEGMENTOS]] y se usan en [[06_UMBRALES_Y_REGLAS]].
+> Ver [[av2_00_INDICE_AV2]] para el índice completo.
+> Estas features se calculan en [[av2_03_DETECCION_SEGMENTOS]] y se usan en [[av2_06_UMBRALES_Y_REGLAS]].
 
 > [!success] MOTOR v2 IMPLEMENTADO — 2026-06-26
 > Las 5 features F00 (monotonía, R², ZCR, sim_alim, sim_serv) documentadas aquí siguen siendo la base. El Motor Matemático v2 las extiende a **~105 features en 15 familias** implementadas en `shape_features_v2.py`.
-> Ver [[09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo del motor v2.
+> Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo del motor v2.
 
 ---
 
@@ -264,7 +264,7 @@ Las tres categorías ocupan regiones distintas del plano:
 - **Servido**: esquina superior izquierda (sim_serv≈+0.88)
 - **Ruido**: banda central (ambas similitudes cercanas a 0)
 
-Las líneas punteadas en `±0.7` son los umbrales de decisión implementados en [[06_UMBRALES_Y_REGLAS]].
+Las líneas punteadas en `±0.7` son los umbrales de decisión implementados en [[av2_06_UMBRALES_Y_REGLAS]].
 
 ---
 
@@ -351,14 +351,14 @@ El Motor v2 incluye **12 templates canónicos** en la familia F12 (similitud cos
 `tpl_ramp_up`, `tpl_exp_rise`, `tpl_sigmoide`, `tpl_serv_brusco`,
 `tpl_plateau`, `tpl_triangular`, `tpl_parabola_down`, `tpl_doble_rampa`.
 
-`tpl_doble_rampa` resultó ser el mejor discriminador de toda la suite (5.76σ A/S), superando a `sim_alimentacion`. Ver [[09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle.
+`tpl_doble_rampa` resultó ser el mejor discriminador de toda la suite (5.76σ A/S), superando a `sim_alimentacion`. Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle.
 
 ---
 
 ## Ver también
 
-- [[03_DETECCION_SEGMENTOS]] — Dónde se calculan estas features (función `_shape_features`)
-- [[06_UMBRALES_Y_REGLAS]] — Cómo se usan los umbrales de estas features en el detector
-- [[07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones (F00 + top features v2)
-- [[09_EVOLUCION_MOTOR_MATEMATICO]] — Motor v2: 105 features en 15 familias + Evidence Engine
-- [[08_APP_ANOTACION_AV2]] — Visualización en la app (Tab 4 Umbrales + Tab 5 Motor Matemático)
+- [[av2_03_DETECCION_SEGMENTOS]] — Dónde se calculan estas features (función `_shape_features`)
+- [[av2_06_UMBRALES_Y_REGLAS]] — Cómo se usan los umbrales de estas features en el detector
+- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones (F00 + top features v2)
+- [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] — Motor v2: 105 features en 15 familias + Evidence Engine
+- [[av2_08_APP_ANOTACION_AV2]] — Visualización en la app (Tab 4 Umbrales + Tab 5 Motor Matemático)

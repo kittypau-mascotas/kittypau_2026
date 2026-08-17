@@ -7,7 +7,7 @@ estado: activo
 
 # Ciclo Alpha v2 — Hidratación (Índice)
 
-> Réplica de la línea de investigación de comida ([[00_INDICE_AV2]]) para el bebedero
+> Réplica de la línea de investigación de comida ([[av2_00_INDICE_AV2]]) para el bebedero
 > inteligente **KPCL0036**. Fuente de verdad del diseño y las decisiones:
 > [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — este documento es solo el mapa de
 > artefactos generados, no duplica ese contenido.
@@ -45,6 +45,6 @@ estado: activo
 ## Ver también
 
 - [[29_Specs/SPEC_07_Investigacion_Hidratacion]] — spec completo: hallazgos, arquitectura, roadmap
-- [[00_INDICE_AV2]] — línea de investigación de comida (KPCL0034), no mezclar datos
+- [[av2_00_INDICE_AV2]] — línea de investigación de comida (KPCL0034), no mezclar datos
 - [[09_Sensores/README_Sensores]] — identidad de dispositivos
 - [[10_Datasets/README_Datasets]] — datasets de comida + nota de resolución KPCL0036

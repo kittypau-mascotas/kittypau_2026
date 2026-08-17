@@ -1,6 +1,6 @@
 # Ciclo Alpha v1 — Bitácoras Completas de Experimentos (Exp 01–11)
 
-> Fusión de los 12 archivos `A1_exp_NN_*.md` — bitácora detallada de cada experimento del Ciclo Alpha v1 (cerrado). Ver [[A1_EXPERIMENT_TRACKER]] para la tabla resumen con métricas comparadas.
+> Fusión de los 12 archivos `A1_exp_NN_*.md` — bitácora detallada de cada experimento del Ciclo Alpha v1 (cerrado). Ver [[av1_EXPERIMENT_TRACKER]] para la tabla resumen con métricas comparadas.
 
 
 ---
@@ -1926,8 +1926,8 @@ El archivo `readings_rows.csv` cubre el período **2026-05-23 → 2026-06-14** y
 
 ### Referencias a experimentos anteriores
 
-- Los modelos usados en este experimento son los producidos en `A1_EXPERIMENTOS_DETALLE.md`.
-- La arquitectura de features es la definida desde `A1_EXPERIMENTOS_DETALLE.md` (12 features activas, invariantes desde entonces).
+- Los modelos usados en este experimento son los producidos en `av1_EXPERIMENTOS_DETALLE.md`.
+- La arquitectura de features es la definida desde `av1_EXPERIMENTOS_DETALLE.md` (12 features activas, invariantes desde entonces).
 - Las reglas de etiquetado y fuente de verdad están en `REGLAS_EVENTOS_ALIMENTACION.md`.
 - El pipeline de inferencia de referencia es `inferencia_kpcl0034.py` documentado en el `README.md` de Data Science.
 
@@ -2028,7 +2028,7 @@ Quedan registradas como candidatas para el Experimento 08 si se decide reentrena
 
 ## 2. Modelos disponibles (Experimento 06)
 
-Los modelos a usar son los artefactos producidos en `A1_EXPERIMENTOS_DETALLE.md`,
+Los modelos a usar son los artefactos producidos en `av1_EXPERIMENTOS_DETALLE.md`,
 entrenados con el dump 07-05-2026 (Apr 8 – May 1).
 
 | Modelo | Artefacto | Métricas de validación (Exp 06) |
@@ -2073,7 +2073,7 @@ Ajustes requeridos para este experimento:
 
 **Script de referencia:** `fase_2_dataset/scripts/02_build_features.py`
 
-Las **12 features activas** definidas en `A1_EXPERIMENTOS_DETALLE.md` y mantenidas en
+Las **12 features activas** definidas en `av1_EXPERIMENTOS_DETALLE.md` y mantenidas en
 todos los experimentos hasta el Exp 06 se calculan exactamente igual:
 
 | # | Feature | Nota |
@@ -2186,7 +2186,7 @@ test set más robusto del proyecto — con 21 días de datos nunca vistos vs. lo
 
 ### Cierre
 - [x] Completar sección "7. Resultados" de este documento
-- [ ] Registrar en `A1_RESUMEN_EXPERIMENTOS_FASE3.md` la fila del Exp 07
+- [ ] Registrar en `av1_RESUMEN_EXPERIMENTOS_FASE3.md` la fila del Exp 07
 
 ---
 
@@ -2281,12 +2281,12 @@ Para calcularlas: etiquetar retroactivamente con `app_anotacion.py` y re-ejecuta
 
 | Experimento | Rol en el Exp 07 |
 |---|---|
-| `A1_EXPERIMENTOS_DETALLE.md` | Línea base histórica de referencia |
-| `A1_EXPERIMENTOS_DETALLE.md` | Introdujo threshold tuning — threshold 0.20 del Exp 07 viene de esta línea |
-| `A1_EXPERIMENTOS_DETALLE.md` | Definió las 12 features activas — invariantes en el Exp 07 |
-| `A1_EXPERIMENTOS_DETALLE.md` | Introdujo calibración isotónica — usada en Modelo A del Exp 07 |
-| `A1_EXPERIMENTOS_DETALLE.md` | Confirmó que nueva ingesta no siempre mueve el modelo — lección aplicable aquí |
-| `A1_EXPERIMENTOS_DETALLE.md` | **Fuente de los modelos** usados en el Exp 07 — F1 activo 0.76, F1 alim 0.76 |
+| `av1_EXPERIMENTOS_DETALLE.md` | Línea base histórica de referencia |
+| `av1_EXPERIMENTOS_DETALLE.md` | Introdujo threshold tuning — threshold 0.20 del Exp 07 viene de esta línea |
+| `av1_EXPERIMENTOS_DETALLE.md` | Definió las 12 features activas — invariantes en el Exp 07 |
+| `av1_EXPERIMENTOS_DETALLE.md` | Introdujo calibración isotónica — usada en Modelo A del Exp 07 |
+| `av1_EXPERIMENTOS_DETALLE.md` | Confirmó que nueva ingesta no siempre mueve el modelo — lección aplicable aquí |
+| `av1_EXPERIMENTOS_DETALLE.md` | **Fuente de los modelos** usados en el Exp 07 — F1 activo 0.76, F1 alim 0.76 |
 
 ---
 
@@ -2747,7 +2747,7 @@ Opciones para Exp 09 (en evaluación):
 | **Fecha** | 2026-06-14 |
 | **Estado** | ✅ Completado |
 | **Basado en** | Exp 08 (dataset Abril + Mayo-Jun) |
-| **Siguiente** | [Exp 09B](A1_EXPERIMENTOS_DETALLE.md) — threshold por período + plateau en segundos + cadencia_s |
+| **Siguiente** | [Exp 09B](av1_EXPERIMENTOS_DETALLE.md) — threshold por período + plateau en segundos + cadencia_s |
 
 ---
 
@@ -3034,7 +3034,7 @@ Exp 09 es un experimento diagnóstico que confirma:
 | **Nombre** | Threshold por período de cadencia · plateau_duration en segundos · feature cadencia_s |
 | **Fecha** | 2026-06-14 |
 | **Estado** | ✅ Completado |
-| **Basado en** | [Exp 09A](A1_EXPERIMENTOS_DETALLE.md) + nueva data Abril y Mayo-Jun |
+| **Basado en** | [Exp 09A](av1_EXPERIMENTOS_DETALLE.md) + nueva data Abril y Mayo-Jun |
 | **Foco** | Modelo A (binario: activo vs reposo) |
 
 ---
@@ -4063,7 +4063,7 @@ Hallazgos clave:
 | **Nombre** | Limpieza de features + ampliación de ground truth Mayo-Jun + ensemble servido |
 | **Fecha planificada** | A definir (post 2026-06-15) |
 | **Estado** | 📋 Planificado — no ejecutado |
-| **Basado en** | [Exp 09B](A1_EXPERIMENTOS_DETALLE.md) (pipeline 30s, 13 features) + [Exp 10-NN](A1_EXPERIMENTOS_DETALLE.md) (benchmark NN) + [Exp 07](A1_EXPERIMENTOS_DETALLE.md) (candidatos sin etiquetar) |
+| **Basado en** | [Exp 09B](av1_EXPERIMENTOS_DETALLE.md) (pipeline 30s, 13 features) + [Exp 10-NN](av1_EXPERIMENTOS_DETALLE.md) (benchmark NN) + [Exp 07](av1_EXPERIMENTOS_DETALLE.md) (candidatos sin etiquetar) |
 | **Modelo en producción** | Exp 06 (sin cambios hasta que Exp 11 demuestre mejora real) |
 
 ---
@@ -4348,7 +4348,7 @@ Paso 6 — Reporte
 ### Cierre
 - [ ] Sección "9. Resultados" completada con métricas reales
 - [ ] Decisión documentada (¿reemplaza a Exp 06 para Mayo-Jun? ¿queda como diagnóstico?)
-- [ ] Fila de Exp 11 actualizada en `A1_EXPERIMENTS_README.md` y `A1_EXPERIMENT_TRACKER.md`
+- [ ] Fila de Exp 11 actualizada en `av1_EXPERIMENTS_README.md` y `av1_EXPERIMENT_TRACKER.md`
 
 ---
 

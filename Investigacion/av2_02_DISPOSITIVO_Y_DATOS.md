@@ -6,7 +6,7 @@ estado: activo
 
 # KPCL0034 — Dispositivo y Fuentes de Datos
 
-> Ver [[00_INDICE_AV2]] para el índice completo del ciclo.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo del ciclo.
 
 ---
 
@@ -149,6 +149,6 @@ t_ini_stgo = t_inicio.astimezone(TZ_STGO)
 
 ## Ver también
 
-- [[03_DETECCION_SEGMENTOS]] — Cómo se procesan estos datos para detectar candidatos
-- [[01_ARQUITECTURA_PIPELINE]] — Flujo completo del pipeline
+- [[av2_03_DETECCION_SEGMENTOS]] — Cómo se procesan estos datos para detectar candidatos
+- [[av2_01_ARQUITECTURA_PIPELINE]] — Flujo completo del pipeline
 - [[02_REGLAS_EVENTOS_ALIMENTACION]] — Reglas canónicas de eventos de Supabase

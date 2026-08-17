@@ -71,7 +71,7 @@ de familias/conteo — solo el fallback legado del Evidence Engine.
 **Trigger:** revisión de práctica/análisis a pedido de Mauro. No fue solo re-ingesta de
 datos (496 anotaciones vs 417 en v2.1) — se encontró y corrigió un bug estructural en
 `evidence_score()`. Detalle completo en
-[RECOPILACION_DATOS_APP.md §12bis](RECOPILACION_DATOS_APP.md#12bis-actualización-2026-08-10--el-problema-real-no-eran-los-pesos-era-la-escala).
+[av2_RECOPILACION_DATOS_APP.md §12bis](av2_RECOPILACION_DATOS_APP.md#12bis-actualización-2026-08-10--el-problema-real-no-eran-los-pesos-era-la-escala).
 
 **Resumen:** `evidence_score()` sumaba `peso × valor crudo` sin normalizar. Con 496
 anotaciones acertaba **49.6%** — peor que predecir siempre "alimentación" (51.2%). Fix:

@@ -72,7 +72,7 @@ Según [`REGLAS_EVENTOS_ALIMENTACION.md`](../REGLAS_EVENTOS_ALIMENTACION.md), **
 
 Esta decisión está documentada en:
 - [`Data Science/README.md`](Data%20Science/README.md): "El alcance vigente de esta carpeta es investigación supervisada sobre alimento; `KPCL0036` e hidratación quedan fuera del modelo activo por ahora."
-- [`A1_FASE_2_DATASET_README.md`](A1_FASE_2_DATASET_README.md): "El modelo activo de esta fase es solo para alimentación y no cubre hidratación."
+- [`av1_FASE_2_DATASET_README.md`](av1_FASE_2_DATASET_README.md): "El modelo activo de esta fase es solo para alimentación y no cubre hidratación."
 
 ### Razón de la exclusión
 

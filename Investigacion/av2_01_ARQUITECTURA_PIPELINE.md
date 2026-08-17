@@ -6,7 +6,7 @@ estado: activo
 
 # Ciclo Alpha v2 — Arquitectura del Pipeline
 
-> Ver [[00_INDICE_AV2]] para el índice completo del ciclo.
+> Ver [[av2_00_INDICE_AV2]] para el índice completo del ciclo.
 
 ---
 
@@ -97,15 +97,15 @@ El Ciclo Alpha v2 se basa en tres principios:
 ```
 09_Investigacion/Ciclo_Alpha_v2/
 │
-├── 00_INDICE_AV2.md                 ← Este índice
-├── 01_ARQUITECTURA_PIPELINE.md      ← Este documento
-├── 02_DISPOSITIVO_Y_DATOS.md
-├── 03_DETECCION_SEGMENTOS.md
+├── av2_00_INDICE_AV2.md                 ← Este índice
+├── av2_01_ARQUITECTURA_PIPELINE.md      ← Este documento
+├── av2_02_DISPOSITIVO_Y_DATOS.md
+├── av2_03_DETECCION_SEGMENTOS.md
 ├── 04_SHAPE_FEATURES.md
-├── 05_ANOTACION_Y_CATEGORIAS.md
-├── 06_UMBRALES_Y_REGLAS.md
-├── 07_RESULTADOS_304_ANOTACIONES.md
-├── 08_APP_ANOTACION_AV2.md
+├── av2_05_ANOTACION_Y_CATEGORIAS.md
+├── av2_06_UMBRALES_Y_REGLAS.md
+├── av2_07_RESULTADOS_304_ANOTACIONES.md
+├── av2_08_APP_ANOTACION_AV2.md
 │
 └── fase_0_ruido/                    ← Código del ciclo
     ├── 01_genera_candidatos.py
@@ -148,7 +148,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 
 ## Ver también
 
-- [[02_DISPOSITIVO_Y_DATOS]] — Fuentes de datos y UUIDs
-- [[03_DETECCION_SEGMENTOS]] — Detalles de `01_genera_candidatos.py`
+- [[av2_02_DISPOSITIVO_Y_DATOS]] — Fuentes de datos y UUIDs
+- [[av2_03_DETECCION_SEGMENTOS]] — Detalles de `01_genera_candidatos.py`
 - [[04_SHAPE_FEATURES]] — Matemática de los features de forma
-- [[06_UMBRALES_Y_REGLAS]] — Reglas de clasificación actuales
+- [[av2_06_UMBRALES_Y_REGLAS]] — Reglas de clasificación actuales

@@ -13,19 +13,19 @@
 > ```
 >
 > **Para entender la app antes de tocarla, en este orden:**
-> 1. **[AV2_FASE_0_RUIDO_README.md](AV2_FASE_0_RUIDO_README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
-> 2. **[ARQUITECTURA_APP.md](ARQUITECTURA_APP.md)** — arquitectura técnica interna
-> 3. **[08_APP_ANOTACION_AV2.md](08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
-> 4. **[04_MATEMATICA_SHAPE_FEATURES.md](04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
-> 5. **[APRENDIZAJES_CONSOLIDADOS.md](APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
+> 1. **[av2_FASE_0_RUIDO_README.md](av2_FASE_0_RUIDO_README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
+> 2. **[av2_ARQUITECTURA_APP.md](av2_ARQUITECTURA_APP.md)** — arquitectura técnica interna
+> 3. **[av2_08_APP_ANOTACION_AV2.md](av2_08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
+> 4. **[av2_04_MATEMATICA_SHAPE_FEATURES.md](av2_04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
+> 5. **[av2_APRENDIZAJES_CONSOLIDADOS.md](av2_APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
 >
-> **MOC completo de Alpha v2:** [00_INDICE_AV2.md](00_INDICE_AV2.md) ⭐ — **MOC de toda la carpeta:** [[_MOC]]
+> **MOC completo de Alpha v2:** [av2_00_INDICE_AV2.md](av2_00_INDICE_AV2.md) ⭐ — **MOC de toda la carpeta:** [[_MOC]]
 >
 > ---
 >
 > **Documentos maestros de toda la carpeta** (para agentes IA — leer si necesitás contexto más amplio que la app):
 > - **[GLOSARIO.md](GLOSARIO.md)** — devices, features, clases, parámetros globales, convenciones
-> - **[A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha v1 (Exp01–11), histórico
+> - **[av1_EXPERIMENT_TRACKER.md](av1_EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha v1 (Exp01–11), histórico
 > - **[ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md)** — por qué se archivó Alpha/Gamma/Delta y nació Alpha v2
 >
 > **Convención de nombres** (todos los `.md` viven planos en esta raíz — el prefijo dice el ciclo):
@@ -42,14 +42,14 @@
 > **Mapa de la carpeta (estado real, verificado):**
 > ```
 > Investigacion/
-> ├── README.md, _MOC.md, GLOSARIO.md, A1_EXPERIMENT_TRACKER.md    ← navegación + histórico Alpha v1
+> ├── README.md, _MOC.md, GLOSARIO.md, av1_EXPERIMENT_TRACKER.md    ← navegación + histórico Alpha v1
 > ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                          ← por qué existe Alpha v2
 > ├── REGLAS_EVENTOS_ALIMENTACION.md, OPERATIVIZACION_SESIONES_SUPABASE.md,
 > │   REGISTRO_EVENTOS_2026-04-16.md                                ← reglas canónicas cross-cycle
-> ├── 00_INDICE_AV2*.md … 09_EVOLUCION_MOTOR_MATEMATICO.md          ← docs del Ciclo Alpha v2
-> ├── AV2_*.md, ACTUALIZACION_DATA.md, ARQUITECTURA_APP.md,
-> │   HISTORIAL_RESULTADOS.md, RECOPILACION_DATOS_APP.md,
-> │   ANALISIS_BENCHMARK.md, APRENDIZAJES_CONSOLIDADOS.md           ← más docs de Alpha v2 / fase_0_ruido
+> ├── 00_INDICE_AV2*.md … av2_09_EVOLUCION_MOTOR_MATEMATICO.md          ← docs del Ciclo Alpha v2
+> ├── AV2_*.md, av2_ACTUALIZACION_DATA.md, av2_ARQUITECTURA_APP.md,
+> │   av2_HISTORIAL_RESULTADOS.md, av2_RECOPILACION_DATOS_APP.md,
+> │   av2_ANALISIS_BENCHMARK.md, av2_APRENDIZAJES_CONSOLIDADOS.md           ← más docs de Alpha v2 / fase_0_ruido
 > ├── A1_*.md (20 archivos, incl. A1_exp_01–11)                     ← docs del Ciclo Alpha v1
 > ├── GAMMA_*.md, g0N_*.md, *_GAMMA.md, CICLO_GAMMA_*.md,
 > │   COMO_EJECUTAR_GAMMA.md                                        ← docs del Ciclo Gamma
@@ -75,7 +75,7 @@
 > Los datos crudos (`readings.csv`, `readings_rows.csv`) viven en `11_Data/2026/` — hermano de
 > `Investigacion/` en la raíz del repo, no adentro de esta carpeta.
 >
-> **Cómo categorizar un archivo nuevo:** ver sección [Regla de uso de la carpeta](#regla-de-uso-de-la-carpeta) + [A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md) para experimentos. Un doc nuevo de un ciclo cerrado (Alpha v1/Gamma/Delta) lleva el prefijo de ese ciclo; uno nuevo de Alpha v2 no necesita prefijo si sigue la numeración `00`–`09` existente.
+> **Cómo categorizar un archivo nuevo:** ver sección [Regla de uso de la carpeta](#regla-de-uso-de-la-carpeta) + [av1_EXPERIMENT_TRACKER.md](av1_EXPERIMENT_TRACKER.md) para experimentos. Un doc nuevo de un ciclo cerrado (Alpha v1/Gamma/Delta) lleva el prefijo de ese ciclo; uno nuevo de Alpha v2 no necesita prefijo si sigue la numeración `00`–`09` existente.
 
 **Proyecto:** Kittypau — Ecosistema IoT para monitoreo de mascotas  
 **Dispositivos documentados:** KPCL0034 (food_bowl) · KPCL0036 (water_bowl)  
@@ -314,7 +314,7 @@ Especificación canónica de las reglas de detección y categorización. Incluye
 
 ---
 
-#### [`A1_ML_PREDICCION_ALIMENTACION.md`](A1_ML_PREDICCION_ALIMENTACION.md)
+#### [`av1_ML_PREDICCION_ALIMENTACION.md`](av1_ML_PREDICCION_ALIMENTACION.md)
 
 Especificación completa del problema de ML. Incluye:
 - Formulación del problema (segmentación de 3 estados: baseline / inicio_alimentacion / post_alimentacion)
@@ -340,7 +340,7 @@ Documentación de la implementación SQL/API en Supabase. Incluye:
 
 ### Análisis Colab (export 07-05-2026)
 
-- [`A1_ANALISIS_COLAB_KPCL0034_07052026.md`](A1_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
+- [`av1_ANALISIS_COLAB_KPCL0034_07052026.md`](av1_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
 - [`Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py`](Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
 
 ### Datos históricos — `Data_2026/`
@@ -898,14 +898,14 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 ### Para agentes IA (lectura mínima para operar)
 1. Este `README.md` — contexto operativo completo del ecosistema
 2. [`GLOSARIO.md`](GLOSARIO.md) — devices, features, clases, parámetros, convenciones
-3. [`A1_EXPERIMENT_TRACKER.md`](A1_EXPERIMENT_TRACKER.md) — estado de todos los experimentos y métricas
+3. [`av1_EXPERIMENT_TRACKER.md`](av1_EXPERIMENT_TRACKER.md) — estado de todos los experimentos y métricas
 4. [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) — reglas canónicas de etiquetado
 
 ### Para ejecutar o extender el pipeline ML
-5. [`A1_README.md`](A1_README.md) — guía de ejecución Fase 1→4
-6. [`A1_EXPERIMENTS_README.md`](A1_EXPERIMENTS_README.md) — índice de experimentos con hitos
-7. [`A1_EXPERIMENTOS_DETALLE.md`](A1_EXPERIMENTOS_DETALLE.md) — experimento activo ★
-8. [`A1_PREPARACION_NUEVA_INGESTA.md`](A1_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
+5. [`av1_README.md`](av1_README.md) — guía de ejecución Fase 1→4
+6. [`av1_EXPERIMENTS_README.md`](av1_EXPERIMENTS_README.md) — índice de experimentos con hitos
+7. [`av1_EXPERIMENTOS_DETALLE.md`](av1_EXPERIMENTOS_DETALLE.md) — experimento activo ★
+8. [`av1_PREPARACION_NUEVA_INGESTA.md`](av1_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
 
 ### Para categorizar sesiones manualmente
 9. [`KPCL_GUIA_DASHBOARD.md`](KPCL_GUIA_DASHBOARD.md) — cómo usar el dashboard visual
@@ -913,4 +913,4 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 
 ### Para entender los datos
 11. [`Data_2026/README.md`](Data_2026/README.md) — índice de dumps disponibles y alertas de calidad
-12. [`A1_ML_PREDICCION_ALIMENTACION.md`](A1_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
+12. [`av1_ML_PREDICCION_ALIMENTACION.md`](av1_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
