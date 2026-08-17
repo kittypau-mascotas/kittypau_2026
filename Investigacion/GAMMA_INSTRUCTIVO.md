@@ -303,12 +303,12 @@ Data Science/
 │   ├── GLOSARIO_GAMMA.md                       ← términos actualizados con lecciones Alpha
 │   │
 │   ├── experiments/                            ← un MD por experimento Gamma
-│   │   ├── g01_baseline_limpio.md
-│   │   ├── g02_gbm_benchmark.md
-│   │   ├── g03_feature_engineering.md
-│   │   ├── g04_hyperparameter_optimization.md
-│   │   ├── g05_classical_ml_benchmark.md
-│   │   └── g06_nn_baseline.md  (data-conditional)
+│   │   ├── GAMMA_EXPERIMENTOS_DETALLE.md
+│   │   ├── GAMMA_EXPERIMENTOS_DETALLE.md
+│   │   ├── GAMMA_EXPERIMENTOS_DETALLE.md
+│   │   ├── GAMMA_EXPERIMENTOS_DETALLE.md
+│   │   ├── GAMMA_EXPERIMENTOS_DETALLE.md
+│   │   └── GAMMA_EXPERIMENTOS_DETALLE.md  (data-conditional)
 │   │
 │   ├── fase_1_extraccion/
 │   │   ├── scripts/
@@ -952,7 +952,7 @@ Estas reglas son inviolables. Romperlas requiere documentar el motivo en el expe
 | `fase_1_extraccion/scripts/g01_setup_env.md` ... `g10_quality_report.md` | Implementación (specs .py) de los Pasos 4.1–4.11 del runbook de unificación |
 | `EXPERIMENT_TRACKER_GAMMA.md` | Tabla maestra de todos los experimentos del Ciclo Gamma |
 | `GLOSARIO_GAMMA.md` | Definiciones actualizadas con lecciones Alpha |
-| `A1_exp_01_linea_base.md` a `A1_exp_10_nn_colab.md` | Ciclo Alpha (solo lectura, referencia histórica) |
+| `A1_EXPERIMENTOS_DETALLE.md` a `A1_EXPERIMENTOS_DETALLE.md` | Ciclo Alpha (solo lectura, referencia histórica) |
 | `A1_EXPERIMENT_TRACKER.md` | Tracker del Ciclo Alpha (histórico) |
 | `../REGLAS_EVENTOS_ALIMENTACION.md` | Taxonomía canónica de eventos (aplica a ambos ciclos) |
 | `A1_ML_PREDICCION_ALIMENTACION.md` | Especificación ML original (Ciclo Alpha) |

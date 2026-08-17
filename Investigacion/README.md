@@ -904,7 +904,7 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 ### Para ejecutar o extender el pipeline ML
 5. [`A1_README.md`](A1_README.md) — guía de ejecución Fase 1→4
 6. [`A1_EXPERIMENTS_README.md`](A1_EXPERIMENTS_README.md) — índice de experimentos con hitos
-7. [`A1_exp_07_inferencia_mayo_junio.md`](A1_exp_07_inferencia_mayo_junio.md) — experimento activo ★
+7. [`A1_EXPERIMENTOS_DETALLE.md`](A1_EXPERIMENTOS_DETALLE.md) — experimento activo ★
 8. [`A1_PREPARACION_NUEVA_INGESTA.md`](A1_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
 
 ### Para categorizar sesiones manualmente

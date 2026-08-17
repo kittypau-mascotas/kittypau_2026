@@ -93,17 +93,11 @@ Código en `Ciclo_Alpha_v1/`.
 - [[A1_ANALISIS_COLAB_KPCL0034_07052026]] — análisis exploratorio en Colab (export mayo 2026)
 - [[A1_EXPERIMENT_TRACKER]] — tabla maestra de experimentos Exp01–11
 - [[A1_EXPERIMENTS_README]] · [[A1_FASE_2_DATASET_README]] · [[A1_FASE_3_MODELOS_README]] — índices de subcarpetas de código
-
-**Experimentos** (`A1_exp_NN_*.md`):
-[[A1_exp_01_linea_base]] · [[A1_exp_02_threshold_rebalanceo]] · [[A1_exp_03_mejor_base]] ·
-[[A1_exp_04_smote_calibracion]] · [[A1_exp_05_nueva_ingesta]] · [[A1_exp_06_colab_dataset]] ·
-[[A1_exp_07_inferencia_mayo_junio]] · [[A1_exp_08_unificacion_mayo_junio]] ·
-[[A1_exp_09a_cadencia_normalizada]] · [[A1_exp_09b_threshold_por_periodo]] ·
-[[A1_exp_10_nn_colab]] · [[A1_exp_11_ensemble_gru_lgbm]]
+- [[A1_EXPERIMENTOS_DETALLE]] — bitácora completa de los 12 experimentos (Exp01–11, fusión de los `A1_exp_NN_*.md` individuales)
 
 ---
 
-## 🔬 Ciclo Gamma (prefijo `GAMMA_` en los docs ambiguos, `g0N_`/`EXPERIMENT_TRACKER_GAMMA`/`GLOSARIO_GAMMA` en el resto) — ARCHIVADO
+## 🔬 Ciclo Gamma (prefijo `GAMMA_` en los docs ambiguos, `EXPERIMENT_TRACKER_GAMMA`/`GLOSARIO_GAMMA` en el resto) — ARCHIVADO
 
 Segunda generación, supervisado multi-modelo. Código en
 `Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Gamma/`.
@@ -114,33 +108,27 @@ Segunda generación, supervisado multi-modelo. Código en
 - [[COMO_EJECUTAR_GAMMA]] — instrucciones de ejecución
 - [[EXPERIMENT_TRACKER_GAMMA]] — estado y métricas de cada experimento G-01 a G-08
 - [[GLOSARIO_GAMMA]] — vocabulario específico de Gamma (complementa GLOSARIO.md)
-
-**Experimentos** (resultados, `g0N_*.md`):
-[[g01_baseline_limpio]] · [[g02_gbm_benchmark]] · [[g03_feature_engineering]] ·
-[[g04_hyperparameter_optimization]] · [[g05_classical_ml_benchmark]] · [[g06_nn_baseline]]
-
-**Specs de scripts** (pre-implementación, `— PY` en el título — Mauro convierte a `.py` a mano):
-[[g01_build_labels]] · [[g02_build_features]] · [[g03_build_train_dataset]] ·
-[[g04_dataset_report]] · [[g05_build_sessions]] · [[_gamma_phase2_utils]] · [[_gamma_phase3_utils]]
+- [[GAMMA_EXPERIMENTOS_DETALLE]] — bitácora completa G-01 a G-06 (fusión de los 6 `g0N_*.md` de resultados)
+- [[GAMMA_SCRIPTS_SPECS]] — specs de los 7 scripts del pipeline (pre-implementación, `— PY` en el título — Mauro convierte a `.py` a mano; fusión de `g01_build_labels.md`...`g05_build_sessions.md` + `_gamma_phase2_utils.md`/`_gamma_phase3_utils.md`)
 
 ---
 
-## 🌊 Ciclo Delta (prefijo `DELTA_` en el doc ambiguo, `d0N_`/`EXPERIMENT_TRACKER_DELTA`/`GLOSARIO_DELTA` en el resto) — ARCHIVADO
+## 🌊 Ciclo Delta (prefijo `DELTA_` en el doc ambiguo, `EXPERIMENT_TRACKER_DELTA`/`GLOSARIO_DELTA` en el resto) — ARCHIVADO
 
 Exploración no supervisada (clustering + anomalías). Código en
 `Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Delta/`.
 
 - [[instructivo_delta]] — guía maestra del ciclo no supervisado
 - [[inferencia_delta]] — inferencia sobre el modelo no supervisado
-- [[REPORTE_EJECUCION_DELTA]] — reporte de ejecución completo
-- [[reporte_final_delta]] — reporte final generado por el pipeline
-- [[DELTA_ANOMALY_REPORT]] — reporte de anomalías generado (676 H/C/U)
+- [[DELTA_ANOMALY_REPORT]] — reporte de anomalías generado (676 H/C/U, incl. top 10 más extremas)
 - [[EXPERIMENT_TRACKER_DELTA]] — estado y métricas D-01 a D-Final
 - [[GLOSARIO_DELTA]] — vocabulario específico de Delta (complementa GLOSARIO.md y GLOSARIO_GAMMA.md)
+- [[DELTA_EXPERIMENTOS_DETALLE]] — bitácora completa D-01 a D-05 (fusión de los 5 `d0N_*.md` + lo rescatable de `REPORTE_EJECUCION_DELTA.md`, discontinuado por redundante)
 
-**Experimentos** (`d0N_*.md`):
-[[d01_clustering_peso]] · [[d02_anomaly_detection]] · [[d03_patron_temporal]] ·
-[[d04_cross_check_gamma]] · [[d05_candidatos_servido]]
+> `REPORTE_EJECUCION_DELTA.md` y `reporte_final_delta.md` se discontinuaron — su
+> contenido era ~100% redundante con [[APRENDIZAJES_GAMMA_DELTA]] (memoria final del
+> ciclo) y con `DELTA_EXPERIMENTOS_DETALLE.md`. Lo único rescatable (archivos
+> generados, recomendaciones pendientes) se fusionó como apéndice de este último.
 
 ---
 

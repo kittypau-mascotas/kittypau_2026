@@ -170,7 +170,7 @@ else:
 | Componente | Formato | Ejemplo |
 |-----------|---------|---------|
 | ID | `Exp NN` (dos dígitos con cero) | `Exp 07` |
-| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `A1_exp_07_inferencia_mayo_junio.md` |
+| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `A1_EXPERIMENTOS_DETALLE.md` |
 | Fecha | ISO 8601 (YYYY-MM-DD) | `2026-06-14` |
 
 ### Estados de Experimento

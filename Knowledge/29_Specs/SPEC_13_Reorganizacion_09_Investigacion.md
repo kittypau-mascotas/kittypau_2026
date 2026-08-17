@@ -706,3 +706,79 @@ de código.
 `py_compile` (6 scripts core de `fase_0_ruido/`), `streamlit run --headless` →
 HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16. Grep dirigido:
 0 referencias rotas a los 33 nombres viejos en toda `Investigacion/`.
+
+## 15. Octavo addendum (2026-08-16) — fusionar y descartar para reducir el conteo
+
+> Pedido de Mauro: "unamos y fusionemos algunos .md, si es necesario renombra o
+> elimina algunas, necesitamos reducir este numero. son muchos .md" — sobre los
+> 88 `.md` de §14.
+
+### Fusiones ejecutadas (30 archivos → 4)
+
+Concatenación con separador `---` y comentario HTML de procedencia
+(`<!-- ==== fusionado desde X.md ==== -->`) por cada archivo origen, preservando
+el 100% del contenido — nada se resumió ni se recortó:
+
+| Archivo nuevo | Fusiona | Motivo |
+|---|---|---|
+| `A1_EXPERIMENTOS_DETALLE.md` | 12 × `A1_exp_NN_*.md` | Bitácora cronológica de un ciclo cerrado — mismo patrón que un lab notebook acumulativo. `A1_EXPERIMENT_TRACKER.md` ya indexa cada uno con link, no se perdió navegabilidad |
+| `GAMMA_EXPERIMENTOS_DETALLE.md` | 6 × `g0N_*.md` (resultados G-01 a G-06) | Ídem, indexado por `EXPERIMENT_TRACKER_GAMMA.md` |
+| `GAMMA_SCRIPTS_SPECS.md` | 7 archivos (`g01_build_labels.md`...`g05_build_sessions.md` + `_gamma_phase2_utils.md`/`_gamma_phase3_utils.md`) | Specs pre-implementación de scripts (convención `— PY` documentada en `GAMMA_INSTRUCTIVO.md` regla 1) — una unidad temática, no experimentos separados |
+| `DELTA_EXPERIMENTOS_DETALLE.md` | 5 × `d0N_*.md` (D-01 a D-05) | Ídem, indexado por `EXPERIMENT_TRACKER_DELTA.md` |
+
+**Verificado antes de fusionar** que no eran material distinto: `g01_baseline_limpio.md`
+(bitácora de resultado del experimento G-01) vs. `g01_build_labels.md` (spec del
+script `g01_build_labels.py`) — mismo número, contenido y propósito distintos,
+confirmado leyendo ambos headers antes de decidir el agrupamiento correcto.
+
+### Descartes (3 archivos)
+
+- **`COMPARACION_ALPHA_GAMMA.md`** (ya en §14) — reconfirmado en este addendum al
+  auditar el resto de la carpeta.
+- **`reporte_final_delta.md`** — archivo 100% generado automáticamente por
+  `d03_reporte_final.py` (confirmado en el código, ver §13 sobre por qué esos
+  scripts no se tocan). Su contenido íntegro (K-Means, anomalías, ARI, candidatos)
+  ya estaba en `APRENDIZAJES_GAMMA_DELTA.md` con más detalle, incluso incrustaba
+  el texto completo de `DELTA_ANOMALY_REPORT.md` verbatim.
+- **`REPORTE_EJECUCION_DELTA.md`** — reporte fase-por-fase con la misma
+  información que `APRENDIZAJES_GAMMA_DELTA.md` §2.4–2.8 y los `d0N_*.md` recién
+  fusionados. Sus 2 secciones sin duplicar en otro lado (árbol de "Archivos
+  generados" y "Pendiente/Recomendaciones" del cierre del ciclo) se fusionaron
+  como apéndice de `DELTA_EXPERIMENTOS_DETALLE.md` antes de descartarlo.
+
+### Explícitamente NO fusionado, y por qué
+
+`GLOSARIO.md` / `GLOSARIO_GAMMA.md` / `GLOSARIO_DELTA.md` — leídos los 3 headers
+antes de decidir: ya están diseñados como capas complementarias explícitas
+("El Ciclo Alpha usa el mismo vocabulario salvo donde se indica `[CORREGIDO EN
+GAMMA]`", "Complementa GLOSARIO.md... No redefine términos ya cubiertos ahí").
+Fusionarlos habría sido peor que dejarlos — se perdería esa estructura de diff
+ya pensada por quien los escribió. Mismo criterio para los 3
+`EXPERIMENT_TRACKER*.md` (tablas resumen por ciclo, cada una alimenta el detalle
+fusionado de su propio ciclo — fusionarlas mezclaría métricas de 3 ciclos con
+columnas distintas en una sola tabla ilegible).
+
+### Referencias
+
+Mismo patrón sin regex que §14 (reemplazo de string exacto, `.py` excluidos del
+sweep). Efecto secundario detectado y corregido: el propio comentario HTML de
+procedencia que insertó el script de fusión (`<!-- ==== fusionado desde X.md
+==== -->`) se autocorrompió en los 4 archivos nuevos porque el sweep de
+referencias corrió después y reemplazó el nombre del archivo origen dentro del
+comentario por el nombre del archivo fusionado (contenía el string buscado) —
+detectado con grep, corregido restaurando el nombre de procedencia original en
+cada uno de los 30 comentarios.
+
+`EXPERIMENT_TRACKER_DELTA.md`: la columna "Archivo" de las 10 filas D-01 a
+D-Final actualizada para apuntar a `DELTA_EXPERIMENTOS_DETALLE.md`/
+`APRENDIZAJES_GAMMA_DELTA.md` en vez de los `d0N_*.md` ya fusionados.
+
+### Resultado
+
+88 → 59 `.md` en la raíz de `Investigacion/` (33% menos), sin perder contenido —
+solo consolidado y con la redundancia genuina eliminada. `_MOC.md` actualizado
+con los 4 nuevos índices y la nota de los 2 descartes.
+
+Verificado: `py_compile` (6 scripts core), `streamlit run --headless` → HTTP 200
++ `/_stcore/health` → `ok`, `pytest tests/` → 16/16. Grep dirigido: 0 referencias
+rotas a los 32 nombres eliminados.

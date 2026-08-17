@@ -10,18 +10,18 @@
 
 | # | Archivo | Fecha | Estado | Cambio principal | Resultado clave |
 |---|---------|-------|--------|-----------------|----------------|
-| 1 | [A1_exp_01_linea_base.md](A1_exp_01_linea_base.md) | 2026-04-26 | 🗂️ Histórico | Configuración inicial LightGBM | F1 activo=0.000 — binario colapsa con threshold default |
-| 2 | [A1_exp_02_threshold_rebalanceo.md](A1_exp_02_threshold_rebalanceo.md) | 2026-04-26 | 🗂️ Histórico | Threshold sweep → 0.42 | F1 activo=0.555 — mejora crítica en binario |
-| 3 | [A1_exp_03_mejor_base.md](A1_exp_03_mejor_base.md) | 2026-04-26 | 🗂️ Histórico | **12 features definitivas** + servido ×3 | F1 multiclase=0.671 — **base histórica fija** |
-| 4 | [A1_exp_04_smote_calibracion.md](A1_exp_04_smote_calibracion.md) | 2026-04-26 | 🗂️ Histórico | SMOTE local + calibración isotónica → **threshold 0.20** | F1 activo=0.569 — calibración de producción establecida |
-| 5 | [A1_exp_05_nueva_ingesta.md](A1_exp_05_nueva_ingesta.md) | 2026-04-26 | 🗂️ Histórico | Fase 1 cambia a CSV dump (no API) | Sin mejora en modelos — cambio de infraestructura |
-| 6 | [A1_exp_06_colab_dataset.md](A1_exp_06_colab_dataset.md) | 2026-06-13 | ✅ **Producción** | +8 sesiones alim, +4 servido en dataset | F1 activo=**0.7619** ✅ · F1 alim=**0.7606** ✅ · **Fase 4 habilitada** |
-| 7 | [A1_exp_07_inferencia_mayo_junio.md](A1_exp_07_inferencia_mayo_junio.md) | 2026-06-14 | 🗂️ Histórico | Primera inferencia en datos reales sin etiquetar | 134 sesiones alim detectadas · 1,306 g consumo |
-| 8 | [A1_exp_08_unificacion_mayo_junio.md](A1_exp_08_unificacion_mayo_junio.md) | 2026-06-14 | 🗂️ Histórico | Unificación Abril+MayoJun · 185 alim · 27 serv | F1 activo=0.6021 · shift distribución identificado |
-| 9A | [A1_exp_09a_cadencia_normalizada.md](A1_exp_09a_cadencia_normalizada.md) | 2026-06-14 | ✅ Completado | Resampleo a cadencia uniforme 30 s | F1 activo=0.6000 · AUC=0.9146 · threshold sube a 0.26 — shift persiste |
-| 9B | [A1_exp_09b_threshold_por_periodo.md](A1_exp_09b_threshold_por_periodo.md) | 2026-06-14 | ✅ Completado | Threshold por período + `plateau_duration` en segundos + `cadencia_s` (feature #13) | F1 activo=0.6000 (sin mejora) · AUC=0.9171 (+0.0025) · `cadencia_s` importancia baja |
-| 10-NN | [A1_exp_10_nn_colab.md](A1_exp_10_nn_colab.md) | 2026-06-15 | 🗂️ Completado | Benchmark 4 arquitecturas neuronales (MLP / GRU / TCN / Transformer) en Colab T4 | LGBM Exp 06 supera a todas las NN · GRU mejor en F1 servido (0.34) · TCN mejor en F1 activo (0.60) |
-| 11 | [A1_exp_11_ensemble_gru_lgbm.md](A1_exp_11_ensemble_gru_lgbm.md) | ⏳ TBD | 📋 Planificado | Revertir `cadencia_s` (→12 feat) · revisar 155 candidatos Exp 07 (Línea B) · ensemble LGBM+GRU Modelo B (Línea C) | Meta: F1 servido ≥ 0.30 · Macro F1 ≥ 0.62 · no degradar F1 activo ni F1 alim |
+| 1 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-04-26 | 🗂️ Histórico | Configuración inicial LightGBM | F1 activo=0.000 — binario colapsa con threshold default |
+| 2 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-04-26 | 🗂️ Histórico | Threshold sweep → 0.42 | F1 activo=0.555 — mejora crítica en binario |
+| 3 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-04-26 | 🗂️ Histórico | **12 features definitivas** + servido ×3 | F1 multiclase=0.671 — **base histórica fija** |
+| 4 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-04-26 | 🗂️ Histórico | SMOTE local + calibración isotónica → **threshold 0.20** | F1 activo=0.569 — calibración de producción establecida |
+| 5 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-04-26 | 🗂️ Histórico | Fase 1 cambia a CSV dump (no API) | Sin mejora en modelos — cambio de infraestructura |
+| 6 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-13 | ✅ **Producción** | +8 sesiones alim, +4 servido en dataset | F1 activo=**0.7619** ✅ · F1 alim=**0.7606** ✅ · **Fase 4 habilitada** |
+| 7 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-14 | 🗂️ Histórico | Primera inferencia en datos reales sin etiquetar | 134 sesiones alim detectadas · 1,306 g consumo |
+| 8 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-14 | 🗂️ Histórico | Unificación Abril+MayoJun · 185 alim · 27 serv | F1 activo=0.6021 · shift distribución identificado |
+| 9A | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-14 | ✅ Completado | Resampleo a cadencia uniforme 30 s | F1 activo=0.6000 · AUC=0.9146 · threshold sube a 0.26 — shift persiste |
+| 9B | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-14 | ✅ Completado | Threshold por período + `plateau_duration` en segundos + `cadencia_s` (feature #13) | F1 activo=0.6000 (sin mejora) · AUC=0.9171 (+0.0025) · `cadencia_s` importancia baja |
+| 10-NN | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | 2026-06-15 | 🗂️ Completado | Benchmark 4 arquitecturas neuronales (MLP / GRU / TCN / Transformer) en Colab T4 | LGBM Exp 06 supera a todas las NN · GRU mejor en F1 servido (0.34) · TCN mejor en F1 activo (0.60) |
+| 11 | [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) | ⏳ TBD | 📋 Planificado | Revertir `cadencia_s` (→12 feat) · revisar 155 candidatos Exp 07 (Línea B) · ensemble LGBM+GRU Modelo B (Línea C) | Meta: F1 servido ≥ 0.30 · Macro F1 ≥ 0.62 · no degradar F1 activo ni F1 alim |
 
 ---
 
@@ -103,7 +103,7 @@ Cada `exp_NN_*.md` debe contener estas secciones:
 
 ## Cómo Crear Exp 08
 
-1. Copiar [A1_exp_06_colab_dataset.md](A1_exp_06_colab_dataset.md) como plantilla
+1. Copiar [A1_EXPERIMENTOS_DETALLE.md](A1_EXPERIMENTOS_DETALLE.md) como plantilla
 2. Renombrar a `exp_08_reentrenamiento_mayo_junio.md`
 3. Prerequisito: etiquetado retroactivo completo de Mayo–Jun en `app_anotacion.py`
 4. Ejecutar Fase 1 con el CSV `Mayo_2026/readings_rows.csv` + nuevas annotations

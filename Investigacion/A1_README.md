@@ -26,18 +26,18 @@ Data Science/
 ├── resumen_fase3.svg                   ← gráfico comparativo visual
 │
 ├── experiments/                       ← un MD por experimento
-│   ├── A1_exp_01_linea_base.md           ← Modelo A F1=0.00 (threshold default)
-│   ├── A1_exp_02_threshold_rebalanceo.md ← Modelo A F1=0.555 (threshold tuning)
-│   ├── A1_exp_03_mejor_base.md           ← Modelo B Macro F1=0.671 (mejor base histórica)
-│   ├── A1_exp_04_smote_calibracion.md    ← SMOTE + calibración isotónica
-│   ├── A1_exp_05_nueva_ingesta.md        ← Fase 1 actualizada, modelos sin cambio
-│   ├── A1_exp_06_colab_dataset.md        ← dump 07-05-2026 · Fase 4 habilitada
-│   ├── A1_exp_07_inferencia_mayo_junio.md ← ✅ Completado — inferencia Mayo–Jun 2026 · 155 sesiones anotadas retroactivamente
-│   ├── A1_exp_08_unificacion_mayo_junio.md ← ✅ Completado — Abril+MayoJun unificados · F1 servido↑ · shift distribución
-│   ├── A1_exp_09a_cadencia_normalizada.md ← ✅ Completado — resampleo 30s · F1=0.6000 · AUC=0.9146 · threshold sube a 0.26
-│   ├── A1_exp_09b_threshold_por_periodo.md ← ✅ Completado — threshold por período · plateau en segundos · cadencia_s (#13)
-│   ├── A1_exp_10_nn_colab.md               ← ✅ Completado — benchmark 4 NN vs LGBM Exp 06 · LGBM permanece en prod · GRU F1 serv=0.34
-│   └── A1_exp_11_ensemble_gru_lgbm.md      ← 📋 Planificado — revertir cadencia_s · revisión 155 candidatos Exp 07 · ensemble GRU+LGBM
+│   ├── A1_EXPERIMENTOS_DETALLE.md           ← Modelo A F1=0.00 (threshold default)
+│   ├── A1_EXPERIMENTOS_DETALLE.md ← Modelo A F1=0.555 (threshold tuning)
+│   ├── A1_EXPERIMENTOS_DETALLE.md           ← Modelo B Macro F1=0.671 (mejor base histórica)
+│   ├── A1_EXPERIMENTOS_DETALLE.md    ← SMOTE + calibración isotónica
+│   ├── A1_EXPERIMENTOS_DETALLE.md        ← Fase 1 actualizada, modelos sin cambio
+│   ├── A1_EXPERIMENTOS_DETALLE.md        ← dump 07-05-2026 · Fase 4 habilitada
+│   ├── A1_EXPERIMENTOS_DETALLE.md ← ✅ Completado — inferencia Mayo–Jun 2026 · 155 sesiones anotadas retroactivamente
+│   ├── A1_EXPERIMENTOS_DETALLE.md ← ✅ Completado — Abril+MayoJun unificados · F1 servido↑ · shift distribución
+│   ├── A1_EXPERIMENTOS_DETALLE.md ← ✅ Completado — resampleo 30s · F1=0.6000 · AUC=0.9146 · threshold sube a 0.26
+│   ├── A1_EXPERIMENTOS_DETALLE.md ← ✅ Completado — threshold por período · plateau en segundos · cadencia_s (#13)
+│   ├── A1_EXPERIMENTOS_DETALLE.md               ← ✅ Completado — benchmark 4 NN vs LGBM Exp 06 · LGBM permanece en prod · GRU F1 serv=0.34
+│   └── A1_EXPERIMENTOS_DETALLE.md      ← 📋 Planificado — revertir cadencia_s · revisión 155 candidatos Exp 07 · ensemble GRU+LGBM
 │
 ├── fase_1_extraccion/
 │   ├── INSTRUCCIONES_FASE1_CLAUDE_CODE.docx

@@ -55,11 +55,11 @@ Ciclo_Delta/
 ├── EXPERIMENT_TRACKER_DELTA.md
 ├── GLOSARIO_DELTA.md
 ├── experiments/
-│   ├── d01_clustering_peso.md
-│   ├── d02_anomaly_detection.md
-│   ├── d03_patron_temporal.md
-│   ├── d04_cross_check_gamma.md
-│   └── d05_candidatos_servido.md
+│   ├── DELTA_EXPERIMENTOS_DETALLE.md
+│   ├── DELTA_EXPERIMENTOS_DETALLE.md
+│   ├── DELTA_EXPERIMENTOS_DETALLE.md
+│   ├── DELTA_EXPERIMENTOS_DETALLE.md
+│   └── DELTA_EXPERIMENTOS_DETALLE.md
 ├── fase_1_datos/
 │   ├── scripts/
 │   │   ├── _delta_utils.md

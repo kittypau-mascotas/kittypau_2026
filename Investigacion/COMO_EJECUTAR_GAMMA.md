@@ -193,5 +193,5 @@ Revisar OBLIGATORIAMENTE:
 |---|---|
 | Guía maestra | [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) |
 | Tracker de experimentos | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |
-| Primer experimento | [g01_baseline_limpio.md](g01_baseline_limpio.md) |
+| Primer experimento | [GAMMA_EXPERIMENTOS_DETALLE.md](GAMMA_EXPERIMENTOS_DETALLE.md) |
 | Taxonomía de eventos | [../../REGLAS_EVENTOS_ALIMENTACION.md](../../REGLAS_EVENTOS_ALIMENTACION.md) |
