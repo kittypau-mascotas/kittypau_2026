@@ -826,3 +826,58 @@ para ese caso específico).
 Verificado: `py_compile`, `streamlit run --headless` → HTTP 200 + `/_stcore/health`
 → `ok`, `pytest tests/` → 16/16. Grep dirigido (ambos estilos, `.md` y wikilink):
 0 referencias rotas.
+
+## 17. Décimo addendum (2026-08-16) — fusión total de Gamma + Delta
+
+> Pedido de Mauro: "ahora fusiona en 1 documento, todo lo qeu tenga relacion
+> con el ciclo gamma y delta, llamado delta_gamma_antiguio.md" — nombre de
+> archivo literal pedido por Mauro, no corregido (probable typo de "antiguo").
+
+A diferencia de §15 (que fusionó solo los experimentos y specs de scripts,
+dejando separados instructivo/glosario/tracker/memoria por ciclo), acá se
+fusionan **los 15 documentos completos** de Gamma y Delta en 1 solo archivo
+(305 KB), incluyendo lo que en §15 se decidió explícitamente NO fusionar
+(`GLOSARIO_GAMMA.md`/`GLOSARIO_DELTA.md`, `EXPERIMENT_TRACKER_GAMMA.md`/
+`EXPERIMENT_TRACKER_DELTA.md`). Se ejecuta igual porque es un pedido nuevo y
+explícito de Mauro que anula el criterio de §15 para este caso puntual — la
+razón de §15 (perder la estructura de "capas complementarias") sigue siendo
+válida como advertencia, pero Mauro decide que para Gamma/Delta —ambos
+archivados, sin desarrollo futuro— vale más tener un solo archivo que
+navegar 15.
+
+Orden de fusión (lógico, no alfabético): memoria consolidada primero
+(`APRENDIZAJES_GAMMA_DELTA.md`), después todo Gamma completo (instructivo →
+implementación → runbook → cómo ejecutar → experimentos → specs de scripts →
+tracker → glosario), después todo Delta completo (instructivo → inferencia →
+experimentos → reporte de anomalías → tracker → glosario).
+
+### Efecto esperado: colapso de referencias cruzadas internas
+
+Los 15 archivos originales se citaban extensamente entre sí (ej.
+`GAMMA_INSTRUCTIVO.md` cita a `EXPERIMENT_TRACKER_GAMMA.md`, que cita a
+`GLOSARIO_GAMMA.md`, etc. — típico de una carpeta de investigación con
+convención de referencias cruzadas). Al fusionar los 15 en 1, todas esas
+citas ahora apuntan al mismo archivo — el sweep de referencias las reescribe
+correctamente (no quedan rotas), pero el resultado es ruido visible: texto
+como `"...integradas en `delta_gamma_antiguio.md`, `delta_gamma_antiguio.md`
+y `delta_gamma_antiguio.md`"` donde antes había 3 nombres distintos.
+Detectado con grep dirigido después de la fusión. Se limpiaron
+mecánicamente las repeticiones consecutivas del mismo nombre unidas por coma
+o "y" (3 casos). El resto de las menciones sueltas (decenas, esparcidas en
+el archivo) se dejaron como están — son autorreferencias correctas dentro
+del mismo documento, no rotas, solo redundantes; restaurar cada nombre
+original habría requerido investigar la cita original de cada una de las
+~30 ocurrencias por un beneficio cosmético menor en un archivo ya archivado.
+
+`_MOC.md`: las secciones separadas "Ciclo Gamma" y "Ciclo Delta" (con 8+6
+bullets cada una) se colapsaron en una sola sección "Ciclo Gamma + Ciclo
+Delta" con 1 bullet apuntando al archivo fusionado — el sweep automático
+había dejado 12 bullets duplicados idénticos (`[[delta_gamma_antiguio]]`
+repetido), reescrito a mano.
+
+### Resultado
+
+59 → 45 `.md` en la raíz de `Investigacion/`. Verificado: `py_compile`,
+`streamlit run --headless` → HTTP 200 + `/_stcore/health` → `ok`,
+`pytest tests/` → 16/16. Grep dirigido (`.md` + wikilink): 0 referencias
+rotas a los 15 nombres eliminados, en `Investigacion/` y `Knowledge/`.

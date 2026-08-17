@@ -46,15 +46,9 @@
 > ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                          ← por qué existe Alpha v2
 > ├── REGLAS_EVENTOS_ALIMENTACION.md, OPERATIVIZACION_SESIONES_SUPABASE.md,
 > │   REGISTRO_EVENTOS_2026-04-16.md                                ← reglas canónicas cross-cycle
-> ├── 00_INDICE_AV2*.md … av2_09_EVOLUCION_MOTOR_MATEMATICO.md          ← docs del Ciclo Alpha v2
-> ├── AV2_*.md, av2_ACTUALIZACION_DATA.md, av2_ARQUITECTURA_APP.md,
-> │   av2_HISTORIAL_RESULTADOS.md, av2_RECOPILACION_DATOS_APP.md,
-> │   av2_ANALISIS_BENCHMARK.md, av2_APRENDIZAJES_CONSOLIDADOS.md           ← más docs de Alpha v2 / fase_0_ruido
-> ├── A1_*.md (20 archivos, incl. A1_exp_01–11)                     ← docs del Ciclo Alpha v1
-> ├── GAMMA_*.md, g0N_*.md, *_GAMMA.md, CICLO_GAMMA_*.md,
-> │   COMO_EJECUTAR_GAMMA.md                                        ← docs del Ciclo Gamma
-> ├── DELTA_*.md, d0N_*.md, *_DELTA.md, *_delta.md,
-> │   APRENDIZAJES_GAMMA_DELTA.md                                   ← docs del Ciclo Delta + memoria conjunta
+> ├── av2_*.md (21 archivos, numerados av2_00…av2_09 + fase_0_ruido/benchmark)  ← docs del Ciclo Alpha v2
+> ├── av1_*.md (13 archivos, incl. av1_EXPERIMENTOS_DETALLE)         ← docs del Ciclo Alpha v1
+> ├── delta_gamma_antiguio.md                                        ← docs de Gamma + Delta + memoria conjunta, fusionados en 1
 > ├── KPCL_*.md                                                     ← docs del toolkit Dashboard_KPCL
 > │
 > ├── Dashboard_KPCL/                          toolkit de visualización operativa (scripts + CSVs + HTML)
@@ -889,7 +883,7 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 | Fase 4 — Inferencia | 🔄 En curso | `inferencia_kpcl0034.py` · visual GT vs ML en HTML |
 | Fase 4 — Anotación | 🔄 En curso | `app_anotacion.py` Streamlit · agregando etiquetas de servido |
 
-**Siguiente acción:** Ciclo Alpha v2 — rediseño completo con detección de eventos por segmentos (change-point detection). Ver [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) para la nueva dirección y [`APRENDIZAJES_GAMMA_DELTA.md`](APRENDIZAJES_GAMMA_DELTA.md) para los aprendizajes de los ciclos anteriores.
+**Siguiente acción:** Ciclo Alpha v2 — rediseño completo con detección de eventos por segmentos (change-point detection). Ver [`ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md) para la nueva dirección y [`delta_gamma_antiguio.md`](delta_gamma_antiguio.md) para los aprendizajes de los ciclos anteriores.
 
 ---
 

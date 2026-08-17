@@ -97,47 +97,27 @@ Código en `Ciclo_Alpha_v1/`.
 
 ---
 
-## 🔬 Ciclo Gamma (prefijo `GAMMA_` en los docs ambiguos, `EXPERIMENT_TRACKER_GAMMA`/`GLOSARIO_GAMMA` en el resto) — ARCHIVADO
+## 🔬🌊 Ciclo Gamma + Ciclo Delta — ARCHIVADO (fusionados en 1 archivo)
 
-Segunda generación, supervisado multi-modelo. Código en
-`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Gamma/`.
+Segunda generación (Gamma, supervisado multi-modelo) y exploración no
+supervisada (Delta, clustering + anomalías). Código en
+`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/{Ciclo_Gamma,Ciclo_Delta}/`.
 
-- [[GAMMA_INSTRUCTIVO]] — guía maestra del ciclo (pipeline, errores, reglas)
-- [[GAMMA_IMPLEMENTACION]] — detalle de implementación
-- [[CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO]] — runbook operativo Pre-G
-- [[COMO_EJECUTAR_GAMMA]] — instrucciones de ejecución
-- [[EXPERIMENT_TRACKER_GAMMA]] — estado y métricas de cada experimento G-01 a G-08
-- [[GLOSARIO_GAMMA]] — vocabulario específico de Gamma (complementa GLOSARIO.md)
-- [[GAMMA_EXPERIMENTOS_DETALLE]] — bitácora completa G-01 a G-06 (fusión de los 6 `g0N_*.md` de resultados)
-- [[GAMMA_SCRIPTS_SPECS]] — specs de los 7 scripts del pipeline (pre-implementación, `— PY` en el título — Mauro convierte a `.py` a mano; fusión de `g01_build_labels.md`...`g05_build_sessions.md` + `_gamma_phase2_utils.md`/`_gamma_phase3_utils.md`)
+- [[delta_gamma_antiguio]] — ⭐ **único documento** con todo Gamma + Delta:
+  memoria institucional (métricas, los 8 errores de Alpha que Gamma corrigió,
+  comparación de features Alpha vs Gamma), guías maestras de ambos ciclos,
+  runbook de unificación/retiquetado, bitácoras completas de experimentos
+  (G-01 a G-06, D-01 a D-05), specs de scripts, trackers y glosarios. Léase
+  antes de reabrir cualquier pregunta ya respondida en Gamma/Delta.
 
----
-
-## 🌊 Ciclo Delta (prefijo `DELTA_` en el doc ambiguo, `EXPERIMENT_TRACKER_DELTA`/`GLOSARIO_DELTA` en el resto) — ARCHIVADO
-
-Exploración no supervisada (clustering + anomalías). Código en
-`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Delta/`.
-
-- [[instructivo_delta]] — guía maestra del ciclo no supervisado
-- [[inferencia_delta]] — inferencia sobre el modelo no supervisado
-- [[DELTA_ANOMALY_REPORT]] — reporte de anomalías generado (676 H/C/U, incl. top 10 más extremas)
-- [[EXPERIMENT_TRACKER_DELTA]] — estado y métricas D-01 a D-Final
-- [[GLOSARIO_DELTA]] — vocabulario específico de Delta (complementa GLOSARIO.md y GLOSARIO_GAMMA.md)
-- [[DELTA_EXPERIMENTOS_DETALLE]] — bitácora completa D-01 a D-05 (fusión de los 5 `d0N_*.md` + lo rescatable de `REPORTE_EJECUCION_DELTA.md`, discontinuado por redundante)
-
-> `REPORTE_EJECUCION_DELTA.md` y `reporte_final_delta.md` se discontinuaron — su
-> contenido era ~100% redundante con [[APRENDIZAJES_GAMMA_DELTA]] (memoria final del
-> ciclo) y con `DELTA_EXPERIMENTOS_DETALLE.md`. Lo único rescatable (archivos
-> generados, recomendaciones pendientes) se fusionó como apéndice de este último.
-
----
-
-## 🔗 Memoria consolidada de Gamma + Delta
-
-- [[APRENDIZAJES_GAMMA_DELTA]] — ⭐ memoria institucional completa de ambos ciclos:
-  métricas exactas, los 8 errores de Alpha que Gamma corrigió, comparación de
-  features Alpha vs Gamma, por qué se archivaron. Léase antes de reabrir
-  cualquier pregunta ya respondida en Gamma/Delta.
+> Fusión de 15 archivos previamente separados (`GAMMA_INSTRUCTIVO.md`,
+> `GAMMA_IMPLEMENTACION.md`, `CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md`,
+> `COMO_EJECUTAR_GAMMA.md`, `GAMMA_EXPERIMENTOS_DETALLE.md`,
+> `GAMMA_SCRIPTS_SPECS.md`, `EXPERIMENT_TRACKER_GAMMA.md`, `GLOSARIO_GAMMA.md`,
+> `instructivo_delta.md`, `inferencia_delta.md`, `DELTA_EXPERIMENTOS_DETALLE.md`,
+> `DELTA_ANOMALY_REPORT.md`, `EXPERIMENT_TRACKER_DELTA.md`, `GLOSARIO_DELTA.md`,
+> `APRENDIZAJES_GAMMA_DELTA.md`) — todo en orden de lectura lógico dentro del
+> mismo archivo, separado por `---` con comentario de procedencia.
 
 ---
 
