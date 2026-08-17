@@ -11,20 +11,20 @@
 ---
 tags: [kittypau, ciclo-alpha-v2, resultados, estadisticas, anotaciones]
 fecha_creacion: 2026-06-26
-fecha_actualizacion: 2026-08-16
-n_anotaciones: 814
+fecha_actualizacion: 2026-08-17
+n_anotaciones: 741
 estado: activo
 ---
 
-# Resultados — 814 Anotaciones
+# Resultados — 741 Anotaciones (post-dedup, ver snapshot v2.7)
 
 > Ver [[av2_00_INDICE_Y_VISION_GENERAL]] para el índice completo. Ver [[av2_05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
-> Snapshot correspondiente: [[av2_07_RESULTADOS_Y_BENCHMARKS]] v2.6 (2026-08-16).
+> Snapshot correspondiente: [[av2_07_RESULTADOS_Y_BENCHMARKS]] v2.7 (2026-08-17).
 
-**Fecha de análisis:** 2026-08-16
+**Fecha de análisis:** 2026-08-17
 **Script:** `revisar_anotaciones_v2.py`
-**Fuente:** `anotaciones_av2.csv` + lecturas crudas `11_Data/2026/` (resampled 30s)
-**Output:** `features_anotaciones_v2.csv` (814 × 109), `comp_stats_v2.json`
+**Fuente:** `anotaciones_av2.csv` (741, tras deduplicar 73 filas duplicadas — ver v2.7) + lecturas crudas `11_Data/2026/` (resampled 30s)
+**Output:** `features_anotaciones_v2.csv` (741 × 109), `comp_stats_v2.json`
 
 ---
 
@@ -32,10 +32,15 @@ estado: activo
 
 | Categoría | N | % del total |
 |---|---|---|
-| alimentacion | 356 | 43.7% |
-| ruido | 374 | 46.0% |
-| servido | 84 | 10.3% |
-| **Total** | **814** | **100%** |
+| alimentacion | 318 | 42.9% |
+| ruido | 348 | 47.0% |
+| servido | 75 | 10.1% |
+| **Total** | **741** | **100%** |
+
+> Antes de deduplicar eran 814 (356/374/84) — 73 filas eran duplicados exactos
+> del mismo evento (mismo `t_inicio`/`t_fin`/`categoria`, re-anotado semanas o
+> meses después por el mismo bug de `id_candidato` que motivó [[av2_03_DETECCION_SEGMENTOS]]
+> § "id_candidato — hash de contenido". Ver snapshot v2.7 más abajo.
 
 ---
 
@@ -43,81 +48,95 @@ estado: activo
 
 *(Calculadas directamente desde las lecturas crudas entre `t_inicio` y `t_fin` de cada anotación)*
 
-> Recalculado 2026-08-16 sobre las 814 anotaciones actuales (`extraer_ventana()` de
-> `revisar_anotaciones_v2.py`, misma metodología del análisis original). Los outliers
-> de mislabel que documentaba la versión anterior de este doc (alimentación con
-> Δpeso +69g, servido de 62 min) ya no aparecen en los máximos actuales — o se
-> corrigieron/reclasificaron entre entonces y ahora, o quedaron diluidos entre las
-> ~400 anotaciones nuevas. No se investigó cuál de las dos explicaciones es correcta.
+> Recalculado 2026-08-17 sobre las 741 anotaciones deduplicadas (`extraer_ventana()` de
+> `revisar_anotaciones_v2.py`, misma metodología del análisis original). Los outliers de
+> mislabel que documentaba una versión anterior de este doc (alimentación con Δpeso
+> +69g, servido de 62 min) siguen sin aparecer en los máximos — confirmado ahora que
+> **no** era solo dilución por dataset más grande: 73 de las filas que "diluían" la
+> distribución eran directamente duplicados del mismo evento, ya removidos. Los
+> extremos de ruido (Δpeso −129g/+161g) **sobrevivieron el dedup** — no son duplicados,
+> son eventos únicos genuinos, pendientes de revisión manual (ver más abajo).
 
-### ALIMENTACIÓN (n=356)
-
-| Métrica | Media | Std | Min | Max | P10 | P90 |
-|---|---|---|---|---|---|---|
-| Duración (min) | 7.51 | 3.04 | 3.0 | 20.0 | 5.0 | 12.0 |
-| Δpeso (g) | −12.44 | 5.09 | −33.0 | 0.0 | −18.0 | −6.0 |
-| Rango (g) | 17.74 | 5.77 | 4.0 | 41.0 | 11.0 | 25.0 |
-| Pendiente (g/min) | −1.81 | 0.79 | −4.17 | 0.0 | −2.80 | −0.80 |
-
-**El 90% de las alimentaciones tiene Δpeso entre −18g y −6g.** Ya no hay outliers con
-Δpeso positivo en el máximo (antes +69g) — la distribución quedó limpia.
-
-### SERVIDO (n=84)
+### ALIMENTACIÓN (n=318)
 
 | Métrica | Media | Std | Min | Max | P10 | P90 |
 |---|---|---|---|---|---|---|
-| Duración (min) | 3.61 | 3.65 | 1.0 | 17.0 | 1.0 | 11.0 |
-| Δpeso (g) | +54.89 | 29.65 | −2.0 | +126.0 | +21.0 | +102.1 |
-| Rango (g) | 57.58 | 28.80 | 0.0 | +126.0 | +26.3 | +103.0 |
-| Pendiente (g/min) | +27.64 | 25.54 | −0.18 | +126.0 | +3.73 | +53.25 |
+| Duración (min) | 7.59 | 3.13 | 3.0 | 20.0 | 5.0 | 12.0 |
+| Δpeso (g) | −12.38 | 5.17 | −33.0 | 0.0 | −18.0 | −6.0 |
+| Rango (g) | 17.77 | 5.90 | 4.0 | 41.0 | 11.0 | 25.0 |
+| Pendiente (g/min) | −1.80 | 0.82 | −4.2 | 0.0 | −2.8 | −0.8 |
 
-**El 90% de los servidos tiene Δpeso entre +21g y +102g.** El outlier de 62 min de la
-versión anterior ya no aparece (máximo actual: 17 min).
+**El 90% de las alimentaciones tiene Δpeso entre −18g y −6g.** Sin outliers con
+Δpeso positivo en el máximo (antes +69g, en un snapshot anterior al dedup).
 
-### RUIDO (n=374)
+### SERVIDO (n=75)
 
 | Métrica | Media | Std | Min | Max | P10 | P90 |
 |---|---|---|---|---|---|---|
-| Duración (min) | 9.31 | 6.28 | 1.0 | 43.0 | 1.0 | 16.0 |
-| Δpeso (g) | +0.63 | 24.41 | −129.0 | +161.0 | −9.0 | +9.0 |
-| Rango (g) | 25.79 | 39.65 | 0.0 | 200.0 | 4.0 | 97.7 |
-| Pendiente (g/min) | −0.56 | 12.56 | −129.0 | +16.1 | −0.91 | +4.45 |
+| Duración (min) | 3.68 | 3.72 | 1.0 | 17.0 | 1.0 | 11.0 |
+| Δpeso (g) | +55.21 | 30.99 | −2.0 | +126.0 | +21.0 | +103.0 |
+| Rango (g) | 58.23 | 30.03 | 0.0 | +126.0 | +26.4 | +103.6 |
+| Pendiente (g/min) | +27.84 | 26.38 | −0.2 | +126.0 | +3.2 | +53.0 |
 
-**El rango de ruido sigue siendo muy amplio** (Δpeso −129g a +161g) por la variabilidad
-del sensor — pero el P10/P90 (−9g a +9g) muestra que el 80% central sigue siendo
-pequeño, consistente con el análisis anterior. Los extremos son ahora más marcados
-(antes −62g/+89g) porque el dataset creció ~2.4×.
+**El 90% de los servidos tiene Δpeso entre +21g y +103g.** El outlier de 62 min de
+snapshots anteriores no aparece (máximo actual: 17 min).
+
+### RUIDO (n=348)
+
+| Métrica | Media | Std | Min | Max | P10 | P90 |
+|---|---|---|---|---|---|---|
+| Duración (min) | 9.34 | 6.43 | 1.0 | 43.0 | 1.0 | 16.0 |
+| Δpeso (g) | +0.91 | 25.25 | −129.0 | +161.0 | −9.0 | +9.3 |
+| Rango (g) | 27.24 | 40.73 | 0.0 | 200.0 | 4.0 | 112.0 |
+| Pendiente (g/min) | −0.58 | 13.02 | −129.0 | +16.1 | −0.9 | +5.0 |
+
+**El rango de ruido sigue siendo muy amplio** (Δpeso −129g a +161g) — **no son
+duplicados** (sobrevivieron la deduplicación por evento exacto), y al menos 2 casos
+(id_anotacion 615/616 y 685/686) forman pares temporalmente adyacentes con signo
+opuesto casi simétrico (ej. −115g seguido inmediatamente de +115g) — patrón
+consistente con un segmento "mixto" partido en 2 por `punto_split_mixto()` y
+anotado como "ruido" en cada mitad por separado, en vez de reconocerse como 1 solo
+evento. **Pendiente de revisión manual en Tab 1** — no se relabeleó nada, solo se
+identificó el patrón.
 
 ---
 
 ## Estadísticas de shape features
 
-*(Calculadas desde `candidatos_av2.csv` mergeado con anotaciones via `id_candidato`)*
+*(Calculadas directo desde `anotaciones_av2.csv` + lecturas crudas —
+`revisar_anotaciones_v2.py` nunca lee `candidatos_av2.csv`, no hay merge por
+`id_candidato` acá. Caption anterior desactualizada, corregida 2026-08-17
+tras confirmar que no hay dependencia real del join — ver
+[[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.6.)*
 
 ### Features F00 clásicas (v1)
 
-*(Estadísticas de `comp_stats_v2.json`, regenerado 2026-08-16 sobre 814 anotaciones)*
+*(Estadísticas de `comp_stats_v2.json`, regenerado 2026-08-17 sobre 741 anotaciones deduplicadas)*
 
-| Feature | alim (n=356) | serv (n=84) | ruido (n=374) |
+| Feature | alim (n=318) | serv (n=75) | ruido (n=348) |
 |---|---|---|---|
-| **sim_alimentacion** µ | **+0.738** | −0.871 | +0.050 |
-| sim_alimentacion std | 0.352 | 0.181 | 0.692 |
-| **sim_servido** µ | −0.738 | **+0.871** | −0.050 |
-| sim_servido std | 0.352 | 0.181 | 0.692 |
-| **monotonicity** µ | **−0.181** | +0.280 | +0.024 |
-| monotonicity std | 0.111 | 0.210 | 0.191 |
-| **r2_lineal** µ | **0.619** | 0.643 | 0.300 |
-| r2_lineal std | 0.238 | 0.226 | 0.262 |
-| **zcr** µ | 0.640 | 0.394 | 0.236 |
-| zcr std | 0.162 | 0.176 | 0.160 |
+| **sim_alimentacion** µ | **+0.730** | −0.866 | +0.023 |
+| sim_alimentacion std | 0.362 | 0.191 | 0.683 |
+| **sim_servido** µ | −0.730 | **+0.866** | −0.023 |
+| sim_servido std | 0.362 | 0.191 | 0.683 |
+| **monotonicity** µ | **−0.180** | +0.275 | +0.027 |
+| monotonicity std | 0.113 | 0.216 | 0.197 |
+| **r2_lineal** µ | **0.611** | 0.635 | 0.300 |
+| r2_lineal std | 0.240 | 0.233 | 0.266 |
+| **zcr** µ | 0.632 | 0.390 | 0.239 |
+| zcr std | 0.164 | 0.179 | 0.163 |
 
-> Los valores se mantienen en el mismo orden de magnitud que el snapshot anterior
-> (n=417) — el motor sigue siendo estable al agregar ~400 anotaciones nuevas.
+> Los valores se mantienen en el mismo orden de magnitud que snapshots anteriores
+> (n=417, n=814 pre-dedup) — el motor sigue siendo estable, tanto al agregar
+> anotaciones nuevas como al remover las 73 duplicadas.
 
 ### Top features discriminativas — Motor v2
 
-*(Top 20 por separación alim vs. serv, calculado sobre 814 anotaciones — ver
-[[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.5 para la tabla completa con familias)*
+*(Top 20 por separación alim vs. serv, calculado sobre 814 anotaciones pre-dedup —
+ver [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.5 para la tabla completa con
+familias. No recalculado sobre las 741 post-dedup: el orden y las separaciones σ no
+cambian de forma material con 73 filas menos de las mismas categorías — ver F00 arriba
+para confirmar que las medias apenas se mueven)*
 
 | Feature | Familia | Sep. A/S (σ) |
 |---|---|---:|
@@ -150,7 +169,10 @@ pequeño, consistente con el análisis anterior. Los extremos son ahora más mar
 
 ## Tabla de separación (distancia entre categorías)
 
-*(Recalculado 2026-08-16 sobre 814 anotaciones — σ pooled entre pares de categorías)*
+*(Recalculado 2026-08-16 sobre 814 anotaciones pre-dedup — σ pooled entre pares
+de categorías. No recalculado sobre las 741 post-dedup de v2.7: las medias/std
+de F00 apenas se movieron con el dedup, ver tabla F00 arriba — no se espera
+cambio material acá)*
 
 | Feature | alim vs. serv | alim vs. ruido | Familia |
 |---|---|---|---|
@@ -172,9 +194,10 @@ pequeño, consistente con el análisis anterior. Los extremos son ahora más mar
 
 ## Distribución temporal de las anotaciones
 
-Las 814 anotaciones fueron creadas entre 2026-06-26 y 2026-08-13 (fecha de
-anotación, vía `app_anotacion_av2.py`), sobre datos crudos que cubren
-2026-04-07 → 2026-07-22.
+Las 741 anotaciones (post-dedup, v2.7) fueron creadas entre 2026-06-26 y
+2026-08-13 (fecha de anotación, vía `app_anotacion_av2.py`), sobre datos
+crudos que cubren 2026-04-07 → 2026-07-22. 73 de las 814 filas originales eran
+re-anotaciones del mismo evento con `created_at` posterior — ver v2.7.
 
 > El detalle por franja horaria/día de la semana del snapshot anterior (n=417) no
 > se recalculó en esta actualización — requiere una consulta aparte a
@@ -251,6 +274,41 @@ Ver [[av2_04_MOTOR_MATEMATICO]] para el cuadro comparativo completo de las 102 f
 | v2.5 | 2026-08-16 | 356 | 84 | 374 | 814 | 916 | 102 | Abr 7 → Jul 22 | `tpl_doble_rampa` (6.92σ) |
 
 ---
+
+## Snapshot v2.7 — 2026-08-17 — deduplicación de 73 anotaciones (814 → 741)
+
+Auditoría manual de los outliers que v2.6/v2.5 dejaron pendientes ("no se
+investigó si se corrigieron o se diluyeron"). Comparando cada anotación por
+`(t_inicio, t_fin, categoria)` en `anotaciones_av2.csv`:
+
+- **73 filas eran duplicados exactos** del mismo evento — misma ventana, misma
+  categoría, `id_anotacion` distinto y `created_at` semanas o meses después
+  (ej. id 465 creado 2026-06-28, id 691 con la ventana idéntica creado
+  2026-08-13, 46 días después). Mecanismo: exactamente el bug de `id_candidato`
+  posicional arreglado en v2.6 — al regenerarse `candidatos_av2.csv`, ventanas
+  ya anotadas volvían a aparecer como "pendientes" en la app (el chequeo
+  "¿está anotado?" comparaba por `id_candidato`, que había cambiado), y se
+  re-anotaban sin que nadie notara que ya existían.
+- **Deduplicado**: se conservó la fila con `created_at` más reciente por
+  evento único. 814 → 741 (356→318 alimentación, 374→348 ruido, 84→75
+  servido). Backup completo pre-dedup en
+  `data/backups/anotaciones_av2_PRE_DEDUP_20260817_112308.csv`.
+  `features_anotaciones_v2.csv`/`comp_stats_v2.json` regenerados sobre las 741.
+- **Confirmado**: los outliers extremos de ruido (Δpeso −129g/+161g) **no eran
+  duplicados** — sobrevivieron el dedup, son eventos únicos. Encontrado un
+  patrón adicional en 2 de ellos (id 615/616, id 685/686): pares de anotaciones
+  "ruido" temporalmente adyacentes con Δpeso de signo opuesto casi simétrico
+  (ej. −115g inmediatamente seguido de +115g) — consistente con un segmento
+  "mixto" partido en 2 por `punto_split_mixto()` (ver [[av2_03_DETECCION_SEGMENTOS]])
+  y anotado como "ruido" en cada mitad por separado. **No se relabeleó nada** —
+  queda como pendiente de revisión manual en Tab 1.
+- **No aplicado**: la deduplicación por overlap más amplio (320 pares de
+  ventanas que se solapan en todo el archivo, encontrados en el mismo barrido —
+  incluye el patrón anterior más solapes parciales genuinos entre categorías
+  distintas) queda fuera de este dedup, que solo tocó duplicados EXACTOS. Ese
+  universo más amplio necesita juicio caso por caso (¿cuál anotación es la
+  "correcta" cuando 2 ventanas se solapan parcialmente con distinta
+  categoría?), no un criterio mecánico — pendiente, no se tocó.
 
 ## Snapshot v2.6 — 2026-08-16 — incidente `id_candidato` + regla estructural (rollback NO ejecutado)
 

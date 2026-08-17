@@ -112,14 +112,14 @@ Toda la clasificación del Ciclo Alpha v2 se basa en tres categorías mutuamente
 
 ---
 
-## Estado de las anotaciones (actualizado 2026-08-16)
+## Estado de las anotaciones (deduplicado 2026-08-17, ver [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.7)
 
 | Categoría | Anotaciones | Meta original | Estado |
 |---|---|---|---|
-| alimentacion | 356 | 40 | ✅ 890% |
-| ruido | 374 | 30 | ✅ 1247% |
-| servido | 84 | 20 | ✅ 420% |
-| **Total** | **814** | **90** | ✅ **904%** |
+| alimentacion | 318 | 40 | ✅ 795% |
+| ruido | 348 | 30 | ✅ 1160% |
+| servido | 75 | 20 | ✅ 375% |
+| **Total** | **741** | **90** | ✅ **823%** |
 
 Las metas se superaron ampliamente, dando mayor confianza estadística a los umbrales derivados.
 
@@ -157,5 +157,5 @@ Las metas se superaron ampliamente, dando mayor confianza estadística a los umb
 
 - [[av2_03_DETECCION_SEGMENTOS]] — Cómo se generan los candidatos a anotar
 - [[av2_08_APP_ANOTACION]] — Documentación de la app Streamlit
-- [[av2_07_RESULTADOS_Y_BENCHMARKS]] — Estadísticas completas de las 814 anotaciones
+- [[av2_07_RESULTADOS_Y_BENCHMARKS]] — Estadísticas completas de las 741 anotaciones (deduplicadas)
 - [[av2_06_UMBRALES_Y_REGLAS]] — Cómo las anotaciones derivan en umbrales

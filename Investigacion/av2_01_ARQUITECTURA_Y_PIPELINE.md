@@ -64,7 +64,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 │  - Métricas: duración, Δpeso, pendiente, shape features         │
 │  - Asigna: alimentacion | servido | ruido                       │
 │                                                                 │
-│  OUTPUT: anotaciones_av2.csv (814 anotaciones)                  │
+│  OUTPUT: anotaciones_av2.csv (741 anotaciones, deduplicado)     │
 └─────────────────────────────┬───────────────────────────────────┘
                               │
                               ▼
@@ -428,7 +428,7 @@ Cada tab muestra barra de progreso real 0→100% al cargar.
 **Features:** 102 en 15 familias (F00–F14) — solo numpy + scipy  
 **Importar:** `from shape_features_v2 import extraer_features, evidence_score`
 
-**Mejor feature discriminativo:** `tpl_doble_rampa` (6.92σ sep. Alimentación vs Servido, medido sobre 814 anotaciones — actualizado 2026-08-16, ver [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.5)  
+**Mejor feature discriminativo:** `tpl_doble_rampa` (6.92σ sep. Alimentación vs Servido, medido sobre 814 anotaciones pre-dedup — ver [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.7 para el estado deduplicado actual, 741 anotaciones)  
 **Optimización aplicada (2026-06-28):** `_f08_lempel_ziv` O(n²) → O(n log n) con set-based LZ78  
 **Fix aplicado (2026-08-10):** `evidence_score()` normaliza features (z-score) y calcula pesos desde los
 datos en vez de usarlos crudos con pesos a mano — accuracy 49.6% → 78.8% (held-out). Ver

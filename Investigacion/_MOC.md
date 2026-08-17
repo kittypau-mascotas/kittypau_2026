@@ -107,6 +107,6 @@ supervisada (Delta, clustering + anomalías). Código en
 | Artefacto | Estado |
 |---|---|
 | `candidatos_av2.csv` | ✅ 916 candidatos · 2026-04-07 → 2026-07-22 |
-| `anotaciones_av2.csv` | ✅ 814 anotaciones (alim=356, ruido=374, serv=84) — actualizado 2026-08-16 |
-| `umbrales.json` | ⚠️ v1.3 — calibrado contra n=496 (2026-08-11), desactualizado frente a las 814 actuales — pendiente recalibrar |
+| `anotaciones_av2.csv` | ✅ 741 anotaciones (alim=318, ruido=348, serv=75) — deduplicado 2026-08-17 (814→741, 73 duplicados exactos) |
+| `umbrales.json` | ⚠️ v1.3 — calibrado contra n=496 (2026-08-11), desactualizado frente a las 741 actuales — pendiente recalibrar |
 | Clasificador automático | ⏳ Fase 1 pendiente |

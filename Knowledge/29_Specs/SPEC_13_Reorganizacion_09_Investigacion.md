@@ -1100,3 +1100,63 @@ vacías), `features_anotaciones_v2.csv`, `umbrales.json`, ninguna anotación
 manual, `shape_features_v2.py`. No hubo rollback de ningún dato — no existía
 backup al que revertir y ninguno de los archivos que el informe temía
 afectados dependía del join roto.
+
+## 20. Decimotercer addendum (2026-08-17) — deduplicación de anotaciones (814 → 741)
+
+Revisión externa de §19 (recibida como comentario, no como informe formal)
+confirmó el diagnóstico y el fix, y dejó 1 punto pendiente concreto:
+"outliers documentados como 'no se investigó si se corrigieron o diluyeron'
+— vale la pena confirmarlo antes de confiar 100%". Se investigó en vez de
+diferirlo.
+
+### 20.1 Hallazgo
+
+Comparando las 814 anotaciones por `(t_inicio, t_fin, categoria)`: **73 filas
+eran duplicados exactos** del mismo evento físico — misma ventana, misma
+categoría, `id_anotacion` distinto, `created_at` semanas o meses después
+(ej. id 465 creado 2026-06-28, id 691 con ventana idéntica creado
+2026-08-13 — 46 días después). Mecanismo confirmado, no especulado: al
+regenerarse `candidatos_av2.csv` con `id_candidato` posicional (el bug de
+§19), la app comparaba "¿está anotado?" por `id_candidato` — una ventana ya
+anotada aparecía como "pendiente" de nuevo tras la regeneración, y se
+re-anotaba sin que nadie notara que ya existía. Barrido más amplio de
+solapes de ventana (no solo duplicado exacto, cualquier par que se solape):
+320 pares en las 814 filas — incluye los 73 duplicados exactos más un
+patrón adicional (`punto_split_mixto()` genera 2 candidatos nuevos que
+juntos cubren la misma ventana que un candidato "mixto" viejo ya anotado
+como 1 solo evento — 3 anotaciones para 1 evento físico en esos casos).
+
+### 20.2 Qué se hizo
+
+- Backup completo pre-dedup: `data/backups/anotaciones_av2_PRE_DEDUP_20260817_112308.csv`.
+- Deduplicado por `(t_inicio, t_fin, categoria)`, conservando la fila con
+  `created_at` más reciente. 814 → 741 (alim 356→318, ruido 374→348,
+  servido 84→75). Todos los pares duplicados tenían la MISMA categoría en
+  ambas copias — sin conflicto de etiqueta que arbitrar.
+- `features_anotaciones_v2.csv`/`comp_stats_v2.json` regenerados sobre las
+  741 (`revisar_anotaciones_v2.py`, mismo método directo desde lecturas
+  crudas, sin join a `candidatos_av2.csv`).
+- Confirmado con las mismas herramientas de §19: los outliers extremos de
+  ruido (Δpeso −129g/+161g) **no eran duplicados** — sobrevivieron el dedup,
+  son eventos únicos genuinos. 2 de ellos (id 615/616, id 685/686) muestran
+  el patrón de "mixto partido en 2 y anotado como ruido en cada mitad" — no
+  se relabeleó nada, queda documentado como pendiente de revisión manual en
+  Tab 1 (ver [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.7).
+- **No se tocó** el universo más amplio de 320 solapes — solo los 73
+  duplicados EXACTOS tenían un criterio mecánico sin ambigüedad
+  (misma ventana + misma categoría → quedarse con la más reciente). El resto
+  necesita juicio caso por caso.
+- Documentación actualizada a los números post-dedup en: `_MOC.md`,
+  `av2_00_INDICE_Y_VISION_GENERAL.md`, `av2_01_ARQUITECTURA_Y_PIPELINE.md`,
+  `av2_05_ANOTACION_Y_CATEGORIAS.md`, `av2_07_RESULTADOS_Y_BENCHMARKS.md`
+  (nuevo snapshot v2.7), `av2_08_APP_ANOTACION.md`. De paso, corregida una
+  caption vieja en `av2_07` ("shape features calculadas desde
+  `candidatos_av2.csv` mergeado con anotaciones") que no reflejaba código
+  real — confirmado que `revisar_anotaciones_v2.py` nunca lee
+  `candidatos_av2.csv`.
+
+### 20.3 Verificación
+
+`py_compile` sobre los 4 scripts de `fase_0_ruido/`. `streamlit run
+--headless` → HTTP 200 + `/_stcore/health` → `ok`, sin errores en log.
+`pytest tests/` → 16/16.

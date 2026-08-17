@@ -122,7 +122,7 @@ Pestaña técnica con tres secciones:
 Expander `📖 Guía visual — ¿qué mide cada feature de forma?` con:
 
 1. **3 curvas template** — alimentación (bajada lineal), servido (subida asintótica), ruido (sinusoidal)
-2. **Box plots de monotonicity, r2_lineal, zcr** por categoría — distribución real de 814 anotaciones (actualizado 2026-08-16)
+2. **Box plots de monotonicity, r2_lineal, zcr** por categoría — distribución real de 741 anotaciones (deduplicado 2026-08-17)
 3. **Mapa 2D sim_alimentacion vs sim_servido** — scatter coloreado por categoría con líneas de umbral en ±0.70
 4. **Scatter monotonicity vs r2_lineal** (en expander anidado)
 
@@ -150,7 +150,7 @@ Análisis completo del candidato seleccionado con el Motor Matemático v2 (`shap
 - Cada sección muestra un dataframe con nombre / valor / rango / significado
 
 **Cuadro comparativo:**
-- 25 features con µ±σ por categoría, calibrado sobre **814 anotaciones reales** (actualizado 2026-08-16)
+- 25 features con µ±σ por categoría, calibrado sobre **741 anotaciones reales** (deduplicado 2026-08-17)
 - Columna "Valor candidato" para comparar el evento actual contra las distribuciones
 - Separación A/S y A/R en unidades σ
 - Datos de `comp_stats_v2.json` (generado por `revisar_anotaciones_v2.py`)
