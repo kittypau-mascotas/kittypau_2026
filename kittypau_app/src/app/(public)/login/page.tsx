@@ -42,6 +42,10 @@ import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 import { resolveAuthenticatedPath, setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import {
+  getKnownEmails,
+  rememberEmailOnThisDevice,
+} from "@/lib/utils/known-emails";
 import RegistroFlow, {
   AVATAR_OPTIONS,
   PROVINCIA_SANTIAGO,
@@ -61,6 +65,12 @@ export default function LoginPage() {
   const router = useRouter();
   const isNativeApk = isNativeFlavorEnabled();
   const [email, setEmail] = useState("");
+  // Autocompletado del login acotado a este dispositivo (ver known-emails.ts) — se
+  // lee recién en un useEffect porque localStorage no existe en el render de servidor.
+  const [knownEmails, setKnownEmails] = useState<string[]>([]);
+  useEffect(() => {
+    setKnownEmails(getKnownEmails());
+  }, []);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1057,6 +1067,9 @@ export default function LoginPage() {
     }
 
     setTokens({ accessToken, refreshToken });
+    // Autocompletado acotado a este dispositivo (no el sync del navegador, que puede
+    // traer emails de otras PCs) -- solo se recuerda tras un login realmente exitoso.
+    rememberEmailOnThisDevice(emailValue);
 
     // Sincronizar la sesión en el cliente Supabase para que las queries funcionen.
     const supabase = getSupabaseBrowser();
@@ -1178,6 +1191,7 @@ export default function LoginPage() {
       accessToken: data.session.access_token,
       refreshToken: data.session.refresh_token,
     });
+    rememberEmailOnThisDevice(registerEmail);
 
     // Guarda de una vez el perfil de usuario con lo ya capturado acá (Avatar, Nombre,
     // Comuna) — evita repetir una pantalla "Usuario" separada dentro de RegistroFlow.
@@ -1662,8 +1676,18 @@ export default function LoginPage() {
                       aria-invalid={
                         Boolean(error) || (email.length > 0 && !isEmailValid)
                       }
-                      autoComplete="email"
+                      // Sugerencias propias (known-emails.ts, localStorage -- nunca
+                      // sincroniza entre dispositivos) en vez del autocompletado nativo
+                      // del navegador, que sí puede traer emails de otras PCs si el
+                      // navegador tiene sync de cuenta activado.
+                      list="login-known-emails"
+                      autoComplete="off"
                     />
+                    <datalist id="login-known-emails">
+                      {knownEmails.map((knownEmail) => (
+                        <option key={knownEmail} value={knownEmail} />
+                      ))}
+                    </datalist>
                     {email.length > 0 && !isEmailValid ? (
                       <p className="text-[11px] text-rose-600">
                         Ingresa un email válido.
