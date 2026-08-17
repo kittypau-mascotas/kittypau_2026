@@ -10,7 +10,7 @@
 
 ## Descripción del problema
 
-Durante el experimento sin cargador (ver [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md)), KPCL0036 presentó **lecturas de peso anómalas** que no correspondían al contenido real del bowl de agua.
+Durante el experimento sin cargador (ver [`KPCL_AUDITORIA_SIN_CARGADOR.md`](KPCL_AUDITORIA_SIN_CARGADOR.md)), KPCL0036 presentó **lecturas de peso anómalas** que no correspondían al contenido real del bowl de agua.
 
 Las anomalías se manifestaron como:
 - **Spikes de peso** con valores súbitamente altos o negativos no atribuibles al comportamiento de Bandida.
@@ -60,7 +60,7 @@ Durante el período de las anomalías, `public.audit_events` registró múltiple
 1. El device posiblemente se desconectaba cuando la batería bajaba de cierto umbral.
 2. La race condition conocida del health-check generó duplicados de estos eventos (lotes de 2–3 eventos en milisegundos).
 
-Según [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md), **los 30 eventos de conectividad acumulados entre 2026-02-12 y 2026-04-10 eran parte del cleanup histórico inicial** y ya no forman parte del flujo canónico actual.
+Según [`REGLAS_EVENTOS_ALIMENTACION.md`](../REGLAS_EVENTOS_ALIMENTACION.md), **los 30 eventos de conectividad acumulados entre 2026-02-12 y 2026-04-10 eran parte del cleanup histórico inicial** y ya no forman parte del flujo canónico actual.
 
 ---
 
@@ -72,7 +72,7 @@ Según [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.m
 
 Esta decisión está documentada en:
 - [`Data Science/README.md`](Data%20Science/README.md): "El alcance vigente de esta carpeta es investigación supervisada sobre alimento; `KPCL0036` e hidratación quedan fuera del modelo activo por ahora."
-- [`Ciclo_Alpha_v1_fase_2_dataset_README.md`](Ciclo_Alpha_v1_fase_2_dataset_README.md): "El modelo activo de esta fase es solo para alimentación y no cubre hidratación."
+- [`A1_FASE_2_DATASET_README.md`](A1_FASE_2_DATASET_README.md): "El modelo activo de esta fase es solo para alimentación y no cubre hidratación."
 
 ### Razón de la exclusión
 
@@ -134,9 +134,9 @@ Esta regla no está implementada automáticamente en el sistema; depende de la s
 
 | Documento / Archivo | Relación |
 |---|---|
-| [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md) | Contexto del experimento que originó esta anomalía |
+| [`KPCL_AUDITORIA_SIN_CARGADOR.md`](KPCL_AUDITORIA_SIN_CARGADOR.md) | Contexto del experimento que originó esta anomalía |
 | [`kpcl0034_kpcl0036_prueba_sincargador.csv`](kpcl0034_kpcl0036_prueba_sincargador.csv) | Datos brutos del experimento (incluye período anómalo) |
 | [`kpcl0036_sin_batera_actual.csv`](kpcl0036_sin_batera_actual.csv) | Export vigente de KPCL0036 (desde Supabase) |
-| [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md) | Bug conocido de duplicados en health-check (Fuente 4) |
+| [`REGLAS_EVENTOS_ALIMENTACION.md`](../REGLAS_EVENTOS_ALIMENTACION.md) | Bug conocido de duplicados en health-check (Fuente 4) |
 | [`Data Science/README.md`](Data%20Science/README.md) | Declaración de alcance: KPCL0036 excluido del pipeline activo |
 | `bridge/src/processor.js` | State machine que procesa datos de ambos devices (umbral SESSION_THRESHOLD_G = 5g) |

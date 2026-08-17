@@ -624,3 +624,85 @@ run --headless` → HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 1
 editado a mano), `streamlit run --headless` → HTTP 200 + `/_stcore/health` → `ok`,
 `pytest tests/` → 16/16. Grep dirigido confirmó 0 hrefs rotos residuales (excepto la
 fila de plantilla ya mencionada).
+
+## 14. Séptimo addendum (2026-08-16) — renombrar por lógica de ciclo + fusionar/descartar redundancia
+
+> Pedido de Mauro: "renombra los .md para que tengan una logica ... me refiero al
+> orden [de] todos los .md que estan en investigacion, algunos pueden unirse, otros
+> desecharse. ordena logicamente." Sobre los 88 `.md` ya aplanados en §13.
+
+### Diagnóstico
+
+El problema real no era falta de organización interna de cada doc (varios, como
+`GLOSARIO.md`/`GLOSARIO_GAMMA.md`/`GLOSARIO_DELTA.md`, ya estaban diseñados como
+capas complementarias que se declaran explícitamente "no redefine términos ya
+cubiertos" — leídos antes de tocar nada, confirmado que NO son redundantes, se
+dejaron intactos). El problema real era **colisión de prefijos numéricos entre
+ciclos no relacionados**: Alpha v1 (`01_REFERENCIAS`, `02_PREPARACION_NUEVA_INGESTA`,
+`03_ML_PREDICCION_ALIMENTACION`...) y Alpha v2 (`00_INDICE_AV2` a
+`09_EVOLUCION_MOTOR_MATEMATICO`) usaban el mismo rango `00`–`09` para documentos sin
+relación, mezclados alfabéticamente en la carpeta plana sin ninguna señal visual de
+a qué ciclo pertenece cada uno. Auditado leyendo `ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md`,
+`APRENDIZAJES_GAMMA_DELTA.md`, `COMPARACION_ALPHA_GAMMA.md` y los headers de
+`GLOSARIO_GAMMA.md`/`GLOSARIO_DELTA.md`/`g01_baseline_limpio.md`/`g01_build_labels.md`
+antes de decidir qué renombrar, fusionar o descartar.
+
+### Descartado (1 archivo)
+
+`COMPARACION_ALPHA_GAMMA.md` (2026-06-17) — snapshot intermedio de Gamma escrito
+**antes** de que G-01 entrenara ("ningún modelo entrenado aún", métricas "pendiente").
+Completamente superseded por `APRENDIZAJES_GAMMA_DELTA.md` (2026-06-23, "documento
+generado al archivar Ciclo Gamma y Ciclo Delta" — memoria institucional completa con
+las mismas métricas ya resueltas). Sus 2 tablas con valor único que no estaban en
+el doc final (§1.3 correcciones de calidad de datos, §2 comparación feature-por-
+feature Alpha vs Gamma) se fusionaron primero como §1.3b/§1.3c de
+`APRENDIZAJES_GAMMA_DELTA.md`, con nota de dónde vinieron. 3 referencias cruzadas
+actualizadas (`APRENDIZAJES_CONSOLIDADOS.md`, `instructivo_delta.md`) antes de
+`git rm`.
+
+### Renombrado — 36 archivos, convención por prefijo de ciclo
+
+| Prefijo | Ciclo | Archivos |
+|---|---|---|
+| *(sin prefijo, `00`–`09`)* | Alpha v2 — ACTIVO | sin cambio, ya no colisiona tras renombrar Alpha v1 |
+| `A1_` | Alpha v1 — CERRADO | 24 (7 numerados + `EXPERIMENT_TRACKER` + 12 `exp_NN` + 4 `README` de subcarpetas) |
+| `KPCL_` | Toolkit Dashboard KPCL | 3 (`01_GUIA_DASHBOARD_KPCL`, `06_AUDITORIA_SIN_CARGADOR`, `07_AUDITORIA_KPCL0036_ERROR_PESO`) |
+| *(sin número)* | Canónicos cross-cycle | 3 (`02_REGLAS_EVENTOS_ALIMENTACION` → `REGLAS_EVENTOS_ALIMENTACION`, etc. — el número `02`/`04`/`08` no significaba secuencia, era heredado del viejo esquema `Docs/09_Investigacion/`) |
+| `GAMMA_` | Gamma — nombres ambiguos | 2 (`instructivo.md`, `implementacion.md` — sin esto, indistinguibles de cualquier otro doc genérico) |
+| `DELTA_` | Delta — nombre ambiguo | 1 (`anomaly_report.md`) |
+| `AV2_` | Alpha v2 — consistencia con el resto de prefijos | 3 `README` de subcarpetas (`Ciclo_Alpha_v2_README.md` → `AV2_README.md`, etc.) |
+
+**No renombrado, y por qué**: los `g0N_*.md`/`d0N_*.md` (17 archivos) ya llevan un
+identificador de ciclo implícito vía el prefijo de letra (`g`=Gamma, `d`=Delta) —
+agregar `GAMMA_`/`DELTA_` a estos 17 más habría sido riesgo sin beneficio real
+(ya son inequívocos en contexto). Los glosarios/trackers con sufijo
+`_GAMMA`/`_DELTA` ya se autoidentifican, tampoco se tocaron.
+
+### Sweep de referencias — sin regex esta vez
+
+Reemplazo global de string exacto (basename viejo → nuevo), sin regex ni cálculo de
+profundidad — todos los archivos ya estaban al mismo nivel (raíz de
+`Investigacion/`) antes y después del rename, así que no había riesgo del bug de
+backtracking ni de corrupción de ruta de §13. **Deliberadamente excluidos los
+`.py`** de este sweep — la lección de §13 (un script de `Ciclo_Delta` corrompido
+porque su propio nombre de archivo de salida coincidía por casualidad con un doc
+movido) aplica igual acá: más vale un comentario desactualizado en un script
+archivado que arriesgar romper código en vivo por segunda vez.
+
+### `_MOC.md` y `README.md` reescritos como índice completo
+
+`_MOC.md` estaba incompleto desde antes de esta sesión — no mencionaba Gamma ni
+Delta en absoluto, y varios links usaban los nombres viejos. Reescrito de cero
+como índice completo de los 88 `.md`, agrupados por ciclo con el prefijo nuevo,
+incluyendo una sección "Memoria consolidada de Gamma + Delta" que no existía.
+`README.md`: agregada una tabla de convención de nombres al inicio, corregido un
+bug de contenido preexistente (línea que describía el tracker de experimentos de
+Alpha v2 pero enlazaba al de Alpha v1 — arrastrado desde antes de esta sesión),
+y el diagrama de estructura reescrito para reflejar los archivos planos + carpetas
+de código.
+
+### Verificación final
+
+`py_compile` (6 scripts core de `fase_0_ruido/`), `streamlit run --headless` →
+HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16. Grep dirigido:
+0 referencias rotas a los 33 nombres viejos en toda `Investigacion/`.

@@ -6,7 +6,7 @@
 **Prerequisito:** G-04 completado (GBM optimizado como referencia)
 **Fecha estimada:** TBD
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) §9
 
 ---
 

@@ -28,7 +28,7 @@ El analisis en Google Colab confirmo los siguientes numeros del dump:
 | Cobertura temporal | Apr 8 – Apr 27 | Apr 8 – **May 1** | **May 25 – Jun 14** |
 
 El Experimento 06 usara estos datos. El plan detallado esta en:
-[`exp_06_colab_dataset.md`](exp_06_colab_dataset.md)
+[`A1_exp_06_colab_dataset.md`](A1_exp_06_colab_dataset.md)
 
 ---
 

@@ -101,11 +101,11 @@ Este experimento se realizó para caracterizar el comportamiento de ambos device
 - Similar a KPCL0034: ~50% de lecturas con `clock_invalid = True`.
 
 #### Anomalías detectadas en el peso
-- Se identificaron anomalías en la curva de peso de KPCL0036 relacionadas con el estado de la batería. Ver documento específico: [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md).
+- Se identificaron anomalías en la curva de peso de KPCL0036 relacionadas con el estado de la batería. Ver documento específico: [`KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`](KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md).
 - Estas anomalías generaron lecturas de peso que no correspondían al contenido real del bowl.
 
 #### Eventos de conectividad
-- Se detectaron duplicados en `device_offline_detected` / `device_online_detected` en `public.audit_events` durante el período, atribuibles a la race condition conocida en el health-check. Ver [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md) sección Fuente 4.
+- Se detectaron duplicados en `device_offline_detected` / `device_online_detected` en `public.audit_events` durante el período, atribuibles a la race condition conocida en el health-check. Ver [`REGLAS_EVENTOS_ALIMENTACION.md`](../REGLAS_EVENTOS_ALIMENTACION.md) sección Fuente 4.
 
 ---
 
@@ -166,6 +166,6 @@ Este experimento se realizó para caracterizar el comportamiento de ambos device
 | [`kpcl0034_kpcl0036_prueba_sincargador.csv`](kpcl0034_kpcl0036_prueba_sincargador.csv) | Datos brutos del experimento |
 | [`kpcl0034_sin_batera_actual.csv`](kpcl0034_sin_batera_actual.csv) | Export filtrado de KPCL0034 (cubre este período) |
 | [`kpcl0036_sin_batera_actual.csv`](kpcl0036_sin_batera_actual.csv) | Export filtrado de KPCL0036 (cubre este período) |
-| [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico específico de la anomalía de peso en KPCL0036 |
-| [`02_REGLAS_EVENTOS_ALIMENTACION.md`](../02_REGLAS_EVENTOS_ALIMENTACION.md) | Reglas de clasificación de eventos (Fuente 4: health-check) |
+| [`KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`](KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico específico de la anomalía de peso en KPCL0036 |
+| [`REGLAS_EVENTOS_ALIMENTACION.md`](../REGLAS_EVENTOS_ALIMENTACION.md) | Reglas de clasificación de eventos (Fuente 4: health-check) |
 | `bridge/src/index.js` | Bridge que procesa los datos de ambos devices |

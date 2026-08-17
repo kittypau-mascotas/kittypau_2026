@@ -6,7 +6,7 @@
 | **Nombre** | Threshold por período de cadencia · plateau_duration en segundos · feature cadencia_s |
 | **Fecha** | 2026-06-14 |
 | **Estado** | ✅ Completado |
-| **Basado en** | [Exp 09A](exp_09a_cadencia_normalizada.md) + nueva data Abril y Mayo-Jun |
+| **Basado en** | [Exp 09A](A1_exp_09a_cadencia_normalizada.md) + nueva data Abril y Mayo-Jun |
 | **Foco** | Modelo A (binario: activo vs reposo) |
 
 ---

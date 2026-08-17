@@ -62,7 +62,7 @@ consenso robusto.
 ## Hallazgos
 
 - **IF y LOF coinciden exactamente en cantidad (6,709)** — ambos usan contamination=5%. El consenso reduce a 676 anomalías robustas (0.50% del dataset).
-- **Tipo H domina** (338/676 = 50%): lecturas con `clock_invalid=100%` que coinciden con períodos sin cargador documentados en `06_AUDITORIA_SIN_CARGADOR.md`. Validado.
+- **Tipo H domina** (338/676 = 50%): lecturas con `clock_invalid=100%` que coinciden con períodos sin cargador documentados en `KPCL_AUDITORIA_SIN_CARGADOR.md`. Validado.
 - **Autoencoder pendiente:** Instalar Visual C++ Redistributable 2022 x64 o usar entorno conda para resolver el DLL de PyTorch. Con 3/3 detectores, el consenso sería más estricto.
 - **75.65% de anomalías IF tienen clock_invalid=True** — correlación directa hardware/anomalía.
 
@@ -80,5 +80,5 @@ Consenso IF∩LOF con 676 anomalías es suficiente y robusto. Umbral de Tipo H (
 
 - [_delta_utils.md](../fase_1_datos/scripts/_delta_utils.md)
 - [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)
-- `06_AUDITORIA_SIN_CARGADOR.md`
-- `07_AUDITORIA_KPCL0036_ERROR_PESO.md`
+- `KPCL_AUDITORIA_SIN_CARGADOR.md`
+- `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`

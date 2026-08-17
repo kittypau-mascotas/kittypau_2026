@@ -7,7 +7,7 @@
 | **Fecha** | 2026-06-14 |
 | **Estado** | ✅ Completado |
 | **Basado en** | Exp 08 (dataset Abril + Mayo-Jun) |
-| **Siguiente** | [Exp 09B](exp_09b_threshold_por_periodo.md) — threshold por período + plateau en segundos + cadencia_s |
+| **Siguiente** | [Exp 09B](A1_exp_09b_threshold_por_periodo.md) — threshold por período + plateau en segundos + cadencia_s |
 
 ---
 

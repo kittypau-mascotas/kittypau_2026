@@ -27,7 +27,7 @@ Mayo-Jun 2026 → D:\Escritorio\Proyectos\AIoT_Kittypau\kittypau_2026_hivemq\Doc
 
 ## Por qué este documento existe
 
-El instructivo original (`instructivo.md`) y los archivos de experimentos Gamma (`g01` a `g06`) cubren la arquitectura y los objetivos. Lo que falta —y lo que aquí se documenta— son los **detalles de implementación concretos** que se descubrieron durante Alpha y que no quedaron capturados explícitamente: cómo cargar exactamente los dos CSVs de datos, qué hacer con sus columnas inconsistentes, qué orden de operaciones falla en silencio si no se sigue, y qué decisiones de código específicas bloquean errores conocidos antes de que ocurran.
+El instructivo original (`GAMMA_INSTRUCTIVO.md`) y los archivos de experimentos Gamma (`g01` a `g06`) cubren la arquitectura y los objetivos. Lo que falta —y lo que aquí se documenta— son los **detalles de implementación concretos** que se descubrieron durante Alpha y que no quedaron capturados explícitamente: cómo cargar exactamente los dos CSVs de datos, qué hacer con sus columnas inconsistentes, qué orden de operaciones falla en silencio si no se sigue, y qué decisiones de código específicas bloquean errores conocidos antes de que ocurran.
 
 ---
 

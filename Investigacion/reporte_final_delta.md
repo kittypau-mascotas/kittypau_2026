@@ -21,7 +21,7 @@
 
 ## Anomalias detectadas
 
-Ver detalle completo en `anomaly_report.md`. Resumen:
+Ver detalle completo en `DELTA_ANOMALY_REPORT.md`. Resumen:
 
 # Reporte de Anomalias — Ciclo Delta
 
@@ -63,7 +63,7 @@ Generado: 2026-06-22T10:22:57.793601
 ## Recomendaciones para Gamma
 
 - Revisar los 2 candidatos nuevos de servido (Jun 1–2, 2026) con `app_anotacion_gamma.py` antes de incorporarlos como etiquetas oficiales.
-- Las 338 anomalías Tipo H coinciden con períodos documentados en `06_AUDITORIA_SIN_CARGADOR.md`; considerar excluir esas ventanas del dataset de entrenamiento de Gamma para evitar contaminación.
+- Las 338 anomalías Tipo H coinciden con períodos documentados en `KPCL_AUDITORIA_SIN_CARGADOR.md`; considerar excluir esas ventanas del dataset de entrenamiento de Gamma para evitar contaminación.
 - Las 178 anomalías Tipo C (horario activo) merecen revisión manual: pueden ser sesiones de servido atípicas no capturadas.
 
 ## Recomendaciones para el Ciclo Epsilon (si aplica)

@@ -5,7 +5,7 @@
 **Cierre:** TBD
 **Estado actual:** ✅ G-01 ✅ G-02 ✅ G-03 ✅ G-05 completos · ⏳ G-04 bloqueado (`pip install optuna`) · próximo: **G-04** Hyperopt
 
-Referencia principal: [instructivo.md](instructivo.md) · Runbook Pre-G: [CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md](CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md)
+Referencia principal: [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) · Runbook Pre-G: [CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md](CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md)
 
 ---
 
@@ -131,4 +131,4 @@ G-06/07/08 se implementan cuando los datos lo permitan (≥300 alim + ≥80 serv
 2. Solo registrar métricas de **validación** hasta G-Final; las de test solo se registran en G-Final.
 3. El campo "Modelo prod" solo puede ser `✅` si el experimento superó **todos** los umbrales Gamma.
 4. Los experimentos data-conditional (G-06, G-07) no pueden iniciar sin verificar los prerequisitos de datos.
-5. Ver [instructivo.md](instructivo.md) sección 13 para las 14 reglas inviolables del Ciclo Gamma.
+5. Ver [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) sección 13 para las 14 reglas inviolables del Ciclo Gamma.

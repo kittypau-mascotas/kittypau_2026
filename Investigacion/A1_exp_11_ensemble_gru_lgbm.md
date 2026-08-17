@@ -6,7 +6,7 @@
 | **Nombre** | Limpieza de features + ampliación de ground truth Mayo-Jun + ensemble servido |
 | **Fecha planificada** | A definir (post 2026-06-15) |
 | **Estado** | 📋 Planificado — no ejecutado |
-| **Basado en** | [Exp 09B](exp_09b_threshold_por_periodo.md) (pipeline 30s, 13 features) + [Exp 10-NN](exp_10_nn_colab.md) (benchmark NN) + [Exp 07](exp_07_inferencia_mayo_junio.md) (candidatos sin etiquetar) |
+| **Basado en** | [Exp 09B](A1_exp_09b_threshold_por_periodo.md) (pipeline 30s, 13 features) + [Exp 10-NN](A1_exp_10_nn_colab.md) (benchmark NN) + [Exp 07](A1_exp_07_inferencia_mayo_junio.md) (candidatos sin etiquetar) |
 | **Modelo en producción** | Exp 06 (sin cambios hasta que Exp 11 demuestre mejora real) |
 
 ---
@@ -291,7 +291,7 @@ Paso 6 — Reporte
 ### Cierre
 - [ ] Sección "9. Resultados" completada con métricas reales
 - [ ] Decisión documentada (¿reemplaza a Exp 06 para Mayo-Jun? ¿queda como diagnóstico?)
-- [ ] Fila de Exp 11 actualizada en `Ciclo_Alpha_v1_experiments_README.md` y `EXPERIMENT_TRACKER.md`
+- [ ] Fila de Exp 11 actualizada en `A1_EXPERIMENTS_README.md` y `A1_EXPERIMENT_TRACKER.md`
 
 ---
 

@@ -952,14 +952,14 @@ Estas reglas son inviolables. Romperlas requiere documentar el motivo en el expe
 | `fase_1_extraccion/scripts/g01_setup_env.md` ... `g10_quality_report.md` | Implementación (specs .py) de los Pasos 4.1–4.11 del runbook de unificación |
 | `EXPERIMENT_TRACKER_GAMMA.md` | Tabla maestra de todos los experimentos del Ciclo Gamma |
 | `GLOSARIO_GAMMA.md` | Definiciones actualizadas con lecciones Alpha |
-| `exp_01_linea_base.md` a `exp_10_nn_colab.md` | Ciclo Alpha (solo lectura, referencia histórica) |
-| `EXPERIMENT_TRACKER.md` | Tracker del Ciclo Alpha (histórico) |
-| `../02_REGLAS_EVENTOS_ALIMENTACION.md` | Taxonomía canónica de eventos (aplica a ambos ciclos) |
-| `03_ML_PREDICCION_ALIMENTACION.md` | Especificación ML original (Ciclo Alpha) |
-| `01_GUIA_DASHBOARD_KPCL.md` | Guía del dashboard para identificar sesiones a anotar |
-| `../04_OPERATIVIZACION_SESIONES_SUPABASE.md` | Estructura de sesiones en Supabase |
-| `06_AUDITORIA_SIN_CARGADOR.md` | Contexto de anomalías KPCL0036 |
-| `07_AUDITORIA_KPCL0036_ERROR_PESO.md` | Por qué KPCL0036 sigue excluido |
+| `A1_exp_01_linea_base.md` a `A1_exp_10_nn_colab.md` | Ciclo Alpha (solo lectura, referencia histórica) |
+| `A1_EXPERIMENT_TRACKER.md` | Tracker del Ciclo Alpha (histórico) |
+| `../REGLAS_EVENTOS_ALIMENTACION.md` | Taxonomía canónica de eventos (aplica a ambos ciclos) |
+| `A1_ML_PREDICCION_ALIMENTACION.md` | Especificación ML original (Ciclo Alpha) |
+| `KPCL_GUIA_DASHBOARD.md` | Guía del dashboard para identificar sesiones a anotar |
+| `../OPERATIVIZACION_SESIONES_SUPABASE.md` | Estructura de sesiones en Supabase |
+| `KPCL_AUDITORIA_SIN_CARGADOR.md` | Contexto de anomalías KPCL0036 |
+| `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md` | Por qué KPCL0036 sigue excluido |
 
 ---
 

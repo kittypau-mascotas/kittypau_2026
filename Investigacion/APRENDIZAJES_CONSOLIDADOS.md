@@ -277,4 +277,4 @@ Los **2 candidatos nuevos de servido** identificados en Delta están en:
 
 ---
 
-*Fuentes: APRENDIZAJES_GAMMA_DELTA.md · EXPERIMENT_TRACKER.md · ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md · COMPARACION_ALPHA_GAMMA.md · exp_10_nn_colab.md*
+*Fuentes: APRENDIZAJES_GAMMA_DELTA.md · A1_EXPERIMENT_TRACKER.md · ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md · A1_exp_10_nn_colab.md*

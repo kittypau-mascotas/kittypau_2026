@@ -57,6 +57,37 @@ de mejorar F1-servido que en Alpha apenas llegó a 0.1395.
 para revisar segmentos candidatos uno por uno y asignar categorías.
 Concepto clave a preservar para Alpha v2.
 
+### 1.3b Corrección de calidad de datos — Alpha vs Gamma
+
+> Fusionado desde `COMPARACION_ALPHA_GAMMA.md` (2026-06-17, discontinuado por
+> quedar superseded por este documento — su §3 de métricas nunca se completó
+> porque se escribió antes de que G-01 entrenara).
+
+| Problema | Alpha | Gamma |
+|---|---|---|
+| UUID doble de KPCL0034 | ❌ dos UUIDs mezclados sin mapeo explícito | ✅ `uuid_mapping.json` — un UUID canónico antes de cualquier cálculo |
+| Timezone mixta en `audit_events.created_at` | ❌ `+00`, `-04`, `-04:00` mezclados | ✅ normalización UTC explícita en g03 |
+| Origen de etiquetas | ❌ mixto: tiempo real (Abril) + retroactivo (Mayo–Jun, Exp07/08) con criterios distintos | ✅ un solo criterio: revisión completa de los 3 meses vía `app_anotacion.py` |
+| Gap Mayo 1–25 | ❌ documentado pero no manejado — contaminaba splits temporales | ✅ tratado como gap de transmisión; no se rellena |
+| `clock_invalid` en Mayo–Jun | ❌ ignorado en Alpha | ✅ forzado a `ingested_at` cuando `clock_invalid=100%` |
+
+### 1.3c Comparación feature por feature — Alpha vs Gamma
+
+| Feature | Alpha (v1_modelo_a_13) | Gamma (FEATURES_GAMMA) | Cambio |
+|---|---|---|---|
+| `weight_grams` | ✅ | ✅ | igual |
+| `delta_w` | ✅ | ✅ | igual |
+| `delta_w_10` | ✅ | ✅ | igual |
+| `rolling_std_5/10` | ✅ | ✅ | igual |
+| `rolling_mean_5` | ✅ | ✅ | igual |
+| `net_weight` | ✅ | ✅ | igual |
+| `is_plateau` | ✅ | ✅ | igual |
+| `plateau_duration` | ✅ en **filas** | ✅ en **segundos** (`plateau_duration_s`) | corregido |
+| `hour_sin/cos` | ✅ hora **UTC** | ✅ hora **Santiago** | corregido |
+| `cadencia_s` | ✅ (gain ≈ 0 en todos los exp.) | ❌ eliminada | corregido |
+| `clock_invalid` | ✅ | ✅ | igual |
+| `dia_semana_sin` | ❌ no existía | ✅ nueva | añadida |
+
 ### 1.4 Las 13 features de Gamma
 
 | Feature | Descripción |

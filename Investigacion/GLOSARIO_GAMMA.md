@@ -4,7 +4,7 @@
 **Fecha:** 2026-06-15
 **Aplica a:** Ciclo Gamma (γ). El Ciclo Alpha usa el mismo vocabulario salvo donde se indica `[CORREGIDO EN GAMMA]`.
 
-Referencia principal: [instructivo.md](instructivo.md)
+Referencia principal: [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md)
 
 ---
 
@@ -30,7 +30,7 @@ Dispositivo food_bowl principal de prueba. Mascota asociada: Bandida. Tiene **do
 Dispositivo secundario. Reporta `battery_level` de forma más consistente. No se usa en el pipeline ML activo de Gamma.
 
 **KPCL0036**
-Dispositivo hidratación (water_bowl). Excluido del pipeline ML por error de peso documentado. Ver `07_AUDITORIA_KPCL0036_ERROR_PESO.md`.
+Dispositivo hidratación (water_bowl). Excluido del pipeline ML por error de peso documentado. Ver `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`.
 
 **UUID Abril 2026** (`9510a455-b0e9-4932-8be1-03976d31228a`)
 Primer UUID de KPCL0034, activo del 8 al 30 de abril de 2026.
@@ -249,7 +249,7 @@ Todas definidas en `_gamma_utils.py`. Cambiarlas requiere un nuevo experimento n
 
 ## 7. Errores documentados del Ciclo Alpha
 
-Ocho errores críticos corregidos en Gamma. Ver [instructivo.md](instructivo.md) sección 4 para los checkpoints de verificación.
+Ocho errores críticos corregidos en Gamma. Ver [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) sección 4 para los checkpoints de verificación.
 
 | ID | Error | Impacto observado | Corrección Gamma |
 |---|---|---|---|
@@ -294,9 +294,9 @@ Todo el código y datos del Ciclo Gamma viven bajo `Data Science/gamma/`. Las ca
 | Documento | Contenido |
 |---|---|
 | [CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md](CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md) | Runbook operativo del Pre-G: unificación de datos + inferencia con Modelo A de Exp06 + retiquetado total |
-| [instructivo.md](instructivo.md) | Guía maestra del Ciclo Gamma (pipeline, errores, reglas) |
+| [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) | Guía maestra del Ciclo Gamma (pipeline, errores, reglas) |
 | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | Estado y métricas de cada experimento Gamma |
-| [../02_REGLAS_EVENTOS_ALIMENTACION.md](../02_REGLAS_EVENTOS_ALIMENTACION.md) | Taxonomía canónica de eventos (aplica a ambos ciclos) |
-| [03_ML_PREDICCION_ALIMENTACION.md](03_ML_PREDICCION_ALIMENTACION.md) | Especificación ML original (Ciclo Alpha — referencia) |
-| [01_GUIA_DASHBOARD_KPCL.md](01_GUIA_DASHBOARD_KPCL.md) | Dashboard para identificar sesiones a anotar |
-| [07_AUDITORIA_KPCL0036_ERROR_PESO.md](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Por qué KPCL0036 sigue excluido |
+| [../REGLAS_EVENTOS_ALIMENTACION.md](../REGLAS_EVENTOS_ALIMENTACION.md) | Taxonomía canónica de eventos (aplica a ambos ciclos) |
+| [A1_ML_PREDICCION_ALIMENTACION.md](A1_ML_PREDICCION_ALIMENTACION.md) | Especificación ML original (Ciclo Alpha — referencia) |
+| [KPCL_GUIA_DASHBOARD.md](KPCL_GUIA_DASHBOARD.md) | Dashboard para identificar sesiones a anotar |
+| [KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md](KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md) | Por qué KPCL0036 sigue excluido |

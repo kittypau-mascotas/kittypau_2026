@@ -5,15 +5,15 @@
 | **Ciclo** | Gamma |
 | **Sub-proceso** | Unificación de datos + inferencia Modelo A (Alpha) + re-etiquetado total via `app_anotacion.py` |
 | **Fecha de creación** | 2026-06-16 |
-| **Última actualización** | 2026-06-16 — decisiones de la Sección 5 resueltas e integradas en `instructivo.md`, `GLOSARIO_GAMMA.md` y `EXPERIMENT_TRACKER_GAMMA.md` |
+| **Última actualización** | 2026-06-16 — decisiones de la Sección 5 resueltas e integradas en `GAMMA_INSTRUCTIVO.md`, `GLOSARIO_GAMMA.md` y `EXPERIMENT_TRACKER_GAMMA.md` |
 | **Device** | KPCL0034 (food_bowl, Bandida) |
-| **Estado** | ✅ Pre-G oficial del Ciclo Gamma — reemplaza la anotación manual desde cero descrita en versiones previas de `instructivo.md` |
+| **Estado** | ✅ Pre-G oficial del Ciclo Gamma — reemplaza la anotación manual desde cero descrita en versiones previas de `GAMMA_INSTRUCTIVO.md` |
 | **Reemplaza** | Cualquier dataset de etiquetas heredado de Alpha (`audit_events` Abril + `new_annotations.csv` Mayo-Jun de Exp07/08) como fuente única de verdad para Gamma |
 
 > Este documento es el **runbook operativo del Pre-G de Gamma**: detalla el paso a paso
-> y las decisiones de diseño. Vive dentro de `Ciclo_Gamma/` junto a `instructivo.md`,
+> y las decisiones de diseño. Vive dentro de `Ciclo_Gamma/` junto a `GAMMA_INSTRUCTIVO.md`,
 > `EXPERIMENT_TRACKER_GAMMA.md` y `GLOSARIO_GAMMA.md`, y ha sido conciliado con los tres:
-> el Pre-G de `instructivo.md` ahora describe este mismo proceso (unificación +
+> el Pre-G de `GAMMA_INSTRUCTIVO.md` ahora describe este mismo proceso (unificación +
 > inferencia con Modelo A de Alpha + retiquetado total), en vez de la anotación manual
 > desde cero que describían versiones anteriores.
 
@@ -142,7 +142,7 @@ Data_2026/
   columnas) — cargarlo con 13 features rompería la inferencia.
 - **Pendiente (explícitamente, por decisión del usuario) — 12 vs 13 para el
   entrenamiento de Gamma:** la pregunta de si el **nuevo modelo** que se entrene en
-  la Fase 3 de Gamma usará las 12 features de Alpha o las 13 de `instructivo.md`
+  la Fase 3 de Gamma usará las 12 features de Alpha o las 13 de `GAMMA_INSTRUCTIVO.md`
   (con `dia_semana_sin`) **no se resuelve en este documento**. Queda abierta y se
   decide al llegar a G-01/G-02, sin bloquear este paso de generación de candidatos.
 

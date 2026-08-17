@@ -13,50 +13,69 @@
 > ```
 >
 > **Para entender la app antes de tocarla, en este orden:**
-> 1. **[Ciclo_Alpha_v2_fase_0_ruido_README.md](Ciclo_Alpha_v2_fase_0_ruido_README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
+> 1. **[AV2_FASE_0_RUIDO_README.md](AV2_FASE_0_RUIDO_README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
 > 2. **[ARQUITECTURA_APP.md](ARQUITECTURA_APP.md)** — arquitectura técnica interna
 > 3. **[08_APP_ANOTACION_AV2.md](08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
 > 4. **[04_MATEMATICA_SHAPE_FEATURES.md](04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
 > 5. **[APRENDIZAJES_CONSOLIDADOS.md](APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
 >
-> **MOC completo de Alpha v2:** [00_INDICE_AV2.md](00_INDICE_AV2.md) ⭐
+> **MOC completo de Alpha v2:** [00_INDICE_AV2.md](00_INDICE_AV2.md) ⭐ — **MOC de toda la carpeta:** [[_MOC]]
 >
 > ---
 >
 > **Documentos maestros de toda la carpeta** (para agentes IA — leer si necesitás contexto más amplio que la app):
 > - **[GLOSARIO.md](GLOSARIO.md)** — devices, features, clases, parámetros globales, convenciones
-> - **[EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha v1 (Exp01–11), histórico
+> - **[A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md)** — tabla de experimentos del Ciclo Alpha v1 (Exp01–11), histórico
 > - **[ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md](ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md)** — por qué se archivó Alpha/Gamma/Delta y nació Alpha v2
+>
+> **Convención de nombres** (todos los `.md` viven planos en esta raíz — el prefijo dice el ciclo):
+>
+> | Prefijo | Ciclo | Estado |
+> |---|---|---|
+> | *(sin prefijo, numerado `00`–`09`)* | Alpha v2 | ⭐ ACTIVO |
+> | *(sin prefijo)* | Cross-cycle / maestro / KPCL toolkit | Vigente |
+> | `KPCL_` | Toolkit dashboard KPCL0034/36 | Vigente (uso sin confirmar, ver SPEC_07 §8) |
+> | `A1_` | Ciclo Alpha (v1) | 🗄️ CERRADO |
+> | `GAMMA_` / `g0N_` / `*_GAMMA` | Ciclo Gamma | 🗄️ ARCHIVADO |
+> | `DELTA_` / `d0N_` / `*_DELTA` / `*_delta` | Ciclo Delta | 🗄️ ARCHIVADO |
 >
 > **Mapa de la carpeta (estado real, verificado):**
 > ```
 > Investigacion/
-> ├── README.md + GLOSARIO.md + EXPERIMENT_TRACKER.md    ← navegación + histórico Ciclo Alpha v1
-> ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                ← por qué existe Alpha v2
-> ├── 01–08_*.md                                          ← reglas canónicas de eventos + auditorías (cross-cycle)
-> ├── Dashboard_KPCL/                                     ← toolkit de visualización operativa (scripts + CSVs + HTML)
-> ├── PowerBI_Supabase/                                  ← informe .pbix (propósito sin confirmar, ver SPEC_07 §8)
+> ├── README.md, _MOC.md, GLOSARIO.md, A1_EXPERIMENT_TRACKER.md    ← navegación + histórico Alpha v1
+> ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                          ← por qué existe Alpha v2
+> ├── REGLAS_EVENTOS_ALIMENTACION.md, OPERATIVIZACION_SESIONES_SUPABASE.md,
+> │   REGISTRO_EVENTOS_2026-04-16.md                                ← reglas canónicas cross-cycle
+> ├── 00_INDICE_AV2*.md … 09_EVOLUCION_MOTOR_MATEMATICO.md          ← docs del Ciclo Alpha v2
+> ├── AV2_*.md, ACTUALIZACION_DATA.md, ARQUITECTURA_APP.md,
+> │   HISTORIAL_RESULTADOS.md, RECOPILACION_DATOS_APP.md,
+> │   ANALISIS_BENCHMARK.md, APRENDIZAJES_CONSOLIDADOS.md           ← más docs de Alpha v2 / fase_0_ruido
+> ├── A1_*.md (20 archivos, incl. A1_exp_01–11)                     ← docs del Ciclo Alpha v1
+> ├── GAMMA_*.md, g0N_*.md, *_GAMMA.md, CICLO_GAMMA_*.md,
+> │   COMO_EJECUTAR_GAMMA.md                                        ← docs del Ciclo Gamma
+> ├── DELTA_*.md, d0N_*.md, *_DELTA.md, *_delta.md,
+> │   APRENDIZAJES_GAMMA_DELTA.md                                   ← docs del Ciclo Delta + memoria conjunta
+> ├── KPCL_*.md                                                     ← docs del toolkit Dashboard_KPCL
 > │
-> ├── Ciclo_Alpha_v2/                          ⭐ ACTIVO — detección por segmentos, sin ML supervisado
-> │   ├── 00_INDICE_AV2.md                                ← MOC principal de este ciclo
-> │   ├── APRENDIZAJES_CONSOLIDADOS.md                    ← memoria de todos los ciclos previos
-> │   ├── fase_0_ruido/                        ⭐⭐ AQUÍ VIVE app_anotacion_av2.py
-> │   │   ├── app_anotacion_av2.py                        ← LA APP — 8 tabs, motor matemático, anotación
-> │   │   ├── shape_features_v2.py                        ← 102 features en 15 familias + Evidence Engine
-> │   │   ├── 01_genera_candidatos.py / 0A_.../ 0B_.../ 0C_...  ← pipeline de detección de candidatos
-> │   │   ├── data/ (+ backups/)                          ← anotaciones, candidatos, cache — NO tocar a mano
-> │   │   └── tests/                                      ← 16 tests, correr antes de tocar shape_features_v2.py
-> │   └── Ciclo_Alpha_v1_experiments_README.md                           ← tracker de experimentos v2 + baselines
+> ├── Dashboard_KPCL/                          toolkit de visualización operativa (scripts + CSVs + HTML)
+> ├── PowerBI_Supabase/                        informe .pbix (propósito sin confirmar, ver SPEC_07 §8)
 > │
-> └── Ciclo_Alpha_v1/                              🗄️ CERRADO — pipeline ML supervisado (Exp01–11), Jun 2026
->     ├── experiments/exp_01–11_*.md                      ← iteraciones del modelo
->     └── Exploracion_Gamma_Delta_2026/                    ← archivo de Gamma (multi-modelo) + Delta (no supervisado)
+> ├── Ciclo_Alpha_v2/                          ⭐ ACTIVO — código, sin ML supervisado
+> │   └── fase_0_ruido/                        ⭐⭐ AQUÍ VIVE app_anotacion_av2.py
+> │       ├── app_anotacion_av2.py                        ← LA APP — 8 tabs, motor matemático, anotación
+> │       ├── shape_features_v2.py                        ← 102 features en 15 familias + Evidence Engine
+> │       ├── 01_genera_candidatos.py / 0A_.../ 0B_.../ 0C_...  ← pipeline de detección de candidatos
+> │       ├── data/ (+ backups/)                          ← anotaciones, candidatos, cache — NO tocar a mano
+> │       └── tests/                                      ← 16 tests, correr antes de tocar shape_features_v2.py
+> │
+> └── Ciclo_Alpha_v1/                          🗄️ CERRADO — código del pipeline ML supervisado (Exp01–11), Jun 2026
+>     └── Exploracion_Gamma_Delta_2026/         código archivado de Gamma (multi-modelo) + Delta (no supervisado)
 > ```
 >
 > Los datos crudos (`readings.csv`, `readings_rows.csv`) viven en `11_Data/2026/` — hermano de
 > `Investigacion/` en la raíz del repo, no adentro de esta carpeta.
 >
-> **Cómo categorizar un archivo nuevo:** ver sección [Regla de uso de la carpeta](#regla-de-uso-de-la-carpeta) + [EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md) para experimentos.
+> **Cómo categorizar un archivo nuevo:** ver sección [Regla de uso de la carpeta](#regla-de-uso-de-la-carpeta) + [A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md) para experimentos. Un doc nuevo de un ciclo cerrado (Alpha v1/Gamma/Delta) lleva el prefijo de ese ciclo; uno nuevo de Alpha v2 no necesita prefijo si sigue la numeración `00`–`09` existente.
 
 **Proyecto:** Kittypau — Ecosistema IoT para monitoreo de mascotas  
 **Dispositivos documentados:** KPCL0034 (food_bowl) · KPCL0036 (water_bowl)  
@@ -221,7 +240,7 @@ python Investigacion/Dashboard_KPCL/serve_kpcl_dashboard.py
 
 **Tamaño:** ~63 MB  
 **Contenido:** Snapshot bruto combinado de KPCL0034 y KPCL0036 durante el experimento sin cargador. Incluye columna `device_code` para distinguir entre devices.  
-**Propósito:** Experimento compartido para validar comportamiento de batería en descarga libre. Ver [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md) para el diagnóstico completo.
+**Propósito:** Experimento compartido para validar comportamiento de batería en descarga libre. Ver [`KPCL_AUDITORIA_SIN_CARGADOR.md`](KPCL_AUDITORIA_SIN_CARGADOR.md) para el diagnóstico completo.
 
 ---
 
@@ -273,7 +292,7 @@ python Investigacion/Dashboard_KPCL/serve_kpcl_dashboard.py
 
 ### Documentación técnica
 
-#### [`01_GUIA_DASHBOARD_KPCL.md`](01_GUIA_DASHBOARD_KPCL.md)
+#### [`KPCL_GUIA_DASHBOARD.md`](KPCL_GUIA_DASHBOARD.md)
 
 Guía operativa paso a paso para usar el dashboard. Incluye:
 - Flujo completo de apertura (lanzador → servidor → navegador)
@@ -284,7 +303,7 @@ Guía operativa paso a paso para usar el dashboard. Incluye:
 
 ---
 
-#### [`02_REGLAS_EVENTOS_ALIMENTACION.md`](02_REGLAS_EVENTOS_ALIMENTACION.md)
+#### [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md)
 
 Especificación canónica de las reglas de detección y categorización. Incluye:
 - Definición formal de "sesión de alimentación" e "hidratación"
@@ -295,7 +314,7 @@ Especificación canónica de las reglas de detección y categorización. Incluye
 
 ---
 
-#### [`03_ML_PREDICCION_ALIMENTACION.md`](03_ML_PREDICCION_ALIMENTACION.md)
+#### [`A1_ML_PREDICCION_ALIMENTACION.md`](A1_ML_PREDICCION_ALIMENTACION.md)
 
 Especificación completa del problema de ML. Incluye:
 - Formulación del problema (segmentación de 3 estados: baseline / inicio_alimentacion / post_alimentacion)
@@ -308,7 +327,7 @@ Especificación completa del problema de ML. Incluye:
 
 ---
 
-#### [`04_OPERATIVIZACION_SESIONES_SUPABASE.md`](04_OPERATIVIZACION_SESIONES_SUPABASE.md)
+#### [`OPERATIVIZACION_SESIONES_SUPABASE.md`](OPERATIVIZACION_SESIONES_SUPABASE.md)
 
 Documentación de la implementación SQL/API en Supabase. Incluye:
 - Estructura de `public.device_bowl_sessions` y `public.device_bowl_session_anomalies`
@@ -321,7 +340,7 @@ Documentación de la implementación SQL/API en Supabase. Incluye:
 
 ### Análisis Colab (export 07-05-2026)
 
-- [`05_ANALISIS_COLAB_KPCL0034_07052026.md`](05_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
+- [`A1_ANALISIS_COLAB_KPCL0034_07052026.md`](A1_ANALISIS_COLAB_KPCL0034_07052026.md) — documentación completa del análisis exploratorio en Colab: pipeline de 2 fases, features por sesión, 4 paneles del dashboard, cruce servido vs. consumido, diferencias vs. pipeline ML.
 - [`Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py`](Ciclo_Alpha_v1/colab_analisis_kpcl0034_07052026.py) — script Python completo para Google Colab. Lee CSVs exportados desde Google Drive, reconstruye sesiones, calcula features de comportamiento y genera dashboard HTML interactivo con 4 paneles Plotly.
 
 ### Datos históricos — `Data_2026/`
@@ -356,9 +375,9 @@ Dump PostgreSQL completo (52 MB). Permite restaurar el estado completo de la bas
 
 | Archivo | Descripción | Estado |
 |---|---|---|
-| [`08_REGISTRO_EVENTOS_2026-04-16.md`](08_REGISTRO_EVENTOS_2026-04-16.md) | Bitácora del backfill inicial de 49 eventos manuales de KPCL0034 | ✅ Disponible |
-| [`06_AUDITORIA_SIN_CARGADOR.md`](06_AUDITORIA_SIN_CARGADOR.md) | Diagnóstico del experimento compartido sin cargador | ✅ Disponible |
-| [`07_AUDITORIA_KPCL0036_ERROR_PESO.md`](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico del historial de peso anómalo sin batería en KPCL0036 | ✅ Disponible |
+| [`REGISTRO_EVENTOS_2026-04-16.md`](REGISTRO_EVENTOS_2026-04-16.md) | Bitácora del backfill inicial de 49 eventos manuales de KPCL0034 | ✅ Disponible |
+| [`KPCL_AUDITORIA_SIN_CARGADOR.md`](KPCL_AUDITORIA_SIN_CARGADOR.md) | Diagnóstico del experimento compartido sin cargador | ✅ Disponible |
+| [`KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`](KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md) | Diagnóstico del historial de peso anómalo sin batería en KPCL0036 | ✅ Disponible |
 | `SQL_EXPORT_KPCL0034_KPCL0036_EXPERIMENTO.sql` | SQL canónico de exportación del tramo de experimento | ⏳ Pendiente |
 | `refresh_kpcl_experimento.py` | Script de descarga histórica desde Supabase | ⏳ Pendiente |
 | `SQL_VALIDACION_KPCL0036_TARE_FILL.sql` | Validación SQL de secuencia tare/llenado en KPCL0036 | ⏳ Pendiente |
@@ -879,19 +898,19 @@ Todas las categorías se registran en `public.audit_events.payload->>'category'`
 ### Para agentes IA (lectura mínima para operar)
 1. Este `README.md` — contexto operativo completo del ecosistema
 2. [`GLOSARIO.md`](GLOSARIO.md) — devices, features, clases, parámetros, convenciones
-3. [`EXPERIMENT_TRACKER.md`](EXPERIMENT_TRACKER.md) — estado de todos los experimentos y métricas
-4. [`02_REGLAS_EVENTOS_ALIMENTACION.md`](02_REGLAS_EVENTOS_ALIMENTACION.md) — reglas canónicas de etiquetado
+3. [`A1_EXPERIMENT_TRACKER.md`](A1_EXPERIMENT_TRACKER.md) — estado de todos los experimentos y métricas
+4. [`REGLAS_EVENTOS_ALIMENTACION.md`](REGLAS_EVENTOS_ALIMENTACION.md) — reglas canónicas de etiquetado
 
 ### Para ejecutar o extender el pipeline ML
-5. [`Ciclo_Alpha_v1_README.md`](Ciclo_Alpha_v1_README.md) — guía de ejecución Fase 1→4
-6. [`Ciclo_Alpha_v1_experiments_README.md`](Ciclo_Alpha_v1_experiments_README.md) — índice de experimentos con hitos
-7. [`exp_07_inferencia_mayo_junio.md`](exp_07_inferencia_mayo_junio.md) — experimento activo ★
-8. [`02_PREPARACION_NUEVA_INGESTA.md`](02_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
+5. [`A1_README.md`](A1_README.md) — guía de ejecución Fase 1→4
+6. [`A1_EXPERIMENTS_README.md`](A1_EXPERIMENTS_README.md) — índice de experimentos con hitos
+7. [`A1_exp_07_inferencia_mayo_junio.md`](A1_exp_07_inferencia_mayo_junio.md) — experimento activo ★
+8. [`A1_PREPARACION_NUEVA_INGESTA.md`](A1_PREPARACION_NUEVA_INGESTA.md) — roadmap Exp 08
 
 ### Para categorizar sesiones manualmente
-9. [`01_GUIA_DASHBOARD_KPCL.md`](01_GUIA_DASHBOARD_KPCL.md) — cómo usar el dashboard visual
+9. [`KPCL_GUIA_DASHBOARD.md`](KPCL_GUIA_DASHBOARD.md) — cómo usar el dashboard visual
 10. [`Ciclo_Alpha_v1/fase_4_visualizacion/COMO_EJECUTAR.md`](Ciclo_Alpha_v1/fase_4_visualizacion/COMO_EJECUTAR.md) — app Streamlit de anotación
 
 ### Para entender los datos
 11. [`Data_2026/README.md`](Data_2026/README.md) — índice de dumps disponibles y alertas de calidad
-12. [`03_ML_PREDICCION_ALIMENTACION.md`](03_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original
+12. [`A1_ML_PREDICCION_ALIMENTACION.md`](A1_ML_PREDICCION_ALIMENTACION.md) — especificación técnica ML original

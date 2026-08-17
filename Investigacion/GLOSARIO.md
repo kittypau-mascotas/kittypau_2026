@@ -1,7 +1,7 @@
 # Glosario del Ecosistema Kittypau Investigacion
 
 > Definiciones de todos los términos técnicos usados en esta carpeta.
-> Referencia cruzada con [README.md](README.md) y [EXPERIMENT_TRACKER.md](EXPERIMENT_TRACKER.md).
+> Referencia cruzada con [README.md](README.md) y [A1_EXPERIMENT_TRACKER.md](A1_EXPERIMENT_TRACKER.md).
 
 ---
 
@@ -11,7 +11,7 @@
 |----|------|-------------|-------------|
 | **KPCL0034** | `3a460074-e7c3-41bf-ae5a-a011445f927a` | Comedero de Bandida (gata principal). Device de referencia para todos los experimentos. | ✅ ACTIVO — todos los modelos entrenados con este device |
 | **KPCL0035** | `0dc601c0-1533-40c5-b606-6d89eb2d4042` | Comedero nuevo, instalado ~May 2026. Sin etiquetas manuales. | ⏳ Pendiente etiquetado para Exp 10 |
-| **KPCL0036** | (no en pipeline activo) | Device con anomalía de peso documentada (voltaje bajo → spikes). | ❌ EXCLUIDO — ver `07_AUDITORIA_KPCL0036_ERROR_PESO.md` |
+| **KPCL0036** | (no en pipeline activo) | Device con anomalía de peso documentada (voltaje bajo → spikes). | ❌ EXCLUIDO — ver `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md` |
 | **Device desconocido** | `418565e7-6683-440c-80e6-666363574cec` | Aparece en dump Mayo_2026. Origen no identificado. | ❌ EXCLUIDO — investigar origen |
 
 **Bandida** = nombre de la gata de prueba de KPCL0034.
@@ -170,7 +170,7 @@ else:
 | Componente | Formato | Ejemplo |
 |-----------|---------|---------|
 | ID | `Exp NN` (dos dígitos con cero) | `Exp 07` |
-| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `exp_07_inferencia_mayo_junio.md` |
+| Archivo | `exp_NN_nombre_corto.md` en `experiments/` | `A1_exp_07_inferencia_mayo_junio.md` |
 | Fecha | ISO 8601 (YYYY-MM-DD) | `2026-06-14` |
 
 ### Estados de Experimento
@@ -220,5 +220,5 @@ else:
 | Fuente | URL / Acceso | Propósito |
 |--------|-------------|---------|
 | Supabase (producción) | Variables de entorno en `.env` | Base de datos con lecturas y eventos |
-| Google Colab | Análisis exploratorio independiente | Ver `05_ANALISIS_COLAB_KPCL0034_07052026.md` |
+| Google Colab | Análisis exploratorio independiente | Ver `A1_ANALISIS_COLAB_KPCL0034_07052026.md` |
 | Google Drive | CSVs para análisis Colab | `kittypau_full_07-05-2026_csv/` subido manualmente |

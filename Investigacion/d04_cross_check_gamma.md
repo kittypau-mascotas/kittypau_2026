@@ -67,5 +67,5 @@ ARI bajo (0.16) es esperado por la diferencia de granularidad (2 clusters vs 4 c
 - [d01_clustering_peso.md](d01_clustering_peso.md)
 - [d02_anomaly_detection.md](d02_anomaly_detection.md)
 - [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)
-- `06_AUDITORIA_SIN_CARGADOR.md`
-- `07_AUDITORIA_KPCL0036_ERROR_PESO.md`
+- `KPCL_AUDITORIA_SIN_CARGADOR.md`
+- `KPCL_AUDITORIA_KPCL0036_ERROR_PESO.md`

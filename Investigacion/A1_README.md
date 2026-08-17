@@ -1,7 +1,7 @@
 # KPCL0034 — Data Science Pipeline
 
 > **Ecosistema:** Este pipeline forma parte de `investigacion/`. Documentos maestros:
-> [README raíz](../README.md) · [GLOSARIO](../GLOSARIO.md) · [EXPERIMENT_TRACKER](../EXPERIMENT_TRACKER.md) · [experiments/README](Ciclo_Alpha_v1_experiments_README.md) · [Data_2026/README](../Data_2026/README.md)
+> [README raíz](../README.md) · [GLOSARIO](../GLOSARIO.md) · [EXPERIMENT_TRACKER](../A1_EXPERIMENT_TRACKER.md) · [experiments/README](A1_EXPERIMENTS_README.md) · [Data_2026/README](../Data_2026/README.md)
 
 Pipeline de ML supervisado para detección automática de sesiones de alimentación de Bandida
 sobre datos de peso del bowl `KPCL0034`. Estado activo: **Exp 10-NN completado** (2026-06-15) · F1 activo mejor NN=0.6016 (TCN) · GRU F1 servido=0.34 · **Modelo en producción: Exp 06** · **Próximo: Exp 11** (ensemble GRU+LGBM + revisión 155 candidatos Mayo-Jun).
@@ -18,26 +18,26 @@ Data Science/
 ├── inferencia_kpcl0034.py              ← inferencia con modelos Exp 06 sobre datos de entrenamiento
 ├── inferencia_exp07_mayo_junio.py      ← inferencia Exp 07 sobre Mayo–Jun 2026 (sin etiquetar)
 ├── colab_analisis_kpcl0034_07052026.py ← análisis exploratorio Colab (07-05-2026)
-├── 01_REFERENCIAS.md                   ← links y referencias externas
-├── 02_PREPARACION_NUEVA_INGESTA.md     ← guía para nueva ingesta de datos
-├── 03_REPORTE_SESION_2026-04-26.md     ← bitácora histórica de la sesión inicial
-├── 04_RESUMEN_EXPERIMENTOS_FASE3.md    ← resumen ejecutivo Exp 01–05 (histórico)
-├── 05_REPORTE_EXPERIMENTOS_FASE3.md    ← reporte maestro Exp 01–05 (histórico)
+├── A1_REFERENCIAS.md                   ← links y referencias externas
+├── A1_PREPARACION_NUEVA_INGESTA.md     ← guía para nueva ingesta de datos
+├── A1_REPORTE_SESION_2026-04-26.md     ← bitácora histórica de la sesión inicial
+├── A1_RESUMEN_EXPERIMENTOS_FASE3.md    ← resumen ejecutivo Exp 01–05 (histórico)
+├── A1_REPORTE_EXPERIMENTOS_FASE3.md    ← reporte maestro Exp 01–05 (histórico)
 ├── resumen_fase3.svg                   ← gráfico comparativo visual
 │
 ├── experiments/                       ← un MD por experimento
-│   ├── exp_01_linea_base.md           ← Modelo A F1=0.00 (threshold default)
-│   ├── exp_02_threshold_rebalanceo.md ← Modelo A F1=0.555 (threshold tuning)
-│   ├── exp_03_mejor_base.md           ← Modelo B Macro F1=0.671 (mejor base histórica)
-│   ├── exp_04_smote_calibracion.md    ← SMOTE + calibración isotónica
-│   ├── exp_05_nueva_ingesta.md        ← Fase 1 actualizada, modelos sin cambio
-│   ├── exp_06_colab_dataset.md        ← dump 07-05-2026 · Fase 4 habilitada
-│   ├── exp_07_inferencia_mayo_junio.md ← ✅ Completado — inferencia Mayo–Jun 2026 · 155 sesiones anotadas retroactivamente
-│   ├── exp_08_unificacion_mayo_junio.md ← ✅ Completado — Abril+MayoJun unificados · F1 servido↑ · shift distribución
-│   ├── exp_09a_cadencia_normalizada.md ← ✅ Completado — resampleo 30s · F1=0.6000 · AUC=0.9146 · threshold sube a 0.26
-│   ├── exp_09b_threshold_por_periodo.md ← ✅ Completado — threshold por período · plateau en segundos · cadencia_s (#13)
-│   ├── exp_10_nn_colab.md               ← ✅ Completado — benchmark 4 NN vs LGBM Exp 06 · LGBM permanece en prod · GRU F1 serv=0.34
-│   └── exp_11_ensemble_gru_lgbm.md      ← 📋 Planificado — revertir cadencia_s · revisión 155 candidatos Exp 07 · ensemble GRU+LGBM
+│   ├── A1_exp_01_linea_base.md           ← Modelo A F1=0.00 (threshold default)
+│   ├── A1_exp_02_threshold_rebalanceo.md ← Modelo A F1=0.555 (threshold tuning)
+│   ├── A1_exp_03_mejor_base.md           ← Modelo B Macro F1=0.671 (mejor base histórica)
+│   ├── A1_exp_04_smote_calibracion.md    ← SMOTE + calibración isotónica
+│   ├── A1_exp_05_nueva_ingesta.md        ← Fase 1 actualizada, modelos sin cambio
+│   ├── A1_exp_06_colab_dataset.md        ← dump 07-05-2026 · Fase 4 habilitada
+│   ├── A1_exp_07_inferencia_mayo_junio.md ← ✅ Completado — inferencia Mayo–Jun 2026 · 155 sesiones anotadas retroactivamente
+│   ├── A1_exp_08_unificacion_mayo_junio.md ← ✅ Completado — Abril+MayoJun unificados · F1 servido↑ · shift distribución
+│   ├── A1_exp_09a_cadencia_normalizada.md ← ✅ Completado — resampleo 30s · F1=0.6000 · AUC=0.9146 · threshold sube a 0.26
+│   ├── A1_exp_09b_threshold_por_periodo.md ← ✅ Completado — threshold por período · plateau en segundos · cadencia_s (#13)
+│   ├── A1_exp_10_nn_colab.md               ← ✅ Completado — benchmark 4 NN vs LGBM Exp 06 · LGBM permanece en prod · GRU F1 serv=0.34
+│   └── A1_exp_11_ensemble_gru_lgbm.md      ← 📋 Planificado — revertir cadencia_s · revisión 155 candidatos Exp 07 · ensemble GRU+LGBM
 │
 ├── fase_1_extraccion/
 │   ├── INSTRUCCIONES_FASE1_CLAUDE_CODE.docx

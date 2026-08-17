@@ -174,7 +174,7 @@ fase_3_anomalias/outputs/
   anomalias_lof.csv            (6,709 filas)
   anomalias_consenso.csv       (676 filas)
   anomalias_detectadas.csv     (676 filas)
-  anomaly_report.md
+  DELTA_ANOMALY_REPORT.md
   visualizaciones/anomaly_timeline_por_tipo.html
 
 fase_4_validacion/outputs/

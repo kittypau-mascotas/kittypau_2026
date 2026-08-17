@@ -24,9 +24,9 @@ El archivo `readings_rows.csv` cubre el período **2026-05-23 → 2026-06-14** y
 
 ### Referencias a experimentos anteriores
 
-- Los modelos usados en este experimento son los producidos en `exp_06_colab_dataset.md`.
-- La arquitectura de features es la definida desde `exp_03_mejor_base.md` (12 features activas, invariantes desde entonces).
-- Las reglas de etiquetado y fuente de verdad están en `02_REGLAS_EVENTOS_ALIMENTACION.md`.
+- Los modelos usados en este experimento son los producidos en `A1_exp_06_colab_dataset.md`.
+- La arquitectura de features es la definida desde `A1_exp_03_mejor_base.md` (12 features activas, invariantes desde entonces).
+- Las reglas de etiquetado y fuente de verdad están en `REGLAS_EVENTOS_ALIMENTACION.md`.
 - El pipeline de inferencia de referencia es `inferencia_kpcl0034.py` documentado en el `README.md` de Data Science.
 
 ---
@@ -65,7 +65,7 @@ A diferencia del dump de abril (donde `clock_invalid = True` era ~50%), en este 
 - Usar `ingested_at` como timestamp canónico en todo el experimento.
 - Ajustar el script `03_extract_readings.py` para forzar `ingested_at` sin condición.
 
-Esta diferencia debe documentarse y no ignorarse. Ver `02_REGLAS_EVENTOS_ALIMENTACION.md`
+Esta diferencia debe documentarse y no ignorarse. Ver `REGLAS_EVENTOS_ALIMENTACION.md`
 sección "Fuente 1" para el tratamiento canónico de `clock_invalid`.
 
 ### Devices presentes en el CSV
@@ -126,7 +126,7 @@ Quedan registradas como candidatas para el Experimento 08 si se decide reentrena
 
 ## 2. Modelos disponibles (Experimento 06)
 
-Los modelos a usar son los artefactos producidos en `exp_06_colab_dataset.md`,
+Los modelos a usar son los artefactos producidos en `A1_exp_06_colab_dataset.md`,
 entrenados con el dump 07-05-2026 (Apr 8 – May 1).
 
 | Modelo | Artefacto | Métricas de validación (Exp 06) |
@@ -171,7 +171,7 @@ Ajustes requeridos para este experimento:
 
 **Script de referencia:** `fase_2_dataset/scripts/02_build_features.py`
 
-Las **12 features activas** definidas en `exp_03_mejor_base.md` y mantenidas en
+Las **12 features activas** definidas en `A1_exp_03_mejor_base.md` y mantenidas en
 todos los experimentos hasta el Exp 06 se calculan exactamente igual:
 
 | # | Feature | Nota |
@@ -284,7 +284,7 @@ test set más robusto del proyecto — con 21 días de datos nunca vistos vs. lo
 
 ### Cierre
 - [x] Completar sección "7. Resultados" de este documento
-- [ ] Registrar en `04_RESUMEN_EXPERIMENTOS_FASE3.md` la fila del Exp 07
+- [ ] Registrar en `A1_RESUMEN_EXPERIMENTOS_FASE3.md` la fila del Exp 07
 
 ---
 
@@ -379,12 +379,12 @@ Para calcularlas: etiquetar retroactivamente con `app_anotacion.py` y re-ejecuta
 
 | Experimento | Rol en el Exp 07 |
 |---|---|
-| `exp_01_linea_base.md` | Línea base histórica de referencia |
-| `exp_02_threshold_rebalanceo.md` | Introdujo threshold tuning — threshold 0.20 del Exp 07 viene de esta línea |
-| `exp_03_mejor_base.md` | Definió las 12 features activas — invariantes en el Exp 07 |
-| `exp_04_smote_calibracion.md` | Introdujo calibración isotónica — usada en Modelo A del Exp 07 |
-| `exp_05_nueva_ingesta.md` | Confirmó que nueva ingesta no siempre mueve el modelo — lección aplicable aquí |
-| `exp_06_colab_dataset.md` | **Fuente de los modelos** usados en el Exp 07 — F1 activo 0.76, F1 alim 0.76 |
+| `A1_exp_01_linea_base.md` | Línea base histórica de referencia |
+| `A1_exp_02_threshold_rebalanceo.md` | Introdujo threshold tuning — threshold 0.20 del Exp 07 viene de esta línea |
+| `A1_exp_03_mejor_base.md` | Definió las 12 features activas — invariantes en el Exp 07 |
+| `A1_exp_04_smote_calibracion.md` | Introdujo calibración isotónica — usada en Modelo A del Exp 07 |
+| `A1_exp_05_nueva_ingesta.md` | Confirmó que nueva ingesta no siempre mueve el modelo — lección aplicable aquí |
+| `A1_exp_06_colab_dataset.md` | **Fuente de los modelos** usados en el Exp 07 — F1 activo 0.76, F1 alim 0.76 |
 
 ---
 

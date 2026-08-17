@@ -6,7 +6,7 @@
 **Prerequisito:** Pre-G completado (≥80 serv · ≥200 alim · Fase 1 OK)
 **Fecha estimada:** TBD (post Pre-G)
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) §9
 
 ---
 
@@ -192,7 +192,7 @@ gamma/fase_3_modelos/models/gbm/
 
 | Documento | Enlace |
 |---|---|
-| Guía maestra Gamma | [instructivo.md](instructivo.md) |
+| Guía maestra Gamma | [GAMMA_INSTRUCTIVO.md](GAMMA_INSTRUCTIVO.md) |
 | Tracker de experimentos | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |
 | Experimento sucesor | [g02_gbm_benchmark.md](g02_gbm_benchmark.md) |
 | Referencia Alpha (α-06) | `Ciclo_Alpha_v1/experiments/exp_06_dump_colab.md` |
