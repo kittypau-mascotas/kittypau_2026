@@ -180,8 +180,8 @@ nada, es solo un recordatorio visual.
 | Campo | Regla |
 |---|---|
 | Almacenamiento | Supabase Storage |
-| Tamaño máximo | 5 MB |
-| Compresión | Cliente (antes de subir) |
+| Tamaño máximo | 5 MB — sobre el archivo YA reducido, no la foto original que el usuario selecciona (corregido 2026-08-17: antes se rechazaba la foto original si pesaba más de 5MB, sin comprimir primero — ver `Knowledge/29_Specs/003-compresion-foto-mascota/`) |
+| Compresión | Cliente (antes de subir), automática al seleccionar el archivo — downscale proporcional + reencode JPEG iterativo (`kittypau_app/src/lib/utils/photo-compress.ts`) |
 | Reemplazo | Overwrite (no múltiples versiones) |
 | Foto por defecto | Placeholder por especie |
 

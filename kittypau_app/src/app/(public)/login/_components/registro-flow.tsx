@@ -10,6 +10,7 @@ import {
   setTokens,
 } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
+import { compressPhoto, MAX_UPLOAD_BYTES } from "@/lib/utils/photo-compress";
 import DevicePicker from "@/app/_components/device-picker";
 
 type RegistroStatus = {
@@ -165,7 +166,11 @@ const defaultStatus: RegistroStatus = {
 };
 
 const STORAGE_BUCKET = "kittypau-photos";
-const MAX_PHOTO_MB = 5;
+// Derivado de MAX_UPLOAD_BYTES (photo-compress.ts) en vez de un número propio — antes
+// este archivo y pet/page.tsx tenían cada uno su propia constante de 5MB, que podían
+// desincronizarse. Solo para el texto de ayuda visible; el límite real que se aplica
+// es el de compressPhoto(). Ver spec 003 US3.
+const MAX_PHOTO_MB = MAX_UPLOAD_BYTES / (1024 * 1024);
 export const AVATAR_OPTIONS = [
   { id: "avatar-1", label: "Avatar 1", url: "/avatar_1.png" },
   { id: "avatar-2", label: "Avatar 2", url: "/avatar_2.png" },
@@ -515,7 +520,13 @@ export default function RegistroFlow({
     onDeviceTypeChange?.(deviceForm.device_type);
   }, [deviceForm.device_type, onDeviceTypeChange]);
 
-  const preparePhoto = (
+  // Antes rechazaba de plano cualquier archivo >MAX_PHOTO_MB antes de llegar al editor
+  // de recorte (applyCrop, más abajo) que ya comprimía — pero ese editor es manual y
+  // opcional (el usuario tiene que abrirlo a mano), así que una foto de celular pesada
+  // nunca llegaba a comprimirse. Ahora compressPhoto() reduce automáticamente al
+  // seleccionar el archivo; el editor de recorte sigue disponible aparte, ahora sobre
+  // una foto ya liviana. Ver spec 003.
+  const preparePhoto = async (
     file: File | null,
     setFile: (value: File | null) => void,
     setPreview: (value: string | null) => void,
@@ -526,12 +537,15 @@ export default function RegistroFlow({
       setPreview(null);
       return;
     }
-    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
-      setPhotoError(`La imagen no puede superar ${MAX_PHOTO_MB}MB.`);
-      return;
+    try {
+      const compressed = await compressPhoto(file);
+      setFile(compressed);
+      setPreview(URL.createObjectURL(compressed));
+    } catch (err) {
+      setPhotoError(
+        err instanceof Error ? err.message : "No se pudo procesar la foto.",
+      );
     }
-    setFile(file);
-    setPreview(URL.createObjectURL(file));
   };
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import EmptyState from "@/app/_components/empty-state";
 import PageLoadingSkeleton from "@/app/_components/page-loading-skeleton";
 import OnboardingTip from "@/app/_components/onboarding-tip";
 import { parseListResponse } from "@/lib/utils/api";
+import { compressPhoto } from "@/lib/utils/photo-compress";
 
 type ApiPet = {
   id: string;
@@ -509,24 +510,24 @@ export default function PetPage() {
     return (await res.json()) as ApiPet;
   };
 
-  // Tamaño máximo y overwrite-sin-versiones son reglas ya documentadas en
+  // Overwrite-sin-versiones es una regla ya documentada en
   // Knowledge/01_Proyecto/DOC_MAESTRO_DOMINIO.md § 7 "Estrategia de fotos" — el path
   // determinístico (por petId, no un nombre random) es lo que hace que upsert:true
   // realmente reemplace la foto anterior en vez de acumular archivos huérfanos.
-  const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+  // El límite de tamaño (MAX_UPLOAD_BYTES) se aplica sobre el archivo ya reducido por
+  // compressPhoto(), no sobre el original — ver spec 003 (fotos de celular >5MB sin
+  // comprimir se rechazaban de plano antes de este fix).
   const uploadPetPhoto = async (petId: string, file: File) => {
-    if (file.size > MAX_PHOTO_BYTES) {
-      throw new Error("La foto no puede pesar más de 5 MB.");
-    }
+    const compressed = await compressPhoto(file);
     const supabase = getSupabaseBrowser();
     if (!supabase) {
       throw new Error("Faltan variables públicas de Supabase en el entorno.");
     }
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const ext = "jpg"; // compressPhoto() siempre devuelve JPEG
     const path = `pets/${petId}.${ext}`;
     const { error } = await supabase.storage
       .from("kittypau-photos")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, compressed, { upsert: true, contentType: compressed.type });
     if (error) throw new Error(error.message);
     // cache-bust: mismo path siempre, sin esto el navegador podría seguir
     // mostrando la foto vieja desde caché tras reemplazarla.
