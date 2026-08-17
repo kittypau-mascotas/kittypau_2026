@@ -19,7 +19,7 @@ estado: activo
 # Resultados — 814 Anotaciones
 
 > Ver [[av2_00_INDICE_Y_VISION_GENERAL]] para el índice completo. Ver [[av2_05_ANOTACION_Y_CATEGORIAS]] para el workflow de anotación.
-> Snapshot correspondiente: [[av2_07_RESULTADOS_Y_BENCHMARKS]] v2.5 (2026-08-16).
+> Snapshot correspondiente: [[av2_07_RESULTADOS_Y_BENCHMARKS]] v2.6 (2026-08-16).
 
 **Fecha de análisis:** 2026-08-16
 **Script:** `revisar_anotaciones_v2.py`
@@ -251,6 +251,38 @@ Ver [[av2_04_MOTOR_MATEMATICO]] para el cuadro comparativo completo de las 102 f
 | v2.5 | 2026-08-16 | 356 | 84 | 374 | 814 | 916 | 102 | Abr 7 → Jul 22 | `tpl_doble_rampa` (6.92σ) |
 
 ---
+
+## Snapshot v2.6 — 2026-08-16 — incidente `id_candidato` + regla estructural (rollback NO ejecutado)
+
+Informe externo ("Informe Maestro — Corrupción de candidatos_av2.csv",
+hecho sin acceso al repo) reportó `id_candidato` posicional inestable entre
+regeneraciones de `candidatos_av2.csv` y pidió rollback + regla estructural.
+Detalle completo, verificación número por número contra el repo real, y
+diseño de la solución: `Knowledge/29_Specs/SPEC_13_Reorganizacion_09_Investigacion.md`
+§19. Resumen:
+
+- **Rollback: verificado imposible y no necesario.** `candidatos_av2.csv` no
+  tiene git history (gitignored) ni backup previo — no hay a qué revertir.
+  `umbrales.json` y `features_anotaciones_v2.csv` no dependen del join roto
+  (ambos ya calculan directo desde lecturas crudas, ver §19.2 del spec) — no
+  se tocó ninguno de los dos, ni las 814 anotaciones existentes.
+- **Implementado en su lugar:** `id_candidato` pasó a ser hash de contenido
+  determinístico (ver [[av2_03_DETECCION_SEGMENTOS]] § "id_candidato — hash
+  de contenido"); `candidatos_av2.csv` ya no se sobreescribe in-place (gate
+  de validación por solape + backup + `CHANGELOG_candidatos.md`);
+  `anotaciones_av2.csv` ganó 4 columnas nuevas (`duracion_min`,
+  `delta_w_total`, `peso_inicio_g`, `peso_fin_g`) calculadas al momento de
+  guardar, que sobreviven cualquier regeneración futura de candidatos.
+- **`candidatos_av2.csv` regenerado** con el script corregido (primera
+  corrida con IDs por hash): mismos 916 candidatos, misma distribución
+  (bajada=515, subida=383, mixto=18) que documentaba v2.5 — el fix no cambió
+  el comportamiento del detector, solo cómo se identifican y versionan sus
+  resultados. Gate de validación: 814/814 anotaciones (100%) siguen
+  solapando algún candidato de la corrida nueva.
+- **`id_candidato` de las 814 anotaciones existentes queda con el esquema
+  posicional viejo** — no reconciliado a propósito (huérfano frente a
+  candidatos nuevos, por diseño). Para cualquier join histórico usar
+  `(t_inicio, t_fin)`, nunca `id_candidato`.
 
 ## Snapshot v2.5 — 2026-08-16 — regeneración desde 814 anotaciones (+318 vs v2.3/v2.4)
 

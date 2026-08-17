@@ -188,6 +188,29 @@ else:            direction = "mixto"
 
 ---
 
+## `id_candidato` — hash de contenido, no posicional
+
+> Cambio 2026-08-16 tras incidente de corrupción (ver
+> `Knowledge/29_Specs/SPEC_13_Reorganizacion_09_Investigacion.md` §19). Antes
+> era `range(len(df))`: se reasignaba entero en cada corrida, así que una
+> anotación guardada contra "candidato #37" podía apuntar a un segmento
+> distinto en la siguiente regeneración. Ahora es
+> `sha256(f"{device_code}|{t_inicio}|{t_fin}")[:12]` — determinístico, mismos
+> datos + mismos umbrales dan siempre el mismo ID. `id_candidato` de
+> anotaciones guardadas **antes** de este cambio sigue siendo el esquema
+> posicional viejo y no calza con IDs nuevos: para trabajo histórico, unir
+> siempre por `(t_inicio, t_fin)`, nunca por `id_candidato`.
+
+`candidatos_av2.csv` **nunca se sobreescribe in-place**: cada corrida escribe
+a `candidatos_av2.staging.csv`, corre `validar_regeneracion_candidatos.py`
+(compara anotaciones existentes contra los candidatos nuevos por solape de
+intervalo — no por timestamp exacto, porque el operador ajusta manualmente
+los límites al guardar), y solo si el solape es ≥90% (o con `--force`)
+respalda el canónico anterior a `data/backups/` y promueve. Cada promoción
+queda logueada en `data/CHANGELOG_candidatos.md`.
+
+---
+
 ## Columnas del CSV resultante
 
 `candidatos_av2.csv` contiene **~115 columnas** cuando se usa el motor v2:
@@ -217,6 +240,11 @@ Ver [[av2_04_MOTOR_MATEMATICO]] para el detalle de las 5 features F00 clásicas.
 ```bash
 cd "Investigacion/Ciclo_Alpha_v2/fase_0_ruido"
 python 01_genera_candidatos.py
+# Si el gate de validación no pasa (≥90% de anotaciones deben seguir
+# solapando algún candidato nuevo) y el cambio de detector es intencional:
+python 01_genera_candidatos.py --force
+# Umbral del gate configurable:
+python 01_genera_candidatos.py --umbral 0.85
 ```
 
 Salida esperada:
@@ -224,8 +252,12 @@ Salida esperada:
 === 01_genera_candidatos.py — Alpha v2 ===
 Umbrales: std>1.5g | Δ>5.0g | rango_min>4.0g | min_dur=45s | merge_gap=120s
 ...
-417 candidatos tras filtrar
-Guardado: candidatos_av2.csv
+916 candidatos tras filtrar
+Staging guardado: candidatos_av2.staging.csv
+Validando contra anotaciones ya guardadas...
+  tasa_match: 1.0
+Respaldo del canónico anterior: backups\candidatos_av2_backup_20260816_233940.csv
+Promovido: candidatos_av2.csv (916 candidatos)
 ```
 
 ---

@@ -17,9 +17,12 @@ Uso:
 
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -35,6 +38,8 @@ try:
     _MOTOR_V2 = True
 except ImportError:
     _MOTOR_V2 = False
+
+from validar_regeneracion_candidatos import validar as _validar_regeneracion
 
 # ─── Rutas ───────────────────────────────────────────────────────────────────
 SCRIPT_DIR    = Path(__file__).parent
@@ -70,6 +75,7 @@ DEVICE_PROFILES: dict[str, dict] = {
         "candidatos_csv": DATA_DIR / "candidatos_av2.csv",
         "ciclos_csv": DATA_DIR / "ciclos_servido_alimento.csv",
         "umbrales_json": CONFIG_DIR / "umbrales.json",
+        "anotaciones_csv": DATA_DIR / "anotaciones_av2.csv",
     },
     "KPCL0035": {
         "device_code": "KPCL0035",
@@ -79,6 +85,7 @@ DEVICE_PROFILES: dict[str, dict] = {
         "candidatos_csv": DATA_DIR_AGUA / "candidatos_agua.csv",
         "ciclos_csv": DATA_DIR_AGUA / "ciclos_servido_hidratacion.csv",
         "umbrales_json": CONFIG_DIR / "umbrales_agua.json",
+        "anotaciones_csv": DATA_DIR_AGUA / "anotaciones_agua.csv",
     },
 }
 
@@ -88,11 +95,20 @@ DEVICE_PROFILES: dict[str, dict] = {
 _ACTIVE_PROFILE = os.environ.get("KITTYPAU_DEVICE_PROFILE", "KPCL0034")
 _ACTIVE = DEVICE_PROFILES[_ACTIVE_PROFILE]
 
-CANDIDATOS_CSV = _ACTIVE["candidatos_csv"]
-CICLOS_CSV     = _ACTIVE["ciclos_csv"]
-UMBRALES_JSON  = _ACTIVE["umbrales_json"]
-KPCL0034_UUIDS = _ACTIVE["uuids"]  # nombre histórico; sigue siendo el set de UUIDs del perfil activo
-DEVICE_CODE    = _ACTIVE["device_code"]
+CANDIDATOS_CSV   = _ACTIVE["candidatos_csv"]
+CICLOS_CSV       = _ACTIVE["ciclos_csv"]
+UMBRALES_JSON    = _ACTIVE["umbrales_json"]
+ANOTACIONES_CSV  = _ACTIVE["anotaciones_csv"]
+KPCL0034_UUIDS   = _ACTIVE["uuids"]  # nombre histórico; sigue siendo el set de UUIDs del perfil activo
+DEVICE_CODE      = _ACTIVE["device_code"]
+
+# candidatos_av2.csv NUNCA se sobreescribe en el sitio -- ver incidente 2026-08
+# (Knowledge/29_Specs/SPEC_13_Reorganizacion_09_Investigacion.md §19). Cada
+# corrida escribe primero en STAGING_CSV, pasa por el gate de validación, y
+# solo si pasa (o con --force) se respalda el canónico y se promueve.
+STAGING_CSV    = CANDIDATOS_CSV.with_suffix(".staging.csv")
+BACKUPS_DIR    = CANDIDATOS_CSV.parent / "backups"
+CHANGELOG_MD   = CANDIDATOS_CSV.parent / "CHANGELOG_candidatos.md"
 
 TZ_STGO = ZoneInfo("America/Santiago")
 
@@ -454,7 +470,15 @@ def main():
         return
 
     df_cand = pd.DataFrame(candidatos)
-    df_cand.insert(0, "id_candidato", range(len(df_cand)))
+    # id_candidato = hash de contenido (device_code, t_inicio, t_fin), NO posicional.
+    # Antes era range(len(df_cand)): se reasignaba entero en cada corrida, así que
+    # una anotación guardada contra "candidato #37" podía apuntar a un segmento
+    # distinto en la siguiente regeneración -- ver incidente 2026-08 (SPEC_13 §19).
+    # Determinístico: mismos datos + mismos umbrales → mismo id_candidato siempre.
+    df_cand.insert(0, "id_candidato", [
+        hashlib.sha256(f"{DEVICE_CODE}|{ti}|{tf}".encode()).hexdigest()[:12]
+        for ti, tf in zip(df_cand["t_inicio"], df_cand["t_fin"])
+    ])
 
     # Resumen de direcciones
     print("\nDistribución:")
@@ -477,11 +501,47 @@ def main():
             print(f"  fraccion_ciclo media:      {df_cand['fraccion_ciclo'].mean():.3f}")
 
     CANDIDATOS_CSV.parent.mkdir(parents=True, exist_ok=True)
-    df_cand.to_csv(CANDIDATOS_CSV, index=False)
-    print(f"\nGuardado: {CANDIDATOS_CSV.name}")
+    BACKUPS_DIR.mkdir(exist_ok=True)
+    df_cand.to_csv(STAGING_CSV, index=False)
+
+    print(f"\nStaging guardado: {STAGING_CSV.name}")
+    print("\nValidando contra anotaciones ya guardadas...")
+    paso, reporte = _validar_regeneracion(df_cand, ANOTACIONES_CSV, DEVICE_CODE, umbral=ARGS.umbral)
+    for k, v in reporte.items():
+        print(f"  {k}: {v}")
+
+    if not paso and not ARGS.force:
+        print(f"\n[GATE] NO promovido a {CANDIDATOS_CSV.name} -- tasa de match "
+              f"{reporte.get('tasa_match', 0):.1%} < umbral {ARGS.umbral:.0%}.")
+        print(f"  El detector cambió de comportamiento respecto a las anotaciones ya guardadas.")
+        print(f"  Si es intencional (experimento documentado, ver regla #5), re-correr con --force.")
+        print(f"  Archivo nuevo queda en: {STAGING_CSV}")
+        sys.exit(1)
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if CANDIDATOS_CSV.exists():
+        bk = BACKUPS_DIR / f"{CANDIDATOS_CSV.stem}_backup_{ts}.csv"
+        CANDIDATOS_CSV.replace(bk)
+        print(f"\nRespaldo del canónico anterior: {bk.relative_to(CANDIDATOS_CSV.parent)}")
+    STAGING_CSV.replace(CANDIDATOS_CSV)
+    print(f"Promovido: {CANDIDATOS_CSV.name} ({len(df_cand)} candidatos)")
+
+    motivo = "forzado (--force, gate no pasó)" if (not paso and ARGS.force) else "gate OK"
+    with open(CHANGELOG_MD, "a", encoding="utf-8") as f:
+        f.write(
+            f"- {datetime.now().isoformat(timespec='seconds')} | {DEVICE_CODE} | "
+            f"{len(df_cand)} candidatos | tasa_match={reporte.get('tasa_match', 'N/A')} | {motivo}\n"
+        )
+
     print(f"Total candidatos a anotar: {len(df_cand)}")
     print("\n→ Siguiente paso: python -m streamlit run app_anotacion_av2.py")
 
 
 if __name__ == "__main__":
+    _ap = argparse.ArgumentParser(description=__doc__)
+    _ap.add_argument("--force", action="store_true",
+                      help="Promover aunque el gate de validación no pase")
+    _ap.add_argument("--umbral", type=float, default=0.90,
+                      help="Tasa mínima de match anotaciones↔candidatos nuevos (default 0.90)")
+    ARGS = _ap.parse_args()
     main()

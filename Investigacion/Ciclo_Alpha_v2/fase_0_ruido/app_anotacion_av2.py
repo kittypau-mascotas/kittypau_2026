@@ -460,6 +460,24 @@ def _evidence_engine_accuracy_cached(df_lec: pd.DataFrame) -> dict | None:
     }
 
 
+def _id_candidato_a_str(s: pd.Series) -> pd.Series:
+    """Normaliza id_candidato a string, preservando NaN.
+
+    candidatos_av2.csv nuevo usa hash de contenido (str, 12 hex). Anotaciones
+    viejas todavía traen el índice posicional (float64 por los NaN de la
+    columna, ej. 37.0) -- se normaliza a "37", no "37.0". Sin esto, cualquier
+    .astype(int)/int() sobre la columna revienta apenas conviven IDs viejos y
+    nuevos. Ver incidente 2026-08 (SPEC_13 §19): los IDs viejos no calzan con
+    ningún candidato de una regeneración nueva de todos modos -- eso es
+    esperado, no se intenta reconciliarlos acá.
+    """
+    def _conv(v):
+        if pd.isna(v):
+            return v
+        return str(int(v)) if isinstance(v, float) else str(v)
+    return s.apply(_conv)
+
+
 def load_candidatos() -> pd.DataFrame | None:
     if not CANDIDATOS_CSV.exists():
         return None
@@ -471,6 +489,7 @@ def load_candidatos() -> pd.DataFrame | None:
     df["t_fin"]    = pd.to_datetime(df["t_fin"],    format="ISO8601", utc=True)
     if "id_candidato" not in df.columns:
         df.insert(0, "id_candidato", range(len(df)))
+    df["id_candidato"] = _id_candidato_a_str(df["id_candidato"])
     st.session_state["_df_cand"]       = df
     st.session_state["_df_cand_mtime"] = cand_mtime
     return df
@@ -478,7 +497,8 @@ def load_candidatos() -> pd.DataFrame | None:
 
 def load_anotaciones() -> pd.DataFrame:
     _cols = ["id_anotacion", "id_candidato", "t_inicio", "t_fin",
-             "categoria", "notas", "device_code", "origen", "created_at"]
+             "categoria", "notas", "device_code", "origen", "created_at",
+             "duracion_min", "delta_w_total", "peso_inicio_g", "peso_fin_g"]
     if not ANOTACIONES_CSV.exists():
         return pd.DataFrame(columns=_cols)
     anot_mtime = ANOTACIONES_CSV.stat().st_mtime
@@ -488,6 +508,8 @@ def load_anotaciones() -> pd.DataFrame:
     for c in ["t_inicio", "t_fin"]:
         if c in df.columns:
             df[c] = pd.to_datetime(df[c], format="ISO8601", utc=True)
+    if "id_candidato" in df.columns:
+        df["id_candidato"] = _id_candidato_a_str(df["id_candidato"])
     st.session_state["_df_anot"]       = df
     st.session_state["_df_anot_mtime"] = anot_mtime
     return df
@@ -503,12 +525,13 @@ def _invalidar_cache_anot() -> None:
 
 
 def save_anotacion(
-    id_candidato: int | None,
+    id_candidato: str | int | None,
     t_inicio: pd.Timestamp,
     t_fin: pd.Timestamp,
     categoria: str,
     notas: str,
     origen: str = "candidato_auto",
+    df_lec: pd.DataFrame | None = None,
 ) -> None:
     # Backup diario: copia simple, solo una vez por día
     if ANOTACIONES_CSV.exists():
@@ -528,6 +551,12 @@ def save_anotacion(
     ids_val = df_cur["id_anotacion"].dropna() if "id_anotacion" in df_cur.columns else pd.Series([], dtype=int)
     nuevo_id = int(ids_val.max() + 1) if len(ids_val) > 0 else 0
 
+    # Snapshot de peso crudo al momento de anotar, calculado sobre t_inicio/t_fin
+    # FINALES (ya ajustados por el operador en el form) -- nunca copiado del
+    # candidato original. id_candidato puede volver a barajarse en la próxima
+    # regeneración de candidatos_av2.csv; estos valores no (ver incidente 2026-08).
+    metricas = calcular_metricas(df_lec, t_inicio, t_fin) if df_lec is not None else {}
+
     row: dict = {
         "id_anotacion": nuevo_id,
         "id_candidato": id_candidato,
@@ -538,15 +567,25 @@ def save_anotacion(
         "device_code":  DEVICE_CODE,
         "origen":       origen,
         "created_at":   datetime.now(timezone.utc).isoformat(),
+        "duracion_min":    metricas.get("duracion_min"),
+        "delta_w_total":   metricas.get("delta_w_g"),
+        "peso_inicio_g":   metricas.get("peso_inicio_g"),
+        "peso_fin_g":      metricas.get("peso_fin_g"),
     }
 
-    if is_update:
-        # Re-anotación: reescribir CSV completo (reemplaza la fila anterior)
-        df_new = df_cur[df_cur["id_candidato"] != id_candidato].copy()
+    write_header = not ANOTACIONES_CSV.exists() or ANOTACIONES_CSV.stat().st_size == 0
+    # El header en disco puede quedar desactualizado (ej. CSV viejo sin las
+    # columnas de snapshot recién agregadas) -- si no coincide con las
+    # columnas de `row`, un append lisa y llanamente correría filas contra un
+    # header con menos columnas. Forzar reescritura completa esa vez.
+    cols_match = write_header or list(pd.read_csv(ANOTACIONES_CSV, nrows=0).columns) == list(row.keys())
+
+    if is_update or not cols_match:
+        # Re-anotación, o migración de header: reescribir CSV completo
+        df_new = df_cur[df_cur["id_candidato"] != id_candidato].copy() if is_update else df_cur
         pd.concat([df_new, pd.DataFrame([row])], ignore_index=True).to_csv(ANOTACIONES_CSV, index=False)
     else:
-        # Primera anotación: append rápido, sin leer ni reescribir el CSV completo
-        write_header = not ANOTACIONES_CSV.exists() or ANOTACIONES_CSV.stat().st_size == 0
+        # Primera anotación, header ya compatible: append rápido, sin leer ni reescribir el CSV completo
         pd.DataFrame([row]).to_csv(ANOTACIONES_CSV, mode="a", header=write_header, index=False)
 
     _invalidar_cache_anot()
@@ -1176,12 +1215,12 @@ def init_state():
 
 
 def get_filtrados(df_cand: pd.DataFrame, df_anot: pd.DataFrame) -> pd.DataFrame:
-    anot_ids: set[int] = set()
-    anot_cat: dict[int, str] = {}
+    anot_ids: set[str] = set()
+    anot_cat: dict[str, str] = {}
     if len(df_anot) > 0 and "id_candidato" in df_anot.columns:
         _last = df_anot.dropna(subset=["id_candidato"]).drop_duplicates("id_candidato", keep="last")
-        anot_ids = set(_last["id_candidato"].astype(int).tolist())
-        anot_cat = dict(zip(_last["id_candidato"].astype(int), _last["categoria"].astype(str)))
+        anot_ids = set(_last["id_candidato"].tolist())
+        anot_cat = dict(zip(_last["id_candidato"], _last["categoria"].astype(str)))
 
     df = df_cand.copy()
     df["estado"] = np.where(df["id_candidato"].isin(anot_ids), "anotado", "pendiente")
@@ -1193,7 +1232,7 @@ def get_filtrados(df_cand: pd.DataFrame, df_anot: pd.DataFrame) -> pd.DataFrame:
     fc = st.session_state.get("filtro_categoria", "todas")
     if fc != "todas":
         if fe in ("anotado", "todos"):
-            df = df[df["id_candidato"].map(lambda cid: anot_cat.get(int(cid), "") == fc)]
+            df = df[df["id_candidato"].map(lambda cid: anot_cat.get(cid, "") == fc)]
         elif "direction" in df.columns:
             # pendientes: usar dirección como proxy de categoría
             _proxy = {"alimentacion": "bajada", "servido": "subida", "ruido": "mixto"}
@@ -1398,9 +1437,9 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
         st.stop()
 
     # Header: métricas globales
-    anot_ids: set[int] = set()
+    anot_ids: set[str] = set()
     if len(df_anot) > 0 and "id_candidato" in df_anot.columns:
-        anot_ids = set(df_anot["id_candidato"].dropna().astype(int).tolist())
+        anot_ids = set(df_anot["id_candidato"].dropna().tolist())
 
     n_tot   = len(df_cand)
     n_an    = len(anot_ids)
@@ -1760,7 +1799,7 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                     cand      = _item["row"]
                     t_ini     = cand["t_inicio"]
                     t_fin     = cand["t_fin"]
-                    id_cand   = int(cand["id_candidato"])
+                    id_cand   = cand["id_candidato"]  # str: hash de contenido, ver _id_candidato_a_str
                     direction = str(cand.get("direction", "mixto"))
                     t_ini_s   = t_ini.astimezone(TZ_STGO)
                     t_fin_s   = t_fin.astimezone(TZ_STGO)
@@ -1948,7 +1987,7 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                             elif (t_f - t_i).total_seconds() < 15:
                                 _form_error.error("⚠️ Segmento demasiado corto (< 15s)")
                             else:
-                                save_anotacion(id_cand, t_i, t_f, categoria, notas)
+                                save_anotacion(id_cand, t_i, t_f, categoria, notas, df_lec=df_lec)
                                 st.toast(f"✅ {CATEGORIAS[categoria][0]} guardado", icon="✅")
                                 n_nuevo = len(df_anot) + 1
                                 if n_nuevo in (20, 40, 60, 80, 100):

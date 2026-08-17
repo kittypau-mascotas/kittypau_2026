@@ -953,3 +953,150 @@ nombre de archivo sino prefijo de ruta).
 dirigido (`.md` + wikilink) en `Investigacion/` y `Knowledge/`: 0 referencias
 rotas a los 21 nombres viejos. 34 `.md` en la raíz de `Investigacion/`
 (45 → 34, tras fusionar los 21 `av2_` en 10).
+
+## 19. Duodécimo addendum (2026-08-16) — incidente `candidatos_av2.csv` + regla estructural
+
+### 19.1 El informe
+
+Mauro pegó un "Informe Maestro — Corrupción de candidatos_av2.csv" (dirigido
+explícitamente a Claude Code, hecho fuera del repo sobre 2 CSVs exportados a
+mano, con instrucción explícita de verificar cada número contra el repo real
+antes de actuar). Diagnóstico del informe: `id_candidato` en
+`candidatos_av2.csv` era un índice posicional (`range(len(df))`) reasignado
+en cada corrida de `01_genera_candidatos.py` — una anotación guardada contra
+el candidato #37 de una corrida podía apuntar a un segmento totalmente
+distinto en la siguiente. Plan propuesto: rollback a un punto de corte seguro
++ regla estructural de 4 partes (§7 del informe).
+
+### 19.2 Verificación contra el repo real (antes de ejecutar nada)
+
+- **Confirmado**: bug real. `01_genera_candidatos.py:457` (línea antes del
+  fix) hacía exactamente `df_cand.insert(0, "id_candidato", range(len(df_cand)))`
+  y `:480` sobreescribía `candidatos_av2.csv` in-place, sin versionado ni
+  backup (a diferencia de `anotaciones_av2.csv`/`ciclos_servido_alimento.csv`,
+  que sí tienen backup diario en `data/backups/` desde antes).
+- **Descartado — rollback literal imposible**: `candidatos_av2.csv` está en
+  `.gitignore` (regla `Investigacion/**/*.csv`), sin historial git. No existe
+  ningún `candidatos_av2_backup_*.csv` en `data/backups/` en ningún momento
+  del pasado. No hay a qué revertir.
+  - `03_recalibrar_umbrales.py`: **NO USA `candidatos_av2.csv`**. Ya fue
+    corregido el 2026-08-11 para calcular duración/delta_w/rango directamente
+    desde lecturas crudas usando el `t_inicio`/`t_fin` propio de cada
+    anotación — su propio docstring documenta el bug de "ventana candidato
+    más ancha que anotación confirmada" y la corrección. `umbrales.json`
+    v1.3 no depende del join roto.
+  - `revisar_anotaciones_v2.py` (usado para regenerar
+    `features_anotaciones_v2.csv`/`comp_stats_v2.json`, ver §18.1): tampoco
+    lee `candidatos_av2.csv` — usa `cargar_resampled()` +
+    `extraer_ventana()` sobre el `t_inicio`/`t_fin` propio de cada
+    anotación. `features_anotaciones_v2.csv` está sano.
+  - Verificado el número citado por el informe: 71.9% de mismatch al unir
+    por `id_candidato`, 10.7% de match si se exige timestamp exacto — ambos
+    reproducidos contra los archivos reales.
+- **Descartado — una afirmación del informe no verificó**: cita
+  `av2_10_INVESTIGACION_MEJOR_MODELO.md` como generado "en la misma sesión"
+  — ese archivo no existe en el repo (`av2_*.md` va de `00` a `09`, ver §18.2).
+  Recordatorio de que el informe se hizo sin acceso al repo y hay que
+  verificar cada afirmación, no solo las numéricas.
+
+Presentado esto a Mauro vía pregunta explícita (rollback imposible +
+innecesario para los 2 archivos que el informe temía afectados) — eligió
+"Implementar la regla estructural (Recomendado)": no tocar
+anotaciones/features, implementar §7, documentar, marcar `id_candidato`
+histórico como no confiable para joins.
+
+### 19.3 Regla estructural implementada
+
+**1. `id_candidato` por hash de contenido** (`01_genera_candidatos.py`):
+`sha256(f"{DEVICE_CODE}|{t_inicio}|{t_fin}")[:12]` en vez de posicional.
+Determinístico — mismos datos + mismos umbrales → mismo `id_candidato`
+siempre (verificado corriendo el script 2 veces seguidas: IDs idénticos).
+
+**2. `candidatos_av2.csv` nunca se sobreescribe in-place**
+(`01_genera_candidatos.py`): cada corrida escribe primero en
+`candidatos_av2.staging.csv`, corre el gate de validación
+(`validar_regeneracion_candidatos.py`, nuevo módulo/script standalone), y
+solo si pasa (o con `--force`) respalda el canónico anterior a
+`data/backups/candidatos_av2_backup_YYYYMMDD_HHMMSS.csv` (mismo patrón que
+ya usaban anotaciones/ciclos) y promueve el staging. Cada promoción queda
+logueada en `data/CHANGELOG_candidatos.md` (nuevo, sí versionado en git —
+`.csv` está en `.gitignore`, `.md` no).
+
+El gate compara `anotaciones_av2.csv` contra el `candidatos_av2.csv` nuevo
+por **solape de intervalo**, no por timestamp exacto ni por `id_candidato`.
+Se probó exact-match primero (como sugería el informe) y dio ~11% incluso
+en una regeneración sana e idéntica en umbrales/datos a la actual — porque
+el operador ajusta manualmente `t_inicio`/`t_fin` al guardar ("Ajustar
+tiempos" en la app), así que casi ninguna anotación conserva los límites
+exactos del candidato. El chequeo que realmente importa —¿la anotación
+sigue solapando algún candidato de la corrida nueva?— dio 100% en la
+regeneración real (814/814), y es el que cae si el detector deja de
+detectar eventos que antes sí detectaba. Umbral default 90%, configurable
+por `--umbral`.
+
+Corrida real contra los datos del proyecto (no un fixture): 916 candidatos
+regenerados (misma distribución que ya documentaba `av2_03`: 56%/42%/2%),
+gate en 100% de solape, promovido, backup del canónico anterior verificado
+byte a byte idéntico al original.
+
+**3. Snapshot de peso crudo en `anotaciones_av2.csv`**
+(`app_anotacion_av2.py` — `save_anotacion()`): 4 columnas nuevas —
+`duracion_min`, `delta_w_total`, `peso_inicio_g`, `peso_fin_g` — calculadas
+en el momento de guardar, sobre el `t_inicio`/`t_fin` **final** (ya ajustado
+por el operador si usó "Ajustar tiempos"), reutilizando `calcular_metricas()`
+(función ya existente en el mismo archivo, sin reimplementar la extracción).
+Nunca copiadas del candidato original — eso reintroduciría el bug de
+"ventana candidato más ancha" que `03_recalibrar_umbrales.py` ya corrigió.
+Estas 4 columnas sobreviven cualquier regeneración futura de
+`candidatos_av2.csv`, aunque `id_candidato` vuelva a barajarse.
+
+Efecto secundario encontrado y corregido: el CSV existente tenía el header
+viejo de 9 columnas; el camino rápido de guardado (`append`, sin reescribir
+el archivo) habría escrito filas de 13 columnas bajo un header de 9,
+corrompiendo el CSV en el primer guardado real. Fix: `save_anotacion()`
+ahora compara el header en disco contra las columnas de la fila nueva antes
+de decidir `append` vs. reescritura completa; si no calzan (primera vez con
+las columnas nuevas), reescribe una sola vez y migra el header. Verificado
+con test aislado sobre una copia del CSV real: migración 814→815 filas sin
+desalineación, luego append rápido y re-anotación probados por separado
+sobre el archivo ya migrado.
+
+**4. `id_candidato` histórico marcado como no confiable para joins**: las
+~814 anotaciones guardadas antes de este fix tienen `id_candidato` con el
+esquema posicional viejo — quedan "huérfanas" frente a cualquier
+`candidatos_av2.csv` regenerado desde ahora (esperado, no se intentó
+reconciliarlas: el join correcto para trabajo histórico es por
+`t_inicio`/`t_fin`, nunca por `id_candidato`, exactamente como pedía §6.3
+del informe). `id_candidato` en ambos DataFrames se normaliza a `str` en
+`load_candidatos()`/`load_anotaciones()` (`_id_candidato_a_str()`, nuevo
+helper compartido) para que IDs viejos (int) y nuevos (hash str) convivan
+sin reventar los `.astype(int)`/`int(...)` que existían en 5 puntos del
+código de filtrado/selección de la app — todos corregidos a operar sobre
+string.
+
+**5. Cambios de comportamiento del detector como experimento explícito**: no
+requiere código nuevo — es un acuerdo de proceso, documentado acá. La regla
+#4 (el gate) es el mecanismo que lo hace cumplir en la práctica.
+
+### 19.4 Verificación final
+
+`py_compile` sobre los 3 archivos tocados/nuevos. Corrida real de
+`01_genera_candidatos.py` dos veces seguidas contra los datos del proyecto
+(no mock): mismos 916 candidatos, mismos `id_candidato` en ambas corridas
+(determinismo confirmado byte a byte). Gate de validación probado en sus 2
+ramas (falla con exact-match antes del ajuste de diseño, pasa al 100% con
+solape). Backup y promoción verificados (md5 del backup == md5 del canónico
+pre-regeneración). 3 tests funcionales aislados de `save_anotacion()` sobre
+copia del CSV real: migración de header, append rápido, re-anotación — los
+3 sin desalineación de columnas ni `FutureWarning`. `streamlit run
+--headless` → HTTP 200 + `/_stcore/health` → `ok`, sin errores en log.
+`pytest tests/` → 16/16.
+
+### 19.5 Qué NO se tocó
+
+Por decisión explícita de Mauro y verificación propia: `anotaciones_av2.csv`
+(814 filas existentes, intactas — solo se les agregaron columnas nuevas
+vacías), `features_anotaciones_v2.csv`, `umbrales.json`, ninguna anotación
+manual, `shape_features_v2.py`. No hubo rollback de ningún dato — no existía
+backup al que revertir y ninguno de los archivos que el informe temía
+afectados dependía del join roto.
