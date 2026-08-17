@@ -215,6 +215,6 @@ Cuando se tengan más anotaciones, regenerar `COMP_STATS` en la app ejecutando:
 
 - [[av2_04_MATEMATICA_SHAPE_FEATURES]] — Features actuales de la v1 (detalle matemático)
 - [[av2_06_UMBRALES_Y_REGLAS]] — Clasificador determinístico v1.2 (umbrales.json)
-- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Base empírica para calibrar las nuevas features
+- [[av2_07_RESULTADOS_ANOTACIONES]] — Base empírica para calibrar las nuevas features
 - [[av2_03_DETECCION_SEGMENTOS]] — Pipeline de detección de candidatos
 - [[av2_08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit

@@ -41,7 +41,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 │  5. Fusionar gaps < 120s                                        │
 │  6. Calcular metadata + shape features por segmento             │
 │                                                                 │
-│  OUTPUT: candidatos_av2.csv (417 candidatos)                    │
+│  OUTPUT: candidatos_av2.csv (916 candidatos)                    │
 └─────────────────────────────┬───────────────────────────────────┘
                               │
                               ▼
@@ -54,7 +54,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 │  - Métricas: duración, Δpeso, pendiente, shape features         │
 │  - Asigna: alimentacion | servido | ruido                       │
 │                                                                 │
-│  OUTPUT: anotaciones_av2.csv (304 anotaciones)                  │
+│  OUTPUT: anotaciones_av2.csv (814 anotaciones)                  │
 └─────────────────────────────┬───────────────────────────────────┘
                               │
                               ▼
@@ -95,7 +95,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 ## Estructura de archivos
 
 ```
-09_Investigacion/Ciclo_Alpha_v2/
+Investigacion/Ciclo_Alpha_v2/
 │
 ├── av2_00_INDICE_AV2.md                 ← Este índice
 ├── av2_01_ARQUITECTURA_PIPELINE.md      ← Este documento
@@ -104,7 +104,7 @@ El Ciclo Alpha v2 se basa en tres principios:
 ├── 04_SHAPE_FEATURES.md
 ├── av2_05_ANOTACION_Y_CATEGORIAS.md
 ├── av2_06_UMBRALES_Y_REGLAS.md
-├── av2_07_RESULTADOS_304_ANOTACIONES.md
+├── av2_07_RESULTADOS_ANOTACIONES.md
 ├── av2_08_APP_ANOTACION_AV2.md
 │
 └── fase_0_ruido/                    ← Código del ciclo

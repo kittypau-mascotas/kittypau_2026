@@ -62,7 +62,7 @@ centro de toda la carpeta).
 ### Anotación y clasificación
 - [[av2_05_ANOTACION_Y_CATEGORIAS]] — workflow de anotación, categorías
 - [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json`, reglas del detector
-- [[av2_07_RESULTADOS_304_ANOTACIONES]] — estadísticas completas, percentiles, separación por categoría
+- [[av2_07_RESULTADOS_ANOTACIONES]] — estadísticas completas, percentiles, separación por categoría
 
 ### App y experimentos
 - [[av2_08_APP_ANOTACION_AV2]] — 8 tabs de la app Streamlit, componentes técnicos
@@ -125,7 +125,7 @@ supervisada (Delta, clustering + anomalías). Código en
 
 | Artefacto | Estado |
 |---|---|
-| `candidatos_av2.csv` | ✅ 417 candidatos · 2026-04-08 → 2026-06-26 |
-| `anotaciones_av2.csv` | ✅ 304+ anotaciones (alim/ruido/servido) |
-| `umbrales.json` | ✅ v1.2 — shape features como discriminador primario |
+| `candidatos_av2.csv` | ✅ 916 candidatos · 2026-04-07 → 2026-07-22 |
+| `anotaciones_av2.csv` | ✅ 814 anotaciones (alim=356, ruido=374, serv=84) — actualizado 2026-08-16 |
+| `umbrales.json` | ⚠️ v1.3 — calibrado contra n=496 (2026-08-11), desactualizado frente a las 814 actuales — pendiente recalibrar |
 | Clasificador automático | ⏳ Fase 1 pendiente |

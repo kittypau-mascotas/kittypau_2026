@@ -9,7 +9,7 @@ estado: activo
 > Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[04_SHAPE_FEATURES]] para las features matemáticas calculadas sobre cada segmento.
 
 **Script:** `fase_0_ruido/01_genera_candidatos.py`
-**Output:** `fase_0_ruido/data/candidatos_av2.csv` (417 candidatos)
+**Output:** `fase_0_ruido/data/candidatos_av2.csv` (916 candidatos, 2026-08-16)
 
 ---
 
@@ -125,7 +125,7 @@ Para cada segmento se verifica que cumpla los criterios mínimos:
 | `duracion >= min_duracion_s` | 45 segundos | Eliminar micro-fluctuaciones |
 | `rango >= min_rango_g` | 4.0 g | Eliminar ruido estático del sensor |
 
-**Resultado final:** 417 candidatos.
+**Resultado final:** 916 candidatos (actualizado 2026-08-16, ver nota de "mixto" más abajo).
 
 ### Paso 7 — Cálculo de metadata y shape features v2
 
@@ -159,19 +159,32 @@ else:            direction = "mixto"
 
 ---
 
-## Distribución de los 417 candidatos
+## Distribución de los 916 candidatos
+
+*(Recalculado 2026-08-16)*
 
 | Direction | Cantidad | Porcentaje |
 |---|---|---|
-| bajada | 244 | 59% |
-| mixto | 95 | 23% |
-| subida | 78 | 19% |
-| **Total** | **417** | **100%** |
+| bajada | 515 | 56% |
+| subida | 383 | 42% |
+| mixto | 18 | 2% |
+| **Total** | **916** | **100%** |
 
 **Estadísticas globales:**
-- Duración media: 13.7 min
-- Δpeso medio: +0.3 g (balanceado, ya que mezcla bajadas y subidas)
-- Rango medio: 28.3 g
+- Duración media: 8.7 min
+- Δpeso medio: +1.0 g (balanceado, ya que mezcla bajadas y subidas)
+- Rango medio: 27.8 g
+
+> **Cambio importante respecto al snapshot anterior (n=417, mixto=23%):** "mixto"
+> bajó a solo 2% del total. Esto coincide exactamente con lo que
+> [[av2_HISTORIAL_RESULTADOS]] snapshot v2.4 (2026-08-11) describía como
+> **pendiente de aplicar**: partir candidatos "mixto" por su punto de giro interno
+> (`punto_split_mixto()` en `01_genera_candidatos.py`), que en el dry-run daba
+> "mixto bajaría de ~23% a ~1.7%" — número casi idéntico al 2% actual. Todo indica
+> que ese cambio se aplicó entre el 2026-08-11 y hoy, pero **no hay un snapshot que
+> lo documente explícitamente como aplicado** — no se pudo confirmar leyendo el
+> historial. Si alguien sabe cuándo se corrió, vale la pena agregar la entrada
+> correspondiente a `av2_HISTORIAL_RESULTADOS.md`.
 
 ---
 
@@ -202,7 +215,7 @@ Ver [[av2_04_MATEMATICA_SHAPE_FEATURES]] para el detalle de las 5 features F00 c
 ## Cómo ejecutar
 
 ```bash
-cd "09_Investigacion/Ciclo_Alpha_v2/fase_0_ruido"
+cd "Investigacion/Ciclo_Alpha_v2/fase_0_ruido"
 python 01_genera_candidatos.py
 ```
 

@@ -73,7 +73,7 @@ Toda la clasificación del Ciclo Alpha v2 se basa en tres categorías mutuamente
 ```
 ┌─────────────────────────────────────────────────────┐
 │  1. Cargar candidatos_av2.csv en la app             │
-│     417 candidatos detectados automáticamente       │
+│     916 candidatos detectados automáticamente       │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
@@ -112,14 +112,14 @@ Toda la clasificación del Ciclo Alpha v2 se basa en tres categorías mutuamente
 
 ---
 
-## Estado de las anotaciones (2026-06-26)
+## Estado de las anotaciones (actualizado 2026-08-16)
 
 | Categoría | Anotaciones | Meta original | Estado |
 |---|---|---|---|
-| alimentacion | 160 | 40 | ✅ 400% |
-| ruido | 113 | 30 | ✅ 377% |
-| servido | 31 | 20 | ✅ 155% |
-| **Total** | **304** | **90** | ✅ **338%** |
+| alimentacion | 356 | 40 | ✅ 890% |
+| ruido | 374 | 30 | ✅ 1247% |
+| servido | 84 | 20 | ✅ 420% |
+| **Total** | **814** | **90** | ✅ **904%** |
 
 Las metas se superaron ampliamente, dando mayor confianza estadística a los umbrales derivados.
 
@@ -157,5 +157,5 @@ Las metas se superaron ampliamente, dando mayor confianza estadística a los umb
 
 - [[av2_03_DETECCION_SEGMENTOS]] — Cómo se generan los candidatos a anotar
 - [[av2_08_APP_ANOTACION_AV2]] — Documentación de la app Streamlit
-- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 304 anotaciones
+- [[av2_07_RESULTADOS_ANOTACIONES]] — Estadísticas completas de las 814 anotaciones
 - [[av2_06_UMBRALES_Y_REGLAS]] — Cómo las anotaciones derivan en umbrales

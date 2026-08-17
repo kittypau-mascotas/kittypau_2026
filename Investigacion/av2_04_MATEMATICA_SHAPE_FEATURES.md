@@ -359,6 +359,6 @@ El Motor v2 incluye **12 templates canónicos** en la familia F12 (similitud cos
 
 - [[av2_03_DETECCION_SEGMENTOS]] — Dónde se calculan estas features (función `_shape_features`)
 - [[av2_06_UMBRALES_Y_REGLAS]] — Cómo se usan los umbrales de estas features en el detector
-- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones (F00 + top features v2)
+- [[av2_07_RESULTADOS_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones (F00 + top features v2)
 - [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] — Motor v2: 105 features en 15 familias + Evidence Engine
 - [[av2_08_APP_ANOTACION_AV2]] — Visualización en la app (Tab 4 Umbrales + Tab 5 Motor Matemático)

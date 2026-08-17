@@ -1,7 +1,7 @@
 ---
 tags: [kittypau, ciclo-alpha-v2, moc, indice]
 fecha_creacion: 2026-06-26
-fecha_actualizacion: 2026-06-26
+fecha_actualizacion: 2026-08-16
 estado: activo
 ---
 
@@ -13,9 +13,9 @@ estado: activo
 ---
 
 > [!success] MOTOR MATEMÁTICO v2 IMPLEMENTADO — 2026-06-26
-> `shape_features_v2.py` implementa **~105 features en 15 familias** + **Evidence Engine** + **Clasificador determinístico v1.2**.
-> `app_anotacion_av2.py` actualizado con **Tab 5 — Motor Matemático**: cuadro comparativo empírico (417 anot.), radar, templates, dinámica temporal, Feature Registry.
-> Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo.
+> `shape_features_v2.py` implementa **102 features en 15 familias** + **Evidence Engine** + **Clasificador determinístico v1.3**.
+> `app_anotacion_av2.py` actualizado con **Tab 5 — Motor Matemático**: cuadro comparativo empírico (814 anot., actualizado 2026-08-16), radar, templates, dinámica temporal, Feature Registry.
+> Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para el detalle completo y [[av2_HISTORIAL_RESULTADOS]] snapshot v2.5 para el último refresh de datos.
 
 ## ¿Qué es el Ciclo Alpha v2?
 
@@ -23,10 +23,10 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 
 - Usa **solo matemática** — sin ML supervisado
 - Opera sobre **candidatos detectados automáticamente** del stream de peso
-- Clasifica mediante **~105 features de forma de curva** (15 familias: derivadas, curvatura, entropías, fractales, templates canónicos, dinámica temporal, etc.)
-- Se alimenta de **417 anotaciones manuales** para calibrar estadísticas y umbrales
+- Clasifica mediante **102 features de forma de curva** (15 familias: derivadas, curvatura, entropías, fractales, templates canónicos, dinámica temporal, etc.)
+- Se alimenta de **814 anotaciones manuales** (alim=356, ruido=374, serv=84) para calibrar estadísticas y umbrales
 
-**Estado actual:** Fase 0 completada — detección + **417 anotaciones** + Motor Matemático v2. Fase 1 (clasificador automático) pendiente.
+**Estado actual:** Fase 0 completada — detección + **814 anotaciones** + Motor Matemático v2. Fase 1 (clasificador automático) pendiente. `umbrales.json` (v1.3) sigue calibrado contra n=496 (2026-08-11) — pendiente recalibrar contra las 814 actuales, ver [[av2_06_UMBRALES_Y_REGLAS]].
 
 ---
 
@@ -44,8 +44,8 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 - [[av2_08_APP_ANOTACION_AV2]] — La app Streamlit de anotación (7 pestañas)
 
 ### Clasificación y Resultados
-- [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json` v1.2, reglas del detector
-- [[av2_07_RESULTADOS_304_ANOTACIONES]] — Estadísticas completas de las 417 anotaciones
+- [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json` v1.3 (desactualizado, ver nota arriba), reglas del detector
+- [[av2_07_RESULTADOS_ANOTACIONES]] — Estadísticas completas de las 814 anotaciones
 
 ### Documentos previos relacionados
 - [[02_REGLAS_EVENTOS_ALIMENTACION]] — Reglas canónicas de eventos (fuente de verdad)
@@ -57,12 +57,12 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 
 | Fase | Descripción | Estado | Artefacto |
 |---|---|---|---|
-| **0 — Detección** | Segmentar señal de peso en candidatos | ✅ Completo | `candidatos_av2.csv` (417 cands.) |
-| **0 — Anotación** | Clasificar candidatos manualmente | ✅ Completo | `anotaciones_av2.csv` (417 anots.) |
+| **0 — Detección** | Segmentar señal de peso en candidatos | ✅ Completo | `candidatos_av2.csv` (916 cands.) |
+| **0 — Anotación** | Clasificar candidatos manualmente | ✅ Completo | `anotaciones_av2.csv` (814 anots.) |
 | **0 — Shape features F00** | Calcular monotonía, R², ZCR, coseno | ✅ Completo | Columnas en `candidatos_av2.csv` |
-| **0 — Motor Matemático v2** | ~105 features en 15 familias + Evidence Engine | ✅ Implementado | `shape_features_v2.py` |
-| **0 — Estadísticas empíricas** | µ±σ por feature y categoría (417 anots.) | ✅ Completo | `features_anotaciones_v2.csv`, `comp_stats_v2.json` |
-| **0 — Umbrales** | Derivar reglas desde anotaciones | ✅ v1.2 | `umbrales.json` |
+| **0 — Motor Matemático v2** | 102 features en 15 familias + Evidence Engine | ✅ Implementado | `shape_features_v2.py` |
+| **0 — Estadísticas empíricas** | µ±σ por feature y categoría (814 anots.) | ✅ Completo (2026-08-16) | `features_anotaciones_v2.csv`, `comp_stats_v2.json` |
+| **0 — Umbrales** | Derivar reglas desde anotaciones | ⚠️ v1.3, desactualizado (calibrado contra n=496) | `umbrales.json` |
 | **1 — Clasificador** | Implementar detector automático | ⏳ Pendiente | `fase_1_extraccion/` |
 | **2 — Validación** | Evaluar detector vs. anotaciones | ⏳ Pendiente | — |
 | **3 — Integración** | Conectar detector al bridge/app | ⏳ Pendiente | — |
@@ -71,12 +71,12 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 
 ## Metas de anotación
 
-| Categoría | Meta | Actual | Estado |
+| Categoría | Meta | Actual (2026-08-16) | Estado |
 |---|---|---|---|
-| alimentacion | 40 | 213 | ✅ 533% |
-| ruido | 30 | 159 | ✅ 530% |
-| servido | 20 | 45 | ✅ 225% |
-| **Total** | **90** | **417** | ✅ **463%** |
+| alimentacion | 40 | 356 | ✅ 890% |
+| ruido | 30 | 374 | ✅ 1247% |
+| servido | 20 | 84 | ✅ 420% |
+| **Total** | **90** | **814** | ✅ **904%** |
 
 ---
 
@@ -84,18 +84,18 @@ El **Ciclo Alpha v2** es el sistema de detección y clasificación de eventos de
 
 ```
 fase_0_ruido/
-├── 01_genera_candidatos.py       ← Detecta segmentos + calcula ~105 features v2
-├── app_anotacion_av2.py          ← App Streamlit de anotación (7 tabs)
-├── shape_features_v2.py          ← Motor Matemático v2: ~105 features + Evidence Engine
+├── 01_genera_candidatos.py       ← Detecta segmentos + calcula 102 features v2
+├── app_anotacion_av2.py          ← App Streamlit de anotación (8 tabs)
+├── shape_features_v2.py          ← Motor Matemático v2: 102 features + Evidence Engine
 ├── revisar_anotaciones_v2.py     ← Calcula features v2 para todas las anotaciones
 ├── requirements_check.py         ← Verificación del entorno
 ├── config/
-│   └── umbrales.json             ← Umbrales v1.2 (reglas del detector)
+│   └── umbrales.json             ← Umbrales v1.3 (reglas del detector, desactualizado)
 └── data/
-    ├── candidatos_av2.csv        ← 417 candidatos con shape features
-    ├── anotaciones_av2.csv       ← 417 anotaciones manuales (completo)
-    ├── features_anotaciones_v2.csv  ← 417 filas × 109 cols (features v2 por evento)
-    └── comp_stats_v2.json        ← µ±σ por feature y categoría (417 anots.)
+    ├── candidatos_av2.csv        ← 916 candidatos con shape features
+    ├── anotaciones_av2.csv       ← 814 anotaciones manuales (completo, 2026-08-16)
+    ├── features_anotaciones_v2.csv  ← 814 filas × 109 cols (features v2 por evento)
+    └── comp_stats_v2.json        ← µ±σ por feature y categoría (814 anots.)
 ```
 
 ---
@@ -115,7 +115,7 @@ fase_0_ruido/
 
 - **Dispositivo:** KPCL0034 "Bandida" — comedero inteligente food_bowl
 - **UUIDs activos:** `9510a455-...` (Abr 2026) · `3a460074-...` (May-Jun 2026)
-- **Período de datos:** 2026-04-08 → 2026-06-26
-- **Lecturas totales:** 246.130 de KPCL0034
+- **Período de datos:** 2026-04-07 → 2026-07-22 (candidatos) · anotaciones creadas hasta 2026-08-13
+- **Lecturas totales:** 322.820 de KPCL0034 (actualizado 2026-08-16)
 - **Resampleo:** 30 segundos con forward-fill (máx. 2 slots)
 - **Zona horaria display:** America/Santiago (UTC−3/−4)

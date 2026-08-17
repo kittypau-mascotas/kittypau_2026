@@ -35,7 +35,7 @@ kittypau_2026_hivemq/
 │   ├── readings.csv                            ← Abril 2026 (KPCL0034 UUID 1)
 │   └── readings_rows.csv                       ← Mayo-Jun 2026 (KPCL0034 UUID 2)
 │
-└── 09_Investigacion/Ciclo_Alpha_v2/fase_0_ruido/
+└── Investigacion/Ciclo_Alpha_v2/fase_0_ruido/
     │
     ├── app_anotacion_av2.py                    ← APP PRINCIPAL (Streamlit)
     ├── 01_genera_candidatos.py                 ← SCRIPT 1: detecta eventos

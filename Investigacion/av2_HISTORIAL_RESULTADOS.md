@@ -14,6 +14,61 @@
 | v2.0 | 2026-06-26 | 200 | 43 | 165 | 408 | 417 | 101 | Abr 8 → Jun 25 | — |
 | v2.1 | 2026-06-27 | 205 | 45 | 167 | 417 | 421 | 102 | Abr 8 → Jun 27 | `tpl_doble_rampa` (7.63σ) |
 | v2.3 | 2026-08-10 | 254 | 55 | 187 | 496 | 589 | 102 | Abr 8 → Ago 10 | `tpl_doble_rampa` (7.69σ) |
+| v2.5 | 2026-08-16 | 356 | 84 | 374 | 814 | 916 | 102 | Abr 7 → Jul 22 | `tpl_doble_rampa` (6.92σ) |
+
+---
+
+## Snapshot v2.5 — 2026-08-16 — regeneración desde 814 anotaciones (+318 vs v2.3/v2.4)
+
+Verificación pedida por Mauro: "todo lo de av2_ esta actualizado en relacion a
+los resultados que hemos obtenido con app_anotacion_av2?" — no lo estaba.
+`anotaciones_av2.csv` y `candidatos_av2.csv` habían crecido bastante desde el
+último snapshot documentado (v2.4, 2026-08-11, 496 anotaciones) sin que nadie
+actualizara este historial ni corriera `revisar_anotaciones_v2.py` para
+refrescar `features_anotaciones_v2.csv`/`comp_stats_v2.json`.
+
+**Ejecutado:** `python revisar_anotaciones_v2.py` sobre el estado actual de
+`anotaciones_av2.csv` (814 filas). Exportó `features_anotaciones_v2.csv`
+(814 × 109 cols) y `comp_stats_v2.json` frescos. La app los lee directamente
+en runtime — no hace falta pegar ningún bloque a mano (la nota "pegar
+COMP_STATS en app_anotacion_av2.py" de snapshots anteriores está obsoleta,
+el script ahora imprime explícitamente "informativo — la app lee OUT_STATS.json,
+no este bloque").
+
+**Conteos:**
+- `anotaciones_av2.csv`: 814 (alimentacion=356, ruido=374, servido=84) —
+  todas `origen=candidato_auto`, creadas entre 2026-06-26 y 2026-08-13
+- `candidatos_av2.csv`: 916 (bajada=515, subida=383, mixto=18), rango
+  2026-04-07 → 2026-07-22
+
+**Top features discriminativas (separación alim/serv, σ pooled) — igual
+familia que v2.3, orden similar:**
+
+| Feature | Familia | Separación A/S (σ) |
+|---|---|---:|
+| `tpl_doble_rampa` | F12_templates | 6.92 |
+| `tpl_sigmoide` | F12_templates | 5.94 |
+| `tpl_alim_escalonada` | F12_templates | 5.79 |
+| `tpl_ramp_down` | F12_templates | 5.75 |
+| `sim_servido` / `sim_alimentacion` | F00_clasicas | 5.75 |
+| `tpl_ramp_up` | F12_templates | 5.75 |
+| `tpl_alim_lenta` | F12_templates | 4.96 |
+| `entropy_permutation` | F06_entropias | 3.42 |
+| `d1_frac_neg` | F01_derivadas | 3.26 |
+| `monotonicity` | F00_clasicas | 2.74 |
+
+**Observación:** la separación de `tpl_doble_rampa` bajó de 7.69σ (n=496) a
+6.92σ (n=814) — con más anotaciones la distribución se ensancha un poco
+(esperable, los nuevos casos incluyen ejemplos más ambiguos), pero sigue
+siendo por lejos el discriminador primario. No indica un problema del motor.
+
+**Pendiente, no ejecutado en este snapshot (fuera del alcance de "actualizar
+documentación"):** `config/umbrales.json` sigue en v1.3, calibrado contra
+n=496 (2026-08-11) — ahora desactualizado frente a las 814 anotaciones
+actuales. Recalibrarlo (`03_recalibrar_umbrales.py`) es una decisión de
+Motor Matemático que cambia el comportamiento de detección en vivo, no una
+actualización de docs — queda como próximo paso a decidir explícitamente,
+no se tocó.
 
 ---
 

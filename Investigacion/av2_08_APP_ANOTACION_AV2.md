@@ -13,7 +13,7 @@ estado: activo
 **Framework:** Streamlit (dark theme personalizado)
 **Cómo ejecutar:**
 ```bash
-cd "09_Investigacion/Ciclo_Alpha_v2/fase_0_ruido"
+cd "Investigacion/Ciclo_Alpha_v2/fase_0_ruido"
 python -m streamlit run app_anotacion_av2.py
 ```
 
@@ -86,7 +86,7 @@ Análisis visual del dataset de candidatos completo:
 - Columnas: id, fecha, hora, duración, Δpeso, dirección, categoría
 
 **Progreso de anotación:**
-- Barra de progreso: X de 417 candidatos anotados
+- Barra de progreso: X de 916 candidatos anotados
 
 ---
 
@@ -122,7 +122,7 @@ Pestaña técnica con tres secciones:
 Expander `📖 Guía visual — ¿qué mide cada feature de forma?` con:
 
 1. **3 curvas template** — alimentación (bajada lineal), servido (subida asintótica), ruido (sinusoidal)
-2. **Box plots de monotonicity, r2_lineal, zcr** por categoría — distribución real de 304 anotaciones
+2. **Box plots de monotonicity, r2_lineal, zcr** por categoría — distribución real de 814 anotaciones (actualizado 2026-08-16)
 3. **Mapa 2D sim_alimentacion vs sim_servido** — scatter coloreado por categoría con líneas de umbral en ±0.70
 4. **Scatter monotonicity vs r2_lineal** (en expander anidado)
 
@@ -150,7 +150,7 @@ Análisis completo del candidato seleccionado con el Motor Matemático v2 (`shap
 - Cada sección muestra un dataframe con nombre / valor / rango / significado
 
 **Cuadro comparativo:**
-- 25 features con µ±σ por categoría, calibrado sobre **417 anotaciones reales**
+- 25 features con µ±σ por categoría, calibrado sobre **814 anotaciones reales** (actualizado 2026-08-16)
 - Columna "Valor candidato" para comparar el evento actual contra las distribuciones
 - Separación A/S y A/R en unidades σ
 - Datos de `comp_stats_v2.json` (generado por `revisar_anotaciones_v2.py`)
