@@ -38,44 +38,25 @@ Scripts, CSVs y HTML del dashboard viven en [[Dashboard_KPCL]]. Docs:
 
 ---
 
-## 🚀 Ciclo Alpha v2 (prefijo `av2_`) — ACTIVO
+## 🚀 Ciclo Alpha v2 (prefijo `av2_`, numerado `00`–`09`) — ACTIVO
 
 Sistema de detección por segmentos con reglas matemáticas. Sin ML supervisado.
 El código vive en `Ciclo_Alpha_v2/fase_0_ruido/` (`app_anotacion_av2.py` es el
-centro de toda la carpeta).
+centro de toda la carpeta). Documentación fusionada de 21 archivos previos a
+**exactamente 10 documentos** (2026-08-16), sin perder contenido:
 
-### Índice y arquitectura
-- [[av2_00_INDICE_AV2]] — ⭐ MOC principal del Ciclo Alpha v2 (comida)
-- [[av2_00_INDICE_AV2_AGUA]] — MOC propio para hidratación (no se mezcla con comida)
-- [[av2_01_ARQUITECTURA_PIPELINE]] — pipeline completo, fases y flujo de datos
-- [[av2_README]] — descripción de las fases + constantes del ciclo
-- [[av2_APRENDIZAJES_CONSOLIDADOS]] — ⭐ memoria de Alpha + Gamma + Delta + Exp10-NN, leer antes de escribir código nuevo
-
-### Datos y detección
-- [[av2_02_DISPOSITIVO_Y_DATOS]] — KPCL0034, UUIDs, fuentes, período cubierto
-- [[av2_03_DETECCION_SEGMENTOS]] — algoritmo de `01_genera_candidatos.py` paso a paso
-
-### Matemática y features
-- [[av2_04_MATEMATICA_SHAPE_FEATURES]] — ⭐ monotonía, R², ZCR, similitud coseno (con fórmulas)
-- [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] — 102 features en 15 familias + Evidence Engine
-
-### Anotación y clasificación
-- [[av2_05_ANOTACION_Y_CATEGORIAS]] — workflow de anotación, categorías
-- [[av2_06_UMBRALES_Y_REGLAS]] — `umbrales.json`, reglas del detector
-- [[av2_07_RESULTADOS_ANOTACIONES]] — estadísticas completas, percentiles, separación por categoría
-
-### App y experimentos
-- [[av2_08_APP_ANOTACION_AV2]] — 8 tabs de la app Streamlit, componentes técnicos
-- [[av2_EXPERIMENTS_README]] — tracker de experimentos v2 + baselines
-
-### Docs internos de `fase_0_ruido/` (el home de `app_anotacion_av2.py`)
-- [[av2_FASE_0_RUIDO_README]] — cómo lanzar la app, los 8 tabs, qué hace cada uno
-- [[av2_ARQUITECTURA_APP]] — arquitectura técnica interna (caché, responsabilidades por función)
-- [[av2_ACTUALIZACION_DATA]] — pipeline completo y rutas críticas de datos
-- [[av2_HISTORIAL_RESULTADOS]] — snapshots históricos por ingesta de datos (fuente canónica)
-- [[av2_RECOPILACION_DATOS_APP]] — recopilación técnica detallada, motor matemático
-- [[av2_ANALISIS_BENCHMARK]] — benchmark abril-mayo-junio, comparación de modelos
-- `av2_diagnostico_clustering.md` — análisis de clustering sobre el benchmark (referencia, no indexado individualmente)
+| # | Documento | Contenido (fusión de) |
+|---|---|---|
+| 00 | [[av2_00_INDICE_Y_VISION_GENERAL]] | ⭐ Índice comida + índice agua + README de fases/constantes + tracker de experimentos |
+| 01 | [[av2_01_ARQUITECTURA_Y_PIPELINE]] | Pipeline completo + arquitectura técnica de la app (caché, funciones) + cómo lanzarla + rutas críticas de datos |
+| 02 | [[av2_02_DISPOSITIVO_Y_DATOS]] | KPCL0034, UUIDs, fuentes, período cubierto |
+| 03 | [[av2_03_DETECCION_SEGMENTOS]] | Algoritmo de `01_genera_candidatos.py` paso a paso |
+| 04 | [[av2_04_MOTOR_MATEMATICO]] | ⭐ Features F00 clásicas + evolución a 102 features/15 familias + Evidence Engine + recopilación técnica detallada |
+| 05 | [[av2_05_ANOTACION_Y_CATEGORIAS]] | Workflow de anotación manual, categorías |
+| 06 | [[av2_06_UMBRALES_Y_REGLAS]] | `umbrales.json`, reglas del detector y clasificador |
+| 07 | [[av2_07_RESULTADOS_Y_BENCHMARKS]] | Estadísticas de anotaciones + historial de snapshots + benchmark de 20 modelos + diagnóstico de clustering |
+| 08 | [[av2_08_APP_ANOTACION]] | 8 tabs de la app Streamlit, componentes técnicos |
+| 09 | [[av2_09_APRENDIZAJES_CONSOLIDADOS]] | ⭐ Memoria de Alpha + Gamma + Delta + Exp10-NN, leer antes de escribir código nuevo |
 
 ---
 

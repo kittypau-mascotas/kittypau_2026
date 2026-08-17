@@ -881,3 +881,75 @@ repetido), reescrito a mano.
 `streamlit run --headless` → HTTP 200 + `/_stcore/health` → `ok`,
 `pytest tests/` → 16/16. Grep dirigido (`.md` + wikilink): 0 referencias
 rotas a los 15 nombres eliminados, en `Investigacion/` y `Knowledge/`.
+
+## 18. Undécimo addendum (2026-08-16) — datos frescos + Alpha v2 en 10 documentos
+
+### 18.1 Verificación de que `av2_` reflejaba resultados reales
+
+> Pedido de Mauro: "todo lo de av2_ esta actualizado en relacion a los
+> resultados que hemos obtenido con app_anotacion_av2? si no es asi, actualiza
+> todo el contenido de av2 en funcion de los nuevos resultados."
+
+No estaba actualizado. `anotaciones_av2.csv` había crecido de 496 (último
+snapshot documentado, 2026-08-11) a 814 sin que nadie regenerara
+`features_anotaciones_v2.csv`/`comp_stats_v2.json` ni actualizara el
+historial. Se ejecutó `revisar_anotaciones_v2.py` sobre el estado real
+(nuevo snapshot v2.5 en el historial), y se recalcularon con scripts —no a
+mano— las métricas clásicas (duración/Δpeso/rango/pendiente por categoría,
+con percentiles) directamente desde las lecturas crudas, misma metodología
+que el doc original usaba. Hallazgo real no trivial: "mixto" en
+`candidatos_av2.csv` bajó de 23% a 2% — coincide casi exacto con un dry-run
+que el historial describía como "pendiente de aplicar" (`punto_split_mixto`);
+todo indica que se aplicó sin dejar registro, se documentó como hallazgo, no
+se inventó. `umbrales.json` (v1.3) sigue calibrado contra n=496 —
+deliberadamente **no recalibrado**: es una decisión de Motor Matemático que
+cambia comportamiento de detección en vivo, se dejó como pendiente explícito
+en vez de tocarla sin confirmación.
+
+### 18.2 Fusión de los 21 documentos `av2_` en exactamente 10
+
+> Pedido de Mauro: "fusiona toda la informacion de av2_ en 10 documentos .md,
+> si es necesario, renombra, re enumera, pero manten av2_. ordenalo como un
+> profesional, la info debe quedar muy ordenada, sin perder nada."
+
+21 → 10, numerados `av2_00` a `av2_09`, por tema (no por origen):
+
+| # | Documento | Fusiona |
+|---|---|---|
+| 00 | `av2_00_INDICE_Y_VISION_GENERAL.md` | índice comida + índice agua + README de fases/constantes + tracker de experimentos (4→1) |
+| 01 | `av2_01_ARQUITECTURA_Y_PIPELINE.md` | arquitectura del pipeline + arquitectura técnica de la app + cómo lanzarla + rutas críticas de datos (4→1) |
+| 02 | `av2_02_DISPOSITIVO_Y_DATOS.md` | sin cambio (ya era 1 doc enfocado) |
+| 03 | `av2_03_DETECCION_SEGMENTOS.md` | sin cambio |
+| 04 | `av2_04_MOTOR_MATEMATICO.md` | features F00 clásicas + evolución 102 features/15 familias + recopilación técnica detallada — el más grande, 88 KB (3→1) |
+| 05 | `av2_05_ANOTACION_Y_CATEGORIAS.md` | sin cambio |
+| 06 | `av2_06_UMBRALES_Y_REGLAS.md` | sin cambio |
+| 07 | `av2_07_RESULTADOS_Y_BENCHMARKS.md` | estadísticas de anotaciones + historial de snapshots + benchmark 20 modelos + diagnóstico de clustering (4→1) |
+| 08 | `av2_08_APP_ANOTACION.md` | sin cambio (solo renombrado, quita el `_AV2` redundante) |
+| 09 | `av2_09_APRENDIZAJES_CONSOLIDADOS.md` | sin cambio (solo renombrado con número) |
+
+Criterio de agrupación: por tema/audiencia, no por tamaño ni por origen — ej.
+`av2_04` junta 3 documentos que responden la misma pregunta ("cómo funciona
+el motor matemático") a 3 niveles de profundidad distintos (fórmulas F00 →
+evolución a 102 features → recopilación técnica completa), en vez de
+mezclarlos con documentos de tema no relacionado solo para balancear tamaños.
+
+Mismo patrón de ejecución que las fusiones anteriores (§15, §17): script
+Python concatena con comentario de procedencia por archivo origen, `git rm`
+de los originales, sweep de referencias en 2 pasadas (`.md` + wikilink, sin
+tocar `.py`). Detectado y corregido: `README.md` tenía 2 bullets idénticos
+tras el sweep (`av2_FASE_0_RUIDO_README.md` y `av2_ARQUITECTURA_APP.md`
+colapsaron al mismo `av2_01_ARQUITECTURA_Y_PIPELINE.md`) — consolidados a
+mano en 1 bullet. `_MOC.md` reescrito con una tabla de los 10 documentos y
+qué fusiona cada uno, en vez de la lista plana anterior.
+
+De paso, encontradas y corregidas 4 rutas `09_Investigacion/` (prefijo previo
+a toda esta sesión, ninguna de las barridas anteriores las agarró por no ser
+nombre de archivo sino prefijo de ruta).
+
+### 18.3 Verificación final
+
+`py_compile`, `streamlit run --headless` → HTTP 200 + `/_stcore/health` →
+`ok`, `pytest tests/` → 16/16 (con los datos regenerados de §18.1). Grep
+dirigido (`.md` + wikilink) en `Investigacion/` y `Knowledge/`: 0 referencias
+rotas a los 21 nombres viejos. 34 `.md` en la raíz de `Investigacion/`
+(45 → 34, tras fusionar los 21 `av2_` en 10).

@@ -13,13 +13,12 @@
 > ```
 >
 > **Para entender la app antes de tocarla, en este orden:**
-> 1. **[av2_FASE_0_RUIDO_README.md](av2_FASE_0_RUIDO_README.md)** — cómo lanzarla, los 8 tabs, qué hace cada uno
-> 2. **[av2_ARQUITECTURA_APP.md](av2_ARQUITECTURA_APP.md)** — arquitectura técnica interna
-> 3. **[av2_08_APP_ANOTACION_AV2.md](av2_08_APP_ANOTACION_AV2.md)** — doc de referencia de los 8 tabs
-> 4. **[av2_04_MATEMATICA_SHAPE_FEATURES.md](av2_04_MATEMATICA_SHAPE_FEATURES.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno)
-> 5. **[av2_APRENDIZAJES_CONSOLIDADOS.md](av2_APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
+> 1. **[av2_01_ARQUITECTURA_Y_PIPELINE.md](av2_01_ARQUITECTURA_Y_PIPELINE.md)** — cómo lanzarla, arquitectura técnica interna, pipeline de datos
+> 2. **[av2_08_APP_ANOTACION.md](av2_08_APP_ANOTACION.md)** — doc de referencia de los 8 tabs
+> 3. **[av2_04_MOTOR_MATEMATICO.md](av2_04_MOTOR_MATEMATICO.md)** — fórmulas del motor matemático (monotonía, R², ZCR, similitud coseno, 102 features)
+> 4. **[av2_09_APRENDIZAJES_CONSOLIDADOS.md](av2_09_APRENDIZAJES_CONSOLIDADOS.md)** — memoria acumulada de Alpha + Gamma + Delta + Exp10-NN, para no repetir un experimento ya descartado
 >
-> **MOC completo de Alpha v2:** [av2_00_INDICE_AV2.md](av2_00_INDICE_AV2.md) ⭐ — **MOC de toda la carpeta:** [[_MOC]]
+> **MOC completo de Alpha v2:** [av2_00_INDICE_Y_VISION_GENERAL.md](av2_00_INDICE_Y_VISION_GENERAL.md) ⭐ — **MOC de toda la carpeta:** [[_MOC]]
 >
 > ---
 >
@@ -32,12 +31,16 @@
 >
 > | Prefijo | Ciclo | Estado |
 > |---|---|---|
-> | *(sin prefijo, numerado `00`–`09`)* | Alpha v2 | ⭐ ACTIVO |
+> | `av2_` (10 docs, numerados `00`–`09`) | Alpha v2 | ⭐ ACTIVO |
 > | *(sin prefijo)* | Cross-cycle / maestro / KPCL toolkit | Vigente |
 > | `KPCL_` | Toolkit dashboard KPCL0034/36 | Vigente (uso sin confirmar, ver SPEC_07 §8) |
-> | `A1_` | Ciclo Alpha (v1) | 🗄️ CERRADO |
-> | `GAMMA_` / `g0N_` / `*_GAMMA` | Ciclo Gamma | 🗄️ ARCHIVADO |
-> | `DELTA_` / `d0N_` / `*_DELTA` / `*_delta` | Ciclo Delta | 🗄️ ARCHIVADO |
+> | `av1_` | Ciclo Alpha (v1) | 🗄️ CERRADO |
+> | `delta_gamma_antiguio.md` (1 solo doc) | Gamma + Delta | 🗄️ ARCHIVADO |
+>
+> **Los 10 documentos de Alpha v2** (00→09, ver [[av2_00_INDICE_Y_VISION_GENERAL]] para el detalle):
+> índice+visión general · arquitectura+pipeline · dispositivo+datos · detección de
+> segmentos · motor matemático · anotación+categorías · umbrales+reglas ·
+> resultados+benchmarks · app de anotación · aprendizajes consolidados.
 >
 > **Mapa de la carpeta (estado real, verificado):**
 > ```
@@ -46,7 +49,7 @@
 > ├── ESTADO_PROYECTO_Y_NUEVA_DIRECCION.md                          ← por qué existe Alpha v2
 > ├── REGLAS_EVENTOS_ALIMENTACION.md, OPERATIVIZACION_SESIONES_SUPABASE.md,
 > │   REGISTRO_EVENTOS_2026-04-16.md                                ← reglas canónicas cross-cycle
-> ├── av2_*.md (21 archivos, numerados av2_00…av2_09 + fase_0_ruido/benchmark)  ← docs del Ciclo Alpha v2
+> ├── av2_00…av2_09_*.md (10 archivos)                              ← docs del Ciclo Alpha v2
 > ├── av1_*.md (13 archivos, incl. av1_EXPERIMENTOS_DETALLE)         ← docs del Ciclo Alpha v1
 > ├── delta_gamma_antiguio.md                                        ← docs de Gamma + Delta + memoria conjunta, fusionados en 1
 > ├── KPCL_*.md                                                     ← docs del toolkit Dashboard_KPCL

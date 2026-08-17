@@ -6,7 +6,7 @@ estado: activo
 
 # Fase 0 — Detección de Segmentos
 
-> Ver [[av2_00_INDICE_AV2]] para el índice completo. Ver [[04_SHAPE_FEATURES]] para las features matemáticas calculadas sobre cada segmento.
+> Ver [[av2_00_INDICE_Y_VISION_GENERAL]] para el índice completo. Ver [[04_SHAPE_FEATURES]] para las features matemáticas calculadas sobre cada segmento.
 
 **Script:** `fase_0_ruido/01_genera_candidatos.py`
 **Output:** `fase_0_ruido/data/candidatos_av2.csv` (916 candidatos, 2026-08-16)
@@ -177,14 +177,14 @@ else:            direction = "mixto"
 
 > **Cambio importante respecto al snapshot anterior (n=417, mixto=23%):** "mixto"
 > bajó a solo 2% del total. Esto coincide exactamente con lo que
-> [[av2_HISTORIAL_RESULTADOS]] snapshot v2.4 (2026-08-11) describía como
+> [[av2_07_RESULTADOS_Y_BENCHMARKS]] snapshot v2.4 (2026-08-11) describía como
 > **pendiente de aplicar**: partir candidatos "mixto" por su punto de giro interno
 > (`punto_split_mixto()` en `01_genera_candidatos.py`), que en el dry-run daba
 > "mixto bajaría de ~23% a ~1.7%" — número casi idéntico al 2% actual. Todo indica
 > que ese cambio se aplicó entre el 2026-08-11 y hoy, pero **no hay un snapshot que
 > lo documente explícitamente como aplicado** — no se pudo confirmar leyendo el
 > historial. Si alguien sabe cuándo se corrió, vale la pena agregar la entrada
-> correspondiente a `av2_HISTORIAL_RESULTADOS.md`.
+> correspondiente a `av2_07_RESULTADOS_Y_BENCHMARKS.md`.
 
 ---
 
@@ -207,8 +207,8 @@ etiqueta_audit_ref
 #          12 templates canónicos, dinámica temporal, compuestos
 ```
 
-Ver [[av2_09_EVOLUCION_MOTOR_MATEMATICO]] para la lista completa de features y familias.
-Ver [[av2_04_MATEMATICA_SHAPE_FEATURES]] para el detalle de las 5 features F00 clásicas.
+Ver [[av2_04_MOTOR_MATEMATICO]] para la lista completa de features y familias.
+Ver [[av2_04_MOTOR_MATEMATICO]] para el detalle de las 5 features F00 clásicas.
 
 ---
 
