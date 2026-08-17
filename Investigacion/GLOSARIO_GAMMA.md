@@ -297,6 +297,6 @@ Todo el código y datos del Ciclo Gamma viven bajo `Data Science/gamma/`. Las ca
 | [instructivo.md](instructivo.md) | Guía maestra del Ciclo Gamma (pipeline, errores, reglas) |
 | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | Estado y métricas de cada experimento Gamma |
 | [../02_REGLAS_EVENTOS_ALIMENTACION.md](../02_REGLAS_EVENTOS_ALIMENTACION.md) | Taxonomía canónica de eventos (aplica a ambos ciclos) |
-| [../03_ML_PREDICCION_ALIMENTACION.md](../03_ML_PREDICCION_ALIMENTACION.md) | Especificación ML original (Ciclo Alpha — referencia) |
-| [../01_GUIA_DASHBOARD_KPCL.md](../01_GUIA_DASHBOARD_KPCL.md) | Dashboard para identificar sesiones a anotar |
-| [../07_AUDITORIA_KPCL0036_ERROR_PESO.md](../07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Por qué KPCL0036 sigue excluido |
+| [03_ML_PREDICCION_ALIMENTACION.md](03_ML_PREDICCION_ALIMENTACION.md) | Especificación ML original (Ciclo Alpha — referencia) |
+| [01_GUIA_DASHBOARD_KPCL.md](01_GUIA_DASHBOARD_KPCL.md) | Dashboard para identificar sesiones a anotar |
+| [07_AUDITORIA_KPCL0036_ERROR_PESO.md](07_AUDITORIA_KPCL0036_ERROR_PESO.md) | Por qué KPCL0036 sigue excluido |

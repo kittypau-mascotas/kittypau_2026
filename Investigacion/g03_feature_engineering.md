@@ -6,7 +6,7 @@
 **Prerequisito:** G-02 completado (mejor GBM seleccionado)
 **Fecha estimada:** TBD
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](../instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
 
 ---
 
@@ -129,4 +129,4 @@ gamma/fase_3_modelos/outputs/training_report/
 |---|---|
 | Experimento anterior | [g02_gbm_benchmark.md](g02_gbm_benchmark.md) |
 | Experimento siguiente | [g04_hyperparameter_optimization.md](g04_hyperparameter_optimization.md) |
-| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) |
+| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |

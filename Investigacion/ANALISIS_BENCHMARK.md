@@ -311,5 +311,5 @@ El benchmark sobre 421 eventos del sensor IoT KPCL0034 "Bandida" demuestra que:
 
 ---
 
-*Archivo generado en: `benchmark_data_abril_mayo_junio/ANALISIS_BENCHMARK.md`*  
+*Archivo generado en: `ANALISIS_BENCHMARK.md`*  
 *Fuentes: `resultados_benchmark.csv`, `diagnostico_clustering_resumen.csv`, `diagnostico_clustering.md`, `benchmark_comparison.png`, `eda_overview.png`, `shap_importance.png`*

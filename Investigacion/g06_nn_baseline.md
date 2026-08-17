@@ -8,7 +8,7 @@
 **Entorno:** Google Colab Pro (GPU T4 o A100)
 **Fecha estimada:** TBD (data-conditional)
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](../instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
 
 ---
 
@@ -214,5 +214,5 @@ gamma/fase_3_modelos/models/nn/
 | Documento | Enlace |
 |---|---|
 | Experimento anterior | [g05_classical_ml_benchmark.md](g05_classical_ml_benchmark.md) |
-| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) |
-| Referencia α-10 | `Ciclo_Alpha_v1/experiments/exp_10_nn_colab.md` (referencia histórica) |
+| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |
+| Referencia α-10 | `exp_10_nn_colab.md` (referencia histórica) |

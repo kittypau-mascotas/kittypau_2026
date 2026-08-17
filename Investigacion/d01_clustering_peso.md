@@ -110,4 +110,4 @@ Cluster 0 = candidato servido · Cluster 1 = alimentación/reposo.
 ## Referencias
 
 - [_delta_utils.md](../fase_1_datos/scripts/_delta_utils.md)
-- [EXPERIMENT_TRACKER_DELTA.md](../EXPERIMENT_TRACKER_DELTA.md)
+- [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)

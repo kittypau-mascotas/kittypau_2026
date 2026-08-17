@@ -156,7 +156,7 @@ enfoque. Ningún modelo per-reading puede aprender la forma de una curva.
 - 71% de las lecturas tienen `clock_invalid=True` → siempre usar `ingested_at`
 
 Todo ese conocimiento está documentado en:
-[`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)
+[`APRENDIZAJES_GAMMA_DELTA.md`](APRENDIZAJES_GAMMA_DELTA.md)
 
 Los archivos completos de Gamma y Delta (scripts, datos, modelos, reportes) están en:
 [`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/)
@@ -288,4 +288,4 @@ casi perfecta incluso con reglas simples.
 ---
 
 *Para detalles técnicos completos de lo explorado en Gamma y Delta, ver:*  
-*[`Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md`](Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md)*
+*[`APRENDIZAJES_GAMMA_DELTA.md`](APRENDIZAJES_GAMMA_DELTA.md)*

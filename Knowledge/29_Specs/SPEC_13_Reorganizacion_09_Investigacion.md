@@ -546,3 +546,81 @@ toca por regla del proyecto).
 Verificado tras el rename: `py_compile` (14 scripts de `fase_0_ruido/` incluyendo
 `0A_`/`0B_`/`0C_`), resolución de `RAW_DATA_DIR` con `.exists() == True`, `streamlit
 run --headless` → HTTP 200 + `/_stcore/health` → `ok`, `pytest tests/` → 16/16.
+
+## 13. Sexto addendum (2026-08-16) — aplanar TODOS los .md a la raíz
+
+> Pedido de Mauro: "revisa los docs dentro de investigacion, deben solo quedar docs en
+> la ruta de investigacion, no dentro de carpetas, necesitamos actualizar todo en
+> relacion a investigacion." Confirmado por pregunta explícita — alcance elegido:
+> **todos** los `.md` del árbol (no solo los 8 sueltos de rondas anteriores), pese a la
+> advertencia de que esto generaría colisiones de nombre y borraría la asociación de
+> cada doc con su ciclo/fase.
+
+### Qué se hizo
+
+1. Inventario de los 89 `.md` de `Investigacion/` (excluyendo `venv/`, `node_modules/`,
+   `__pycache__/`, `.pytest_cache/`). 8 ya estaban en la raíz, 80 vivían en subcarpetas,
+   1 era caché de pytest (ignorado, no es un doc real).
+2. **Única colisión de nombre real**: 8 archivos llamados `README.md` (uno por
+   ciclo/fase). El de la raíz quedó igual; los otros 7 se renombraron con el prefijo de
+   su carpeta padre (`Ciclo_Alpha_v1_README.md`,
+   `Ciclo_Alpha_v2_fase_0_ruido_README.md`, etc.) — verificado que ningún otro basename
+   colisionaba antes de mover nada.
+3. 80 archivos movidos a la raíz de `Investigacion/` (`git mv`, todos trackeados).
+   Limpiadas 7 carpetas que quedaron vacías tras el movimiento (`Ciclo_Gamma/experiments/`,
+   `Ciclo_Gamma/scripts/fase_1|2|3/`, `Ciclo_Delta/experiments/`,
+   `Ciclo_Alpha_v2/experiments/`, `fase_0_ruido/Documentacion/`).
+4. Sweep de referencias con un script Python: para cada archivo restante (`.md`, `.py`,
+   `.ps1`, `.json`, excluyendo generados >500 KB como los HTML de Plotly), calcula la
+   profundidad hasta `Investigacion/` (o hasta ahí vía la raíz del repo si el archivo
+   está en `Knowledge/`) y reemplaza cualquier ruta que apunte a un basename movido —
+   con cualquier prefijo previo — por la referencia correcta desde ese archivo.
+
+### 3 bugs encontrados durante el sweep y cómo se resolvieron
+
+- **Backtracking catastrófico**: el primer patrón de prefijo `(?:[\w.\-%]+[/\\])*`
+  (grupo con `+` anidado dentro de `*`) colgó el script dos veces sobre archivos
+  grandes. Corregido a una sola clase de caracteres `[\w./\\%-]*` (sin grupo anidado) —
+  lineal, sin riesgo de blow-up exponencial.
+- **Corrupción de narrativa histórica**: el sweep tocó `SPEC_13` (este archivo) y
+  `SPEC_07_Investigacion_Hidratacion.md`, insertando `../../Investigacion/` en medio de
+  diagramas ASCII y citas en prosa que documentan estados *pasados* del árbol — técnicamente
+  no roto (no son links funcionales, son texto narrativo), pero ilegible y
+  cronológicamente incorrecto. **Revertidos por completo** ambos archivos con
+  `git checkout --`, igual que 2 HTML estáticos con el mismo problema
+  (`visualizacion_fase4_delta.md/v2.html` — narrativa congelada de un reporte generado).
+  Consecuencia aceptada: estos 2 specs y 2 HTML quedan con referencias a rutas viejas de
+  antes de este addendum — su prosa importa más que su exactitud de ruta.
+- **Corrupción de código en vivo (el más grave)**: 2 scripts archivados de `Ciclo_Delta`
+  (`d03_reporte_final.py`, `d04_anomaly_report.py`) construyen en runtime la ruta de sus
+  propios archivos de salida vía `pathlib` (`FASE3_OUTPUTS / "anomaly_report" /
+  "anomaly_report.md"`) — el basename coincide por casualidad con un doc que también se
+  movió, y el sweep reescribió la expresión de código como si fuera una referencia de
+  documentación, dejando una ruta sin sentido. Causa raíz: mover un `.md` que es
+  **salida generada por un pipeline** (no solo documentación de autor) a un lugar plano
+  rompe la ruta que el pipeline espera escribir. **Los 9 `.py` tocados por el sweep se
+  revirtieron por completo** (`git checkout --`) por seguridad — no se podía garantizar
+  caso por caso cuál era comentario seguro y cuál código real sin revisar los 9 a mano.
+  Se reaplicaron a mano, con `Edit`, solo los 2 comentarios de `shape_features_v2.py`
+  (verificados 1 por 1 como seguros — son comentarios puros, no construyen rutas).
+  Los otros 8 scripts (todos en `Ciclo_Gamma`/`Ciclo_Delta`, ambos ciclos archivados)
+  quedan con comentarios apuntando a la ubicación vieja de sus docs — aceptable: son
+  scripts que casi seguro no se vuelven a correr, y un comentario desactualizado no
+  rompe nada si igual no se ejecuta.
+- **Prefijo con espacio no capturado**: la clase de caracteres `[\w./\\%-]*` no incluye
+  el espacio, así que el bug preexistente `Data Science/experiments/X.md` (texto visible
+  ya corregido a `Ciclo_Alpha_v1/...` en una ronda anterior, pero el href seguía roto en
+  3 archivos que esa ronda no tocó: `EXPERIMENT_TRACKER.md`,
+  `07_AUDITORIA_KPCL0036_ERROR_PESO.md`, `08_REGISTRO_EVENTOS_2026-04-16.md`) dejó un
+  `"Data "` residual pegado antes del nombre nuevo (ej. `Data exp_01_linea_base.md`).
+  Detectado con grep dirigido tras el sweep, corregido con un segundo patrón acotado
+  (`\bData (\S+\.(?:md|py))\b` → solo el grupo capturado). Verificado con grep que no
+  queda ningún href con espacio salvo una fila de plantilla en
+  `EXPERIMENT_TRACKER.md:205` (`exp_0N_nombre.md`, no es un archivo real).
+
+### Verificación final
+
+`py_compile` de los 8 scripts de `fase_0_ruido/` (incluye `shape_features_v2.py`
+editado a mano), `streamlit run --headless` → HTTP 200 + `/_stcore/health` → `ok`,
+`pytest tests/` → 16/16. Grep dirigido confirmó 0 hrefs rotos residuales (excepto la
+fila de plantilla ya mencionada).

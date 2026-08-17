@@ -6,7 +6,7 @@
 **Prerequisito:** G-04 completado (GBM optimizado como referencia)
 **Fecha estimada:** TBD
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](../instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
 
 ---
 
@@ -169,4 +169,4 @@ gamma/fase_3_modelos/models/classical/
 |---|---|
 | Experimento anterior | [g04_hyperparameter_optimization.md](g04_hyperparameter_optimization.md) |
 | Experimento siguiente | [g06_nn_baseline.md](g06_nn_baseline.md) |
-| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) |
+| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |

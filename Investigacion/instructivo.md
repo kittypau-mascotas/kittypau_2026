@@ -709,7 +709,7 @@ data-conditional (solo ejecutar cuando los prerequisitos de datos se cumplan).
 
 ## 10. Tabla Maestra de Experimentos
 
-Ver archivo: `gamma/EXPERIMENT_TRACKER_GAMMA.md`
+Ver archivo: `EXPERIMENT_TRACKER_GAMMA.md`
 
 Resumen inicial:
 
@@ -950,16 +950,16 @@ Estas reglas son inviolables. Romperlas requiere documentar el motivo en el expe
 |---|---|
 | `CICLO_GAMMA_UNIFICACION_Y_RETIQUETADO.md` | Runbook operativo del Pre-G: unificación de datos + inferencia con Modelo A de Exp06 + retiquetado total |
 | `fase_1_extraccion/scripts/g01_setup_env.md` ... `g10_quality_report.md` | Implementación (specs .py) de los Pasos 4.1–4.11 del runbook de unificación |
-| `gamma/EXPERIMENT_TRACKER_GAMMA.md` | Tabla maestra de todos los experimentos del Ciclo Gamma |
-| `gamma/GLOSARIO_GAMMA.md` | Definiciones actualizadas con lecciones Alpha |
-| `experiments/exp_01_linea_base.md` a `exp_10_nn_colab.md` | Ciclo Alpha (solo lectura, referencia histórica) |
+| `EXPERIMENT_TRACKER_GAMMA.md` | Tabla maestra de todos los experimentos del Ciclo Gamma |
+| `GLOSARIO_GAMMA.md` | Definiciones actualizadas con lecciones Alpha |
+| `exp_01_linea_base.md` a `exp_10_nn_colab.md` | Ciclo Alpha (solo lectura, referencia histórica) |
 | `EXPERIMENT_TRACKER.md` | Tracker del Ciclo Alpha (histórico) |
 | `../02_REGLAS_EVENTOS_ALIMENTACION.md` | Taxonomía canónica de eventos (aplica a ambos ciclos) |
-| `../03_ML_PREDICCION_ALIMENTACION.md` | Especificación ML original (Ciclo Alpha) |
-| `../01_GUIA_DASHBOARD_KPCL.md` | Guía del dashboard para identificar sesiones a anotar |
+| `03_ML_PREDICCION_ALIMENTACION.md` | Especificación ML original (Ciclo Alpha) |
+| `01_GUIA_DASHBOARD_KPCL.md` | Guía del dashboard para identificar sesiones a anotar |
 | `../04_OPERATIVIZACION_SESIONES_SUPABASE.md` | Estructura de sesiones en Supabase |
-| `../06_AUDITORIA_SIN_CARGADOR.md` | Contexto de anomalías KPCL0036 |
-| `../07_AUDITORIA_KPCL0036_ERROR_PESO.md` | Por qué KPCL0036 sigue excluido |
+| `06_AUDITORIA_SIN_CARGADOR.md` | Contexto de anomalías KPCL0036 |
+| `07_AUDITORIA_KPCL0036_ERROR_PESO.md` | Por qué KPCL0036 sigue excluido |
 
 ---
 

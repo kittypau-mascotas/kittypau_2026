@@ -1247,8 +1247,8 @@ Seguir este orden estrictamente. Cada paso tiene una verificación antes de cont
   python gamma/fase_3_modelos/scripts/g09_training_report.py
   
   Registrar resultados en:
-  - gamma/experiments/g01_baseline_limpio.md (sección "7. Resultados")
-  - gamma/EXPERIMENT_TRACKER_GAMMA.md (fila G-01)
+  - g01_baseline_limpio.md (sección "7. Resultados")
+  - EXPERIMENT_TRACKER_GAMMA.md (fila G-01)
 
 □ PASO 16 — Evaluar contra umbrales G-01
   F1 activo ≥ 0.75? (referencia α-06: 0.7619)

@@ -76,7 +76,7 @@ Cada tab muestra barra de progreso real 0→100% al cargar.
 **Optimización aplicada (2026-06-28):** `_f08_lempel_ziv` O(n²) → O(n log n) con set-based LZ78  
 **Fix aplicado (2026-08-10):** `evidence_score()` normaliza features (z-score) y calcula pesos desde los
 datos en vez de usarlos crudos con pesos a mano — accuracy 49.6% → 78.8% (held-out). Ver
-[RECOPILACION_DATOS_APP.md §12bis](Documentacion/RECOPILACION_DATOS_APP.md#12bis-actualización-2026-08-10--el-problema-real-no-eran-los-pesos-era-la-escala).
+[RECOPILACION_DATOS_APP.md §12bis](RECOPILACION_DATOS_APP.md#12bis-actualización-2026-08-10--el-problema-real-no-eran-los-pesos-era-la-escala).
 
 ---
 
@@ -126,6 +126,6 @@ fase_0_ruido/
 
 ## Ver también
 
-- [HISTORIAL_RESULTADOS.md](Documentacion/HISTORIAL_RESULTADOS.md) — snapshots históricos por ingesta de datos
-- [ACTUALIZACION_DATA.md](Documentacion/ACTUALIZACION_DATA.md) — pipeline completo y rutas críticas
-- [ARQUITECTURA_APP.md](Documentacion/ARQUITECTURA_APP.md) — arquitectura de caché y responsabilidades por función
+- [HISTORIAL_RESULTADOS.md](HISTORIAL_RESULTADOS.md) — snapshots históricos por ingesta de datos
+- [ACTUALIZACION_DATA.md](ACTUALIZACION_DATA.md) — pipeline completo y rutas críticas
+- [ARQUITECTURA_APP.md](ARQUITECTURA_APP.md) — arquitectura de caché y responsabilidades por función

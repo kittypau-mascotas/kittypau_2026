@@ -31,7 +31,7 @@ ejecuta `revisar_anotaciones_v2.py`.
 
 ## Tabla Resumen
 
-> Fuente canónica de este historial: [`fase_0_ruido/Documentacion/HISTORIAL_RESULTADOS.md`](../../Investigacion/Ciclo_Alpha_v2/fase_0_ruido/Documentacion/HISTORIAL_RESULTADOS.md)
+> Fuente canónica de este historial: [`../../Investigacion/HISTORIAL_RESULTADOS.md`](../../Investigacion/HISTORIAL_RESULTADOS.md)
 > — la app y sus scripts escriben ahí directamente. Esta tabla es un espejo resumido
 > para navegación rápida desde el vault; ante conflicto, gana el doc de `fase_0_ruido`.
 
@@ -48,7 +48,7 @@ un bug estructural — sumaba `peso × valor crudo` sin normalizar, con 496 anot
 solo 49.6% (peor que predecir siempre "alimentación", 51.2%). Fix: z-score pooled + pesos
 calculados desde los datos (discriminante tipo Fisher sobre las 102 features en vez de 26
 elegidas a mano) → **78.8% accuracy held-out (20% nunca visto)**. Detalle completo en
-`fase_0_ruido/Documentacion/RECOPILACION_DATOS_APP.md §12bis` y `fase_0_ruido/Documentacion/HISTORIAL_RESULTADOS.md`.
+`../../Investigacion/RECOPILACION_DATOS_APP.md §12bis` y `../../Investigacion/HISTORIAL_RESULTADOS.md`.
 Tab 1 ahora sugiere la categoría automáticamente con el motor corregido.
 
 **v2.4 (mismo día, 2026-08-11) — 4 mejoras incrementales**, en orden de impacto/riesgo:

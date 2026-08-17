@@ -1,7 +1,7 @@
 # KPCL0034 — Data Science Pipeline
 
 > **Ecosistema:** Este pipeline forma parte de `investigacion/`. Documentos maestros:
-> [README raíz](../README.md) · [GLOSARIO](../GLOSARIO.md) · [EXPERIMENT_TRACKER](../EXPERIMENT_TRACKER.md) · [experiments/README](experiments/README.md) · [Data_2026/README](../Data_2026/README.md)
+> [README raíz](../README.md) · [GLOSARIO](../GLOSARIO.md) · [EXPERIMENT_TRACKER](../EXPERIMENT_TRACKER.md) · [experiments/README](Ciclo_Alpha_v1_experiments_README.md) · [Data_2026/README](../Data_2026/README.md)
 
 Pipeline de ML supervisado para detección automática de sesiones de alimentación de Bandida
 sobre datos de peso del bowl `KPCL0034`. Estado activo: **Exp 10-NN completado** (2026-06-15) · F1 activo mejor NN=0.6016 (TCN) · GRU F1 servido=0.34 · **Modelo en producción: Exp 06** · **Próximo: Exp 11** (ensemble GRU+LGBM + revisión 155 candidatos Mayo-Jun).

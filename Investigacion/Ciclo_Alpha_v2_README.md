@@ -186,5 +186,5 @@ KPCL0034_UUIDS = [
 | `readings_delta.parquet` (134k lecturas) | `Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Delta/fase_1_datos/data/processed/` |
 | Pipeline extracción Fase 1 | `Ciclo_Alpha_v1/fase_1_extraccion/` |
 | `app_anotacion_gamma.py` | `Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/Ciclo_Gamma/` |
-| Aprendizajes Gamma + Delta | `Ciclo_Alpha_v1/Exploracion_Gamma_Delta_2026/APRENDIZAJES_GAMMA_DELTA.md` |
+| Aprendizajes Gamma + Delta | `APRENDIZAJES_GAMMA_DELTA.md` |
 | Ground truth completo | `public.audit_events` en Supabase |

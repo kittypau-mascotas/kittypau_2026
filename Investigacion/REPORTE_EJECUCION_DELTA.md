@@ -132,7 +132,7 @@
 - **Candidatos nuevos** (no etiquetados en Gamma): **2**
 
 ### d03_reporte_final.py
-- Reporte generado en `fase_4_validacion/outputs/reporte_final_delta.md`
+- Reporte generado en `reporte_final_delta.md`
 
 ---
 
@@ -174,7 +174,7 @@ fase_3_anomalias/outputs/
   anomalias_lof.csv            (6,709 filas)
   anomalias_consenso.csv       (676 filas)
   anomalias_detectadas.csv     (676 filas)
-  anomaly_report/anomaly_report.md
+  anomaly_report.md
   visualizaciones/anomaly_timeline_por_tipo.html
 
 fase_4_validacion/outputs/

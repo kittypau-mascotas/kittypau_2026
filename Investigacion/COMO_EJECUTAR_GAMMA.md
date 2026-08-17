@@ -22,7 +22,7 @@ Abre `http://localhost:8501` en el navegador.
 **Herramienta principal:** `app_anotacion_gamma.py` (Streamlit)
 **Meta:** ≥80 sesiones de `servido` + ≥200 sesiones de `alimentacion` en `new_annotations_gamma.csv`
 
-Referencia: [instructivo.md](../instructivo.md) §6 | [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md)
+Referencia: [instructivo.md](instructivo.md) §6 | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md)
 
 ---
 
@@ -191,7 +191,7 @@ Revisar OBLIGATORIAMENTE:
 
 | Documento | Enlace |
 |---|---|
-| Guía maestra | [../instructivo.md](../instructivo.md) |
-| Tracker de experimentos | [../EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) |
-| Primer experimento | [../experiments/g01_baseline_limpio.md](../experiments/g01_baseline_limpio.md) |
+| Guía maestra | [instructivo.md](instructivo.md) |
+| Tracker de experimentos | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |
+| Primer experimento | [g01_baseline_limpio.md](g01_baseline_limpio.md) |
 | Taxonomía de eventos | [../../02_REGLAS_EVENTOS_ALIMENTACION.md](../../02_REGLAS_EVENTOS_ALIMENTACION.md) |

@@ -79,6 +79,6 @@ Consenso IF∩LOF con 676 anomalías es suficiente y robusto. Umbral de Tipo H (
 ## Referencias
 
 - [_delta_utils.md](../fase_1_datos/scripts/_delta_utils.md)
-- [EXPERIMENT_TRACKER_DELTA.md](../EXPERIMENT_TRACKER_DELTA.md)
-- `../06_AUDITORIA_SIN_CARGADOR.md`
-- `../07_AUDITORIA_KPCL0036_ERROR_PESO.md`
+- [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)
+- `06_AUDITORIA_SIN_CARGADOR.md`
+- `07_AUDITORIA_KPCL0036_ERROR_PESO.md`

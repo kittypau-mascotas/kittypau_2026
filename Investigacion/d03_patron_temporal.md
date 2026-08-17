@@ -52,4 +52,4 @@ como insumo para Ciclo Epsilon]
 
 - [../fase_1_datos/scripts/_delta_utils.md](../fase_1_datos/scripts/_delta_utils.md)
 - [d01_clustering_peso.md](d01_clustering_peso.md)
-- [../EXPERIMENT_TRACKER_DELTA.md](../EXPERIMENT_TRACKER_DELTA.md)
+- [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)

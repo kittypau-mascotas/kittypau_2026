@@ -6,7 +6,7 @@
 **Prerequisito:** G-01 completado
 **Fecha estimada:** TBD
 
-Referencia: [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](../instructivo.md) §9
+Referencia: [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) | [instructivo.md](instructivo.md) §9
 
 ---
 
@@ -153,4 +153,4 @@ gamma/fase_3_modelos/models/gbm/
 |---|---|
 | Experimento anterior | [g01_baseline_limpio.md](g01_baseline_limpio.md) |
 | Experimento siguiente | [g03_feature_engineering.md](g03_feature_engineering.md) |
-| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](../EXPERIMENT_TRACKER_GAMMA.md) |
+| Tracker | [EXPERIMENT_TRACKER_GAMMA.md](EXPERIMENT_TRACKER_GAMMA.md) |

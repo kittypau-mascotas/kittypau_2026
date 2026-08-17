@@ -67,5 +67,5 @@
 |---|---|
 | [instructivo_delta.md](instructivo_delta.md) | Guia maestra del ciclo |
 | [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md) | Tabla maestra de experimentos |
-| `../Ciclo_Gamma/GLOSARIO_GAMMA.md` | Glosario del ciclo supervisado activo |
+| `GLOSARIO_GAMMA.md` | Glosario del ciclo supervisado activo |
 | `../GLOSARIO.md` | Glosario original del ciclo Alpha |

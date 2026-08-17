@@ -85,5 +85,5 @@ Solo 2 candidatos nuevos — umbral ≥10 no alcanzado. Se incorporan los 2 para
 
 - [../fase_4_validacion/scripts/d02_candidatos_servido.md](../fase_4_validacion/scripts/d02_candidatos_servido.md)
 - [d04_cross_check_gamma.md](d04_cross_check_gamma.md)
-- [../EXPERIMENT_TRACKER_DELTA.md](../EXPERIMENT_TRACKER_DELTA.md)
+- [EXPERIMENT_TRACKER_DELTA.md](EXPERIMENT_TRACKER_DELTA.md)
 - `../../../Ciclo_Gamma/` — destino final del CSV via app_anotacion_gamma.py

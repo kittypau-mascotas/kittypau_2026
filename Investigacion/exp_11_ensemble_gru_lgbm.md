@@ -291,7 +291,7 @@ Paso 6 — Reporte
 ### Cierre
 - [ ] Sección "9. Resultados" completada con métricas reales
 - [ ] Decisión documentada (¿reemplaza a Exp 06 para Mayo-Jun? ¿queda como diagnóstico?)
-- [ ] Fila de Exp 11 actualizada en `experiments/README.md` y `EXPERIMENT_TRACKER.md`
+- [ ] Fila de Exp 11 actualizada en `Ciclo_Alpha_v1_experiments_README.md` y `EXPERIMENT_TRACKER.md`
 
 ---
 
