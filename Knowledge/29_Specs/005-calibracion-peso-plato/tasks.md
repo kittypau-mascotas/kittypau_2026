@@ -332,6 +332,41 @@ Task: "Crear plate-tare-check.ts + test (T002-T003)"
 
 ---
 
+## Phase 14: Pantalla de cierre — feedback tras primer uso real (2026-08-18)
+
+**Feedback de Mauro tras ver la pantalla de cierre en producción**: el logo estaba mal
+posicionado y sin el nombre de marca, el nombre de usuario mostraba "Vos" en vez del
+nombre real, la foto de la mascota no aparecía, y no había animación de triángulo
+visible — la técnica SVG con `<image>` embebida + `clip-path` (Phase 6/T024) no
+renderizaba de forma confiable en el navegador real.
+
+- [X] T064 Causa raíz del nombre de usuario ("Vos" en vez del nombre real): el flujo
+  fusionado (cuenta+perfil en un solo paso, ver encabezado del archivo) hace que el
+  paso interno "Usuario" de `RegistroFlow` nunca se renderice — `profileForm.user_name`
+  queda vacío para cuentas que pasaron por ese flujo. `profileSummary.user_name` (cargado
+  del servidor vía `loadStatus()`) sí tiene el valor real siempre. Mismo patrón de bug
+  que ya existía silenciosamente en la sección "Resumen rápido" vieja (sin corregir ahí,
+  fuera de alcance de este pedido).
+- [X] T065 Reescrita la pantalla de cierre completa con HTML/CSS estándar (mismo patrón
+  de `<img className="rounded-full object-cover">` que ya usa el resto del archivo) en
+  vez de SVG con imágenes embebidas — 3 nodos posicionados con `absolute` (arriba-centro:
+  logo, abajo-izquierda: usuario, abajo-derecha: mascota) sobre un SVG puramente
+  decorativo (solo el trazo del triángulo, sin imágenes adentro) para la animación de
+  líneas conectando los 3 nodos.
+- [X] T066 Agregado el wordmark de marca "Kittypau" debajo del logo, reusando la misma
+  clase `brand-title text-primary` que ya usa el header del login (`page.tsx`).
+- [X] T067 Nombre y foto de usuario: `profileSummary?.user_name` primero, con fallback a
+  `profileForm.user_name` y luego "Vos". Nombre y foto de mascota: el `pets` array
+  (fuente del servidor) primero, con fallback a `petForm`/`petPhotoPreview`.
+- [X] T068 Fallback visual (emoji en un círculo) si no hay foto de usuario o de mascota,
+  en vez de un `<img>` roto con `src` vacío.
+- [X] T069 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T070 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T071 Validar visualmente en producción que el logo+marca, nombre/foto real de
+  usuario y mascota, y la animación de triángulo aparecen correctamente esta vez.
+
+---
+
 ## Notes
 
 - Sin tabla de Complexity Tracking que traer de `plan.md` — no hubo violaciones de constitución.

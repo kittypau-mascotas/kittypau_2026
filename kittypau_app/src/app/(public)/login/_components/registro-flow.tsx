@@ -2554,106 +2554,136 @@ export default function RegistroFlow({
           </div>
         ) : null}
       </div>
-      {showLinkCelebration ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white px-6 py-8 text-center shadow-xl"
-          >
-            <svg
-              viewBox="0 0 200 160"
-              className="mx-auto h-40 w-full max-w-xs"
-              aria-hidden="true"
-            >
-              <motion.path
-                d="M 100 20 L 30 130 L 170 130 Z"
-                fill="none"
-                stroke="var(--primary, #f0a998)"
-                strokeWidth={2}
-                strokeLinejoin="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              />
-              {/* Punta: Kittypau (el dispositivo vinculado) */}
-              <motion.g
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-              >
-                <image
-                  href="/logo_carga.jpg"
-                  x={82}
-                  y={2}
-                  width={36}
-                  height={36}
-                  style={{ clipPath: "circle(18px at 18px 18px)" }}
-                />
-              </motion.g>
-              {/* Base izquierda: quién vinculó */}
-              <motion.g
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-              >
-                <image
-                  href={profileSummary?.photo_url ?? selectedAvatar ?? ""}
-                  x={10}
-                  y={112}
-                  width={36}
-                  height={36}
-                  style={{ clipPath: "circle(18px at 18px 18px)" }}
-                />
-              </motion.g>
-              {/* Base derecha: la mascota vinculada */}
-              <motion.g
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-              >
-                <image
-                  href={
-                    pets.find((pet) => pet.id === deviceForm.pet_id)
-                      ?.photo_url ??
-                    petPhotoPreview ??
-                    ""
-                  }
-                  x={154}
-                  y={112}
-                  width={36}
-                  height={36}
-                  style={{ clipPath: "circle(18px at 18px 18px)" }}
-                />
-              </motion.g>
-            </svg>
-            <div className="mt-1 flex items-center justify-between px-2 text-xs font-semibold text-slate-600">
-              <span>{profileForm.user_name || "Vos"}</span>
-              <span>{petForm.name || "tu mascota"}</span>
-            </div>
-            <motion.h3
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.3 }}
-              className="mt-4 text-lg font-bold text-slate-900"
-            >
-              ¡Terminaste la vinculación!
-            </motion.h3>
-            <p className="mt-1 text-xs text-slate-500">
-              {deviceForm.device_id} ya quedó vinculado a{" "}
-              {petForm.name || "tu mascota"}.
-            </p>
-            <button
-              type="button"
-              onClick={closeLinkCelebration}
-              className="mt-5 h-12 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground"
-            >
-              Cerrar
-            </button>
-          </motion.div>
-        </div>
-      ) : null}
+      {showLinkCelebration
+        ? (() => {
+            // El flujo fusionado (cuenta+perfil en un solo paso, ver comentario del
+            // encabezado del archivo) hace que el paso "Usuario" interno de RegistroFlow
+            // nunca se renderice -- profileForm.user_name queda vacío. profileSummary sí
+            // viene siempre del servidor (loadStatus), así que es la fuente confiable acá.
+            const userName =
+              profileSummary?.user_name?.trim() ||
+              profileForm.user_name.trim() ||
+              "Vos";
+            const userPhoto = profileSummary?.photo_url ?? selectedAvatar;
+            const linkedPet = pets.find((pet) => pet.id === deviceForm.pet_id);
+            const petName =
+              linkedPet?.name?.trim() || petForm.name.trim() || "tu mascota";
+            const petPhoto = linkedPet?.photo_url ?? petPhotoPreview;
+            return (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white px-6 py-8 text-center shadow-xl"
+                >
+                  <div className="relative h-56">
+                    <svg
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      className="absolute inset-0 h-full w-full"
+                      aria-hidden="true"
+                    >
+                      <motion.path
+                        d="M 50 16 L 15 84 L 85 84 Z"
+                        fill="none"
+                        stroke="var(--primary, #f0a998)"
+                        strokeWidth={0.6}
+                        strokeLinejoin="round"
+                        vectorEffect="non-scaling-stroke"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    </svg>
+
+                    {/* Punta: Kittypau, el dispositivo vinculado */}
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2, duration: 0.3 }}
+                      className="absolute left-1/2 top-0 flex -translate-x-1/2 flex-col items-center"
+                    >
+                      <img
+                        src="/logo_carga.jpg"
+                        alt=""
+                        className="h-14 w-14 rounded-full border border-slate-200 object-cover"
+                      />
+                      <span className="brand-title mt-1 text-sm text-primary">
+                        Kittypau
+                      </span>
+                    </motion.div>
+
+                    {/* Base izquierda: quién se registró */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4, duration: 0.3 }}
+                      className="absolute bottom-0 left-0 flex flex-col items-center"
+                    >
+                      {userPhoto ? (
+                        <img
+                          src={userPhoto}
+                          alt=""
+                          className="h-14 w-14 rounded-full border border-slate-200 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-lg">
+                          🙂
+                        </div>
+                      )}
+                      <span className="mt-1 max-w-[6rem] truncate text-xs font-semibold text-slate-700">
+                        {userName}
+                      </span>
+                    </motion.div>
+
+                    {/* Base derecha: la mascota vinculada */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4, duration: 0.3 }}
+                      className="absolute bottom-0 right-0 flex flex-col items-center"
+                    >
+                      {petPhoto ? (
+                        <img
+                          src={petPhoto}
+                          alt=""
+                          className="h-14 w-14 rounded-full border border-slate-200 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-lg">
+                          🐾
+                        </div>
+                      )}
+                      <span className="mt-1 max-w-[6rem] truncate text-xs font-semibold text-slate-700">
+                        {petName}
+                      </span>
+                    </motion.div>
+                  </div>
+
+                  <motion.h3
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.3 }}
+                    className="text-lg font-bold text-slate-900"
+                  >
+                    ¡Terminaste la vinculación!
+                  </motion.h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {deviceForm.device_id} ya quedó vinculado a {petName}.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={closeLinkCelebration}
+                    className="mt-5 h-12 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground"
+                  >
+                    Cerrar
+                  </button>
+                </motion.div>
+              </div>
+            );
+          })()
+        : null}
       {isCropOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
           <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">
