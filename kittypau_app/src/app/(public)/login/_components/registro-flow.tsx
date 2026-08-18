@@ -436,7 +436,11 @@ export default function RegistroFlow({
   // tiempo -- ver tasks.md Phase 9. Mismo patrón que bowl/page.tsx ya usa como red de
   // seguridad junto a su propio Realtime, acá aplicado también a la confirmación de tara).
   const tarePollIntervalRef = useRef<number | null>(null);
-  const tareStartedAtRef = useRef<string | null>(null);
+  // Bug real encontrado con hardware: comparar timestamps del cliente (reloj del
+  // navegador) contra `recorded_at` (reloj del servidor) descartaba lecturas válidas por
+  // desfase de reloj -- guardamos el `id` de la última lectura ANTES de la tara y
+  // comparamos por id (opaco, asignado por el servidor), no por hora.
+  const tareBaselineReadingIdRef = useRef<string | null>(null);
   // Pantalla de cierre de vinculación (pedido explícito): reemplaza el toast+redirect
   // automático de antes por una pantalla que la persona cierra a mano.
   const [showLinkCelebration, setShowLinkCelebration] = useState(false);
@@ -1143,6 +1147,27 @@ export default function RegistroFlow({
           "No se pudo acelerar la lectura del dispositivo para confirmar la tara.",
         );
       }
+      // Baseline ANTES de tarar -- cualquier lectura con un id distinto a esta, durante
+      // el polling de abajo, es necesariamente posterior a este punto (el id lo asigna
+      // el servidor al insertar, sin ambigüedad de reloj entre cliente y servidor).
+      type ReadingRow = {
+        id?: string;
+        recorded_at?: string;
+        weight_grams?: number | null;
+      };
+      try {
+        const baselineRes = await fetch(
+          `/api/readings?device_id=${linkedDeviceId}&limit=1`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        const baselineRows = baselineRes.ok
+          ? ((await baselineRes.json()) as ReadingRow[])
+          : [];
+        tareBaselineReadingIdRef.current = baselineRows[0]?.id ?? null;
+      } catch {
+        tareBaselineReadingIdRef.current = null;
+      }
+
       const tareRes = await fetch(`/api/devices/${linkedDeviceId}/tare`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -1151,37 +1176,27 @@ export default function RegistroFlow({
         throw new Error("No se pudo enviar el comando de tara.");
       }
       tareSequenceActiveRef.current = true;
-      tareStartedAtRef.current = new Date().toISOString();
       // Fallback de polling junto al Realtime de arriba (bug real: Realtime no entrega
-      // el INSERT a este cliente aunque la fila llegue bien y a tiempo). Compara contra
-      // tareStartedAtRef para no confirmar con una lectura vieja de antes de la tara.
+      // el INSERT a este cliente aunque la fila llegue bien y a tiempo).
       tarePollIntervalRef.current = window.setInterval(() => {
         if (!tareSequenceActiveRef.current || !token) return;
         void fetch(`/api/readings?device_id=${linkedDeviceId}&limit=1`, {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => (res.ok ? res.json() : []))
-          .then(
-            (
-              rows: Array<{
-                recorded_at?: string;
-                weight_grams?: number | null;
-              }>,
-            ) => {
-              const latest = rows[0];
-              if (
-                !tareSequenceActiveRef.current ||
-                !latest?.recorded_at ||
-                typeof latest.weight_grams !== "number" ||
-                !tareStartedAtRef.current ||
-                latest.recorded_at <= tareStartedAtRef.current
-              ) {
-                return;
-              }
-              setLiveWeightGrams(latest.weight_grams);
-              handleTareReading(latest.weight_grams);
-            },
-          )
+          .then((rows: ReadingRow[]) => {
+            const latest = rows[0];
+            if (
+              !tareSequenceActiveRef.current ||
+              !latest?.id ||
+              typeof latest.weight_grams !== "number" ||
+              latest.id === tareBaselineReadingIdRef.current
+            ) {
+              return;
+            }
+            setLiveWeightGrams(latest.weight_grams);
+            handleTareReading(latest.weight_grams);
+          })
           .catch(() => {
             // Best-effort: el timeout de abajo sigue siendo la red de seguridad final.
           });

@@ -164,8 +164,36 @@ timeout seguía apareciendo pese al fix del intervalo. Diagnóstico hecho consul
   algún momento se habilita la publicación) — el primero de los dos que confirme gana.
 - [X] T040 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
 - [X] T041 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
-- [ ] T042 Validar con KPCL0036 real que la confirmación ahora llega dentro de los 15s
-  (vía el polling, ya que Realtime sigue sin entregar).
+- [X] T042 Validado con KPCL0036 real — **seguía fallando pese al fix de Phase 9**, ver
+  Phase 10: el polling en sí tenía un bug propio.
+
+---
+
+## Phase 10: Bug real #3 — el polling comparaba reloj de cliente contra reloj de servidor
+
+**Segunda ronda de prueba real con KPCL0036** (2026-08-18, mismo día) — el polling de
+Phase 9 tampoco confirmaba. Diagnóstico con datos reales de nuevo:
+
+- [X] T043 Confirmado con `device_commands`/`readings`: el pipeline físico seguía
+  funcionando perfecto (interval 1000ms enviado, tara ejecutada, lecturas cada ~1s
+  llegando a Supabase con normalidad dentro de la ventana de 15s). El polling agregado
+  en Phase 9 igual no confirmaba nunca — "Peso en vivo" seguía en "esperando lectura..."
+  todo el intento.
+- [X] T044 Causa raíz: el polling comparaba `latest.recorded_at` (timestamp generado por
+  el **servidor**, formato `...+00:00`) contra `tareStartedAtRef.current =
+  new Date().toISOString()` (timestamp generado por el **reloj del navegador**, formato
+  `...Z`) usando comparación de strings (`<=`). Cualquier desfase de reloj entre el
+  cliente y el servidor (nada raro en una PC real) podía hacer que `tareStartedAtRef`
+  quedara *después* de la lectura real que confirmaba la tara, descartándola como
+  "vieja" para siempre durante esa ventana de 15s.
+- [X] T045 Fix: se elimina la comparación por hora por completo. Antes de enviar el
+  comando de tara, se guarda el `id` (asignado por el servidor, opaco) de la última
+  lectura existente como baseline (`tareBaselineReadingIdRef`). El polling confirma en
+  cuanto la lectura más reciente tiene un `id` **distinto** al baseline — sin depender de
+  que ningún reloj esté sincronizado entre cliente y servidor.
+- [X] T046 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T047 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T048 Validar con KPCL0036 real que la confirmación ahora sí llega dentro de los 15s.
 
 ---
 
