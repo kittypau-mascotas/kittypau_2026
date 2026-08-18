@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   clearTokens,
   getSupabaseSessionSafely,
@@ -11,6 +12,8 @@ import {
 } from "@/lib/auth/token";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { compressPhoto, MAX_UPLOAD_BYTES } from "@/lib/utils/photo-compress";
+import { isTareConfirmed } from "@/lib/utils/plate-tare-check";
+import { DEVICE_ONLINE_THRESHOLD_MS } from "@/lib/device-diagnostics";
 import DevicePicker from "@/app/_components/device-picker";
 
 type RegistroStatus = {
@@ -175,6 +178,14 @@ const STORAGE_BUCKET = "kittypau-photos";
 // desincronizarse. Solo para el texto de ayuda visible; el límite real que se aplica
 // es el de compressPhoto(). Ver spec 003 US3.
 const MAX_PHOTO_MB = MAX_UPLOAD_BYTES / (1024 * 1024);
+
+// Spec 005 — calibración del plato por tara real.
+// Intervalo normal de SENSORS documentado en Knowledge/07_MQTT/README_MQTT.md (default
+// del firmware). Se acelera durante la prueba para que la confirmación llegue rápido
+// (SC-001, bajo 15s) y se restaura a este valor al terminar, con éxito o no.
+const DEFAULT_SENSOR_INTERVAL_MS = 30_000;
+const TARE_FAST_INTERVAL_MS = 2_000; // mínimo aceptado por SET_INTERVAL es 1000ms
+const TARE_CONFIRM_TIMEOUT_MS = 15_000;
 export const AVATAR_OPTIONS = [
   { id: "avatar-1", label: "Avatar 1", url: "/avatar_1.png" },
   { id: "avatar-2", label: "Avatar 2", url: "/avatar_2.png" },
@@ -392,6 +403,33 @@ export default function RegistroFlow({
     plate_weight_grams: "",
   });
 
+  // Spec 005: calibración del plato por tara real, en vez de escribir el peso a mano.
+  // `linkedDeviceId` (id interno de `devices`) se llena recién cuando el dispositivo ya
+  // fue vinculado (POST /api/devices) — la tara necesita que el dispositivo ya exista
+  // (ver research.md § Orden real de los pasos), así que "Vincular" y "Calibrar" pasan
+  // a ser 2 sub-pasos en vez de 1 solo submit atómico como antes.
+  const [linkedDeviceId, setLinkedDeviceId] = useState<string | null>(null);
+  type TareSequenceState =
+    | "esperando_conexion"
+    | "listo_para_plato"
+    | "tarando"
+    | "confirmando"
+    | "exitoso"
+    | "fallido"
+    | "manual";
+  const [tareState, setTareState] =
+    useState<TareSequenceState>("esperando_conexion");
+  const [tareMessage, setTareMessage] = useState<string | null>(null);
+  // US3: la persona puede pedir el camino manual desde "listo_para_plato" o desde
+  // "fallido" — un booleano aparte evita mezclar esa elección con los 7 estados de la
+  // máquina de la tara en sí.
+  const [showManualPlateInput, setShowManualPlateInput] = useState(false);
+  const tareSequenceActiveRef = useRef(false);
+  const tareTimeoutRef = useRef<number | null>(null);
+  // Pantalla de cierre de vinculación (pedido explícito): reemplaza el toast+redirect
+  // automático de antes por una pantalla que la persona cierra a mano.
+  const [showLinkCelebration, setShowLinkCelebration] = useState(false);
+
   const [token, setToken] = useState<string | null>(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
   const [entryPath, setEntryPath] = useState<string>("/inicio");
@@ -457,6 +495,9 @@ export default function RegistroFlow({
     return { ok: issues.length === 0, issues };
   }, [petForm]);
 
+  // Spec 005: ya no exige el peso del plato para vincular — eso pasó al
+  // sub-paso de calibración (tara automática, o el input manual como
+  // respaldo). Vincular solo necesita mascota + dispositivo + tipo.
   const deviceValidation = useMemo(() => {
     const issues: string[] = [];
     if (!deviceForm.pet_id) issues.push("Selecciona una mascota.");
@@ -465,6 +506,13 @@ export default function RegistroFlow({
     }
     if (!deviceForm.device_type.trim())
       issues.push("Tipo de dispositivo requerido.");
+    return { ok: issues.length === 0, issues };
+  }, [deviceForm]);
+
+  // Spec 005 US3: validación del respaldo manual — solo se evalúa si la persona
+  // elige ese camino, nunca bloquea la tara automática.
+  const manualPlateValidation = useMemo(() => {
+    const issues: string[] = [];
     const tare = Number(deviceForm.plate_weight_grams);
     if (!deviceForm.plate_weight_grams.trim()) {
       issues.push("Peso del plato requerido.");
@@ -472,7 +520,7 @@ export default function RegistroFlow({
       issues.push("Peso del plato debe estar entre 1 y 5000 g.");
     }
     return { ok: issues.length === 0, issues };
-  }, [deviceForm]);
+  }, [deviceForm.plate_weight_grams]);
 
   // h-12/text-base (spec 002 FR-022/FR-023): 44px/14px quedaban justo debajo de los
   // mínimos táctil (48px) y tipográfico (16px, evita además el auto-zoom de iOS en
@@ -920,7 +968,11 @@ export default function RegistroFlow({
     }
   };
 
-  const saveDevice = async () => {
+  // Spec 005: antes este único submit creaba el dispositivo Y terminaba el registro. Ahora
+  // solo vincula (sin plate_weight_grams -- queda null, listo para tara) y deja paso a la
+  // secuencia de calibración; finishDeviceStep() hace lo que antes hacía el final de esta
+  // función (marcar onboarding completo + redirigir).
+  const linkDevice = async () => {
     if (!token) return;
     setIsSavingDevice(true);
     setShowDeviceHints(true);
@@ -942,7 +994,6 @@ export default function RegistroFlow({
           pet_id: deviceForm.pet_id,
           device_uuid: deviceForm.device_uuid,
           device_type: deviceForm.device_type,
-          plate_weight_grams: Number(deviceForm.plate_weight_grams),
           status: "active",
         }),
       });
@@ -954,18 +1005,50 @@ export default function RegistroFlow({
         );
       }
 
-      await fetch("/api/profiles", {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_onboarding_step: "completed" }),
-      });
+      const data = (await res.json()) as {
+        id: string;
+        last_seen?: string | null;
+      };
+      setLinkedDeviceId(data.id);
 
-      await loadStatus();
-      setShowDeviceHints(false);
-      showSavedToastAndRedirect(true);
+      // FR-009 (no-negociable): resguardo extra -- la tara solo se ofrece si este
+      // dispositivo recién vinculado no tiene ninguna lectura propia todavía. En el
+      // flujo normal esto siempre es así (la vinculación acaba de crear la fila), pero
+      // es una comprobación barata que lo deja explícito en vez de asumido.
+      let hasPriorReadings = false;
+      try {
+        const readingsRes = await fetch(
+          `/api/readings?device_id=${data.id}&limit=1`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        if (readingsRes.ok) {
+          const rows = (await readingsRes.json()) as unknown[];
+          hasPriorReadings = Array.isArray(rows) && rows.length > 0;
+        }
+      } catch {
+        // Si el chequeo falla, no bloqueamos el flujo -- se sigue con la calibración
+        // normal; es un resguardo adicional, no la única defensa (ver research.md).
+      }
+
+      if (hasPriorReadings) {
+        setTareState("fallido");
+        setTareMessage(
+          "Este dispositivo ya tiene lecturas registradas — la calibración automática no está disponible acá. Usá el ingreso manual, o recalibralo desde la configuración del dispositivo.",
+        );
+        setShowManualPlateInput(true);
+        return;
+      }
+
+      const isOnline =
+        data.last_seen != null &&
+        Date.now() - new Date(data.last_seen).getTime() <=
+          DEVICE_ONLINE_THRESHOLD_MS;
+      setTareState(isOnline ? "listo_para_plato" : "fallido");
+      if (!isOnline) {
+        setTareMessage(
+          "No detectamos conexión reciente con tu dispositivo. Verifica que esté encendido y conectado a WiFi.",
+        );
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -976,6 +1059,223 @@ export default function RegistroFlow({
       setIsSavingDevice(false);
     }
   };
+
+  const restoreNormalInterval = async () => {
+    if (!linkedDeviceId || !token) return;
+    try {
+      await fetch(`/api/devices/${linkedDeviceId}/interval`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value_ms: DEFAULT_SENSOR_INTERVAL_MS }),
+      });
+    } catch {
+      // Best-effort: no bloquear el flujo de registro si esto falla. El intervalo
+      // acelerado es transitorio y de bajo riesgo aunque quede sin restaurar un rato.
+    }
+  };
+
+  const handleTareReading = (weightGrams: number) => {
+    if (!tareSequenceActiveRef.current) return; // ignora lecturas fuera de esta prueba
+    tareSequenceActiveRef.current = false;
+    if (tareTimeoutRef.current !== null) {
+      window.clearTimeout(tareTimeoutRef.current);
+      tareTimeoutRef.current = null;
+    }
+    if (isTareConfirmed(weightGrams)) {
+      setTareState("exitoso");
+      setTareMessage("Listo — ahora tenemos el peso de tu plato.");
+    } else {
+      setTareState("fallido");
+      setTareMessage(
+        `La lectura no confirmó el cero (dio ${Math.round(weightGrams)} g). Probemos de nuevo.`,
+      );
+    }
+    void restoreNormalInterval();
+  };
+
+  // US1 FR-002/FR-004: conexión → colocar plato → tara → confirmación, en ese orden.
+  const startTareSequence = async () => {
+    if (!linkedDeviceId || !token) return;
+    setTareState("tarando");
+    setTareMessage(null);
+    try {
+      await fetch(`/api/devices/${linkedDeviceId}/interval`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value_ms: TARE_FAST_INTERVAL_MS }),
+      });
+      const tareRes = await fetch(`/api/devices/${linkedDeviceId}/tare`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!tareRes.ok) {
+        throw new Error("No se pudo enviar el comando de tara.");
+      }
+      tareSequenceActiveRef.current = true;
+      // US2 FR-005: si no llega confirmación a tiempo, se da la prueba por fallida
+      // (no colgada) y se ofrece repetir.
+      tareTimeoutRef.current = window.setTimeout(() => {
+        if (!tareSequenceActiveRef.current) return;
+        tareSequenceActiveRef.current = false;
+        setTareState("fallido");
+        setTareMessage(
+          "No llegó una lectura de confirmación a tiempo. Probemos de nuevo.",
+        );
+        void restoreNormalInterval();
+      }, TARE_CONFIRM_TIMEOUT_MS);
+    } catch (err) {
+      setTareState("fallido");
+      setTareMessage(
+        err instanceof Error
+          ? err.message
+          : "No se pudo iniciar la calibración.",
+      );
+      void restoreNormalInterval();
+    }
+  };
+
+  const retryTareSequence = () => {
+    setTareMessage(null);
+    setTareState("listo_para_plato");
+  };
+
+  // US3: respaldo si la prueba automática no es viable ahora — mismo camino que existía
+  // antes de este feature (PATCH del peso escrito a mano), sin ejecutar ninguna tara.
+  const submitManualPlateWeight = async () => {
+    if (!linkedDeviceId || !token) return;
+    setShowDeviceHints(true);
+    if (!manualPlateValidation.ok) {
+      setTareMessage(manualPlateValidation.issues.join(" "));
+      return;
+    }
+    setIsSavingDevice(true);
+    try {
+      const res = await fetch(`/api/devices/${linkedDeviceId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          plate_weight_grams: Number(deviceForm.plate_weight_grams),
+        }),
+      });
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(
+          payload?.error ?? "No se pudo guardar el peso del plato.",
+        );
+      }
+      setTareState("manual");
+      setTareMessage(null);
+    } catch (err) {
+      setTareMessage(
+        err instanceof Error
+          ? err.message
+          : "No se pudo guardar el peso del plato.",
+      );
+    } finally {
+      setIsSavingDevice(false);
+    }
+  };
+
+  const finishDeviceStep = async () => {
+    if (!token) return;
+    try {
+      await fetch("/api/profiles", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_onboarding_step: "completed" }),
+      });
+      await loadStatus();
+      setShowDeviceHints(false);
+      // Vinculación ya guardada en el backend acá arriba -- la celebración de abajo es
+      // solo la confirmación visual, "Cerrar" navega recién cuando la persona lo pide.
+      setShowLinkCelebration(true);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No se pudo completar el registro.",
+      );
+    }
+  };
+
+  const closeLinkCelebration = () => {
+    setShowLinkCelebration(false);
+    onClose?.();
+    router.push(entryPath);
+  };
+
+  // Confirmación en vivo (US1 FR-004): Realtime sobre `readings`, mismo patrón que ya usa
+  // bowl/page.tsx. ponytail: sin fallback de polling explícito acá (a diferencia del que
+  // sí existe en bowl/page.tsx) -- Realtime es el mecanismo primario y ya cubre el caso
+  // real; si en producción se ve que Realtime no conecta lo suficiente, agregar el mismo
+  // polling de /api/readings que research.md ya documenta como alternativa.
+  useEffect(() => {
+    if (!linkedDeviceId) return;
+    const supabase = getSupabaseBrowser();
+    if (!supabase) return;
+
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let active = true;
+
+    const connect = async () => {
+      const accessToken = await getValidAccessToken();
+      if (!active || !accessToken) return;
+      supabase.realtime.setAuth(accessToken);
+      channel = supabase
+        .channel(`tare-calibration:${linkedDeviceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "readings",
+            filter: `device_id=eq.${linkedDeviceId}`,
+          },
+          (payload) => {
+            const reading = payload.new as { weight_grams?: number | null };
+            if (typeof reading.weight_grams === "number") {
+              handleTareReading(reading.weight_grams);
+            }
+          },
+        )
+        .subscribe();
+    };
+
+    void connect();
+
+    return () => {
+      active = false;
+      if (channel) supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedDeviceId]);
+
+  // Salvaguarda: si la persona navega fuera a mitad de la calibración, restaurar el
+  // intervalo normal en vez de dejarlo acelerado (ver research.md § riesgo a mitigar).
+  useEffect(() => {
+    return () => {
+      if (tareTimeoutRef.current !== null) {
+        window.clearTimeout(tareTimeoutRef.current);
+      }
+      if (tareSequenceActiveRef.current) {
+        tareSequenceActiveRef.current = false;
+        void restoreNormalInterval();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading) {
     // Skeleton screen en vez de texto plano (rescate #5 de la guía de barras de
@@ -2001,68 +2301,203 @@ export default function RegistroFlow({
                   </div>
                 </FieldCard>
               </div>
-
-              <div className="sm:col-span-2">
-                <FieldCard
-                  label="Peso del plato (g)"
-                  tooltip="Peso del plato auxiliar vacío que va sobre Kittypau. Esto permite calcular contenido exacto."
-                  required
-                  help="Kittypau mide el peso total. Con esta tara se calcula el contenido del plato."
-                  error={
-                    showDeviceHints &&
-                    (!deviceForm.plate_weight_grams.trim() ||
-                      !Number.isFinite(Number(deviceForm.plate_weight_grams)) ||
-                      Number(deviceForm.plate_weight_grams) <= 0)
-                      ? "Ingresa el peso del plato vacío en gramos."
-                      : null
-                  }
-                >
-                  <input
-                    type="number"
-                    min={1}
-                    max={5000}
-                    className={inputClass(
-                      !deviceForm.plate_weight_grams.trim() ||
-                        !Number.isFinite(
-                          Number(deviceForm.plate_weight_grams),
-                        ) ||
-                        Number(deviceForm.plate_weight_grams) <= 0,
-                    )}
-                    placeholder="Ej: 320"
-                    value={deviceForm.plate_weight_grams}
-                    onChange={(event) =>
-                      setDeviceForm((prev) => ({
-                        ...prev,
-                        plate_weight_grams: event.target.value,
-                      }))
-                    }
-                  />
-                </FieldCard>
-              </div>
             </div>
-            <button
-              type="button"
-              onClick={saveDevice}
-              disabled={isSavingDevice || !deviceValidation.ok}
-              className="mt-4 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
-            >
-              {isSavingDevice ? "Guardando..." : "Vincular mi dispositivo"}
-            </button>
-            {isSavingDevice ? (
-              <p className="mt-2 text-[11px] text-slate-500">
-                Guardando dispositivo, por favor espera...
-              </p>
-            ) : null}
-            {!deviceValidation.ok ? (
-              <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
-                Falta completar: {deviceValidation.issues.join(" ")}
+
+            {/* Spec 005: "Peso del plato" ya no se pide acá arriba -- pasa a la secuencia
+                de calibración de abajo, disponible recién cuando el dispositivo ya está
+                vinculado (la tara necesita un dispositivo real, ver research.md). */}
+
+            {!linkedDeviceId ? (
+              <>
+                <button
+                  type="button"
+                  onClick={linkDevice}
+                  disabled={isSavingDevice || !deviceValidation.ok}
+                  className="mt-4 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                >
+                  {isSavingDevice ? "Vinculando..." : "Vincular mi dispositivo"}
+                </button>
+                {isSavingDevice ? (
+                  <p className="mt-2 text-[11px] text-slate-500">
+                    Vinculando dispositivo, por favor espera...
+                  </p>
+                ) : null}
+                {!deviceValidation.ok ? (
+                  <div className="mt-3 rounded-[calc(var(--radius)-8px)] border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                    Falta completar: {deviceValidation.issues.join(" ")}
+                  </div>
+                ) : null}
+                {deviceError ? (
+                  <p className="mt-2 text-xs text-rose-600" role="alert">
+                    {deviceError}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <div className="mt-4 rounded-[var(--radius)] border border-slate-200/70 bg-white px-4 py-4">
+                <h3 className="text-sm font-semibold text-slate-900">
+                  Calibrar el peso de tu plato
+                </h3>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Kittypau pesa el plato vacío directamente — así sabemos el
+                  peso exacto de lo que sirvas después, sin que tengas que
+                  escribir nada.
+                </p>
+
+                {tareState === "esperando_conexion" ? (
+                  <p className="mt-3 text-xs text-slate-500" aria-live="polite">
+                    Verificando conexión con tu dispositivo...
+                  </p>
+                ) : null}
+
+                {tareState === "listo_para_plato" && !showManualPlateInput ? (
+                  <>
+                    <p className="mt-3 text-xs text-slate-600">
+                      Kittypau listo. Agrega el plato vacío donde irá comida o
+                      agua, y confirmá cuando esté puesto.
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={startTareSequence}
+                        className="h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                      >
+                        Ya coloqué el plato
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowManualPlateInput(true)}
+                        className="h-12 rounded-[var(--radius)] border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700"
+                      >
+                        Prefiero ingresarlo a mano
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+
+                {tareState === "tarando" ? (
+                  <p className="mt-3 text-xs text-slate-600" aria-live="polite">
+                    Pesando plato......
+                  </p>
+                ) : null}
+
+                {tareState === "confirmando" ? (
+                  <p className="mt-3 text-xs text-slate-600" aria-live="polite">
+                    Confirmando resultado...
+                  </p>
+                ) : null}
+
+                {tareState === "exitoso" ? (
+                  <>
+                    <p className="mt-3 text-xs text-emerald-700" role="status">
+                      {tareMessage}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={finishDeviceStep}
+                      className="mt-3 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                    >
+                      Continuar
+                    </button>
+                  </>
+                ) : null}
+
+                {tareState === "fallido" && !showManualPlateInput ? (
+                  <>
+                    <p className="mt-3 text-xs text-rose-600" role="alert">
+                      {tareMessage ?? "Algo salió mal con la calibración."}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={retryTareSequence}
+                        className="h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                      >
+                        Repetir prueba
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowManualPlateInput(true)}
+                        className="h-12 rounded-[var(--radius)] border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700"
+                      >
+                        Ingresarlo a mano
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+
+                {showManualPlateInput ? (
+                  <div className="mt-4 border-t border-slate-100 pt-4">
+                    <FieldCard
+                      label="Peso del plato (g)"
+                      tooltip="Peso del plato auxiliar vacío que va sobre Kittypau. Esto permite calcular contenido exacto."
+                      required
+                      help="Alternativa manual — el camino recomendado es la calibración automática de arriba."
+                      error={
+                        showDeviceHints && !manualPlateValidation.ok
+                          ? manualPlateValidation.issues.join(" ")
+                          : null
+                      }
+                    >
+                      <input
+                        type="number"
+                        min={1}
+                        max={5000}
+                        className={inputClass(
+                          showDeviceHints && !manualPlateValidation.ok,
+                        )}
+                        placeholder="Ej: 320"
+                        value={deviceForm.plate_weight_grams}
+                        onChange={(event) =>
+                          setDeviceForm((prev) => ({
+                            ...prev,
+                            plate_weight_grams: event.target.value,
+                          }))
+                        }
+                      />
+                    </FieldCard>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={submitManualPlateWeight}
+                        disabled={isSavingDevice}
+                        className="h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                      >
+                        {isSavingDevice ? "Guardando..." : "Guardar peso"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowManualPlateInput(false)}
+                        className="h-12 rounded-[var(--radius)] border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700"
+                      >
+                        Volver a la prueba automática
+                      </button>
+                    </div>
+                    {tareMessage ? (
+                      <p className="mt-2 text-xs text-rose-600" role="alert">
+                        {tareMessage}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {tareState === "manual" ? (
+                  <>
+                    <p className="mt-3 text-xs text-slate-600">
+                      Peso del plato guardado: {deviceForm.plate_weight_grams}{" "}
+                      g.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={finishDeviceStep}
+                      className="mt-3 h-12 rounded-[var(--radius)] bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                    >
+                      Continuar
+                    </button>
+                  </>
+                ) : null}
               </div>
-            ) : null}
-            {deviceError ? (
-              <p className="mt-2 text-xs text-rose-600" role="alert">
-                {deviceError}
-              </p>
-            ) : null}
+            )}
           </section>
         )}
 
@@ -2151,6 +2586,106 @@ export default function RegistroFlow({
           </div>
         ) : null}
       </div>
+      {showLinkCelebration ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white px-6 py-8 text-center shadow-xl"
+          >
+            <svg
+              viewBox="0 0 200 160"
+              className="mx-auto h-40 w-full max-w-xs"
+              aria-hidden="true"
+            >
+              <motion.path
+                d="M 100 20 L 30 130 L 170 130 Z"
+                fill="none"
+                stroke="var(--primary, #f0a998)"
+                strokeWidth={2}
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              />
+              {/* Punta: Kittypau (el dispositivo vinculado) */}
+              <motion.g
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+              >
+                <image
+                  href="/logo_carga.jpg"
+                  x={82}
+                  y={2}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+              {/* Base izquierda: quién vinculó */}
+              <motion.g
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <image
+                  href={profileSummary?.photo_url ?? selectedAvatar ?? ""}
+                  x={10}
+                  y={112}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+              {/* Base derecha: la mascota vinculada */}
+              <motion.g
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <image
+                  href={
+                    pets.find((pet) => pet.id === deviceForm.pet_id)
+                      ?.photo_url ??
+                    petPhotoPreview ??
+                    ""
+                  }
+                  x={154}
+                  y={112}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+            </svg>
+            <div className="mt-1 flex items-center justify-between px-2 text-xs font-semibold text-slate-600">
+              <span>{profileForm.user_name || "Vos"}</span>
+              <span>{petForm.name || "tu mascota"}</span>
+            </div>
+            <motion.h3
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.3 }}
+              className="mt-4 text-lg font-bold text-slate-900"
+            >
+              ¡Terminaste la vinculación!
+            </motion.h3>
+            <p className="mt-1 text-xs text-slate-500">
+              {deviceForm.device_id} ya quedó vinculado a{" "}
+              {petForm.name || "tu mascota"}.
+            </p>
+            <button
+              type="button"
+              onClick={closeLinkCelebration}
+              className="mt-5 h-12 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground"
+            >
+              Cerrar
+            </button>
+          </motion.div>
+        </div>
+      ) : null}
       {isCropOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
           <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">
