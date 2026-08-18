@@ -104,6 +104,18 @@ Proyecto único (Next.js App Router) — rutas relativas a `kittypau_app/`.
 
 ---
 
+## Phase 6: User Story 4 - Confirmación visual de que la vinculación quedó lista (Priority: P2)
+
+**Agregado tras probar con hardware real KPCL0036** — reemplaza el toast+redirect automático de `finishDeviceStep` por una pantalla de cierre dedicada.
+
+- [X] T023 [US4] En `registro-flow.tsx`: agregar estado `showLinkCelebration`, cambiar `finishDeviceStep` para que muestre esa pantalla en vez de `showSavedToastAndRedirect(true)`, y agregar `closeLinkCelebration()` (cierra el popup vía `onClose` + navega a `entryPath`).
+- [X] T024 [US4] Construir la pantalla de cierre: overlay a pantalla completa dentro del popup, triángulo SVG animado (framer-motion, ya dependencia del proyecto) con el logo de Kittypau en la punta de arriba y las fotos/nombres de usuario y mascota en las dos bases, mensaje "¡Terminaste la vinculación!" y botón "Cerrar".
+- [X] T025 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T026 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T027 Validar visualmente con KPCL0036 (junto con T022) que la pantalla de cierre aparece con las fotos/nombres correctos y que "Cerrar" lleva al `/today` de la cuenta.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

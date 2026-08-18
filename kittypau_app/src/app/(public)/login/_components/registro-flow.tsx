@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   clearTokens,
   getSupabaseSessionSafely,
@@ -425,6 +426,9 @@ export default function RegistroFlow({
   const [showManualPlateInput, setShowManualPlateInput] = useState(false);
   const tareSequenceActiveRef = useRef(false);
   const tareTimeoutRef = useRef<number | null>(null);
+  // Pantalla de cierre de vinculación (pedido explícito): reemplaza el toast+redirect
+  // automático de antes por una pantalla que la persona cierra a mano.
+  const [showLinkCelebration, setShowLinkCelebration] = useState(false);
 
   const [token, setToken] = useState<string | null>(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
@@ -1194,7 +1198,9 @@ export default function RegistroFlow({
       });
       await loadStatus();
       setShowDeviceHints(false);
-      showSavedToastAndRedirect(true);
+      // Vinculación ya guardada en el backend acá arriba -- la celebración de abajo es
+      // solo la confirmación visual, "Cerrar" navega recién cuando la persona lo pide.
+      setShowLinkCelebration(true);
     } catch (err) {
       setError(
         err instanceof Error
@@ -1202,6 +1208,12 @@ export default function RegistroFlow({
           : "No se pudo completar el registro.",
       );
     }
+  };
+
+  const closeLinkCelebration = () => {
+    setShowLinkCelebration(false);
+    onClose?.();
+    router.push(entryPath);
   };
 
   // Confirmación en vivo (US1 FR-004): Realtime sobre `readings`, mismo patrón que ya usa
@@ -2574,6 +2586,106 @@ export default function RegistroFlow({
           </div>
         ) : null}
       </div>
+      {showLinkCelebration ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white px-6 py-8 text-center shadow-xl"
+          >
+            <svg
+              viewBox="0 0 200 160"
+              className="mx-auto h-40 w-full max-w-xs"
+              aria-hidden="true"
+            >
+              <motion.path
+                d="M 100 20 L 30 130 L 170 130 Z"
+                fill="none"
+                stroke="var(--primary, #f0a998)"
+                strokeWidth={2}
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              />
+              {/* Punta: Kittypau (el dispositivo vinculado) */}
+              <motion.g
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+              >
+                <image
+                  href="/logo_carga.jpg"
+                  x={82}
+                  y={2}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+              {/* Base izquierda: quién vinculó */}
+              <motion.g
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <image
+                  href={profileSummary?.photo_url ?? selectedAvatar ?? ""}
+                  x={10}
+                  y={112}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+              {/* Base derecha: la mascota vinculada */}
+              <motion.g
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <image
+                  href={
+                    pets.find((pet) => pet.id === deviceForm.pet_id)
+                      ?.photo_url ??
+                    petPhotoPreview ??
+                    ""
+                  }
+                  x={154}
+                  y={112}
+                  width={36}
+                  height={36}
+                  style={{ clipPath: "circle(18px at 18px 18px)" }}
+                />
+              </motion.g>
+            </svg>
+            <div className="mt-1 flex items-center justify-between px-2 text-xs font-semibold text-slate-600">
+              <span>{profileForm.user_name || "Vos"}</span>
+              <span>{petForm.name || "tu mascota"}</span>
+            </div>
+            <motion.h3
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.3 }}
+              className="mt-4 text-lg font-bold text-slate-900"
+            >
+              ¡Terminaste la vinculación!
+            </motion.h3>
+            <p className="mt-1 text-xs text-slate-500">
+              {deviceForm.device_id} ya quedó vinculado a{" "}
+              {petForm.name || "tu mascota"}.
+            </p>
+            <button
+              type="button"
+              onClick={closeLinkCelebration}
+              className="mt-5 h-12 w-full rounded-[var(--radius)] bg-primary text-sm font-semibold text-primary-foreground"
+            >
+              Cerrar
+            </button>
+          </motion.div>
+        </div>
+      ) : null}
       {isCropOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4">
           <div className="w-full max-w-md rounded-[var(--radius)] border border-slate-200 bg-white shadow-xl">

@@ -10,6 +10,8 @@
 
 **Actualización del mecanismo** (misma sesión): "utilicemos tara en dispositivo. ordenemos esa prueba: conexión de dispositivo → poner plato arriba → hacer tara → debe quedar Kittypau con plato arriba en 0 después de la tara." Ver `research.md` (fase de plan) para el detalle técnico de qué hace la tara en el firmware real y por qué el orden de esta secuencia importa — resumen: existe un comando de tara (`CALIBRATE_WEIGHT`/`tare`) ya implementado en el firmware, que **persiste el nuevo punto cero de forma permanente** (sobrevive reinicios). Antes de este pedido, el plan era leer el peso sin tocar el sensor — el usuario decidió explícitamente usar la tara real en su lugar, con pleno conocimiento de que el resultado deseado es que el dispositivo quede leyendo 0 con el plato puesto.
 
+**Actualización — pantalla de cierre de vinculación** (sesión posterior, tras probar con hardware real KPCL0036): "en el mismo popup, que sea la vista total del popup, busca animaciones donde aparezca un triángulo, que en la punta de arriba esté el Kittypau (foto del dispositivo y letras como Kittypau) y abajo a los lados la foto del usuario y su nombre y al otro lado foto de la mascota. y que diga terminaste vinculación!!! y al apretar cerrar vaya automáticamente al today de la cuenta vinculada." Ver User Story 4 y FR-010 más abajo.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Calibrar el plato haciendo tara en vivo (Priority: P1)
@@ -58,6 +60,21 @@ La persona está registrándose pero el dispositivo físico no está a mano en e
 
 ---
 
+### User Story 4 - Confirmación visual de que la vinculación quedó lista (Priority: P2)
+
+Ya sea que la persona haya calibrado el plato por tara automática o a mano, al terminar necesita una confirmación clara e inequívoca de que la vinculación quedó completa — quién se registró, qué mascota, y con qué Kittypau — antes de que el popup de registro se cierre y la lleve a la app.
+
+**Why this priority**: Sin esto, el paso final se resuelve con un toast breve que desaparece solo y redirige automáticamente — la persona puede perderse esa confirmación si no está mirando la pantalla en ese instante exacto. No es el pedido central (la tara sí lo es), pero es la forma en que la persona se entera de que terminó.
+
+**Independent Test**: Completar la calibración (por tara o a mano) y confirmar que aparece una pantalla de cierre dedicada, con la mascota y la persona que se vincularon con este Kittypau, que permanece visible hasta que la persona la cierra a propósito — no desaparece sola.
+
+**Acceptance Scenarios**:
+
+1. **Given** la calibración (automática o manual) terminó con éxito y la persona confirma "Continuar", **When** el sistema termina de guardar la vinculación, **Then** muestra una pantalla de cierre que ocupa todo el popup, con el Kittypau vinculado en la parte de arriba y, abajo, la foto y nombre de quien se registró de un lado y la foto y nombre de la mascota del otro — y un mensaje de éxito explícito.
+2. **Given** la pantalla de cierre está visible, **When** la persona hace clic en "Cerrar", **Then** el popup de registro se cierra y la app la lleva directo a la vista principal de la cuenta recién vinculada — sin pasos intermedios.
+
+---
+
 ### Edge Cases
 
 - ¿Qué pasa si la persona coloca comida o agua en el plato en vez de dejarlo vacío antes de la tara? El dispositivo quedaría tarado con ese contenido incluido como si fuera parte del "cero" — el sistema debe insistir explícitamente en el propio texto de la prueba en que el plato debe estar vacío, ya que no hay forma de que el sistema distinga por sí solo un plato vacío de uno con algo liviano encima.
@@ -79,6 +96,7 @@ La persona está registrándose pero el dispositivo físico no está a mano en e
 - **FR-007**: La prueba DEBE estar disponible tanto para dispositivos de comida como de agua — la secuencia es la misma sin importar cuál de los dos se esté vinculando.
 - **FR-008**: Si la persona no puede completar la prueba automática en este momento (dispositivo no disponible, prueba falla repetidamente), el sistema DEBE ofrecer ingresar el peso del plato manualmente como alternativa, para no bloquear el registro — sabiendo que ese camino no aplica la tara y por lo tanto sigue necesitando restar el peso del plato en el cálculo del contenido, como ya ocurre hoy.
 - **FR-009**: La tara ejecutada por esta prueba DEBE quedar como el nuevo punto de referencia permanente del dispositivo — a diferencia de una simple lectura, este paso SÍ cambia de forma duradera cómo el dispositivo mide de ahí en adelante, y por eso solo debe ejecutarse en una vinculación real de dispositivo nuevo, nunca disparada por accidente sobre un dispositivo que ya esté en uso.
+- **FR-010**: Al terminar la vinculación (por tara automática o por peso manual), el sistema DEBE mostrar una pantalla de cierre dedicada — no un aviso que desaparece solo — con el Kittypau vinculado, la persona que se registró y la mascota vinculada, y un mensaje explícito de éxito. Esa pantalla DEBE permanecer visible hasta que la persona la cierre a propósito, y cerrarla DEBE llevarla directo a la vista principal de su cuenta ya vinculada.
 
 ### Key Entities
 
@@ -101,3 +119,4 @@ La persona está registrándose pero el dispositivo físico no está a mano en e
 - "Confirmar que dio ~0" usa el mismo criterio de precisión que el dispositivo ya aplica para distinguir una lectura real de ruido del sensor — no se inventa un umbral nuevo.
 - Esta prueba se limita a la secuencia de tara en el momento de vincular un dispositivo nuevo (lo pedido explícitamente). Recalibrar el plato de un dispositivo ya vinculado y en uso, o construir una serie más amplia de pruebas de vinculación (batería/wifi/sensor, etc.), quedan fuera de alcance — no se encontró nada parecido ya construido más allá del mecanismo de tara en sí (que existe hoy como botón manual de mantenimiento en la configuración de un dispositivo ya vinculado, sin la guía paso a paso que este pedido agrega).
 - La tara que ejecuta esta prueba es el mismo mecanismo de tara del dispositivo que ya existe para otros usos (ajuste manual post-vinculación) — este pedido lo reutiliza con una secuencia guiada nueva alrededor, no inventa un mecanismo de calibración distinto. Por tratarse del mismo mecanismo real (no una simulación), sus efectos son igual de permanentes que los que ya tiene hoy ese botón manual.
+- La pantalla de cierre (US4) usa el logo de marca ya existente (`/logo_carga.jpg`) para representar "Kittypau" en la punta del triángulo — no existe todavía una foto de producto del dispositivo físico (KPCL) como asset en el repo. Si se agrega una foto real del dispositivo más adelante, reemplazar ahí.
