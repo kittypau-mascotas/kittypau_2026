@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-17
 
-**Status**: Draft
+**Status**: ✅ Confirmado end-to-end con hardware real (2026-08-18) — ver quickstart.md § "Flujo ideal"
 
 **Input**: User description original: "en dispositivo en register flow, al momento de seleccionar un dispositivo, necesitamos hacer una prueba en relación al plato. al kittypau se le debe poner un plato encima, que esté un tiempo ahí, y entender que ese será el peso constante del plato. la data que nosotros necesitamos es el contenido del plato. busca si existe algo parecido, si no, dejemos esta prueba de 5 segundos en dispositivo. kittypau listo? ok agrega el plato donde irá comida o agua, listo? pesando plato......, listo ahora tenemos el peso de tu plato, (me explico?) — o definir una serie de pruebas al momento de vincular el kpcl a la cuenta. debe quedar perfecto."
 
@@ -106,8 +106,8 @@ Ya sea que la persona haya calibrado el plato por tara automática o a mano, al 
 
 ### Measurable Outcomes
 
-- **SC-001**: Una persona con el dispositivo físico a mano completa la secuencia de tara (conexión → plato → tara → confirmación) en menos de 15 segundos desde que la inicia hasta ver la confirmación, sin necesitar ayuda externa ni instrucciones fuera de lo que la propia prueba muestra.
-- **SC-002**: Tras una calibración exitosa, una lectura del dispositivo con el plato puesto (sin nada más) da un valor cercano a cero, dentro del margen de precisión normal del sensor.
+- **SC-001**: ✅ Confirmado 2026-08-18 con KPCL0036 real — la confirmación llegó en ~1 segundo (muy por debajo de los 15s), sin ayuda externa.
+- **SC-002**: ✅ Confirmado 2026-08-18 — lectura post-tara en 0g, dentro del margen de precisión esperado.
 - ~~**SC-003**~~ — ajustado (2026-08-18): ya no hay camino manual; el único recurso ante una falla es "Repetir prueba".
 - **SC-004**: Ningún dispositivo ya vinculado y en uso sufre un cambio de punto cero por esta prueba — solo se ejecuta en la vinculación real de un dispositivo nuevo.
 - **SC-005**: La cantidad de dispositivos vinculados con una calibración de plato manifiestamente errónea (ej. contenidos negativos o absurdos en el uso normal) baja respecto al método de ingreso manual actual.

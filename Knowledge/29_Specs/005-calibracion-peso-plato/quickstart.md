@@ -1,5 +1,30 @@
 # Quickstart: Validar la calibración por tara del plato
 
+## ✅ Flujo ideal — confirmado end-to-end con hardware real (2026-08-18)
+
+Validado contra producción (`kittypau-app.vercel.app`), cuenta `frentecalamari2@gmail.com`,
+dispositivo físico **KPCL0036** real. Este es el flujo de referencia — **cualquier cambio
+futuro al paso 3 del registro debe seguir confirmando estos mismos pasos, en este orden**:
+
+1. Registro paso 1 (Usuario) → paso 2 (Mascota) → paso 3 (Dispositivo): elegir la mascota
+   y el dispositivo de la lista (`DevicePicker`, solo dispositivos con `owner_id IS NULL`),
+   elegir tipo (comida/agua).
+2. "Vincular mi dispositivo" → reclama el dispositivo (`POST /api/devices`), chequea
+   FR-009 (sin lecturas previas) y conectividad (`last_seen` reciente) → pasa a la
+   tarjeta "Calibrar el peso de tu plato".
+3. "Ya coloqué el plato" → dispara `SET_INTERVAL 1000ms` + `CALIBRATE_WEIGHT tare` →
+   estado "Pesando plato......" → "Confirmando resultado...".
+4. Confirmación real: **~1 segundo** desde el comando de tara hasta que "Peso en vivo"
+   muestra el valor confirmado (bien dentro de los 15s de margen) — verificado con datos
+   reales de Supabase, no simulado.
+5. "Continuar" → pantalla de cierre animada (triángulo Kittypau/usuario/mascota) →
+   "Cerrar" → navega a `/today` de la cuenta recién vinculada.
+
+**No existe alternativa manual** (eliminada 2026-08-18, ver spec.md Assumptions) — si la
+tara falla, el único camino es "Repetir prueba".
+
+---
+
 ## Prerrequisitos
 
 - `kittypau_app/` corriendo local (`npm run dev`), con el bridge y un
@@ -34,15 +59,10 @@
    "listo" sobre un resultado dudoso.
 4. Repetir correctamente y confirmar que sí termina en éxito.
 
-## Escenario 3 — Alternativa manual (User Story 3)
+## ~~Escenario 3 — Alternativa manual~~ (ELIMINADO 2026-08-18)
 
-1. Repetir el paso 1-2 de arriba, pero elegir explícitamente no hacer la
-   prueba automática (o agotar los reintentos del Escenario 2).
-2. **Esperado**: aparece la opción de ingresar el peso del plato a mano,
-   igual que el comportamiento previo a este feature — el registro se
-   completa sin tara.
-3. Confirmar en `/today` o `/bowl` que el contenido se calcula restando ese
-   valor manual del peso bruto (comportamiento ya existente, sin cambios).
+Ya no existe — ver spec.md Assumptions. Si la tara falla, el único camino es "Repetir
+prueba" (Escenario 2).
 
 ## Escenario 4 — No se dispara sobre un dispositivo ya en uso
 
