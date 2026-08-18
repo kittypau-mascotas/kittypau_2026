@@ -137,6 +137,38 @@ Proyecto único (Next.js App Router) — rutas relativas a `kittypau_app/`.
 
 ---
 
+## Phase 9: Bug real #2 — Supabase Realtime nunca entrega el INSERT de `readings`
+
+**Investigado en vivo con KPCL0036 real, probando el fix de Phase 7** (2026-08-18) — el
+timeout seguía apareciendo pese al fix del intervalo. Diagnóstico hecho consultando
+`device_commands` y `readings` directamente en Supabase (no adivinado):
+
+- [X] T037 Confirmado que el fix de Phase 7 funcionó: `device_commands` mostró
+  `SET_INTERVAL value_ms:1000` con `status: "sent"` (antes nunca aparecía). El pipeline
+  físico completo (bridge → MQTT → firmware → tara → siguiente lectura) funcionó
+  perfectamente: la fila de `readings` con `weight_grams: 0` llegó a Supabase ~5s después
+  del comando de tara, muy dentro de los 15s de `TARE_CONFIRM_TIMEOUT_MS`.
+- [X] T038 Pese a eso, el timeout de 15s igual se disparó — la fila SÍ estaba en la base
+  pero la suscripción Realtime del browser nunca la recibió. Causa raíz: ninguna
+  migración de `supabase/migrations/` agrega `readings` a la publicación
+  `supabase_realtime` (grep confirmado, cero resultados) — `Knowledge/03_Backend/README_Backend.md`
+  ya documentaba (aunque en una frase ambigua) que Realtime no es el mecanismo de tiempo
+  real de este proyecto. `bowl/page.tsx` usa el mismo patrón `postgres_changes` pero
+  "funciona" solo porque tiene un polling de respaldo cada 8s que enmascara el fallo —
+  `registro-flow.tsx` no tenía ese respaldo (documentado explícitamente como omisión
+  deliberada en `research.md`, que ahora quedó desactualizado en ese punto).
+- [X] T039 Fix: agregado un polling de respaldo (mismo patrón que `bowl/page.tsx`) en
+  `startTareSequence()` — cada `TARE_FAST_INTERVAL_MS` (1000ms) consulta
+  `GET /api/readings?device_id={id}&limit=1` y confirma si `recorded_at` es posterior al
+  inicio de la tara. Corre en paralelo a la suscripción Realtime (que se deja, por si en
+  algún momento se habilita la publicación) — el primero de los dos que confirme gana.
+- [X] T040 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T041 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T042 Validar con KPCL0036 real que la confirmación ahora llega dentro de los 15s
+  (vía el polling, ya que Realtime sigue sin entregar).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

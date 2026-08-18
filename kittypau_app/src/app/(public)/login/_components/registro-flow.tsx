@@ -431,6 +431,12 @@ export default function RegistroFlow({
   const [showManualPlateInput, setShowManualPlateInput] = useState(false);
   const tareSequenceActiveRef = useRef(false);
   const tareTimeoutRef = useRef<number | null>(null);
+  // Fallback de polling (bug real encontrado con hardware: Supabase Realtime nunca
+  // entrega el INSERT de `readings` a este cliente pese a que la fila llega bien y a
+  // tiempo -- ver tasks.md Phase 9. Mismo patrón que bowl/page.tsx ya usa como red de
+  // seguridad junto a su propio Realtime, acá aplicado también a la confirmación de tara).
+  const tarePollIntervalRef = useRef<number | null>(null);
+  const tareStartedAtRef = useRef<string | null>(null);
   // Pantalla de cierre de vinculación (pedido explícito): reemplaza el toast+redirect
   // automático de antes por una pantalla que la persona cierra a mano.
   const [showLinkCelebration, setShowLinkCelebration] = useState(false);
@@ -1086,6 +1092,13 @@ export default function RegistroFlow({
     }
   };
 
+  const stopTarePolling = () => {
+    if (tarePollIntervalRef.current !== null) {
+      window.clearInterval(tarePollIntervalRef.current);
+      tarePollIntervalRef.current = null;
+    }
+  };
+
   const handleTareReading = (weightGrams: number) => {
     if (!tareSequenceActiveRef.current) return; // ignora lecturas fuera de esta prueba
     tareSequenceActiveRef.current = false;
@@ -1093,6 +1106,7 @@ export default function RegistroFlow({
       window.clearTimeout(tareTimeoutRef.current);
       tareTimeoutRef.current = null;
     }
+    stopTarePolling();
     if (isTareConfirmed(weightGrams)) {
       setTareState("exitoso");
       setTareMessage("Listo — ahora tenemos el peso de tu plato.");
@@ -1137,11 +1151,47 @@ export default function RegistroFlow({
         throw new Error("No se pudo enviar el comando de tara.");
       }
       tareSequenceActiveRef.current = true;
+      tareStartedAtRef.current = new Date().toISOString();
+      // Fallback de polling junto al Realtime de arriba (bug real: Realtime no entrega
+      // el INSERT a este cliente aunque la fila llegue bien y a tiempo). Compara contra
+      // tareStartedAtRef para no confirmar con una lectura vieja de antes de la tara.
+      tarePollIntervalRef.current = window.setInterval(() => {
+        if (!tareSequenceActiveRef.current || !token) return;
+        void fetch(`/api/readings?device_id=${linkedDeviceId}&limit=1`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => (res.ok ? res.json() : []))
+          .then(
+            (
+              rows: Array<{
+                recorded_at?: string;
+                weight_grams?: number | null;
+              }>,
+            ) => {
+              const latest = rows[0];
+              if (
+                !tareSequenceActiveRef.current ||
+                !latest?.recorded_at ||
+                typeof latest.weight_grams !== "number" ||
+                !tareStartedAtRef.current ||
+                latest.recorded_at <= tareStartedAtRef.current
+              ) {
+                return;
+              }
+              setLiveWeightGrams(latest.weight_grams);
+              handleTareReading(latest.weight_grams);
+            },
+          )
+          .catch(() => {
+            // Best-effort: el timeout de abajo sigue siendo la red de seguridad final.
+          });
+      }, TARE_FAST_INTERVAL_MS);
       // US2 FR-005: si no llega confirmación a tiempo, se da la prueba por fallida
       // (no colgada) y se ofrece repetir.
       tareTimeoutRef.current = window.setTimeout(() => {
         if (!tareSequenceActiveRef.current) return;
         tareSequenceActiveRef.current = false;
+        stopTarePolling();
         setTareState("fallido");
         setTareMessage(
           "No llegó una lectura de confirmación a tiempo. Probemos de nuevo.",
@@ -1149,6 +1199,7 @@ export default function RegistroFlow({
         void restoreNormalInterval();
       }, TARE_CONFIRM_TIMEOUT_MS);
     } catch (err) {
+      stopTarePolling();
       setTareState("fallido");
       setTareMessage(
         err instanceof Error
@@ -1288,6 +1339,9 @@ export default function RegistroFlow({
     return () => {
       if (tareTimeoutRef.current !== null) {
         window.clearTimeout(tareTimeoutRef.current);
+      }
+      if (tarePollIntervalRef.current !== null) {
+        window.clearInterval(tarePollIntervalRef.current);
       }
       if (tareSequenceActiveRef.current) {
         tareSequenceActiveRef.current = false;
