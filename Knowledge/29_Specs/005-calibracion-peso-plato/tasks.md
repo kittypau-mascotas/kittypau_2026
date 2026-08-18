@@ -193,7 +193,49 @@ Phase 9 tampoco confirmaba. Diagnóstico con datos reales de nuevo:
   que ningún reloj esté sincronizado entre cliente y servidor.
 - [X] T046 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
 - [X] T047 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
-- [ ] T048 Validar con KPCL0036 real que la confirmación ahora sí llega dentro de los 15s.
+- [X] T048 Validado con KPCL0036 real — **seguía fallando pese al fix de Phase 10**, ver
+  Phase 11: el diagnóstico de "desfase de reloj" era plausible pero incorrecto — el bug
+  real estaba un nivel más abajo, en cómo se leía la respuesta del endpoint.
+
+---
+
+## Phase 11: Bug real #4 (la causa raíz de verdad) — `/api/readings?limit=1` nunca devolvía un array
+
+**Tercera ronda de prueba real con KPCL0036** (2026-08-18, mismo día) — el fix de Phase 10
+tampoco confirmaba. Esta vez se revisó `/api/readings/route.ts` línea por línea en vez de
+seguir iterando sobre la lógica de comparación:
+
+- [X] T049 Causa raíz real, confirmada leyendo el código del endpoint: `GET /api/readings`
+  tiene **dos formas de respuesta distintas** según si hay `limit`/`cursor` en la query
+  (`const paginate = Boolean(limitParam || cursor)`, línea 24). Sin esos params responde
+  un array plano; **con** `limit=1` (que es justo lo que pedían los 3 call-sites de
+  `registro-flow.tsx`, desde la versión original de Phase 7) responde
+  `{ data: [...], next_cursor }` — un objeto, no un array. Todo el código de
+  `registro-flow.tsx` asumía siempre un array plano (`rows[0]`, `Array.isArray(rows)`) —
+  con un objeto, eso siempre da `undefined`/`false`. **Esto explica los 3 intentos
+  fallidos anteriores por igual** — ni el fix de Phase 9 (polling) ni el de Phase 10
+  (comparación por id) podían funcionar nunca, porque ninguno de los dos llegaba siquiera
+  a leer una fila real de la respuesta. El diagnóstico de "desfase de reloj" de Phase 10
+  (T044) era plausible pero **no era la causa real** — queda documentado acá para no
+  repetir el mismo camino de diagnóstico la próxima vez.
+- [X] T050 El mismo bug afectaba también el resguardo de FR-009 en `linkDevice()`
+  (`hasPriorReadings`) — `Array.isArray(rows)` sobre el objeto paginado siempre daba
+  `false`, así que ese chequeo nunca detectaba lecturas previas reales. Corregido de paso.
+- [X] T051 Fix: los 3 call-sites (`linkDevice()`, el baseline de `startTareSequence()`, y
+  el polling de `startTareSequence()`) ahora extraen `.data` cuando la respuesta viene
+  como objeto, con un helper compartido (`extractRows`) en vez de tres parcheos
+  independientes.
+- [X] T052 [US eliminada] A pedido explícito de Mauro ("eso jamás fue hablado ni
+  estructurado"), se elimina por completo el camino manual de respaldo (User Story 3,
+  FR-008): `showManualPlateInput`, `manualPlateValidation`, `submitManualPlateWeight`,
+  el estado `tareState === "manual"`, el botón "Prefiero ingresarlo a mano"/"Ingresarlo a
+  mano", el `FieldCard` de peso manual, y el campo `plate_weight_grams` del formulario de
+  vinculación. La única vía para vincular un dispositivo nuevo queda siendo la tara
+  automática; si falla, el único camino es "Repetir prueba" (US2).
+- [X] T053 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T054 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T055 Validar con KPCL0036 real que la confirmación ahora sí llega dentro de los 15s
+  — esta vez el bug real (parseo de la respuesta) está corregido en la raíz.
 
 ---
 

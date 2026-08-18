@@ -46,17 +46,16 @@ La persona coloca el plato tarde, lo mueve durante la tara, o el dispositivo tod
 
 ---
 
-### User Story 3 - Alternativa manual si la prueba no es viable en este momento (Priority: P3)
+### User Story 3 - ~~Alternativa manual si la prueba no es viable en este momento~~ (ELIMINADA)
 
-La persona está registrándose pero el dispositivo físico no está a mano en ese momento (por ejemplo, lo va a instalar más tarde), o la prueba automática falla repetidamente. Necesita poder completar igual el registro sin quedar bloqueada por un paso que depende de tener el hardware presente y conectado ahí mismo.
-
-**Why this priority**: Evita que este cambio, pensado para mejorar la experiencia, termine siendo un bloqueo nuevo para quien no puede hacer la prueba física en el momento exacto del registro — prioridad más baja porque es el camino de excepción, no el flujo esperado.
-
-**Independent Test**: Elegir explícitamente no hacer la prueba automática (o agotar los reintentos) y confirmar que la persona puede completar la vinculación ingresando el peso del plato manualmente, igual que el comportamiento de hoy (sin tara aplicada — ver Assumptions sobre qué implica elegir este camino).
-
-**Acceptance Scenarios**:
-
-1. **Given** la persona no puede o no quiere hacer la prueba automática ahora, **When** elige la alternativa manual, **Then** puede ingresar el peso del plato escribiéndolo, y el registro continúa con normalidad, sin que el sistema intente ejecutar ninguna tara.
+**Eliminada explícitamente por Mauro (2026-08-18)**: "eso jamás fue hablado ni estructurado."
+Existía un camino de respaldo (ingresar el peso del plato a mano, sin tara) para cuando la
+prueba automática fallaba repetidamente — se sacó por completo del código
+(`registro-flow.tsx`: `showManualPlateInput`, `manualPlateValidation`,
+`submitManualPlateWeight`, el estado `tareState === "manual"`, y el campo
+`plate_weight_grams` del formulario de vinculación). FR-008 (abajo) queda igual eliminado.
+La única vía para vincular un dispositivo nuevo es ahora la tara automática — si falla,
+el único camino es "Repetir prueba" (US2).
 
 ---
 
@@ -94,7 +93,7 @@ Ya sea que la persona haya calibrado el plato por tara automática o a mano, al 
 - **FR-005**: Si la confirmación de cero no llega o no es válida (dispositivo sin conexión, plato mal puesto, tara no efectiva), el sistema DEBE permitir repetir la secuencia completa desde "colocar el plato", sin perder el resto de lo ya completado en el paso de vinculación.
 - **FR-006**: Una vez confirmada la tara (dispositivo en cero con el plato puesto), las lecturas futuras de ese dispositivo DEBEN representar directamente el contenido del plato (comida o agua) — sin que el sistema necesite restar ningún valor guardado aparte para obtener ese dato.
 - **FR-007**: La prueba DEBE estar disponible tanto para dispositivos de comida como de agua — la secuencia es la misma sin importar cuál de los dos se esté vinculando.
-- **FR-008**: Si la persona no puede completar la prueba automática en este momento (dispositivo no disponible, prueba falla repetidamente), el sistema DEBE ofrecer ingresar el peso del plato manualmente como alternativa, para no bloquear el registro — sabiendo que ese camino no aplica la tara y por lo tanto sigue necesitando restar el peso del plato en el cálculo del contenido, como ya ocurre hoy.
+- ~~**FR-008**~~ — ELIMINADO (2026-08-18, Mauro: "eso jamás fue hablado ni estructurado"). Ya no existe alternativa manual — la única vía para vincular un dispositivo nuevo es la tara automática.
 - **FR-009**: La tara ejecutada por esta prueba DEBE quedar como el nuevo punto de referencia permanente del dispositivo — a diferencia de una simple lectura, este paso SÍ cambia de forma duradera cómo el dispositivo mide de ahí en adelante, y por eso solo debe ejecutarse en una vinculación real de dispositivo nuevo, nunca disparada por accidente sobre un dispositivo que ya esté en uso.
 - **FR-010**: Al terminar la vinculación (por tara automática o por peso manual), el sistema DEBE mostrar una pantalla de cierre dedicada — no un aviso que desaparece solo — con el Kittypau vinculado, la persona que se registró y la mascota vinculada, y un mensaje explícito de éxito. Esa pantalla DEBE permanecer visible hasta que la persona la cierre a propósito, y cerrarla DEBE llevarla directo a la vista principal de su cuenta ya vinculada.
 
@@ -109,13 +108,13 @@ Ya sea que la persona haya calibrado el plato por tara automática o a mano, al 
 
 - **SC-001**: Una persona con el dispositivo físico a mano completa la secuencia de tara (conexión → plato → tara → confirmación) en menos de 15 segundos desde que la inicia hasta ver la confirmación, sin necesitar ayuda externa ni instrucciones fuera de lo que la propia prueba muestra.
 - **SC-002**: Tras una calibración exitosa, una lectura del dispositivo con el plato puesto (sin nada más) da un valor cercano a cero, dentro del margen de precisión normal del sensor.
-- **SC-003**: Ninguna persona queda bloqueada en el paso de vinculación de dispositivo por no poder completar la prueba automática — siempre hay un camino para continuar (repetir o ingresar a mano).
+- ~~**SC-003**~~ — ajustado (2026-08-18): ya no hay camino manual; el único recurso ante una falla es "Repetir prueba".
 - **SC-004**: Ningún dispositivo ya vinculado y en uso sufre un cambio de punto cero por esta prueba — solo se ejecuta en la vinculación real de un dispositivo nuevo.
 - **SC-005**: La cantidad de dispositivos vinculados con una calibración de plato manifiestamente errónea (ej. contenidos negativos o absurdos en el uso normal) baja respecto al método de ingreso manual actual.
 
 ## Assumptions
 
-- La prueba automática (tara) es el camino **por defecto y recomendado**, pero el ingreso manual del peso se mantiene disponible como alternativa (User Story 3) para quien no pueda usarla en el momento — ese camino manual sigue funcionando como hoy (resta de un peso guardado), no aplica tara.
+- ~~La prueba automática (tara) es el camino por defecto, pero el ingreso manual se mantiene como alternativa~~ — YA NO. Eliminado el 2026-08-18 (ver User Story 3). La tara automática es el único camino.
 - "Confirmar que dio ~0" usa el mismo criterio de precisión que el dispositivo ya aplica para distinguir una lectura real de ruido del sensor — no se inventa un umbral nuevo.
 - Esta prueba se limita a la secuencia de tara en el momento de vincular un dispositivo nuevo (lo pedido explícitamente). Recalibrar el plato de un dispositivo ya vinculado y en uso, o construir una serie más amplia de pruebas de vinculación (batería/wifi/sensor, etc.), quedan fuera de alcance — no se encontró nada parecido ya construido más allá del mecanismo de tara en sí (que existe hoy como botón manual de mantenimiento en la configuración de un dispositivo ya vinculado, sin la guía paso a paso que este pedido agrega).
 - La tara que ejecuta esta prueba es el mismo mecanismo de tara del dispositivo que ya existe para otros usos (ajuste manual post-vinculación) — este pedido lo reutiliza con una secuencia guiada nueva alrededor, no inventa un mecanismo de calibración distinto. Por tratarse del mismo mecanismo real (no una simulación), sus efectos son igual de permanentes que los que ya tiene hoy ese botón manual.
