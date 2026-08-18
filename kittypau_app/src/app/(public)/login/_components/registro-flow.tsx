@@ -184,7 +184,12 @@ const MAX_PHOTO_MB = MAX_UPLOAD_BYTES / (1024 * 1024);
 // del firmware). Se acelera durante la prueba para que la confirmación llegue rápido
 // (SC-001, bajo 15s) y se restaura a este valor al terminar, con éxito o no.
 const DEFAULT_SENSOR_INTERVAL_MS = 30_000;
-const TARE_FAST_INTERVAL_MS = 2_000; // mínimo aceptado por SET_INTERVAL es 1000ms
+// 1000 (no 2000) -- /api/devices/[id]/interval valida contra un allowlist fijo
+// (VALID_INTERVALS_MS) que no incluye 2000; pedir un valor fuera de esa lista devuelve
+// 400 y la prueba de tara nunca se acelera, causando el timeout de confirmación (bug
+// real encontrado en producción: la tara SÍ llegaba al hardware, pero la siguiente
+// lectura tardaba hasta 30s en publicarse, más que TARE_CONFIRM_TIMEOUT_MS).
+const TARE_FAST_INTERVAL_MS = 1_000;
 const TARE_CONFIRM_TIMEOUT_MS = 15_000;
 export const AVATAR_OPTIONS = [
   { id: "avatar-1", label: "Avatar 1", url: "/avatar_1.png" },
@@ -429,6 +434,10 @@ export default function RegistroFlow({
   // Pantalla de cierre de vinculación (pedido explícito): reemplaza el toast+redirect
   // automático de antes por una pantalla que la persona cierra a mano.
   const [showLinkCelebration, setShowLinkCelebration] = useState(false);
+  // Peso en vivo del plato vinculado (pedido explícito) -- refleja cada lectura nueva
+  // que llega por Realtime mientras el dispositivo está vinculado, no solo durante la
+  // prueba de tara.
+  const [liveWeightGrams, setLiveWeightGrams] = useState<number | null>(null);
 
   const [token, setToken] = useState<string | null>(null);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
@@ -1102,14 +1111,24 @@ export default function RegistroFlow({
     setTareState("tarando");
     setTareMessage(null);
     try {
-      await fetch(`/api/devices/${linkedDeviceId}/interval`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+      const intervalRes = await fetch(
+        `/api/devices/${linkedDeviceId}/interval`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ value_ms: TARE_FAST_INTERVAL_MS }),
         },
-        body: JSON.stringify({ value_ms: TARE_FAST_INTERVAL_MS }),
-      });
+      );
+      if (!intervalRes.ok) {
+        // No seguir a la tara si esto falla: sin el intervalo rápido, la confirmación
+        // puede tardar hasta 30s (el intervalo normal) y siempre daría timeout falso.
+        throw new Error(
+          "No se pudo acelerar la lectura del dispositivo para confirmar la tara.",
+        );
+      }
       const tareRes = await fetch(`/api/devices/${linkedDeviceId}/tare`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -1246,6 +1265,7 @@ export default function RegistroFlow({
           (payload) => {
             const reading = payload.new as { weight_grams?: number | null };
             if (typeof reading.weight_grams === "number") {
+              setLiveWeightGrams(reading.weight_grams);
               handleTareReading(reading.weight_grams);
             }
           },
@@ -2343,6 +2363,20 @@ export default function RegistroFlow({
                   peso exacto de lo que sirvas después, sin que tengas que
                   escribir nada.
                 </p>
+
+                <div className="mt-3 flex items-center justify-between rounded-[calc(var(--radius)-8px)] border border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                    Peso en vivo
+                  </span>
+                  <span
+                    className="text-sm font-semibold text-slate-900"
+                    aria-live="polite"
+                  >
+                    {liveWeightGrams !== null
+                      ? `${Math.round(liveWeightGrams)} g`
+                      : "esperando lectura..."}
+                  </span>
+                </div>
 
                 {tareState === "esperando_conexion" ? (
                   <p className="mt-3 text-xs text-slate-500" aria-live="polite">

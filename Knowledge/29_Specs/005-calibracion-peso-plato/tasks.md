@@ -116,6 +116,27 @@ Proyecto único (Next.js App Router) — rutas relativas a `kittypau_app/`.
 
 ---
 
+## Phase 7: Bug real encontrado con hardware — timeout falso de confirmación
+
+**Encontrado en producción probando con KPCL0036 real** (2026-08-18) — la tara SÍ se ejecutaba en el hardware, pero la app siempre reportaba "No llegó una lectura de confirmación a tiempo."
+
+- [X] T028 Causa raíz encontrada revisando `device_commands` en Supabase directamente: `TARE_FAST_INTERVAL_MS = 2_000` en `registro-flow.tsx`, pero `/api/devices/[id]/interval/route.ts` valida `value_ms` contra un allowlist fijo (`VALID_INTERVALS_MS`) que **no incluye 2000** — la petición fallaba con 400, y `startTareSequence()` no chequeaba el `ok` de esa respuesta, así que seguía igual al comando de tara. El dispositivo nunca aceleraba su intervalo de reporte (seguía en 30s), y la confirmación llegaba después de que el timeout de 15s ya había dado la prueba por fallida.
+- [X] T029 Fix: `TARE_FAST_INTERVAL_MS` cambiado a `1_000` (sí está en el allowlist) + `startTareSequence()` ahora chequea `intervalRes.ok` y aborta con error explícito si falla, en vez de seguir en silencio — previene que este mismo patrón (validación silenciosamente ignorada) vuelva a causar un timeout falso indistinguible de una falla real de hardware.
+- [X] T030 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T031 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+- [ ] T032 Validar con KPCL0036 real que la secuencia de tara ahora confirma dentro de los 15s (junto con T022/T027).
+
+---
+
+## Phase 8: Peso en vivo del plato vinculado (pedido explícito)
+
+- [X] T033 Agregar estado `liveWeightGrams` en `registro-flow.tsx`, actualizado desde la misma suscripción Realtime de `readings` ya usada para confirmar la tara (no una suscripción nueva) — refleja cada lectura nueva mientras el dispositivo está vinculado, no solo durante la prueba de tara activa.
+- [X] T034 Cuadro pequeño en la tarjeta "Calibrar el peso de tu plato": "Peso en vivo" + el último valor recibido en gramos (o "esperando lectura..." si todavía no llegó ninguna).
+- [X] T035 [P] Correr `npx tsc --noEmit` y `npx eslint "src/app/(public)/login/_components/registro-flow.tsx"` — 0 errores.
+- [X] T036 [P] Correr `npm run build` — confirmar que `/registro` sigue compilando.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
