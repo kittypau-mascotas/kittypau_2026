@@ -45,7 +45,7 @@ storage), ver [[29_Specs/SPEC_12_Recrear_Analytics_DB]].
 | Auth | Supabase Auth con JWT. `auth.users` enlaza a `profiles` (1:1). |
 | RLS | Row Level Security activa en todas las tablas públicas. |
 | Service Role | El bridge bypasea RLS con `service_role key`. |
-| Realtime | No usado directamente — el tiempo real va por MQTT (HiveMQ). |
+| Realtime | ⚠️ Corregido 2026-08-18, confirmado con datos reales (no solo lectura de código): `bowl/page.tsx` y `registro-flow.tsx` (spec 005) SÍ intentan usar Realtime (`postgres_changes` sobre `readings`) — pero se confirmó en producción que **no entrega eventos a este cliente**, aunque la fila llegue bien y a tiempo a la tabla (ninguna migración habilita `readings` en la publicación `supabase_realtime`, ver `supabase/migrations/`). `bowl/page.tsx` "funciona" solo porque tiene un polling de respaldo cada 8s que enmascara el fallo; `registro-flow.tsx` no lo tenía y por eso la confirmación de tara daba timeout falso — ya tiene su propio polling de respaldo agregado (`Knowledge/29_Specs/005-calibracion-peso-plato/tasks.md` Phase 9). Cualquier código nuevo que dependa de Realtime sobre `readings` DEBE agregar un polling de respaldo, no asumir que Realtime entrega. |
 | Edge Functions | Sin Edge Functions activas en producción actualmente. |
 
 Ver esquema completo de tablas en [[06_BaseDatos/README_BaseDatos]].

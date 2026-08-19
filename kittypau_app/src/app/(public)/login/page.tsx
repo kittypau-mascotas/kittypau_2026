@@ -62,6 +62,15 @@ export default function LoginPage() {
   const isNativeApk = isNativeFlavorEnabled();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Spec 006: los campos de email/contraseña de login, registro y reset nunca deben
+  // pre-llenarse ni sugerir nada (ni el navegador, ni sugerencias propias) — nacen
+  // `readOnly` y se desbloquean recién en el primer foco/click real de la persona.
+  const [loginEmailLocked, setLoginEmailLocked] = useState(true);
+  const [loginPasswordLocked, setLoginPasswordLocked] = useState(true);
+  const [resetEmailLocked, setResetEmailLocked] = useState(true);
+  const [registerEmailLocked, setRegisterEmailLocked] = useState(true);
+  const [registerPasswordLocked, setRegisterPasswordLocked] = useState(true);
+  const unlock = (setter: (locked: boolean) => void) => () => setter(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1652,17 +1661,24 @@ export default function LoginPage() {
                       type="email"
                       placeholder="tu@email.com"
                       value={email}
+                      readOnly={loginEmailLocked}
                       onChange={(event) => {
                         setEmail(event.target.value);
                         wakeTrialCat();
                       }}
-                      onFocus={wakeTrialCat}
+                      onFocus={() => {
+                        setLoginEmailLocked(false);
+                        wakeTrialCat();
+                      }}
+                      onMouseDown={() => setLoginEmailLocked(false)}
                       onBlur={sleepTrialCat}
                       className="h-10 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                       aria-invalid={
                         Boolean(error) || (email.length > 0 && !isEmailValid)
                       }
-                      autoComplete="email"
+                      // Spec 006: sin sugerencias de ningún tipo (ni propias ni del
+                      // navegador) — nunca pre-llenar, ver readOnly-hasta-foco arriba.
+                      autoComplete="off"
                     />
                     {email.length > 0 && !isEmailValid ? (
                       <p className="text-[11px] text-rose-600">
@@ -1682,11 +1698,16 @@ export default function LoginPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
+                      readOnly={loginPasswordLocked}
                       onChange={(event) => {
                         setPassword(event.target.value);
                         wakeTrialCat();
                       }}
-                      onFocus={wakeTrialCat}
+                      onFocus={() => {
+                        setLoginPasswordLocked(false);
+                        wakeTrialCat();
+                      }}
+                      onMouseDown={() => setLoginPasswordLocked(false)}
                       onBlur={sleepTrialCat}
                       className="h-10 w-full rounded-[var(--radius)] border border-border bg-white/90 px-4 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-ring"
                       aria-invalid={
@@ -1807,8 +1828,11 @@ export default function LoginPage() {
                       className="mt-3 w-full rounded-[calc(var(--radius)-8px)] border border-slate-200 px-3 py-2 text-xs text-slate-700"
                       placeholder="correo@ejemplo.com"
                       value={resetEmail}
+                      readOnly={resetEmailLocked}
+                      onFocus={unlock(setResetEmailLocked)}
+                      onMouseDown={unlock(setResetEmailLocked)}
                       onChange={(event) => setResetEmail(event.target.value)}
-                      autoComplete="email"
+                      autoComplete="off"
                     />
                     <button
                       type="button"
@@ -2027,7 +2051,10 @@ export default function LoginPage() {
                           id="reg-email"
                           type="email"
                           placeholder="tu@email.com"
-                          autoComplete="email"
+                          autoComplete="off"
+                          readOnly={registerEmailLocked}
+                          onFocus={unlock(setRegisterEmailLocked)}
+                          onMouseDown={unlock(setRegisterEmailLocked)}
                           value={registerEmail}
                           onChange={(event) =>
                             setRegisterEmail(event.target.value)
@@ -2052,6 +2079,9 @@ export default function LoginPage() {
                           type={registerShowPassword ? "text" : "password"}
                           placeholder="••••••••"
                           autoComplete="new-password"
+                          readOnly={registerPasswordLocked}
+                          onFocus={unlock(setRegisterPasswordLocked)}
+                          onMouseDown={unlock(setRegisterPasswordLocked)}
                           value={registerPassword}
                           onChange={(event) =>
                             setRegisterPassword(event.target.value)
