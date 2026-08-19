@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-08-14
-updated: 2026-08-15
+updated: 2026-08-18
 tags:
   - devops
   - colaboracion
@@ -69,7 +69,6 @@ técnica particular.
 
 | # | Tarea | Spec | Nota |
 |---|---|---|---|
-| 0 | 🔴 **Nuevo (2026-08-16):** `sudo systemctl restart kittypau-bridge` en la Raspberry — el fix de `owner_id` nullable ya está aplicado en la DB (✅ ver Completado), pero el bridge cachea en memoria (`knownDevices`, `Set` en `bridge/src/index.js:57`) qué devices ya conoce y no vuelve a chequear la DB para un código ya visto. KPCL0036 (renombrado a `KPCL9036` para preservar el historial de Javier) no se va a auto-registrar como fila nueva sin dueño hasta que el proceso reinicie | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] | Requiere red de Javier o Mauro (misma que SPEC_09 §1.1) |
 | 1 | `SPEC_12` — crear la cuenta Supabase nueva (regla: NO la misma cuenta que el proyecto principal) y recrear `pet_sessions`/`pet_daily_summary` | [[29_Specs/SPEC_12_Recrear_Analytics_DB]] | Decisión — implica costo/cuenta nueva |
 | 2 | `SPEC_11` — sección de resumen de consumo en `/today` | [[29_Specs/SPEC_11_Resumen_Consumo_Today]] | 🔴 Bloqueado por #1 (`SPEC_12`) |
 | 3 | **Nuevo (2026-08-16):** SMTP propio para correos de Supabase Auth (Resend/SendGrid/Postmark/SES + dominio verificado) — el servicio built-in de Supabase se saturó (`email rate limit exceeded`) en pleno testing de `002-registro-flow-unificado`, y el remitente sale como "Supabase Auth", no "Kittypau" | [[05_API/SPEC_Correos_Transaccionales]] § Pendiente | Decisión — implica cuenta/dominio nuevo |
@@ -80,6 +79,7 @@ técnica particular.
 
 | Fecha | Qué | Quién | Spec |
 |---|---|---|---|
+| 2026-08-17 | `sudo systemctl restart kittypau-bridge` — limpia el cache en memoria (`knownDevices`) para que `KPCL0036` (liberado el 16/08 al renombrar el device viejo a `KPCL9036`) pueda auto-registrarse como fila nueva sin dueño la próxima vez que algo publique bajo ese código. Verificado: nuevo PID/invocation, logs sin errores nuevos (el error preexistente de `sensor_readings`/`battery_level` sigue igual, no relacionado), y el fix de `device_type` de KPCL0035 (§1.1) sigue intacto en `water_bowl` después del restart | PC de Javier, autorizado por Javier | [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] |
 | 2026-08-16 | `09_Investigacion/` → `Investigacion/`, `10_Postulaciones_Fondos/` → `Postulaciones_Fondos/` (sin prefijo numérico). Toolkit dashboard KPCL (9 archivos sueltos) agrupado en `Investigacion/Dashboard_KPCL/`. Corregidas 2 rutas relativas rotas desde la mudanza anterior. `.gitignore` + 14 docs de Knowledge actualizados, `py_compile`/`streamlit`/`pytest` (16/16) re-verificados | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_13_Reorganizacion_09_Investigacion]] §9 |
 | 2026-08-16 | Reorganización de `Investigacion/` centrada en `app_anotacion_av2.py`: 9 rutas obsoletas (`Docs/09_Investigacion`, `Docs/11_Data`) corregidas dentro de la propia documentación de `Ciclo_Alpha_v2/fase_0_ruido/` (nunca barridas en rondas anteriores), 1 link roto arreglado, `README.md`/`_MOC.md` reescritos para apuntar directo a la app como centro. `Ciclo Alpha`/`Ciclo Alpha v2`/`fase_0_ruido` NO se renombraron — convención de fases ya documentada, alto costo/bajo beneficio. `py_compile`/`pytest` (16/16) verificados | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_13_Reorganizacion_09_Investigacion]] §10 |
 | 2026-08-16 | Reorganización física real de `Investigacion/`: `fase_0_ruido/` separa `Documentacion/` (4 docs) y `Resultados/` (benchmark) de los scripts activos; los 8 docs sueltos de la raíz se enrutaron cada uno a donde pertenecen (3 a `Dashboard_KPCL/`, 2 a `Ciclo_Alpha_v1/`, 3 quedan en raíz por ser cross-cycle). De paso: 12 links rotos sistémicos en `README.md` (`Data Science/` → `Ciclo_Alpha_v1/`, bug preexistente) + 3 links con nombres de archivo viejos corregidos. `py_compile`/`streamlit`/`pytest` (16/16) re-verificados | PC de Mauro, autorizado por Mauro | [[29_Specs/SPEC_13_Reorganizacion_09_Investigacion]] §11 |
