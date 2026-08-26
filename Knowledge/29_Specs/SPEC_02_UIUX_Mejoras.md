@@ -50,9 +50,9 @@ related:
 | # | Qué | Por qué importa | Esfuerzo |
 |---|---|---|---|
 | I9 | SSIDs de WiFi solo en `localStorage`, se pierden en reinstall de la APK | Pérdida de datos de configuración — requiere migración de schema (persistir en `devices`) | M |
-| L-C1 | `/login` sigue siendo un monolito de ~1924 líneas | Mantenibilidad — no bloquea usuario final | XL |
-| L-C3 | SVG del gato como string gigante inline con `dangerouslySetInnerHTML` en `/login` | Mantenibilidad, no seguridad (contenido estático propio) | M |
-| A-C1 | `/admin` monolito, ver desarrollo completo abajo — **en curso, batch 2/N hecho 2026-08-13** | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final | XL |
+| L-C1 | `/login` sigue siendo un monolito (2376 líneas al 2026-08-25, no 1924 — el archivo creció con specs 002-006) | Mantenibilidad — no bloquea usuario final | XL |
+| ~~L-C3~~ | ✅ **Hecho 2026-08-25**: SVG del gato extraído a `_components/kittypau-cat-svg.tsx` (`<KittypauCatSvg />`) — mismo DOM/ids exactos (el CSS de animación depende de ellos), cero cambio de comportamiento. Ganancia real es legibilidad/diff, no línea-conteo (era 1 sola línea de ~9000 caracteres) | — | — |
+| A-C1 | `/admin` monolito, ver desarrollo completo abajo — **en curso, batch 3/N hecho 2026-08-15** | Mantenibilidad — solo lo usa Mauro/admin, no bloquea usuario final | XL |
 
 ### A-C1 — `/admin` monolito: extracción por componentes EN CURSO
 
