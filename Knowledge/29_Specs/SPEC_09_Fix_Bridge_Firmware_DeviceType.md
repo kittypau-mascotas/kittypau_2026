@@ -326,9 +326,14 @@ explícita antes de escribir en tablas de producción). Reportarle a Mauro:
 
 ## 3. P1 — Seguridad (no negociable según CLAUDE.md, hallazgos concretos)
 
-### 3.1 Bridge: TLS sin verificar certificado
+### 3.1 Bridge: TLS sin verificar certificado — ✅ Resuelto (2026-08-18)
 
-`bridge/src/index.js:114`:
+**Deployado y verificado en producción** (PC de Javier, backup + syntax check + restart):
+`rejectUnauthorized: true` explícito. Confirmado en logs: `[MQTT] Conectado a HiveMQ Cloud`
+inmediato tras el restart, sin errores de certificado/TLS — la hipótesis de que HiveMQ
+Cloud usa certificados válidos estándar (sin necesitar el bypass) era correcta.
+
+`bridge/src/index.js:114` (repo — recordar que el deploy real es manual, ver §-1):
 ```js
 const mqttOptions = {
   ...
@@ -375,11 +380,12 @@ una sesión abierta con el mismo deploy.
 
 ## 5. P3 — Housekeeping (opcional, bajo riesgo)
 
-- **`DEVICE_TYPE_MAP` en `bridge/src/index.js:26-31`** — código muerto (§0.3). Con el fix de
-  §1.1 aplicado, decidir: usarlo (reemplazar el override puntual por una traducción
-  español→enum genérica + el override manual encima) o borrarlo. No dejarlo como código
-  muerto que confunda a la próxima persona que lea el archivo pensando que ya traduce
-  `'comedero'/'bebedero'`.
+- **`DEVICE_TYPE_MAP` — ✅ Resuelto (2026-08-18).** Decisión tomada: **borrarlo**, no
+  activarlo. Activarlo hubiera traducido `device_type` a inglés (`'food_bowl'`/`'water_bowl'`)
+  para **todos** los devices, no solo el caso conocido de KPCL0035 — un cambio de
+  comportamiento amplio y no pedido. `kittypau_app/src/lib/device-role.ts` ya normaliza
+  español/inglés por substring en la capa de lectura, así que no hacía falta tocar el dato
+  de origen para el resto de los devices. Deployado y verificado en producción.
 - **Versión del bridge en docs** — [[07_MQTT/README_MQTT]] dice que `package.json` marca
   `"2.4.0"` desactualizado. Verificado en esta sesión: `bridge/package.json` ya dice
   `"3.2.0"`, coincide con el `console.log` de `index.js:118`. **La inconsistencia ya no
@@ -413,10 +419,12 @@ sin un motivo concreto para tocarlo (YAGNI).
       requiere OTA físico desde la red de Mauro (no bloqueante ahora que §1.1 ya corrige el
       dato en Supabase; §1.2 es la corrección definitiva de raíz, no urgente en el mismo día)
 - [ ] §2 reportado a Mauro con conteo real de filas afectadas, esperar decisión antes de UPDATE
-- [ ] §3.1 `rejectUnauthorized` corregido y conexión MQTT confirmada estable
+- [x] §3.1 `rejectUnauthorized` corregido y conexión MQTT confirmada estable — ✅ hecho
+      2026-08-18, deployado y verificado (`[MQTT] Conectado a HiveMQ Cloud` limpio)
 - [ ] §3.2 decisión de Mauro registrada (mantener o migrar credenciales)
 - [ ] §4 persistencia de estado implementada (o explícitamente diferida)
-- [ ] §5 decisión sobre `DEVICE_TYPE_MAP` tomada
+- [x] §5 decisión sobre `DEVICE_TYPE_MAP` tomada — ✅ hecho 2026-08-18: se borró (no se
+      activó), ver §5 arriba para el razonamiento
 - [ ] Actualizar [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] §6 marcando los
       pendientes 1(a)/1(b) como resueltos, con fecha
 - [ ] Actualizar este doc (`status: pendiente_ejecucion` → `ejecutado`) con lo que
