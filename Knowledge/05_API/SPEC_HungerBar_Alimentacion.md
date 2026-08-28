@@ -2,10 +2,10 @@
 id: spec_hunger_bar_alimentacion
 title: SPEC — Hunger Bar (barra de hambre)
 type: spec
-status: v1-implementado
+status: v2-implementado
 owner: Mauro
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-28
 tags:
   - feature
   - hunger-bar
@@ -50,18 +50,27 @@ estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 > queda como está hoy (fullness simple, contenido/máximo servido — ver
 > `bowl-wellness-card.tsx`), sin más desarrollo por ahora.
 
-## 0. Qué se implementó (v1) vs. qué sigue pendiente
+> **Actualización (Mauro/Claude, 2026-08-28):** el gap principal de esta sección — v1
+> clasificando con reglas simples en vez del Evidence Engine real — se cerró en
+> [[29_Specs/007-evidence-engine-hunger-bar/spec]]. El motor real
+> (`shape_features_v2.py`, 102 features + softmax calibrado) fue portado a mano a
+> `kittypau_app/src/lib/evidence-engine/` (sin librerías nuevas) y `hunger-bar.ts` ya lo usa
+> para clasificar cada segmento — ver detalle en §1.2 más abajo, que queda como referencia
+> histórica de por qué v1 se implementó como stand-in.
+
+## 0. Qué se implementó (v1 → v2) vs. qué sigue pendiente
 
 | Pieza | Estado |
 |---|---|
-| `kittypau_app/src/lib/hunger-bar.ts` | ✅ Detección de segmentos + clasificación por reglas + cálculo de la barra |
+| `kittypau_app/src/lib/hunger-bar.ts` | ✅ Detección de segmentos (sin cambios) + clasificación vía Evidence Engine real + cálculo de la barra |
+| `kittypau_app/src/lib/evidence-engine/` | ✅ Port TS del Evidence Engine — ver [[29_Specs/007-evidence-engine-hunger-bar/spec]] |
 | `kittypau_app/src/app/api/pets/[id]/hunger-bar/route.ts` | ✅ Endpoint, on-demand sobre `readings`, sin tabla intermedia |
 | `kittypau_app/src/app/_components/hunger-bar-card.tsx` | ✅ UI en `/pet` (solo si hay comedero activo) |
 | Card "Comida" en `/today` (widget "Barras Sims") | ✅ Reemplazada — ver `today/page.tsx` |
-| Clasificación por Motor v2 / Evidence Engine real | ❌ v1 usa reglas de magnitud/dirección/duración, no las 23 features calibradas — ver §1.2 |
+| Clasificación por Motor v2 / Evidence Engine real | ✅ **Resuelto 2026-08-28** — ver spec 007. `hunger-bar.ts` ya no usa reglas de magnitud/dirección/duración |
+| Agrupar picoteo (comidas seguidas) | ✅ **Resuelto 2026-08-28** — `mergeMealBursts()` en `hunger-bar.ts`: comidas separadas por una pausa < `MIN_INTERVALO_H` (20 min) se fusionan en una sola antes de calcular `sampleSize`/mediana/`lastMealDetectedAt` |
 | Uso de `servido` como señal secundaria (§4) | ❌ se detecta pero no se usa para ajustar la predicción |
-| Modelo circadiano | ❌ v1 usa solo mediana de intervalos, no franjas horarias |
-| Agrupar picoteo (comidas seguidas) | ❌ no implementado — cada segmento cuenta como comida independiente |
+| Modelo circadiano | ❌ sigue usando solo mediana de intervalos, no franjas horarias |
 
 ## 0.1 Números reales usados para calibrar v1
 

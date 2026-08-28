@@ -5,7 +5,7 @@ type: model
 status: active
 owner: Mauro
 created: 2026-08-10
-updated: 2026-08-13
+updated: 2026-08-28
 tags:
   - modelo
   - evidence-engine
@@ -86,7 +86,17 @@ Matemático) lo recalcula en vivo con `_evidence_engine_accuracy_cached()` (mism
 seed=42, ttl=1h) cada vez que cambian las anotaciones, así no vuelve a quedar
 desactualizado en la UI. Ver [[14_Experimentos/EXP_AlphaV2_AppArq]].
 
-Con todos los datos (527 anotaciones, sin held-out): 80.5%.
+Con todos los datos (527 anotaciones, sin held-out, medido 2026-08-13): 80.5%.
+
+> **Corrección (2026-08-28):** con el dataset actual (741 anotaciones,
+> `features_anotaciones_v2.csv`), el mismo cálculo in-sample (sin held-out) da **71.5%**
+> (0.7152496626180836 exacto, verificado corriendo `evidence_score()` directo) — más bajo que
+> el 80.5% de arriba. No es una regresión del motor: el dataset creció de 527 a 741
+> anotaciones desde esa medición y la cifra in-sample es sensible a la composición de la
+> muestra. La cifra que importa para saber si el motor generaliza es la **held-out** (split
+> 80/20, ver test de regresión abajo) — con el dataset actual da **77.0%** (seed=42), en línea
+> con el rango histórico. Ver [[29_Specs/007-evidence-engine-hunger-bar/spec]] §Success
+> Criteria (SC-001) para el detalle de por qué se distinguen estas dos cifras.
 
 Test de regresión permanente:
 `Investigacion/Ciclo_Alpha_v2/fase_0_ruido/tests/test_evidence_engine.py`
@@ -100,6 +110,7 @@ normalizado deja de superar claramente al legado.
 | Tab 1 — Revisar Candidatos | **Nuevo (2026-08-10).** Sugiere la categoría pre-seleccionada con badge de confianza 🟢≥70% / 🟡50-70% / 🔴<50%, usando las features ya calculadas por `01_genera_candidatos.py`. Antes no existía ninguna sugerencia automática — el operador anotaba a ciegas pese a tener un motor calibrado. |
 | Tab 5 — Motor Matemático | Predicción sobre un candidato seleccionado + texto explicativo actualizado |
 | Tab 7/8 — Próxima Comida / Kittypau | `_evidence_ventana_cached()` — Evidence Engine sobre los últimos N minutos de lecturas |
+| **Producción — `kittypau_app` (Alimentación, desde 2026-08-28)** | Port TS 1:1 en `kittypau_app/src/lib/evidence-engine/`, consumido por `hunger-bar.ts` (Barra de Hambre en `/today` y `/pet`) — ver [[29_Specs/007-evidence-engine-hunger-bar/spec]]. Sin librerías nuevas (FFT/find_peaks/entropías portados a mano). **Recalibración**: reemplazar `kittypau_app/src/lib/evidence-engine/comp_stats_v2.json` por la versión nueva de `data/comp_stats_v2.json` y re-desplegar — ninguna lógica cambia. |
 
 ## Features nuevas en el fallback legado
 

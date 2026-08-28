@@ -3,19 +3,21 @@
  * de `readings` crudas, sin depender de `device_bowl_sessions` (manual) ni de
  * `pet_sessions` (DB analytics opcional/legado).
  *
- * ponytail: la clasificación de segmentos usa reglas simples de magnitud/dirección/
- * duración (rangos documentados en Knowledge/SPEC_HungerBar_Alimentacion.md), NO el
- * Motor Matemático v2 / Evidence Engine (shape_features_v2.py, 23 features + softmax
- * calibrado contra 417 anotaciones reales). Ese motor es Python/numpy y no está
- * portado a la app — decisión de arquitectura pendiente (microservicio / port a TS /
- * job batch). Techo de este v1: no distingue tan bien "comida real" de un roce/
- * ruido cerca del plato como el Evidence Engine (~7σ de separación medida).
- * Upgrade path: reemplazar `classifySegment()` por una llamada al motor real
- * cuando se resuelva la integración.
+ * La clasificación de segmentos (¿fue alimentación real, servido, o ruido?)
+ * usa el Evidence Engine real portado en `./evidence-engine/` — mismo motor
+ * calibrado (102 features en 15 familias + softmax con discriminante de
+ * Fisher) que ya corre en Investigacion/Ciclo_Alpha_v2/fase_0_ruido/
+ * shape_features_v2.py, 80% accuracy fuera de muestra. Ver
+ * Knowledge/29_Specs/007-evidence-engine-hunger-bar/. La detección de
+ * SEGMENTOS (qué ventana de tiempo es candidata) es un problema aparte y
+ * sigue siendo la máquina de estados de `detectSegments()` de abajo, sin
+ * cambios — solo cambió cómo se decide la categoría de cada segmento ya
+ * detectado.
  *
  * Constantes de calibración: medidas sobre 254 comidas anotadas de KPCL0034
  * ("Bandida"), abril–julio 2026 — ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md.
  */
+import { classifyWeightSegment } from "./evidence-engine/evidence-score";
 
 export const SESSION_THRESHOLD_G = 5; // mismo umbral ya probado en bridge/src/processor.js
 export const STABLE_TOLERANCE_G = 3;
@@ -52,8 +54,9 @@ export type Segment = {
   endAt: string;
   deltaG: number; // peso final - peso inicial (negativo = bajó)
   durationMin: number;
+  weights: ReadingPoint[]; // sub-array crudo del segmento — insumo de evidence-engine
   category: SegmentCategory;
-  confidence: number; // 0-1, qué tanto matchea el rango típico documentado — no es el score del Evidence Engine
+  confidence: number; // 0-1, confianza softmax del Evidence Engine para la categoría ganadora
 };
 
 export type HungerBarResult = {
@@ -68,43 +71,6 @@ export type HungerBarResult = {
   alertActive: boolean; // v1.1 — nunca true si status != "ok"
   hoursOverdue: number | null; // v1.1 — null si status != "ok"
 };
-
-function triangularScore(
-  x: number,
-  lo: number,
-  mid: number,
-  hi: number,
-): number {
-  if (x <= lo || x >= hi) return 0;
-  if (x <= mid) return (x - lo) / (mid - lo);
-  return (hi - x) / (hi - mid);
-}
-
-function classifySegment(
-  deltaG: number,
-  durationMin: number,
-): { category: SegmentCategory; confidence: number } {
-  if (deltaG < 0) {
-    // candidato a alimentación: baja 5–15 g en 4–8 min (rango documentado, con margen)
-    const mag = -deltaG;
-    if (mag >= 3 && mag <= 25 && durationMin >= 1.5 && durationMin <= 15) {
-      const magScore = triangularScore(mag, 3, 10, 25);
-      const durScore = triangularScore(durationMin, 1.5, 6, 15);
-      return {
-        category: "alimentacion",
-        confidence: (magScore + durScore) / 2,
-      };
-    }
-    return { category: "ruido", confidence: 0 };
-  }
-  // candidato a servido: sube ≥15 g rápido (<3 min) — no se usa para la barra,
-  // solo se detecta (ver Knowledge spec §4: uso de "servido" como señal secundaria
-  // — no implementado en v1).
-  if (deltaG >= 15) {
-    return { category: "servido", confidence: 0.6 };
-  }
-  return { category: "ruido", confidence: 0 };
-}
 
 // Ventana de comparación para el ancla idle. No puede ser "la lectura anterior"
 // (como en bridge/src/processor.js, pensado para streaming en vivo con deltas
@@ -167,13 +133,20 @@ export function detectSegments(readings: ReadingPoint[]): Segment[] {
         (new Date(endPoint.recordedAt).getTime() -
           new Date(startPoint.recordedAt).getTime()) /
         60_000;
+      const segmentWeights = readings.slice(sessionStartIdx, i + 1);
 
-      const { category, confidence } = classifySegment(deltaG, durationMin);
+      // FR-007: datos insuficientes tras resamplear -> no clasificar como
+      // alimentación (evita forzar una categoría con baja confianza).
+      const evidence = classifyWeightSegment(segmentWeights);
+      const category: SegmentCategory = evidence?.category ?? "ruido";
+      const confidence = evidence?.confidence ?? 0;
+
       segments.push({
         startAt: startPoint.recordedAt,
         endAt: endPoint.recordedAt,
         deltaG,
         durationMin,
+        weights: segmentWeights,
         category,
         confidence,
       });
@@ -194,16 +167,57 @@ function median(values: number[]): number {
     : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+/**
+ * Agrupa picoteo: comidas consecutivas separadas por una pausa menor a
+ * MIN_INTERVALO_H (20 min) son la misma sesión de alimentación partida en
+ * varios segmentos por el detector, no comidas independientes — mismo
+ * criterio que ya declaraba el comentario de MIN_INTERVALO_H, ahora aplicado
+ * de verdad en vez de solo excluir el intervalo corto del cálculo de mediana.
+ * El resultado fusionado conserva el inicio de la primera bocanada (ahí
+ * arranca el 100% de la barra) y el fin de la última.
+ */
+export function mergeMealBursts(meals: Segment[]): Segment[] {
+  if (meals.length === 0) return [];
+  const merged: Segment[] = [meals[0]];
+
+  for (let i = 1; i < meals.length; i++) {
+    const prev = merged[merged.length - 1];
+    const curr = meals[i];
+    const pauseH =
+      (new Date(curr.startAt).getTime() - new Date(prev.endAt).getTime()) /
+      3_600_000;
+
+    if (pauseH < MIN_INTERVALO_H) {
+      merged[merged.length - 1] = {
+        startAt: prev.startAt,
+        endAt: curr.endAt,
+        deltaG: prev.deltaG + curr.deltaG,
+        durationMin:
+          (new Date(curr.endAt).getTime() - new Date(prev.startAt).getTime()) /
+          60_000,
+        weights: [...prev.weights, ...curr.weights],
+        category: "alimentacion",
+        confidence: Math.max(prev.confidence, curr.confidence),
+      };
+    } else {
+      merged.push(curr);
+    }
+  }
+
+  return merged;
+}
+
 export function computeHungerBar(
   readings: ReadingPoint[],
   now: Date = new Date(),
 ): HungerBarResult {
   const segments = detectSegments(readings);
-  const meals = segments
+  const rawMeals = segments
     .filter((s) => s.category === "alimentacion")
     .sort(
       (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
     );
+  const meals = mergeMealBursts(rawMeals);
 
   if (meals.length === 0) {
     return {
