@@ -167,16 +167,57 @@ function median(values: number[]): number {
     : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+/**
+ * Agrupa picoteo: comidas consecutivas separadas por una pausa menor a
+ * MIN_INTERVALO_H (20 min) son la misma sesión de alimentación partida en
+ * varios segmentos por el detector, no comidas independientes — mismo
+ * criterio que ya declaraba el comentario de MIN_INTERVALO_H, ahora aplicado
+ * de verdad en vez de solo excluir el intervalo corto del cálculo de mediana.
+ * El resultado fusionado conserva el inicio de la primera bocanada (ahí
+ * arranca el 100% de la barra) y el fin de la última.
+ */
+export function mergeMealBursts(meals: Segment[]): Segment[] {
+  if (meals.length === 0) return [];
+  const merged: Segment[] = [meals[0]];
+
+  for (let i = 1; i < meals.length; i++) {
+    const prev = merged[merged.length - 1];
+    const curr = meals[i];
+    const pauseH =
+      (new Date(curr.startAt).getTime() - new Date(prev.endAt).getTime()) /
+      3_600_000;
+
+    if (pauseH < MIN_INTERVALO_H) {
+      merged[merged.length - 1] = {
+        startAt: prev.startAt,
+        endAt: curr.endAt,
+        deltaG: prev.deltaG + curr.deltaG,
+        durationMin:
+          (new Date(curr.endAt).getTime() - new Date(prev.startAt).getTime()) /
+          60_000,
+        weights: [...prev.weights, ...curr.weights],
+        category: "alimentacion",
+        confidence: Math.max(prev.confidence, curr.confidence),
+      };
+    } else {
+      merged.push(curr);
+    }
+  }
+
+  return merged;
+}
+
 export function computeHungerBar(
   readings: ReadingPoint[],
   now: Date = new Date(),
 ): HungerBarResult {
   const segments = detectSegments(readings);
-  const meals = segments
+  const rawMeals = segments
     .filter((s) => s.category === "alimentacion")
     .sort(
       (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
     );
+  const meals = mergeMealBursts(rawMeals);
 
   if (meals.length === 0) {
     return {

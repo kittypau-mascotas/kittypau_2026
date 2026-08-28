@@ -68,9 +68,9 @@ estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 | `kittypau_app/src/app/_components/hunger-bar-card.tsx` | ✅ UI en `/pet` (solo si hay comedero activo) |
 | Card "Comida" en `/today` (widget "Barras Sims") | ✅ Reemplazada — ver `today/page.tsx` |
 | Clasificación por Motor v2 / Evidence Engine real | ✅ **Resuelto 2026-08-28** — ver spec 007. `hunger-bar.ts` ya no usa reglas de magnitud/dirección/duración |
+| Agrupar picoteo (comidas seguidas) | ✅ **Resuelto 2026-08-28** — `mergeMealBursts()` en `hunger-bar.ts`: comidas separadas por una pausa < `MIN_INTERVALO_H` (20 min) se fusionan en una sola antes de calcular `sampleSize`/mediana/`lastMealDetectedAt` |
 | Uso de `servido` como señal secundaria (§4) | ❌ se detecta pero no se usa para ajustar la predicción |
 | Modelo circadiano | ❌ sigue usando solo mediana de intervalos, no franjas horarias |
-| Agrupar picoteo (comidas seguidas) | ❌ no implementado — cada segmento cuenta como comida independiente |
 
 ## 0.1 Números reales usados para calibrar v1
 
