@@ -129,6 +129,38 @@ mayor cuidado.
 
 ## Hallazgos sin resolver
 
+### U7 — ✅ Resuelto 2026-08-28: `/api/devices/[id]/events` devolvía siempre `[]`
+
+Encontrado investigando por qué las barras "Comida"/"Agua" del widget "Barras Sims" nunca
+mostraban un llenado real. La ruta GET estaba hardcodeada:
+
+```ts
+// GET /api/devices/[id]/events — sin categorías activas, devuelve siempre vacío
+export async function GET() { return NextResponse.json({ data: [] }); }
+```
+
+`/api/devices/[id]/category` (POST) sí escribía eventos `termino_servido` con normalidad en
+`audit_events` — pero nada del lado del cliente podía leerlos de vuelta, así que
+`bowlMaxServedContentGrams`/`waterMaxServedContentMl` en `today/page.tsx` (el "100% = último
+plato servido lleno") quedaban siempre en `null`. Causa raíz probable del stub original:
+`audit_events` no tiene policy de RLS que deje leer a un usuario normal (confirmado en vivo:
+`permission denied for table audit_events` con el cliente de usuario) — probablemente alguien
+lo dejó devolviendo `[]` como parche rápido en vez de arreglar el permiso.
+
+Fix: implementación real de la ruta, usando `supabaseServer` (service role, mismo patrón que
+ya usa `category/route.ts` para escribir) tanto para el chequeo de dueño del dispositivo como
+para la query a `audit_events`. Verificado en vivo con Playwright contra `next dev` real
+(cuenta `kittypau.mascotas@gmail.com`, KPCL0034/KPCL0035): la barra de Agua pasó de un
+llenado casi vacío a ~97% real tras insertar un evento `termino_servido` de referencia.
+
+**Nota importante que salió de esta investigación**: la barra "Comida" de Barras Sims **no**
+usa este mecanismo — desde `SPEC_HungerBar_Alimentacion.md` usa el tiempo desde la última
+comida confirmada (Hunger Bar), no el peso. El mecanismo de "100% por peso" que se arregló acá
+solo sigue alimentando la barra de Agua; para Comida, la lógica de peso queda funcionando a
+nivel de datos pero sin ninguna UI que la consuma (código casi muerto, solo escribe un caché
+en `localStorage` que nada más lee) — no se tocó, es una decisión de producto ya tomada, no un
+bug.
+
 ### U5 — Inconsistencia visual de estado (mismo patrón que causaba el bug del badge de `/pet`)
 
 Cualquier card que muestre el mismo estado por 2 caminos distintos (texto + badge, cada uno

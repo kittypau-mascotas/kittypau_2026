@@ -65,12 +65,20 @@ Las rutas de admin además verifican que el usuario tenga rol en `admin_roles`.
 | `/api/devices/[id]/interval` | POST | ✅ usuario | Cambiar intervalo de publicación |
 | `/api/devices/[id]/wifi` | POST | ✅ usuario | Agregar/remover red WiFi |
 | `/api/devices/[id]/sessions` | GET | ✅ usuario | Sesiones de alimentación del dispositivo (`device_bowl_sessions`) |
-| `/api/devices/[id]/category` | GET | ✅ usuario | Eventos categorizados (`audit_events`) |
-| `/api/devices/[id]/events` | GET | ✅ usuario | Log de eventos del dispositivo |
+| `/api/devices/[id]/category` | POST | ✅ usuario | Registrar categoría manual (`audit_events`, `event_type: manual_bowl_category`) — no tiene GET |
+| `/api/devices/[id]/events` | GET | ✅ usuario | Log de eventos categorizados del dispositivo (lee lo que `category` escribe) |
 
 > ⚠️ `/api/devices/tare` (sin ID) **no existe** — usar siempre `/api/devices/[id]/tare`.  
 > ⚠️ Corrección 2026-08-11: `category` y `events` **siempre van bajo `/api/devices/[id]/...`**,
-> no como rutas planas `/api/devices/category` — verificado contra el árbol real de archivos.
+> no como rutas planas `/api/devices/category` — verificado contra el árbol real de archivos.  
+> ⚠️ Corrección 2026-08-28: la tabla de arriba tenía `category` como GET (nunca lo fue, siempre
+> POST) y describía `events` como si ya funcionara. En realidad `events` devolvía siempre
+> `{ data: [] }` hardcodeado — por eso `bowlMaxServedContentGrams`/`waterMaxServedContentMl`
+> en `today/page.tsx` nunca podían calcular un "100%" real aunque `category` sí escribía
+> eventos `termino_servido` con normalidad. Corregido: `events` ahora lee de verdad
+> `audit_events` con `supabaseServer` (RLS bloquea la lectura con el cliente de usuario
+> normal — probablemente la razón original del stub). Ver
+> `Knowledge/29_Specs/SPEC_02_UIUX_Mejoras.md` para el detalle completo.
 
 ---
 
