@@ -1076,7 +1076,11 @@ def build_global_chart(
                 annotation_text="",
             )
 
-    fig.add_trace(go.Scatter(
+    # WebGL en vez de SVG: con "Todo" el rango cubre ~145 días a 30s (400k+
+    # puntos) — go.Scatter (SVG) se pone perceptiblemente lento pasando unos
+    # miles de puntos; go.Scattergl escala a millones sin downsamplear nada.
+    # Mismo API (x/y/mode/line/name/hovertemplate), drop-in.
+    fig.add_trace(go.Scattergl(
         x=df_lec_vg["ts_stgo"],
         y=df_lec_vg["peso_g"],
         mode="lines",
