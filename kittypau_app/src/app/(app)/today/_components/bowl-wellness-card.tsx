@@ -83,6 +83,7 @@ export default function BowlWellnessCard({
   contentValueText,
   contentWeightGrams,
   prevContentWeightGrams,
+  maxReferenceGrams,
   tempText,
   humidityText,
   formatTimestamp,
@@ -96,6 +97,9 @@ export default function BowlWellnessCard({
   contentValueText: string;
   contentWeightGrams: number | null;
   prevContentWeightGrams: number | null;
+  // "100%" = peso del último "término servido" real (audit_events) -- ver
+  // bowlMaxServedContentGrams/waterMaxServedContentMl en today/page.tsx.
+  maxReferenceGrams: number | null;
   tempText: string;
   humidityText: string;
   formatTimestamp: (value?: string | null) => string;
@@ -148,6 +152,18 @@ export default function BowlWellnessCard({
     device?.battery_state,
     device?.battery_level,
   );
+
+  const fillPct =
+    contentWeightGrams !== null &&
+    maxReferenceGrams !== null &&
+    maxReferenceGrams > 0
+      ? Math.round(
+          Math.min(
+            100,
+            Math.max(0, (contentWeightGrams / maxReferenceGrams) * 100),
+          ),
+        )
+      : null;
 
   return (
     <article
@@ -204,6 +220,21 @@ export default function BowlWellnessCard({
               height={164}
               className="mx-auto h-48 w-auto object-contain object-center"
             />
+            {fillPct !== null ? (
+              <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className={`h-full rounded-full ${
+                      kind === "food" ? "bg-emerald-400" : "bg-sky-400"
+                    }`}
+                    style={{ width: `${fillPct}%` }}
+                  />
+                </div>
+                <span className="text-[10px] font-semibold tabular-nums text-slate-400">
+                  {fillPct}%
+                </span>
+              </div>
+            ) : null}
             {wellness.levelLabel !== "Sin confirmación" ? (
               <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
                 {wellness.levelLabel}

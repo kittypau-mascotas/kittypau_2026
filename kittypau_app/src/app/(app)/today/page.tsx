@@ -2462,6 +2462,7 @@ export default function TodayPage() {
                   contentValueText={bowlContentWeightText}
                   contentWeightGrams={bowlContentWeightGrams}
                   prevContentWeightGrams={bowlPrevContentWeightGrams}
+                  maxReferenceGrams={bowlMaxServedContentGrams}
                   tempText={bowlTempText}
                   humidityText={bowlHumidityText}
                   formatTimestamp={formatTimestamp}
@@ -2479,6 +2480,7 @@ export default function TodayPage() {
                   contentValueText={waterVolumeMlText}
                   contentWeightGrams={waterContentWeightGrams}
                   prevContentWeightGrams={waterPrevContentWeightGrams}
+                  maxReferenceGrams={waterMaxServedContentMl}
                   tempText={waterTempText}
                   humidityText={waterHumidityText}
                   formatTimestamp={formatTimestamp}
