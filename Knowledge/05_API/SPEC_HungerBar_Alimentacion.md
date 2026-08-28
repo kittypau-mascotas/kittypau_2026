@@ -41,6 +41,15 @@ liviana), no el Motor v2/Evidence Engine completo — ver §0 y §1.2. En `/toda
 la card "Comida" del widget "Barras Sims" (antes: medidor de combustible del plato +
 estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 
+> **Decisión de alcance (Mauro, 2026-08-28):** foco 100% en Comida — es lo único que tiene
+> datos reales suficientes en `Investigacion/` para calibrar en serio (417 anotaciones de
+> KPCL0034, Motor v2/Evidence Engine ya calibrado ahí). **Hidratación (Agua) queda
+> pendiente/pausada a propósito** — no tiene un pipeline de investigación equivalente
+> todavía, así que no se le va a construir un "Hunger Bar de agua" (barra que se llena al
+> beber y decae hacia el próximo trago) hasta que exista esa base. La barra de Agua se
+> queda como está hoy (fullness simple, contenido/máximo servido — ver
+> `bowl-wellness-card.tsx`), sin más desarrollo por ahora.
+
 ## 0. Qué se implementó (v1) vs. qué sigue pendiente
 
 | Pieza | Estado |
