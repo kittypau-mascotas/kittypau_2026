@@ -5,6 +5,7 @@ import {
   ALERT_THRESHOLD_HOURS,
   type ReadingPoint,
 } from "./hunger-bar";
+import { classifyWeightSegment } from "./evidence-engine/evidence-score";
 
 // Fixture calibrado contra el algoritmo de detectSegments (ventana de lag de 8 min,
 // ver LAG_SECONDS en hunger-bar.ts): lecturas cada 2 min desde t-20 hasta t+8, plano
@@ -47,6 +48,9 @@ describe("detectSegments", () => {
     expect(segments[0].category).toBe("alimentacion");
     expect(segments[0].deltaG).toBeCloseTo(-10, 0);
     expect(segments[0].startAt).toBe(mealDetectedAt(anchor).toISOString());
+    // US3 (spec 007): weights se conserva para que evidence-engine pueda
+    // reclasificar el segmento — no debe quedar vacío ni perderse.
+    expect(segments[0].weights.length).toBeGreaterThan(0);
   });
 
   it("no detecta nada con menos de 2 lecturas", () => {
@@ -106,5 +110,23 @@ describe("computeHungerBar", () => {
     );
     expect(beforeAlert.alertActive).toBe(false);
     expect(afterAlert.alertActive).toBe(true);
+  });
+
+  // US2 (spec 007): lastMealConfidence debe ser trazable al Evidence Engine
+  // real, no un score arbitrario — se compara contra classifyWeightSegment()
+  // llamado directamente sobre el mismo segmento.
+  it("lastMealConfidence refleja la confianza real del Evidence Engine para el segmento detectado", () => {
+    const anchor = new Date("2026-08-01T08:00:00Z");
+    const readings = readingsFromMeal(anchor);
+    const [segment] = detectSegments(readings);
+    const evidence = classifyWeightSegment(segment.weights);
+
+    const result = computeHungerBar(
+      readings,
+      new Date(mealDetectedAt(anchor).getTime() + 60_000),
+    );
+
+    expect(evidence).not.toBeNull();
+    expect(result.lastMealConfidence).toBeCloseTo(evidence!.confidence, 2);
   });
 });

@@ -2227,9 +2227,10 @@ export default function TodayPage() {
       return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
     if (hungerBar.percentage <= 0) return "Debería haber comido ya";
-    return hungerBar.estimatedNextMealAt
-      ? `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`
-      : "Última comida confirmada: sin registro";
+    if (hungerBar.lastMealDetectedAt && hungerBar.estimatedNextMealAt) {
+      return `Última: ${formatTimestamp(hungerBar.lastMealDetectedAt)} · Próxima: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`;
+    }
+    return "Última comida confirmada: sin registro";
   }, [hungerBar]);
 
   const waterFilledBlocks = useMemo(() => {
