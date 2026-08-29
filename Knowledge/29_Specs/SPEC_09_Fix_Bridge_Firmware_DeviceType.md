@@ -443,14 +443,28 @@ sin un motivo concreto para tocarlo (YAGNI).
 - [x] §3.1 `rejectUnauthorized` corregido y conexión MQTT confirmada estable — ✅ hecho
       2026-08-18, deployado y verificado (`[MQTT] Conectado a HiveMQ Cloud` limpio)
 - [ ] §3.2 decisión de Mauro registrada (mantener o migrar credenciales)
-- [x] §4 código implementado en el repo — ✅ 2026-08-29, PC de Javier.
-      `bridge/src/processor.js` persiste `deviceState`/`petBaseline` a
-      `bridge-state.json` (cada 30s + en shutdown) y los recarga al iniciar;
-      `bridge/src/index.js` gana el handler de `SIGTERM` que faltaba (es la señal real que
-      manda `systemctl restart`, `SIGINT` solo no alcanzaba). Verificado con smoke test de
-      round-trip (guardar → simular restart → restaurar) — sin tocar producción.
-      **Pendiente: deployar a la Raspberry** (mismo flujo manual `.bak` que §1.1, no hay
-      `git pull` ahí salvo que se ejecute la migración de §-1).
+- [x] §4 implementado y **deployado en producción** — ✅ 2026-08-29, PC de Javier.
+      `processor.js` persiste `deviceState`/`petBaseline` a `bridge-state.json` (cada 30s +
+      en shutdown) y los recarga al iniciar; el bridge gana el handler de `SIGTERM` que
+      faltaba (es la señal real que manda `systemctl restart`, `SIGINT` solo no alcanzaba).
+      Verificado con smoke test de round-trip local, backup + `node --check` (local y en la
+      Pi) + swap + restart, y **un segundo restart real en producción** con log
+      `[PROCESSOR] Estado restaurado desde disco (2 devices, 0 pets)` confirmando que
+      funciona de punta a punta. `device_type` de KPCL0035 confirmado intacto en
+      `water_bowl` vía query directa a Supabase después del deploy.
+
+  ⚠️ **Hallazgo crítico durante el deploy — drift repo/producción en `bridge/src/index.js`,
+  independiente de §4:** el commit `85a9e20` ("3 fixes de bajo riesgo deployados") solo
+  tocó `Knowledge/`, **nunca `bridge/src/index.js`** — los 3 fixes (§3.1 TLS,
+  `DEVICE_TYPE_MAP`→`DEVICE_TYPE_MANUAL_OVERRIDE`, retiro de escritura a
+  `sensor_readings`) están confirmados en producción pero el repo nunca los tuvo. Por eso
+  el deploy de hoy se hizo parcheando el `bridge.js` **real** de la Pi (bajado por scp), no
+  copiando `bridge/src/index.js` del repo — copiar el del repo hoy habría revertido los 3
+  fixes de producción sin darse cuenta. **El repo sigue con esa deuda** (`rejectUnauthorized:
+  false`, `DEVICE_TYPE_MAP` sin usar) — pendiente nuevo: backportear esos 3 fixes a
+  `bridge/src/index.js` del repo para que vuelva a ser la fuente de verdad real. No se hizo
+  en esta sesión por estar fuera del pedido original (persistencia de estado); ver
+  `PENDIENTES_POR_PC.md`.
 - [x] §5 decisión sobre `DEVICE_TYPE_MAP` tomada — ✅ hecho 2026-08-18: se borró (no se
       activó), ver §5 arriba para el razonamiento
 - [ ] Actualizar [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] §6 marcando los
