@@ -19,6 +19,7 @@ kittypau_app/.env*.local
 bridge/.env
 bridge/.env.*
 !bridge/.env.example
+bridge/src/bridge-state.json
 
 # ── Credenciales y certificados ──────────────────────────────
 *.pem

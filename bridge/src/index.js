@@ -596,10 +596,15 @@ async function pollDeviceCommands() {
 setInterval(pollDeviceCommands, 5000);
 
 // ============ GRACEFUL SHUTDOWN ============
-process.on('SIGINT', () => {
-  console.log('\n[BRIDGE] Cerrando conexiones...');
+function shutdown(signal) {
+  console.log(`\n[BRIDGE] ${signal} recibido — cerrando conexiones...`);
+  processor.saveState();
   mqttClient.end();
   process.exit(0);
-});
+}
+// SIGTERM es el que manda "systemctl restart" (SPEC_09 §4) — sin este handler,
+// deviceState/petBaseline de processor.js se perdían en cada restart del bridge.
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 console.log('[BRIDGE] Esperando mensajes MQTT...\n');

@@ -13,6 +13,8 @@
  */
 
 const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
 
 // ── Configuración ─────────────────────────────────────────────
 const SESSION_THRESHOLD_G   = 5;    // caída mínima en gramos para abrir sesión
@@ -21,6 +23,12 @@ const STABLE_TOLERANCE_G    = 3;    // varianza máxima en gramos considerada "e
 const BASELINE_WINDOW       = 30;   // últimas N sesiones para calcular baseline
 const ZSCORE_HIGH_THRESHOLD = 1.5;
 const ZSCORE_LOW_THRESHOLD  = -1.5;
+
+// Estado en memoria (deviceState/petBaseline) persistido en el mismo directorio que este
+// archivo — funciona igual en el repo (bridge/src/) y en el deploy real de la Pi (carpeta
+// suelta, ver SPEC_09 §-1), donde no hay .git ni estructura src/.
+const STATE_FILE       = path.join(__dirname, 'bridge-state.json');
+const SAVE_INTERVAL_MS = 30_000;
 
 // ── Cliente analytics ─────────────────────────────────────────
 let analyticsClient = null;
@@ -294,6 +302,39 @@ async function upsertDailySummary(session, gramsConsumed, sessionType) {
   }
 }
 
+// ── Persistencia de estado en disco (SPEC_09 §4 — sobrevive a systemctl restart) ────
+
+function loadState() {
+  try {
+    if (!fs.existsSync(STATE_FILE)) return;
+    const raw = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+
+    for (const [deviceId, state] of raw.deviceState ?? []) {
+      state.sessionStart = state.sessionStart ? new Date(state.sessionStart) : null;
+      deviceState.set(deviceId, state);
+    }
+    for (const [petId, baseline] of raw.petBaseline ?? []) {
+      petBaseline.set(petId, baseline);
+    }
+
+    console.log(`[PROCESSOR] Estado restaurado desde disco (${deviceState.size} devices, ${petBaseline.size} pets)`);
+  } catch (err) {
+    console.error(`[PROCESSOR] Error restaurando estado desde disco: ${err.message}`);
+  }
+}
+
+function saveState() {
+  try {
+    const data = {
+      deviceState: [...deviceState.entries()],
+      petBaseline: [...petBaseline.entries()],
+    };
+    fs.writeFileSync(STATE_FILE, JSON.stringify(data));
+  } catch (err) {
+    console.error(`[PROCESSOR] Error guardando estado en disco: ${err.message}`);
+  }
+}
+
 // ── Init / Export ─────────────────────────────────────────────
 
 function init() {
@@ -301,6 +342,8 @@ function init() {
   if (analyticsClient) {
     console.log('[PROCESSOR] ✓ Analytics processor iniciado');
   }
+  loadState();
+  setInterval(saveState, SAVE_INTERVAL_MS);
 }
 
-module.exports = { init, processReading };
+module.exports = { init, processReading, saveState };

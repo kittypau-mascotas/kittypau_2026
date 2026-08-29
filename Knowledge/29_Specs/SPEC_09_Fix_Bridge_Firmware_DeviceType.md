@@ -89,6 +89,27 @@ migrar el `.env`) — así el próximo fix sí se puede hacer con `git pull`, en
 el patrón manual de `.bak`. Es una mejora de una sola vez, no bloqueante para aplicar el fix
 de §1.1 ahora mismo a mano si hay apuro.
 
+**Evaluación 2026-08-29 (PC de Javier) — comparadas las 2 opciones de arriba, no ejecutado:**
+
+- **`git init` in place — no recomendado.** Arrastraría a la historia de git los `.bak*`
+  sueltos ya acumulados y cualquier drift no documentado entre lo desplegado y el repo (ya
+  hubo un caso real: v3.1 desplegado vs. v3.2 del repo, ver hallazgo arriba).
+- **Clone limpio en carpeta nueva + swap — recomendado.** Pasos: (1) `git clone` del repo en
+  una carpeta nueva (ej. `/home/kittypau/kittypau-bridge-git`); (2) copiar el `.env` real
+  (gitignoreado, nunca se commitea) al clone nuevo; (3) **antes de apuntar el servicio ahí,
+  diff `bridge.js`/`processor.js` desplegados contra `bridge/src/index.js`/`processor.js`
+  del repo** para confirmar que no hay drift no documentado que el swap pisaría sin
+  querer — mismo chequeo que ya destapó el caso v3.1/v3.2; (4) actualizar
+  `WorkingDirectory`/`ExecStart` de `bridge/systemd/kittypau-bridge.service` al path nuevo;
+  (5) `sudo systemctl daemon-reload` + restart + verificar; (6) dejar la carpeta vieja como
+  backup unos días antes de borrarla.
+- El fix de persistencia de §4 (ver abajo, código listo en el repo desde hoy) todavía no
+  está deployado en la Pi — si se hace el clone limpio, viene incluido automáticamente. Si en
+  cambio se sigue el flujo manual `.bak`, hay que copiar `processor.js`/`index.js`
+  actualizados aparte.
+- **No ejecutado** — toca la Pi en producción, requiere confirmación explícita antes de
+  tocarla (mismo criterio que §1.1).
+
 ### ✅ SSH ya funciona sin password (hecho 2026-08-14 desde la PC de Javier)
 
 Se generó una key ed25519 (`~/.ssh/kittypau_bridge` en la PC de Javier) y se agregó a
@@ -422,7 +443,14 @@ sin un motivo concreto para tocarlo (YAGNI).
 - [x] §3.1 `rejectUnauthorized` corregido y conexión MQTT confirmada estable — ✅ hecho
       2026-08-18, deployado y verificado (`[MQTT] Conectado a HiveMQ Cloud` limpio)
 - [ ] §3.2 decisión de Mauro registrada (mantener o migrar credenciales)
-- [ ] §4 persistencia de estado implementada (o explícitamente diferida)
+- [x] §4 código implementado en el repo — ✅ 2026-08-29, PC de Javier.
+      `bridge/src/processor.js` persiste `deviceState`/`petBaseline` a
+      `bridge-state.json` (cada 30s + en shutdown) y los recarga al iniciar;
+      `bridge/src/index.js` gana el handler de `SIGTERM` que faltaba (es la señal real que
+      manda `systemctl restart`, `SIGINT` solo no alcanzaba). Verificado con smoke test de
+      round-trip (guardar → simular restart → restaurar) — sin tocar producción.
+      **Pendiente: deployar a la Raspberry** (mismo flujo manual `.bak` que §1.1, no hay
+      `git pull` ahí salvo que se ejecute la migración de §-1).
 - [x] §5 decisión sobre `DEVICE_TYPE_MAP` tomada — ✅ hecho 2026-08-18: se borró (no se
       activó), ver §5 arriba para el razonamiento
 - [ ] Actualizar [[29_Specs/SPEC_08_Auditoria_Tipificacion_Dispositivos]] §6 marcando los
