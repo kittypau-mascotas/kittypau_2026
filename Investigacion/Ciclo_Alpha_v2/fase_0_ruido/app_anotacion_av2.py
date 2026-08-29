@@ -2420,6 +2420,9 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                 for k in CATEGORIAS
                 if k in df_anot["categoria"].values and k != "ciclo_servido_alimento"
             }
+            _mets_comp: dict = {}  # poblado abajo si hay ≥1 categoría — reutilizado más
+            # abajo en "Análisis individual" para no recalcular calcular_metricas() dos
+            # veces sobre las mismas (df_lec, t_ini, t_fin) en el mismo rerun.
             if cats_con_data:
                 st.markdown("#### 🎯 Resumen — Comparación entre categorías")
                 st.caption(
@@ -2564,8 +2567,18 @@ div[data-testid="stRadio"][data-key="tab_nav"] label p { margin: 0; }
                         )
 
                 else:
-                    mets_all = [calcular_metricas(df_lec, r["t_inicio"], r["t_fin"]) for _, r in df_cat.iterrows()]
-                    mets_all = [m for m in mets_all if m]
+                    # Reusa el batch ya calculado arriba (misma categoría, mismas
+                    # (df_lec, t_ini, t_fin)) en vez de recorrer df_cat.iterrows() de
+                    # nuevo — evita duplicar ~n llamadas a calcular_metricas() en el
+                    # mismo rerun. Fallback al cálculo directo solo si el resumen de
+                    # arriba no corrió (ej. una sola categoría con datos).
+                    if cat_an in _mets_comp:
+                        mets_all = [m for m in _mets_comp[cat_an] if m]
+                    else:
+                        mets_all = [
+                            m for _, r in df_cat.iterrows()
+                            if (m := calcular_metricas(df_lec, r["t_inicio"], r["t_fin"]))
+                        ]
 
                     with ac2:
                         if mets_all:
