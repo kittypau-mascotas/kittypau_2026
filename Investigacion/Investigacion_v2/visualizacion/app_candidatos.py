@@ -322,6 +322,23 @@ if modo_revision_sin_anotacion:
         cand_device[cand_device["categoria_real"] == "sin_anotacion"]
         .sort_values("ts_inicio").reset_index(drop=True)
     )
+    if len(vista):
+        _predicciones_bulk = vista[col_cluster].map(_categoria_dominante_por_cluster)
+        _n_guardables = int(_predicciones_bulk.notna().sum())
+        if st.button(
+            f"💾 Guardar los {_n_guardables} candidatos de esta lista con la "
+            "categoría que sugiere el modelo",
+            disabled=_n_guardables == 0,
+            help="Guarda cada candidato con la categoría dominante de su cluster "
+                 "(la misma que se muestra abajo en la revisión 1 a 1) -- sin "
+                 "revisarlos uno por uno. Los clusters sin categoría dominante "
+                 "conocida ('?') se saltan.",
+        ):
+            for _cid, _pred in zip(vista["candidato_id"], _predicciones_bulk):
+                if pd.notna(_pred):
+                    guardar_veredicto(_cid, _pred)
+            st.success(f"Guardados {_n_guardables} veredictos.")
+            st.rerun()
 else:
     st.subheader(f"Candidatos del cluster {cluster_bueno} — uno por uno")
     vista = cand_device[cand_device[col_cluster] == cluster_bueno].sort_values("ts_inicio").reset_index(drop=True)
