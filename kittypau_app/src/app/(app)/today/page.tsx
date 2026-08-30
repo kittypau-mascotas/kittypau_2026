@@ -41,6 +41,7 @@ import { authFetch } from "@/lib/auth/auth-fetch";
 import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
+import { useHungerBarEventNotifications } from "@/lib/hooks/useHungerBarEventNotifications";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -469,21 +470,6 @@ function findSessionForPoint(
       (session) =>
         pointIndex >= session.startIndex && pointIndex <= session.endIndex,
     ) ?? null
-  );
-}
-
-// Igual que findSessionForPoint pero por tiempo -- necesario para el dataset de
-// Alimentación/Servido del gráfico de /today, que ahora son subconjuntos
-// FILTRADOS de bowlDayNightPoints (ver Knowledge/29_Specs/007-motor-
-// alimentacion-produccion/): startIndex/endIndex de IntakeSession se calcularon
-// contra el array completo, no contra el subconjunto que llega a cada dataset.
-function findSessionForTime(
-  sessions: IntakeSession[],
-  tMs: number,
-): IntakeSession | null {
-  return (
-    sessions.find((session) => tMs >= session.startT && tMs <= session.endT) ??
-    null
   );
 }
 
@@ -1044,6 +1030,13 @@ export default function TodayPage() {
     petName: petLabel,
     status: hungerBar?.status,
     estimatedNextMealAt: hungerBar?.estimatedNextMealAt,
+  });
+  // Aviso positivo (distinto del de atraso de arriba): "comió"/"le sirvieron"
+  // en cuanto el motor de Investigacion_v2 confirma un evento nuevo -- ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/.
+  useHungerBarEventNotifications({
+    petName: petLabel,
+    events: hungerBar?.events,
   });
   const petTypeLabel =
     primaryPet?.type === "dog"
@@ -1703,21 +1696,6 @@ export default function TodayPage() {
     [deviceHistoryReadings, waterChartReadings, waterDevice?.id],
   );
 
-  const bowlIntakeSessions = useMemo(() => {
-    if (!isAuthoritativeFoodDevice) return [];
-    return buildAuditSessions(
-      deviceAuditEvents[bowlDevice?.id ?? ""] ?? [],
-      bowlDayNightPoints,
-      FOOD_START_CATEGORY,
-      FOOD_END_CATEGORY,
-    );
-  }, [
-    bowlDayNightPoints,
-    bowlDevice?.id,
-    deviceAuditEvents,
-    isAuthoritativeFoodDevice,
-  ]);
-
   const waterIntakeSessions = useMemo(() => {
     return buildAuditSessions(
       deviceAuditEvents[waterDevice?.id ?? ""] ?? [],
@@ -1964,87 +1942,38 @@ export default function TodayPage() {
               return [`${seriesTitle}: ${valueText}`];
             },
             afterLabel: (context) => {
+              // Pedido explícito: al pasar el mouse sobre el plato
+              // (Alimentación/Servido) el tooltip debe decir ÚNICAMENTE la
+              // hora (ya la da `title`) y cuánto comió (ya lo da `label`) --
+              // sin líneas extra de auditoría ni de cross-referencia del
+              // modelo. Hidratación (el bebedero, no "el plato") conserva su
+              // detalle de sesión auditada.
               const label = String(context.dataset.label ?? "Serie");
               const isHydration = label.includes("Hidratación");
-              const isFood = !isHydration; // Alimentación o Servido, ambos son el plato
-              const unit = isHydration ? "cm3 (aprox)" : "g";
-              const t =
-                dayNightWindow.startMs +
-                Number(context.parsed.x) * 60 * 60 * 1000;
-              const sessions = isFood
-                ? bowlIntakeSessions
-                : waterIntakeSessions;
-              const session = isFood
-                ? findSessionForTime(sessions, t)
-                : findSessionForPoint(sessions, context.dataIndex);
-              const auditLines: string[] = [];
-              if (!session) {
-                auditLines.push(
-                  isFood
-                    ? "Sin evidencia auditada de alimentación"
-                    : "Sin evento registrado",
-                );
-              } else {
-                const deviceId = isFood
-                  ? (bowlDevice?.id ?? "")
-                  : (waterDevice?.id ?? "");
-                const auditEvents = deviceAuditEvents[deviceId] ?? [];
-                const startCat = isHydration
-                  ? WATER_START_CATEGORY
-                  : FOOD_START_CATEGORY;
-                const isConfirmed = auditEvents.some(
-                  (e) =>
-                    e.category === startCat &&
-                    Math.abs(
-                      new Date(e.created_at).getTime() - session.startT,
-                    ) <
-                      5 * 60 * 1000,
-                );
-                const statusLabel = isFood
-                  ? "✓ Alimentación confirmada (audit_event)"
-                  : isConfirmed
-                    ? "✓ Hidratación confirmada"
-                    : "Hidratación detectada";
-                auditLines.push(
-                  statusLabel,
-                  `Inicio: ${formatSessionClock(session.startT)}`,
-                  `Fin: ${formatSessionClock(session.endT)}`,
-                  `Duración: ${formatSessionDuration(session.durationMinutes)}`,
-                  `Consumo: ${Math.round(session.consumed)} ${unit}`,
-                );
-              }
+              if (!isHydration) return [];
 
-              // Modelo de Investigacion_v2 (solo KPCL0034) -- siempre muestra
-              // ambas categorías (alimentación + servido) cerca del punto, sin
-              // importar en qué serie se hizo hover (FR-006).
-              if (isFood && bowlEventsPorCategoria) {
-                const VENTANA_MS = 2 * 60 * 60 * 1000;
-                const masCercano = (categoria: "alimentacion" | "servido") =>
-                  bowlEventsPorCategoria
-                    .filter((ev) => ev.category === categoria)
-                    .map((ev) => ({
-                      ev,
-                      dist: Math.min(
-                        Math.abs(new Date(ev.startAt).getTime() - t),
-                        Math.abs(new Date(ev.endAt).getTime() - t),
-                      ),
-                    }))
-                    .filter((x) => x.dist <= VENTANA_MS)
-                    .sort((a, b) => a.dist - b.dist)[0]?.ev ?? null;
-                const alim = masCercano("alimentacion");
-                const serv = masCercano("servido");
-                auditLines.push(
-                  "— Modelo (Investigacion_v2) —",
-                  alim
-                    ? `Alimentación: ${formatSessionClock(new Date(alim.startAt).getTime())}${alim.isProvisional ? " (provisoria)" : ""}`
-                    : "Alimentación: sin evento cercano",
-                  serv
-                    ? `Servido: ${formatSessionClock(new Date(serv.startAt).getTime())}${serv.isProvisional ? " (provisorio)" : ""}`
-                    : "Servido: sin evento cercano",
-                );
-              }
-
-              return auditLines;
+              const session = findSessionForPoint(
+                waterIntakeSessions,
+                context.dataIndex,
+              );
+              if (!session) return ["Sin evento registrado"];
+              const auditEvents =
+                deviceAuditEvents[waterDevice?.id ?? ""] ?? [];
+              const isConfirmed = auditEvents.some(
+                (e) =>
+                  e.category === WATER_START_CATEGORY &&
+                  Math.abs(new Date(e.created_at).getTime() - session.startT) <
+                    5 * 60 * 1000,
+              );
+              return [
+                isConfirmed
+                  ? "✓ Hidratación confirmada"
+                  : "Hidratación detectada",
+                `Inicio: ${formatSessionClock(session.startT)}`,
+                `Fin: ${formatSessionClock(session.endT)}`,
+                `Duración: ${formatSessionDuration(session.durationMinutes)}`,
+                `Consumo: ${Math.round(session.consumed)} cm3 (aprox)`,
+              ];
             },
             footer: () => "KittyPaw · Ciclo diario",
           },
@@ -2099,12 +2028,7 @@ export default function TodayPage() {
         },
       },
     }),
-    [
-      bowlEventsPorCategoria,
-      bowlIntakeSessions,
-      dayNightWindow.startMs,
-      waterIntakeSessions,
-    ],
+    [dayNightWindow.startMs, waterIntakeSessions],
   );
 
   const nowMs = useMemo(() => Date.now(), []);
