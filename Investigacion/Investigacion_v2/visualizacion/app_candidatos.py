@@ -2,8 +2,13 @@
 App de visualizacion de candidatos y clusters -- Investigacion_v2, Paso 4.
 
 Solo visualiza, no guarda nada todavia (a proposito). Lee:
-  - ../data/lecturas_limpias.csv     (cache post-dedup de Paso 1)
-  - ../data/candidatos_clusters.csv  (candidatos + etiquetas de 4 modelos, Paso 4)
+  - ../data/lecturas_limpias.csv           (cache post-dedup de Paso 1)
+  - ../data/candidatos_clusters.csv          (features propias, tau=1 lectura, notebook 05)
+  - ../data/candidatos_clusters_duracion.csv (features propias, tau=180s calibrado, notebook 07)
+  - ../data/candidatos_categoria_real.csv    (categoria real por candidato via
+                                               solapamiento contra anotaciones reales,
+                                               solo KPCL0034, notebook 08 -- opcional)
+Fuente de clusters elegible desde el sidebar ("Segmentación / features usadas").
 
 Cada candidato ya tiene un `candidato_id` unico (device_code + timestamp de
 inicio) -- pensado para cuando se agregue el guardado real, poder marcar
@@ -23,6 +28,15 @@ CACHE_CSV = DATA_DIR / "lecturas_limpias.csv"
 FUENTES_CLUSTERS = {
     "Features propias, τ=1 lectura (notebook 05)": DATA_DIR / "candidatos_clusters.csv",
     "Features propias, τ=180s calibrado (notebook 07)": DATA_DIR / "candidatos_clusters_duracion.csv",
+}
+CATEGORIA_REAL_CSV = DATA_DIR / "candidatos_categoria_real.csv"
+
+COLOR_CATEGORIA = {
+    "alimentacion": "tab:green",
+    "servido": "tab:blue",
+    "ruido": "tab:orange",
+    "sin_anotacion": "lightgray",
+    "sin_validar": "lightgray",
 }
 
 MODELOS = {
@@ -49,6 +63,14 @@ def cargar_candidatos(ruta_csv: str):
     df = pd.read_csv(ruta_csv)
     df["ts_inicio"] = pd.to_datetime(df["ts_inicio"], format="ISO8601", utc=True)
     df["ts_fin"] = pd.to_datetime(df["ts_fin"], format="ISO8601", utc=True)
+    if CATEGORIA_REAL_CSV.exists():
+        # solo existe para KPCL0034 (unica con anotaciones reales, notebook 08) --
+        # las filas que no matchean (KPCL0035, u otra fuente de clusters) quedan NaN
+        categorias = pd.read_csv(CATEGORIA_REAL_CSV)
+        df = df.merge(categorias, on="candidato_id", how="left")
+        df["categoria_real"] = df["categoria_real"].fillna("sin_validar")
+    else:
+        df["categoria_real"] = "sin_validar"
     return df
 
 
@@ -104,24 +126,31 @@ def graficar_candidato(fila, ax):
 # --- Seccion 1: vista general de clusters --------------------------------------
 st.subheader(f"Clusters — {device_code} — {modelo_nombre}")
 
+hay_categoria_real = (cand_device["categoria_real"] != "sin_validar").any()
+if hay_categoria_real:
+    st.caption(
+        "Color = categoría real (anotación verificada, solo KPCL0034). "
+        "Borde negro = pertenece al cluster elegido (rojo en el gráfico anterior)."
+    )
+
 fig1, ax1 = plt.subplots(figsize=(9, 5))
-for _c in clusters_disponibles:
-    _sub = cand_device[cand_device[col_cluster] == _c]
-    if _c == cluster_bueno:
-        ax1.scatter(
-            _sub["duracion_s"], _sub["delta_neto_real"],
-            color="red", label=f"cluster {_c} (elegido)", alpha=0.8, zorder=3,
-        )
-    else:
-        ax1.scatter(
-            _sub["duracion_s"], _sub["delta_neto_real"],
-            color="lightgray", label=f"cluster {_c}", alpha=0.6, zorder=1,
-        )
+for _cat, _sub in cand_device.groupby("categoria_real"):
+    _en_cluster_bueno = _sub[col_cluster] == cluster_bueno
+    ax1.scatter(
+        _sub.loc[~_en_cluster_bueno, "duracion_s"], _sub.loc[~_en_cluster_bueno, "delta_neto_real"],
+        color=COLOR_CATEGORIA.get(_cat, "lightgray"), alpha=0.5, zorder=1, label=f"{_cat}",
+    )
+    ax1.scatter(
+        _sub.loc[_en_cluster_bueno, "duracion_s"], _sub.loc[_en_cluster_bueno, "delta_neto_real"],
+        color=COLOR_CATEGORIA.get(_cat, "lightgray"), alpha=0.9, zorder=3,
+        edgecolor="black", linewidth=1.2,
+    )
 ax1.set_xscale("log")
 ax1.axhline(0, color="gray", linewidth=0.5)
 ax1.set_xlabel("duración (s, log)")
 ax1.set_ylabel("delta_neto_real (g)")
-ax1.legend()
+ax1.legend(title="Categoría real" if hay_categoria_real else "categoria_real")
+ax1.set_title(f"Cluster elegido: {cluster_bueno} (borde negro)")
 st.pyplot(fig1)
 plt.close(fig1)
 
@@ -169,6 +198,15 @@ else:
     st.markdown(
         f"<p style='text-align:center'>Inicio: {_ini_stgo:%Y-%m-%d %H:%M:%S} &nbsp;→&nbsp; "
         f"Fin: {_fin_stgo:%Y-%m-%d %H:%M:%S} &nbsp;(hora Santiago)</p>",
+        unsafe_allow_html=True,
+    )
+    _categoria = fila["categoria_real"]
+    _etiqueta_categoria = {
+        "sin_anotacion": "sin anotación real cerca",
+        "sin_validar": "sin validar (dispositivo/fuente sin anotaciones reales)",
+    }.get(_categoria, _categoria)
+    st.markdown(
+        f"<p style='text-align:center'>Categoría real (anotación): <b>{_etiqueta_categoria}</b></p>",
         unsafe_allow_html=True,
     )
 
