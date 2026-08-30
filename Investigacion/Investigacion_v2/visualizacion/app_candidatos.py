@@ -1,7 +1,7 @@
 """
 App de visualizacion de candidatos y clusters -- Investigacion_v2, Paso 4.
 
-Solo visualiza, no guarda nada todavia (a proposito). Lee:
+Lee:
   - ../data/lecturas_limpias.csv           (cache post-dedup de Paso 1)
   - ../data/candidatos_clusters.csv          (features propias, tau=1 lectura, notebook 05)
   - ../data/candidatos_clusters_duracion.csv (features propias, tau=180s calibrado, notebook 07)
@@ -9,6 +9,12 @@ Solo visualiza, no guarda nada todavia (a proposito). Lee:
                                                solapamiento contra anotaciones reales,
                                                solo KPCL0034, notebook 08 -- opcional)
 Fuente de clusters elegible desde el sidebar ("Segmentación / features usadas").
+
+Modo "Revisar candidatos sin anotación real" (checkbox del sidebar): muestra
+la categoría que el cluster elegido sugiere para cada candidato sin ninguna
+anotación real cerca, y guarda el veredicto manual en
+../data/revision_sin_anotacion.csv (candidato_id -> veredicto). Es el unico
+guardado que hace la app -- el resto sigue siendo solo visualizacion.
 
 Cada candidato ya tiene un `candidato_id` unico (device_code + timestamp de
 inicio) -- pensado para cuando se agregue el guardado real, poder marcar
@@ -31,6 +37,9 @@ FUENTES_CLUSTERS = {
     "τ=1 lectura, original (notebook 05)": DATA_DIR / "candidatos_clusters.csv",
 }
 CATEGORIA_REAL_CSV = DATA_DIR / "candidatos_categoria_real.csv"
+REVISION_SIN_ANOTACION_CSV = DATA_DIR / "revision_sin_anotacion.csv"
+
+VEREDICTOS = ["(sin revisar)", "alimentacion", "servido", "ruido", "no está claro"]
 
 RESUMEN_MODELO_RECOMENDADO = """
 **★ Modelo recomendado: KMeans + refinamiento delta_w, sobre τ=180s**
@@ -156,6 +165,28 @@ st.sidebar.caption(
 with st.sidebar.expander("ℹ️ Por qué este es el modelo recomendado", expanded=False):
     st.markdown(RESUMEN_MODELO_RECOMENDADO)
 
+st.sidebar.divider()
+modo_revision_sin_anotacion = st.sidebar.checkbox(
+    "🔍 Revisar candidatos sin anotación real",
+    help="Corre el modelo elegido sobre los candidatos que no coinciden con "
+         "ninguna anotación real, y deja marcar si la categoría que el "
+         "cluster sugiere está bien o no.",
+)
+
+
+def cargar_veredictos():
+    if REVISION_SIN_ANOTACION_CSV.exists():
+        return pd.read_csv(REVISION_SIN_ANOTACION_CSV).set_index("candidato_id")["veredicto"].to_dict()
+    return {}
+
+
+def guardar_veredicto(candidato_id, veredicto):
+    _veredictos = cargar_veredictos()
+    _veredictos[candidato_id] = veredicto
+    pd.DataFrame(
+        [{"candidato_id": k, "veredicto": v} for k, v in _veredictos.items()]
+    ).to_csv(REVISION_SIN_ANOTACION_CSV, index=False)
+
 
 def graficar_candidato(fila, ax):
     _m = lecturas["device_code"] == fila["device_code"]
@@ -213,19 +244,39 @@ with st.expander("Medianas por cluster"):
 
 st.divider()
 
-# --- Seccion 2: revision 1 a 1 del cluster elegido -----------------------------
-st.subheader(f"Candidatos del cluster {cluster_bueno} — uno por uno")
+# --- Seccion 2: revision 1 a 1 -------------------------------------------------
+if modo_revision_sin_anotacion:
+    st.subheader("Candidatos sin anotación real — ¿el modelo acertó?")
+    st.caption(
+        "El modelo se corre igual que siempre; acá se muestra qué categoría "
+        "sugiere el cluster de cada candidato, para que confirmes o corrijas."
+    )
+    # categoria dominante de cada cluster, calculada solo con candidatos que SI
+    # tienen categoria real (para no usar "sin_anotacion" para predecir "sin_anotacion")
+    _con_categoria_real = cand_device[~cand_device["categoria_real"].isin(["sin_anotacion", "sin_validar"])]
+    _categoria_dominante_por_cluster = (
+        _con_categoria_real.groupby(col_cluster)["categoria_real"]
+        .agg(lambda s: s.mode().iat[0] if not s.mode().empty else "?")
+    )
+    vista = (
+        cand_device[cand_device["categoria_real"] == "sin_anotacion"]
+        .sort_values("ts_inicio").reset_index(drop=True)
+    )
+else:
+    st.subheader(f"Candidatos del cluster {cluster_bueno} — uno por uno")
+    vista = cand_device[cand_device[col_cluster] == cluster_bueno].sort_values("ts_inicio").reset_index(drop=True)
 
-vista = cand_device[cand_device[col_cluster] == cluster_bueno].sort_values("ts_inicio").reset_index(drop=True)
-
-clave_seleccion = (fuente_nombre, device_code, modelo_nombre, cluster_bueno)
+clave_seleccion = (fuente_nombre, device_code, modelo_nombre, cluster_bueno, modo_revision_sin_anotacion)
 if st.session_state.get("clave_seleccion") != clave_seleccion:
     st.session_state["clave_seleccion"] = clave_seleccion
     st.session_state["idx_revision"] = 0
 
 n_vista = len(vista)
 if n_vista == 0:
-    st.warning("Este cluster no tiene candidatos para este dispositivo.")
+    st.warning(
+        "No hay candidatos sin anotación real acá." if modo_revision_sin_anotacion
+        else "Este cluster no tiene candidatos para este dispositivo."
+    )
 else:
     idx = st.session_state["idx_revision"]
     idx = max(0, min(idx, n_vista - 1))
@@ -250,17 +301,38 @@ else:
         f"Fin: {_fin_stgo:%Y-%m-%d %H:%M:%S} &nbsp;(hora Santiago)</p>",
         unsafe_allow_html=True,
     )
-    _categoria = fila["categoria_real"]
-    _etiqueta_categoria = {
-        "sin_anotacion": "sin anotación real cerca",
-        "sin_validar": "sin validar (dispositivo/fuente sin anotaciones reales)",
-    }.get(_categoria, _categoria)
-    st.markdown(
-        f"<p style='text-align:center'>Categoría real (anotación): <b>{_etiqueta_categoria}</b></p>",
-        unsafe_allow_html=True,
-    )
+    if modo_revision_sin_anotacion:
+        _prediccion = _categoria_dominante_por_cluster.get(fila[col_cluster], "?")
+        st.markdown(
+            f"<p style='text-align:center'>El modelo dice (cluster {fila[col_cluster]}): "
+            f"<b>{_prediccion}</b></p>",
+            unsafe_allow_html=True,
+        )
+    else:
+        _categoria = fila["categoria_real"]
+        _etiqueta_categoria = {
+            "sin_anotacion": "sin anotación real cerca",
+            "sin_validar": "sin validar (dispositivo/fuente sin anotaciones reales)",
+        }.get(_categoria, _categoria)
+        st.markdown(
+            f"<p style='text-align:center'>Categoría real (anotación): <b>{_etiqueta_categoria}</b></p>",
+            unsafe_allow_html=True,
+        )
 
     fig2, ax2 = plt.subplots(figsize=(8, 4))
     graficar_candidato(fila, ax2)
     st.pyplot(fig2)
     plt.close(fig2)
+
+    if modo_revision_sin_anotacion:
+        _veredictos_guardados = cargar_veredictos()
+        _veredicto_actual = _veredictos_guardados.get(fila["candidato_id"], "(sin revisar)")
+        _veredicto_elegido = st.selectbox(
+            "Tu veredicto", VEREDICTOS,
+            index=VEREDICTOS.index(_veredicto_actual) if _veredicto_actual in VEREDICTOS else 0,
+            key=f"veredicto_{fila['candidato_id']}",
+        )
+        if _veredicto_elegido != _veredicto_actual:
+            guardar_veredicto(fila["candidato_id"], _veredicto_elegido)
+            st.rerun()
+        st.caption(f"{len(_veredictos_guardados):,} candidatos ya revisados en total (todas las fuentes/modelos).")

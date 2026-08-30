@@ -22,7 +22,7 @@ estado: activo
 | `03_kpcl0035_periodo.ipynb` | Escrutinio period-over-period de KPCL0035 (agua) — el mismo análisis que Paso 1 le hizo a KPCL0034, pero partido por el apagón real de 18 días, no por UUID |
 | `04_deteccion_candidatos.ipynb` | Paso 3 — detección de candidatos 100% desde cero (sin motor viejo): segmentos activos + filtro por z-score modificado (MAD) + revisión manual con contexto |
 | `05_clustering_no_supervisado.ipynb` | Paso 4 — clustering no supervisado (KMeans/Agglomerative/GMM/DBSCAN) sobre los candidatos, sin etiquetas |
-| `visualizacion/app_candidatos.py` | App Streamlit — visualiza los clusters y navega los candidatos del cluster elegido uno por uno. Solo visualiza, no guarda todavía |
+| `visualizacion/app_candidatos.py` | App Streamlit — visualiza clusters, navega candidatos uno por uno, y permite revisar/guardar veredictos sobre los candidatos sin anotación real |
 | `data/candidatos_clusters.csv` | Candidatos con `candidato_id` único + etiqueta de los 4 modelos, generado por `05_...ipynb`, consumido por la app |
 | `data/lecturas_limpias.csv` | Cache (device_id, device_code, ts, peso — post-dedup), generado por `01_caracterizacion_fondo.ipynb`, consumido por 02/03/04 |
 
@@ -431,25 +431,32 @@ causa: **hace falta juntar candidatos pegados en el tiempo antes de analizar la 
 solo mejorar las features de cada segmento aislado. Queda como el paso pendiente más
 concreto antes de reintentar clustering o clasificación.
 
-## `visualizacion/app_candidatos.py` — visor de clusters y candidatos (sin guardar todavía)
+## `visualizacion/app_candidatos.py` — visor de clusters y candidatos
 
-App Streamlit (`streamlit run app_candidatos.py` desde `visualizacion/`), solo lectura por
-ahora — el objetivo final es guardar candidatos revisados, pero **esta versión únicamente
-visualiza**, a propósito, hasta decidir el criterio de clasificación con la revisión manual.
+App Streamlit (`streamlit run app_candidatos.py` desde `visualizacion/`). Abre con el
+modelo recomendado (τ=180s + KMeans+refinamiento) por default, marcado con "★" en el
+sidebar.
 
-- Sidebar: dispositivo, modelo de clustering (de los 4 que corrió el notebook 05), y cuál
-  cluster "funciona mejor" — decisión del usuario, no hay un default correcto.
-- Vista general: scatter `duración` vs `delta_neto_real` del dispositivo/modelo elegido, con
-  el cluster elegido en **rojo** y el resto en gris.
+- Sidebar: fuente de segmentación, dispositivo, modelo de clustering, cuál cluster
+  "funciona mejor" (decisión del usuario), y un expander "Por qué este es el modelo
+  recomendado" con el resumen completo de la validación (cobertura, pureza de cluster).
+- Vista general: scatter `duración` vs `delta_neto_real`, color = categoría real (cuando
+  existe), borde negro = pertenece al cluster elegido. Tabla de composición real por
+  cluster (% de cada categoría), calculada en vivo.
 - Revisión 1 a 1: candidatos del cluster elegido, ordenados cronológicamente, con botones
-  "Atrás"/"Siguiente" — muestra únicamente el gráfico del candidato (curva + margen), sin
-  tabla ni texto extra.
-- Cada candidato ya tiene un `candidato_id` único (`device_code` + timestamp de inicio,
-  `data/candidatos_clusters.csv`) — preparado para cuando se agregue el guardado real, así
-  no se vuelven a tocar/solapar lecturas ya clasificadas. El guardado en sí queda pendiente.
+  "Atrás"/"Siguiente" y la categoría real (o "sin_validar" para KPCL0035, que no tiene
+  anotaciones — warning explícito en el sidebar si se elige ese dispositivo).
+- **Modo "Revisar candidatos sin anotación real"** (checkbox del sidebar): filtra a los
+  candidatos sin ninguna anotación real cerca (149/701 en KPCL0034), muestra qué categoría
+  sugiere su cluster, y deja guardar un veredicto manual (`alimentacion`/`servido`/`ruido`/
+  `no está claro`) en `data/revision_sin_anotacion.csv` (`candidato_id` → veredicto) — el
+  único guardado real que hace la app, el resto sigue siendo solo visualización.
+- Cada candidato tiene un `candidato_id` único (`device_code` + timestamp de inicio) — así
+  el guardado nunca solapa ni duplica sobre lecturas ya revisadas.
 
-Verificado con `streamlit.testing.v1.AppTest` (sin excepciones al cargar, navegar
-Atrás/Siguiente, y cambiar dispositivo/modelo) y con el servidor real corriendo (`HTTP 200`).
+Verificado con `streamlit.testing.v1.AppTest` (carga, navegación, cambio de
+fuente/dispositivo/modelo, modo de revisión y guardado de veredicto) y con el servidor
+real corriendo (`HTTP 200`).
 
 ---
 
