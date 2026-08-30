@@ -434,34 +434,76 @@ concreto antes de reintentar clustering o clasificación.
 ## `visualizacion/app_candidatos.py` — visor de clusters y candidatos
 
 App Streamlit (`streamlit run app_candidatos.py` desde `visualizacion/`). Abre con el
-modelo recomendado (τ=180s + KMeans+refinamiento) por default, marcado con "★" en el
-sidebar.
+modelo recomendado (τ=180s + KMeans + refinamiento + guardia física) por default, marcado
+con "★" en el sidebar.
 
-- Sidebar: fuente de segmentación, dispositivo, modelo de clustering, cuál cluster
-  "funciona mejor" (decisión del usuario), y un expander "Por qué este es el modelo
-  recomendado" con el resumen completo de la validación (cobertura, pureza de cluster).
-- Vista general: scatter `duración` vs `delta_neto_real`, color = categoría real (cuando
-  existe), borde negro = pertenece al cluster elegido. Tabla de composición real por
-  cluster (% de cada categoría), calculada en vivo.
-- Revisión 1 a 1: candidatos del cluster elegido, ordenados cronológicamente, con botones
-  "Atrás"/"Siguiente" y la categoría real (o "sin_validar" para KPCL0035, que no tiene
-  anotaciones — warning explícito en el sidebar si se elige ese dispositivo).
-- **Modo "Revisar candidatos sin anotación real"** (checkbox del sidebar): filtra a los
-  candidatos sin ninguna anotación real cerca (partió en 149/701 en KPCL0034), muestra qué
-  categoría sugiere su cluster, y deja guardar un veredicto manual (`alimentacion`/
-  `servido`/`ruido`/`no está claro`) en `data/revision_sin_anotacion.csv` (`candidato_id` →
-  veredicto) — el único guardado real que hace la app, el resto sigue siendo visualización.
-- Cada candidato tiene un `candidato_id` único (`device_code` + timestamp de inicio) — así
-  el guardado nunca solapa ni duplica sobre lecturas ya revisadas.
+**Sidebar:** fuente de segmentación, dispositivo, modelo de clustering, cuál cluster
+"funciona mejor" (decisión del usuario), y un expander "Por qué este es el modelo
+recomendado" con el resumen completo de validación (cobertura, accuracy con/sin guardia —
+ver Paso 5 más abajo, siempre leído en vivo de `calibracion_kpcl0034_export.json`, nunca
+hardcodeado en la app).
 
-**Primera tanda revisada (2026-08-30):** 34 candidatos confirmados a mano (30 ruido,
-4 alimentación) — **cero desacuerdo** con lo que el cluster ya sugería. Promovidos a
-`categoria_real` (celda "Promover veredictos manuales" de `08_validacion_contra_anotaciones.ipynb`)
-— quedan **115 sin revisar todavía** (antes 149).
+**Sección 0 — Nube 3D + densidad (KDE):** mismo color (categoría real) y borde (cluster
+elegido) que la vista general de abajo, pero con una tercera dimensión (`max_abs_delta_g`,
+scatter 3D) y con densidad KDE por categoría en vez de puntos sueltos — para ver dónde se
+concentra cada categoría, no solo su dispersión punto a punto.
+
+**Sección 1 — Vista general de clusters:** scatter `duración` vs `delta_neto_real`, color =
+categoría real (cuando existe), borde negro = pertenece al cluster elegido. Tabla de
+composición real por cluster (% de cada categoría), calculada en vivo.
+
+**Sección 2 — Últimos eventos por categoría:** tabla de los últimos N candidatos (slider)
+por categoría predicha (alimentación/servido/ruido), con hora de inicio, duración,
+`delta_neto_real`, gap en minutos desde el evento anterior de la misma categoría, y
+categoría real cuando existe — para revisar rápido si la categorización y el espaciado en
+el tiempo tienen sentido (picoteo, eventos pegados) sin consultar la API a mano. Incluye una
+línea de tiempo compacta (carriles fijos por categoría, scatter) de los últimos eventos.
+
+**Sección 3 — Revisión 1 a 1:** candidatos del cluster elegido, ordenados cronológicamente,
+con botones "⬅ Atrás" / "Siguiente ➡" / **"Último ⏭"** (salta directo al candidato más
+reciente) y la categoría real (o "sin_validar" para KPCL0035, sin anotaciones — warning
+explícito en el sidebar si se elige ese dispositivo).
+
+**Modo "🔍 Revisar candidatos sin anotación real"** (checkbox del sidebar) — la herramienta
+principal de etiquetado manual, con 3 capacidades:
+
+- **Veredicto manual** por candidato (`alimentacion`/`servido`/`ruido`/`no está claro`),
+  guardado en `data/revision_sin_anotacion.csv` (`candidato_id` → veredicto).
+- **"💾 Guardar todos con la categoría que sugiere el modelo"** — guardado en bloque de
+  toda la lista visible, sin revisar uno por uno (útil cuando ya se confía en el cluster;
+  ver la advertencia de circularidad más abajo).
+- **"Incluir candidatos que ya tienen categoría real"** — para corregir, no solo llenar
+  huecos; muestra la categoría real actual antes de dejar cambiarla.
+- **"Ordenar por Incertidumbre del modelo"** — *active learning*, no reentrena nada: calcula
+  por candidato la distancia a su cluster más cercano contra el segundo más cercano
+  (reusando la calibración de producción congelada), y muestra primero los casos ambiguos
+  en vez de los más viejos.
+- **Corrección manual de hora de inicio/fin** — cuando el corte automático no coincide con
+  el evento real, se puede corregir la hora (Santiago) y guardarla aparte
+  (`ts_inicio_corregido`/`ts_fin_corregido` en el mismo CSV, compatible hacia atrás); se
+  dibuja como franja violeta a rayas sobre el corte automático (naranja) para comparar.
+
+Cada candidato tiene un `candidato_id` único (`device_code` + timestamp de inicio) — así el
+guardado nunca solapa ni duplica sobre lecturas ya revisadas.
+
+> **Sobre el guardado en bloque y la corrección de hora — no es "reentrenar con el
+> modelo"**: usar las predicciones del modelo para completar `categoria_real` sin que un
+> humano las mire es *validación circular* (el modelo termina midiéndose contra sí mismo,
+> no contra la realidad) — distinto de *overfitting* clásico, pero igual de dañino: un error
+> sistemático del modelo (como el que arregló la guardia física, ver Paso 5) queda grabado
+> como "verdad" en vez de corregido. El guardado en bloque es una herramienta legítima
+> siempre que se le dé una pasada visual después, no un reemplazo de mirar cada caso.
+
+**Progreso de revisión manual (KPCL0034, actualizado 2026-08-30):** 37 candidatos
+confirmados a mano (33 ruido, 4 alimentación) — cero desacuerdo con lo que el cluster ya
+sugería. Promovidos a `categoria_real` (celda "Promover veredictos manuales" de
+`08_validacion_contra_anotaciones.ipynb`, idempotente — re-correrla sin veredictos nuevos no
+cambia nada). Quedan **112 sin revisar todavía** (arrancó en 149, después 115, ahora 112).
 
 Verificado con `streamlit.testing.v1.AppTest` (carga, navegación, cambio de
-fuente/dispositivo/modelo, modo de revisión y guardado de veredicto) y con el servidor
-real corriendo (`HTTP 200`).
+fuente/dispositivo/modelo, guardado individual y en bloque, orden por incertidumbre,
+corrección de hora — restaurando siempre el CSV real después de la prueba) y con el
+servidor real corriendo (`HTTP 200`).
 
 ---
 
@@ -489,8 +531,9 @@ features, no predicciones) de `Ciclo_Alpha_v2/fase_0_ruido/` — las 743 anotaci
   (alimentación/ruido/servido), pureza de cluster 73.9%/100%/75.0%. Exporta
   `candidatos_categoria_real.csv` (`candidato_id` → categoría real, o `sin_anotacion`). Celda
   "Promover veredictos manuales" (2026-08-30): toma los veredictos guardados por
-  `app_candidatos.py` (34 candidatos, ver arriba) y los suma a `categoria_real` — reproducible,
-  no una edición manual del CSV.
+  `app_candidatos.py` (37 candidatos, ver arriba) y los suma a `categoria_real` —
+  **reproducible e idempotente**: se puede correr cuantas veces haga falta a medida que se
+  acumulan más veredictos, re-correrla sin nada nuevo no cambia el resultado.
 
 ## De la investigación a producción — `motor-alimentacion/` en `kittypau_app` (2026-08-30)
 
@@ -508,7 +551,10 @@ volver a correr este script y reemplazar el JSON, sin tocar TypeScript. Incluye
 **`guardia_alimentacion`** (agregada 2026-08-30 tras un hallazgo real en producción: ~11% de
 los candidatos más cercanos al cluster de alimentación tenían `delta_neto_real >= 0` —
 físicamente imposible, comer no sube el peso del plato — se redirigen con el mismo umbral de
-20g ya calibrado; mejora medida: accuracy 80.9%→86.3%).
+20g ya calibrado; mejora medida: accuracy 81.0%→**86.4%**, recall servido 67.4%→**91.8%**).
+Estas métricas de mejora se **recalculan siempre desde los datos actuales** (antes de
+2026-08-30 estaban hardcodeadas de una corrida vieja — quedaban desactualizadas cada vez que
+se promovían más veredictos manuales; corregido el mismo día).
 
 **Dónde se aplica el modelo en la app real** (`kittypau_app/`), en orden de dependencia:
 
@@ -527,11 +573,17 @@ físicamente imposible, comer no sube el peso del plato — se redirigen con el 
      `audit_events` — conviven).
    - **Widget "Comida" de Barras Sims**: porcentaje + "Última comida" + "Próxima comida
      estimada", ya alimentado por `hunger-bar.ts` sin cambios de fórmula.
-   - **Gráfico día/noche**: 3 carriles fijos en Y (Alimentación/Servido/Hidratación, el
-     peso real vive en `valorReal` para el tooltip) — un ícono por evento, ubicado por la
-     hora real del evento (`startAt`), no por lectura cruda cercana.
+   - **Gráfico día/noche**: 3 carriles fijos en Y (Alimentación/Servido/Hidratación — el eje
+     Y ya no sigue el peso real, solo importa el tiempo en X; el peso real vive en
+     `valorReal` para el tooltip). Un ícono por evento, ubicado por la **hora real del
+     evento** (`startAt`) — bug real corregido 2026-08-30: antes se buscaba "la lectura
+     cruda más cercana" en un array que solo tenía datos del día visible, y eventos de otros
+     días se enganchaban a puntos de otra hora o no aparecían. Tooltip del plato
+     (Alimentación/Servido) simplificado a solo hora + cuánto comió (pedido explícito) — sin
+     la cross-referencia servido/alimentación que tenía antes.
 5. `src/lib/hooks/useHungerBarEventNotifications.ts` — notificación push nativa (Capacitor)
-   cuando el motor confirma un evento nuevo de alimentación/servido.
+   cuando el motor confirma un evento nuevo de alimentación/servido (solo eventos nuevos
+   desde que se monta el hook, no dispara para todo el historial al cargar la página).
 
 Validado localmente (`tsc`, `eslint`, `vitest`, `npm run build`, servidor real con Playwright
 logueado como `kittypau.mascotas@gmail.com`) — no se tocó Supabase/Vercel de producción.

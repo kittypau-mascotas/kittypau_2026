@@ -110,24 +110,52 @@ tono visual (ámbar) distinto de "Confirmado" (verde, solo auditoría). No reemp
 
 ## Decisión 6 — Gráfico de /today (`day-night-timeline-card.tsx` + `dayNightChartData` en `page.tsx`)
 
-El dataset "Alimentación" pasó de graficar **todas** las lecturas crudas del comedero a graficar
-solo las que caen dentro de una ventana `[startAt,endAt]` de un evento clasificado como
-`alimentacion` (`bowlAlimentacionPoints`). Se agregó un dataset nuevo "Servido"
-(`bowlServidoPoints`) con ícono distinto (`pointStyle: "rectRot"`, color índigo — sin encargar un
-asset nuevo, ver ladder Ponytail escalón 4/5) para las lecturas dentro de ventanas `servido`. Fuera
-de KPCL0034 (sin `hunger-bar.events`), el dataset de Alimentación cae de vuelta al comportamiento
-actual (todas las lecturas) — no rompe KPCL0035.
+Iteración en varios pasos, terminó bastante distinto de como arrancó:
 
-Tooltip (`afterLabel`): al pasar el mouse sobre cualquier punto del plato (alimentación o
-servido), además de la info auditada existente se agrega una sección "— Modelo
-(Investigacion_v2) —" con el evento de alimentación y de servido más cercano en el tiempo (ventana
-de ±2h), cumpliendo el pedido de "mostrar info de alimentación y de servido" en el mismo hover.
+1. **Separar el plato en Alimentación/Servido**: el dataset "Alimentación" pasó de graficar
+   todas las lecturas crudas a graficar solo eventos clasificados como `alimentacion`; dataset
+   nuevo "Servido" para los eventos `servido`. Ícono de Servido: primero `pointStyle: "rectRot"`
+   (genérico), después reemplazado por pedido explícito con `icono_comida.png` (mismo asset que
+   ya usa el widget "Comida" de Barras Sims — sin encargar un asset nuevo).
+2. **1 ícono por evento, no por lectura**: filtrar lecturas crudas por ventana `[startAt,endAt]`
+   dejaba varios íconos por evento (un evento típico abarca varias lecturas). Se pasó a un único
+   punto representante por evento.
+3. **Eje Y pasa a carriles fijos**: pedido explícito — "el eje Y no me importa, solo el tiempo".
+   Alimentación/Servido/Hidratación se dibujan cada uno en su propia línea horizontal fija
+   (`LANE_ALIMENTACION=3/SERVIDO=2/HIDRATACION=1`), no seguían más el peso real. El peso real se
+   preserva en `valorReal` (nuevo campo de `DayNightLanePoint`) para que el tooltip lo siga
+   mostrando aunque el eje Y ya no lo represente.
+4. **Bug real corregido (2026-08-30)**: el paso 2 ubicaba cada evento buscando "la lectura cruda
+   más cercana" en `bowlDayNightPoints` — que solo tiene lecturas del día que se está viendo
+   (`hungerBar.events` viene de una ventana de 10 días). Si el día no tenía lecturas justo ahí, el
+   evento no aparecía, o se enganchaba al punto disponible más cercano aunque fuera de otra hora
+   — amontonando íconos mal ubicados (reportado por el usuario: "aparecen muchas alimentaciones").
+   Fix: ubicar cada punto directo con la hora del propio evento (`startAt`), descartando el
+   evento si cae fuera de la ventana del día actual (mismo criterio que `toDayNightPoints` ya
+   usa para lecturas crudas) — verificado en vivo: antes 0 íconos en "hoy" pese a 2 eventos
+   reales, después los 2 aparecen en su hora correcta.
+5. **Tooltip simplificado (pedido explícito, 2026-08-30)**: la primera versión agregaba una
+   sección "— Modelo (Investigacion_v2) —" con info cruzada de alimentación y servido en el mismo
+   hover. Se reemplazó por lo pedido: al pasar el mouse sobre el plato, el tooltip dice
+   **únicamente la hora (ya la da `title`) y cuánto comió (ya lo da `label`)** — se eliminó toda
+   la lógica de auditoría/cross-referencia de ese tooltip (`bowlIntakeSessions` y
+   `findSessionForTime` quedaron sin uso y se borraron). Hidratación (el bebedero, no "el plato")
+   conserva su detalle de sesión auditada sin cambios.
 
-Se corrigió de paso un acoplamiento por índice posicional (`context.datasetIndex === 0`) que se
+De paso se corrigió un acoplamiento por índice posicional (`context.datasetIndex === 0`) que se
 habría roto al insertar el dataset "Servido" en el medio — reemplazado por matching sobre
-`dataset.label`, y el lookup de sesión auditada para el plato pasó de indexar por posición
-(`findSessionForPoint`, inválido una vez que el dataset se filtra) a indexar por tiempo
-(`findSessionForTime`, nuevo).
+`dataset.label`.
+
+## Decisión 8 — Notificación push cuando el modelo confirma "comió"/"le sirvieron" (2026-08-30)
+
+Fuera del alcance original del spec (agregado por pedido explícito posterior). Nuevo hook
+`useHungerBarEventNotifications` (mismo patrón que `useHungerBarPushAlert`, que ya existía para
+el aviso de atraso): notificación push nativa (Capacitor `LocalNotifications`, no-op en web) cuando
+`hunger-bar.events` trae un evento **nuevo** de alimentación/servido, `isProvisional: false`
+(espera la confirmación, no avisa sobre algo que puede recategorizarse). El primer fetch al montar
+el hook se toma como línea base sin notificar nada (son eventos históricos, no "acaban de pasar")
+— solo se notifica lo que aparece nuevo en un fetch posterior (poll cada 5min ya existente en
+`today/page.tsx`).
 
 ## Alcance de esta entrega (ver Assumptions del spec)
 
@@ -159,28 +187,34 @@ distancia es `alimentacion` pero `delta_neto_real >= 0`, redirigir con el **mism
 calibrado** del refinamiento (20g) — sin inventar un número nuevo, reutilizando la calibración
 existente (`calibracion.guardia_alimentacion`).
 
-**Mejora medida contra las 743+34 anotaciones reales** (antes → después de la guardia):
+**Mejora medida contra las 743+37 anotaciones reales** (antes → después de la guardia; estos
+números se **recalculan siempre desde los datos actuales**, nunca hardcodeados — bug corregido
+el mismo día: la primera versión del script sí los tenía pegados como constantes, quedaban
+desactualizados cada vez que se promovían más veredictos manuales):
 
 | Métrica | Sin guardia | Con guardia |
 |---|---|---|
-| Accuracy global | 80.9% | **86.3%** |
+| Accuracy global | 81.0% | **86.4%** |
 | Pureza cluster alimentación | 75.3% | **85.9%** |
 | Recall servido | 67.4% | **91.8%** |
-| Recall ruido | 70.7% | **79.3%** |
-| Recall alimentación | 93.4% | 92.3% (-1.1pp, trade-off aceptado) |
+| Recall ruido | 71.0% | **79.6%** |
 
 Verificado en vivo (servidor local, cuenta `kittypau.mascotas`): el evento real del 30-ago 02:53
 (`+22g`) pasó de `alimentacion` a `servido` (categoría real confirmada: servido) sin afectar
 ningún otro evento. Calibración regenerada vía `exportar_calibracion_produccion.py`
 (`version: 2026-08-30-v2`), tests nuevos en `clasificador.test.ts` con 2 exemplares reales del
-conjunto redirigido.
+conjunto redirigido. Los centroides/umbrales no cambian al promover más veredictos (clustering es
+no supervisado, no depende de las etiquetas) — solo las métricas de confianza reportadas.
 
 ## Verificación
 
 - `npx tsc --noEmit`: sin errores.
 - `npx eslint` sobre los archivos tocados: sin errores.
-- `npx vitest run`: 52/52 tests (incluye 4 tests nuevos en `motor-alimentacion/` + 6 preexistentes
-  de `hunger-bar.test.ts`, sin cambios, todos verdes).
+- `npx vitest run`: 54/54 tests (motor-alimentacion/ + hunger-bar.test.ts preexistentes, todos
+  verdes en cada iteración).
 - `npm run build`: build de producción de Next.js.
-- Pendiente (no bloqueante para "local"): correr `npm run dev`, iniciar sesión como
-  `kittypau.mascotas@gmail.com` y confirmar visualmente `/today` con datos reales de Bandida.
+- Verificado en vivo con `npm run dev` + Playwright, logueado como `kittypau.mascotas@gmail.com`
+  (Bandida, datos reales): card "Detectado por modelo", Barras Sims con última/próxima comida,
+  gráfico con carriles fijos e íconos en su hora correcta, tooltip simplificado, sin errores de
+  consola. Ya no pendiente — hecho en varias rondas a medida que se fueron encontrando y
+  corrigiendo bugs reales (ver Decisión 6, punto 4).
