@@ -128,6 +128,47 @@ def cargar_candidatos(ruta_csv: str):
     return df
 
 
+@st.cache_data
+def cargar_calibracion_produccion():
+    """Calibración congelada que corre en kittypau_app (motor-alimentacion/) --
+    se reusa acá solo para calcular incertidumbre por distancia a centroide,
+    nunca se reentrena desde la app. Solo válida para KPCL0034 (ver
+    calibracion['device_code'])."""
+    _ruta = DATA_DIR / "calibracion_kpcl0034_export.json"
+    if not _ruta.exists():
+        return None
+    import json
+    return json.loads(_ruta.read_text(encoding="utf-8"))
+
+
+def incertidumbre_candidato(row, calibracion):
+    """Cociente distancia-al-cluster-mas-cercano / distancia-al-segundo-mas-
+    cercano, sobre las 3 features estandarizadas del KMeans crudo (mismo fit
+    que produccion). Cerca de 1.0 = ambiguo (casi empatado entre 2 clusters),
+    cerca de 0 = confiado. No usa la guardia ni el refinamiento -- es sobre
+    el cluster crudo, para priorizar QUE revisar, no para reclasificar."""
+    _features_orden = calibracion["features_orden"]
+    _log1p = set(calibracion["log1p_features"])
+    _mean = calibracion["scaler"]["mean"]
+    _scale = calibracion["scaler"]["scale"]
+    _crudas = {
+        "duracion_s": row["duracion_s"], "delta_neto_real": row["delta_neto_real"],
+        "max_abs_delta_g": row["max_abs_delta_g"], "n_lecturas": row["n_lecturas"],
+        "n_cambios_signo": row["n_cambios_signo"],
+    }
+    _x = np.array([
+        (np.log1p(_crudas[_n]) if _n in _log1p else _crudas[_n]) - _mean[_i]
+        for _i, _n in enumerate(_features_orden)
+    ]) / np.array(_scale)
+    _dists = sorted(
+        float(np.sqrt(((_x - np.array(_info["centroide_estandarizado"])) ** 2).sum()))
+        for _info in calibracion["clusters_kmeans_crudo"].values()
+    )
+    if len(_dists) < 2 or _dists[1] == 0:
+        return 0.0
+    return _dists[0] / _dists[1]
+
+
 if not CACHE_CSV.exists():
     st.error(
         "Falta data/lecturas_limpias.csv -- correr 01_caracterizacion_fondo.ipynb primero."
@@ -182,29 +223,88 @@ modo_revision_sin_anotacion = st.sidebar.checkbox(
          "ninguna anotación real, y deja marcar si la categoría que el "
          "cluster sugiere está bien o no.",
 )
+incluir_ya_categorizados = False
+orden_revision = "Fecha"
+calibracion_produccion = None
+if modo_revision_sin_anotacion:
+    incluir_ya_categorizados = st.sidebar.checkbox(
+        "Incluir candidatos que ya tienen categoría real",
+        help="Para corregir un candidato que ya tiene categoría real (anotación "
+             "u otro veredicto tuyo) y no solo llenar huecos. Guardar acá "
+             "SOBREESCRIBE esa categoría cuando promuevas los veredictos "
+             "(notebook 08) -- mirá qué categoría tiene antes de cambiarla.",
+    )
+    calibracion_produccion = cargar_calibracion_produccion()
+    _incertidumbre_disponible = (
+        device_code == "KPCL0034" and calibracion_produccion is not None
+        and "cluster_kmeans" in cand_device.columns
+    )
+    orden_revision = st.sidebar.radio(
+        "Ordenar revisión por",
+        ["Fecha", "Incertidumbre del modelo (más ambiguos primero)"],
+        disabled=not _incertidumbre_disponible,
+        help="Incertidumbre = qué tan cerca está el candidato entre dos "
+             "clusters (distancia al más cercano / al segundo más cercano). "
+             "Prioriza revisar los casos ambiguos en vez de ir por fecha -- "
+             "active learning, no reentrena nada. Solo disponible para "
+             "KPCL0034 con la calibración de producción ya exportada."
+             if _incertidumbre_disponible else
+             "Solo disponible para KPCL0034 -- correr "
+             "exportar_calibracion_produccion.py si falta el JSON.",
+    )
+
+
+REVISION_COLUMNAS_HORA = ["ts_inicio_corregido", "ts_fin_corregido"]
+
+
+def cargar_revisiones_df():
+    """DataFrame indexado por candidato_id con veredicto + hora corregida (si
+    existe). Columnas nuevas (ts_inicio_corregido/ts_fin_corregido) se agregan
+    vacías si el CSV es de antes de que existiera la corrección de hora --
+    compatible hacia atrás, notebook 08 solo lee 'veredicto' y las ignora."""
+    if REVISION_SIN_ANOTACION_CSV.exists():
+        df = pd.read_csv(REVISION_SIN_ANOTACION_CSV)
+        for _col in REVISION_COLUMNAS_HORA:
+            if _col not in df.columns:
+                df[_col] = pd.NA
+        return df.set_index("candidato_id")
+    return pd.DataFrame(columns=["veredicto", *REVISION_COLUMNAS_HORA]).rename_axis("candidato_id")
 
 
 def cargar_veredictos():
-    if REVISION_SIN_ANOTACION_CSV.exists():
-        return pd.read_csv(REVISION_SIN_ANOTACION_CSV).set_index("candidato_id")["veredicto"].to_dict()
-    return {}
+    return cargar_revisiones_df()["veredicto"].dropna().to_dict()
+
+
+def guardar_revision(candidato_id, veredicto=None, ts_inicio_corregido=None, ts_fin_corregido=None):
+    """Guarda parcialmente -- solo pisa los campos que se pasan (no None),
+    conserva lo que ya estaba guardado para ese candidato en los demás."""
+    df = cargar_revisiones_df()
+    if candidato_id not in df.index:
+        df.loc[candidato_id] = pd.NA
+    if veredicto is not None:
+        df.loc[candidato_id, "veredicto"] = veredicto
+    if ts_inicio_corregido is not None:
+        df.loc[candidato_id, "ts_inicio_corregido"] = ts_inicio_corregido
+    if ts_fin_corregido is not None:
+        df.loc[candidato_id, "ts_fin_corregido"] = ts_fin_corregido
+    df.reset_index().to_csv(REVISION_SIN_ANOTACION_CSV, index=False)
 
 
 def guardar_veredicto(candidato_id, veredicto):
-    _veredictos = cargar_veredictos()
-    _veredictos[candidato_id] = veredicto
-    pd.DataFrame(
-        [{"candidato_id": k, "veredicto": v} for k, v in _veredictos.items()]
-    ).to_csv(REVISION_SIN_ANOTACION_CSV, index=False)
+    guardar_revision(candidato_id, veredicto=veredicto)
 
 
-def graficar_candidato(fila, ax):
+def graficar_candidato(fila, ax, corregido=None):
     _m = lecturas["device_code"] == fila["device_code"]
     _ini = max(lecturas.loc[_m].index.min(), fila["idx_inicio"] - MARGEN_GRAFICO_LECTURAS)
     _fin = min(lecturas.loc[_m].index.max(), fila["idx_fin"] + MARGEN_GRAFICO_LECTURAS)
     _ventana = lecturas.loc[_m].loc[_ini:_fin]
     ax.plot(_ventana["ts"], _ventana["peso"], marker="o", markersize=4)
-    ax.axvspan(fila["ts_inicio"], fila["ts_fin"], color="orange", alpha=0.25)
+    ax.axvspan(fila["ts_inicio"], fila["ts_fin"], color="orange", alpha=0.25, label="Corte automático")
+    if corregido is not None:
+        _ini_c, _fin_c = corregido
+        ax.axvspan(_ini_c, _fin_c, color="purple", alpha=0.2, hatch="//", label="Tu corrección")
+        ax.legend(fontsize=7)
     ax.tick_params(axis="x", labelrotation=20)
 
 
@@ -403,10 +503,20 @@ if modo_revision_sin_anotacion:
     )
     # ya calculado arriba (categoria_dominante_por_cluster) -- se reusa acá
     _categoria_dominante_por_cluster = categoria_dominante_por_cluster
-    vista = (
-        cand_device[cand_device["categoria_real"] == "sin_anotacion"]
-        .sort_values("ts_inicio").reset_index(drop=True)
-    )
+    _base = cand_device if incluir_ya_categorizados else cand_device[cand_device["categoria_real"] == "sin_anotacion"]
+    if orden_revision.startswith("Incertidumbre") and calibracion_produccion is not None:
+        vista = _base.copy()
+        vista["_incertidumbre"] = vista.apply(
+            lambda r: incertidumbre_candidato(r, calibracion_produccion), axis=1
+        )
+        vista = vista.sort_values("_incertidumbre", ascending=False).reset_index(drop=True)
+        st.caption(
+            "Ordenado por incertidumbre del modelo -- los más ambiguos primero "
+            "(cociente distancia_1°/distancia_2° cerca de 1.0 = casi empatado "
+            "entre dos clusters)."
+        )
+    else:
+        vista = _base.sort_values("ts_inicio").reset_index(drop=True)
     if len(vista):
         _predicciones_bulk = vista[col_cluster].map(_categoria_dominante_por_cluster)
         _n_guardables = int(_predicciones_bulk.notna().sum())
@@ -428,7 +538,10 @@ else:
     st.subheader(f"Candidatos del cluster {cluster_bueno} — uno por uno")
     vista = cand_device[cand_device[col_cluster] == cluster_bueno].sort_values("ts_inicio").reset_index(drop=True)
 
-clave_seleccion = (fuente_nombre, device_code, modelo_nombre, cluster_bueno, modo_revision_sin_anotacion)
+clave_seleccion = (
+    fuente_nombre, device_code, modelo_nombre, cluster_bueno,
+    modo_revision_sin_anotacion, incluir_ya_categorizados, orden_revision,
+)
 if st.session_state.get("clave_seleccion") != clave_seleccion:
     st.session_state["clave_seleccion"] = clave_seleccion
     st.session_state["idx_revision"] = 0
@@ -475,6 +588,18 @@ else:
             f"<b>{_prediccion}</b></p>",
             unsafe_allow_html=True,
         )
+        if incluir_ya_categorizados:
+            st.markdown(
+                f"<p style='text-align:center'>Categoría real actual: "
+                f"<b>{fila['categoria_real']}</b></p>",
+                unsafe_allow_html=True,
+            )
+        if "_incertidumbre" in fila.index:
+            st.markdown(
+                f"<p style='text-align:center'>Incertidumbre: "
+                f"<b>{fila['_incertidumbre']:.2f}</b> (1.0 = casi empatado entre 2 clusters)</p>",
+                unsafe_allow_html=True,
+            )
     else:
         _categoria = fila["categoria_real"]
         _etiqueta_categoria = {
@@ -486,8 +611,23 @@ else:
             unsafe_allow_html=True,
         )
 
+    _revisiones_df = cargar_revisiones_df()
+    _correccion_existente = (
+        _revisiones_df.loc[fila["candidato_id"]]
+        if fila["candidato_id"] in _revisiones_df.index else None
+    )
+    _corregido_plot = None
+    if _correccion_existente is not None and pd.notna(_correccion_existente.get("ts_inicio_corregido")):
+        try:
+            _corregido_plot = (
+                pd.Timestamp(_correccion_existente["ts_inicio_corregido"]),
+                pd.Timestamp(_correccion_existente["ts_fin_corregido"]),
+            )
+        except (ValueError, TypeError):
+            _corregido_plot = None
+
     fig2, ax2 = plt.subplots(figsize=(8, 4))
-    graficar_candidato(fila, ax2)
+    graficar_candidato(fila, ax2, corregido=_corregido_plot)
     st.pyplot(fig2)
     plt.close(fig2)
 
@@ -503,3 +643,47 @@ else:
             guardar_veredicto(fila["candidato_id"], _veredicto_elegido)
             st.rerun()
         st.caption(f"{len(_veredictos_guardados):,} candidatos ya revisados en total (todas las fuentes/modelos).")
+
+        with st.expander("🕐 Corregir la hora de inicio/fin (si el corte automático está mal)", expanded=_corregido_plot is not None):
+            st.caption(
+                "El corte automático (franja naranja) a veces no coincide con el "
+                "evento real. Corregí acá la hora real (Santiago) y guardá -- se "
+                "muestra como franja violeta a rayas en el gráfico, sin tocar el "
+                "candidato original ni la segmentación."
+            )
+            _col_h_ini, _col_h_fin = st.columns(2)
+            _valor_ini_default = (
+                pd.Timestamp(_correccion_existente["ts_inicio_corregido"]).strftime("%Y-%m-%d %H:%M:%S")
+                if _corregido_plot is not None else f"{_ini_stgo:%Y-%m-%d %H:%M:%S}"
+            )
+            _valor_fin_default = (
+                pd.Timestamp(_correccion_existente["ts_fin_corregido"]).strftime("%Y-%m-%d %H:%M:%S")
+                if _corregido_plot is not None else f"{_fin_stgo:%Y-%m-%d %H:%M:%S}"
+            )
+            with _col_h_ini:
+                _hora_inicio_txt = st.text_input(
+                    "Inicio corregido (hora Santiago)", value=_valor_ini_default,
+                    key=f"hora_ini_{fila['candidato_id']}",
+                )
+            with _col_h_fin:
+                _hora_fin_txt = st.text_input(
+                    "Fin corregido (hora Santiago)", value=_valor_fin_default,
+                    key=f"hora_fin_{fila['candidato_id']}",
+                )
+            if st.button("💾 Guardar hora corregida", key=f"guardar_hora_{fila['candidato_id']}"):
+                try:
+                    _ts_ini_nuevo = pd.Timestamp(_hora_inicio_txt, tz="America/Santiago").tz_convert("UTC")
+                    _ts_fin_nuevo = pd.Timestamp(_hora_fin_txt, tz="America/Santiago").tz_convert("UTC")
+                except (ValueError, TypeError) as _err:
+                    st.error(f"Formato de fecha/hora inválido -- usá 'YYYY-MM-DD HH:MM:SS'. ({_err})")
+                else:
+                    if _ts_fin_nuevo <= _ts_ini_nuevo:
+                        st.error("El fin corregido tiene que ser posterior al inicio corregido.")
+                    else:
+                        guardar_revision(
+                            fila["candidato_id"],
+                            ts_inicio_corregido=_ts_ini_nuevo.isoformat(),
+                            ts_fin_corregido=_ts_fin_nuevo.isoformat(),
+                        )
+                        st.success("Hora corregida guardada.")
+                        st.rerun()
