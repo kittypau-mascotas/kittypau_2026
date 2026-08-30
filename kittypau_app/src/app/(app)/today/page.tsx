@@ -146,6 +146,18 @@ function hungerBarColor(pct: number): string {
 }
 
 type DayNightPoint = { x: number; y: number; t: number };
+// Punto de gráfico con carril fijo en Y (orden visual por categoría, no por
+// peso real) -- el valor real que reemplazó a `y` se guarda en `valorReal`
+// para que el tooltip lo siga mostrando. Ver
+// Knowledge/29_Specs/007-motor-alimentacion-produccion/.
+type DayNightLanePoint = DayNightPoint & { valorReal: number | null };
+const LANE_ALIMENTACION = 3;
+const LANE_SERVIDO = 2;
+const LANE_HIDRATACION = 1;
+
+function aCarril(p: DayNightPoint, lane: number): DayNightLanePoint {
+  return { x: p.x, y: lane, t: p.t, valorReal: p.y };
+}
 
 type AuditEvent = {
   id: string;
@@ -1623,10 +1635,14 @@ export default function TodayPage() {
   // Un ícono por EVENTO, no uno por lectura cruda -- un evento suele abarcar
   // varias lecturas (todo el segmento), así que se elige el punto crudo más
   // cercano al inicio del evento como representante visual sobre la curva.
+  // El eje Y ya no seguía el peso real (subía/bajaba sin orden útil) -- cada
+  // categoría se fija a su propio carril horizontal; lo único que importa es
+  // el eje X (tiempo). El peso real sigue disponible en `valorReal` para el
+  // tooltip.
   const puntosPorCategoria = useMemo(() => {
     const resultado: {
-      alimentacion: DayNightPoint[];
-      servido: DayNightPoint[];
+      alimentacion: DayNightLanePoint[];
+      servido: DayNightLanePoint[];
     } = { alimentacion: [], servido: [] };
     if (!bowlEventsPorCategoria || bowlDayNightPoints.length === 0) {
       return resultado;
@@ -1643,13 +1659,18 @@ export default function TodayPage() {
           mejor = p;
         }
       }
-      if (mejor) resultado[ev.category].push(mejor);
+      if (mejor) {
+        const lane =
+          ev.category === "alimentacion" ? LANE_ALIMENTACION : LANE_SERVIDO;
+        resultado[ev.category].push(aCarril(mejor, lane));
+      }
     }
     return resultado;
   }, [bowlEventsPorCategoria, bowlDayNightPoints]);
 
   const bowlAlimentacionPoints = useMemo(() => {
-    if (!bowlEventsPorCategoria) return bowlDayNightPoints; // sin modelo: trazo crudo (comportamiento actual)
+    // sin modelo (device no validado): trazo crudo tal cual, sin carril fijo
+    if (!bowlEventsPorCategoria) return bowlDayNightPoints;
     return puntosPorCategoria.alimentacion;
   }, [bowlDayNightPoints, bowlEventsPorCategoria, puntosPorCategoria]);
 
@@ -1657,6 +1678,14 @@ export default function TodayPage() {
     if (!bowlEventsPorCategoria) return [];
     return puntosPorCategoria.servido;
   }, [bowlEventsPorCategoria, puntosPorCategoria]);
+
+  // Hidratación no tiene modelo (ver spec) -- se mantienen todas las lecturas
+  // crudas, solo se les fija el carril para que el eje Y deje de importar acá
+  // también (pedido explícito: los 3 platos ordenados por carril, no por peso).
+  const waterLanePoints = useMemo(
+    () => waterDayNightPoints.map((p) => aCarril(p, LANE_HIDRATACION)),
+    [waterDayNightPoints],
+  );
 
   const bowlReferenceReadings = useMemo(
     () => [
@@ -1814,7 +1843,7 @@ export default function TodayPage() {
         },
         {
           label: `Hidratación (${waterDevice?.device_id ?? "KPCL"})`,
-          data: waterDayNightPoints,
+          data: waterLanePoints,
           showLine: false,
           pointStyle: waterPointStyle,
           pointRadius: 13,
@@ -1832,7 +1861,7 @@ export default function TodayPage() {
       bowlDevice?.device_id,
       foodPointStyle,
       servidoPointStyle,
-      waterDayNightPoints,
+      waterLanePoints,
       waterDevice?.device_id,
       waterPointStyle,
     ],
@@ -1910,10 +1939,17 @@ export default function TodayPage() {
               return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
             },
             label: (context) => {
+              // El eje Y ahora es un carril fijo por categoría (no el peso
+              // real) -- el peso/volumen real viaja en `valorReal` cuando el
+              // punto lo trae (ver DayNightLanePoint); si no, cae a parsed.y
+              // (trazo crudo sin carril, ej. device sin modelo validado).
+              const raw = context.raw as { valorReal?: number } | undefined;
               const value =
-                typeof context.parsed.y === "number"
-                  ? Math.round(context.parsed.y)
-                  : null;
+                typeof raw?.valorReal === "number"
+                  ? Math.round(raw.valorReal)
+                  : typeof context.parsed.y === "number"
+                    ? Math.round(context.parsed.y)
+                    : null;
               const label = String(context.dataset.label ?? "Serie");
               const seriesTitle = label.includes("Hidratación")
                 ? "Hidratación"
@@ -2046,7 +2082,11 @@ export default function TodayPage() {
         },
         y: {
           type: "linear",
-          beginAtZero: true,
+          // Carriles fijos por categoría (LANE_ALIMENTACION=3/SERVIDO=2/
+          // HIDRATACION=1), no peso real -- min/max con margen para que los
+          // íconos de los carriles extremos no queden pegados al borde.
+          min: 0,
+          max: 4,
           ticks: {
             display: false,
           },
