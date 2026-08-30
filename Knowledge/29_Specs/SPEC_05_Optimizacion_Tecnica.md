@@ -78,23 +78,19 @@ lógica pura ya cubierta.
 
 ---
 
-## 🟡 Bridge: estado de sesión en memoria se pierde en cada reinicio
+## ✅ Bridge: estado de sesión en memoria se pierde en cada reinicio — Resuelto (2026-08-29)
 
-`bridge/src/processor.js`: `deviceState` y `petBaseline` son `Map()` en memoria del proceso
-Node.js. `sudo systemctl restart kittypau-bridge` los borra por completo. Si hay una sesión
-de alimentación abierta en el momento del reinicio, queda sin cerrar en la analytics DB — y
-el baseline de peso por mascota se reconstruye desde cero.
+`bridge/src/processor.js`: `deviceState` y `petBaseline` eran `Map()` en memoria del proceso
+Node.js. `sudo systemctl restart kittypau-bridge` los borraba por completo — si había una
+sesión de alimentación abierta en el momento del reinicio, quedaba sin cerrar en la
+analytics DB y el baseline de peso por mascota se reconstruía desde cero.
 
-**Fix (sin sobre-ingeniería):** persistir `deviceState`/`petBaseline` como JSON en disco
-local de la Raspberry (`fs.writeFileSync` cada N segundos o al recibir SIGTERM) y
-recargarlos al arrancar. `device_operation_records` ya existe en el schema como alternativa
-si se prefiere persistir en Supabase en vez de un archivo local — pero el archivo JSON es la
-opción de menor esfuerzo real. **Nota:** es código que corre en producción en la Raspberry —
-cualquier cambio necesita probarse contra el servicio real antes de desplegar, no solo
-compilar en local.
-
-**Esfuerzo:** M. **Impacto:** Medio — solo se manifiesta en el momento exacto de un
-`restart`, pero cuando ocurre pierde datos silenciosamente.
+**Fix deployado en producción** (PC de Javier, ver [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
+§4): `deviceState`/`petBaseline` se persisten como JSON en disco (`bridge-state.json`,
+cada 30s + en shutdown) y se recargan al arrancar. De paso se agregó el handler de
+`SIGTERM` que faltaba en `index.js` (es la señal real que manda `systemctl restart`, no
+`SIGINT`). Verificado con un restart real en producción — log `Estado restaurado desde
+disco (2 devices, 0 pets)` confirma el round-trip completo.
 
 ---
 
@@ -114,7 +110,7 @@ la señal-ruido del schema.
 
 | # | Fix | Esfuerzo | Impacto |
 |---|-----|----------|---------|
-| 1 | Persistir estado del bridge en disco | M | Medio |
+| 1 | Persistir estado del bridge en disco — ✅ hecho y deployado 2026-08-29 | M | Medio |
 | 2 | `npm audit fix` en dependencias de Capacitor/Android — ✅ parcial 2026-08-13 (26→9), resto depende de releases upstream | S | Bajo/medio |
 | 3 | Decidir `breeds`/`pet_breeds`, `DROP sensor_readings` | XS | Bajo |
 | 4 | Tests unitarios `lib/utils/api.ts` + integración de API routes críticas — ✅ hecho 2026-08-13 (`api.test.ts` + `tare/route.test.ts`), falta `hunger-bar` | S-M | Medio |
