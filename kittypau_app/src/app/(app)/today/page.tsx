@@ -1700,14 +1700,14 @@ export default function TodayPage() {
 
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    const img = new window.Image(28, 28);
+    const img = new window.Image(64, 64);
     img.src = "/illustrations/pink_food_full.png";
     return img;
   }, []);
 
   const waterPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    const img = new window.Image(28, 28);
+    const img = new window.Image(64, 64);
     img.src = "/illustrations/green_water_full.png";
     return img;
   }, []);
@@ -1717,7 +1717,7 @@ export default function TodayPage() {
   // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
   const servidoPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    const img = new window.Image(28, 28);
+    const img = new window.Image(64, 64);
     img.src = "/illustrations/icono_comida.png";
     return img;
   }, []);
@@ -1790,8 +1790,8 @@ export default function TodayPage() {
           data: bowlAlimentacionPoints,
           showLine: false,
           pointStyle: foodPointStyle,
-          pointRadius: 9,
-          pointHoverRadius: 10,
+          pointRadius: 13,
+          pointHoverRadius: 14,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#ec4899",
           pointBorderColor: "#ffffff",
@@ -1805,8 +1805,8 @@ export default function TodayPage() {
           data: bowlServidoPoints,
           showLine: false,
           pointStyle: servidoPointStyle,
-          pointRadius: 9,
-          pointHoverRadius: 10,
+          pointRadius: 13,
+          pointHoverRadius: 14,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#6366f1",
           pointBorderColor: "#ffffff",
@@ -1817,8 +1817,8 @@ export default function TodayPage() {
           data: waterDayNightPoints,
           showLine: false,
           pointStyle: waterPointStyle,
-          pointRadius: 9,
-          pointHoverRadius: 10,
+          pointRadius: 13,
+          pointHoverRadius: 14,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#14b8a6",
           pointBorderColor: "#ffffff",
