@@ -1625,41 +1625,44 @@ export default function TodayPage() {
     return hungerBar.events;
   }, [bowlDevice?.device_id, hungerBar?.events]);
 
-  // Un ícono por EVENTO, no uno por lectura cruda -- un evento suele abarcar
-  // varias lecturas (todo el segmento), así que se elige el punto crudo más
-  // cercano al inicio del evento como representante visual sobre la curva.
-  // El eje Y ya no seguía el peso real (subía/bajaba sin orden útil) -- cada
-  // categoría se fija a su propio carril horizontal; lo único que importa es
-  // el eje X (tiempo). El peso real sigue disponible en `valorReal` para el
-  // tooltip.
+  // Un ícono por EVENTO, ubicado con la hora del PROPIO evento (`startAt`),
+  // no buscando "la lectura cruda más cercana" -- eso fue un bug real: los
+  // eventos de `hungerBar.events` vienen de una ventana de 10 días, pero
+  // `bowlDayNightPoints` solo tiene lecturas del día que se está viendo. Si
+  // ese día no traía lecturas justo ahí (fetch/ventana distinta al de
+  // hunger-bar), el evento no encontraba dónde pintarse o se enganchaba al
+  // punto más cercano disponible aunque fuera de otra hora, amontonando
+  // íconos mal ubicados. Igual que `toDayNightPoints`, se descarta el evento
+  // si su hora cae fuera de la ventana del día actual. `valorReal` sale
+  // directo de `deltaG` del propio evento (el peso que YA calculó el
+  // clasificador), no de una lectura aproximada.
   const puntosPorCategoria = useMemo(() => {
     const resultado: {
       alimentacion: DayNightLanePoint[];
       servido: DayNightLanePoint[];
     } = { alimentacion: [], servido: [] };
-    if (!bowlEventsPorCategoria || bowlDayNightPoints.length === 0) {
-      return resultado;
-    }
+    if (!bowlEventsPorCategoria) return resultado;
     for (const ev of bowlEventsPorCategoria) {
       if (ev.category !== "alimentacion" && ev.category !== "servido") continue;
-      const inicio = new Date(ev.startAt).getTime();
-      let mejor: DayNightPoint | null = null;
-      let mejorDist = Infinity;
-      for (const p of bowlDayNightPoints) {
-        const dist = Math.abs(p.t - inicio);
-        if (dist < mejorDist) {
-          mejorDist = dist;
-          mejor = p;
-        }
+      const ts = new Date(ev.startAt).getTime();
+      if (
+        Number.isNaN(ts) ||
+        ts < dayNightWindow.startMs ||
+        ts > dayNightWindow.endMs
+      ) {
+        continue;
       }
-      if (mejor) {
-        const lane =
-          ev.category === "alimentacion" ? LANE_ALIMENTACION : LANE_SERVIDO;
-        resultado[ev.category].push(aCarril(mejor, lane));
-      }
+      const lane =
+        ev.category === "alimentacion" ? LANE_ALIMENTACION : LANE_SERVIDO;
+      resultado[ev.category].push({
+        x: (ts - dayNightWindow.startMs) / (60 * 60 * 1000),
+        y: lane,
+        t: ts,
+        valorReal: ev.deltaG,
+      });
     }
     return resultado;
-  }, [bowlEventsPorCategoria, bowlDayNightPoints]);
+  }, [bowlEventsPorCategoria, dayNightWindow.startMs, dayNightWindow.endMs]);
 
   const bowlAlimentacionPoints = useMemo(() => {
     // sin modelo (device no validado): trazo crudo tal cual, sin carril fijo
