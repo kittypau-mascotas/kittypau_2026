@@ -27,7 +27,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d  # noqa: F401 -- registra la proyeccion "3d", no se usa directo
 import streamlit as st
+from scipy.stats import gaussian_kde
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CACHE_CSV = DATA_DIR / "lecturas_limpias.csv"
@@ -205,6 +207,82 @@ def graficar_candidato(fila, ax):
     ax.axvspan(fila["ts_inicio"], fila["ts_fin"], color="orange", alpha=0.25)
     ax.tick_params(axis="x", labelrotation=20)
 
+
+# --- Seccion 0: nube 3D + densidad (KDE) -- vista al comienzo, mismo color/borde
+# que la Seccion 1 de abajo (categoria real / cluster elegido), pero con una
+# tercera dimension (max_abs_delta_g) y con densidad en vez de puntos sueltos.
+st.subheader(f"Nube 3D + densidad (KDE) — {device_code} — {modelo_nombre}")
+st.caption(
+    "Mismo criterio que el gráfico de abajo: color = categoría real (anotación "
+    "verificada, solo KPCL0034), borde negro = pertenece al cluster elegido "
+    "(rojo en el gráfico siguiente). Acá con una tercera dimensión "
+    "(max_abs_delta_g) y con densidad KDE en vez de puntos sueltos."
+)
+_col_3d, _col_kde = st.columns(2)
+
+with _col_3d:
+    fig0 = plt.figure(figsize=(5.5, 5))
+    ax0 = fig0.add_subplot(projection="3d")
+    for _cat, _sub in cand_device.groupby("categoria_real"):
+        _en_cluster_bueno = _sub[col_cluster] == cluster_bueno
+        ax0.scatter(
+            _sub.loc[~_en_cluster_bueno, "duracion_s"],
+            _sub.loc[~_en_cluster_bueno, "delta_neto_real"],
+            _sub.loc[~_en_cluster_bueno, "max_abs_delta_g"],
+            color=COLOR_CATEGORIA.get(_cat, "lightgray"), alpha=0.4, s=15, label=_cat,
+        )
+        ax0.scatter(
+            _sub.loc[_en_cluster_bueno, "duracion_s"],
+            _sub.loc[_en_cluster_bueno, "delta_neto_real"],
+            _sub.loc[_en_cluster_bueno, "max_abs_delta_g"],
+            color=COLOR_CATEGORIA.get(_cat, "lightgray"), alpha=0.9, s=25,
+            edgecolor="black", linewidth=0.8,
+        )
+    ax0.set_xlabel("duración (s)")
+    ax0.set_ylabel("delta_neto_real (g)")
+    ax0.set_zlabel("max_abs_delta_g (g)")
+    ax0.set_title("Nube de puntos 3D")
+    ax0.legend(fontsize=7, loc="upper left")
+    st.pyplot(fig0)
+    plt.close(fig0)
+
+with _col_kde:
+    fig_kde, ax_kde = plt.subplots(figsize=(5.5, 5))
+    _log_dur = np.log10(cand_device["duracion_s"].clip(lower=1))
+    _hubo_contorno = False
+    for _cat, _sub in cand_device.groupby("categoria_real"):
+        if _cat in ("sin_anotacion", "sin_validar") or len(_sub) < 5:
+            continue
+        try:
+            _x = np.log10(_sub["duracion_s"].clip(lower=1))
+            _y = _sub["delta_neto_real"]
+            _kde = gaussian_kde(np.vstack([_x, _y]))
+            _xg, _yg = np.mgrid[
+                _log_dur.min():_log_dur.max():60j,
+                cand_device["delta_neto_real"].min():cand_device["delta_neto_real"].max():60j,
+            ]
+            _zg = _kde(np.vstack([_xg.ravel(), _yg.ravel()])).reshape(_xg.shape)
+            ax_kde.contour(
+                10 ** _xg, _yg, _zg, levels=4,
+                colors=[COLOR_CATEGORIA.get(_cat, "gray")], alpha=0.8,
+            )
+            ax_kde.plot([], [], color=COLOR_CATEGORIA.get(_cat, "gray"), label=_cat)
+            _hubo_contorno = True
+        except np.linalg.LinAlgError:
+            continue  # categoria con varianza ~0 (todos los puntos iguales) -- sin KDE posible
+    if not _hubo_contorno:
+        st.caption("No hay suficientes candidatos con categoría real para estimar densidad.")
+    ax_kde.set_xscale("log")
+    ax_kde.axhline(0, color="gray", linewidth=0.5)
+    ax_kde.set_xlabel("duración (s, log)")
+    ax_kde.set_ylabel("delta_neto_real (g)")
+    ax_kde.set_title("Densidad (KDE) por categoría real")
+    if _hubo_contorno:
+        ax_kde.legend(fontsize=7)
+    st.pyplot(fig_kde)
+    plt.close(fig_kde)
+
+st.divider()
 
 # --- Seccion 1: vista general de clusters --------------------------------------
 st.subheader(f"Clusters — {device_code} — {modelo_nombre}")
