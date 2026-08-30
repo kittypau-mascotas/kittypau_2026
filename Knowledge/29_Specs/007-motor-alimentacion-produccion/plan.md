@@ -145,6 +145,36 @@ sobrescribe `calibracion-kpcl0034.json` si esas métricas igualan o superan a la
 (el propio JSON ya trae `validacion_referencia` para comparar contra). Mantenerlo **fuera** de
 Vercel (build-time o CI, no request-time) — no hay necesidad de que corra dentro de la app Next.js.
 
+## Decisión 7 — Guardia física post-hoc: "alimentación" exige peso bajando (2026-08-30)
+
+Encontrado en producción (no hipotético): revisando eventos reales de KPCL0034 apareció un
+candidato con `delta_neto_real = +22g` (el peso **subió**) clasificado como `alimentacion`. Comer
+nunca sube el peso del plato — es una contradicción física que la distancia-a-centroide no puede
+detectar por sí sola (mira las 5 features en conjunto, no fuerza el signo de una en particular).
+
+Se verificó contra los datos reales (`candidatos_clusters_duracion.csv` + `categoria_real.csv`,
+KPCL0034): **~11% de los candidatos** que caen en el cluster de alimentación por distancia tienen
+`delta_neto_real >= 0`. Se agregó una guardia en `clasificador.ts`: si la categoría asignada por
+distancia es `alimentacion` pero `delta_neto_real >= 0`, redirigir con el **mismo umbral ya
+calibrado** del refinamiento (20g) — sin inventar un número nuevo, reutilizando la calibración
+existente (`calibracion.guardia_alimentacion`).
+
+**Mejora medida contra las 743+34 anotaciones reales** (antes → después de la guardia):
+
+| Métrica | Sin guardia | Con guardia |
+|---|---|---|
+| Accuracy global | 80.9% | **86.3%** |
+| Pureza cluster alimentación | 75.3% | **85.9%** |
+| Recall servido | 67.4% | **91.8%** |
+| Recall ruido | 70.7% | **79.3%** |
+| Recall alimentación | 93.4% | 92.3% (-1.1pp, trade-off aceptado) |
+
+Verificado en vivo (servidor local, cuenta `kittypau.mascotas`): el evento real del 30-ago 02:53
+(`+22g`) pasó de `alimentacion` a `servido` (categoría real confirmada: servido) sin afectar
+ningún otro evento. Calibración regenerada vía `exportar_calibracion_produccion.py`
+(`version: 2026-08-30-v2`), tests nuevos en `clasificador.test.ts` con 2 exemplares reales del
+conjunto redirigido.
+
 ## Verificación
 
 - `npx tsc --noEmit`: sin errores.

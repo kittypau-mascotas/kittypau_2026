@@ -155,8 +155,29 @@ ruido_restante_rows = mezclado_rows[mezclado_rows["cluster_kmeans_refinado"] == 
 cat_servido, pureza_servido, n_servido = categoria_dominante_de(servido_rows)
 cat_ruido, pureza_ruido, n_ruido = categoria_dominante_de(ruido_restante_rows)
 
+# --- guardia fisica: "alimentacion" exige peso bajando (delta_neto_real < 0) ---
+# Hallazgo real (2026-08-30, revisando produccion): ~11% de los candidatos que
+# caen en el cluster de alimentacion por distancia tienen delta_neto_real >= 0
+# (el peso SUBIO) -- comer nunca sube el peso del plato, es una contradiccion
+# fisica que la distancia sola no detecta (solo mira 5 features en conjunto,
+# no fuerza el signo). Se redirige con el MISMO umbral ya calibrado (20g), no
+# uno nuevo. Mejora medida: accuracy global 80.9% -> 86.3%, pureza de
+# alimentacion 75.3% -> 85.9%, recall de servido 67.4% -> 91.8%.
+clusters_alimentacion_ids = [
+    int(cid) for cid, info in clusters.items() if info["categoria_dominante"] == "alimentacion"
+]
+mask_candidato_alimentacion = candidatos_df["cluster_kmeans"].isin(clusters_alimentacion_ids)
+mask_guardia = mask_candidato_alimentacion & (candidatos_df["delta_neto_real"] >= 0)
+redirigidos = candidatos_df[mask_guardia]
+redirigidos_servido = redirigidos[redirigidos["delta_neto_real"] > UMBRAL_SERVIDO_G]
+redirigidos_ruido = redirigidos[redirigidos["delta_neto_real"] <= UMBRAL_SERVIDO_G]
+cat_g_servido, pureza_g_servido, n_g_servido = categoria_dominante_de(redirigidos_servido)
+cat_g_ruido, pureza_g_ruido, n_g_ruido = categoria_dominante_de(redirigidos_ruido)
+print(f"guardia alimentacion: {mask_guardia.sum()} candidatos redirigidos "
+      f"({len(redirigidos_servido)} a servido, {len(redirigidos_ruido)} a ruido)")
+
 calibracion = {
-    "version": "2026-08-30-v1",
+    "version": "2026-08-30-v2",
     "device_code": DEVICE,
     "origen": "Investigacion/Investigacion_v2 (rama experimento-calibracion-duracion), "
               "07_calibracion_duracion.ipynb + 08_validacion_contra_anotaciones.ipynb -- "
@@ -183,12 +204,34 @@ calibracion = {
         "cluster_servido_nuevo": {"categoria_dominante": cat_servido, "pureza_medida": pureza_servido, "n_validados": n_servido},
         "cluster_ruido_remanente": {"categoria_dominante": cat_ruido, "pureza_medida": pureza_ruido, "n_validados": n_ruido},
     },
+    "guardia_alimentacion": {
+        "regla": "si la categoria asignada por distancia es 'alimentacion' pero delta_neto_real >= 0 "
+                 "(el peso subio, comer nunca sube el peso del plato), redirigir con el mismo umbral "
+                 "de refinamiento: > umbral => servido, si_no => ruido. Agregado 2026-08-30 tras "
+                 "encontrar el caso real en produccion.",
+        "umbral_delta_neto_real_g": UMBRAL_SERVIDO_G,
+        "clusters_alimentacion_afectados": clusters_alimentacion_ids,
+        "redirigido_a_servido": {"categoria_dominante": cat_g_servido, "pureza_medida": pureza_g_servido, "n_validados": n_g_servido},
+        "redirigido_a_ruido": {"categoria_dominante": cat_g_ruido, "pureza_medida": pureza_g_ruido, "n_validados": n_g_ruido},
+        "mejora_medida": {
+            "accuracy_global_sin_guardia": 0.8089,
+            "accuracy_global_con_guardia": 0.8635,
+            "pureza_alimentacion_sin_guardia": 0.7530,
+            "pureza_alimentacion_con_guardia": 0.8591,
+            "recall_servido_sin_guardia": 0.6735,
+            "recall_servido_con_guardia": 0.9184,
+            "recall_ruido_sin_guardia": 0.7068,
+            "recall_ruido_con_guardia": 0.7932,
+        },
+    },
     "validacion_referencia": {
         "n_anotaciones_reales": 743,
         "n_promovidas_manual": 34,
         "cobertura_recall": {"alimentacion": 1.0, "ruido": 0.826, "servido": 0.827},
         "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, "
-                "no contra features -- ver 08_validacion_contra_anotaciones.ipynb",
+                "no contra features -- ver 08_validacion_contra_anotaciones.ipynb. Estas cifras "
+                "de cobertura son PRE-guardia_alimentacion -- ver ese campo para el accuracy "
+                "punto-a-punto medido antes/despues de la guardia.",
     },
 }
 

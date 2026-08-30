@@ -74,4 +74,35 @@ describe("clasificarSegmento (motor Investigacion_v2, KPCL0034)", () => {
     ).category;
     expect(cat).toBe("servido");
   });
+
+  // Guardia física (2026-08-30): comer nunca sube el peso del plato. Estos dos
+  // exemplares reales caen por distancia en el cluster de alimentación pero
+  // tienen delta_neto_real >= 0 -- sin la guardia, el clasificador los habría
+  // devuelto como "alimentacion" (físicamente imposible). Ver
+  // calibracion-kpcl0034.json > guardia_alimentacion.
+  it("redirige a ruido un candidato cercano a alimentación con peso subiendo <=20g", () => {
+    const cat = clasificarSegmento(
+      segmento({
+        duracionS: 480.161159,
+        deltaNetoReal: 14,
+        maxAbsDeltaG: 24,
+        nLecturas: 16,
+        nCambiosSigno: 9,
+      }),
+    ).category;
+    expect(cat).toBe("ruido"); // categoria_real real de este candidato: ruido
+  });
+
+  it("redirige a servido un candidato cercano a alimentación con peso subiendo >20g", () => {
+    const cat = clasificarSegmento(
+      segmento({
+        duracionS: 330.013,
+        deltaNetoReal: 95,
+        maxAbsDeltaG: 100,
+        nLecturas: 11,
+        nCambiosSigno: 7,
+      }),
+    ).category;
+    expect(cat).toBe("servido"); // categoria_real real de este candidato: servido
+  });
 });

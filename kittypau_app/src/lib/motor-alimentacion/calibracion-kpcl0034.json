@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-30-v1",
+  "version": "2026-08-30-v2",
   "device_code": "KPCL0034",
   "origen": "Investigacion/Investigacion_v2 (rama experimento-calibracion-duracion), 07_calibracion_duracion.ipynb + 08_validacion_contra_anotaciones.ipynb -- reproducido desde data/lecturas_limpias.csv por scripts/exportar_calibracion.py",
   "segmentacion": {
@@ -92,6 +92,33 @@
       "n_validados": 37
     }
   },
+  "guardia_alimentacion": {
+    "regla": "si la categoria asignada por distancia es 'alimentacion' pero delta_neto_real >= 0 (el peso subio, comer nunca sube el peso del plato), redirigir con el mismo umbral de refinamiento: > umbral => servido, si_no => ruido. Agregado 2026-08-30 tras encontrar el caso real en produccion.",
+    "umbral_delta_neto_real_g": 20.0,
+    "clusters_alimentacion_afectados": [
+      0
+    ],
+    "redirigido_a_servido": {
+      "categoria_dominante": "servido",
+      "pureza_medida": 0.6316,
+      "n_validados": 19
+    },
+    "redirigido_a_ruido": {
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.8846,
+      "n_validados": 26
+    },
+    "mejora_medida": {
+      "accuracy_global_sin_guardia": 0.8089,
+      "accuracy_global_con_guardia": 0.8635,
+      "pureza_alimentacion_sin_guardia": 0.753,
+      "pureza_alimentacion_con_guardia": 0.8591,
+      "recall_servido_sin_guardia": 0.6735,
+      "recall_servido_con_guardia": 0.9184,
+      "recall_ruido_sin_guardia": 0.7068,
+      "recall_ruido_con_guardia": 0.7932
+    }
+  },
   "validacion_referencia": {
     "n_anotaciones_reales": 743,
     "n_promovidas_manual": 34,
@@ -100,6 +127,6 @@
       "ruido": 0.826,
       "servido": 0.827
     },
-    "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, no contra features -- ver 08_validacion_contra_anotaciones.ipynb"
+    "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, no contra features -- ver 08_validacion_contra_anotaciones.ipynb. Estas cifras de cobertura son PRE-guardia_alimentacion -- ver ese campo para el accuracy punto-a-punto medido antes/despues de la guardia."
   }
 }
