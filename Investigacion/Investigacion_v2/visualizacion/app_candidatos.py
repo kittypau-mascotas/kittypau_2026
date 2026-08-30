@@ -341,13 +341,18 @@ else:
     idx = st.session_state["idx_revision"]
     idx = max(0, min(idx, n_vista - 1))
 
-    col_atras, col_medio, col_siguiente = st.columns([1, 3, 1])
+    col_atras, col_medio, col_siguiente, col_ultimo = st.columns([1, 3, 1, 1])
     with col_atras:
         if st.button("⬅ Atrás", use_container_width=True, disabled=idx == 0):
             idx -= 1
     with col_siguiente:
         if st.button("Siguiente ➡", use_container_width=True, disabled=idx >= n_vista - 1):
             idx += 1
+    with col_ultimo:
+        # vista esta ordenada por ts_inicio ascendente -- el ultimo indice es el
+        # candidato mas reciente cronologicamente.
+        if st.button("Último ⏭", use_container_width=True, disabled=idx >= n_vista - 1):
+            idx = n_vista - 1
     with col_medio:
         st.markdown(f"<p style='text-align:center'>Candidato {idx + 1} de {n_vista}</p>", unsafe_allow_html=True)
 
