@@ -1620,29 +1620,43 @@ export default function TodayPage() {
     return hungerBar.events;
   }, [bowlDevice?.device_id, hungerBar?.events]);
 
-  const enRangoDeCategoria = useMemo(() => {
-    return (t: number, category: "alimentacion" | "servido") => {
-      if (!bowlEventsPorCategoria) return false;
-      return bowlEventsPorCategoria.some((ev) => {
-        if (ev.category !== category) return false;
-        const inicio = new Date(ev.startAt).getTime();
-        const fin = new Date(ev.endAt).getTime();
-        return t >= inicio && t <= fin;
-      });
-    };
-  }, [bowlEventsPorCategoria]);
+  // Un ícono por EVENTO, no uno por lectura cruda -- un evento suele abarcar
+  // varias lecturas (todo el segmento), así que se elige el punto crudo más
+  // cercano al inicio del evento como representante visual sobre la curva.
+  const puntosPorCategoria = useMemo(() => {
+    const resultado: {
+      alimentacion: DayNightPoint[];
+      servido: DayNightPoint[];
+    } = { alimentacion: [], servido: [] };
+    if (!bowlEventsPorCategoria || bowlDayNightPoints.length === 0) {
+      return resultado;
+    }
+    for (const ev of bowlEventsPorCategoria) {
+      if (ev.category !== "alimentacion" && ev.category !== "servido") continue;
+      const inicio = new Date(ev.startAt).getTime();
+      let mejor: DayNightPoint | null = null;
+      let mejorDist = Infinity;
+      for (const p of bowlDayNightPoints) {
+        const dist = Math.abs(p.t - inicio);
+        if (dist < mejorDist) {
+          mejorDist = dist;
+          mejor = p;
+        }
+      }
+      if (mejor) resultado[ev.category].push(mejor);
+    }
+    return resultado;
+  }, [bowlEventsPorCategoria, bowlDayNightPoints]);
 
   const bowlAlimentacionPoints = useMemo(() => {
     if (!bowlEventsPorCategoria) return bowlDayNightPoints; // sin modelo: trazo crudo (comportamiento actual)
-    return bowlDayNightPoints.filter((p) =>
-      enRangoDeCategoria(p.t, "alimentacion"),
-    );
-  }, [bowlDayNightPoints, bowlEventsPorCategoria, enRangoDeCategoria]);
+    return puntosPorCategoria.alimentacion;
+  }, [bowlDayNightPoints, bowlEventsPorCategoria, puntosPorCategoria]);
 
   const bowlServidoPoints = useMemo(() => {
     if (!bowlEventsPorCategoria) return [];
-    return bowlDayNightPoints.filter((p) => enRangoDeCategoria(p.t, "servido"));
-  }, [bowlDayNightPoints, bowlEventsPorCategoria, enRangoDeCategoria]);
+    return puntosPorCategoria.servido;
+  }, [bowlEventsPorCategoria, puntosPorCategoria]);
 
   const bowlReferenceReadings = useMemo(
     () => [
