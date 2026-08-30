@@ -447,12 +447,17 @@ sidebar.
   "Atrás"/"Siguiente" y la categoría real (o "sin_validar" para KPCL0035, que no tiene
   anotaciones — warning explícito en el sidebar si se elige ese dispositivo).
 - **Modo "Revisar candidatos sin anotación real"** (checkbox del sidebar): filtra a los
-  candidatos sin ninguna anotación real cerca (149/701 en KPCL0034), muestra qué categoría
-  sugiere su cluster, y deja guardar un veredicto manual (`alimentacion`/`servido`/`ruido`/
-  `no está claro`) en `data/revision_sin_anotacion.csv` (`candidato_id` → veredicto) — el
-  único guardado real que hace la app, el resto sigue siendo solo visualización.
+  candidatos sin ninguna anotación real cerca (partió en 149/701 en KPCL0034), muestra qué
+  categoría sugiere su cluster, y deja guardar un veredicto manual (`alimentacion`/
+  `servido`/`ruido`/`no está claro`) en `data/revision_sin_anotacion.csv` (`candidato_id` →
+  veredicto) — el único guardado real que hace la app, el resto sigue siendo visualización.
 - Cada candidato tiene un `candidato_id` único (`device_code` + timestamp de inicio) — así
   el guardado nunca solapa ni duplica sobre lecturas ya revisadas.
+
+**Primera tanda revisada (2026-08-30):** 34 candidatos confirmados a mano (30 ruido,
+4 alimentación) — **cero desacuerdo** con lo que el cluster ya sugería. Promovidos a
+`categoria_real` (celda "Promover veredictos manuales" de `08_validacion_contra_anotaciones.ipynb`)
+— quedan **115 sin revisar todavía** (antes 149).
 
 Verificado con `streamlit.testing.v1.AppTest` (carga, navegación, cambio de
 fuente/dispositivo/modelo, modo de revisión y guardado de veredicto) y con el servidor

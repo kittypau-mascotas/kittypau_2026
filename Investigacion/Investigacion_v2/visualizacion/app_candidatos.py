@@ -70,8 +70,9 @@ El umbral `delta_w > 20g` no se inventó — es el mínimo `delta_w` observado e
 dentro del cluster que ya salía mezclado.
 
 **No probado con:** k=4 (silhouette casi igual, no separó nada — descartado).
-**Sin resolver todavía:** 149/701 candidatos (21%) sin ninguna anotación real
-cerca — no necesariamente errores.
+**Sin resolver todavía:** 115/701 candidatos (16%) sin ninguna anotación real
+cerca — 34 ya revisados a mano y promovidos a `categoria_real` (30 ruido,
+4 alimentación, cero desacuerdo con el cluster) vía el modo de revisión.
 """
 
 COLOR_CATEGORIA = {
