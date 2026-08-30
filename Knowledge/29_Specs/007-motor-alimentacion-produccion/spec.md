@@ -183,6 +183,32 @@ los eventos de alimentación confirmados (no con eventos de servido ni ruido).
 - **SC-005**: El comportamiento observable del bebedero (KPCL0035) no cambia en ningún aspecto
   perceptible para el usuario tras esta entrega.
 
+## Estado real vs. spec (auditoría 2026-08-30, post-implementación)
+
+- **FR-006 SUPERADO por decisión posterior explícita**: el spec original pedía que el tooltip
+  mostrara info de alimentación Y servido al pasar el mouse. Mauro pidió después, explícitamente,
+  simplificarlo a solo hora + cuánto comió — implementado así. FR-006 y el Acceptance Scenario 2
+  de la Historia 2 quedan obsoletos, reemplazados por: *"el tooltip del plato muestra únicamente
+  la hora y cuánto comió, sin cross-referencia a la otra categoría."*
+- **SC-002 por debajo del piso declarado (72.6% vs. ≥75%)**: la guardia física agregada el
+  2026-08-30 (`clasificador.ts` — alimentación exige peso bajando, ver plan.md Decisión 7) mejoró
+  accuracy global (80.9%→86.3%) y recall de servido (67.4%→91.8%) a costa de bajar la pureza del
+  bucket "servido" de 76.74% a 72.58% (más candidatos ambiguos ahora caen ahí en vez de quedar
+  como "alimentación" imposible). Es un trade-off medido y deliberado, no un descuido — documentado
+  acá para que la cifra de SC-002 no quede citada como vigente sin esta salvedad.
+- **FR-004/FR-002 solo parcialmente en la card #1**: `today-bowl-card` prioriza `audit_events`
+  (confirmación humana) sobre el modelo — si existe *cualquier* comida confirmada por auditoría,
+  la card muestra "Confirmado" con esa evidencia, no la clasificación (ni el estado provisorio) del
+  modelo, aunque el modelo tenga un evento más reciente. La distinción provisorio/definitivo del
+  modelo SÍ se cumple sin condiciones en el widget "Comida" de Barras Sims (`lastMealIsProvisional`
+  siempre visible ahí). Decisión documentada en plan.md Decisión 5 — no se mezclaron los dos
+  sistemas de evidencia a propósito.
+- **Fuera del alcance original del spec, agregado después por pedido explícito**: notificación
+  push nativa cuando el modelo confirma "comió"/"le sirvieron" (`useHungerBarEventNotifications`)
+  — no estaba en las User Stories originales, documentado acá para que quede trazado.
+- Todo lo demás (FR-001, FR-003, FR-005, FR-007, FR-008, FR-009, FR-011, SC-001, SC-003, SC-004,
+  SC-005) verificado cumplido — ver plan.md § Verificación.
+
 ## Assumptions
 
 - "En local" significa ejecutar la aplicación con su servidor de desarrollo habitual y verificar
