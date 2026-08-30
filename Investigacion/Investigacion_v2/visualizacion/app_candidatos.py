@@ -20,7 +20,10 @@ import streamlit as st
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CACHE_CSV = DATA_DIR / "lecturas_limpias.csv"
-CLUSTERS_CSV = DATA_DIR / "candidatos_clusters.csv"
+FUENTES_CLUSTERS = {
+    "Features propias, τ=1 lectura (notebook 05)": DATA_DIR / "candidatos_clusters.csv",
+    "Features propias, τ=180s calibrado (notebook 07)": DATA_DIR / "candidatos_clusters_duracion.csv",
+}
 
 MODELOS = {
     "KMeans": "cluster_kmeans",
@@ -42,26 +45,34 @@ def cargar_lecturas():
 
 
 @st.cache_data
-def cargar_candidatos():
-    df = pd.read_csv(CLUSTERS_CSV)
+def cargar_candidatos(ruta_csv: str):
+    df = pd.read_csv(ruta_csv)
     df["ts_inicio"] = pd.to_datetime(df["ts_inicio"], format="ISO8601", utc=True)
     df["ts_fin"] = pd.to_datetime(df["ts_fin"], format="ISO8601", utc=True)
     return df
 
 
-if not CACHE_CSV.exists() or not CLUSTERS_CSV.exists():
+if not CACHE_CSV.exists():
     st.error(
-        "Faltan los CSV de datos. Correr en orden: "
-        "01_caracterizacion_fondo.ipynb (genera lecturas_limpias.csv) y "
-        "05_clustering_no_supervisado.ipynb (genera candidatos_clusters.csv)."
+        "Falta data/lecturas_limpias.csv -- correr 01_caracterizacion_fondo.ipynb primero."
     )
     st.stop()
 
 lecturas = cargar_lecturas()
-candidatos = cargar_candidatos()
 
-# --- Sidebar: dispositivo, modelo, cluster "bueno" -----------------------------
+# --- Sidebar: fuente de clusters, dispositivo, modelo, cluster "bueno" ---------
 st.sidebar.header("Selección")
+fuente_nombre = st.sidebar.radio("Segmentación / features usadas", list(FUENTES_CLUSTERS.keys()))
+clusters_csv = FUENTES_CLUSTERS[fuente_nombre]
+if not clusters_csv.exists():
+    st.error(
+        f"Falta {clusters_csv.name} -- correr el notebook que lo genera "
+        "(05_clustering_no_supervisado.ipynb o 07_calibracion_duracion.ipynb, "
+        "según la fuente elegida)."
+    )
+    st.stop()
+candidatos = cargar_candidatos(str(clusters_csv))
+
 device_code = st.sidebar.selectbox("Dispositivo", sorted(candidatos["device_code"].unique()))
 modelo_nombre = st.sidebar.selectbox("Modelo de clustering", list(MODELOS.keys()))
 col_cluster = MODELOS[modelo_nombre]
@@ -128,7 +139,7 @@ st.subheader(f"Candidatos del cluster {cluster_bueno} — uno por uno")
 
 vista = cand_device[cand_device[col_cluster] == cluster_bueno].sort_values("ts_inicio").reset_index(drop=True)
 
-clave_seleccion = (device_code, modelo_nombre, cluster_bueno)
+clave_seleccion = (fuente_nombre, device_code, modelo_nombre, cluster_bueno)
 if st.session_state.get("clave_seleccion") != clave_seleccion:
     st.session_state["clave_seleccion"] = clave_seleccion
     st.session_state["idx_revision"] = 0
