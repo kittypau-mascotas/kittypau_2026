@@ -41,6 +41,7 @@ COLOR_CATEGORIA = {
 
 MODELOS = {
     "KMeans": "cluster_kmeans",
+    "KMeans + refinamiento delta_w (servido)": "cluster_kmeans_refinado",
     "Agglomerative": "cluster_agg",
     "GMM": "cluster_gmm",
     "DBSCAN": "cluster_dbscan",
@@ -96,8 +97,9 @@ if not clusters_csv.exists():
 candidatos = cargar_candidatos(str(clusters_csv))
 
 device_code = st.sidebar.selectbox("Dispositivo", sorted(candidatos["device_code"].unique()))
-modelo_nombre = st.sidebar.selectbox("Modelo de clustering", list(MODELOS.keys()))
-col_cluster = MODELOS[modelo_nombre]
+modelos_disponibles = {k: v for k, v in MODELOS.items() if v in candidatos.columns}
+modelo_nombre = st.sidebar.selectbox("Modelo de clustering", list(modelos_disponibles.keys()))
+col_cluster = modelos_disponibles[modelo_nombre]
 
 cand_device = candidatos[candidatos["device_code"] == device_code].copy()
 clusters_disponibles = sorted(cand_device[col_cluster].unique())
