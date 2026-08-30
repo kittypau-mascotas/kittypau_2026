@@ -243,22 +243,81 @@ with st.expander("Medianas por cluster"):
         ].median().round(2)
     )
 
+# categoria dominante de cada cluster (mismo criterio que el modo de revision,
+# calculado siempre -- lo usan la seccion de "ultimos eventos" y la revision 1 a 1)
+_con_categoria_real = cand_device[~cand_device["categoria_real"].isin(["sin_anotacion", "sin_validar"])]
+categoria_dominante_por_cluster = (
+    _con_categoria_real.groupby(col_cluster)["categoria_real"]
+    .agg(lambda s: s.mode().iat[0] if not s.mode().empty else "?")
+)
+cand_device["categoria_predicha"] = cand_device[col_cluster].map(categoria_dominante_por_cluster).fillna("?")
+
 st.divider()
 
-# --- Seccion 2: revision 1 a 1 -------------------------------------------------
+# --- Seccion 2: ultimos eventos por categoria (revisar categorizacion y tiempo) -
+st.subheader("Últimos eventos por categoría — revisar categorización y tiempo")
+st.caption(
+    "Categoría predicha = la que sugiere el cluster de cada candidato (mismo mapeo "
+    "que 'Composición real de cada cluster' arriba). Columna 'gap' = minutos desde "
+    "el evento anterior de la MISMA categoría -- eventos muy pegados en el tiempo "
+    "suelen ser la señal de que algo no tiene sentido (ver picoteo, Knowledge "
+    "SPEC_HungerBar_Alimentacion.md §3)."
+)
+N_ULTIMOS = st.slider("Cuántos últimos eventos por categoría", 3, 20, 8)
+cols_ultimos = st.columns(3)
+for _col, _categoria in zip(cols_ultimos, ["alimentacion", "servido", "ruido"]):
+    with _col:
+        st.markdown(f"**{_categoria}**")
+        _sub = (
+            cand_device[cand_device["categoria_predicha"] == _categoria]
+            .sort_values("ts_inicio", ascending=False)
+            .head(N_ULTIMOS)
+            .sort_values("ts_inicio")
+            .copy()
+        )
+        if _sub.empty:
+            st.caption("Sin candidatos de esta categoría.")
+            continue
+        _sub["hora_inicio"] = _sub["ts_inicio"].dt.tz_convert("America/Santiago").dt.strftime("%d-%b %H:%M")
+        _sub["dur_min"] = (_sub["duracion_s"] / 60).round(1)
+        _sub["gap_min"] = _sub["ts_inicio"].diff().dt.total_seconds().div(60).round(1)
+        _mostrar = _sub[["hora_inicio", "dur_min", "delta_neto_real", "gap_min", "categoria_real"]]
+        _mostrar = _mostrar.rename(columns={
+            "hora_inicio": "inicio", "dur_min": "dur(min)",
+            "delta_neto_real": "Δg", "gap_min": "gap(min)", "categoria_real": "real",
+        })
+        st.dataframe(_mostrar.iloc[::-1], hide_index=True, use_container_width=True)
+
+with st.expander("📈 Línea de tiempo de los últimos eventos (todas las categorías)", expanded=False):
+    _n_timeline = cand_device.sort_values("ts_inicio").tail(N_ULTIMOS * 3)
+    if _n_timeline.empty:
+        st.caption("Sin candidatos para graficar.")
+    else:
+        _lane = {"alimentacion": 3, "servido": 2, "ruido": 1}
+        fig_tl, ax_tl = plt.subplots(figsize=(10, 2.5))
+        for _cat, _sub in _n_timeline.groupby("categoria_predicha"):
+            ax_tl.scatter(
+                _sub["ts_inicio"], [_lane.get(_cat, 0)] * len(_sub),
+                color=COLOR_CATEGORIA.get(_cat, "gray"), label=_cat, s=60,
+            )
+        ax_tl.set_yticks(list(_lane.values()), list(_lane.keys()))
+        ax_tl.set_ylim(0.5, 3.5)
+        ax_tl.tick_params(axis="x", labelrotation=20)
+        ax_tl.set_title(f"Últimos {len(_n_timeline)} candidatos por categoría predicha")
+        st.pyplot(fig_tl)
+        plt.close(fig_tl)
+
+st.divider()
+
+# --- Seccion 3: revision 1 a 1 -------------------------------------------------
 if modo_revision_sin_anotacion:
     st.subheader("Candidatos sin anotación real — ¿el modelo acertó?")
     st.caption(
         "El modelo se corre igual que siempre; acá se muestra qué categoría "
         "sugiere el cluster de cada candidato, para que confirmes o corrijas."
     )
-    # categoria dominante de cada cluster, calculada solo con candidatos que SI
-    # tienen categoria real (para no usar "sin_anotacion" para predecir "sin_anotacion")
-    _con_categoria_real = cand_device[~cand_device["categoria_real"].isin(["sin_anotacion", "sin_validar"])]
-    _categoria_dominante_por_cluster = (
-        _con_categoria_real.groupby(col_cluster)["categoria_real"]
-        .agg(lambda s: s.mode().iat[0] if not s.mode().empty else "?")
-    )
+    # ya calculado arriba (categoria_dominante_por_cluster) -- se reusa acá
+    _categoria_dominante_por_cluster = categoria_dominante_por_cluster
     vista = (
         cand_device[cand_device["categoria_real"] == "sin_anotacion"]
         .sort_values("ts_inicio").reset_index(drop=True)
