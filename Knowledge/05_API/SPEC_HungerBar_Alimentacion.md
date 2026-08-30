@@ -2,15 +2,16 @@
 id: spec_hunger_bar_alimentacion
 title: SPEC — Hunger Bar (barra de hambre)
 type: spec
-status: v1-implementado
+status: superado-por-motor-alimentacion
 owner: Mauro
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-30
 tags:
   - feature
   - hunger-bar
   - api
   - evidence-engine
+  - historico
 related:
   - [[00_HOME]]
   - [[05_API/README_API]]
@@ -18,9 +19,23 @@ related:
   - [[11_ModelosIA/MOC_ModelosIA]]
   - [[11_ModelosIA/MODEL_EvidenceEngine]]
   - [[13_Features/README_ShapeFeatures]]
+  - [[../29_Specs/007-motor-alimentacion-produccion/spec]]
 ---
 
 # SPEC — Hunger Bar (barra de hambre)
+
+> **v5 (2026-08-30) — el "gap ❌ principal" de §0 ya se cerró, pero NO como decía este
+> documento.** Acá abajo (§1.1, §5) queda pendiente portar el Evidence Engine
+> (`shape_features_v2.py`, 102 features). Mauro decidió en su lugar usar el modelo de
+> `Investigacion/Investigacion_v2` (segmentación por tolerancia de pausa τ=180s + KMeans +
+> refinamiento por umbral calibrado), hecho desde cero y validado por solapamiento de tiempo
+> contra las mismas anotaciones reales — **ya implementado y en uso** en
+> `kittypau_app/src/lib/motor-alimentacion/`. El port del Evidence Engine queda descartado, no
+> pendiente. Historia completa, decisiones y verificación:
+> **[[../29_Specs/007-motor-alimentacion-produccion/spec|Knowledge/29_Specs/007-motor-alimentacion-produccion/]]**
+> (spec + plan). El resto de este documento (§0-§5) describe la v1 de reglas simples que ese
+> motor nuevo reemplazó — se deja como registro histórico de cómo se llegó hasta acá, no como
+> el comportamiento actual de `hunger-bar.ts`.
 
 > v4 — post 3 rondas de discovery técnico + implementación v1 en producción.
 

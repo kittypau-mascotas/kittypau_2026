@@ -1,7 +1,7 @@
 ---
 tags: [kittypau, investigacion-v2, kpcl0034, kpcl0035, caracterizacion, baseline]
 fecha_creacion: 2026-08-29
-fecha_actualizacion: 2026-08-29
+fecha_actualizacion: 2026-08-30
 estado: activo
 ---
 
@@ -464,6 +464,77 @@ fuente/dispositivo/modelo, modo de revisión y guardado de veredicto) y con el s
 real corriendo (`HTTP 200`).
 
 ---
+
+## Paso 5 — Calibración de duración (τ) + refinamiento + validación (07/08)
+
+El Paso 4 (clustering por segmento individual) quedó con una conclusión negativa: no
+separaba bien sin antes resolver la segmentación. El Paso 5 retoma eso, con una única
+excepción acotada a la regla "sin motor viejo": se permite usar **números** (no código, no
+features, no predicciones) de `Ciclo_Alpha_v2/fase_0_ruido/` — las 743 anotaciones reales de
+`anotaciones_av2.csv` y los umbrales calibrados de `config/umbrales.json` — solo como
+**objetivo de calibración y vara de validación**, nunca como entrada del modelo.
+
+- **`07_calibracion_duracion.ipynb`** — reemplaza el Hallazgo 6 ("tolera 1 lectura") por un
+  corte basado en **tiempo acumulado**: un segmento se corta cuando la racha estable acumula
+  `τ` segundos (o hay gap/NaN). Se barrió `τ ∈ {30,60,90,120,180,240,300}s` contra los
+  percentiles de duración real de las 743 anotaciones → **τ=180s** elegido (mejora clara de
+  silhouette 0.441→0.514 en KMeans k=3, KPCL0034). Sobre esos candidatos: KMeans k=3, y un
+  **refinamiento por umbral real** dentro del único cluster que queda mezclado (servido+ruido,
+  identificado programáticamente como el de mayor `max_abs_delta_g` mediano entre los que no
+  son alimentación): `delta_neto_real > 20g` → servido (umbral real de `umbrales.json`,
+  calibrado sobre 496 anotaciones de Ciclo Alpha v2, no inventado acá). k=4 se probó y se
+  descartó — no separaba nada nuevo, solo aislaba 2 outliers.
+- **`08_validacion_contra_anotaciones.ipynb`** — valida por **solapamiento de tiempo** (no
+  por features) contra las 743 anotaciones reales: cobertura/recall 100%/82.6%/82.7%
+  (alimentación/ruido/servido), pureza de cluster 73.9%/100%/75.0%. Exporta
+  `candidatos_categoria_real.csv` (`candidato_id` → categoría real, o `sin_anotacion`). Celda
+  "Promover veredictos manuales" (2026-08-30): toma los veredictos guardados por
+  `app_candidatos.py` (34 candidatos, ver arriba) y los suma a `categoria_real` — reproducible,
+  no una edición manual del CSV.
+
+## De la investigación a producción — `motor-alimentacion/` en `kittypau_app` (2026-08-30)
+
+Con el modelo validado (τ=180s + KMeans + refinamiento), Mauro decidió llevarlo a la app real
+en vez de retomar el port pendiente del Evidence Engine (102 features). Historia completa,
+decisiones técnicas y verificación: **`Knowledge/29_Specs/007-motor-alimentacion-produccion/`**
+(spec.md + plan.md + checklist) — acá solo el resumen de qué conecta con qué.
+
+**`exportar_calibracion_produccion.py`** (esta carpeta) reproduce, desde el cache crudo
+(`data/lecturas_limpias.csv`), la misma segmentación τ=180s + fit de KMeans/refinamiento de
+07/08, y congela los números (centroides estandarizados, scaler, umbrales) en
+`data/calibracion_kpcl0034_export.json` — copiado tal cual a
+`kittypau_app/src/lib/motor-alimentacion/calibracion-kpcl0034.json`. Reentrenar significa
+volver a correr este script y reemplazar el JSON, sin tocar TypeScript. Incluye
+**`guardia_alimentacion`** (agregada 2026-08-30 tras un hallazgo real en producción: ~11% de
+los candidatos más cercanos al cluster de alimentación tenían `delta_neto_real >= 0` —
+físicamente imposible, comer no sube el peso del plato — se redirigen con el mismo umbral de
+20g ya calibrado; mejora medida: accuracy 80.9%→86.3%).
+
+**Dónde se aplica el modelo en la app real** (`kittypau_app/`), en orden de dependencia:
+
+1. `src/lib/motor-alimentacion/` — el motor puerteado a TypeScript, self-contained:
+   `segmentacion.ts` (τ=180s, sin librería de ML), `clasificador.ts` (distancia a centroide +
+   refinamiento + guardia), `index.ts` (API pública `clasificarEventos(readings)`).
+2. `src/lib/hunger-bar.ts` — `computeHungerBar(readings, now, deviceCode)` usa el motor nuevo
+   **solo si `deviceCode === "KPCL0034"`**; cualquier otro device (KPCL0035 incluido) sigue con
+   las reglas simples de v1, sin cambios.
+3. `src/app/api/pets/[id]/hunger-bar/route.ts` — pasa el `device_id` real al llamar
+   `computeHungerBar`, es la única API que expone la clasificación (`events`,
+   `lastMealIsProvisional`, etc.) al frontend.
+4. `src/app/(app)/today/page.tsx` — 3 puntos de consumo:
+   - **Card "Alimentación"**: estado "Detectado por modelo"/"(provisorio)" cuando no hay
+     confirmación por auditoría (`buildWellnessState`, no reemplaza "Confirmado" de
+     `audit_events` — conviven).
+   - **Widget "Comida" de Barras Sims**: porcentaje + "Última comida" + "Próxima comida
+     estimada", ya alimentado por `hunger-bar.ts` sin cambios de fórmula.
+   - **Gráfico día/noche**: 3 carriles fijos en Y (Alimentación/Servido/Hidratación, el
+     peso real vive en `valorReal` para el tooltip) — un ícono por evento, ubicado por la
+     hora real del evento (`startAt`), no por lectura cruda cercana.
+5. `src/lib/hooks/useHungerBarEventNotifications.ts` — notificación push nativa (Capacitor)
+   cuando el motor confirma un evento nuevo de alimentación/servido.
+
+Validado localmente (`tsc`, `eslint`, `vitest`, `npm run build`, servidor real con Playwright
+logueado como `kittypau.mascotas@gmail.com`) — no se tocó Supabase/Vercel de producción.
 
 ## Resumen — qué queda resuelto y qué sigue abierto
 
