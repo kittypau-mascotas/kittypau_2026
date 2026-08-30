@@ -176,6 +176,62 @@ cat_g_ruido, pureza_g_ruido, n_g_ruido = categoria_dominante_de(redirigidos_ruid
 print(f"guardia alimentacion: {mask_guardia.sum()} candidatos redirigidos "
       f"({len(redirigidos_servido)} a servido, {len(redirigidos_ruido)} a ruido)")
 
+# --- mejora medida: SIEMPRE recalculada de los datos actuales, nunca hardcodeada --
+# (antes de 2026-08-30 esto estaba pegado como constantes de una corrida vieja --
+# quedaba desactualizado cada vez que se promovian mas veredictos manuales)
+def _prediccion_sin_guardia(row):
+    info = clusters[str(int(row["cluster_kmeans"]))]
+    if not info["es_mezclado"]:
+        return info["categoria_dominante"]
+    return cat_servido if row["delta_neto_real"] > UMBRAL_SERVIDO_G else cat_ruido
+
+
+def _prediccion_con_guardia(row):
+    base = _prediccion_sin_guardia(row)
+    if base == "alimentacion" and row["delta_neto_real"] >= 0:
+        return cat_g_servido if row["delta_neto_real"] > UMBRAL_SERVIDO_G else cat_g_ruido
+    return base
+
+
+candidatos_df["_pred_sin_guardia"] = candidatos_df.apply(_prediccion_sin_guardia, axis=1)
+candidatos_df["_pred_con_guardia"] = candidatos_df.apply(_prediccion_con_guardia, axis=1)
+_validados_metricas = candidatos_df[candidatos_df["categoria_real"].isin(etiquetas_validas)]
+
+
+def _accuracy(col):
+    return round(float((_validados_metricas[col] == _validados_metricas["categoria_real"]).mean()), 4)
+
+
+def _pureza(col, categoria):
+    _sub = _validados_metricas[_validados_metricas[col] == categoria]
+    return round(float((_sub["categoria_real"] == categoria).mean()), 4) if len(_sub) else None
+
+
+def _recall(col, categoria):
+    _real = _validados_metricas[_validados_metricas["categoria_real"] == categoria]
+    return round(float((_real[col] == categoria).mean()), 4) if len(_real) else None
+
+
+mejora_medida = {
+    "accuracy_global_sin_guardia": _accuracy("_pred_sin_guardia"),
+    "accuracy_global_con_guardia": _accuracy("_pred_con_guardia"),
+    "pureza_alimentacion_sin_guardia": _pureza("_pred_sin_guardia", "alimentacion"),
+    "pureza_alimentacion_con_guardia": _pureza("_pred_con_guardia", "alimentacion"),
+    "recall_servido_sin_guardia": _recall("_pred_sin_guardia", "servido"),
+    "recall_servido_con_guardia": _recall("_pred_con_guardia", "servido"),
+    "recall_ruido_sin_guardia": _recall("_pred_sin_guardia", "ruido"),
+    "recall_ruido_con_guardia": _recall("_pred_con_guardia", "ruido"),
+}
+print(f"mejora medida (recalculada sobre {len(_validados_metricas)} candidatos con categoria real):")
+for _k, _v in mejora_medida.items():
+    print(f"  {_k}: {_v}")
+
+_revision_csv = NB_DIR / "data" / "revision_sin_anotacion.csv"
+n_promovidas_manual = 0
+if _revision_csv.exists():
+    _rev = pd.read_csv(_revision_csv)
+    n_promovidas_manual = int(_rev["veredicto"].isin(etiquetas_validas).sum())
+
 calibracion = {
     "version": "2026-08-30-v2",
     "device_code": DEVICE,
@@ -213,20 +269,11 @@ calibracion = {
         "clusters_alimentacion_afectados": clusters_alimentacion_ids,
         "redirigido_a_servido": {"categoria_dominante": cat_g_servido, "pureza_medida": pureza_g_servido, "n_validados": n_g_servido},
         "redirigido_a_ruido": {"categoria_dominante": cat_g_ruido, "pureza_medida": pureza_g_ruido, "n_validados": n_g_ruido},
-        "mejora_medida": {
-            "accuracy_global_sin_guardia": 0.8089,
-            "accuracy_global_con_guardia": 0.8635,
-            "pureza_alimentacion_sin_guardia": 0.7530,
-            "pureza_alimentacion_con_guardia": 0.8591,
-            "recall_servido_sin_guardia": 0.6735,
-            "recall_servido_con_guardia": 0.9184,
-            "recall_ruido_sin_guardia": 0.7068,
-            "recall_ruido_con_guardia": 0.7932,
-        },
+        "mejora_medida": mejora_medida,
     },
     "validacion_referencia": {
         "n_anotaciones_reales": 743,
-        "n_promovidas_manual": 34,
+        "n_promovidas_manual": n_promovidas_manual,
         "cobertura_recall": {"alimentacion": 1.0, "ruido": 0.826, "servido": 0.827},
         "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, "
                 "no contra features -- ver 08_validacion_contra_anotaciones.ipynb. Estas cifras "

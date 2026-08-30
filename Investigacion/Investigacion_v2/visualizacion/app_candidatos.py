@@ -42,16 +42,18 @@ REVISION_SIN_ANOTACION_CSV = DATA_DIR / "revision_sin_anotacion.csv"
 VEREDICTOS = ["(sin revisar)", "alimentacion", "servido", "ruido", "no está claro"]
 
 RESUMEN_MODELO_RECOMENDADO = """
-**★ Modelo recomendado: KMeans + refinamiento delta_w, sobre τ=180s**
+**★ Modelo recomendado: KMeans + refinamiento delta_w + guardia física, sobre τ=180s**
 
 **Todo lo de acá vale solo para KPCL0034** — es el único dispositivo con
 anotaciones reales (743, Ciclo_Alpha_v2). KPCL0035 se clusteriza igual, pero
 sin ninguna anotación real que lo valide — su `categoria_real` siempre sale
 "sin_validar", no "confirmado que funciona".
 
-Validado contra las 743 anotaciones reales de Ciclo_Alpha_v2 (solapamiento de
-tiempo, notebook 08) — no es una preferencia estética, es el único que se
-midió y funciona:
+Validado contra las 743 anotaciones reales + 37 veredictos manuales promovidos
+(solapamiento de tiempo, notebook 08) — no es una preferencia estética, es el
+único que se midió y funciona. Números recalculados en cada corrida de
+`exportar_calibracion_produccion.py` (nunca hardcodeados), ver `data/
+calibracion_kpcl0034_export.json > guardia_alimentacion.mejora_medida`:
 
 | Cobertura (¿detectamos el evento real?) | % |
 |---|---|
@@ -59,20 +61,25 @@ midió y funciona:
 | Ruido | 82.6% (289/350) |
 | Servido | 82.7% (62/75) |
 
-| Cluster refinado | Composición real |
-|---|---|
-| Alimentación | 73.9% alimentación |
-| Ruido (resto del cluster mezclado) | **100% ruido** |
-| Servido (nuevo, `delta_w > 20g`) | **75.0% servido** |
+| Accuracy punto a punto (contra 589 candidatos con categoría real) | Sin guardia | Con guardia |
+|---|---|---|
+| Global | 81.0% | **86.4%** |
+| Pureza alimentación | 75.3% | **85.9%** |
+| Recall servido | 67.4% | **91.8%** |
+| Recall ruido | 71.0% | **79.6%** |
 
-El umbral `delta_w > 20g` no se inventó — es el mínimo `delta_w` observado en
-496 servidos reales (`config/umbrales.json`, Ciclo_Alpha_v2), aplicado solo
-dentro del cluster que ya salía mezclado.
+**Guardia física** (2026-08-30): "alimentación" exige que el peso haya bajado
+— comer nunca sube el peso del plato. Un ~11% de los candidatos más cercanos
+al cluster de alimentación tenían `delta_neto_real >= 0`; se redirigen con el
+mismo umbral ya calibrado (no uno nuevo). El umbral `delta_w > 20g` tampoco se
+inventó — es el mínimo `delta_w` observado en 496 servidos reales
+(`config/umbrales.json`, Ciclo_Alpha_v2).
 
 **No probado con:** k=4 (silhouette casi igual, no separó nada — descartado).
-**Sin resolver todavía:** 115/701 candidatos (16%) sin ninguna anotación real
-cerca — 34 ya revisados a mano y promovidos a `categoria_real` (30 ruido,
-4 alimentación, cero desacuerdo con el cluster) vía el modo de revisión.
+**Sin resolver todavía:** 112 de 783 candidatos (14%) sin ninguna anotación
+real cerca — 37 ya revisados a mano y promovidos a `categoria_real` (33
+ruido, 4 alimentación, cero desacuerdo con el cluster) vía el modo de
+revisión.
 """
 
 COLOR_CATEGORIA = {

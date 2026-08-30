@@ -59,8 +59,8 @@
         -0.778587
       ],
       "categoria_dominante": "ruido",
-      "pureza_medida": 0.8882,
-      "n_validados": 170,
+      "pureza_medida": 0.8902,
+      "n_validados": 173,
       "es_mezclado": false
     },
     "2": {
@@ -109,19 +109,19 @@
       "n_validados": 26
     },
     "mejora_medida": {
-      "accuracy_global_sin_guardia": 0.8089,
-      "accuracy_global_con_guardia": 0.8635,
+      "accuracy_global_sin_guardia": 0.8098,
+      "accuracy_global_con_guardia": 0.8642,
       "pureza_alimentacion_sin_guardia": 0.753,
       "pureza_alimentacion_con_guardia": 0.8591,
       "recall_servido_sin_guardia": 0.6735,
       "recall_servido_con_guardia": 0.9184,
-      "recall_ruido_sin_guardia": 0.7068,
-      "recall_ruido_con_guardia": 0.7932
+      "recall_ruido_sin_guardia": 0.71,
+      "recall_ruido_con_guardia": 0.7955
     }
   },
   "validacion_referencia": {
     "n_anotaciones_reales": 743,
-    "n_promovidas_manual": 34,
+    "n_promovidas_manual": 37,
     "cobertura_recall": {
       "alimentacion": 1.0,
       "ruido": 0.826,
