@@ -1698,6 +1698,16 @@ export default function TodayPage() {
     return img;
   }, []);
 
+  // Ícono de Servido en el gráfico -- mismo asset que ya usa el widget "Comida"
+  // de Barras Sims, sin encargar uno nuevo (ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
+  const servidoPointStyle = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    const img = new window.Image(28, 28);
+    img.src = "/illustrations/icono_comida.png";
+    return img;
+  }, []);
+
   const dayNightBackground = useMemo(() => {
     if (typeof window === "undefined") return null;
     const img = new window.Image();
@@ -1780,9 +1790,9 @@ export default function TodayPage() {
           label: `Servido (${bowlDevice?.device_id ?? "KPCL"})`,
           data: bowlServidoPoints,
           showLine: false,
-          pointStyle: "rectRot",
-          pointRadius: 7,
-          pointHoverRadius: 9,
+          pointStyle: servidoPointStyle,
+          pointRadius: 9,
+          pointHoverRadius: 10,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#6366f1",
           pointBorderColor: "#ffffff",
@@ -1807,6 +1817,7 @@ export default function TodayPage() {
       bowlServidoPoints,
       bowlDevice?.device_id,
       foodPointStyle,
+      servidoPointStyle,
       waterDayNightPoints,
       waterDevice?.device_id,
       waterPointStyle,
