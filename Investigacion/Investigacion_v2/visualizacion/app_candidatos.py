@@ -25,11 +25,45 @@ import streamlit as st
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CACHE_CSV = DATA_DIR / "lecturas_limpias.csv"
+# Orden = orden de aparicion en el sidebar; el primero es el default al abrir la app.
 FUENTES_CLUSTERS = {
-    "Features propias, τ=1 lectura (notebook 05)": DATA_DIR / "candidatos_clusters.csv",
-    "Features propias, τ=180s calibrado (notebook 07)": DATA_DIR / "candidatos_clusters_duracion.csv",
+    "★ τ=180s calibrado, recomendado (notebook 07)": DATA_DIR / "candidatos_clusters_duracion.csv",
+    "τ=1 lectura, original (notebook 05)": DATA_DIR / "candidatos_clusters.csv",
 }
 CATEGORIA_REAL_CSV = DATA_DIR / "candidatos_categoria_real.csv"
+
+RESUMEN_MODELO_RECOMENDADO = """
+**★ Modelo recomendado: KMeans + refinamiento delta_w, sobre τ=180s**
+
+**Todo lo de acá vale solo para KPCL0034** — es el único dispositivo con
+anotaciones reales (743, Ciclo_Alpha_v2). KPCL0035 se clusteriza igual, pero
+sin ninguna anotación real que lo valide — su `categoria_real` siempre sale
+"sin_validar", no "confirmado que funciona".
+
+Validado contra las 743 anotaciones reales de Ciclo_Alpha_v2 (solapamiento de
+tiempo, notebook 08) — no es una preferencia estética, es el único que se
+midió y funciona:
+
+| Cobertura (¿detectamos el evento real?) | % |
+|---|---|
+| Alimentación | **100%** (318/318) |
+| Ruido | 82.6% (289/350) |
+| Servido | 82.7% (62/75) |
+
+| Cluster refinado | Composición real |
+|---|---|
+| Alimentación | 73.9% alimentación |
+| Ruido (resto del cluster mezclado) | **100% ruido** |
+| Servido (nuevo, `delta_w > 20g`) | **75.0% servido** |
+
+El umbral `delta_w > 20g` no se inventó — es el mínimo `delta_w` observado en
+496 servidos reales (`config/umbrales.json`, Ciclo_Alpha_v2), aplicado solo
+dentro del cluster que ya salía mezclado.
+
+**No probado con:** k=4 (silhouette casi igual, no separó nada — descartado).
+**Sin resolver todavía:** 149/701 candidatos (21%) sin ninguna anotación real
+cerca — no necesariamente errores.
+"""
 
 COLOR_CATEGORIA = {
     "alimentacion": "tab:green",
@@ -40,8 +74,8 @@ COLOR_CATEGORIA = {
 }
 
 MODELOS = {
+    "★ KMeans + refinamiento delta_w, recomendado": "cluster_kmeans_refinado",
     "KMeans": "cluster_kmeans",
-    "KMeans + refinamiento delta_w (servido)": "cluster_kmeans_refinado",
     "Agglomerative": "cluster_agg",
     "GMM": "cluster_gmm",
     "DBSCAN": "cluster_dbscan",
@@ -102,6 +136,11 @@ modelo_nombre = st.sidebar.selectbox("Modelo de clustering", list(modelos_dispon
 col_cluster = modelos_disponibles[modelo_nombre]
 
 cand_device = candidatos[candidatos["device_code"] == device_code].copy()
+if device_code != "KPCL0034":
+    st.sidebar.warning(
+        f"{device_code} no tiene anotaciones reales -- se clusteriza igual, "
+        "pero nada de esto está validado acá (solo KPCL0034 lo está)."
+    )
 clusters_disponibles = sorted(cand_device[col_cluster].unique())
 cluster_bueno = st.sidebar.selectbox(
     "Cluster que mejor funciona (se marca en rojo)",
@@ -113,6 +152,9 @@ st.sidebar.caption(
     f"{len(cand_device):,} candidatos de {device_code} · "
     f"{len(clusters_disponibles)} clusters en {modelo_nombre}"
 )
+
+with st.sidebar.expander("ℹ️ Por qué este es el modelo recomendado", expanded=False):
+    st.markdown(RESUMEN_MODELO_RECOMENDADO)
 
 
 def graficar_candidato(fila, ax):
@@ -155,6 +197,12 @@ ax1.legend(title="Categoría real" if hay_categoria_real else "categoria_real")
 ax1.set_title(f"Cluster elegido: {cluster_bueno} (borde negro)")
 st.pyplot(fig1)
 plt.close(fig1)
+
+if hay_categoria_real:
+    with st.expander("Composición real de cada cluster (% de categoría real)", expanded=True):
+        _tabla = pd.crosstab(cand_device[col_cluster], cand_device["categoria_real"])
+        st.dataframe((_tabla.div(_tabla.sum(axis=1), axis=0) * 100).round(1))
+        st.caption(f"Cantidad de candidatos por cluster: {dict(_tabla.sum(axis=1))}")
 
 with st.expander("Medianas por cluster"):
     st.dataframe(
