@@ -1,0 +1,105 @@
+{
+  "version": "2026-08-30-v1",
+  "device_code": "KPCL0034",
+  "origen": "Investigacion/Investigacion_v2 (rama experimento-calibracion-duracion), 07_calibracion_duracion.ipynb + 08_validacion_contra_anotaciones.ipynb -- reproducido desde data/lecturas_limpias.csv por scripts/exportar_calibracion.py",
+  "segmentacion": {
+    "tau_pausa_s": 180,
+    "gap_cutoff_s": 300,
+    "k_margen_lecturas_estables": 5,
+    "umbral_es_candidato_g": 2.0,
+    "umbral_es_candidato_nota": "mediana + (3.5/0.6745)*MAD de max_abs_delta_g sobre TODOS los segmentos del device (candidatos + descartados) -- filtra ruido de sensor"
+  },
+  "features_orden": [
+    "duracion_s",
+    "delta_neto_real",
+    "max_abs_delta_g",
+    "n_lecturas",
+    "n_cambios_signo"
+  ],
+  "log1p_features": [
+    "duracion_s",
+    "max_abs_delta_g"
+  ],
+  "scaler": {
+    "mean": [
+      4.897671,
+      -1.187739,
+      2.388771,
+      6.873563,
+      4.167305
+    ],
+    "scale": [
+      1.017273,
+      64.460383,
+      0.97474,
+      5.888327,
+      4.097017
+    ]
+  },
+  "clusters_kmeans_crudo": {
+    "0": {
+      "centroide_estandarizado": [
+        0.89206,
+        -0.179051,
+        0.062519,
+        0.824662,
+        0.842902
+      ],
+      "categoria_dominante": "alimentacion",
+      "pureza_medida": 0.753,
+      "n_validados": 336,
+      "es_mezclado": false
+    },
+    "1": {
+      "centroide_estandarizado": [
+        -0.823562,
+        0.006666,
+        -0.69152,
+        -0.759734,
+        -0.778587
+      ],
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.8882,
+      "n_validados": 170,
+      "es_mezclado": false
+    },
+    "2": {
+      "centroide_estandarizado": [
+        -0.843776,
+        0.681624,
+        1.987515,
+        -0.785208,
+        -0.795958
+      ],
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.5875,
+      "n_validados": 80,
+      "es_mezclado": true
+    }
+  },
+  "cluster_mezclado": 2,
+  "refinamiento": {
+    "umbral_delta_neto_real_g": 20.0,
+    "regla": "dentro del cluster_mezclado, si delta_neto_real > umbral => servido; si_no => categoria_dominante del cluster_mezclado",
+    "cluster_servido_nuevo": {
+      "categoria_dominante": "servido",
+      "pureza_medida": 0.7674,
+      "n_validados": 43
+    },
+    "cluster_ruido_remanente": {
+      "categoria_dominante": "ruido",
+      "pureza_medida": 1.0,
+      "n_validados": 37
+    }
+  },
+  "validacion_referencia": {
+    "n_anotaciones_reales": 743,
+    "n_promovidas_manual": 34,
+    "cobertura_recall": {
+      "alimentacion": 1.0,
+      "ruido": 0.826,
+      "servido": 0.827
+    },
+    "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, no contra features -- ver 08_validacion_contra_anotaciones.ipynb"
+  }
+}

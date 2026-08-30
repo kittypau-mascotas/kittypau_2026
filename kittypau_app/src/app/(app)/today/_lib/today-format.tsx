@@ -56,6 +56,9 @@ export function getWellnessToneClasses(
       ? "border-emerald-200 bg-emerald-50 text-emerald-800"
       : "border-sky-200 bg-sky-50 text-sky-800";
   }
+  if (stateLabel.startsWith("Detectado por modelo")) {
+    return "border-amber-200 bg-amber-50 text-amber-800";
+  }
   return "border-slate-200 bg-slate-50 text-slate-600";
 }
 

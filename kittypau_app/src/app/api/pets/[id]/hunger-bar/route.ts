@@ -79,12 +79,14 @@ export async function GET(
       percentage: null,
       lastMealDetectedAt: null,
       lastMealConfidence: null,
+      lastMealIsProvisional: false,
       estimatedNextMealAt: null,
       intervalUsedMinutes: null,
       usingFallback: false,
       sampleSize: 0,
       alertActive: false,
       hoursOverdue: null,
+      events: [],
     });
   }
 
@@ -116,7 +118,7 @@ export async function GET(
       weightGrams: r.weight_grams as number,
     }));
 
-  const result = computeHungerBar(points);
+  const result = computeHungerBar(points, new Date(), device.device_id);
 
   logRequestEnd(req, startedAt, 200, {
     pet_id: petId,

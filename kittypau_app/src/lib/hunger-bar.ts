@@ -3,19 +3,27 @@
  * de `readings` crudas, sin depender de `device_bowl_sessions` (manual) ni de
  * `pet_sessions` (DB analytics opcional/legado).
  *
- * ponytail: la clasificación de segmentos usa reglas simples de magnitud/dirección/
- * duración (rangos documentados en Knowledge/SPEC_HungerBar_Alimentacion.md), NO el
- * Motor Matemático v2 / Evidence Engine (shape_features_v2.py, 23 features + softmax
- * calibrado contra 417 anotaciones reales). Ese motor es Python/numpy y no está
- * portado a la app — decisión de arquitectura pendiente (microservicio / port a TS /
- * job batch). Techo de este v1: no distingue tan bien "comida real" de un roce/
- * ruido cerca del plato como el Evidence Engine (~7σ de separación medida).
- * Upgrade path: reemplazar `classifySegment()` por una llamada al motor real
- * cuando se resuelva la integración.
+ * Para KPCL0034: la clasificación usa el motor validado en
+ * `Investigacion/Investigacion_v2` (segmentación por tolerancia de pausa +
+ * centroide más cercano + refinamiento por umbral calibrado, ver
+ * `./motor-alimentacion`) — reemplaza las reglas simples de v1. Validado por
+ * solapamiento de tiempo contra 743+34 anotaciones reales (cobertura
+ * 100%/82.6%/82.7%, pureza 73.9%/100%/75.0% para alimentación/ruido/servido).
+ * Ver `Knowledge/29_Specs/007-motor-alimentacion-produccion/`.
  *
- * Constantes de calibración: medidas sobre 254 comidas anotadas de KPCL0034
- * ("Bandida"), abril–julio 2026 — ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md.
+ * Para cualquier otro dispositivo (ej. KPCL0035, sin ninguna anotación real que
+ * valide el motor ahí): se mantienen las reglas simples de magnitud/dirección/
+ * duración de v1 (`classifySegment`) — ver
+ * Knowledge/05_API/SPEC_HungerBar_Alimentacion.md §1.2 para el detalle.
+ *
+ * Constantes de calibración de v1 (solo usadas fuera de KPCL0034): medidas
+ * sobre 254 comidas anotadas de KPCL0034 ("Bandida"), abril–julio 2026.
  */
+import { clasificarEventos } from "./motor-alimentacion";
+
+// Único dispositivo validado contra anotaciones reales para el motor nuevo —
+// ver Assumptions de Knowledge/29_Specs/007-motor-alimentacion-produccion/spec.md.
+export const MOTOR_NUEVO_DEVICE_CODE = "KPCL0034";
 
 export const SESSION_THRESHOLD_G = 5; // mismo umbral ya probado en bridge/src/processor.js
 export const STABLE_TOLERANCE_G = 3;
@@ -53,7 +61,8 @@ export type Segment = {
   deltaG: number; // peso final - peso inicial (negativo = bajó)
   durationMin: number;
   category: SegmentCategory;
-  confidence: number; // 0-1, qué tanto matchea el rango típico documentado — no es el score del Evidence Engine
+  confidence: number; // 0-1 — proxy de regla en v1, pureza medida contra anotaciones reales en el motor nuevo
+  isProvisional: boolean; // true = evento todavía no confirmado (motor nuevo, ~180s de confirmación)
 };
 
 export type HungerBarResult = {
@@ -61,12 +70,14 @@ export type HungerBarResult = {
   percentage: number | null;
   lastMealDetectedAt: string | null;
   lastMealConfidence: number | null;
+  lastMealIsProvisional: boolean; // true = clasificación provisoria, aún no confirmada
   estimatedNextMealAt: string | null;
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
   sampleSize: number;
   alertActive: boolean; // v1.1 — nunca true si status != "ok"
   hoursOverdue: number | null; // v1.1 — null si status != "ok"
+  events: Segment[]; // todos los eventos clasificados en la ventana (alimentación + servido) — para el gráfico
 };
 
 function triangularScore(
@@ -176,6 +187,7 @@ export function detectSegments(readings: ReadingPoint[]): Segment[] {
         durationMin,
         category,
         confidence,
+        isProvisional: false,
       });
 
       phase = "idle";
@@ -194,11 +206,34 @@ function median(values: number[]): number {
     : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+/** Adapta la salida de `./motor-alimentacion` (KPCL0034) al mismo `Segment[]`
+ * que ya consume `computeHungerBar` — el resto del cálculo (mediana de
+ * intervalos, fallback, clamp, fórmula de la barra) no cambia. */
+function detectSegmentsMotorNuevo(readings: ReadingPoint[]): Segment[] {
+  const puntos = readings.map((r) => ({
+    recordedAt: r.recordedAt,
+    weightGrams: r.weightGrams,
+  }));
+  return clasificarEventos(puntos).map((ev) => ({
+    startAt: ev.startAt,
+    endAt: ev.endAt,
+    deltaG: ev.deltaG,
+    durationMin: ev.durationMin,
+    category: ev.category,
+    confidence: ev.confidence,
+    isProvisional: ev.isProvisional,
+  }));
+}
+
 export function computeHungerBar(
   readings: ReadingPoint[],
   now: Date = new Date(),
+  deviceCode?: string | null,
 ): HungerBarResult {
-  const segments = detectSegments(readings);
+  const segments =
+    deviceCode === MOTOR_NUEVO_DEVICE_CODE
+      ? detectSegmentsMotorNuevo(readings)
+      : detectSegments(readings);
   const meals = segments
     .filter((s) => s.category === "alimentacion")
     .sort(
@@ -211,12 +246,14 @@ export function computeHungerBar(
       percentage: null,
       lastMealDetectedAt: null,
       lastMealConfidence: null,
+      lastMealIsProvisional: false,
       estimatedNextMealAt: null,
       intervalUsedMinutes: null,
       usingFallback: false,
       sampleSize: 0,
       alertActive: false,
       hoursOverdue: null,
+      events: segments,
     };
   }
 
@@ -259,11 +296,13 @@ export function computeHungerBar(
     percentage: Math.round(percentage),
     lastMealDetectedAt: lastMeal.startAt,
     lastMealConfidence: Math.round(lastMeal.confidence * 100) / 100,
+    lastMealIsProvisional: lastMeal.isProvisional,
     estimatedNextMealAt: estimatedNextMealAt.toISOString(),
     intervalUsedMinutes: Math.round(intervalH * 60),
     usingFallback,
     sampleSize: meals.length,
     alertActive,
     hoursOverdue: Math.round(hoursOverdue * 100) / 100,
+    events: segments,
   };
 }

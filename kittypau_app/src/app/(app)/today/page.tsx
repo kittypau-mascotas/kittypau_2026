@@ -114,16 +114,28 @@ type ApiReading = {
   battery_level: number | null;
 };
 
+type HungerBarEvent = {
+  startAt: string;
+  endAt: string;
+  deltaG: number;
+  durationMin: number;
+  category: "alimentacion" | "servido" | "ruido";
+  confidence: number;
+  isProvisional: boolean;
+};
+
 type HungerBarResponse = {
   status: "ok" | "sin_datos" | "sin_dispositivo";
   percentage: number | null;
   lastMealDetectedAt: string | null;
+  lastMealIsProvisional?: boolean;
   estimatedNextMealAt: string | null;
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
   sampleSize: number;
   alertActive: boolean;
   hoursOverdue: number | null;
+  events?: HungerBarEvent[];
 };
 
 // v1.1 — gradiente continuo verde→amarillo→rojo. Ver
@@ -448,13 +460,47 @@ function findSessionForPoint(
   );
 }
 
+// Igual que findSessionForPoint pero por tiempo -- necesario para el dataset de
+// Alimentación/Servido del gráfico de /today, que ahora son subconjuntos
+// FILTRADOS de bowlDayNightPoints (ver Knowledge/29_Specs/007-motor-
+// alimentacion-produccion/): startIndex/endIndex de IntakeSession se calcularon
+// contra el array completo, no contra el subconjunto que llega a cada dataset.
+function findSessionForTime(
+  sessions: IntakeSession[],
+  tMs: number,
+): IntakeSession | null {
+  return (
+    sessions.find((session) => tMs >= session.startT && tMs <= session.endT) ??
+    null
+  );
+}
+
 function buildWellnessState(params: {
   type: "food" | "water";
   sessions: IntakeSession[];
+  // Fallback del motor de Investigacion_v2 (solo KPCL0034, ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/) para cuando todavía
+  // no hay un evento confirmado por auditoría -- NO reemplaza "Confirmado" (eso
+  // sigue siendo exclusivo de audit_events), es un tercer estado honesto entre
+  // "sin evidencia" y "confirmado por operador".
+  modelMeal?: { at: string; isProvisional: boolean } | null;
 }): WellnessState {
   const latestSession =
     [...params.sessions].sort((a, b) => b.endT - a.endT)[0] ?? null;
   if (!latestSession) {
+    if (params.type === "food" && params.modelMeal) {
+      const { at, isProvisional } = params.modelMeal;
+      return {
+        stateLabel: isProvisional
+          ? "Detectado por modelo (provisorio)"
+          : "Detectado por modelo",
+        actionLabel:
+          "Clasificado automáticamente por el modelo de Investigacion_v2 (KPCL0034) — todavía sin confirmar por un operador.",
+        levelLabel: isProvisional ? "Sin confirmar" : "Evento clasificado",
+        lastEventLabel: `Última comida detectada por modelo: ${formatTimestamp(at)}${isProvisional ? " (provisoria)" : ""}`,
+        hasEvidence: true,
+      };
+    }
     // Hidratación no tiene (todavía) un modelo de detección calibrado como el
     // Hunger Bar de comida — no hay investigación de hidratación en fase_0_ruido/
     // (ver Knowledge/29_Specs/SPEC_03_Objetivos_Monitoreo.md Pilar 2). Decirlo
@@ -1559,6 +1605,45 @@ export default function TodayPage() {
     ],
   );
 
+  // Separar el plato en "solo alimentación real" vs. "servido", usando el
+  // modelo de Investigacion_v2 (solo KPCL0034, ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/) -- fuera de ese
+  // device (ej. KPCL0035, sin validar) se muestra el trazo crudo como hasta
+  // ahora, sin distinguir categoría.
+  const bowlEventsPorCategoria = useMemo(() => {
+    if (
+      !isAuthoritativeFoodDeviceCode(bowlDevice?.device_id) ||
+      !hungerBar?.events
+    ) {
+      return null;
+    }
+    return hungerBar.events;
+  }, [bowlDevice?.device_id, hungerBar?.events]);
+
+  const enRangoDeCategoria = useMemo(() => {
+    return (t: number, category: "alimentacion" | "servido") => {
+      if (!bowlEventsPorCategoria) return false;
+      return bowlEventsPorCategoria.some((ev) => {
+        if (ev.category !== category) return false;
+        const inicio = new Date(ev.startAt).getTime();
+        const fin = new Date(ev.endAt).getTime();
+        return t >= inicio && t <= fin;
+      });
+    };
+  }, [bowlEventsPorCategoria]);
+
+  const bowlAlimentacionPoints = useMemo(() => {
+    if (!bowlEventsPorCategoria) return bowlDayNightPoints; // sin modelo: trazo crudo (comportamiento actual)
+    return bowlDayNightPoints.filter((p) =>
+      enRangoDeCategoria(p.t, "alimentacion"),
+    );
+  }, [bowlDayNightPoints, bowlEventsPorCategoria, enRangoDeCategoria]);
+
+  const bowlServidoPoints = useMemo(() => {
+    if (!bowlEventsPorCategoria) return [];
+    return bowlDayNightPoints.filter((p) => enRangoDeCategoria(p.t, "servido"));
+  }, [bowlDayNightPoints, bowlEventsPorCategoria, enRangoDeCategoria]);
+
   const bowlReferenceReadings = useMemo(
     () => [
       ...bowlChartReadings,
@@ -1678,13 +1763,28 @@ export default function TodayPage() {
       datasets: [
         {
           label: `Alimentación (${bowlDevice?.device_id ?? "KPCL"})`,
-          data: bowlDayNightPoints,
+          data: bowlAlimentacionPoints,
           showLine: false,
           pointStyle: foodPointStyle,
           pointRadius: 9,
           pointHoverRadius: 10,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#ec4899",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.5,
+        },
+        {
+          // Servido (plato rellenado) -- ícono distinto al de alimentación real,
+          // solo poblado para KPCL0034 (ver
+          // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
+          label: `Servido (${bowlDevice?.device_id ?? "KPCL"})`,
+          data: bowlServidoPoints,
+          showLine: false,
+          pointStyle: "rectRot",
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          pointHoverBorderWidth: 2,
+          pointBackgroundColor: "#6366f1",
           pointBorderColor: "#ffffff",
           pointBorderWidth: 1.5,
         },
@@ -1703,7 +1803,8 @@ export default function TodayPage() {
       ],
     }),
     [
-      bowlDayNightPoints,
+      bowlAlimentacionPoints,
+      bowlServidoPoints,
       bowlDevice?.device_id,
       foodPointStyle,
       waterDayNightPoints,
@@ -1791,53 +1892,98 @@ export default function TodayPage() {
               const label = String(context.dataset.label ?? "Serie");
               const seriesTitle = label.includes("Hidratación")
                 ? "Hidratación"
-                : label.includes("Alimentación")
-                  ? "Alimentación"
-                  : "Lectura";
+                : label.includes("Servido")
+                  ? "Servido"
+                  : label.includes("Alimentación")
+                    ? "Alimentación"
+                    : "Lectura";
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const valueText = value === null ? "N/D" : `${value} ${unit}`;
               return [`${seriesTitle}: ${valueText}`];
             },
             afterLabel: (context) => {
-              const label = context.dataset.label ?? "Serie";
+              const label = String(context.dataset.label ?? "Serie");
               const isHydration = label.includes("Hidratación");
+              const isFood = !isHydration; // Alimentación o Servido, ambos son el plato
               const unit = isHydration ? "cm3 (aprox)" : "g";
-              const isFood = context.datasetIndex === 0;
+              const t =
+                dayNightWindow.startMs +
+                Number(context.parsed.x) * 60 * 60 * 1000;
               const sessions = isFood
                 ? bowlIntakeSessions
                 : waterIntakeSessions;
-              const session = findSessionForPoint(sessions, context.dataIndex);
+              const session = isFood
+                ? findSessionForTime(sessions, t)
+                : findSessionForPoint(sessions, context.dataIndex);
+              const auditLines: string[] = [];
               if (!session) {
-                return isFood
-                  ? ["Sin evidencia auditada de alimentación"]
-                  : ["Sin evento registrado"];
+                auditLines.push(
+                  isFood
+                    ? "Sin evidencia auditada de alimentación"
+                    : "Sin evento registrado",
+                );
+              } else {
+                const deviceId = isFood
+                  ? (bowlDevice?.id ?? "")
+                  : (waterDevice?.id ?? "");
+                const auditEvents = deviceAuditEvents[deviceId] ?? [];
+                const startCat = isHydration
+                  ? WATER_START_CATEGORY
+                  : FOOD_START_CATEGORY;
+                const isConfirmed = auditEvents.some(
+                  (e) =>
+                    e.category === startCat &&
+                    Math.abs(
+                      new Date(e.created_at).getTime() - session.startT,
+                    ) <
+                      5 * 60 * 1000,
+                );
+                const statusLabel = isFood
+                  ? "✓ Alimentación confirmada (audit_event)"
+                  : isConfirmed
+                    ? "✓ Hidratación confirmada"
+                    : "Hidratación detectada";
+                auditLines.push(
+                  statusLabel,
+                  `Inicio: ${formatSessionClock(session.startT)}`,
+                  `Fin: ${formatSessionClock(session.endT)}`,
+                  `Duración: ${formatSessionDuration(session.durationMinutes)}`,
+                  `Consumo: ${Math.round(session.consumed)} ${unit}`,
+                );
               }
-              const deviceId = isFood
-                ? (bowlDevice?.id ?? "")
-                : (waterDevice?.id ?? "");
-              const auditEvents = deviceAuditEvents[deviceId] ?? [];
-              const startCat = isHydration
-                ? WATER_START_CATEGORY
-                : FOOD_START_CATEGORY;
-              const isConfirmed = auditEvents.some(
-                (e) =>
-                  e.category === startCat &&
-                  Math.abs(new Date(e.created_at).getTime() - session.startT) <
-                    5 * 60 * 1000,
-              );
-              const statusLabel = isFood
-                ? "✓ Alimentación confirmada (audit_event)"
-                : isConfirmed
-                  ? "✓ Hidratación confirmada"
-                  : "Hidratación detectada";
-              return [
-                statusLabel,
-                `Inicio: ${formatSessionClock(session.startT)}`,
-                `Fin: ${formatSessionClock(session.endT)}`,
-                `Duración: ${formatSessionDuration(session.durationMinutes)}`,
-                `Consumo: ${Math.round(session.consumed)} ${unit}`,
-              ];
+
+              // Modelo de Investigacion_v2 (solo KPCL0034) -- siempre muestra
+              // ambas categorías (alimentación + servido) cerca del punto, sin
+              // importar en qué serie se hizo hover (FR-006).
+              if (isFood && bowlEventsPorCategoria) {
+                const VENTANA_MS = 2 * 60 * 60 * 1000;
+                const masCercano = (categoria: "alimentacion" | "servido") =>
+                  bowlEventsPorCategoria
+                    .filter((ev) => ev.category === categoria)
+                    .map((ev) => ({
+                      ev,
+                      dist: Math.min(
+                        Math.abs(new Date(ev.startAt).getTime() - t),
+                        Math.abs(new Date(ev.endAt).getTime() - t),
+                      ),
+                    }))
+                    .filter((x) => x.dist <= VENTANA_MS)
+                    .sort((a, b) => a.dist - b.dist)[0]?.ev ?? null;
+                const alim = masCercano("alimentacion");
+                const serv = masCercano("servido");
+                auditLines.push(
+                  "— Modelo (Investigacion_v2) —",
+                  alim
+                    ? `Alimentación: ${formatSessionClock(new Date(alim.startAt).getTime())}${alim.isProvisional ? " (provisoria)" : ""}`
+                    : "Alimentación: sin evento cercano",
+                  serv
+                    ? `Servido: ${formatSessionClock(new Date(serv.startAt).getTime())}${serv.isProvisional ? " (provisorio)" : ""}`
+                    : "Servido: sin evento cercano",
+                );
+              }
+
+              return auditLines;
             },
             footer: () => "KittyPaw · Ciclo diario",
           },
@@ -1888,7 +2034,12 @@ export default function TodayPage() {
         },
       },
     }),
-    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
+    [
+      bowlEventsPorCategoria,
+      bowlIntakeSessions,
+      dayNightWindow.startMs,
+      waterIntakeSessions,
+    ],
   );
 
   const nowMs = useMemo(() => Date.now(), []);
@@ -1963,13 +2114,27 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [deviceAuditEvents, waterDevice?.id, waterHistoryPoints]);
+  const bowlModelMeal = useMemo(() => {
+    if (!isAuthoritativeFoodDeviceCode(bowlDevice?.device_id)) return null;
+    if (
+      !hungerBar ||
+      hungerBar.status !== "ok" ||
+      !hungerBar.lastMealDetectedAt
+    )
+      return null;
+    return {
+      at: hungerBar.lastMealDetectedAt,
+      isProvisional: hungerBar.lastMealIsProvisional ?? false,
+    };
+  }, [bowlDevice?.device_id, hungerBar]);
   const bowlWellness = useMemo(
     () =>
       buildWellnessState({
         type: "food",
         sessions: bowlHistorySessions,
+        modelMeal: bowlModelMeal,
       }),
-    [bowlHistorySessions],
+    [bowlHistorySessions, bowlModelMeal],
   );
   const waterWellness = useMemo(
     () =>
