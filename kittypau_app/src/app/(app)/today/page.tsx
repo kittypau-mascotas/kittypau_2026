@@ -65,6 +65,7 @@ import BowlWellnessCard from "./_components/bowl-wellness-card";
 import DayNightTimelineCard from "./_components/day-night-timeline-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
+import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
 
 type ApiPet = {
   id: string;
@@ -2733,6 +2734,7 @@ export default function TodayPage() {
           onClose={() => setShowGuide(false)}
         />
       ) : null}
+      <QaTestMealNotification petName={petLabel} />
     </div>
   );
 }

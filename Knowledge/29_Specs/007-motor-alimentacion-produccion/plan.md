@@ -157,21 +157,81 @@ el hook se toma como línea base sin notificar nada (son eventos históricos, no
 — solo se notifica lo que aparece nuevo en un fetch posterior (poll cada 5min ya existente en
 `today/page.tsx`).
 
+## Decisión 9 — Agrupar picoteo (2026-09-01)
+
+Pendiente desde v1 (`Knowledge/05_API/SPEC_HungerBar_Alimentacion.md` §3 "Picoteo", nunca
+resuelto). `motor-alimentacion/index.ts`: `fusionarPicoteo()` fusiona eventos consecutivos de la
+misma categoría (alimentación o servido, no ruido) separados por menos de `GAP_FUSION_S=120s` en
+uno solo (extiende `endAt`, suma `deltaG`, la confianza del evento fusionado es la del más débil
+de los dos, no la del primero — conservador). Umbral reutilizado, no inventado: es
+`gap_fusion_s=120` del pipeline legado (`01_genera_candidatos.py`, ver
+`Knowledge/10_Datasets/README_Datasets.md`). Corre como post-procesamiento después de clasificar,
+no toca segmentación ni clustering. 5 tests nuevos en `index.test.ts`.
+
 ## Alcance de esta entrega (ver Assumptions del spec)
 
 Todo lo de arriba se implementó y se verificó **localmente**: `tsc --noEmit` limpio, `eslint`
 limpio, suite completa de tests (`vitest run`, 52/52) y `npm run build` de producción. No se tocó
 Supabase de producción ni se desplegó a Vercel — eso es la fase siguiente, fuera de este spec.
 
-## FR-010 (recalibración semi-automática con freno de calidad) — no implementado en esta entrega
+## FR-010 (recalibración semi-automática con freno de calidad) — implementado (2026-09-01)
 
-Documentado en el spec como requisito, explícitamente no bloqueante (ver Assumptions). Diseño
-recomendado para cuando se retome: un job que (1) corre
-`exportar_calibracion_produccion.py` con datos actualizados, (2) recalcula cobertura/pureza contra
-`candidatos_categoria_real.csv` igual que `08_validacion_contra_anotaciones.ipynb`, (3) solo
-sobrescribe `calibracion-kpcl0034.json` si esas métricas igualan o superan a las del JSON vigente
-(el propio JSON ya trae `validacion_referencia` para comparar contra). Mantenerlo **fuera** de
-Vercel (build-time o CI, no request-time) — no hay necesidad de que corra dentro de la app Next.js.
+`Investigacion/Investigacion_v2/recalibrar_con_freno.py`. Flujo real (no solo diseño):
+
+0. Refresca `candidatos_categoria_real.csv` desde cero (re-corre las celdas de
+   `08_validacion_contra_anotaciones.ipynb` extraídas a un script temporal — categoría real por
+   solapamiento + promoción de veredictos manuales de `revision_sin_anotacion.csv`). **Hallazgo
+   real al construirlo**: la primera versión no tenía este paso y comparaba contra ground truth
+   desactualizado (18 veredictos manuales menos de los que ya existían) — corregido antes de
+   dejarlo andando.
+1. Guarda el JSON vigente de producción como referencia.
+2. Corre `exportar_calibracion_produccion.py` → candidato nuevo.
+3. Compara `guardia_alimentacion.mejora_medida.accuracy_global_con_guardia` (candidato vs.
+   vigente, empate cuenta como mejora).
+4. Solo copia el candidato a `kittypau_app/src/lib/motor-alimentacion/calibracion-kpcl0034.json`
+   si iguala o supera; si no, descarta y dejar el vigente intacto.
+
+Registra cada corrida en `data/historial_recalibraciones.jsonl` (fecha, versión, métrica antes/
+después, decisión) — auditable. Corrido 3 veces en vivo el mismo día: 86.42%→86.82%→88.46%
+(mejorando con cada tanda de veredictos manuales nuevos, nunca empeorando). Mantenido **fuera**
+de Vercel (script standalone, pensado para cron/CI o correrlo a mano) — no corre dentro del
+runtime de Next.js.
+
+## Cierre de validación asistido — sin caer en validación circular (2026-09-01)
+
+`Investigacion/Investigacion_v2/cerrar_validacion_confiable.py`. No hace "guardar todo lo que
+sugiere el modelo" a ciegas (eso sería exactamente la validación circular que se discutió con
+Mauro — ver advertencia agregada al README de `app_candidatos.py`). Separa por incertidumbre
+(mismo cálculo que la app: distancia al cluster más cercano / al segundo más cercano):
+
+- **Confiables** (incertidumbre < 0.4, sin ambigüedad estructural real): se auto-promueven con
+  la categoría que sugiere el cluster — equivalente a lo que un humano aprobaría con solo mirar
+  el número.
+- **Ambiguos** (incertidumbre >= 0.4): se listan en `data/candidatos_ambiguos_pendientes.csv`,
+  **no se tocan** — quedan para que Mauro los revise a mano en `app_candidatos.py`.
+
+Resultado de la corrida real: de 94 candidatos `sin_anotacion`, 86 confiables promovidos (85
+ruido, 1 servido) + 8 genuinamente ambiguos sin resolver. Encadena automáticamente con
+`recalibrar_con_freno.py` al final, así el efecto llega a producción con el mismo freno de
+calidad.
+
+## Notificación QA sin esperar un evento real (2026-09-01)
+
+`src/app/_components/qa-test-meal-notification.tsx` — botón que dispara
+`notifyMealEvent()` directo (mismo código de producción), solo visible en plataforma nativa
+(Capacitor), para poder probar la notificación de "comió"/"le sirvieron" sin esperar horas a
+que aparezca un evento real. Montado en `today/page.tsx`.
+
+**Verificación en dispositivo real — parcial**: se armó un AVD (`Pixel_7`), se compiló el APK
+(`gradlew assembleDebug`, JDK 21 embebido de Android Studio) y se instaló/lanzó correctamente
+contra el dev server local (`CAPACITOR_SERVER_URL=http://10.0.2.2:3000`). Log confirmado:
+Capacitor conecta al server, registra los plugins (incluido `LocalNotifications`), la actividad
+se muestra y queda en foreground sin crashear. **No se pudo confirmar visualmente el banner de
+notificación ni completar el login** — el emulador (con y sin ventana, con software rendering)
+se volvió gráficamente inestable en este entorno (ANR de System UI, framebuffer en negro) — es
+una limitación del entorno de este agente (sin aceleración gráfica real para el emulador), no
+un defecto de la app. Pendiente: correr el botón de QA en un dispositivo real o un emulador con
+GPU en la máquina de Mauro/Javier.
 
 ## Decisión 7 — Guardia física post-hoc: "alimentación" exige peso bajando (2026-08-30)
 
