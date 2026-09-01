@@ -585,6 +585,46 @@ se promovían más veredictos manuales; corregido el mismo día).
    cuando el motor confirma un evento nuevo de alimentación/servido (solo eventos nuevos
    desde que se monta el hook, no dispara para todo el historial al cargar la página).
 
+### Cómo se conecta esto con el gráfico y la barra de Kittypau (el vínculo completo)
+
+Un solo cálculo (`computeHungerBar`, punto 2 de arriba) alimenta **las 3 piezas gráficas de
+`/today` a la vez** — no hay 3 cálculos separados, hay 1 fuente de verdad y 3 vistas de ella:
+
+```mermaid
+flowchart LR
+    A["lecturas crudas<br/>(readings/readings_rows)"] --> B["Segmentación τ=180s<br/>(segmentacion.ts)"]
+    B --> C["Clasificación: KMeans<br/>+ refinamiento delta_w<br/>+ guardia física<br/>(clasificador.ts)"]
+    C -.calibración congelada.-> D["calibracion-kpcl0034.json<br/>(exportado desde Investigacion_v2)"]
+    D -.-> C
+    C --> E["computeHungerBar()<br/>hunger-bar.ts"]
+    E --> F["/api/pets/:id/hunger-bar<br/>(events, percentage, lastMealDetectedAt...)"]
+    F --> G["Card Alimentación<br/>badge 'Detectado por modelo'"]
+    F --> H["Barras Sims — 'Comida'<br/>% + última/próxima comida"]
+    F --> I["Gráfico día/noche<br/>carriles fijos + tooltip"]
+```
+
+- **La barra "Comida" de Barras Sims** (`barras-sims-card.tsx`) no tiene ninguna lógica propia
+  de clasificación — el % que se llena y las fechas de "última comida"/"próxima comida
+  estimada" son directamente `hungerBar.percentage` / `hungerBar.lastMealDetectedAt` /
+  `hungerBar.estimatedNextMealAt`, calculados en `computeHungerBar()` a partir de los eventos
+  que clasificó el motor de Investigacion_v2. Cambiar el modelo (ej. correr
+  `exportar_calibracion_produccion.py` de nuevo con más datos) cambia automáticamente lo que
+  se ve en esa barra, sin tocar el componente.
+- **El gráfico día/noche** (`day-night-timeline-card.tsx` + `dayNightChartData` en
+  `page.tsx`) usa el mismo arreglo `hungerBar.events` para decidir qué puntos dibujar en cada
+  carril (Alimentación/Servido) y qué mostrar en el tooltip — no vuelve a calcular nada, solo
+  posiciona por categoría y hora.
+- **La card "Alimentación"** es la única de las 3 que NO depende 100% del modelo — prioriza
+  `audit_events` (confirmación humana) cuando existe, y usa el modelo como respaldo
+  ("Detectado por modelo") solo si no hay confirmación humana todavía (ver Decisión 5 del
+  plan.md — decisión deliberada, no las tres piezas se mezclaron de la misma forma).
+
+En síntesis: **todo lo hecho en esta carpeta (Investigacion_v2) termina siendo un solo
+archivo de números congelados** (`calibracion-kpcl0034.json`) que, una vez adentro de
+`hunger-bar.ts`, se refleja automáticamente en las 3 piezas gráficas — no hace falta tocar
+ningún componente de UI para que un reentreno se vea reflejado, solo regenerar y reemplazar
+ese JSON.
+
 Validado localmente (`tsc`, `eslint`, `vitest`, `npm run build`, servidor real con Playwright
 logueado como `kittypau.mascotas@gmail.com`) — no se tocó Supabase/Vercel de producción.
 
