@@ -679,6 +679,10 @@ else:
         )
         if _veredicto_elegido != _veredicto_actual:
             guardar_veredicto(fila["candidato_id"], _veredicto_elegido)
+            # Avanza solo al elegir un veredicto real -- volver a "(sin revisar)"
+            # es deshacer, no clasificar, y ahi no tiene sentido saltar de largo.
+            if _veredicto_elegido != "(sin revisar)":
+                st.session_state["idx_revision"] = min(idx + 1, n_vista - 1)
             st.rerun()
         st.caption(f"{len(_veredictos_guardados):,} candidatos ya revisados en total (todas las fuentes/modelos).")
 
