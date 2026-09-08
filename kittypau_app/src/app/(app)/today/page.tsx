@@ -28,8 +28,10 @@
  *     bar de Comida del panel Barras Sims.
  *   - JSX: `#today-hero` (Barras Sims — ⚠️ widget sensible, ver
  *     `barras-sims-card.tsx`), `#today-bowls` (cards Alimentación/
- *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard` y
- *     `OnboardingGuideModal` (ambos extraídos a `today/_components/`).
+ *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard`,
+ *     `ConsumoKpisCard` (9 KPIs de consumo, SPEC_11 §2.1/§2.2 — independiente
+ *     de Barras Sims) y `OnboardingGuideModal` (los 3 extraídos a
+ *     `today/_components/`).
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -63,6 +65,7 @@ import {
 import BarrasSimsCard from "./_components/barras-sims-card";
 import BowlWellnessCard from "./_components/bowl-wellness-card";
 import DayNightTimelineCard from "./_components/day-night-timeline-card";
+import ConsumoKpisCard from "./_components/consumo-kpis-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
@@ -126,6 +129,24 @@ type HungerBarEvent = {
   isProvisional: boolean;
 };
 
+// Espejo de ConsumoKpis (src/lib/consumo-kpis.ts) -- ver
+// Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2.
+type ConsumoKpis = {
+  avgDurationMin: number | null;
+  avgSpeedGPerMin: number | null;
+  mealsToday: number;
+  mealsExpectedMedian: number;
+  mealsExpectedRange: [number, number];
+  ateInPeakHourToday: boolean | null;
+  avgIntervalTodayHours: number | null;
+  intervalConsistency: "mas_seguido" | "tipico" | "mas_espaciado" | null;
+  streakDays: number;
+  dailyRegularityCv: number | null;
+  withinOwnerRange: { count: number; total: number; percent: number } | null;
+  biggestMealG: number | null;
+  smallestMealG: number | null;
+};
+
 type HungerBarResponse = {
   status: "ok" | "sin_datos" | "sin_dispositivo";
   percentage: number | null;
@@ -138,6 +159,7 @@ type HungerBarResponse = {
   alertActive: boolean;
   hoursOverdue: number | null;
   events?: HungerBarEvent[];
+  kpis?: ConsumoKpis | null;
 };
 
 // v1.1 — gradiente continuo verde→amarillo→rojo. Ver
@@ -2685,6 +2707,8 @@ export default function TodayPage() {
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
+
+          <ConsumoKpisCard kpis={hungerBar?.kpis ?? null} />
         </header>
 
         {state.error ? (

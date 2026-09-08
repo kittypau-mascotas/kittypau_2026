@@ -48,6 +48,16 @@ export const CLAMP_MAX_H = 12.02;
 // desde la última comida.
 export const ALERT_THRESHOLD_HOURS = 2;
 
+// KPIs de consumo (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2)
+// — mismas constantes ya calibradas y documentadas en
+// Knowledge/05_API/SPEC_HungerBar_Alimentacion.md §0.1 (254 comidas anotadas
+// reales de KPCL0034), reusadas tal cual, nada nuevo inventado acá.
+export const COMIDAS_DIA_MEDIANA = 4;
+export const COMIDAS_DIA_RANGO: [number, number] = [1, 6];
+export const HORAS_PICO = [19, 5, 16, 10, 17, 6, 7, 9]; // hora local Chile
+export const INTERVALO_P25_H = 3.8;
+export const INTERVALO_P75_H = 8.27;
+
 export type ReadingPoint = {
   recordedAt: string;
   weightGrams: number;
