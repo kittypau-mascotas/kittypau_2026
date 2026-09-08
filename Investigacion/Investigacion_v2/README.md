@@ -556,6 +556,31 @@ unificadas cuadran exacto con 743+358) y pruebas directas de `encontrar_solapami
 contra los datos reales (bloquea cuando la edición toca un id en conflicto, no bloquea
 cuando es un id libre, aunque existan los 232 pares preexistentes en el resto de la tabla).
 
+Agregado el checkbox **"solo conflictos"** (`todos_los_conflictos()`, barrido exhaustivo) —
+reduce la tabla a las 332 anotaciones enredadas en algún solapamiento, ordenadas por hora
+para poder resolver cada par de a uno.
+
+**Actualización 2026-09-08 (2) — base única + curva para editar.** A pedido de Mauro,
+segundo rediseño: `data/anotaciones_unificadas.csv` pasa a ser la fuente de verdad real
+(no solo una unión en memoria) — se arma sola la primera vez (743+358=1.101) y en cada
+carga suma sin pisar nada las filas nuevas que hayan aparecido en las 2 fuentes legadas
+(ej. una recalibración futura que promueva más candidatos). Al guardar, además de la base
+unificada se sigue escribiendo `anotaciones_av2.csv`/`revision_sin_anotacion.csv` para que
+`recalibrar_con_freno.py` y el resto del pipeline vean la corrección en la próxima corrida.
+
+La edición pasa de grilla (`st.data_editor`) a selección de fila (`st.dataframe` con
+`on_select="rerun"`) + curva Plotly con hover (mismo patrón que `graficar_candidato` de
+versiones anteriores) + formulario de hora/categoría al lado — se corrige viendo el peso
+real, no a ciegas. Verificado: migración (1101 filas, 0 duplicados), selección de fila +
+render de curva/formulario (`AppTest`), y el guardado en sí (función `guardar_anotacion()`
+llamada directo, sin pasar por la simulación de clicks de `AppTest` — la selección de fila
+de `st.dataframe` no sobrevive un segundo rerun bajo `AppTest` cuando se inyecta a mano en
+`session_state`, límite conocido del harness de test para este tipo de widget, no del
+comportamiento real en navegador) — probado con cambio de categoría (`candidato_confirmado`
+→ `revision_sin_anotacion.csv`) y cambio de hora (`anotacion_real` → `anotaciones_av2.csv`,
+`duracion_min` recalculada correctamente). Restaurados los 3 archivos reales después de
+cada prueba.
+
 ---
 
 ## Paso 5 — Calibración de duración (τ) + refinamiento + validación (07/08)

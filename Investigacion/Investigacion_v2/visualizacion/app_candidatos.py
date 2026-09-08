@@ -1,40 +1,41 @@
 """
-Anotaciones — revisión y edición unificada de TODAS las anotaciones ya hechas
-de KPCL0034. Reemplaza por completo la versión anterior de este archivo (que
-era un explorador de clustering/candidatos) — a pedido de Mauro, ahora es
-únicamente una tabla de revisión/edición.
+Anotaciones — base única de KPCL0034, con curva interactiva para editar hora
+y categoría con contexto visual.
 
-Une 2 fuentes que hasta ahora vivían separadas:
+Fuente única real: `data/anotaciones_unificadas.csv`. Se arma/actualiza sola
+en cada carga uniendo 2 fuentes legadas que hasta ahora vivían separadas:
   - anotaciones_av2.csv        743 anotaciones reales originales, cada una
                                 con su propio id_anotacion (Ciclo_Alpha_v2/
                                 fase_0_ruido, hecha en app_anotacion_av2.py).
   - revision_sin_anotacion.csv veredictos manuales sobre candidatos que NO
                                 tenían ninguna anotación real cerca
                                 (Investigacion_v2, candidato_id como id).
+Un candidato cuyo categoria_real salió de solaparse con una anotación real
+(notebook 08) NO se lista aparte -- sería el mismo evento contado dos veces.
+La primera vez que corre esta app arma el archivo unificado desde cero; las
+siguientes veces solo agrega filas nuevas que hayan aparecido en las fuentes
+legadas (ej. una recalibración nueva promovió más candidatos) -- nunca pisa
+una fila que ya esté en la base unificada, así que una hora/categoría
+corregida acá no se pierde.
 
-Regla del pedido: "no se deben solapar categorías" — un candidato cuyo
-categoria_real salió de solaparse en el tiempo con una anotación real
-(notebook 08) NO se lista aparte acá: sería la misma comida/ruido/servido
-contado dos veces. Solo entran los candidatos con veredicto manual PROPIO
-(genuinamente sin anotación real preexistente) — el resto ya está cubierto
-por su fila de anotaciones_av2.csv.
-
-Edición vía tabla editable (st.data_editor) — cambiar hora o categoría
-directo en la celda. Al guardar: valida que ninguna anotación quede
-solapada en el tiempo con otra del mismo dispositivo contra la TABLA
-COMPLETA (no solo lo que está filtrado en pantalla); si hay conflicto
-rechaza el guardado entero y muestra cuál par choca. Si está todo bien,
-escribe cada fila cambiada de vuelta a su archivo de origen, con backup
-diario (una copia por día, no una por guardado) antes del primer write.
+Editar: elegís una anotación de la tabla (click en la fila), ves su curva
+de peso real con hover (hora exacta + peso al pasar el mouse), y corregís
+hora/categoría con contexto visual real -- no a ciegas. Al guardar: valida
+que la anotación corregida no quede solapada con otra del mismo dispositivo
+(sin exigir resolver los conflictos que ya existían de antes, ver checkbox
+"solo conflictos" para ir resolviéndolos de a uno), escribe la base
+unificada Y las 2 fuentes legadas (para que recalibrar_con_freno.py y el
+resto del pipeline sigan viendo la corrección), con backup diario antes de
+cada primer write del día.
 
 Correr con: streamlit run app_candidatos.py
 """
 import shutil
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 NOTEBOOK_DIR = Path(__file__).resolve().parent.parent
@@ -43,18 +44,20 @@ BACKUPS_DIR = DATA_DIR / "backups"
 CACHE_CSV = DATA_DIR / "lecturas_limpias.csv"
 CANDIDATOS_CSV = DATA_DIR / "candidatos_clusters_duracion.csv"
 REVISION_CSV = DATA_DIR / "revision_sin_anotacion.csv"
+UNIFICADA_CSV = DATA_DIR / "anotaciones_unificadas.csv"
 AV2_CSV = (
     NOTEBOOK_DIR.parent / "Ciclo_Alpha_v2" / "fase_0_ruido" / "data" / "anotaciones_av2.csv"
 )
 
 CATEGORIAS = ["alimentacion", "servido", "ruido"]
 TZ_STGO = "America/Santiago"
+MARGEN_GRAFICO_MIN = 15
 
 st.set_page_config(page_title="Anotaciones - Investigacion_v2", layout="wide")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Carga
+# Carga de las 2 fuentes legadas + union
 # ─────────────────────────────────────────────────────────────────────────────
 @st.cache_data
 def cargar_lecturas() -> pd.DataFrame:
@@ -85,10 +88,10 @@ def cargar_revision() -> pd.DataFrame:
     return pd.read_csv(REVISION_CSV)
 
 
-def construir_tabla_unificada() -> pd.DataFrame:
-    """Une anotaciones_av2.csv + los veredictos manuales de revision_sin_anotacion.csv
-    que tienen categoría real confirmada -- ver docstring del módulo para la regla
-    de no-duplicar/no-solapar."""
+def construir_tabla_desde_fuentes() -> pd.DataFrame:
+    """Reconstruye la union completa desde las 2 fuentes legadas (no lee ni
+    escribe la base unificada) -- usado para migrar y para detectar filas
+    nuevas que hayan aparecido ahi desde la ultima vez."""
     av2 = cargar_av2()
     filas_av2 = pd.DataFrame(
         {
@@ -105,14 +108,7 @@ def construir_tabla_unificada() -> pd.DataFrame:
     confirmados = revision[revision["veredicto"].isin(CATEGORIAS)].copy()
     candidatos = cargar_candidatos()
     confirmados = confirmados.merge(candidatos, on="candidato_id", how="left")
-    _sin_match = confirmados["device_code"].isna()
-    if _sin_match.any():
-        st.warning(
-            f"{_sin_match.sum()} veredicto(s) en revision_sin_anotacion.csv no encontraron "
-            "su candidato en candidatos_clusters_duracion.csv -- se omiten de la tabla "
-            "(no se puede saber su hora)."
-        )
-        confirmados = confirmados[~_sin_match]
+    confirmados = confirmados[confirmados["device_code"].notna()]
 
     confirmados["ts_inicio_corregido"] = pd.to_datetime(
         confirmados.get("ts_inicio_corregido"), format="ISO8601", utc=True, errors="coerce"
@@ -131,27 +127,48 @@ def construir_tabla_unificada() -> pd.DataFrame:
         }
     )
 
-    tabla = pd.concat([filas_av2, filas_cand], ignore_index=True)
-    return tabla.sort_values("ts_inicio").reset_index(drop=True)
+    return pd.concat([filas_av2, filas_cand], ignore_index=True)
+
+
+def cargar_base_unificada() -> pd.DataFrame:
+    """La base unica real. Si ya existe en disco, la usa como fuente de
+    verdad para las filas que ya tiene (una hora/categoría corregida acá
+    nunca se pisa releyendo las fuentes legadas) y solo AGREGA las filas
+    nuevas que hayan aparecido en anotaciones_av2.csv/revision_sin_anotacion.csv
+    desde la última vez. Si no existe, la arma de cero (migración)."""
+    fuentes = construir_tabla_desde_fuentes()
+    if UNIFICADA_CSV.exists():
+        existente = pd.read_csv(UNIFICADA_CSV)
+        existente["ts_inicio"] = pd.to_datetime(existente["ts_inicio"], format="ISO8601", utc=True)
+        existente["ts_fin"] = pd.to_datetime(existente["ts_fin"], format="ISO8601", utc=True)
+        nuevas = fuentes[~fuentes["id"].isin(existente["id"])]
+        base = pd.concat([existente, nuevas], ignore_index=True)
+        if len(nuevas):
+            st.toast(f"{len(nuevas)} anotación(es) nueva(s) sumadas a la base unificada.")
+    else:
+        base = fuentes
+    base = base.sort_values("ts_inicio").reset_index(drop=True)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    base.to_csv(UNIFICADA_CSV, index=False)
+    return base
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Validación
+# Validación de solapamiento
 # ─────────────────────────────────────────────────────────────────────────────
 def encontrar_solapamiento(
     tabla: pd.DataFrame, ids_cambiados: set[str] | None = None
 ) -> tuple[str, str] | None:
     """Barre por dispositivo, ordenado por ts_inicio, y devuelve el primer par
     de ids que se solapa en el tiempo (o None si no hay ninguno). No es
-    exhaustivo (puede haber más de un par) -- alcanza para bloquear el guardado
-    y que el operador corrija de a uno, igual que un linter.
+    exhaustivo (puede haber más de un par) -- alcanza para bloquear el
+    guardado y que el operador corrija de a uno, igual que un linter.
 
     Si se pasa `ids_cambiados`, solo cuenta como conflicto un par donde AL
     MENOS uno de los dos ids está en ese set -- es decir, solo bloquea
-    solapamientos NUEVOS causados por esta edición, no los 232 pares que ya
-    existían de antes en anotaciones_av2.csv (hallazgo real, ver README --
-    exigir que estén todos resueltos antes de poder guardar cualquier cosa
-    haría la tabla imposible de usar)."""
+    solapamientos NUEVOS causados por esta edición, no los que ya existían
+    de antes (232 pares heredados de anotaciones_av2.csv, ver checkbox "solo
+    conflictos" para resolverlos de a uno)."""
     for _device, grupo in tabla.groupby("device_code"):
         g = grupo.sort_values("ts_inicio")
         fin_maximo = None
@@ -170,12 +187,9 @@ def encontrar_solapamiento(
 
 
 def todos_los_conflictos(tabla: pd.DataFrame) -> list[tuple[str, str]]:
-    """A diferencia de encontrar_solapamiento() (para en el primero que
-    encuentra, pensado para validar un guardado), esta barre TODOS los pares
-    solapados de la tabla completa -- para la vista "solo conflictos" del
-    filtro. O(n²) por dispositivo, pero se corta apenas deja de solaparse
-    (los datos vienen ordenados por ts_inicio), así que en la práctica es
-    rápido incluso con miles de filas."""
+    """A diferencia de encontrar_solapamiento() (para en el primero, pensado
+    para validar un guardado), esta barre TODOS los pares solapados de la
+    tabla completa -- para el checkbox "solo conflictos"."""
     pares: list[tuple[str, str]] = []
     for _device, grupo in tabla.groupby("device_code"):
         g = grupo.sort_values("ts_inicio").reset_index(drop=True)
@@ -185,6 +199,53 @@ def todos_los_conflictos(tabla: pd.DataFrame) -> list[tuple[str, str]]:
                     break
                 pares.append((g.loc[i, "id"], g.loc[j, "id"]))
     return pares
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Gráfico
+# ─────────────────────────────────────────────────────────────────────────────
+def graficar_anotacion(
+    lecturas: pd.DataFrame,
+    device_code: str,
+    ts_inicio: pd.Timestamp,
+    ts_fin: pd.Timestamp,
+    corregido: tuple[pd.Timestamp, pd.Timestamp] | None = None,
+) -> go.Figure:
+    """Curva de peso real alrededor de la anotación, con hover (hora exacta +
+    peso). Mismo patrón que build_chart() de app_anotacion_av2.py."""
+    margen = pd.Timedelta(minutes=MARGEN_GRAFICO_MIN)
+    m = (
+        (lecturas["device_code"] == device_code)
+        & (lecturas["ts"] >= ts_inicio - margen)
+        & (lecturas["ts"] <= ts_fin + margen)
+    )
+    ventana = lecturas.loc[m].copy()
+    ventana["ts_stgo"] = ventana["ts"].dt.tz_convert(TZ_STGO)
+
+    fig = go.Figure()
+    fig.add_vrect(
+        x0=ts_inicio.tz_convert(TZ_STGO), x1=ts_fin.tz_convert(TZ_STGO),
+        fillcolor="orange", opacity=0.2, layer="below", line_width=0,
+        annotation_text="Actual", annotation_position="top left", annotation_font_size=10,
+    )
+    if corregido is not None:
+        c_ini, c_fin = corregido
+        fig.add_vrect(
+            x0=c_ini.tz_convert(TZ_STGO), x1=c_fin.tz_convert(TZ_STGO),
+            fillcolor="purple", opacity=0.15, layer="below", line_width=0,
+            annotation_text="Vista previa del cambio", annotation_position="bottom left",
+            annotation_font_size=10,
+        )
+    fig.add_trace(go.Scatter(
+        x=ventana["ts_stgo"], y=ventana["peso"],
+        mode="lines+markers", marker=dict(size=6),
+        hovertemplate="%{x|%Y-%m-%d %H:%M:%S}<br><b>%{y:.1f} g</b><extra></extra>",
+    ))
+    fig.update_layout(
+        height=420, margin=dict(l=40, r=20, t=30, b=40),
+        yaxis_title="Peso (g)", showlegend=False,
+    )
+    return fig
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -202,8 +263,8 @@ def _backup_diario(ruta: Path) -> None:
 def _metricas_desde_lecturas(
     lecturas: pd.DataFrame, device_code: str, t_ini: pd.Timestamp, t_fin: pd.Timestamp
 ) -> dict:
-    """Mismo cálculo que calcular_metricas() de app_anotacion_av2.py, sobre las
-    columnas de Investigacion_v2 (ts/peso en vez de ts/peso_g)."""
+    """Mismo cálculo que calcular_metricas() de app_anotacion_av2.py, sobre
+    las columnas de Investigacion_v2 (ts/peso en vez de ts/peso_g)."""
     m = (
         (lecturas["device_code"] == device_code)
         & (lecturas["ts"] >= t_ini)
@@ -221,51 +282,56 @@ def _metricas_desde_lecturas(
     }
 
 
-def guardar_cambios_av2(lecturas: pd.DataFrame, filas_cambiadas: pd.DataFrame) -> None:
-    """filas_cambiadas: id/device_code/ts_inicio/ts_fin/categoria de las filas
-    origen=anotacion_real que cambiaron. Reescribe anotaciones_av2.csv completo
-    (mismo patrón que save_anotacion() de app_anotacion_av2.py), preservando
-    todas las columnas que esta app no edita (notas, created_at, etc.)."""
-    if filas_cambiadas.empty:
-        return
-    _backup_diario(AV2_CSV)
-    av2 = cargar_av2()
-    av2 = av2.set_index("id_anotacion")
-    for _, fila in filas_cambiadas.iterrows():
-        id_anot = int(fila["id"].removeprefix("av2_"))
-        metricas = _metricas_desde_lecturas(
-            lecturas, fila["device_code"], fila["ts_inicio"], fila["ts_fin"]
-        )
-        av2.loc[id_anot, "t_inicio"] = fila["ts_inicio"].isoformat()
-        av2.loc[id_anot, "t_fin"] = fila["ts_fin"].isoformat()
-        av2.loc[id_anot, "categoria"] = fila["categoria"]
+def guardar_anotacion(
+    lecturas: pd.DataFrame,
+    fila_original: pd.Series,
+    nueva_categoria: str,
+    nuevo_ts_inicio: pd.Timestamp,
+    nuevo_ts_fin: pd.Timestamp,
+) -> None:
+    """Escribe la corrección en la base unificada Y en la fuente legada que
+    le corresponda (para que el pipeline de recalibración -- que sigue
+    leyendo anotaciones_av2.csv/revision_sin_anotacion.csv -- vea el cambio
+    en la próxima corrida)."""
+    id_ = fila_original["id"]
+    device_code = fila_original["device_code"]
+
+    _backup_diario(UNIFICADA_CSV)
+    base = pd.read_csv(UNIFICADA_CSV)
+    base["ts_inicio"] = pd.to_datetime(base["ts_inicio"], format="ISO8601", utc=True)
+    base["ts_fin"] = pd.to_datetime(base["ts_fin"], format="ISO8601", utc=True)
+    idx = base.index[base["id"] == id_][0]
+    base.loc[idx, "ts_inicio"] = nuevo_ts_inicio
+    base.loc[idx, "ts_fin"] = nuevo_ts_fin
+    base.loc[idx, "categoria"] = nueva_categoria
+    base.to_csv(UNIFICADA_CSV, index=False)
+
+    if id_.startswith("av2_"):
+        _backup_diario(AV2_CSV)
+        av2 = cargar_av2().set_index("id_anotacion")
+        id_anot = int(id_.removeprefix("av2_"))
+        metricas = _metricas_desde_lecturas(lecturas, device_code, nuevo_ts_inicio, nuevo_ts_fin)
+        av2.loc[id_anot, "t_inicio"] = nuevo_ts_inicio.isoformat()
+        av2.loc[id_anot, "t_fin"] = nuevo_ts_fin.isoformat()
+        av2.loc[id_anot, "categoria"] = nueva_categoria
         for campo, valor in metricas.items():
             av2.loc[id_anot, campo] = valor
-    av2.reset_index().to_csv(AV2_CSV, index=False)
-
-
-def guardar_cambios_candidatos(filas_cambiadas: pd.DataFrame) -> None:
-    """filas_cambiadas: id/ts_inicio/ts_fin/categoria de las filas
-    origen=candidato_confirmado que cambiaron. Actualiza revision_sin_anotacion.csv
-    (veredicto + ts_*_corregido) -- guardar_revision() ya existía con este mismo
-    patrón parcial (solo pisa lo que se pasa)."""
-    if filas_cambiadas.empty:
-        return
-    _backup_diario(REVISION_CSV)
-    revision = cargar_revision()
-    if "candidato_id" not in revision.columns:
-        revision = pd.DataFrame(
-            columns=["candidato_id", "veredicto", "ts_inicio_corregido", "ts_fin_corregido"]
-        )
-    revision = revision.set_index("candidato_id")
-    for _, fila in filas_cambiadas.iterrows():
-        cid = fila["id"].removeprefix("cand_")
+        av2.reset_index().to_csv(AV2_CSV, index=False)
+    else:
+        _backup_diario(REVISION_CSV)
+        cid = id_.removeprefix("cand_")
+        revision = cargar_revision()
+        if "candidato_id" not in revision.columns:
+            revision = pd.DataFrame(
+                columns=["candidato_id", "veredicto", "ts_inicio_corregido", "ts_fin_corregido"]
+            )
+        revision = revision.set_index("candidato_id")
         if cid not in revision.index:
             revision.loc[cid] = pd.NA
-        revision.loc[cid, "veredicto"] = fila["categoria"]
-        revision.loc[cid, "ts_inicio_corregido"] = fila["ts_inicio"].isoformat()
-        revision.loc[cid, "ts_fin_corregido"] = fila["ts_fin"].isoformat()
-    revision.reset_index().to_csv(REVISION_CSV, index=False)
+        revision.loc[cid, "veredicto"] = nueva_categoria
+        revision.loc[cid, "ts_inicio_corregido"] = nuevo_ts_inicio.isoformat()
+        revision.loc[cid, "ts_fin_corregido"] = nuevo_ts_fin.isoformat()
+        revision.reset_index().to_csv(REVISION_CSV, index=False)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -273,15 +339,13 @@ def guardar_cambios_candidatos(filas_cambiadas: pd.DataFrame) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 st.title("Anotaciones")
 st.caption(
-    "Todas las anotaciones ya hechas de KPCL0034 -- 743 reales "
-    "(`anotaciones_av2.csv`) + los veredictos manuales confirmados que no "
-    "tenían anotación real cerca (`revision_sin_anotacion.csv`). Editá hora "
-    "o categoría directo en la tabla y guardá; no se permite que dos "
-    "anotaciones queden solapadas en el tiempo."
+    "Base única de KPCL0034 (`data/anotaciones_unificadas.csv`) -- 743 anotaciones reales "
+    "+ los veredictos manuales confirmados que no tenían anotación real cerca. "
+    "Elegí una fila para ver su curva y corregir hora/categoría con contexto real."
 )
 
 lecturas = cargar_lecturas()
-tabla = construir_tabla_unificada()
+tabla = cargar_base_unificada()
 
 pares_conflicto = todos_los_conflictos(tabla)
 ids_conflicto = {i for par in pares_conflicto for i in par}
@@ -295,13 +359,11 @@ with col_f2:
         ["anotacion_real", "candidato_confirmado"],
         default=["anotacion_real", "candidato_confirmado"],
     )
-
 solo_conflictos = st.checkbox(
     f"⚠️ Mostrar solo las {len(ids_conflicto):,} anotaciones en conflicto "
     f"({len(pares_conflicto):,} pares solapados en el tiempo)",
     help="Ordenadas por hora de inicio, así que cada par en conflicto queda "
-         "una al lado de la otra -- corregí una de las dos (hora o "
-         "categoría) y guardá.",
+         "una al lado de la otra -- elegí una, corregila y guardá.",
 )
 
 vista = tabla[
@@ -311,81 +373,80 @@ if solo_conflictos:
     vista = vista[vista["id"].isin(ids_conflicto)]
 st.caption(f"{len(vista):,} de {len(tabla):,} anotaciones (filtradas)")
 
-vista["Inicio (Santiago)"] = vista["ts_inicio"].dt.tz_convert(TZ_STGO).dt.tz_localize(None)
-vista["Fin (Santiago)"] = vista["ts_fin"].dt.tz_convert(TZ_STGO).dt.tz_localize(None)
-
-editado = st.data_editor(
-    vista[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "origen"]],
-    column_config={
-        "id": st.column_config.TextColumn("ID", disabled=True),
-        "device_code": st.column_config.TextColumn("Dispositivo", disabled=True),
-        "Inicio (Santiago)": st.column_config.DatetimeColumn(
-            "Inicio (Santiago)", step=60, format="YYYY-MM-DD HH:mm:ss"
-        ),
-        "Fin (Santiago)": st.column_config.DatetimeColumn(
-            "Fin (Santiago)", step=60, format="YYYY-MM-DD HH:mm:ss"
-        ),
-        "categoria": st.column_config.SelectboxColumn("Categoría", options=CATEGORIAS),
-        "origen": st.column_config.TextColumn("Origen", disabled=True),
-    },
-    hide_index=True,
-    width="stretch",
-    height=560,
-    key="editor_anotaciones",
+vista_mostrar = vista.copy()
+vista_mostrar["Inicio (Santiago)"] = vista_mostrar["ts_inicio"].dt.tz_convert(TZ_STGO).dt.strftime(
+    "%Y-%m-%d %H:%M:%S"
+)
+vista_mostrar["Fin (Santiago)"] = vista_mostrar["ts_fin"].dt.tz_convert(TZ_STGO).dt.strftime(
+    "%Y-%m-%d %H:%M:%S"
 )
 
-if st.button("💾 Guardar cambios", type="primary"):
-    editado_ts = editado.copy()
-    editado_ts["ts_inicio"] = (
-        pd.to_datetime(editado_ts["Inicio (Santiago)"]).dt.tz_localize(TZ_STGO).dt.tz_convert("UTC")
-    )
-    editado_ts["ts_fin"] = (
-        pd.to_datetime(editado_ts["Fin (Santiago)"]).dt.tz_localize(TZ_STGO).dt.tz_convert("UTC")
-    )
+seleccion = st.dataframe(
+    vista_mostrar[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "origen"]],
+    hide_index=True,
+    width="stretch",
+    height=380,
+    on_select="rerun",
+    selection_mode="single-row",
+    key="tabla_anotaciones",
+)
 
-    if (editado_ts["ts_fin"] <= editado_ts["ts_inicio"]).any():
-        st.error("⚠️ Hay una fila donde el fin no es posterior al inicio -- corregila antes de guardar.")
-    else:
-        # Aplicar la edición (solo de lo filtrado en pantalla) sobre la tabla
-        # COMPLETA -- el chequeo de solapamiento tiene que ver todo, no solo
-        # lo que está visible con el filtro actual.
-        tabla_actualizada = tabla.set_index("id")
-        cambios = editado_ts.set_index("id")
-        # Solo lo que está visible con el filtro actual pasó por el editor --
-        # comparar contra ESE mismo subconjunto de "original", no contra toda
-        # la tabla (si no, cada fila filtrada-fuera compara contra NaN y
-        # parece "cambiada" por error).
-        original_visible = tabla.set_index("id").loc[cambios.index]
-        distintos = (
-            (original_visible["ts_inicio"] != cambios["ts_inicio"])
-            | (original_visible["ts_fin"] != cambios["ts_fin"])
-            | (original_visible["categoria"] != cambios["categoria"])
+filas_sel = seleccion.selection.rows if seleccion and seleccion.selection else []
+if not filas_sel:
+    st.info("👆 Hacé click en una fila para ver su curva y editarla.")
+else:
+    fila = vista.iloc[filas_sel[0]]
+    st.divider()
+    st.subheader(f"Anotación {fila['id']}")
+
+    col_g, col_e = st.columns([3, 2], gap="medium")
+
+    with col_e:
+        categoria_nueva = st.radio(
+            "Categoría", CATEGORIAS,
+            index=CATEGORIAS.index(fila["categoria"]) if fila["categoria"] in CATEGORIAS else 0,
+            key=f"cat_{fila['id']}",
         )
-        ids_cambiados = set(cambios[distintos].index)
-        tabla_actualizada.update(cambios[["ts_inicio", "ts_fin", "categoria"]])
-        tabla_actualizada = tabla_actualizada.reset_index()
+        _ini_stgo = fila["ts_inicio"].tz_convert(TZ_STGO)
+        _fin_stgo = fila["ts_fin"].tz_convert(TZ_STGO)
+        c1, c2 = st.columns(2)
+        with c1:
+            fecha_ini = st.date_input("Fecha inicio", value=_ini_stgo.date(), key=f"fi_{fila['id']}")
+            hora_ini = st.time_input("Hora inicio", value=_ini_stgo.time(), step=60, key=f"hi_{fila['id']}")
+        with c2:
+            fecha_fin = st.date_input("Fecha fin", value=_fin_stgo.date(), key=f"ff_{fila['id']}")
+            hora_fin = st.time_input("Hora fin", value=_fin_stgo.time(), step=60, key=f"hf_{fila['id']}")
 
-        if not ids_cambiados:
-            st.info("No hay cambios para guardar.")
-        else:
-            # Solo bloquea si ESTA edición crea un solapamiento nuevo -- los
-            # que ya existían de antes en anotaciones_av2.csv (232 pares, ver
-            # docstring de encontrar_solapamiento) no impiden guardar algo
-            # que no tiene nada que ver con ellos.
-            conflicto = encontrar_solapamiento(tabla_actualizada, ids_cambiados)
-            if conflicto is not None:
-                st.error(
-                    f"⚠️ '{conflicto[0]}' y '{conflicto[1]}' quedarían solapadas en el tiempo -- "
-                    "corregí una de las dos y volvé a guardar. No se guardó nada."
-                )
+        nuevo_ini = pd.Timestamp(f"{fecha_ini}T{hora_ini}").tz_localize(TZ_STGO).tz_convert("UTC")
+        nuevo_fin = pd.Timestamp(f"{fecha_fin}T{hora_fin}").tz_localize(TZ_STGO).tz_convert("UTC")
+
+        if st.button("💾 Guardar", type="primary", key=f"guardar_{fila['id']}"):
+            if nuevo_fin <= nuevo_ini:
+                st.error("⚠️ El fin tiene que ser posterior al inicio.")
             else:
-                actualizado_idx = tabla_actualizada.set_index("id")
-                cambiadas = actualizado_idx.loc[list(ids_cambiados)].reset_index()
-                guardar_cambios_av2(
-                    lecturas, cambiadas[cambiadas["origen"] == "anotacion_real"]
+                tabla_propuesta = tabla.set_index("id")
+                tabla_propuesta.loc[fila["id"], ["ts_inicio", "ts_fin", "categoria"]] = [
+                    nuevo_ini, nuevo_fin, categoria_nueva,
+                ]
+                conflicto = encontrar_solapamiento(
+                    tabla_propuesta.reset_index(), ids_cambiados={fila["id"]}
                 )
-                guardar_cambios_candidatos(
-                    cambiadas[cambiadas["origen"] == "candidato_confirmado"]
-                )
-                st.success(f"Guardadas {len(cambiadas)} anotación(es) editada(s).")
-                st.rerun()
+                if conflicto is not None:
+                    st.error(
+                        f"⚠️ '{conflicto[0]}' y '{conflicto[1]}' quedarían solapadas -- "
+                        "corregí la hora antes de guardar. No se guardó nada."
+                    )
+                else:
+                    guardar_anotacion(lecturas, fila, categoria_nueva, nuevo_ini, nuevo_fin)
+                    st.cache_data.clear()
+                    st.success("Guardado.")
+                    st.rerun()
+
+    with col_g:
+        _corregido = (nuevo_ini, nuevo_fin) if (nuevo_ini, nuevo_fin) != (fila["ts_inicio"], fila["ts_fin"]) else None
+        st.plotly_chart(
+            graficar_anotacion(
+                lecturas, fila["device_code"], fila["ts_inicio"], fila["ts_fin"], corregido=_corregido
+            ),
+            width="stretch",
+        )
