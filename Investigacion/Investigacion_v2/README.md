@@ -505,6 +505,21 @@ fuente/dispositivo/modelo, guardado individual y en bloque, orden por incertidum
 corrección de hora — restaurando siempre el CSV real después de la prueba) y con el
 servidor real corriendo (`HTTP 200`).
 
+**Actualización 2026-09-08 — bug de "período común" arreglado + datos nuevos.** Notebook 08
+excluía del CSV de ground truth (no solo como `sin_anotacion`, directamente ausente) todo
+candidato con `ts_inicio` fuera del rango con anotaciones reales (abr-jul) — el 100% de
+agosto-septiembre era invisible en esta app. Arreglado (ver `plan.md` del spec 007 para el
+detalle). Tras sincronizar `readings_rows.csv` (+61.623 filas) y repipelinear, KPCL0034 pasó
+de 783 a 913 candidatos; `sin_anotacion` real pasó de 219 (141 ya con veredicto manual
+promovidos automáticamente) a **79 genuinamente ambiguos** tras correr
+`cerrar_validacion_confiable.py` sobre el pool completo (140 confiables auto-promovidos,
+sin tocar los ambiguos). Accuracy en producción: 88.46% → 90.41% (con la salvedad de que
+parte de ese salto son casos de alta confianza del propio modelo, no validación
+independiente — ver caveat en `plan.md`).
+
+Agregado el orden **"Fecha (más recientes primero)"** (antes solo había ascendente) para
+poder revisar de lo más nuevo hacia atrás.
+
 ---
 
 ## Paso 5 — Calibración de duración (τ) + refinamiento + validación (07/08)
