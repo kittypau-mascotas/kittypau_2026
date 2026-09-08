@@ -520,6 +520,42 @@ independiente — ver caveat en `plan.md`).
 Agregado el orden **"Fecha (más recientes primero)"** (antes solo había ascendente) para
 poder revisar de lo más nuevo hacia atrás.
 
+**Actualización 2026-09-08 (cierre) — revisión manual completa.** Mauro terminó de revisar
+los 79 ambiguos (más recientes primero + guardado/avance automático). 358 de 360 veredictos
+confirmados (285 ruido, 54 alimentación, 19 servido) — solo 2 quedan "no está claro".
+`recalibrar_con_freno.py` promovió todo a `categoria_real` (360 → 2 `sin_anotacion`,
+prácticamente 100% de KPCL0034 con categoría real) y volvió a recalibrar — el freno de
+calidad **descartó** el candidato nuevo (87.93% < 90.41% vigente): no es que el modelo haya
+empeorado, es que el ground truth ahora incluye los 79 casos más difíciles (por definición,
+los que quedaron cerca del límite entre clusters), así que mide contra un examen más duro.
+Producción queda sin tocar. Detalle completo en `plan.md` del spec 007.
+
+**Rediseño 2026-09-08 — `app_candidatos.py` pasa de explorador de clustering a editor de
+anotaciones.** A pedido de Mauro, reescrito de cero: ya no muestra nube 3D/KDE/overview de
+clusters ni review 1-a-1 de candidatos sin clasificar (ese trabajo ya terminó, ver arriba).
+Ahora es una tabla única (`st.data_editor`) con **todas** las anotaciones ya hechas de
+KPCL0034 — las 743 reales de `anotaciones_av2.csv` + los 358 veredictos manuales
+confirmados que no tenían anotación real cerca (`revision_sin_anotacion.csv`), unificadas
+con un id propio cada una (`av2_<id_anotacion>` / `cand_<candidato_id>`), editable directo
+en la celda (hora Santiago + categoría), con backup diario antes de escribir.
+
+**Hallazgo real al construirlo:** la regla pedida ("no se deben solapar categorías") reveló
+**232 pares de anotaciones que ya se solapaban en el tiempo** en `anotaciones_av2.csv`
+(332 anotaciones distintas involucradas) — mismo tipo de bug que el de los 73 duplicados
+exactos ya corregido antes (`id_candidato` cambiando de esquema entre regeneraciones), pero
+esta vez con ventanas que se solapan sin ser idénticas, así que el dedup anterior (por
+ventana exacta) no lo agarró. Algunos pares tienen categorías DISTINTAS en el mismo tramo de
+tiempo (ej. `alimentacion` vs `ruido`) — puede estar sesgando las métricas de accuracy que
+se calculan sobre este archivo. **No corregido en esta sesión** (son datos de producción,
+requiere criterio caso por caso, no un fix automático) — la validación de la app solo
+bloquea solapamientos NUEVOS causados por una edición, no exige resolver los 232 preexistentes
+para poder guardar nada. Queda como hallazgo pendiente para una sesión de limpieza dedicada.
+
+Verificado con `streamlit.testing.v1.AppTest` (carga sin excepciones, 1.101 anotaciones
+unificadas cuadran exacto con 743+358) y pruebas directas de `encontrar_solapamiento()`
+contra los datos reales (bloquea cuando la edición toca un id en conflicto, no bloquea
+cuando es un id libre, aunque existan los 232 pares preexistentes en el resto de la tabla).
+
 ---
 
 ## Paso 5 — Calibración de duración (τ) + refinamiento + validación (07/08)
