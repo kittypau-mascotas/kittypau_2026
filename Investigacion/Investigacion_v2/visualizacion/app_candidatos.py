@@ -169,6 +169,24 @@ def encontrar_solapamiento(
     return None
 
 
+def todos_los_conflictos(tabla: pd.DataFrame) -> list[tuple[str, str]]:
+    """A diferencia de encontrar_solapamiento() (para en el primero que
+    encuentra, pensado para validar un guardado), esta barre TODOS los pares
+    solapados de la tabla completa -- para la vista "solo conflictos" del
+    filtro. O(n²) por dispositivo, pero se corta apenas deja de solaparse
+    (los datos vienen ordenados por ts_inicio), así que en la práctica es
+    rápido incluso con miles de filas."""
+    pares: list[tuple[str, str]] = []
+    for _device, grupo in tabla.groupby("device_code"):
+        g = grupo.sort_values("ts_inicio").reset_index(drop=True)
+        for i in range(len(g)):
+            for j in range(i + 1, len(g)):
+                if g.loc[j, "ts_inicio"] >= g.loc[i, "ts_fin"]:
+                    break
+                pares.append((g.loc[i, "id"], g.loc[j, "id"]))
+    return pares
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Guardado
 # ─────────────────────────────────────────────────────────────────────────────
@@ -265,6 +283,9 @@ st.caption(
 lecturas = cargar_lecturas()
 tabla = construir_tabla_unificada()
 
+pares_conflicto = todos_los_conflictos(tabla)
+ids_conflicto = {i for par in pares_conflicto for i in par}
+
 col_f1, col_f2 = st.columns([2, 1])
 with col_f1:
     categorias_filtro = st.multiselect("Categoría", CATEGORIAS, default=CATEGORIAS)
@@ -275,9 +296,19 @@ with col_f2:
         default=["anotacion_real", "candidato_confirmado"],
     )
 
+solo_conflictos = st.checkbox(
+    f"⚠️ Mostrar solo las {len(ids_conflicto):,} anotaciones en conflicto "
+    f"({len(pares_conflicto):,} pares solapados en el tiempo)",
+    help="Ordenadas por hora de inicio, así que cada par en conflicto queda "
+         "una al lado de la otra -- corregí una de las dos (hora o "
+         "categoría) y guardá.",
+)
+
 vista = tabla[
     tabla["categoria"].isin(categorias_filtro) & tabla["origen"].isin(origenes_filtro)
 ].copy()
+if solo_conflictos:
+    vista = vista[vista["id"].isin(ids_conflicto)]
 st.caption(f"{len(vista):,} de {len(tabla):,} anotaciones (filtradas)")
 
 vista["Inicio (Santiago)"] = vista["ts_inicio"].dt.tz_convert(TZ_STGO).dt.tz_localize(None)
