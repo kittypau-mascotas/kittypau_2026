@@ -241,7 +241,8 @@ if modo_revision_sin_anotacion:
     )
     orden_revision = st.sidebar.radio(
         "Ordenar revisión por",
-        ["Fecha", "Incertidumbre del modelo (más ambiguos primero)"],
+        ["Fecha (más antiguos primero)", "Fecha (más recientes primero)",
+         "Incertidumbre del modelo (más ambiguos primero)"],
         disabled=not _incertidumbre_disponible,
         help="Incertidumbre = qué tan cerca está el candidato entre dos "
              "clusters (distancia al más cercano / al segundo más cercano). "
@@ -516,7 +517,9 @@ if modo_revision_sin_anotacion:
             "entre dos clusters)."
         )
     else:
-        vista = _base.sort_values("ts_inicio").reset_index(drop=True)
+        vista = _base.sort_values(
+            "ts_inicio", ascending=orden_revision != "Fecha (más recientes primero)"
+        ).reset_index(drop=True)
     if len(vista):
         _predicciones_bulk = vista[col_cluster].map(_categoria_dominante_por_cluster)
         _n_guardables = int(_predicciones_bulk.notna().sum())
@@ -564,8 +567,9 @@ else:
         if st.button("Siguiente ➡", use_container_width=True, disabled=idx >= n_vista - 1):
             idx += 1
     with col_ultimo:
-        # vista esta ordenada por ts_inicio ascendente -- el ultimo indice es el
-        # candidato mas reciente cronologicamente.
+        # el ultimo indice es el otro extremo cronologico de "vista" -- cual
+        # sea, segun orden_revision (mas antiguo si "recientes primero", y
+        # viceversa).
         if st.button("Último ⏭", use_container_width=True, disabled=idx >= n_vista - 1):
             idx = n_vista - 1
     with col_medio:
