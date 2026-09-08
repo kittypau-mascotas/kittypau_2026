@@ -20,13 +20,13 @@ corregida acá no se pierde.
 
 Editar: elegís una anotación de la tabla (click en la fila), ves su curva
 de peso real con hover (hora exacta + peso al pasar el mouse), y corregís
-hora/categoría con contexto visual real -- no a ciegas. Al guardar: valida
-que la anotación corregida no quede solapada con otra del mismo dispositivo
-(sin exigir resolver los conflictos que ya existían de antes, ver checkbox
-"solo conflictos" para ir resolviéndolos de a uno), escribe la base
-unificada Y las 2 fuentes legadas (para que recalibrar_con_freno.py y el
-resto del pipeline sigan viendo la corrección), con backup diario antes de
-cada primer write del día.
+hora/categoría con contexto visual real -- no a ciegas. Guardar NUNCA se
+bloquea por solapamiento -- el flujo real para un par sospechoso es
+corregir una mientras la otra todavía existe, y recién después eliminar la
+que sobra; si sigue quedando solapada avisa (toast), no impide guardar.
+Escribe la base unificada Y las 2 fuentes legadas (para que
+recalibrar_con_freno.py y el resto del pipeline sigan viendo la
+corrección), con backup diario antes de cada primer write del día.
 
 Correr con: streamlit run app_candidatos.py
 """
@@ -475,6 +475,11 @@ else:
             if nuevo_fin <= nuevo_ini:
                 st.error("⚠️ El fin tiene que ser posterior al inicio.")
             else:
+                # Guarda siempre -- el solapamiento NO bloquea. Trabajando un
+                # par sospechoso, corregir una de las dos anotaciones
+                # mientras la otra todavía existe (sin borrarla todavía) es
+                # exactamente el flujo real: ajustar una, después eliminar
+                # la que sobra. Solo se avisa si sigue quedando solapada.
                 tabla_propuesta = tabla.set_index("id")
                 tabla_propuesta.loc[fila["id"], ["ts_inicio", "ts_fin", "categoria"]] = [
                     nuevo_ini, nuevo_fin, categoria_nueva,
@@ -482,16 +487,20 @@ else:
                 conflicto = encontrar_solapamiento(
                     tabla_propuesta.reset_index(), ids_cambiados={fila["id"]}
                 )
+                guardar_anotacion(lecturas, fila, categoria_nueva, nuevo_ini, nuevo_fin)
+                st.cache_data.clear()
                 if conflicto is not None:
-                    st.error(
-                        f"⚠️ '{conflicto[0]}' y '{conflicto[1]}' quedarían solapadas -- "
-                        "corregí la hora antes de guardar. No se guardó nada."
+                    # st.toast (no st.warning) porque sobrevive al st.rerun()
+                    # de abajo -- un st.warning quedaría tapado al instante.
+                    st.toast(
+                        f"Guardado, pero '{conflicto[0]}' y '{conflicto[1]}' quedan "
+                        "solapadas -- si son la misma comida/servido dos veces, "
+                        "eliminá la que sobra.",
+                        icon="⚠️",
                     )
                 else:
-                    guardar_anotacion(lecturas, fila, categoria_nueva, nuevo_ini, nuevo_fin)
-                    st.cache_data.clear()
-                    st.success("Guardado.")
-                    st.rerun()
+                    st.toast("Guardado.", icon="✅")
+                st.rerun()
 
         _choca_con = sorted(
             {b for a, b in pares_conflicto if a == fila["id"]}
