@@ -28,6 +28,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d  # noqa: F401 -- registra la proyeccion "3d", no se usa directo
+import plotly.graph_objects as go
 import streamlit as st
 from scipy.stats import gaussian_kde
 
@@ -42,6 +43,16 @@ CATEGORIA_REAL_CSV = DATA_DIR / "candidatos_categoria_real.csv"
 REVISION_SIN_ANOTACION_CSV = DATA_DIR / "revision_sin_anotacion.csv"
 
 VEREDICTOS = ["(sin revisar)", "alimentacion", "servido", "ruido", "no está claro"]
+# Mismo patron que CATEGORIAS en app_anotacion_av2.py (Ciclo_Alpha_v2/fase_0_ruido)
+# -- descripcion corta al lado de cada opcion, para clasificar sin tener que
+# adivinar el criterio cada vez.
+VEREDICTO_DESC = {
+    "(sin revisar)": "todavía no lo miraste",
+    "alimentacion": "el peso baja de forma sostenida -- comió",
+    "servido": "el peso sube en segundos -- le sirvieron",
+    "ruido": "oscila y vuelve casi al mismo peso -- no fue un evento real",
+    "no está claro": "dudoso, dejalo para revisar de nuevo más adelante",
+}
 
 RESUMEN_MODELO_RECOMENDADO = """
 **★ Modelo recomendado: KMeans + refinamiento delta_w + guardia física, sobre τ=180s**
@@ -295,18 +306,43 @@ def guardar_veredicto(candidato_id, veredicto):
     guardar_revision(candidato_id, veredicto=veredicto)
 
 
-def graficar_candidato(fila, ax, corregido=None):
+def graficar_candidato(fila, corregido=None):
+    """Grafico interactivo (Plotly) -- mismo patron de hover que build_chart en
+    Investigacion/Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py: pasar el
+    mouse sobre un punto muestra su hora exacta y el peso, para poder leer
+    la hora real y tipearla en "Corregir la hora de inicio/fin" de al lado."""
     _m = lecturas["device_code"] == fila["device_code"]
     _ini = max(lecturas.loc[_m].index.min(), fila["idx_inicio"] - MARGEN_GRAFICO_LECTURAS)
     _fin = min(lecturas.loc[_m].index.max(), fila["idx_fin"] + MARGEN_GRAFICO_LECTURAS)
-    _ventana = lecturas.loc[_m].loc[_ini:_fin]
-    ax.plot(_ventana["ts"], _ventana["peso"], marker="o", markersize=4)
-    ax.axvspan(fila["ts_inicio"], fila["ts_fin"], color="orange", alpha=0.25, label="Corte automático")
+    _ventana = lecturas.loc[_m].loc[_ini:_fin].copy()
+    _ventana["ts_stgo"] = _ventana["ts"].dt.tz_convert("America/Santiago")
+
+    fig = go.Figure()
+    fig.add_vrect(
+        x0=fila["ts_inicio"].tz_convert("America/Santiago"),
+        x1=fila["ts_fin"].tz_convert("America/Santiago"),
+        fillcolor="orange", opacity=0.25, layer="below", line_width=0,
+        annotation_text="Corte automático", annotation_position="top left",
+        annotation_font_size=10,
+    )
     if corregido is not None:
         _ini_c, _fin_c = corregido
-        ax.axvspan(_ini_c, _fin_c, color="purple", alpha=0.2, hatch="//", label="Tu corrección")
-        ax.legend(fontsize=7)
-    ax.tick_params(axis="x", labelrotation=20)
+        fig.add_vrect(
+            x0=_ini_c.tz_convert("America/Santiago"), x1=_fin_c.tz_convert("America/Santiago"),
+            fillcolor="purple", opacity=0.15, layer="below", line_width=0,
+            annotation_text="Tu corrección", annotation_position="bottom left",
+            annotation_font_size=10,
+        )
+    fig.add_trace(go.Scatter(
+        x=_ventana["ts_stgo"], y=_ventana["peso"],
+        mode="lines+markers", marker=dict(size=6),
+        hovertemplate="%{x|%Y-%m-%d %H:%M:%S}<br><b>%{y:.1f} g</b><extra></extra>",
+    ))
+    fig.update_layout(
+        height=420, margin=dict(l=40, r=20, t=30, b=40),
+        yaxis_title="Peso (g)", showlegend=False,
+    )
+    return fig
 
 
 # --- Seccion 0: nube 3D + densidad (KDE) -- vista al comienzo, mismo color/borde
@@ -630,16 +666,14 @@ else:
         except (ValueError, TypeError):
             _corregido_plot = None
 
-    fig2, ax2 = plt.subplots(figsize=(8, 4))
-    graficar_candidato(fila, ax2, corregido=_corregido_plot)
-    st.pyplot(fig2)
-    plt.close(fig2)
+    st.plotly_chart(graficar_candidato(fila, corregido=_corregido_plot), width="stretch")
 
     if modo_revision_sin_anotacion:
         _veredictos_guardados = cargar_veredictos()
         _veredicto_actual = _veredictos_guardados.get(fila["candidato_id"], "(sin revisar)")
-        _veredicto_elegido = st.selectbox(
+        _veredicto_elegido = st.radio(
             "Tu veredicto", VEREDICTOS,
+            format_func=lambda v: f"{v}  —  {VEREDICTO_DESC[v]}",
             index=VEREDICTOS.index(_veredicto_actual) if _veredicto_actual in VEREDICTOS else 0,
             key=f"veredicto_{fila['candidato_id']}",
         )
