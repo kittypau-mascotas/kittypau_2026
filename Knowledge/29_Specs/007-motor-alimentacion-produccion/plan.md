@@ -272,6 +272,37 @@ independiente fuerte para esa porción. Sigue sin ser validación circular en el
 dura), pero el número de 90.41% hay que leerlo con esa salvedad hasta que los 79 ambiguos se
 revisen a mano y/o llegue más data realmente nueva para medir en verdadero out-of-sample.
 
+## Revisión manual completa de los 79 ambiguos + freno de calidad protege producción (2026-09-08)
+
+Mauro revisó a mano los 79 candidatos genuinamente ambiguos que dejó
+`cerrar_validacion_confiable.py` (más recientes primero, orden nuevo de
+`app_candidatos.py`, guardado + avance automático al elegir veredicto).
+Resultado: 358 de 360 veredictos totales confirmados (285 ruido, 54
+alimentación, 19 servido) — solo **2 quedan "no está claro"**, genuinamente
+indecisos, correctamente excluidos de la promoción (no se inventa una
+categoría para ellos).
+
+`recalibrar_con_freno.py` promovió los 358 a `categoria_real`
+(`candidatos_categoria_real.csv`: 360→2 `sin_anotacion`, prácticamente 100%
+de KPCL0034 con categoría real ahora) y volvió a recalibrar contra el
+ground truth completo — pero esta vez **el freno de calidad descartó el
+candidato**: `accuracy_global_con_guardia` 87.93% < 90.41% vigente. La
+calibración de producción quedó sin tocar.
+
+**Por qué el número "bajó" sin que el modelo haya empeorado en la
+práctica:** el 90.41% vigente se midió contra un ground truth que todavía
+no incluía los 79 casos ambiguos (por definición, los más difíciles —
+cerca del límite entre clusters). Al sumarlos, el mismo pipeline se mide
+contra un examen más difícil y saca una nota más baja — no es que el
+modelo se haya vuelto peor, es que la medida anterior era, en parte,
+optimista (ver caveat ya documentado arriba sobre la promoción de
+"confiables"). El freno de calidad hizo exactamente lo que tiene que
+hacer: nunca reemplazar producción por algo que mide peor con el mismo
+criterio, sin importar la causa. Con esto, la revisión manual de KPCL0034
+queda prácticamente cerrada (911/913 candidatos con categoría real) — el
+siguiente recalibrado real tendría que venir de candidatos nuevos
+(sync + repipeline), no de más revisión sobre este mismo pool.
+
 ## Notificación QA sin esperar un evento real (2026-09-01)
 
 `src/app/_components/qa-test-meal-notification.tsx` — botón que dispara
