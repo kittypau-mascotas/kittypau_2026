@@ -215,6 +215,46 @@ ruido, 1 servido) + 8 genuinamente ambiguos sin resolver. Encadena automáticame
 `recalibrar_con_freno.py` al final, así el efecto llega a producción con el mismo freno de
 calidad.
 
+## Bug de "período común" en notebook 08 + sync de datos nuevos (2026-09-08)
+
+Pedido: correr el pipeline sobre los datos llegados desde la última sincronización y dejar los
+candidatos nuevos sin clasificar visibles en `app_candidatos.py`, con el circuito de "si los
+clasifico, mejoran el modelo" funcionando de punta a punta.
+
+**Datos**: `11_Data/2026/readings_rows.csv` estaba 11 días desactualizado (última fila
+2026-08-28). Nuevo script `11_Data/2026/sincronizar_readings_rows.py` — solo lectura desde
+Supabase, `recorded_at` estrictamente posterior a la última fila local, solo *append* (nunca
+reescribe lo ya guardado, ver CLAUDE.md). Trajo 61.623 filas nuevas (30.815 KPCL0034 / 30.808
+KPCL0035), verificado con `diff` que las 324.445 filas originales quedaron intactas. Repipeline
+completo: `lecturas_limpias.csv` (394.942 → 456.565 filas) → `candidatos_clusters_duracion.csv`
+(KPCL0034: 783 → 913 candidatos).
+
+**Bug real encontrado** (no documentado antes): las celdas 9 y 11 de
+`08_validacion_contra_anotaciones.ipynb` calculaban `categoria_real` (y exportaban
+`candidatos_categoria_real.csv`) solo para `cand_comun` — candidatos con `ts_inicio` dentro del
+solapamiento `[anotaciones.min, anotaciones.max]` (abril-15 jul). Cualquier candidato fuera de
+ese rango (todo agosto-septiembre, 100% de los posteriores al 28-ago) quedaba **totalmente
+afuera del CSV** — no como `"sin_anotacion"`, sino ausente. `app_candidatos.py` hace un
+`merge(..., how="left")` y rellena lo que no matchea con `"sin_validar"` (línea 125), categoría
+que el modo "revisar sin anotación" **no** filtra (línea 506 filtra estrictamente
+`categoria_real == "sin_anotacion"`) — esos candidatos eran invisibles en la app de revisión,
+silenciosamente, desde que existe. Confirmado con `isna().sum()` = 212 candidatos KPCL0034
+ausentes antes del fix.
+
+Fix: en esas dos celdas, calcular/exportar sobre el `cand` completo (todos los candidatos) en
+vez de `cand_comun`, dejando `anot_comun`/`_inicio_comun`/`_fin_comun` intactos donde
+corresponden metodológicamente (las celdas de cobertura/pureza, que sí deben medirse solo dentro
+del período anotado). Verificado con `ast.parse()` antes de correr y con conteo de filas después.
+
+Resultado tras el fix: `candidatos_categoria_real.csv` pasa de 701 a 913 filas. De 360
+`sin_anotacion` reales, 141 ya tenían veredicto manual guardado en `revision_sin_anotacion.csv`
+y se promovieron automáticamente al re-exportar → quedan **219** genuinamente `sin_anotacion`
+visibles ahora en `app_candidatos.py` (antes, ~212 de esos ni aparecían).
+
+`recalibrar_con_freno.py` corrido de nuevo contra el ground truth ya corregido:
+`accuracy_global_con_guardia` 88.46% → **88.47%** (n_validados total 743 → 771) — promovido
+(empate/mejora, sin regresión), `calibracion-kpcl0034.json` actualizado.
+
 ## Notificación QA sin esperar un evento real (2026-09-01)
 
 `src/app/_components/qa-test-meal-notification.tsx` — botón que dispara

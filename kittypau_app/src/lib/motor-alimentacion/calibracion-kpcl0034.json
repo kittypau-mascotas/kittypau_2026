@@ -22,62 +22,62 @@
   ],
   "scaler": {
     "mean": [
-      4.897671,
-      -1.187739,
-      2.388771,
-      6.873563,
-      4.167305
+      4.858134,
+      -1.084337,
+      2.375882,
+      6.637459,
+      3.947426
     ],
     "scale": [
-      1.017273,
-      64.460383,
-      0.97474,
-      5.888327,
-      4.097017
+      1.01808,
+      59.976031,
+      0.978148,
+      5.733875,
+      3.963618
     ]
   },
   "clusters_kmeans_crudo": {
     "0": {
       "centroide_estandarizado": [
-        0.89206,
-        -0.179051,
-        0.062519,
-        0.824662,
-        0.842902
+        0.907176,
+        -0.168708,
+        0.077742,
+        0.84,
+        0.848046
       ],
       "categoria_dominante": "alimentacion",
-      "pureza_medida": 0.7537,
-      "n_validados": 337,
+      "pureza_medida": 0.7456,
+      "n_validados": 342,
       "es_mezclado": false
     },
     "1": {
       "centroide_estandarizado": [
-        -0.823562,
-        0.006666,
-        -0.69152,
-        -0.759734,
-        -0.778587
-      ],
-      "categoria_dominante": "ruido",
-      "pureza_medida": 0.9309,
-      "n_validados": 275,
-      "es_mezclado": false
-    },
-    "2": {
-      "centroide_estandarizado": [
-        -0.843776,
-        0.681624,
-        1.987515,
-        -0.785208,
-        -0.795958
+        -0.798402,
+        0.643993,
+        1.957898,
+        -0.768655,
+        -0.763714
       ],
       "categoria_dominante": "ruido",
       "pureza_medida": 0.5802,
       "n_validados": 81,
       "es_mezclado": true
+    },
+    "2": {
+      "centroide_estandarizado": [
+        -0.829221,
+        0.001224,
+        -0.696674,
+        -0.758749,
+        -0.769815
+      ],
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.9336,
+      "n_validados": 271,
+      "es_mezclado": false
     }
   },
-  "cluster_mezclado": 2,
+  "cluster_mezclado": 1,
   "refinamiento": {
     "umbral_delta_neto_real_g": 20.0,
     "regla": "dentro del cluster_mezclado, si delta_neto_real > umbral => servido; si_no => categoria_dominante del cluster_mezclado",
@@ -105,18 +105,18 @@
     },
     "redirigido_a_ruido": {
       "categoria_dominante": "ruido",
-      "pureza_medida": 0.8846,
-      "n_validados": 26
+      "pureza_medida": 0.8966,
+      "n_validados": 29
     },
     "mejora_medida": {
-      "accuracy_global_sin_guardia": 0.8384,
-      "accuracy_global_con_guardia": 0.8846,
-      "pureza_alimentacion_sin_guardia": 0.7537,
-      "pureza_alimentacion_con_guardia": 0.8596,
+      "accuracy_global_sin_guardia": 0.8343,
+      "accuracy_global_con_guardia": 0.8847,
+      "pureza_alimentacion_sin_guardia": 0.7456,
+      "pureza_alimentacion_con_guardia": 0.8571,
       "recall_servido_sin_guardia": 0.68,
       "recall_servido_con_guardia": 0.92,
-      "recall_ruido_sin_guardia": 0.7898,
-      "recall_ruido_con_guardia": 0.8518
+      "recall_ruido_sin_guardia": 0.7796,
+      "recall_ruido_con_guardia": 0.8495
     }
   },
   "validacion_referencia": {
