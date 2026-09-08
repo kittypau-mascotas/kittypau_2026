@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-08-14
-updated: 2026-08-18
+updated: 2026-09-08
 tags:
   - devops
   - colaboracion
@@ -73,6 +73,11 @@ técnica particular.
 ---
 
 ## ✅ Completado recientemente (no borrar de una — dejar 1-2 semanas de historial visible)
+
+| Fecha | Qué | Quién | Spec |
+|---|---|---|---|
+| 2026-09-08 | `007` — bug real en `08_validacion_contra_anotaciones.ipynb`: 2 celdas restringían `categoria_real`/`candidatos_categoria_real.csv` al período con anotaciones (abr-jul), dejando **todo candidato posterior (100% de ago-sep) ausente del CSV** (no como "sin_anotacion", directamente invisible en `app_candidatos.py`). Corregido + sync de `readings_rows.csv` (+61.623 filas) + repipeline (KPCL0034 783→913 candidatos) + `cerrar_validacion_confiable.py` sobre el pool completo (140 confiables auto-promovidos, 79 genuinamente ambiguos quedan para revisión humana). `recalibrar_con_freno.py`: accuracy 88.46%→90.41% (n=771), promovido sin regresión. De paso, `app_candidatos.py`: gráfico Plotly con hover (hora exacta al pasar el mouse, portado de `app_anotacion_av2.py`), veredicto con descripción por opción, orden "más recientes primero", avance automático al clasificar | PC de Mauro | [[29_Specs/007-motor-alimentacion-produccion/plan]] |
+| 2026-09-01 | `007` — motor calibrado (Investigacion_v2: τ=180s + centroide + refinamiento + guardia física) portado a producción: `hunger-bar.ts` usa `clasificarEventos()` de `motor-alimentacion/` para KPCL0034 (v1 sigue de fallback para el resto). Agrupado el picoteo (`fusionarPicoteo()`, gap_fusion_s=120 ya calibrado). `recalibrar_con_freno.py` (recalibración semi-automática con freno de calidad — nunca despliega una versión peor) + `cerrar_validacion_confiable.py` (cierre de validación sin caer en circularidad: solo auto-promueve casos sin ambigüedad estructural). `SPEC_03` actualizado — Pilar 1 (Alimentación) ya no tiene el motor v2 como bloqueante | PC de Mauro | [[29_Specs/007-motor-alimentacion-produccion/plan]] |
 
 | Fecha | Qué | Quién | Spec |
 |---|---|---|---|
