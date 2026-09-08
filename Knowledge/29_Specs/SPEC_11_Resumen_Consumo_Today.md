@@ -216,6 +216,13 @@ agregación, si conviene cachear aparte de la barra en vivo). Sigue aplicando el
 free/premium sin decidir de §2, y sigue siendo **KPCL0034 solamente** (el motor v2 no está
 validado en otros dispositivos, mismo alcance que el resto de spec 007).
 
+> ✅ **Hecho (2026-09-08):** las 9 métricas de esta tabla (todo menos #10, que sí necesita
+> `WINDOW_DAYS` más largo) están implementadas y en `/today` — `src/lib/consumo-kpis.ts`
+> (`computeConsumoKpis()`, 9/9 tests) + `kpis` agregado a la respuesta de
+> `GET /api/pets/:id/hunger-bar` + `<ConsumoKpisCard>` en una sección propia, fuera de
+> Barras Sims. `tsc`/`eslint`/`vitest` (68/68) limpios. Pendiente: click-through manual en
+> navegador real (no ejecutado en este entorno) y la decisión de gating free/premium de §2.
+
 ---
 
 ## 3. Qué NO hace falta construir
