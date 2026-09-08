@@ -443,6 +443,12 @@ seleccion = st.dataframe(
 )
 
 filas_sel = seleccion.selection.rows if seleccion and seleccion.selection else []
+# Defensivo: un índice de selección que quedó viejo (filtro cambiado a mano,
+# u otro caso no cubierto por la limpieza explícita de Guardar/Eliminar) no
+# tiene que romper la página entera con un IndexError -- se trata como "sin
+# selección" en vez de reventar.
+if filas_sel and filas_sel[0] >= len(vista):
+    filas_sel = []
 if not filas_sel:
     st.info("👆 Hacé click en una fila para ver su curva y editarla.")
 else:
@@ -489,6 +495,12 @@ else:
                 )
                 guardar_anotacion(lecturas, fila, categoria_nueva, nuevo_ini, nuevo_fin)
                 st.cache_data.clear()
+                # Mismo motivo que en Eliminar: si el cambio de categoría
+                # saca la fila de los filtros activos, el índice de
+                # selección viejo queda inválido en el próximo rerun.
+                st.session_state["tabla_anotaciones"] = {
+                    "selection": {"rows": [], "columns": []}
+                }
                 if conflicto is not None:
                     # st.toast (no st.warning) porque sobrevive al st.rerun()
                     # de abajo -- un st.warning quedaría tapado al instante.
@@ -527,7 +539,17 @@ else:
                     borrar_anotacion(fila)
                     st.cache_data.clear()
                     del st.session_state[_clave_confirmar]
-                    st.success("Eliminada.")
+                    # La fila eliminada desaparece de `vista` -- si no se
+                    # limpia la selección, el índice viejo queda apuntando a
+                    # otra fila (o directamente fuera de rango) en el próximo
+                    # rerun, y el panel entero revienta con un IndexError.
+                    # Bug real que rompía "eliminar" (y también "guardar" si
+                    # el filtro sacaba la fila de la vista) después de varias
+                    # operaciones seguidas.
+                    st.session_state["tabla_anotaciones"] = {
+                        "selection": {"rows": [], "columns": []}
+                    }
+                    st.toast("Eliminada.", icon="🗑️")
                     st.rerun()
             with col_no:
                 if st.button("Cancelar", key=f"borrar_no_{fila['id']}"):
