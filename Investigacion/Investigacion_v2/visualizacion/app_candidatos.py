@@ -186,16 +186,24 @@ def encontrar_solapamiento(
     return None
 
 
-def todos_los_conflictos(tabla: pd.DataFrame) -> list[tuple[str, str]]:
+def todos_los_conflictos(
+    tabla: pd.DataFrame, margen_segundos: float = 0
+) -> list[tuple[str, str]]:
     """A diferencia de encontrar_solapamiento() (para en el primero, pensado
-    para validar un guardado), esta barre TODOS los pares solapados de la
-    tabla completa -- para el checkbox "solo conflictos"."""
+    para validar un guardado), esta barre TODOS los pares solapados -- o, si
+    `margen_segundos` > 0, también los que están muy cerca sin llegar a
+    solaparse -- de la tabla completa. Pensada para el filtro "solo
+    conflictos/cercanos": Mauro encontró que además de los solapamientos
+    exactos hay pares de candidatos (misma comida/servido detectada dos
+    veces, con ids distintos) cuyas ventanas quedan pegadas pero sin
+    solaparse -- el margen los agarra también."""
+    margen = pd.Timedelta(seconds=margen_segundos)
     pares: list[tuple[str, str]] = []
     for _device, grupo in tabla.groupby("device_code"):
         g = grupo.sort_values("ts_inicio").reset_index(drop=True)
         for i in range(len(g)):
             for j in range(i + 1, len(g)):
-                if g.loc[j, "ts_inicio"] >= g.loc[i, "ts_fin"]:
+                if g.loc[j, "ts_inicio"] >= g.loc[i, "ts_fin"] + margen:
                     break
                 pares.append((g.loc[i, "id"], g.loc[j, "id"]))
     return pares
@@ -334,6 +342,33 @@ def guardar_anotacion(
         revision.reset_index().to_csv(REVISION_CSV, index=False)
 
 
+def borrar_anotacion(fila: pd.Series) -> None:
+    """Elimina la anotación de la base unificada Y de su fuente legada --
+    pensado para el caso real que encontró Mauro: 2 candidatos con id
+    distinto que son casi el mismo evento (misma comida/servido detectada
+    dos veces), donde uno de los dos sobra. Con backup diario antes de
+    borrar, igual que al editar."""
+    id_ = fila["id"]
+
+    _backup_diario(UNIFICADA_CSV)
+    base = pd.read_csv(UNIFICADA_CSV)
+    base = base[base["id"] != id_]
+    base.to_csv(UNIFICADA_CSV, index=False)
+
+    if id_.startswith("av2_"):
+        _backup_diario(AV2_CSV)
+        av2 = cargar_av2()
+        id_anot = int(id_.removeprefix("av2_"))
+        av2 = av2[av2["id_anotacion"] != id_anot]
+        av2.to_csv(AV2_CSV, index=False)
+    else:
+        _backup_diario(REVISION_CSV)
+        cid = id_.removeprefix("cand_")
+        revision = cargar_revision()
+        revision = revision[revision["candidato_id"] != cid]
+        revision.to_csv(REVISION_CSV, index=False)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # App
 # ─────────────────────────────────────────────────────────────────────────────
@@ -347,9 +382,6 @@ st.caption(
 lecturas = cargar_lecturas()
 tabla = cargar_base_unificada()
 
-pares_conflicto = todos_los_conflictos(tabla)
-ids_conflicto = {i for par in pares_conflicto for i in par}
-
 col_f1, col_f2 = st.columns([2, 1])
 with col_f1:
     categorias_filtro = st.multiselect("Categoría", CATEGORIAS, default=CATEGORIAS)
@@ -359,12 +391,31 @@ with col_f2:
         ["anotacion_real", "candidato_confirmado"],
         default=["anotacion_real", "candidato_confirmado"],
     )
-solo_conflictos = st.checkbox(
-    f"⚠️ Mostrar solo las {len(ids_conflicto):,} anotaciones en conflicto "
-    f"({len(pares_conflicto):,} pares solapados en el tiempo)",
-    help="Ordenadas por hora de inicio, así que cada par en conflicto queda "
-         "una al lado de la otra -- elegí una, corregila y guardá.",
-)
+
+col_c1, col_c2 = st.columns([2, 1])
+with col_c1:
+    solo_conflictos = st.checkbox(
+        "⚠️ Mostrar solo candidatos solapados o muy cerca (posibles duplicados)",
+        help="Ordenadas por hora de inicio, así que cada par sospechoso queda "
+             "una al lado de la otra -- elegí una, corregila o eliminala.",
+    )
+with col_c2:
+    margen_min = st.slider(
+        "Margen de cercanía (min)", min_value=0, max_value=15, value=3,
+        disabled=not solo_conflictos,
+        help="0 = solo los que se solapan en el tiempo. Más alto también "
+             "agarra pares pegados sin llegar a solaparse -- el patrón real "
+             "que encontró Mauro (misma comida/servido detectada 2 veces "
+             "con id distinto).",
+    )
+
+pares_conflicto = todos_los_conflictos(tabla, margen_segundos=margen_min * 60)
+ids_conflicto = {i for par in pares_conflicto for i in par}
+if solo_conflictos:
+    st.caption(
+        f"{len(ids_conflicto):,} anotaciones en {len(pares_conflicto):,} pares "
+        f"sospechosos (margen {margen_min} min)."
+    )
 
 vista = tabla[
     tabla["categoria"].isin(categorias_filtro) & tabla["origen"].isin(origenes_filtro)
@@ -440,6 +491,38 @@ else:
                     guardar_anotacion(lecturas, fila, categoria_nueva, nuevo_ini, nuevo_fin)
                     st.cache_data.clear()
                     st.success("Guardado.")
+                    st.rerun()
+
+        _choca_con = sorted(
+            {b for a, b in pares_conflicto if a == fila["id"]}
+            | {a for a, b in pares_conflicto if b == fila["id"]}
+        )
+        if _choca_con:
+            st.caption(f"⚠️ Choca o está muy cerca de: {', '.join(_choca_con)}")
+
+        st.divider()
+        _clave_confirmar = f"confirmar_borrado_{fila['id']}"
+        if not st.session_state.get(_clave_confirmar):
+            if st.button("🗑️ Eliminar esta anotación", key=f"borrar_{fila['id']}"):
+                st.session_state[_clave_confirmar] = True
+                st.rerun()
+        else:
+            st.warning(
+                f"¿Seguro que querés eliminar **{fila['id']}** ({fila['categoria']}, "
+                f"{_ini_stgo:%Y-%m-%d %H:%M:%S})? No se puede deshacer desde acá "
+                "(queda en el backup diario)."
+            )
+            col_si, col_no = st.columns(2)
+            with col_si:
+                if st.button("Sí, eliminar", type="primary", key=f"borrar_si_{fila['id']}"):
+                    borrar_anotacion(fila)
+                    st.cache_data.clear()
+                    del st.session_state[_clave_confirmar]
+                    st.success("Eliminada.")
+                    st.rerun()
+            with col_no:
+                if st.button("Cancelar", key=f"borrar_no_{fila['id']}"):
+                    del st.session_state[_clave_confirmar]
                     st.rerun()
 
     with col_g:
