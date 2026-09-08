@@ -253,7 +253,24 @@ visibles ahora en `app_candidatos.py` (antes, ~212 de esos ni aparecían).
 
 `recalibrar_con_freno.py` corrido de nuevo contra el ground truth ya corregido:
 `accuracy_global_con_guardia` 88.46% → **88.47%** (n_validados total 743 → 771) — promovido
-(empate/mejora, sin regresión), `calibracion-kpcl0034.json` actualizado.
+(empate/mejora, sin regresión), `calibracion-kpcl0034.json` actualizado. Verificado en runtime
+(no solo lectura de código) con `streamlit.testing.v1.AppTest`: `app_candidatos.py` carga sin
+excepciones y el modo "sin anotación real" muestra exactamente **"Candidato 1 de 219"**.
+
+Con los 219 ya visibles, se corrió `cerrar_validacion_confiable.py` sobre el pool completo
+(antes solo tenía 94 para trabajar): 140 confiables (incertidumbre < 0.4) auto-promovidos a
+`revision_sin_anotacion.csv` (95 ruido, 37 alimentación, 8 servido) + **79 genuinamente
+ambiguos** quedan en `data/candidatos_ambiguos_pendientes.csv` para revisión humana real en
+`app_candidatos.py`. Encadenó automáticamente la recalibración: `accuracy_global_con_guardia`
+88.47% → **90.41%**.
+
+**Caveat honesto sobre ese salto**: gran parte de esa mejora es por construcción — los 140
+casos recién promovidos son justamente los que el propio modelo clasificó con más confianza
+(incertidumbre < 0.4), así que el modelo "acertándolos" contra sí mismo no es una validación
+independiente fuerte para esa porción. Sigue sin ser validación circular en el sentido grave
+(no se promovió nada ambiguo, y las 743 anotaciones reales originales siguen siendo la base
+dura), pero el número de 90.41% hay que leerlo con esa salvedad hasta que los 79 ambiguos se
+revisen a mano y/o llegue más data realmente nueva para medir en verdadero out-of-sample.
 
 ## Notificación QA sin esperar un evento real (2026-09-01)
 

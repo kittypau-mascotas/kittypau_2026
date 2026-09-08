@@ -46,8 +46,8 @@
         0.848046
       ],
       "categoria_dominante": "alimentacion",
-      "pureza_medida": 0.7456,
-      "n_validados": 342,
+      "pureza_medida": 0.7487,
+      "n_validados": 390,
       "es_mezclado": false
     },
     "1": {
@@ -59,8 +59,8 @@
         -0.763714
       ],
       "categoria_dominante": "ruido",
-      "pureza_medida": 0.5802,
-      "n_validados": 81,
+      "pureza_medida": 0.6154,
+      "n_validados": 104,
       "es_mezclado": true
     },
     "2": {
@@ -72,8 +72,8 @@
         -0.769815
       ],
       "categoria_dominante": "ruido",
-      "pureza_medida": 0.9336,
-      "n_validados": 271,
+      "pureza_medida": 0.9471,
+      "n_validados": 340,
       "es_mezclado": false
     }
   },
@@ -83,13 +83,13 @@
     "regla": "dentro del cluster_mezclado, si delta_neto_real > umbral => servido; si_no => categoria_dominante del cluster_mezclado",
     "cluster_servido_nuevo": {
       "categoria_dominante": "servido",
-      "pureza_medida": 0.7727,
-      "n_validados": 44
+      "pureza_medida": 0.8,
+      "n_validados": 50
     },
     "cluster_ruido_remanente": {
       "categoria_dominante": "ruido",
       "pureza_medida": 1.0,
-      "n_validados": 37
+      "n_validados": 54
     }
   },
   "guardia_alimentacion": {
@@ -100,28 +100,28 @@
     ],
     "redirigido_a_servido": {
       "categoria_dominante": "servido",
-      "pureza_medida": 0.6316,
-      "n_validados": 19
+      "pureza_medida": 0.6667,
+      "n_validados": 21
     },
     "redirigido_a_ruido": {
       "categoria_dominante": "ruido",
-      "pureza_medida": 0.8966,
-      "n_validados": 29
+      "pureza_medida": 0.9211,
+      "n_validados": 38
     },
     "mejora_medida": {
-      "accuracy_global_sin_guardia": 0.8343,
-      "accuracy_global_con_guardia": 0.8847,
-      "pureza_alimentacion_sin_guardia": 0.7456,
-      "pureza_alimentacion_con_guardia": 0.8571,
-      "recall_servido_sin_guardia": 0.68,
-      "recall_servido_con_guardia": 0.92,
-      "recall_ruido_sin_guardia": 0.7796,
-      "recall_ruido_con_guardia": 0.8495
+      "accuracy_global_sin_guardia": 0.8489,
+      "accuracy_global_con_guardia": 0.9041,
+      "pureza_alimentacion_sin_guardia": 0.7487,
+      "pureza_alimentacion_con_guardia": 0.8731,
+      "recall_servido_sin_guardia": 0.6897,
+      "recall_servido_con_guardia": 0.931,
+      "recall_ruido_sin_guardia": 0.8051,
+      "recall_ruido_con_guardia": 0.8801
     }
   },
   "validacion_referencia": {
     "n_anotaciones_reales": 743,
-    "n_promovidas_manual": 141,
+    "n_promovidas_manual": 281,
     "cobertura_recall": {
       "alimentacion": 1.0,
       "ruido": 0.826,
