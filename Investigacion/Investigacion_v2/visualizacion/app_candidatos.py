@@ -443,10 +443,17 @@ seleccion = st.dataframe(
 )
 
 filas_sel = seleccion.selection.rows if seleccion and seleccion.selection else []
+# No se puede reasignar st.session_state["tabla_anotaciones"] (el widget ya
+# se instanció arriba en este mismo run -- Streamlit lo prohíbe con
+# StreamlitAPIException). Guardar/Eliminar piden la deselección con esta
+# bandera aparte (no es key de ningún widget, se puede tocar libremente) en
+# vez de tocar la key del widget directo.
+if st.session_state.pop("_limpiar_seleccion", False):
+    filas_sel = []
 # Defensivo: un índice de selección que quedó viejo (filtro cambiado a mano,
-# u otro caso no cubierto por la limpieza explícita de Guardar/Eliminar) no
-# tiene que romper la página entera con un IndexError -- se trata como "sin
-# selección" en vez de reventar.
+# u otro caso no cubierto por lo de arriba) no tiene que romper la página
+# entera con un IndexError -- se trata como "sin selección" en vez de
+# reventar.
 if filas_sel and filas_sel[0] >= len(vista):
     filas_sel = []
 if not filas_sel:
@@ -498,9 +505,7 @@ else:
                 # Mismo motivo que en Eliminar: si el cambio de categoría
                 # saca la fila de los filtros activos, el índice de
                 # selección viejo queda inválido en el próximo rerun.
-                st.session_state["tabla_anotaciones"] = {
-                    "selection": {"rows": [], "columns": []}
-                }
+                st.session_state["_limpiar_seleccion"] = True
                 if conflicto is not None:
                     # st.toast (no st.warning) porque sobrevive al st.rerun()
                     # de abajo -- un st.warning quedaría tapado al instante.
@@ -546,9 +551,7 @@ else:
                     # Bug real que rompía "eliminar" (y también "guardar" si
                     # el filtro sacaba la fila de la vista) después de varias
                     # operaciones seguidas.
-                    st.session_state["tabla_anotaciones"] = {
-                        "selection": {"rows": [], "columns": []}
-                    }
+                    st.session_state["_limpiar_seleccion"] = True
                     st.toast("Eliminada.", icon="🗑️")
                     st.rerun()
             with col_no:
