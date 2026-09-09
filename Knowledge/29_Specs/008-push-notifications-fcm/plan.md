@@ -1,5 +1,28 @@
 # 008 — Push notifications reales (FCM) para "comió" / "le sirvieron"
 
+> ⚠️ **Incidente real (2026-09-09, mismo día del build inicial): crasheaba la app en
+> producción.** Mauro instaló el APK, la app abría bien pero se cerraba sola ("me tira para
+> afuera"). Log real del celular:
+> ```
+> Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this
+> process com.kittypau.app. Make sure to call FirebaseApp.initializeApp(Context) first.
+>   at com.google.firebase.FirebaseApp.getInstance(FirebaseApp.java:179)
+>   at com.google.firebase.messaging.FirebaseMessaging.getInstance(FirebaseMessaging.java:120)
+>   at com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin.register(...)
+> ```
+> `PushNotifications.register()` llama a `FirebaseMessaging.getInstance()`, que revienta sin
+> `google-services.json` -- pasa en un hilo nativo, **no lo captura el `try/catch` de JS**, mata
+> el proceso entero. El `try/catch` de `usePushTokenRegistration.ts` asumía (mal) que cualquier
+> falla del plugin sería un rechazo de promesa capturable -- una excepción nativa no vuelve por
+> ese camino.
+>
+> **Fix (mismo día):** kill-switch `NEXT_PUBLIC_PUSH_NOTIFICATIONS_ENABLED` (default `"false"`,
+> ver `.env.example`) -- mientras no sea literalmente `"true"`, el hook nunca llama a
+> `PushNotifications.register()` ni pide permisos. Como es JS puro, el fix se desplegó sin
+> recompilar el APK -- la app ya instalada lo toma en el próximo reload desde `server.url`. Solo
+> se debe poner en `"true"` (en Vercel) el mismo día que se recompile el APK con
+> `google-services.json` real adentro -- las dos cosas van juntas, nunca una sin la otra.
+
 ## Contexto
 
 `useHungerBarEventNotifications` (`kittypau_app/src/lib/hooks/useHungerBarEventNotifications.ts`)

@@ -19,11 +19,26 @@ import { getValidAccessToken } from "@/lib/auth/token";
  * de más abajo es quien realmente valida el token contra Supabase -- este
  * flag solo evita intentarlo mientras la pantalla todavía no sabe si hay
  * sesión).
+ *
+ * ⚠️ CRASH REAL confirmado en dispositivo (2026-09-09, log de Mauro):
+ * `PushNotifications.register()` llama internamente a
+ * `FirebaseMessaging.getInstance()`, que revienta con
+ * `IllegalStateException: Default FirebaseApp is not initialized` cuando no
+ * existe `google-services.json` -- pasa en un hilo nativo de Android, NO es
+ * capturable por el `try/catch` de acá abajo, mata la app entera. Por eso el
+ * kill-switch explícito: hasta que `FIREBASE_SERVICE_ACCOUNT_JSON` +
+ * `google-services.json` existan de verdad (ver
+ * Knowledge/29_Specs/008-push-notifications-fcm/plan.md) y el APK se
+ * recompile con eso adentro, esto no debe ni intentar `register()`.
  */
+const PUSH_NOTIFICATIONS_ENABLED =
+  process.env.NEXT_PUBLIC_PUSH_NOTIFICATIONS_ENABLED === "true";
+
 export function usePushTokenRegistration(enabled: boolean) {
   const intentadoRef = useRef(false);
 
   useEffect(() => {
+    if (!PUSH_NOTIFICATIONS_ENABLED) return;
     if (!enabled || intentadoRef.current) return;
     intentadoRef.current = true;
 
