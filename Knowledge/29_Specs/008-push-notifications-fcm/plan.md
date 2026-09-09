@@ -70,6 +70,28 @@ Ninguno de estos 5 pasos es código pendiente — son credenciales/configuració
 puede proveer. El código ya está escrito para que, apenas exista `FIREBASE_SERVICE_ACCOUNT_JSON`
 y `google-services.json`, funcione sin tocar nada más.
 
+## Foto de la mascota en el push (2026-09-09)
+
+Pedido de Mauro tras la lista de mejoras de notificaciones: usar la foto real de la mascota
+(`pets.photo_url`, URL pública de Supabase Storage) en vez del logo genérico de Kittypau.
+
+Investigado antes de tocar código (para no repetir el error del ícono transparente):
+`@capacitor/local-notifications`'s `largeIcon` **solo acepta un drawable empaquetado en el
+APK** (string = nombre de recurso, ver `node_modules/@capacitor/local-notifications/dist/esm/
+definitions.d.ts:568-578`) -- no puede ser una URL ni una foto dinámica, límite de la
+plataforma. `AndroidNotification.imageUrl` de `firebase-admin` (`messaging-api.d.ts:459`) sí
+es una URL real que FCM baja solo.
+
+**Decisión (con Mauro, opción "solo FCM"):** `pet.photo_url` viaja como `imageUrl` en
+`sendPushToTokens()` (`lib/push/fcm.ts`) -- se ve como imagen grande al expandir el push que
+llega con la app cerrada. Las `LocalNotifications` (`useHungerBarEventNotifications`, con la
+app abierta) siguen con `ic_notification_kittypau` fijo, sin tocar -- mostrar la foto ahí
+requeriría descargarla a un archivo local (`@capacitor/filesystem`, dependencia nueva) y
+usar `attachments`, quedó fuera de alcance por ahora.
+
+Igual que el resto de este spec: bloqueado en que exista `FIREBASE_SERVICE_ACCOUNT_JSON` para
+poder probarse en un dispositivo real.
+
 ## Qué se dejó fuera a propósito (ponytail)
 
 - **Sin retry/backoff en el envío FCM** — si un push falla, se loguea y sigue con los demás;

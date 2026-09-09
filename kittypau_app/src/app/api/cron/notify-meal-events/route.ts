@@ -31,18 +31,29 @@ import { sendPushToTokens } from "@/lib/push/fcm";
  * ponytail: recorre pets uno por uno, secuencial -- con pocos pets (uso
  * personal/de prueba) es simple y suficiente. Si esto corre para muchos
  * usuarios reales, paralelizar o paginar es el upgrade obvio, no antes.
+ *
+ * `pets.photo_url` (URL pública de Supabase Storage, `getPublicUrl()`) viaja
+ * como `imageUrl` del push -- FCM la baja sola y la muestra como imagen
+ * grande al expandir la notificación. Solo esta ruta (push real); las
+ * LocalNotifications de `useHungerBarEventNotifications` siguen con el
+ * ícono Kittypau fijo -- `largeIcon` de ese plugin no acepta una URL/foto
+ * dinámica, solo un drawable empaquetado en el APK (límite de la
+ * plataforma, no decisión de diseño).
  */
 
 type PetConDevice = {
   pet_id: string;
   user_id: string;
   pet_name: string | null;
+  pet_photo_url: string | null;
 };
 
 async function petsConComedero(): Promise<PetConDevice[]> {
   const { data, error } = await supabaseServer
     .from("devices")
-    .select("device_id, device_type, pet_id, pets!inner(id, user_id, name)")
+    .select(
+      "device_id, device_type, pet_id, pets!inner(id, user_id, name, photo_url)",
+    )
     .eq("status", "active")
     .not("pet_id", "is", null);
   if (error) throw new Error(error.message);
@@ -58,6 +69,7 @@ async function petsConComedero(): Promise<PetConDevice[]> {
       pet_id: pet.id,
       user_id: pet.user_id,
       pet_name: pet.name,
+      pet_photo_url: pet.photo_url ?? null,
     });
   }
   return resultado;
@@ -146,6 +158,7 @@ export async function POST(req: NextRequest) {
             tokens: tokenList,
             title,
             body,
+            imageUrl: pet.pet_photo_url,
           });
           pushEnviados += resultado.sent;
           if (resultado.invalidTokens.length) {

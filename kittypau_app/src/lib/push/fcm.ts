@@ -37,6 +37,7 @@ export async function sendPushToTokens(params: {
   tokens: string[];
   title: string;
   body: string;
+  imageUrl?: string | null; // foto de la mascota (pets.photo_url) -- imagen grande al expandir, FCM la baja solo
 }): Promise<PushSendResult> {
   const result: PushSendResult = { sent: 0, invalidTokens: [], errors: [] };
   if (!params.tokens.length) return result;
@@ -45,7 +46,13 @@ export async function sendPushToTokens(params: {
   const response = await messaging.sendEachForMulticast({
     tokens: params.tokens,
     notification: { title: params.title, body: params.body },
-    android: { notification: { icon: "ic_stat_kittypau", color: "#ebb6a8" } },
+    android: {
+      notification: {
+        icon: "ic_stat_kittypau",
+        color: "#ebb6a8",
+        imageUrl: params.imageUrl ?? undefined,
+      },
+    },
   });
 
   response.responses.forEach((r, i) => {
