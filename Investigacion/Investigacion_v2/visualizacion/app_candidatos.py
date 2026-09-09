@@ -534,9 +534,17 @@ else:
         st.divider()
         _clave_confirmar = f"confirmar_borrado_{fila['id']}"
         if not st.session_state.get(_clave_confirmar):
-            if st.button("🗑️ Eliminar esta anotación", key=f"borrar_{fila['id']}"):
-                st.session_state[_clave_confirmar] = True
-                st.rerun()
+            # on_click, no "if st.button(): st.session_state[...] = True" --
+            # ese patrón evalúa el if/else de arriba ANTES de que el propio
+            # click alcance a actualizar la bandera en la misma pasada, así
+            # que la confirmación recién se ve al rerun siguiente (con
+            # st.rerun() explícito debería funcionar iguel, pero on_click es
+            # el patrón que Streamlit documenta para esto -- corre el
+            # callback ANTES del rerun automático, sin ambigüedad de orden).
+            st.button(
+                "🗑️ Eliminar esta anotación", key=f"borrar_{fila['id']}",
+                on_click=lambda k=_clave_confirmar: st.session_state.update({k: True}),
+            )
         else:
             st.warning(
                 f"¿Seguro que querés eliminar **{fila['id']}** ({fila['categoria']}, "
