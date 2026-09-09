@@ -343,6 +343,23 @@ descartado (mismo caveat de siempre -- el ground truth ahora incluye los
 casos más difíciles, la medida anterior era en parte optimista, no es que
 el modelo haya empeorado). Producción sin tocar.
 
+**Actualización (mismo día) — override manual del freno de calidad.**
+`probar_modelo.py` (nuevo, evalúa la calibración REALMENTE desplegada
+contra el ground truth completo) confirmó en limpio: 87.28% con guardia
+física, 76.62% sin ella — servido pasa de 0% precision/recall a 76-89%
+gracias a la guardia. Mauro pidió explícitamente desplegar esta
+calibración de todas formas, pese a que mide peor que la vigente
+(90.41%) — el freno de calidad hizo su trabajo (avisó, no bloqueó
+silenciosamente), la decisión de forzarlo es explícitamente humana, no
+automática. `version` pasa de `2026-08-30-v2` a `2026-09-09-v3`
+(`exportar_calibracion_produccion.py` actualizado para que las próximas
+corridas ya generen esta versión). Registrado en
+`historial_recalibraciones.jsonl` como `promovido_manual_override`, con
+la nota de que la baja de accuracy es por un ground truth más completo/
+difícil (743→928 candidatos, 100% con categoría real), no porque el
+modelo real haya empeorado. `tsc`/`vitest` (68/68) verificados limpios
+tras el despliegue.
+
 ## Notificación QA sin esperar un evento real (2026-09-01)
 
 `src/app/_components/qa-test-meal-notification.tsx` — botón que dispara

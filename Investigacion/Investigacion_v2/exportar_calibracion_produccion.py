@@ -233,7 +233,7 @@ if _revision_csv.exists():
     n_promovidas_manual = int(_rev["veredicto"].isin(etiquetas_validas).sum())
 
 calibracion = {
-    "version": "2026-08-30-v2",
+    "version": "2026-09-09-v3",
     "device_code": DEVICE,
     "origen": "Investigacion/Investigacion_v2 (rama experimento-calibracion-duracion), "
               "07_calibracion_duracion.ipynb + 08_validacion_contra_anotaciones.ipynb -- "
