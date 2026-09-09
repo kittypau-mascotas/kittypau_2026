@@ -158,6 +158,7 @@ type HungerBarResponse = {
   percentage: number | null;
   lastMealDetectedAt: string | null;
   lastMealIsProvisional?: boolean;
+  lastMealGramos?: number | null;
   estimatedNextMealAt: string | null;
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
@@ -2707,6 +2708,7 @@ export default function TodayPage() {
                   tempText={bowlTempText}
                   humidityText={bowlHumidityText}
                   formatTimestamp={formatTimestamp}
+                  lastMealGramos={hungerBar?.lastMealGramos ?? null}
                 />
               </div>
 

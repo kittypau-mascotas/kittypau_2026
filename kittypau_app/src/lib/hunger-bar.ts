@@ -64,6 +64,16 @@ export const HORAS_PICO = [5, 19, 10, 17, 16, 6, 7, 9]; // hora local Chile
 export const INTERVALO_P25_H = 4.04;
 export const INTERVALO_P75_H = 8.88;
 
+// "¿Comió más o menos que lo habitual?" (2026-09-09) -- calibrado sobre las
+// mismas 305 comidas reales de KPCL0034. Probado antes de agregar esto: ni
+// la hora del día, ni el día de semana, ni el tamaño de la comida anterior
+// predicen el tamaño de la próxima (ANOVA/correlación no significativos,
+// ver Investigacion/Investigacion_v2/) -- la mediana es el mejor número
+// disponible, no un modelo más sofisticado.
+export const MEDIANA_GRAMOS_COMIDA = 12;
+export const GRAMOS_P25 = 9; // por debajo de esto = "comió menos de lo habitual"
+export const GRAMOS_P75 = 16; // por encima de esto = "comió más de lo habitual"
+
 export type ReadingPoint = {
   recordedAt: string;
   weightGrams: number;
@@ -87,6 +97,7 @@ export type HungerBarResult = {
   lastMealDetectedAt: string | null;
   lastMealConfidence: number | null;
   lastMealIsProvisional: boolean; // true = clasificación provisoria, aún no confirmada
+  lastMealGramos: number | null; // |deltaG| de la última comida -- para "¿comió más o menos que lo habitual?"
   estimatedNextMealAt: string | null;
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
@@ -263,6 +274,7 @@ export function computeHungerBar(
       lastMealDetectedAt: null,
       lastMealConfidence: null,
       lastMealIsProvisional: false,
+      lastMealGramos: null,
       estimatedNextMealAt: null,
       intervalUsedMinutes: null,
       usingFallback: false,
@@ -313,6 +325,7 @@ export function computeHungerBar(
     lastMealDetectedAt: lastMeal.startAt,
     lastMealConfidence: Math.round(lastMeal.confidence * 100) / 100,
     lastMealIsProvisional: lastMeal.isProvisional,
+    lastMealGramos: Math.round(Math.abs(lastMeal.deltaG)),
     estimatedNextMealAt: estimatedNextMealAt.toISOString(),
     intervalUsedMinutes: Math.round(intervalH * 60),
     usingFallback,

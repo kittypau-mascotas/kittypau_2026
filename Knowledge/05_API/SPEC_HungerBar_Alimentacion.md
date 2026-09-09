@@ -97,6 +97,29 @@ Estos valores viven como constantes documentadas en `hunger-bar.ts`, no hardcode
 sin explicación. Valores anteriores (254 comidas, abr-jul): mediana 5.78h, P25/P75
 3.8h/8.27h, P10/P90 2.88h/12.02h, comidas/día mediana 4.
 
+### 0.1.1 "¿Comió más o menos que lo habitual?" (2026-09-09)
+
+Mauro pidió predecir/mejorar también **cuánto** va a comer, no solo **cuándo**. Antes de
+construir nada se probaron 4 hipótesis sobre los mismos 305 eventos (script ad-hoc en
+`Investigacion/Investigacion_v2/`, no versionado): tamaño por hora del día (ANOVA
+F=0.97, p=0.50), por día de semana (F=0.58, p=0.74), autocorrelación con la comida
+anterior (r=0.016, p=0.78), tamaño según cuánto esperó desde la última comida (r=-0.070,
+p=0.23). **Ninguna es significativa** — el tamaño de la comida es ruido puro (CV=0.78,
+desvío casi tan grande como el promedio), sin patrón explotable. La mediana es el mejor
+predictor posible, no una simplificación de algo mejor.
+
+| Métrica | Valor real |
+|---|---|
+| Gramos por comida | mediana **12 g** (constante `MEDIANA_GRAMOS_COMIDA`) |
+| P25 / P75 | 9 g / 16 g → constantes `GRAMOS_P25`/`GRAMOS_P75` |
+| P10 / P90 | 6 g / 19 g (no usados como constante, referencia) |
+
+**Implementado:** `computeHungerBar()` devuelve `lastMealGramos` (gramos de la última
+comida confirmada, `|deltaG|`). `BowlWellnessCard` (solo `kind="food"`) muestra una barra
+comparando ese valor contra `MEDIANA_GRAMOS_COMIDA` — verde "dentro de lo habitual" si cae
+entre `GRAMOS_P25`/`GRAMOS_P75`, ámbar "menos que lo habitual" por debajo, celeste "más
+que lo habitual" por encima.
+
 ## 0.2 Bugs encontrados y corregidos en la verificación en vivo
 
 Probado con Playwright contra `next dev` real, login como `kittypau.mascotas@gmail.com`

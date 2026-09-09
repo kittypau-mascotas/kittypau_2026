@@ -4,12 +4,47 @@ import Image from "next/image";
 import Link from "next/link";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
+  GRAMOS_P25,
+  GRAMOS_P75,
+  MEDIANA_GRAMOS_COMIDA,
+} from "@/lib/hunger-bar";
+import {
   getBatteryStateLabel,
   getConnectivityLabel,
   getWellnessToneClasses,
   powerDotStyles,
   renderTrend,
 } from "../_lib/today-format";
+
+// "¿Comió más o menos que lo habitual?" -- solo tiene sentido para comida
+// (la mediana calibrada sale de Investigacion_v2 sobre KPCL0034, comida
+// real, no hay equivalente calibrado para agua). Ver hunger-bar.ts para el
+// porqué de estos umbrales y qué se descartó antes de llegar a "mediana".
+function mealSizeInfo(gramos: number): {
+  label: string;
+  barClass: string;
+  textClass: string;
+} {
+  if (gramos < GRAMOS_P25) {
+    return {
+      label: "Comió menos que lo habitual",
+      barClass: "bg-amber-400",
+      textClass: "text-amber-700",
+    };
+  }
+  if (gramos > GRAMOS_P75) {
+    return {
+      label: "Comió más que lo habitual",
+      barClass: "bg-sky-400",
+      textClass: "text-sky-700",
+    };
+  }
+  return {
+    label: "Dentro de lo habitual",
+    barClass: "bg-emerald-400",
+    textClass: "text-emerald-700",
+  };
+}
 
 type WellnessState = {
   stateLabel: string;
@@ -103,6 +138,7 @@ export default function BowlWellnessCard({
   tempText,
   humidityText,
   formatTimestamp,
+  lastMealGramos,
 }: {
   kind: "food" | "water";
   hasDevice: boolean;
@@ -119,6 +155,9 @@ export default function BowlWellnessCard({
   tempText: string;
   humidityText: string;
   formatTimestamp: (value?: string | null) => string;
+  // Gramos de la última comida CONFIRMADA (no el contenido actual del
+  // plato) -- solo se usa en la card de comida, ver mealSizeInfo() arriba.
+  lastMealGramos?: number | null;
 }) {
   const c = KIND_CONFIG[kind];
 
@@ -344,6 +383,39 @@ export default function BowlWellnessCard({
             {formatTimestamp(latestReading?.recorded_at ?? null)}
           </span>
         </div>
+
+        {kind === "food" && lastMealGramos != null
+          ? (() => {
+              const info = mealSizeInfo(lastMealGramos);
+              const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
+              const pct = Math.min(
+                100,
+                Math.round((lastMealGramos / escalaMax) * 100),
+              );
+              return (
+                <div className="pt-1">
+                  <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className={`h-full rounded-full ${info.barClass}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                    {/* marca fija al 50% -- la escala es 2x la mediana, así que
+                      la mediana siempre cae justo en el medio de la barra */}
+                    <div
+                      className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <p
+                    className={`mt-1 text-[11px] font-medium ${info.textClass}`}
+                  >
+                    {info.label} — {lastMealGramos} g (habitual:{" "}
+                    {MEDIANA_GRAMOS_COMIDA} g)
+                  </p>
+                </div>
+              );
+            })()
+          : null}
       </div>
     </article>
   );
