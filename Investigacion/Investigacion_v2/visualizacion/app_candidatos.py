@@ -2,10 +2,18 @@
 Anotaciones — base única de KPCL0034, con curva interactiva para editar hora
 y categoría con contexto visual.
 
-Fuente única real: `data/anotaciones_unificadas.csv`. Se arma/actualiza sola
-en cada carga uniendo 2 fuentes legadas que hasta ahora vivían separadas:
-  - anotaciones_av2.csv        743 anotaciones reales originales, cada una
-                                con su propio id_anotacion (Ciclo_Alpha_v2/
+Fuente única real: `data/anotaciones_unificadas.csv` -- una sola tabla, una
+sola categorización (`alimentacion`/`servido`/`ruido`), sin distinguir de
+cara al usuario si una fila viene de una anotación real o de un candidato
+confirmado (esa distinción de origen ya no se muestra ni se filtra, ver
+migración 2026-09-09 más abajo). Cada fila tiene su propio id y un flag
+`revisado`.
+
+Puertas adentro se arma/actualiza sola en cada carga uniendo 2 fuentes
+legadas que todavía existen en disco (para no romper el pipeline de
+recalibración, ver más abajo):
+  - anotaciones_av2.csv        anotaciones reales originales, cada una con
+                                su propio id_anotacion (Ciclo_Alpha_v2/
                                 fase_0_ruido, hecha en app_anotacion_av2.py).
   - revision_sin_anotacion.csv veredictos manuales sobre candidatos que NO
                                 tenían ninguna anotación real cerca
@@ -14,9 +22,16 @@ Un candidato cuyo categoria_real salió de solaparse con una anotación real
 (notebook 08) NO se lista aparte -- sería el mismo evento contado dos veces.
 La primera vez que corre esta app arma el archivo unificado desde cero; las
 siguientes veces solo agrega filas nuevas que hayan aparecido en las fuentes
-legadas (ej. una recalibración nueva promovió más candidatos) -- nunca pisa
-una fila que ya esté en la base unificada, así que una hora/categoría
-corregida acá no se pierde.
+legadas (ej. una recalibración nueva promovió más candidatos), sin revisar
+-- nunca pisa una fila que ya esté en la base unificada, así que una
+hora/categoría/revisado ya guardados acá no se pierden.
+
+Migración 2026-09-09: Mauro terminó de revisar a mano todas las anotaciones
+de `servido`/`alimentacion` -- la primera carga después de este cambio
+marca TODO lo que ya estaba en la base como `revisado=True` de una sola
+vez (columna nueva) y saca la columna `origen` de la tabla. De acá en más,
+cualquier anotación nueva que aparezca arranca `revisado=False` -- ver
+checkbox "Solo pendientes de revisar".
 
 Editar: elegís una anotación de la tabla (click en la fila), ves su curva
 de peso real con hover (hora exacta + peso al pasar el mouse), y corregís
@@ -91,7 +106,11 @@ def cargar_revision() -> pd.DataFrame:
 def construir_tabla_desde_fuentes() -> pd.DataFrame:
     """Reconstruye la union completa desde las 2 fuentes legadas (no lee ni
     escribe la base unificada) -- usado para migrar y para detectar filas
-    nuevas que hayan aparecido ahi desde la ultima vez."""
+    nuevas que hayan aparecido ahi desde la ultima vez. Sin columna "origen"
+    -- de cara al usuario todas las filas son una sola categoría de dato
+    (anotación de KPCL0034), el origen legado solo importa puertas adentro
+    de guardar_anotacion()/borrar_anotacion() (por el prefijo del id, no
+    por esta función) para saber a qué archivo sincronizar."""
     av2 = cargar_av2()
     filas_av2 = pd.DataFrame(
         {
@@ -100,7 +119,7 @@ def construir_tabla_desde_fuentes() -> pd.DataFrame:
             "ts_inicio": av2["t_inicio"],
             "ts_fin": av2["t_fin"],
             "categoria": av2["categoria"],
-            "origen": "anotacion_real",
+            "revisado": False,
         }
     )
 
@@ -123,7 +142,7 @@ def construir_tabla_desde_fuentes() -> pd.DataFrame:
             "ts_inicio": confirmados["ts_inicio_corregido"].fillna(confirmados["ts_inicio"]),
             "ts_fin": confirmados["ts_fin_corregido"].fillna(confirmados["ts_fin"]),
             "categoria": confirmados["veredicto"],
-            "origen": "candidato_confirmado",
+            "revisado": False,
         }
     )
 
@@ -135,16 +154,26 @@ def cargar_base_unificada() -> pd.DataFrame:
     verdad para las filas que ya tiene (una hora/categoría corregida acá
     nunca se pisa releyendo las fuentes legadas) y solo AGREGA las filas
     nuevas que hayan aparecido en anotaciones_av2.csv/revision_sin_anotacion.csv
-    desde la última vez. Si no existe, la arma de cero (migración)."""
+    desde la última vez, sin revisar. Si no existe, la arma de cero
+    (migración)."""
     fuentes = construir_tabla_desde_fuentes()
     if UNIFICADA_CSV.exists():
         existente = pd.read_csv(UNIFICADA_CSV)
         existente["ts_inicio"] = pd.to_datetime(existente["ts_inicio"], format="ISO8601", utc=True)
         existente["ts_fin"] = pd.to_datetime(existente["ts_fin"], format="ISO8601", utc=True)
+        if "revisado" not in existente.columns:
+            # Migración 2026-09-09: Mauro terminó de revisar todo lo que
+            # había hasta ahora a mano -- lo existente pasa a revisado de
+            # una sola vez; de acá en más, solo lo nuevo arranca sin
+            # revisar.
+            existente["revisado"] = True
+            st.toast(f"{len(existente):,} anotaciones existentes marcadas como revisadas.")
+        if "origen" in existente.columns:
+            existente = existente.drop(columns=["origen"])
         nuevas = fuentes[~fuentes["id"].isin(existente["id"])]
         base = pd.concat([existente, nuevas], ignore_index=True)
         if len(nuevas):
-            st.toast(f"{len(nuevas)} anotación(es) nueva(s) sumadas a la base unificada.")
+            st.toast(f"{len(nuevas)} anotación(es) nueva(s) sumadas, sin revisar todavía.")
     else:
         base = fuentes
     base = base.sort_values("ts_inicio").reset_index(drop=True)
@@ -312,6 +341,7 @@ def guardar_anotacion(
     base.loc[idx, "ts_inicio"] = nuevo_ts_inicio
     base.loc[idx, "ts_fin"] = nuevo_ts_fin
     base.loc[idx, "categoria"] = nueva_categoria
+    base.loc[idx, "revisado"] = True  # guardar = revisar
     base.to_csv(UNIFICADA_CSV, index=False)
 
     if id_.startswith("av2_"):
@@ -374,8 +404,8 @@ def borrar_anotacion(fila: pd.Series) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 st.title("Anotaciones")
 st.caption(
-    "Base única de KPCL0034 (`data/anotaciones_unificadas.csv`) -- 743 anotaciones reales "
-    "+ los veredictos manuales confirmados que no tenían anotación real cerca. "
+    "Base única de KPCL0034 (`data/anotaciones_unificadas.csv`) -- una sola categorización "
+    "(alimentacion/servido/ruido), sin distinguir anotación real de candidato confirmado. "
     "Elegí una fila para ver su curva y corregir hora/categoría con contexto real."
 )
 
@@ -386,10 +416,12 @@ col_f1, col_f2 = st.columns([2, 1])
 with col_f1:
     categorias_filtro = st.multiselect("Categoría", CATEGORIAS, default=CATEGORIAS)
 with col_f2:
-    origenes_filtro = st.multiselect(
-        "Origen",
-        ["anotacion_real", "candidato_confirmado"],
-        default=["anotacion_real", "candidato_confirmado"],
+    solo_pendientes = st.checkbox(
+        "Solo pendientes de revisar",
+        help="Todo lo que ya estaba en la base quedó marcado como revisado "
+             "(2026-09-09) -- esto solo va a mostrar algo cuando aparezcan "
+             "anotaciones nuevas (una recalibración que promueva más "
+             "candidatos, por ejemplo).",
     )
 
 col_c1, col_c2 = st.columns([2, 1])
@@ -417,9 +449,9 @@ if solo_conflictos:
         f"sospechosos (margen {margen_min} min)."
     )
 
-vista = tabla[
-    tabla["categoria"].isin(categorias_filtro) & tabla["origen"].isin(origenes_filtro)
-].copy()
+vista = tabla[tabla["categoria"].isin(categorias_filtro)].copy()
+if solo_pendientes:
+    vista = vista[~vista["revisado"]]
 if solo_conflictos:
     vista = vista[vista["id"].isin(ids_conflicto)]
 st.caption(f"{len(vista):,} de {len(tabla):,} anotaciones (filtradas)")
@@ -431,6 +463,7 @@ vista_mostrar["Inicio (Santiago)"] = vista_mostrar["ts_inicio"].dt.tz_convert(TZ
 vista_mostrar["Fin (Santiago)"] = vista_mostrar["ts_fin"].dt.tz_convert(TZ_STGO).dt.strftime(
     "%Y-%m-%d %H:%M:%S"
 )
+vista_mostrar["Revisado"] = vista_mostrar["revisado"].map({True: "✅", False: "⬜"})
 
 # Selección trackeada por ID propio (session_state["id_seleccionado"]), NO
 # por el índice posicional que devuelve st.dataframe -- 3 intentos previos
@@ -447,7 +480,7 @@ if _limpiar:
     st.session_state["id_seleccionado"] = None
 
 seleccion = st.dataframe(
-    vista_mostrar[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "origen"]],
+    vista_mostrar[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "Revisado"]],
     hide_index=True,
     width="stretch",
     height=380,
