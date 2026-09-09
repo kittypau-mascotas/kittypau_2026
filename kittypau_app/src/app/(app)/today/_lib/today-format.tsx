@@ -2,6 +2,36 @@
  * Helpers de formato/presentación puros de /today — sin estado, sin fetch.
  * Compartidos entre page.tsx y los componentes de today/_components/.
  */
+import { GRAMOS_P25, GRAMOS_P75 } from "@/lib/hunger-bar";
+
+// "¿Comió más o menos que lo habitual?" -- solo tiene sentido para comida
+// (mediana calibrada sobre KPCL0034 real, ver hunger-bar.ts §0.1.1). Vive
+// acá (no en bowl-wellness-card.tsx) porque BarrasSimsCard también la usa.
+export function mealSizeInfo(gramos: number): {
+  label: string;
+  barClass: string;
+  textClass: string;
+} {
+  if (gramos < GRAMOS_P25) {
+    return {
+      label: "Comió menos que lo habitual",
+      barClass: "bg-amber-400",
+      textClass: "text-amber-700",
+    };
+  }
+  if (gramos > GRAMOS_P75) {
+    return {
+      label: "Comió más que lo habitual",
+      barClass: "bg-sky-400",
+      textClass: "text-sky-700",
+    };
+  }
+  return {
+    label: "Dentro de lo habitual",
+    barClass: "bg-emerald-400",
+    textClass: "text-emerald-700",
+  };
+}
 
 export const powerDotStyles: Record<"on" | "off" | "nodata", string> = {
   on: "bg-emerald-500 border-emerald-400",

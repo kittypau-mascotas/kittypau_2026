@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { MEDIANA_GRAMOS_COMIDA } from "@/lib/hunger-bar";
 import {
   getBatteryStateLabel,
   getOperationalLabel,
+  mealSizeInfo,
 } from "../_lib/today-format";
 
 const WELLNESS_BLOCKS = 20;
@@ -21,6 +23,11 @@ type BarKind = {
   fillStyle?: { backgroundColor: string };
   labelClass: string;
   badgeClass: string;
+  // Gramos de la última comida CONFIRMADA -- pedido de Mauro 2026-09-09:
+  // que la barra "¿comió más o menos que lo habitual?" (ya vive en
+  // BowlWellnessCard) también aparezca acá. Solo se pasa para la barra de
+  // Comida (Agua no tiene mediana calibrada, queda sin esto a propósito).
+  mealSizeGramos?: number | null;
 };
 
 /**
@@ -70,6 +77,7 @@ export default function BarrasSimsCard({
             fillStyle,
             labelClass,
             badgeClass,
+            mealSizeGramos,
           }) => (
             <div
               key={key}
@@ -108,6 +116,36 @@ export default function BarrasSimsCard({
                     {noteLabel}
                   </p>
                 </div>
+                {mealSizeGramos != null
+                  ? (() => {
+                      const info = mealSizeInfo(mealSizeGramos);
+                      const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
+                      const pct = Math.min(
+                        100,
+                        Math.round((mealSizeGramos / escalaMax) * 100),
+                      );
+                      return (
+                        <div className="w-full pt-0.5">
+                          <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                            <div
+                              className={`h-full rounded-full ${info.barClass}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                            <div
+                              className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
+                              aria-hidden="true"
+                            />
+                          </div>
+                          <p
+                            className={`mt-1 text-[10px] font-medium leading-tight ${info.textClass}`}
+                          >
+                            {info.label} — {mealSizeGramos} g (habitual:{" "}
+                            {MEDIANA_GRAMOS_COMIDA} g)
+                          </p>
+                        </div>
+                      );
+                    })()
+                  : null}
               </div>
             </div>
           ),

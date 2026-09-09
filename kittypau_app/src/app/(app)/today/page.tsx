@@ -2650,6 +2650,7 @@ export default function TodayPage() {
                       valueLabel: hungerValueLabel,
                       statusLabel: hungerStatusLabel,
                       noteLabel: hungerNoteLabel,
+                      mealSizeGramos: hungerBar?.lastMealGramos ?? null,
                       trackClass: hungerBar?.alertActive
                         ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
                         : "border-rose-100 bg-rose-50",
