@@ -185,9 +185,9 @@ export default function BowlWellnessCard({
 
   return (
     <article
-      className={`today-bowl-card rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5`}
+      className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5`}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-1 flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <p
