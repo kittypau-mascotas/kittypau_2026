@@ -432,17 +432,19 @@ vista_mostrar["Fin (Santiago)"] = vista_mostrar["ts_fin"].dt.tz_convert(TZ_STGO)
     "%Y-%m-%d %H:%M:%S"
 )
 
-# Guardar/Eliminar piden la deselección con esta bandera (seteada antes del
-# st.rerun() de cada uno). Tiene que aplicarse ACÁ, antes de instanciar el
-# widget -- después de la llamada a st.dataframe() de abajo, Streamlit
-# prohíbe tocar su session_state (StreamlitAPIException) en el mismo run.
-# Primer intento de este fix (que solo pisaba la variable local filas_sel
-# después del widget) no reseteaba el estado REAL de la tabla -- al hacer
-# click en otra fila que cae en la misma posición numérica que la
-# seleccionada antes de borrar, Streamlit no detectaba cambio de valor y no
-# volvía a correr: el botón "dejaba de funcionar" después de un borrado.
-if st.session_state.pop("_limpiar_seleccion", False):
-    st.session_state["tabla_anotaciones"] = {"selection": {"rows": [], "columns": []}}
+# Selección trackeada por ID propio (session_state["id_seleccionado"]), NO
+# por el índice posicional que devuelve st.dataframe -- 3 intentos previos
+# (limpiar la variable local, limpiar session_state["tabla_anotaciones"]
+# antes/después del widget) seguían rompiéndose de formas distintas después
+# de un borrado o al pasar a otra anotación. Un índice posicional es frágil
+# por diseño: se corre cada vez que la tabla cambia de tamaño (borrar,
+# cambiar un filtro), y reescribir a mano el session_state de un widget de
+# selección tan complejo como st.dataframe resultó no ser confiable. Un id
+# de texto no se corre nunca -- simplemente deja de estar en `vista` cuando
+# se borra, caso que ya se maneja abajo.
+_limpiar = st.session_state.pop("_limpiar_seleccion", False)
+if _limpiar:
+    st.session_state["id_seleccionado"] = None
 
 seleccion = st.dataframe(
     vista_mostrar[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "origen"]],
@@ -453,18 +455,19 @@ seleccion = st.dataframe(
     selection_mode="single-row",
     key="tabla_anotaciones",
 )
+filas_widget = seleccion.selection.rows if seleccion and seleccion.selection else []
+# No sincronizar desde el widget en la misma pasada en la que se pidió
+# limpiar -- el valor que devuelve todavía puede ser el índice viejo previo
+# al borrado/cambio, y pisaría el None que se acaba de setear arriba.
+if not _limpiar and filas_widget and filas_widget[0] < len(vista):
+    st.session_state["id_seleccionado"] = vista.iloc[filas_widget[0]]["id"]
 
-filas_sel = seleccion.selection.rows if seleccion and seleccion.selection else []
-# Defensivo: un índice de selección que quedó viejo (filtro cambiado a mano,
-# u otro caso no cubierto por lo de arriba) no tiene que romper la página
-# entera con un IndexError -- se trata como "sin selección" en vez de
-# reventar.
-if filas_sel and filas_sel[0] >= len(vista):
-    filas_sel = []
-if not filas_sel:
+id_seleccionado = st.session_state.get("id_seleccionado")
+_ids_visibles = set(vista["id"])
+if id_seleccionado is None or id_seleccionado not in _ids_visibles:
     st.info("👆 Hacé click en una fila para ver su curva y editarla.")
 else:
-    fila = vista.iloc[filas_sel[0]]
+    fila = vista[vista["id"] == id_seleccionado].iloc[0]
     st.divider()
     st.subheader(f"Anotación {fila['id']}")
 
