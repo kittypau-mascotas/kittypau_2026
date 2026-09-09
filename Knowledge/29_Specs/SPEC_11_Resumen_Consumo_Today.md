@@ -5,7 +5,7 @@ type: spec
 status: draft
 owner: Mauro
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-09-08
 tags:
   - spec
   - today
@@ -20,6 +20,7 @@ related:
   - [[07_MQTT/README_MQTT]]
   - [[02_Arquitectura/ARQ_Pipeline_End_to_End]]
   - [[29_Specs/SPEC_12_Recrear_Analytics_DB]]
+  - [[29_Specs/007-motor-alimentacion-produccion/plan]]
 ---
 
 # SPEC 11 — Resumen de consumo (día/semana/mes) en `/today`
@@ -33,7 +34,9 @@ related:
 > [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2. **No implementar la UI de este spec
 > hasta ejecutar [[29_Specs/SPEC_12_Recrear_Analytics_DB]]** — ese spec ya tiene el schema
 > exacto, el checklist de reconexión (3 lugares) y un plan de retención para no repetir el
-> mismo problema de storage.
+> mismo problema de storage. **Actualización 2026-09-08:** 9 de las 10 métricas de §2.1 ya
+> no necesitan esperar a esto — ver §2.2, camino alternativo sobre el motor v2 portado en
+> spec 007.
 
 > Pedido de Mauro (2026-08-14): mostrar en `/today` cuánta comida/agua al día, semana y mes,
 > total de servidos, cuánto peso/ml por servido, promedios — la mayor cantidad de data real
@@ -171,6 +174,88 @@ escribiendo en producción** — no dependen de anotaciones nuevas ni de Motor v
 "4 de las ~4 comidas habituales" o "dentro de su horario habitual"; #6 como racha tipo
 streak; #7/#10 como indicador de tendencia con flecha). Mismo principio de copy honesto del
 §2: cada una con su fórmula en tooltip.
+
+---
+
+## 2.2 — Camino alternativo: 9 de las 10 métricas, SIN esperar a SPEC_12
+
+**Hallazgo (2026-09-08):** desde que se escribió §2.1, `Investigacion/Investigacion_v2`
+(motor calibrado τ=180s + centroide + refinamiento + guardia física, accuracy 90.41% contra
+ground truth real) quedó portado a producción — ver [[29_Specs/007-motor-alimentacion-
+produccion/plan]]. `GET /api/pets/:id/hunger-bar` (`hunger-bar/route.ts`) ya calcula
+`events: Segment[]` **on-demand desde `readings`** (KPCL0034, ventana `WINDOW_DAYS=10`) —
+cada evento trae `startAt`/`endAt`/`deltaG`/`durationMin`/`category`/`confidence`. Esto es
+la misma clase de dato que `pet_sessions` (una fila por comida detectada), calculado por un
+camino que **no depende de la DB de analytics eliminada** (`bridge/src/processor.js`) —
+directo sobre `readings`, que nunca se borró.
+
+Mapeo de la tabla de §2.1 contra `events` (filtrando `category === "alimentacion"`):
+
+| # | Métrica | ¿Ya alcanza con `events`? |
+|---|---|---|
+| 1 | Duración promedio por comida | ✅ `avg(durationMin)` — cero trabajo nuevo |
+| 2 | Velocidad de consumo (g/min) | ✅ `avg(\|deltaG\| / durationMin)` |
+| 3 | Comidas hoy vs. patrón (mediana 3, rango 1-6) | ✅ `count(events de hoy)` vs. constante ya calibrada ([[05_API/SPEC_HungerBar_Alimentacion]] §0.1) |
+| 4 | ¿Comió en su horario habitual? | ✅ hora de `startAt` vs. las 8 horas pico ya medidas (mismo doc) |
+| 5 | Consistencia del intervalo | ✅ intervalo real de hoy vs. IQR ya calibrado (P25=4.04h/P75=8.88h) |
+| 6 | Racha de días con actividad | ⚠️ Parcial — `WINDOW_DAYS=10` alcanza para una racha de hasta 10 días; si se quiere más, subir la constante (sin cambio de arquitectura) |
+| 7 | Regularidad del consumo diario | ✅ desvío estándar de `Σ\|deltaG\|` por día dentro de la ventana |
+| 8 | % dentro del rango que definió el dueño | ✅ `pet.food_normal_min_g`/`max_g` ya existen y ya se usan (`applyCustomLimits()`, `story/page.tsx`) |
+| 9 | Comida más grande/chica del período | ✅ `max`/`min(\|deltaG\|)` sobre los eventos del período |
+| 10 | Tendencia semana vs. semana anterior | ⚠️ Necesita `WINDOW_DAYS≈15` (hoy 10) para comparar 2 semanas completas — único cambio de backend real, una constante |
+
+**Qué NO resuelve este camino** (sigue bloqueado por SPEC_12, sin atajo honesto):
+`anomaly_count`/`skipped_meals` (dependen del Z-score rolling y del state machine de
+`processor.js`, no existen en el cálculo on-demand) y **agua** (`events` de
+`hunger-bar.ts` es solo comida — hidratación sigue sin motor calibrado, ver Pilar 2 de
+[[29_Specs/SPEC_03_Objetivos_Monitoreo]]).
+
+**Costo de implementación:** ningún endpoint nuevo — agregar sobre el `events` que
+`/api/pets/:id/hunger-bar` ya devuelve (o exponer un endpoint delgado que solo hace la
+agregación, si conviene cachear aparte de la barra en vivo). Sigue aplicando el gating
+free/premium sin decidir de §2, y sigue siendo **KPCL0034 solamente** (el motor v2 no está
+validado en otros dispositivos, mismo alcance que el resto de spec 007).
+
+> ✅ **Hecho (2026-09-08):** las 9 métricas de esta tabla (todo menos #10, que sí necesita
+> `WINDOW_DAYS` más largo) están implementadas y en `/today` — `src/lib/consumo-kpis.ts`
+> (`computeConsumoKpis()`, 9/9 tests) + `kpis` agregado a la respuesta de
+> `GET /api/pets/:id/hunger-bar` + `<ConsumoKpisCard>` en una sección propia, fuera de
+> Barras Sims. `tsc`/`eslint`/`vitest` (68/68) limpios. Pendiente: click-through manual en
+> navegador real (no ejecutado en este entorno) y la decisión de gating free/premium de §2.
+
+---
+
+## 2.3 — 3 métricas agregadas (2026-09-09): servido, tendencia, ruido
+
+Pedido de Mauro tras revisar de dónde sale cada dato ("¿cuánto se sirve?", "¿está comiendo
+menos?", "¿cuánto ruido genera el sensor?") — mismo estándar de §2.1/§2.2: sin fetch nuevo,
+sobre el mismo `events: Segment[]` que ya trae `GET /api/pets/:id/hunger-bar`.
+
+| # | Métrica | Fuente / fórmula | Por qué está respaldada |
+|---|---|---|---|
+| 11 | **Servido vs. comido** | `Σ\|deltaG\|` de `events` con `category==="servido"` vs. `category==="alimentacion"` del período, como ratio | Mismo campo `deltaG` que ya usan #1/#2/#9 — antes se descartaba todo lo `servido`, ahora se suma aparte |
+| 12 | **Tendencia de apetito** | Pendiente de la regresión lineal simple (mínimos cuadrados) de gramos/día contra el índice de día, sobre los mismos `gramosPorDia` que ya calcula #7 | Ninguna constante nueva — mismo agregado diario de #7, solo con una pendiente en vez de un CV |
+| 13 | **Ruido del sensor** | Mediana de `count(events con category==="ruido")` por día, sobre los días que tienen ≥1 comida real (evita que un día 100% ruido sin comida cuente como "0 ruido") | Proxy directo de cuántas falsas activaciones genera el comedero — el histórico completo (§ ver `Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`) mide 59% de los 928 candidatos de KPCL0034 como ruido |
+
+**Recalibración de fondo (2026-09-09):** las constantes de comparación que usan #3/#4/#5
+(`COMIDAS_DIA_MEDIANA`, `HORAS_PICO`, `INTERVALO_P25_H`/`P75_H`, y las de la Hunger Bar
+`FALLBACK_MEDIANA_H`/`CLAMP_MIN_H`/`CLAMP_MAX_H`) se recalibraron sobre el histórico
+completo de KPCL0034 (305 comidas, ground truth 100%, abril-hoy) en vez de las 254
+comidas abr-jul originales — ver [[05_API/SPEC_HungerBar_Alimentacion]] §0.1 para los
+valores nuevos y `Investigacion/Investigacion_v2/recalibrar_constantes_hunger_bar.py`.
+
+> ✅ **Hecho (2026-09-09):** implementado en `consumo-kpis.ts` (`servedTotalG`,
+> `servedToEatenRatio`, `appetiteTrendGPerDay`, `noiseEventsPerDayMedian`) + 3 tiles nuevos
+> en `<ConsumoKpisCard>`. `tsc`/`vitest` (15/15 de los dos archivos afectados) limpios.
+
+**Qué queda fuera, a propósito:** "cuánto come por semana/mes" con dato en vivo real —
+`WINDOW_DAYS=10` (`hunger-bar/route.ts`) nunca trae más de 10 días de `readings`, así que
+"por semana" es aproximado (última semana parcial dentro de la ventana) y "por mes" es
+matemáticamente imposible sin subir esa constante (costo: más filas de Supabase leídas y
+procesadas en cada carga de `/today`, on-demand, sin caché más allá de 30s). Decisión de si
+vale la pena ese costo: pendiente, no tomada unilateralmente acá. Mientras tanto, el
+histórico completo (155 días, abril-hoy) queda disponible como referencia offline en
+`Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`, no en la app en vivo.
 
 ---
 

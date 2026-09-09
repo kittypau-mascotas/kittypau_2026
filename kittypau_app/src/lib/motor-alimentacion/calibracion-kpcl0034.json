@@ -1,0 +1,132 @@
+{
+  "version": "2026-09-09-v3",
+  "device_code": "KPCL0034",
+  "origen": "Investigacion/Investigacion_v2 (rama experimento-calibracion-duracion), 07_calibracion_duracion.ipynb + 08_validacion_contra_anotaciones.ipynb -- reproducido desde data/lecturas_limpias.csv por scripts/exportar_calibracion.py",
+  "segmentacion": {
+    "tau_pausa_s": 180,
+    "gap_cutoff_s": 300,
+    "k_margen_lecturas_estables": 5,
+    "umbral_es_candidato_g": 2.0,
+    "umbral_es_candidato_nota": "mediana + (3.5/0.6745)*MAD de max_abs_delta_g sobre TODOS los segmentos del device (candidatos + descartados) -- filtra ruido de sensor"
+  },
+  "features_orden": [
+    "duracion_s",
+    "delta_neto_real",
+    "max_abs_delta_g",
+    "n_lecturas",
+    "n_cambios_signo"
+  ],
+  "log1p_features": [
+    "duracion_s",
+    "max_abs_delta_g"
+  ],
+  "scaler": {
+    "mean": [
+      4.854339,
+      -0.993534,
+      2.381366,
+      6.614224,
+      3.927802
+    ],
+    "scale": [
+      1.018188,
+      59.555646,
+      0.977568,
+      5.714649,
+      3.94714
+    ]
+  },
+  "clusters_kmeans_crudo": {
+    "0": {
+      "centroide_estandarizado": [
+        -0.83158,
+        -0.001878,
+        -0.695698,
+        -0.760617,
+        -0.771196
+      ],
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.9595,
+      "n_validados": 370,
+      "es_mezclado": false
+    },
+    "1": {
+      "centroide_estandarizado": [
+        0.907173,
+        -0.167145,
+        0.071542,
+        0.83912,
+        0.846544
+      ],
+      "categoria_dominante": "alimentacion",
+      "pureza_medida": 0.6561,
+      "n_validados": 442,
+      "es_mezclado": false
+    },
+    "2": {
+      "centroide_estandarizado": [
+        -0.804189,
+        0.642872,
+        1.946436,
+        -0.771233,
+        -0.765777
+      ],
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.5603,
+      "n_validados": 116,
+      "es_mezclado": true
+    }
+  },
+  "cluster_mezclado": 2,
+  "refinamiento": {
+    "umbral_delta_neto_real_g": 20.0,
+    "regla": "dentro del cluster_mezclado, si delta_neto_real > umbral => servido; si_no => categoria_dominante del cluster_mezclado",
+    "cluster_servido_nuevo": {
+      "categoria_dominante": "servido",
+      "pureza_medida": 0.8475,
+      "n_validados": 59
+    },
+    "cluster_ruido_remanente": {
+      "categoria_dominante": "ruido",
+      "pureza_medida": 1.0,
+      "n_validados": 57
+    }
+  },
+  "guardia_alimentacion": {
+    "regla": "si la categoria asignada por distancia es 'alimentacion' pero delta_neto_real >= 0 (el peso subio, comer nunca sube el peso del plato), redirigir con el mismo umbral de refinamiento: > umbral => servido, si_no => ruido. Agregado 2026-08-30 tras encontrar el caso real en produccion.",
+    "umbral_delta_neto_real_g": 20.0,
+    "clusters_alimentacion_afectados": [
+      1
+    ],
+    "redirigido_a_servido": {
+      "categoria_dominante": "servido",
+      "pureza_medida": 0.5862,
+      "n_validados": 29
+    },
+    "redirigido_a_ruido": {
+      "categoria_dominante": "ruido",
+      "pureza_medida": 0.8571,
+      "n_validados": 56
+    },
+    "mejora_medida": {
+      "accuracy_global_sin_guardia": 0.8103,
+      "accuracy_global_con_guardia": 0.8728,
+      "pureza_alimentacion_sin_guardia": 0.6561,
+      "pureza_alimentacion_con_guardia": 0.7927,
+      "recall_servido_sin_guardia": 0.6667,
+      "recall_servido_con_guardia": 0.8933,
+      "recall_ruido_sin_guardia": 0.7518,
+      "recall_ruido_con_guardia": 0.8394
+    }
+  },
+  "validacion_referencia": {
+    "n_anotaciones_reales": 743,
+    "n_promovidas_manual": 373,
+    "cobertura_recall": {
+      "alimentacion": 1.0,
+      "ruido": 0.826,
+      "servido": 0.827
+    },
+    "nota": "cobertura medida por solapamiento de tiempo contra anotaciones reales, no contra features -- ver 08_validacion_contra_anotaciones.ipynb. Estas cifras de cobertura son PRE-guardia_alimentacion -- ver ese campo para el accuracy punto-a-punto medido antes/despues de la guardia."
+  }
+}

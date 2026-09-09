@@ -103,7 +103,7 @@ export default function BarrasSimsCard({
                 <p className={`text-[11px] font-semibold ${labelClass}`}>
                   {title} · {valueLabel}
                 </p>
-                <p className="text-[10px] leading-tight text-slate-400">
+                <p className="whitespace-pre-line text-[10px] leading-tight text-slate-400">
                   {noteLabel}
                 </p>
               </div>

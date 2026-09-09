@@ -5,7 +5,7 @@ type: spec
 status: draft
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-14
+updated: 2026-09-08
 tags:
   - spec
   - producto
@@ -56,12 +56,19 @@ preguntas para el dueño, en este orden de importancia:
   [[05_API/SPEC_HungerBar_Alimentacion]].
 - Alerta visual ≥2h de atraso + color continuo de la barra (v1.1). Ver
   [[05_API/SPEC_HungerBar_Alertas]].
-- Motor Matemático v2 (102 features, Evidence Engine 80.0% accuracy held-out, en vivo) existe y
-  está calibrado, pero **no está portado a producción** — la barra usa un clasificador de
-  reglas simples (v1, decisión B' documentada), no el motor real.
+- ✅ **Hecho (2026-09-01, cerrado 2026-09-08):** el motor calibrado (segmentación por
+  tolerancia de pausa τ=180s + centroide más cercano + refinamiento por umbral + guardia
+  física) está portado y en producción para KPCL0034 —
+  `kittypau_app/src/lib/hunger-bar.ts` importa `clasificarEventos` de
+  `./motor-alimentacion`, no las reglas simples de v1 (que siguen como fallback para
+  cualquier otro dispositivo sin anotaciones reales que lo validen). Accuracy contra
+  ground truth real: 90.41% con guardia (n=771, ver `Investigacion/Investigacion_v2/README.md`).
+  Detalle completo: [[29_Specs/007-motor-alimentacion-produccion/plan]].
 
 **Huecos conocidos, ya documentados en la spec de hunger bar:**
-- No distingue picoteo (varias comidas cortas seguidas) de una sola comida grande.
+- ✅ **Hecho (2026-09-01):** picoteo (comidas/servidos separados por <120s, mismo
+  `gap_fusion_s` ya calibrado del pipeline legado) ahora se fusiona en un solo evento
+  (`fusionarPicoteo()` en `motor-alimentacion/index.ts`) antes de mostrarse al usuario.
 - No usa el modelo circadiano (horas pico reales de Bandida) — solo mediana de intervalo.
 - No usa `servido` (plato recién llenado) como señal secundaria de "probablemente coma
   pronto".
@@ -154,7 +161,7 @@ pantalla si queda algún estado degradado suelto sin ese contexto.
 
 | Pilar | Estado | Bloqueante principal |
 |---|---|---|
-| Alimentación | 🟢 Real, calibrado, en producción | Falta portar el Evidence Engine completo (v2) y agrupar picoteo |
+| Alimentación | 🟢 Real, calibrado, en producción (motor v2 portado y picoteo agrupado, 2026-09-08) | No usa el modelo circadiano ni `servido` como señal secundaria; sin validar en dispositivos ≠ KPCL0034 |
 | Hidratación | 🔴 No investigado | Falta una "fase_0" de investigación de agua — no es tarea de ingeniería de producto, es de investigación primero |
 | Alertas | 🟢 Comida: visual + push. Sin cubrir: hidratación, salud del dispositivo | Push de comida no verificado en APK real; hidratación bloqueada por el gap del pilar 2 |
 | Confianza en los datos | 🟢 Generalizado a `/today` y `/pet` (ver Pilar 4 arriba, 2026-08-13) | Falta auditar estados degradados sueltos fuera de `DiagnosticoRapidoCard` |

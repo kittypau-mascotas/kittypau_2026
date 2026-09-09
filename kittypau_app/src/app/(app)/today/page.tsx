@@ -28,8 +28,10 @@
  *     bar de Comida del panel Barras Sims.
  *   - JSX: `#today-hero` (Barras Sims — ⚠️ widget sensible, ver
  *     `barras-sims-card.tsx`), `#today-bowls` (cards Alimentación/
- *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard` y
- *     `OnboardingGuideModal` (ambos extraídos a `today/_components/`).
+ *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard`,
+ *     `ConsumoKpisCard` (12 KPIs de consumo, SPEC_11 §2.1/§2.2/§2.3 — independiente
+ *     de Barras Sims) y `OnboardingGuideModal` (los 3 extraídos a
+ *     `today/_components/`).
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -41,6 +43,8 @@ import { authFetch } from "@/lib/auth/auth-fetch";
 import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
+import { useHungerBarEventNotifications } from "@/lib/hooks/useHungerBarEventNotifications";
+import { usePushTokenRegistration } from "@/lib/hooks/usePushTokenRegistration";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -62,8 +66,10 @@ import {
 import BarrasSimsCard from "./_components/barras-sims-card";
 import BowlWellnessCard from "./_components/bowl-wellness-card";
 import DayNightTimelineCard from "./_components/day-night-timeline-card";
+import ConsumoKpisCard from "./_components/consumo-kpis-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
+import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
 
 type ApiPet = {
   id: string;
@@ -114,16 +120,51 @@ type ApiReading = {
   battery_level: number | null;
 };
 
+type HungerBarEvent = {
+  startAt: string;
+  endAt: string;
+  deltaG: number;
+  durationMin: number;
+  category: "alimentacion" | "servido" | "ruido";
+  confidence: number;
+  isProvisional: boolean;
+};
+
+// Espejo de ConsumoKpis (src/lib/consumo-kpis.ts) -- ver
+// Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2/§2.3.
+type ConsumoKpis = {
+  avgDurationMin: number | null;
+  avgSpeedGPerMin: number | null;
+  mealsToday: number;
+  mealsExpectedMedian: number;
+  mealsExpectedRange: [number, number];
+  ateInPeakHourToday: boolean | null;
+  avgIntervalTodayHours: number | null;
+  intervalConsistency: "mas_seguido" | "tipico" | "mas_espaciado" | null;
+  streakDays: number;
+  dailyRegularityCv: number | null;
+  withinOwnerRange: { count: number; total: number; percent: number } | null;
+  biggestMealG: number | null;
+  smallestMealG: number | null;
+  servedTotalG: number | null;
+  servedToEatenRatio: number | null;
+  appetiteTrendGPerDay: number | null;
+  noiseEventsPerDayMedian: number | null;
+};
+
 type HungerBarResponse = {
   status: "ok" | "sin_datos" | "sin_dispositivo";
   percentage: number | null;
   lastMealDetectedAt: string | null;
+  lastMealIsProvisional?: boolean;
   estimatedNextMealAt: string | null;
   intervalUsedMinutes: number | null;
   usingFallback: boolean;
   sampleSize: number;
   alertActive: boolean;
   hoursOverdue: number | null;
+  events?: HungerBarEvent[];
+  kpis?: ConsumoKpis | null;
 };
 
 // v1.1 — gradiente continuo verde→amarillo→rojo. Ver
@@ -134,6 +175,18 @@ function hungerBarColor(pct: number): string {
 }
 
 type DayNightPoint = { x: number; y: number; t: number };
+// Punto de gráfico con carril fijo en Y (orden visual por categoría, no por
+// peso real) -- el valor real que reemplazó a `y` se guarda en `valorReal`
+// para que el tooltip lo siga mostrando. Ver
+// Knowledge/29_Specs/007-motor-alimentacion-produccion/.
+type DayNightLanePoint = DayNightPoint & { valorReal: number | null };
+const LANE_ALIMENTACION = 3;
+const LANE_SERVIDO = 2;
+const LANE_HIDRATACION = 1;
+
+function aCarril(p: DayNightPoint, lane: number): DayNightLanePoint {
+  return { x: p.x, y: lane, t: p.t, valorReal: p.y };
+}
 
 type AuditEvent = {
   id: string;
@@ -451,10 +504,29 @@ function findSessionForPoint(
 function buildWellnessState(params: {
   type: "food" | "water";
   sessions: IntakeSession[];
+  // Fallback del motor de Investigacion_v2 (solo KPCL0034, ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/) para cuando todavía
+  // no hay un evento confirmado por auditoría -- NO reemplaza "Confirmado" (eso
+  // sigue siendo exclusivo de audit_events), es un tercer estado honesto entre
+  // "sin evidencia" y "confirmado por operador".
+  modelMeal?: { at: string; isProvisional: boolean } | null;
 }): WellnessState {
   const latestSession =
     [...params.sessions].sort((a, b) => b.endT - a.endT)[0] ?? null;
   if (!latestSession) {
+    if (params.type === "food" && params.modelMeal) {
+      const { at, isProvisional } = params.modelMeal;
+      return {
+        stateLabel: isProvisional
+          ? "Detectado por modelo (provisorio)"
+          : "Detectado por modelo",
+        actionLabel:
+          "Clasificado automáticamente por el modelo de Investigacion_v2 (KPCL0034) — todavía sin confirmar por un operador.",
+        levelLabel: isProvisional ? "Sin confirmar" : "Evento clasificado",
+        lastEventLabel: `Última comida detectada por modelo: ${formatTimestamp(at)}${isProvisional ? " (provisoria)" : ""}`,
+        hasEvidence: true,
+      };
+    }
     // Hidratación no tiene (todavía) un modelo de detección calibrado como el
     // Hunger Bar de comida — no hay investigación de hidratación en fase_0_ruido/
     // (ver Knowledge/29_Specs/SPEC_03_Objetivos_Monitoreo.md Pilar 2). Decirlo
@@ -987,6 +1059,18 @@ export default function TodayPage() {
     status: hungerBar?.status,
     estimatedNextMealAt: hungerBar?.estimatedNextMealAt,
   });
+  // Aviso positivo (distinto del de atraso de arriba): "comió"/"le sirvieron"
+  // en cuanto el motor de Investigacion_v2 confirma un evento nuevo -- ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/.
+  useHungerBarEventNotifications({
+    petName: petLabel,
+    events: hungerBar?.events,
+  });
+  // Registra el token FCM del celular -- pieza que hace que el aviso de
+  // "comió"/"le sirvieron" también llegue con la app cerrada, vía el cron
+  // server-side (/api/cron/notify-meal-events). Ver
+  // Knowledge/29_Specs/008-push-notifications-fcm/plan.md.
+  usePushTokenRegistration(isAuthed === true);
   const petTypeLabel =
     primaryPet?.type === "dog"
       ? "Perro"
@@ -1559,6 +1643,79 @@ export default function TodayPage() {
     ],
   );
 
+  // Separar el plato en "solo alimentación real" vs. "servido", usando el
+  // modelo de Investigacion_v2 (solo KPCL0034, ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/) -- fuera de ese
+  // device (ej. KPCL0035, sin validar) se muestra el trazo crudo como hasta
+  // ahora, sin distinguir categoría.
+  const bowlEventsPorCategoria = useMemo(() => {
+    if (
+      !isAuthoritativeFoodDeviceCode(bowlDevice?.device_id) ||
+      !hungerBar?.events
+    ) {
+      return null;
+    }
+    return hungerBar.events;
+  }, [bowlDevice?.device_id, hungerBar?.events]);
+
+  // Un ícono por EVENTO, ubicado con la hora del PROPIO evento (`startAt`),
+  // no buscando "la lectura cruda más cercana" -- eso fue un bug real: los
+  // eventos de `hungerBar.events` vienen de una ventana de 10 días, pero
+  // `bowlDayNightPoints` solo tiene lecturas del día que se está viendo. Si
+  // ese día no traía lecturas justo ahí (fetch/ventana distinta al de
+  // hunger-bar), el evento no encontraba dónde pintarse o se enganchaba al
+  // punto más cercano disponible aunque fuera de otra hora, amontonando
+  // íconos mal ubicados. Igual que `toDayNightPoints`, se descarta el evento
+  // si su hora cae fuera de la ventana del día actual. `valorReal` sale
+  // directo de `deltaG` del propio evento (el peso que YA calculó el
+  // clasificador), no de una lectura aproximada.
+  const puntosPorCategoria = useMemo(() => {
+    const resultado: {
+      alimentacion: DayNightLanePoint[];
+      servido: DayNightLanePoint[];
+    } = { alimentacion: [], servido: [] };
+    if (!bowlEventsPorCategoria) return resultado;
+    for (const ev of bowlEventsPorCategoria) {
+      if (ev.category !== "alimentacion" && ev.category !== "servido") continue;
+      const ts = new Date(ev.startAt).getTime();
+      if (
+        Number.isNaN(ts) ||
+        ts < dayNightWindow.startMs ||
+        ts > dayNightWindow.endMs
+      ) {
+        continue;
+      }
+      const lane =
+        ev.category === "alimentacion" ? LANE_ALIMENTACION : LANE_SERVIDO;
+      resultado[ev.category].push({
+        x: (ts - dayNightWindow.startMs) / (60 * 60 * 1000),
+        y: lane,
+        t: ts,
+        valorReal: ev.deltaG,
+      });
+    }
+    return resultado;
+  }, [bowlEventsPorCategoria, dayNightWindow.startMs, dayNightWindow.endMs]);
+
+  const bowlAlimentacionPoints = useMemo(() => {
+    // sin modelo (device no validado): trazo crudo tal cual, sin carril fijo
+    if (!bowlEventsPorCategoria) return bowlDayNightPoints;
+    return puntosPorCategoria.alimentacion;
+  }, [bowlDayNightPoints, bowlEventsPorCategoria, puntosPorCategoria]);
+
+  const bowlServidoPoints = useMemo(() => {
+    if (!bowlEventsPorCategoria) return [];
+    return puntosPorCategoria.servido;
+  }, [bowlEventsPorCategoria, puntosPorCategoria]);
+
+  // Hidratación no tiene modelo (ver spec) -- se mantienen todas las lecturas
+  // crudas, solo se les fija el carril para que el eje Y deje de importar acá
+  // también (pedido explícito: los 3 platos ordenados por carril, no por peso).
+  const waterLanePoints = useMemo(
+    () => waterDayNightPoints.map((p) => aCarril(p, LANE_HIDRATACION)),
+    [waterDayNightPoints],
+  );
+
   const bowlReferenceReadings = useMemo(
     () => [
       ...bowlChartReadings,
@@ -1575,21 +1732,6 @@ export default function TodayPage() {
     [deviceHistoryReadings, waterChartReadings, waterDevice?.id],
   );
 
-  const bowlIntakeSessions = useMemo(() => {
-    if (!isAuthoritativeFoodDevice) return [];
-    return buildAuditSessions(
-      deviceAuditEvents[bowlDevice?.id ?? ""] ?? [],
-      bowlDayNightPoints,
-      FOOD_START_CATEGORY,
-      FOOD_END_CATEGORY,
-    );
-  }, [
-    bowlDayNightPoints,
-    bowlDevice?.id,
-    deviceAuditEvents,
-    isAuthoritativeFoodDevice,
-  ]);
-
   const waterIntakeSessions = useMemo(() => {
     return buildAuditSessions(
       deviceAuditEvents[waterDevice?.id ?? ""] ?? [],
@@ -1601,15 +1743,25 @@ export default function TodayPage() {
 
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    const img = new window.Image(28, 28);
+    const img = new window.Image(64, 64);
     img.src = "/illustrations/pink_food_full.png";
     return img;
   }, []);
 
   const waterPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
-    const img = new window.Image(28, 28);
+    const img = new window.Image(64, 64);
     img.src = "/illustrations/green_water_full.png";
+    return img;
+  }, []);
+
+  // Ícono de Servido en el gráfico -- mismo asset que ya usa el widget "Comida"
+  // de Barras Sims, sin encargar uno nuevo (ver
+  // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
+  const servidoPointStyle = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    const img = new window.Image(64, 64);
+    img.src = "/illustrations/icono_comida.png";
     return img;
   }, []);
 
@@ -1678,23 +1830,38 @@ export default function TodayPage() {
       datasets: [
         {
           label: `Alimentación (${bowlDevice?.device_id ?? "KPCL"})`,
-          data: bowlDayNightPoints,
+          data: bowlAlimentacionPoints,
           showLine: false,
           pointStyle: foodPointStyle,
-          pointRadius: 9,
-          pointHoverRadius: 10,
+          pointRadius: 13,
+          pointHoverRadius: 14,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#ec4899",
           pointBorderColor: "#ffffff",
           pointBorderWidth: 1.5,
         },
         {
+          // Servido (plato rellenado) -- ícono distinto al de alimentación real,
+          // solo poblado para KPCL0034 (ver
+          // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
+          label: `Servido (${bowlDevice?.device_id ?? "KPCL"})`,
+          data: bowlServidoPoints,
+          showLine: false,
+          pointStyle: servidoPointStyle,
+          pointRadius: 13,
+          pointHoverRadius: 14,
+          pointHoverBorderWidth: 2,
+          pointBackgroundColor: "#6366f1",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.5,
+        },
+        {
           label: `Hidratación (${waterDevice?.device_id ?? "KPCL"})`,
-          data: waterDayNightPoints,
+          data: waterLanePoints,
           showLine: false,
           pointStyle: waterPointStyle,
-          pointRadius: 9,
-          pointHoverRadius: 10,
+          pointRadius: 13,
+          pointHoverRadius: 14,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#14b8a6",
           pointBorderColor: "#ffffff",
@@ -1703,10 +1870,12 @@ export default function TodayPage() {
       ],
     }),
     [
-      bowlDayNightPoints,
+      bowlAlimentacionPoints,
+      bowlServidoPoints,
       bowlDevice?.device_id,
       foodPointStyle,
-      waterDayNightPoints,
+      servidoPointStyle,
+      waterLanePoints,
       waterDevice?.device_id,
       waterPointStyle,
     ],
@@ -1784,59 +1953,62 @@ export default function TodayPage() {
               return `${hh}:${mi}  ${dd}/${mo}/${aa}`;
             },
             label: (context) => {
+              // El eje Y ahora es un carril fijo por categoría (no el peso
+              // real) -- el peso/volumen real viaja en `valorReal` cuando el
+              // punto lo trae (ver DayNightLanePoint); si no, cae a parsed.y
+              // (trazo crudo sin carril, ej. device sin modelo validado).
+              const raw = context.raw as { valorReal?: number } | undefined;
               const value =
-                typeof context.parsed.y === "number"
-                  ? Math.round(context.parsed.y)
-                  : null;
+                typeof raw?.valorReal === "number"
+                  ? Math.round(raw.valorReal)
+                  : typeof context.parsed.y === "number"
+                    ? Math.round(context.parsed.y)
+                    : null;
               const label = String(context.dataset.label ?? "Serie");
               const seriesTitle = label.includes("Hidratación")
                 ? "Hidratación"
-                : label.includes("Alimentación")
-                  ? "Alimentación"
-                  : "Lectura";
+                : label.includes("Servido")
+                  ? "Servido"
+                  : label.includes("Alimentación")
+                    ? "Alimentación"
+                    : "Lectura";
               const isHydration = label.includes("Hidratación");
               const unit = isHydration ? "cm3 (aprox)" : "g";
               const valueText = value === null ? "N/D" : `${value} ${unit}`;
               return [`${seriesTitle}: ${valueText}`];
             },
             afterLabel: (context) => {
-              const label = context.dataset.label ?? "Serie";
+              // Pedido explícito: al pasar el mouse sobre el plato
+              // (Alimentación/Servido) el tooltip debe decir ÚNICAMENTE la
+              // hora (ya la da `title`) y cuánto comió (ya lo da `label`) --
+              // sin líneas extra de auditoría ni de cross-referencia del
+              // modelo. Hidratación (el bebedero, no "el plato") conserva su
+              // detalle de sesión auditada.
+              const label = String(context.dataset.label ?? "Serie");
               const isHydration = label.includes("Hidratación");
-              const unit = isHydration ? "cm3 (aprox)" : "g";
-              const isFood = context.datasetIndex === 0;
-              const sessions = isFood
-                ? bowlIntakeSessions
-                : waterIntakeSessions;
-              const session = findSessionForPoint(sessions, context.dataIndex);
-              if (!session) {
-                return isFood
-                  ? ["Sin evidencia auditada de alimentación"]
-                  : ["Sin evento registrado"];
-              }
-              const deviceId = isFood
-                ? (bowlDevice?.id ?? "")
-                : (waterDevice?.id ?? "");
-              const auditEvents = deviceAuditEvents[deviceId] ?? [];
-              const startCat = isHydration
-                ? WATER_START_CATEGORY
-                : FOOD_START_CATEGORY;
+              if (!isHydration) return [];
+
+              const session = findSessionForPoint(
+                waterIntakeSessions,
+                context.dataIndex,
+              );
+              if (!session) return ["Sin evento registrado"];
+              const auditEvents =
+                deviceAuditEvents[waterDevice?.id ?? ""] ?? [];
               const isConfirmed = auditEvents.some(
                 (e) =>
-                  e.category === startCat &&
+                  e.category === WATER_START_CATEGORY &&
                   Math.abs(new Date(e.created_at).getTime() - session.startT) <
                     5 * 60 * 1000,
               );
-              const statusLabel = isFood
-                ? "✓ Alimentación confirmada (audit_event)"
-                : isConfirmed
-                  ? "✓ Hidratación confirmada"
-                  : "Hidratación detectada";
               return [
-                statusLabel,
+                isConfirmed
+                  ? "✓ Hidratación confirmada"
+                  : "Hidratación detectada",
                 `Inicio: ${formatSessionClock(session.startT)}`,
                 `Fin: ${formatSessionClock(session.endT)}`,
                 `Duración: ${formatSessionDuration(session.durationMinutes)}`,
-                `Consumo: ${Math.round(session.consumed)} ${unit}`,
+                `Consumo: ${Math.round(session.consumed)} cm3 (aprox)`,
               ];
             },
             footer: () => "KittyPaw · Ciclo diario",
@@ -1875,7 +2047,11 @@ export default function TodayPage() {
         },
         y: {
           type: "linear",
-          beginAtZero: true,
+          // Carriles fijos por categoría (LANE_ALIMENTACION=3/SERVIDO=2/
+          // HIDRATACION=1), no peso real -- min/max con margen para que los
+          // íconos de los carriles extremos no queden pegados al borde.
+          min: 0,
+          max: 4,
           ticks: {
             display: false,
           },
@@ -1888,7 +2064,7 @@ export default function TodayPage() {
         },
       },
     }),
-    [bowlIntakeSessions, dayNightWindow.startMs, waterIntakeSessions],
+    [dayNightWindow.startMs, waterIntakeSessions],
   );
 
   const nowMs = useMemo(() => Date.now(), []);
@@ -1963,13 +2139,27 @@ export default function TodayPage() {
       WATER_END_CATEGORY,
     );
   }, [deviceAuditEvents, waterDevice?.id, waterHistoryPoints]);
+  const bowlModelMeal = useMemo(() => {
+    if (!isAuthoritativeFoodDeviceCode(bowlDevice?.device_id)) return null;
+    if (
+      !hungerBar ||
+      hungerBar.status !== "ok" ||
+      !hungerBar.lastMealDetectedAt
+    )
+      return null;
+    return {
+      at: hungerBar.lastMealDetectedAt,
+      isProvisional: hungerBar.lastMealIsProvisional ?? false,
+    };
+  }, [bowlDevice?.device_id, hungerBar]);
   const bowlWellness = useMemo(
     () =>
       buildWellnessState({
         type: "food",
         sessions: bowlHistorySessions,
+        modelMeal: bowlModelMeal,
       }),
-    [bowlHistorySessions],
+    [bowlHistorySessions, bowlModelMeal],
   );
   const waterWellness = useMemo(
     () =>
@@ -2227,9 +2417,12 @@ export default function TodayPage() {
       return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
     if (hungerBar.percentage <= 0) return "Debería haber comido ya";
-    return hungerBar.estimatedNextMealAt
-      ? `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`
-      : "Última comida confirmada: sin registro";
+    if (!hungerBar.estimatedNextMealAt)
+      return "Última comida confirmada: sin registro";
+    const proxima = `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`;
+    if (!hungerBar.lastMealDetectedAt) return proxima;
+    const ultima = `Última comida: ${formatTimestamp(hungerBar.lastMealDetectedAt)}${hungerBar.lastMealIsProvisional ? " (provisoria)" : ""}`;
+    return `${ultima}\n${proxima}`;
   }, [hungerBar]);
 
   const waterFilledBlocks = useMemo(() => {
@@ -2524,6 +2717,8 @@ export default function TodayPage() {
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
+
+          <ConsumoKpisCard kpis={hungerBar?.kpis ?? null} />
         </header>
 
         {state.error ? (
@@ -2573,6 +2768,7 @@ export default function TodayPage() {
           onClose={() => setShowGuide(false)}
         />
       ) : null}
+      <QaTestMealNotification petName={petLabel} />
     </div>
   );
 }
