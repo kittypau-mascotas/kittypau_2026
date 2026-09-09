@@ -502,11 +502,28 @@ if id_seleccionado is None or id_seleccionado not in _ids_visibles:
 else:
     fila = vista[vista["id"] == id_seleccionado].iloc[0]
     st.divider()
-    st.subheader(f"Anotación {fila['id']}")
+    st.subheader(f"Anotación {fila['id']} -- {'✅ revisado' if fila['revisado'] else '⬜ pendiente de revisar'}")
 
     col_g, col_e = st.columns([3, 2], gap="medium")
 
     with col_e:
+        if not fila["revisado"]:
+            # Cuando la categoría sugerida ya está bien, no hay nada que
+            # "editar" -- sin este botón la única forma de marcar revisado
+            # era tocar el formulario y Guardar aunque no cambiara nada, y
+            # en la práctica eso hacía que confirmar "está bien así" se
+            # saltara sin querer (hallazgo real: 14 candidatos quedaron
+            # pendientes pese a haber sido mirados).
+            if st.button(
+                "✅ Confirmar tal cual (el modelo acertó)", key=f"confirmar_{fila['id']}"
+            ):
+                guardar_anotacion(lecturas, fila, fila["categoria"], fila["ts_inicio"], fila["ts_fin"])
+                st.cache_data.clear()
+                st.session_state["_limpiar_seleccion"] = True
+                st.toast("Confirmado.", icon="✅")
+                st.rerun()
+            st.caption("¿Hay que corregir hora o categoría? Editá abajo y guardá.")
+
         categoria_nueva = st.radio(
             "Categoría", CATEGORIAS,
             index=CATEGORIAS.index(fila["categoria"]) if fila["categoria"] in CATEGORIAS else 0,
