@@ -39,15 +39,11 @@ const config: CapacitorConfig = {
     // alerta del hunger bar) — generado desde resources/icon.jpg, ver
     // Knowledge/05_API/SPEC_HungerBar_Alertas.md §6.1.
     // ic_notification_kittypau (el ícono grande, dentro de la notificación
-    // expandida) se corrigió a mano 2026-09-09 con canal alfa real -- el
-    // originado por `npm run android:assets` desde resources/icon.jpg (un
-    // .jpg, sin transparencia posible) traía un cuadrado blanco sólido de
-    // fondo que se veía mal en modo oscuro. ic_stat_kittypau (el chico, de
-    // la barra de estado) SÍ es transparente por diseño -- Android lo tiñe
-    // solo, no se toca.
-    // ⚠️ Volver a correr `npm run android:assets` pisa este fix -- si se
-    // corre, hay que re-aplicar la transparencia a ic_notification_kittypau
-    // en los 5 drawable-*dpi antes de commitear.
+    // expandida) usa la foto tal cual, CON su fondo blanco -- probado a
+    // propósito (no es un descuido): la versión con fondo transparente salía
+    // lavada/rosa pálido en el celular real de Mauro, confirmado 2026-08-12
+    // y de nuevo 2026-09-09. No volver a intentar hacerla transparente sin
+    // repetir esa prueba en dispositivo real primero.
     LocalNotifications: {
       smallIcon: "ic_stat_kittypau",
       iconColor: "#ebb6a8",
