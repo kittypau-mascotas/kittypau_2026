@@ -1748,13 +1748,6 @@ export default function TodayPage() {
     return img;
   }, []);
 
-  const waterPointStyle = useMemo(() => {
-    if (typeof window === "undefined") return undefined;
-    const img = new window.Image(64, 64);
-    img.src = "/illustrations/green_water_full.png";
-    return img;
-  }, []);
-
   // Ícono de Servido en el gráfico -- mismo asset que ya usa el widget "Comida"
   // de Barras Sims, sin encargar uno nuevo (ver
   // Knowledge/29_Specs/007-motor-alimentacion-produccion/).
@@ -1856,16 +1849,26 @@ export default function TodayPage() {
           pointBorderWidth: 1.5,
         },
         {
+          // Sin modelo de detección de "trago" (hidratación no tiene evento
+          // discreto, ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md) --
+          // acá SÍ es 1 lectura cruda cada ~30-60s, no 1 evento. Un ícono de
+          // 64px por lectura se amontonaba en un embarrado ilegible sobre un
+          // día completo. Trazo fino y continuo en vez de íconos grandes --
+          // representa lo que realmente es: una señal seguida, no eventos
+          // puntuales como Comida/Servido.
           label: `Hidratación (${waterDevice?.device_id ?? "KPCL"})`,
           data: waterLanePoints,
-          showLine: false,
-          pointStyle: waterPointStyle,
-          pointRadius: 13,
-          pointHoverRadius: 14,
+          showLine: true,
+          borderColor: "rgba(20,184,166,0.55)",
+          borderWidth: 1.5,
+          pointStyle: "circle",
+          pointRadius: 2.5,
+          pointHoverRadius: 6,
           pointHoverBorderWidth: 2,
           pointBackgroundColor: "#14b8a6",
           pointBorderColor: "#ffffff",
-          pointBorderWidth: 1.5,
+          pointBorderWidth: 1,
+          tension: 0,
         },
       ],
     }),
@@ -1877,7 +1880,6 @@ export default function TodayPage() {
       servidoPointStyle,
       waterLanePoints,
       waterDevice?.device_id,
-      waterPointStyle,
     ],
   );
 
