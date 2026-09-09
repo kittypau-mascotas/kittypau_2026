@@ -2454,7 +2454,10 @@ export default function TodayPage() {
     return hungerBarColor(hungerBar.percentage);
   }, [hungerBar]);
 
-  const hungerNoteLabel = useMemo(() => {
+  // Separado en 2 cuadros (pedido de Mauro 2026-09-09): "última comida" (+
+  // la barra de comió-más-o-menos) en uno, "próxima estimada" en el otro --
+  // antes era un solo string con \n en un solo cuadro.
+  const hungerLastMealLabel = useMemo(() => {
     if (
       !hungerBar ||
       hungerBar.status !== "ok" ||
@@ -2466,12 +2469,23 @@ export default function TodayPage() {
       return `Sin comer hace más de ${Math.floor(hungerBar.hoursOverdue ?? 0)} h`;
     }
     if (hungerBar.percentage <= 0) return "Debería haber comido ya";
-    if (!hungerBar.estimatedNextMealAt)
+    if (!hungerBar.lastMealDetectedAt)
       return "Última comida confirmada: sin registro";
-    const proxima = `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`;
-    if (!hungerBar.lastMealDetectedAt) return proxima;
-    const ultima = `Última comida: ${formatTimestamp(hungerBar.lastMealDetectedAt)}${hungerBar.lastMealIsProvisional ? " (provisoria)" : ""}`;
-    return `${ultima}\n${proxima}`;
+    return `Última comida: ${formatTimestamp(hungerBar.lastMealDetectedAt)}${hungerBar.lastMealIsProvisional ? " (provisoria)" : ""}`;
+  }, [hungerBar]);
+
+  const hungerNextMealLabel = useMemo(() => {
+    if (
+      !hungerBar ||
+      hungerBar.status !== "ok" ||
+      hungerBar.percentage === null ||
+      hungerBar.alertActive ||
+      hungerBar.percentage <= 0 ||
+      !hungerBar.estimatedNextMealAt
+    ) {
+      return null; // ya se dijo todo lo que hay que decir en el cuadro de "última comida"
+    }
+    return `Próxima comida estimada: ${formatTimestamp(hungerBar.estimatedNextMealAt)}`;
   }, [hungerBar]);
 
   const waterFilledBlocks = useMemo(() => {
@@ -2649,7 +2663,8 @@ export default function TodayPage() {
                       filledBlocks: hungerFilledBlocks,
                       valueLabel: hungerValueLabel,
                       statusLabel: hungerStatusLabel,
-                      noteLabel: hungerNoteLabel,
+                      noteLabel: hungerLastMealLabel,
+                      noteLabelSecondary: hungerNextMealLabel,
                       mealSizeGramos: hungerBar?.lastMealGramos ?? null,
                       trackClass: hungerBar?.alertActive
                         ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
@@ -2709,7 +2724,6 @@ export default function TodayPage() {
                   tempText={bowlTempText}
                   humidityText={bowlHumidityText}
                   formatTimestamp={formatTimestamp}
-                  lastMealGramos={hungerBar?.lastMealGramos ?? null}
                 />
               </div>
 

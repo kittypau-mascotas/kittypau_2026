@@ -18,6 +18,10 @@ type BarKind = {
   valueLabel: string;
   statusLabel: string;
   noteLabel: string;
+  // Segundo cuadro aparte (pedido de Mauro 2026-09-09) -- "próxima comida
+  // estimada" separado de "última comida" en vez de un solo cuadro con \n.
+  // Agua no lo usa (queda undefined, ese cuadro no se renderiza).
+  noteLabelSecondary?: string | null;
   trackClass: string;
   fillClass: string;
   fillStyle?: { backgroundColor: string };
@@ -72,6 +76,7 @@ export default function BarrasSimsCard({
             valueLabel,
             statusLabel,
             noteLabel,
+            noteLabelSecondary,
             trackClass,
             fillClass,
             fillStyle,
@@ -115,37 +120,44 @@ export default function BarrasSimsCard({
                   <p className="whitespace-pre-line text-[10px] leading-tight text-slate-500">
                     {noteLabel}
                   </p>
-                </div>
-                {mealSizeGramos != null
-                  ? (() => {
-                      const info = mealSizeInfo(mealSizeGramos);
-                      const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
-                      const pct = Math.min(
-                        100,
-                        Math.round((mealSizeGramos / escalaMax) * 100),
-                      );
-                      return (
-                        <div className="w-full pt-0.5">
-                          <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                            <div
-                              className={`h-full rounded-full ${info.barClass}`}
-                              style={{ width: `${pct}%` }}
-                            />
-                            <div
-                              className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
-                              aria-hidden="true"
-                            />
+                  {mealSizeGramos != null
+                    ? (() => {
+                        const info = mealSizeInfo(mealSizeGramos);
+                        const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
+                        const pct = Math.min(
+                          100,
+                          Math.round((mealSizeGramos / escalaMax) * 100),
+                        );
+                        return (
+                          <div className="mt-1.5">
+                            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className={`h-full rounded-full ${info.barClass}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                              <div
+                                className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <p
+                              className={`mt-1 text-[10px] font-medium leading-tight ${info.textClass}`}
+                            >
+                              {info.label} — {mealSizeGramos} g (habitual:{" "}
+                              {MEDIANA_GRAMOS_COMIDA} g)
+                            </p>
                           </div>
-                          <p
-                            className={`mt-1 text-[10px] font-medium leading-tight ${info.textClass}`}
-                          >
-                            {info.label} — {mealSizeGramos} g (habitual:{" "}
-                            {MEDIANA_GRAMOS_COMIDA} g)
-                          </p>
-                        </div>
-                      );
-                    })()
-                  : null}
+                        );
+                      })()
+                    : null}
+                </div>
+                {noteLabelSecondary ? (
+                  <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
+                    <p className="whitespace-pre-line text-[10px] leading-tight text-slate-500">
+                      {noteLabelSecondary}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
           ),
