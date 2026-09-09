@@ -303,6 +303,46 @@ queda prácticamente cerrada (911/913 candidatos con categoría real) — el
 siguiente recalibrado real tendría que venir de candidatos nuevos
 (sync + repipeline), no de más revisión sobre este mismo pool.
 
+## Base única de anotaciones + cobertura 100% de KPCL0034 (2026-09-09)
+
+Segundo rediseño de `app_candidatos.py`, a pedido de Mauro tras terminar la
+revisión del pilar anterior: pasa de explorador de clustering a editor de
+la base única (`data/anotaciones_unificadas.csv`) con curva interactiva
+(hover), selección por click, validación de solapamiento no bloqueante
+(avisa, no impide guardar), filtro por cercanía además de solapamiento
+exacto (encontró un patrón real: pares de candidatos con id distinto para
+el mismo evento), botón de eliminar con confirmación, y esquema unificado
+sin distinguir "anotación real" de "candidato confirmado" de cara al
+usuario (columna `origen` sacada, columna `revisado` nueva).
+
+**Bug real encontrado y corregido en el camino** (3 intentos antes de dar
+con la causa): el índice posicional de `st.dataframe(selection_mode=
+"single-row")` es frágil -- se corre cada vez que la tabla cambia de
+tamaño (borrar una fila, cambiar un filtro), y reescribir a mano su
+`session_state` no resultó confiable de un run al siguiente. Fix de fondo:
+trackear la anotación elegida por su ID (texto, nunca se corre) en vez de
+por posición. Separado, otro bug real: el patrón `if not flag: if
+st.button(): flag = True` evalúa el `if/else` exterior antes de que el
+click alcance a actualizar la bandera en la misma pasada -- fix con
+`on_click` (patrón que Streamlit documenta para esto). Y un tercero: no
+había forma de marcar "revisado" sin editar categoría/hora aunque el
+modelo ya hubiera acertado -- 14 candidatos quedaron con `revisado=False`
+pese a haber sido mirados. Fix: botón "Confirmar tal cual".
+
+**Ciclo completo sync → repipeline → revisión → cierre, mismo día:**
+sync desde Supabase (+5.636 lecturas), repipeline (KPCL0034 913→928
+candidatos), 21 candidatos genuinamente nuevos sin anotación (13 se
+auto-clasificaron con alta confianza vía `cerrar_validacion_confiable.py`,
+8 quedaron ambiguos y se sumaron a la base con `revisado=False`), Mauro
+revisó los 21 vía la app (corrigiendo los que hacía falta, confirmando el
+resto con el botón nuevo). Resultado: **`candidatos_categoria_real.csv`
+pasa de 372 a 0 `sin_anotacion`** — KPCL0034 queda con el 100% de sus 928
+candidatos con categoría real confirmada, por primera vez en el proyecto.
+`recalibrar_con_freno.py` corrido contra esto: 87.28% < 90.41% vigente,
+descartado (mismo caveat de siempre -- el ground truth ahora incluye los
+casos más difíciles, la medida anterior era en parte optimista, no es que
+el modelo haya empeorado). Producción sin tocar.
+
 ## Notificación QA sin esperar un evento real (2026-09-01)
 
 `src/app/_components/qa-test-meal-notification.tsx` — botón que dispara
