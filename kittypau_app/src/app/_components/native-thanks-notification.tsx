@@ -31,6 +31,13 @@ export default function NativeThanksNotification() {
               title: "Gracias por adquirir Kittypau",
               body: "Bienvenido. Estamos felices de cuidar a tu mascota contigo",
               schedule: { at },
+              // Sin esto, la franja de notificaciones muestra solo el ícono
+              // chico (silueta blanca) sobre el círculo de color -- mismo
+              // patrón que useHungerBarEventNotifications.ts/
+              // useHungerBarPushAlert.ts, que sí lo traían.
+              smallIcon: "ic_stat_kittypau",
+              largeIcon: "ic_notification_kittypau",
+              iconColor: "#ebb6a8",
             },
           ],
         });
