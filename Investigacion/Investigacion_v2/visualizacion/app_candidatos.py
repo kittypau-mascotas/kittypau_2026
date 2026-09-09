@@ -432,6 +432,18 @@ vista_mostrar["Fin (Santiago)"] = vista_mostrar["ts_fin"].dt.tz_convert(TZ_STGO)
     "%Y-%m-%d %H:%M:%S"
 )
 
+# Guardar/Eliminar piden la deselección con esta bandera (seteada antes del
+# st.rerun() de cada uno). Tiene que aplicarse ACÁ, antes de instanciar el
+# widget -- después de la llamada a st.dataframe() de abajo, Streamlit
+# prohíbe tocar su session_state (StreamlitAPIException) en el mismo run.
+# Primer intento de este fix (que solo pisaba la variable local filas_sel
+# después del widget) no reseteaba el estado REAL de la tabla -- al hacer
+# click en otra fila que cae en la misma posición numérica que la
+# seleccionada antes de borrar, Streamlit no detectaba cambio de valor y no
+# volvía a correr: el botón "dejaba de funcionar" después de un borrado.
+if st.session_state.pop("_limpiar_seleccion", False):
+    st.session_state["tabla_anotaciones"] = {"selection": {"rows": [], "columns": []}}
+
 seleccion = st.dataframe(
     vista_mostrar[["id", "device_code", "Inicio (Santiago)", "Fin (Santiago)", "categoria", "origen"]],
     hide_index=True,
@@ -443,13 +455,6 @@ seleccion = st.dataframe(
 )
 
 filas_sel = seleccion.selection.rows if seleccion and seleccion.selection else []
-# No se puede reasignar st.session_state["tabla_anotaciones"] (el widget ya
-# se instanció arriba en este mismo run -- Streamlit lo prohíbe con
-# StreamlitAPIException). Guardar/Eliminar piden la deselección con esta
-# bandera aparte (no es key de ningún widget, se puede tocar libremente) en
-# vez de tocar la key del widget directo.
-if st.session_state.pop("_limpiar_seleccion", False):
-    filas_sel = []
 # Defensivo: un índice de selección que quedó viejo (filtro cambiado a mano,
 # u otro caso no cubierto por lo de arriba) no tiene que romper la página
 # entera con un IndexError -- se trata como "sin selección" en vez de
