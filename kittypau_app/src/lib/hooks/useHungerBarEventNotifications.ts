@@ -19,6 +19,19 @@ import { useEffect, useRef } from "react";
  * notificar nada (son eventos históricos, no "acaban de pasar") -- solo se
  * notifican los que aparecen NUEVOS en una carga posterior (poll cada 5min
  * en today/page.tsx).
+ *
+ * Foto real de la mascota -- investigado 2026-09-09, DESCARTADO para esta
+ * notificación: `@capacitor/local-notifications` en Android no tiene forma
+ * de mostrar una imagen dinámica. Confirmado leyendo el plugin nativo
+ * (`LocalNotificationManager.java`/`AssetUtil.java`): `largeIcon` resuelve
+ * el string SIEMPRE como nombre de recurso `drawable` empaquetado
+ * (`getResources().getIdentifier(...)`, sin fallback a URI/archivo) y
+ * `attachments` se parsea pero nunca se lee en ningún lado del código
+ * Android -- es una función que solo existe para iOS en este plugin. No
+ * hay combinación de campos que lo logre sin parchear el plugin nativo.
+ * La foto real de la mascota SÍ funciona en el push real (FCM, `imageUrl`
+ * en `lib/push/fcm.ts`) porque ahí es Firebase quien la baja y la renderiza
+ * del lado nativo -- pendiente solo de que exista el proyecto Firebase.
  */
 
 type EventoNotificable = {

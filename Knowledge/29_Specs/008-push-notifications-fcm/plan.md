@@ -108,9 +108,28 @@ es una URL real que FCM baja solo.
 **Decisión (con Mauro, opción "solo FCM"):** `pet.photo_url` viaja como `imageUrl` en
 `sendPushToTokens()` (`lib/push/fcm.ts`) -- se ve como imagen grande al expandir el push que
 llega con la app cerrada. Las `LocalNotifications` (`useHungerBarEventNotifications`, con la
-app abierta) siguen con `ic_notification_kittypau` fijo, sin tocar -- mostrar la foto ahí
-requeriría descargarla a un archivo local (`@capacitor/filesystem`, dependencia nueva) y
-usar `attachments`, quedó fuera de alcance por ahora.
+app abierta) siguen con `ic_notification_kittypau` fijo, sin tocar.
+
+> ⚠️ **Investigado más a fondo (2026-09-09, mismo día):** Mauro pidió explícitamente la foto
+> dinámica también en la notificación local ("con la app abierta"). Se intentó construir con
+> `@capacitor/filesystem` (bajar `photo_url` a un archivo + `attachments`) -- **revertido antes
+> de commitear** al leer el código Java real del plugin:
+> - `LocalNotificationManager.java:218` + `LocalNotification.java:347-354` (`getLargeIcon`) --
+>   `largeIcon` SIEMPRE resuelve el string como nombre de recurso `drawable` vía
+>   `context.getResources().getIdentifier(...)` (`AssetUtil.java:341-343`), sin ningún fallback
+>   a URI o archivo. Pasar un `file://` ahí no funciona, puede devolver `null`/fallar.
+> - `attachments` se parsea (`LocalNotificationAttachment.java`) pero **`LocalNotificationManager.java`
+>   nunca lo lee** -- cero referencias a `getAttachments()` en todo el manager de Android. Es
+>   una función que solo existe para iOS en este plugin (`AttachmentOptions` de
+>   `definitions.d.ts` ya lo insinuaba: todas sus opciones dicen "Only available for iOS", pero
+>   el campo base tampoco hace nada en Android).
+>
+> **Conclusión: no hay ninguna combinación de campos de `@capacitor/local-notifications` que
+> muestre una imagen dinámica en Android.** No es "más trabajo", es que el plugin no lo
+> soporta -- la única forma real sería parchear/extender el plugin nativo (Java), fuera de
+> alcance. `@capacitor/filesystem` se instaló y desinstaló en la misma sesión al confirmar
+> esto. La foto real de la mascota queda exclusivamente en el camino FCM (que si funciona,
+> porque ahí Firebase resuelve `imageUrl` del lado nativo), pendiente de las credenciales.
 
 Igual que el resto de este spec: bloqueado en que exista `FIREBASE_SERVICE_ACCOUNT_JSON` para
 poder probarse en un dispositivo real.
