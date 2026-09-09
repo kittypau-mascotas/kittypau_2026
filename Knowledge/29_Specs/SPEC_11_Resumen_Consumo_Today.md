@@ -195,9 +195,9 @@ Mapeo de la tabla de §2.1 contra `events` (filtrando `category === "alimentacio
 |---|---|---|
 | 1 | Duración promedio por comida | ✅ `avg(durationMin)` — cero trabajo nuevo |
 | 2 | Velocidad de consumo (g/min) | ✅ `avg(\|deltaG\| / durationMin)` |
-| 3 | Comidas hoy vs. patrón (mediana 4, rango 1-6) | ✅ `count(events de hoy)` vs. constante ya calibrada ([[05_API/SPEC_HungerBar_Alimentacion]] §0.1) |
+| 3 | Comidas hoy vs. patrón (mediana 3, rango 1-6) | ✅ `count(events de hoy)` vs. constante ya calibrada ([[05_API/SPEC_HungerBar_Alimentacion]] §0.1) |
 | 4 | ¿Comió en su horario habitual? | ✅ hora de `startAt` vs. las 8 horas pico ya medidas (mismo doc) |
-| 5 | Consistencia del intervalo | ✅ intervalo real de hoy vs. IQR ya calibrado (P25=3.8h/P75=8.27h) |
+| 5 | Consistencia del intervalo | ✅ intervalo real de hoy vs. IQR ya calibrado (P25=4.04h/P75=8.88h) |
 | 6 | Racha de días con actividad | ⚠️ Parcial — `WINDOW_DAYS=10` alcanza para una racha de hasta 10 días; si se quiere más, subir la constante (sin cambio de arquitectura) |
 | 7 | Regularidad del consumo diario | ✅ desvío estándar de `Σ\|deltaG\|` por día dentro de la ventana |
 | 8 | % dentro del rango que definió el dueño | ✅ `pet.food_normal_min_g`/`max_g` ya existen y ya se usan (`applyCustomLimits()`, `story/page.tsx`) |
@@ -222,6 +222,40 @@ validado en otros dispositivos, mismo alcance que el resto de spec 007).
 > `GET /api/pets/:id/hunger-bar` + `<ConsumoKpisCard>` en una sección propia, fuera de
 > Barras Sims. `tsc`/`eslint`/`vitest` (68/68) limpios. Pendiente: click-through manual en
 > navegador real (no ejecutado en este entorno) y la decisión de gating free/premium de §2.
+
+---
+
+## 2.3 — 3 métricas agregadas (2026-09-09): servido, tendencia, ruido
+
+Pedido de Mauro tras revisar de dónde sale cada dato ("¿cuánto se sirve?", "¿está comiendo
+menos?", "¿cuánto ruido genera el sensor?") — mismo estándar de §2.1/§2.2: sin fetch nuevo,
+sobre el mismo `events: Segment[]` que ya trae `GET /api/pets/:id/hunger-bar`.
+
+| # | Métrica | Fuente / fórmula | Por qué está respaldada |
+|---|---|---|---|
+| 11 | **Servido vs. comido** | `Σ\|deltaG\|` de `events` con `category==="servido"` vs. `category==="alimentacion"` del período, como ratio | Mismo campo `deltaG` que ya usan #1/#2/#9 — antes se descartaba todo lo `servido`, ahora se suma aparte |
+| 12 | **Tendencia de apetito** | Pendiente de la regresión lineal simple (mínimos cuadrados) de gramos/día contra el índice de día, sobre los mismos `gramosPorDia` que ya calcula #7 | Ninguna constante nueva — mismo agregado diario de #7, solo con una pendiente en vez de un CV |
+| 13 | **Ruido del sensor** | Mediana de `count(events con category==="ruido")` por día, sobre los días que tienen ≥1 comida real (evita que un día 100% ruido sin comida cuente como "0 ruido") | Proxy directo de cuántas falsas activaciones genera el comedero — el histórico completo (§ ver `Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`) mide 59% de los 928 candidatos de KPCL0034 como ruido |
+
+**Recalibración de fondo (2026-09-09):** las constantes de comparación que usan #3/#4/#5
+(`COMIDAS_DIA_MEDIANA`, `HORAS_PICO`, `INTERVALO_P25_H`/`P75_H`, y las de la Hunger Bar
+`FALLBACK_MEDIANA_H`/`CLAMP_MIN_H`/`CLAMP_MAX_H`) se recalibraron sobre el histórico
+completo de KPCL0034 (305 comidas, ground truth 100%, abril-hoy) en vez de las 254
+comidas abr-jul originales — ver [[05_API/SPEC_HungerBar_Alimentacion]] §0.1 para los
+valores nuevos y `Investigacion/Investigacion_v2/recalibrar_constantes_hunger_bar.py`.
+
+> ✅ **Hecho (2026-09-09):** implementado en `consumo-kpis.ts` (`servedTotalG`,
+> `servedToEatenRatio`, `appetiteTrendGPerDay`, `noiseEventsPerDayMedian`) + 3 tiles nuevos
+> en `<ConsumoKpisCard>`. `tsc`/`vitest` (15/15 de los dos archivos afectados) limpios.
+
+**Qué queda fuera, a propósito:** "cuánto come por semana/mes" con dato en vivo real —
+`WINDOW_DAYS=10` (`hunger-bar/route.ts`) nunca trae más de 10 días de `readings`, así que
+"por semana" es aproximado (última semana parcial dentro de la ventana) y "por mes" es
+matemáticamente imposible sin subir esa constante (costo: más filas de Supabase leídas y
+procesadas en cada carga de `/today`, on-demand, sin caché más allá de 30s). Decisión de si
+vale la pena ese costo: pendiente, no tomada unilateralmente acá. Mientras tanto, el
+histórico completo (155 días, abril-hoy) queda disponible como referencia offline en
+`Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`, no en la app en vivo.
 
 ---
 

@@ -75,26 +75,27 @@ estado manual de `audit_events`, siempre "Sin evidencia real" para Bandida).
 | Card "Comida" en `/today` (widget "Barras Sims") | ✅ Reemplazada — ver `today/page.tsx` |
 | Clasificación por Motor v2 / Evidence Engine real | ❌ v1 usa reglas de magnitud/dirección/duración, no las 23 features calibradas — ver §1.2 |
 | Uso de `servido` como señal secundaria (§4) | ❌ se detecta pero no se usa para ajustar la predicción |
-| Modelo circadiano | ❌ v1 usa solo mediana de intervalos, no franjas horarias |
+| Modelo circadiano | ❌ probado 2026-09-09 (híbrido y regresión RF/GBM) — ninguno mejora la mediana de forma significativa, ver §2. No implementado a propósito, no por falta de intento. |
 | Agrupar picoteo (comidas seguidas) | ❌ no implementado — cada segmento cuenta como comida independiente |
 
 ## 0.1 Números reales usados para calibrar v1
 
-Recalculados directamente desde `anotaciones_av2.csv` (254 eventos de alimentación,
-2026-04-08 a 2026-07-10, 93 días de cobertura, 73 días con ≥1 comida registrada):
+Recalibrado 2026-09-09 (`Investigacion/Investigacion_v2/recalibrar_constantes_hunger_bar.py`)
+sobre `candidatos_clusters_duracion.csv` + `candidatos_categoria_real.csv` (305 eventos de
+alimentación, ground truth 100%, 2026-04-08 a hoy, 155 días de cobertura, 95 días con ≥1
+comida registrada) — reemplaza la calibración anterior (254 eventos, abr-jul, 93 días).
 
 | Métrica | Valor real |
 |---|---|
-| Comidas/día (días con datos) | media **3.48**, mediana **4**, rango 1–6 |
-| Comidas/semana (derivado) | ≈ 24–29 (media×7 ≈ 24.4; mediana×7 = 28) |
-| Mediana intervalo entre comidas | **5.78 h** (constante `FALLBACK_MEDIANA_H`) |
-| Media intervalo | 6.69 h |
-| IQR (P75−P25) | 4.47 h (P25=3.8h, P75=8.27h) |
-| P10 / P90 | **2.88 h / 12.02 h** → constantes `CLAMP_MIN_H`/`CLAMP_MAX_H` |
-| Horas pico reales | 19h, 05h, 16h, 10h, 17h, 06h, 07h, 09h (más repartido de lo que decía la doc vieja de "07/13/19h" — esa cifra no se sostiene contra los datos reales) |
+| Comidas/día (días con datos) | mediana **3**, rango 1–6 |
+| Mediana intervalo entre comidas | **6.12 h** (constante `FALLBACK_MEDIANA_H`) |
+| P25 / P75 | 4.04 h / 8.88 h → constantes `INTERVALO_P25_H`/`INTERVALO_P75_H` |
+| P10 / P90 | **2.84 h / 12.81 h** → constantes `CLAMP_MIN_H`/`CLAMP_MAX_H` |
+| Horas pico reales | 05h, 19h, 10h, 17h, 16h, 06h, 07h, 09h (mismo conjunto de horas que la calibración anterior, orden re-derivado con más datos) |
 
 Estos valores viven como constantes documentadas en `hunger-bar.ts`, no hardcodeados
-sin explicación.
+sin explicación. Valores anteriores (254 comidas, abr-jul): mediana 5.78h, P25/P75
+3.8h/8.27h, P10/P90 2.88h/12.02h, comidas/día mediana 4.
 
 ## 0.2 Bugs encontrados y corregidos en la verificación en vivo
 
@@ -220,8 +221,8 @@ depender de leer el TS.
 | `STABLE_COUNT` | 2 | lecturas estables consecutivas para cerrar el segmento |
 | `MIN_INTERVALO_H` / `MAX_INTERVALO_H` | 0.33 / 36.0 | filtro de outliers al calcular la mediana histórica (§2) |
 | `N_MIN_MUESTRAS` | 5 | comidas propias mínimas antes de dejar el fallback |
-| `FALLBACK_MEDIANA_H` | 5.78 | mediana global real (249 intervalos válidos, KPCL0034) |
-| `CLAMP_MIN_H` / `CLAMP_MAX_H` | 2.88 / 12.02 | clamp de display — P10/P90 reales |
+| `FALLBACK_MEDIANA_H` | 6.12 | mediana global real (297 intervalos válidos, KPCL0034, recalibrado 2026-09-09) |
+| `CLAMP_MIN_H` / `CLAMP_MAX_H` | 2.84 / 12.81 | clamp de display — P10/P90 reales |
 
 **Paso 1 — `detectSegments(readings)`** — state machine idle/active sobre lecturas
 ordenadas ascendente por `recorded_at`:
@@ -327,27 +328,29 @@ proximaComida = t_inicio(ultimaComida) + intervalH horas
   clasificadas como `alimentacion` del dispositivo, filtrado por `pet_id` (no solo
   `device_id` — ver casos borde §4).
 
-  **Valores reales medidos** (tab Predictor de `app_anotacion_av2.py`, sobre 254 comidas
-  anotadas de KPCL0034 "Bandida"): **mediana = 5.78 h**, **IQR = 4.47 h**, 249 intervalos
-  válidos.
+  **Valores reales medidos** (`Investigacion/Investigacion_v2/recalibrar_constantes_hunger_bar.py`,
+  sobre 305 comidas reales de KPCL0034 "Bandida", ground truth 100%, abr-hoy — ver §0.1):
+  **mediana = 6.12 h**, 297 intervalos válidos.
 
-  Filtro de outliers para calcular esta mediana histórica — **ya resuelto**, reusa las
-  constantes de módulo corregidas en [`app_anotacion_av2.py:574-575`](../../../Investigacion/Ciclo_Alpha_v2/fase_0_ruido/app_anotacion_av2.py):
+  Filtro de outliers para calcular esta mediana histórica — **ya resuelto**:
   `MIN_INTERVALO_H = 0.33` (20 min, descarta comida partida en dos) y
-  `MAX_INTERVALO_H = 36.0` (descarta gaps de datos/ausencia del dueño). El endpoint de
-  producción debe reusar estos mismos valores, no redefinir un clamp propio para este
-  propósito.
+  `MAX_INTERVALO_H = 36.0` (descarta gaps de datos/ausencia del dueño), mismas constantes
+  que usa `hunger-bar.ts` y el propio script de recalibración.
 
 - **Fallback** sin historial suficiente (mascota recién vinculada): usar la mediana global
-  medida (**5.78h**) como default hasta acumular *N* comidas propias. **Implementado:**
+  medida (**6.12h**) como default hasta acumular *N* comidas propias. **Implementado:**
   `N_MIN_MUESTRAS = 5` (`hunger-bar.ts`).
 - **Clamp de display para la barra en vivo** — pregunta distinta del filtro de outliers de
   arriba: evita mostrar "próxima comida en 36h" o "en 20 min" como número creíble.
-  **Implementado** con los P10/P90 reales de §0.1: `CLAMP_MIN_H = 2.88`, `CLAMP_MAX_H =
-  12.02` (antes eran un rango 2h-12h adivinado — ahora son los percentiles reales).
-- **Modelo circadiano** (picos horarios históricos) ya existe en `app_anotacion_av2.py` y
-  es más preciso para esta gata porque su rutina sigue el horario del dueño más que un
-  intervalo fijo. Decisión mediana vs. circadiano para v1: §6.8.
+  **Implementado** con los P10/P90 reales de §0.1: `CLAMP_MIN_H = 2.84`, `CLAMP_MAX_H =
+  12.81` (antes eran un rango 2h-12h adivinado — ahora son los percentiles reales).
+- **Modelo circadiano** (picos horarios históricos): probado explícitamente 2026-09-09
+  (`Investigacion/Investigacion_v2/backtest_prediccion_proxima_comida.py`, híbrido mediana +
+  snap a hora pico) sobre 299 predicciones held-out — mejora de MAE no significativa
+  (Wilcoxon p=0.50). También se probó regresión (RandomForest/GradientBoosting,
+  `backtest_regresion_proxima_comida.py`) — mide peor que la mediana pura. Conclusión:
+  la mediana simple sigue siendo lo mejor medido hasta ahora; no se portó nada de esto a
+  producción. Decisión histórica mediana vs. circadiano para v1: §6.8.
 - **Fórmula**:
   ```
   barra(t) = 100 × (1 − (t − última_comida_detectada) / intervalo_estimado)
@@ -395,7 +398,7 @@ Response 200:
   "lastMealDetectedAt": "2026-08-10T14:32:00Z",
   "lastMealConfidence": 0.82,      // proxy de regla (0-1), NO el score del Evidence Engine — ver §1.2
   "estimatedNextMealAt": "2026-08-10T20:15:00Z",
-  "intervalUsedMinutes": 345,      // mediana propia o fallback (5.78h), ya clampeado a P10-P90
+  "intervalUsedMinutes": 345,      // mediana propia o fallback (6.12h), ya clampeado a P10-P90
   "usingFallback": false,          // true si sampleSize < N_MIN_MUESTRAS (5)
   "sampleSize": 5                  // comidas "alimentacion" detectadas en la ventana de 10 días
 }
@@ -416,7 +419,7 @@ comedero activo de la mascota (paginado, tope ~60k filas).
    queda solo informativo. Si se quiere exigir un piso, es un cambio de una línea en
    `computeHungerBar()`.
 3. ~~N mínimo de comidas~~ → `N_MIN_MUESTRAS = 5`.
-4. ~~Clamp de display~~ → `CLAMP_MIN_H`/`CLAMP_MAX_H` = P10/P90 reales (2.88h/12.02h).
+4. ~~Clamp de display~~ → `CLAMP_MIN_H`/`CLAMP_MAX_H` = P10/P90 reales (2.84h/12.81h).
 5. **Comportamiento offline** — sigue sin resolver explícitamente: v1 simplemente no
    encuentra comidas nuevas y sigue devolviendo la última detectada, así que la barra
    naturalmente "decae con el último intervalo conocido" (nunca se pausa ni muestra "sin

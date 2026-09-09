@@ -17,7 +17,9 @@
  * Knowledge/05_API/SPEC_HungerBar_Alimentacion.md §1.2 para el detalle.
  *
  * Constantes de calibración de v1 (solo usadas fuera de KPCL0034): medidas
- * sobre 254 comidas anotadas de KPCL0034 ("Bandida"), abril–julio 2026.
+ * sobre 305 comidas anotadas de KPCL0034 ("Bandida"), abril–septiembre 2026
+ * (ground truth 100%, recalibrado 2026-09-09 — ver
+ * `Investigacion/Investigacion_v2/recalibrar_constantes_hunger_bar.py`).
  */
 import { clasificarEventos } from "./motor-alimentacion";
 
@@ -35,13 +37,17 @@ export const MIN_INTERVALO_H = 0.33; // 20 min: probable misma comida partida en
 export const MAX_INTERVALO_H = 36.0; // gap de datos / ausencia del dueño
 
 export const N_MIN_MUESTRAS = 5; // comidas mínimas del propio pet antes de dejar el fallback
-export const FALLBACK_MEDIANA_H = 5.78; // mediana global real, 249 intervalos válidos KPCL0034
+// Recalibrado 2026-09-09 con `recalibrar_constantes_hunger_bar.py` sobre el
+// histórico completo (305 comidas reales KPCL0034, abril-hoy, ground truth
+// 100% -- antes: 249 intervalos válidos de 254 comidas abr-jul). Mismo
+// criterio de siempre: mediana global real, 297 intervalos válidos.
+export const FALLBACK_MEDIANA_H = 6.12;
 
 // Clamp de display de la barra en vivo (distinto del filtro de outliers de arriba):
 // evita mostrar "próxima comida en 36h" o "en 20 min" como predicción creíble.
-// Valores = P10/P90 reales de los mismos 249 intervalos.
-export const CLAMP_MIN_H = 2.88;
-export const CLAMP_MAX_H = 12.02;
+// Valores = P10/P90 reales de los mismos 297 intervalos.
+export const CLAMP_MIN_H = 2.84;
+export const CLAMP_MAX_H = 12.81;
 
 // v1.1 — alerta visual. Ver Knowledge/05_API/SPEC_HungerBar_Alertas.md.
 // Dispara 2h después de que la barra llega a 0% (estimatedNextMealAt), no 2h
@@ -49,14 +55,14 @@ export const CLAMP_MAX_H = 12.02;
 export const ALERT_THRESHOLD_HOURS = 2;
 
 // KPIs de consumo (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2)
-// — mismas constantes ya calibradas y documentadas en
-// Knowledge/05_API/SPEC_HungerBar_Alimentacion.md §0.1 (254 comidas anotadas
-// reales de KPCL0034), reusadas tal cual, nada nuevo inventado acá.
-export const COMIDAS_DIA_MEDIANA = 4;
+// — recalibrado 2026-09-09 sobre 305 comidas reales KPCL0034 (abril-hoy,
+// ground truth 100%; antes: 254 comidas abr-jul), documentado en
+// Knowledge/05_API/SPEC_HungerBar_Alimentacion.md §0.1.
+export const COMIDAS_DIA_MEDIANA = 3;
 export const COMIDAS_DIA_RANGO: [number, number] = [1, 6];
-export const HORAS_PICO = [19, 5, 16, 10, 17, 6, 7, 9]; // hora local Chile
-export const INTERVALO_P25_H = 3.8;
-export const INTERVALO_P75_H = 8.27;
+export const HORAS_PICO = [5, 19, 10, 17, 16, 6, 7, 9]; // hora local Chile
+export const INTERVALO_P25_H = 4.04;
+export const INTERVALO_P75_H = 8.88;
 
 export type ReadingPoint = {
   recordedAt: string;

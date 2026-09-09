@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * 9 KPIs de consumo de alimento — Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md
- * §2.1/§2.2. Sección independiente de "Barras Sims" (widget protegido, no se toca ni se
+ * 12 KPIs de consumo de alimento — Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md
+ * §2.1/§2.2/§2.3. Sección independiente de "Barras Sims" (widget protegido, no se toca ni se
  * le agrega nada) — mismo criterio que ya define ese spec.
  *
  * Solo aparece si `kpis` no es null (hoy: solo KPCL0034, ver `MOTOR_NUEVO_DEVICE_CODE` en
@@ -24,6 +24,10 @@ type ConsumoKpis = {
   withinOwnerRange: { count: number; total: number; percent: number } | null;
   biggestMealG: number | null;
   smallestMealG: number | null;
+  servedTotalG: number | null;
+  servedToEatenRatio: number | null;
+  appetiteTrendGPerDay: number | null;
+  noiseEventsPerDayMedian: number | null;
 };
 
 const CONSISTENCY_LABEL: Record<
@@ -169,6 +173,45 @@ export default function ConsumoKpisCard({
               : `${Math.round(kpis.biggestMealG)}g / ${Math.round(kpis.smallestMealG ?? 0)}g`
           }
           caption="Extremos del período"
+        />
+        <Tile
+          label="Servido vs. comido"
+          value={
+            kpis.servedToEatenRatio === null
+              ? "—"
+              : `${kpis.servedToEatenRatio.toFixed(2)}x`
+          }
+          caption={
+            kpis.servedTotalG === null
+              ? "Sin eventos de servido detectados"
+              : `${Math.round(kpis.servedTotalG)}g servidos en el período`
+          }
+        />
+        <Tile
+          label="Tendencia de apetito"
+          value={
+            kpis.appetiteTrendGPerDay === null
+              ? "—"
+              : `${kpis.appetiteTrendGPerDay >= 0 ? "+" : ""}${kpis.appetiteTrendGPerDay.toFixed(1)} g/día`
+          }
+          caption={
+            kpis.appetiteTrendGPerDay === null
+              ? "Necesita 2+ días con comidas"
+              : Math.abs(kpis.appetiteTrendGPerDay) < 0.5
+                ? "Estable"
+                : kpis.appetiteTrendGPerDay > 0
+                  ? "Subiendo"
+                  : "Bajando"
+          }
+        />
+        <Tile
+          label="Ruido del sensor"
+          value={
+            kpis.noiseEventsPerDayMedian === null
+              ? "—"
+              : `${kpis.noiseEventsPerDayMedian}/día`
+          }
+          caption="Falsas activaciones detectadas, mediana por día"
         />
       </div>
     </section>

@@ -1,8 +1,11 @@
 /**
- * 9 KPIs de consumo de alimento para mostrar al dueño en `/today` — mismo
- * catálogo diseñado en Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md
- * §2.1, recalculado sobre `Segment[]` (eventos ya clasificados por el motor
- * v2 de `./hunger-bar`, on-demand desde `readings`) en vez de
+ * 12 KPIs de consumo de alimento para mostrar al dueño en `/today` — 9
+ * originales del catálogo diseñado en
+ * Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1, + 3 agregados
+ * 2026-09-09 sobre el mismo `Segment[]` sin fetch aparte (servido vs.
+ * comido, tendencia de apetito, ruido/día — ver §2.3 del mismo spec),
+ * recalculado sobre `Segment[]` (eventos ya clasificados por el motor v2 de
+ * `./hunger-bar`, on-demand desde `readings`) en vez de
  * `pet_sessions`/`pet_daily_summary` (DB de analytics eliminada, ver §2.2 del
  * mismo spec) — mismo tipo de dato, camino distinto, sin DB intermedia.
  *
@@ -46,6 +49,13 @@ export type ConsumoKpis = {
   // #9 — extremos del período.
   biggestMealG: number | null;
   smallestMealG: number | null;
+  // #10 — cuánto sirvió el dueño vs. cuánto comió el gato en el período.
+  servedTotalG: number | null; // null = 0 eventos "servido" en la ventana
+  servedToEatenRatio: number | null; // null = no hay comido o servido con qué dividir
+  // #11 — tendencia de apetito: pendiente de gramos/día (regresión lineal simple).
+  appetiteTrendGPerDay: number | null; // null = menos de 2 días con datos
+  // #12 — falsas activaciones del sensor, como proxy de qué tan sucio/ruidoso está.
+  noiseEventsPerDayMedian: number | null; // null = 0 días con datos en la ventana
 };
 
 const gramsOf = (e: Segment) => Math.abs(e.deltaG);
@@ -161,6 +171,50 @@ export function computeConsumoKpis(
     ? Math.min(...gramosDeCadaComida)
     : null;
 
+  // #10 — servido vs. comido. Suma simple, mismo criterio que #1/#2 (solo la
+  // categoría exacta, sin mezclar con alimentación ni ruido).
+  const servedEvents = events.filter((e) => e.category === "servido");
+  const servedTotalG = servedEvents.length
+    ? servedEvents.reduce((acc, e) => acc + gramsOf(e), 0)
+    : null;
+  const eatenTotalG = gramosDeCadaComida.reduce((acc, g) => acc + g, 0);
+  const servedToEatenRatio =
+    servedTotalG !== null && eatenTotalG > 0
+      ? servedTotalG / eatenTotalG
+      : null;
+
+  // #11 — tendencia: pendiente de gramos/día contra el índice de día (regresión
+  // lineal simple, mínimos cuadrados) -- mismos `gramosPorDia` que ya calcula #7.
+  let appetiteTrendGPerDay: number | null = null;
+  if (totalesDiarios.length >= 2) {
+    const n = totalesDiarios.length;
+    const xs = totalesDiarios.map((_, i) => i);
+    const xMean = mean(xs)!;
+    const yMean = mean(totalesDiarios)!;
+    let num = 0;
+    let den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (xs[i] - xMean) * (totalesDiarios[i] - yMean);
+      den += (xs[i] - xMean) ** 2;
+    }
+    appetiteTrendGPerDay = den > 0 ? num / den : null;
+  }
+
+  // #12 — ruido: falsas activaciones por día, sobre los mismos días que #7
+  // (con al menos una comida real -- evita que un día 100% ruido sin comida
+  // cuente como "0 ruido").
+  const ruidoPorDia = new Map<string, number>();
+  for (const e of events) {
+    if (e.category !== "ruido") continue;
+    const dia = chileDateString(new Date(e.startAt));
+    ruidoPorDia.set(dia, (ruidoPorDia.get(dia) ?? 0) + 1);
+  }
+  const diasConDato = [...gramosPorDia.keys()];
+  const noiseCounts = diasConDato.map((d) => ruidoPorDia.get(d) ?? 0);
+  const noiseEventsPerDayMedian = noiseCounts.length
+    ? [...noiseCounts].sort((a, b) => a - b)[Math.floor(noiseCounts.length / 2)]
+    : null;
+
   return {
     avgDurationMin,
     avgSpeedGPerMin,
@@ -175,5 +229,9 @@ export function computeConsumoKpis(
     withinOwnerRange,
     biggestMealG,
     smallestMealG,
+    servedTotalG,
+    servedToEatenRatio,
+    appetiteTrendGPerDay,
+    noiseEventsPerDayMedian,
   };
 }

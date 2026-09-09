@@ -29,7 +29,7 @@
  *   - JSX: `#today-hero` (Barras Sims — ⚠️ widget sensible, ver
  *     `barras-sims-card.tsx`), `#today-bowls` (cards Alimentación/
  *     Hidratación + Diagnóstico rápido), luego `DayNightTimelineCard`,
- *     `ConsumoKpisCard` (9 KPIs de consumo, SPEC_11 §2.1/§2.2 — independiente
+ *     `ConsumoKpisCard` (12 KPIs de consumo, SPEC_11 §2.1/§2.2/§2.3 — independiente
  *     de Barras Sims) y `OnboardingGuideModal` (los 3 extraídos a
  *     `today/_components/`).
  */
@@ -130,7 +130,7 @@ type HungerBarEvent = {
 };
 
 // Espejo de ConsumoKpis (src/lib/consumo-kpis.ts) -- ver
-// Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2.
+// Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.1/§2.2/§2.3.
 type ConsumoKpis = {
   avgDurationMin: number | null;
   avgSpeedGPerMin: number | null;
@@ -145,6 +145,10 @@ type ConsumoKpis = {
   withinOwnerRange: { count: number; total: number; percent: number } | null;
   biggestMealG: number | null;
   smallestMealG: number | null;
+  servedTotalG: number | null;
+  servedToEatenRatio: number | null;
+  appetiteTrendGPerDay: number | null;
+  noiseEventsPerDayMedian: number | null;
 };
 
 type HungerBarResponse = {

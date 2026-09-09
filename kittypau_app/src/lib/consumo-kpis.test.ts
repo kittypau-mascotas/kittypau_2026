@@ -59,7 +59,7 @@ describe("computeConsumoKpis (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.m
     ];
     const k = computeConsumoKpis(eventos, HOY);
     expect(k.mealsToday).toBe(1);
-    expect(k.mealsExpectedMedian).toBe(4);
+    expect(k.mealsExpectedMedian).toBe(3);
     expect(k.mealsExpectedRange).toEqual([1, 6]);
   });
 
@@ -85,7 +85,7 @@ describe("computeConsumoKpis (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.m
     const base = "2026-04-10T";
     const tipico: Segment[] = [
       comida({ startAt: `${base}14:00:00.000Z` }),
-      comida({ startAt: `${base}19:30:00.000Z` }), // 5.5h -- entre P25=3.8 y P75=8.27
+      comida({ startAt: `${base}19:30:00.000Z` }), // 5.5h -- entre P25=4.04 y P75=8.88
     ];
     expect(computeConsumoKpis(tipico, HOY).intervalConsistency).toBe("tipico");
 
