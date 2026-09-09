@@ -42,7 +42,9 @@ const KIND_CONFIG = {
     emptyAlt: "Sin comedero",
     emptyLabel: "Sin comedero asignado",
     addLabel: "Agregar comedero",
-    illustration: "/illustrations/pink_food_full.png",
+    illustrationFull: "/illustrations/pink_food_full.png",
+    illustrationMedium: "/illustrations/pink_food_medium.png",
+    illustrationEmpty: "/illustrations/pink_empty.png",
     illustrationAlt: "Kittypau comedero",
     contentTitle: "Contenido actual",
     contentIconPath: "M3 6h18M3 12h18M3 18h18",
@@ -62,7 +64,9 @@ const KIND_CONFIG = {
     emptyAlt: "Sin bebedero",
     emptyLabel: "Sin bebedero asignado",
     addLabel: "Agregar bebedero",
-    illustration: "/illustrations/green_water_full.png",
+    illustrationFull: "/illustrations/green_water_full.png",
+    illustrationMedium: "/illustrations/green_water_medium.png",
+    illustrationEmpty: "/illustrations/green_water_empty.png",
     illustrationAlt: "Kittypau bebedero",
     contentTitle: "Nivel actual",
     contentIconPath: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z",
@@ -70,6 +74,18 @@ const KIND_CONFIG = {
     humidityChipClass: "bg-violet-50 text-violet-600",
   },
 } as const;
+
+// Umbrales de qué ilustración de plato mostrar según % de contenido -- pedido
+// explícito de Mauro 2026-09-09: lleno 60-100%, medio 20-59%, vacío 0-19%.
+function illustrationForFill(
+  c: (typeof KIND_CONFIG)[keyof typeof KIND_CONFIG],
+  fillPct: number | null,
+): string {
+  if (fillPct === null) return c.illustrationFull; // sin dato de contenido -- mismo default de siempre
+  if (fillPct >= 60) return c.illustrationFull;
+  if (fillPct >= 20) return c.illustrationMedium;
+  return c.illustrationEmpty;
+}
 
 /** Card de "Alimentación"/"Hidratación" del bloque #today-bowls — un solo componente
  * parametrizado por `kind` en vez de 2 bloques JSX casi idénticos duplicados. */
@@ -165,6 +181,8 @@ export default function BowlWellnessCard({
         )
       : null;
 
+  const illustrationSrc = illustrationForFill(c, fillPct);
+
   return (
     <article
       className={`today-bowl-card rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5`}
@@ -214,7 +232,7 @@ export default function BowlWellnessCard({
         <div className="grid items-center gap-3">
           <div className="flex flex-col items-center py-1">
             <Image
-              src={c.illustration}
+              src={illustrationSrc}
               alt={c.illustrationAlt}
               width={224}
               height={164}
