@@ -37,13 +37,17 @@ export async function resolveFoodDevice(
   return device ? { id: device.id, device_id: device.device_id } : null;
 }
 
-export async function fetchHungerBarForDevice(device: FoodDevice) {
-  const sinceIso = new Date(
-    Date.now() - WINDOW_DAYS * 86_400_000,
-  ).toISOString();
+export async function fetchHungerBarForDevice(
+  device: FoodDevice,
+  options?: { windowDays?: number; maxPages?: number },
+) {
+  const windowDays = options?.windowDays ?? WINDOW_DAYS;
+  const maxPages = options?.maxPages ?? MAX_PAGES;
+  const sinceIso = new Date(Date.now() - windowDays * 86_400_000).toISOString();
 
   const allRows: { recorded_at: string; weight_grams: number | null }[] = [];
-  for (let page = 0; page < MAX_PAGES; page++) {
+  let truncated = false;
+  for (let page = 0; page < maxPages; page++) {
     const start = page * PAGE_SIZE;
     const { data, error } = await supabaseServer
       .from("readings")
@@ -56,6 +60,7 @@ export async function fetchHungerBarForDevice(device: FoodDevice) {
     if (error) throw new Error(error.message);
     if (data) allRows.push(...data);
     if (!data || data.length < PAGE_SIZE) break; // página incompleta = no hay más
+    if (page === maxPages - 1) truncated = true; // se llenó la última página -- puede faltar dato más viejo
   }
 
   const points: ReadingPoint[] = allRows
@@ -65,5 +70,8 @@ export async function fetchHungerBarForDevice(device: FoodDevice) {
       weightGrams: r.weight_grams as number,
     }));
 
-  return computeHungerBar(points, new Date(), device.device_id);
+  return {
+    ...computeHungerBar(points, new Date(), device.device_id),
+    truncated,
+  };
 }

@@ -67,6 +67,7 @@ import BarrasSimsCard from "./_components/barras-sims-card";
 import BowlWellnessCard from "./_components/bowl-wellness-card";
 import DayNightTimelineCard from "./_components/day-night-timeline-card";
 import ConsumoKpisCard from "./_components/consumo-kpis-card";
+import ConsumoPeriodoCard from "./_components/consumo-periodo-card";
 import OnboardingGuideModal from "./_components/onboarding-guide-modal";
 import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
@@ -166,6 +167,25 @@ type HungerBarResponse = {
   events?: HungerBarEvent[];
   kpis?: ConsumoKpis | null;
 };
+
+// "Cuánto come por semana/mes" en vivo -- GET /api/pets/:id/consumo-periodo.
+// Endpoint aparte de hunger-bar (ver ese route.ts): ventana 3x más larga,
+// se pide 1 sola vez al montar la página, no cada 5 min.
+type ConsumoPeriodo = {
+  gramos: number;
+  comidas: number;
+  diasConDatos: number;
+  diasTotales: number;
+};
+type ConsumoPeriodoResponse =
+  | { status: "sin_dispositivo" }
+  | {
+      status: "ok";
+      semana: ConsumoPeriodo;
+      mes: ConsumoPeriodo;
+      ventanaDias: number;
+      truncated: boolean;
+    };
 
 // v1.1 — gradiente continuo verde→amarillo→rojo. Ver
 // Knowledge/05_API/SPEC_HungerBar_Alertas.md §2.
@@ -1046,6 +1066,32 @@ export default function TodayPage() {
     return () => {
       cancelled = true;
       clearInterval(interval);
+    };
+  }, [primaryPet?.id]);
+
+  // Semana/mes -- una sola carga al montar (no cada 5 min como el de arriba,
+  // ver comentario del tipo). Si falla, se muestra como "sin dato" -- nunca
+  // bloquea el resto de la página.
+  const [consumoPeriodo, setConsumoPeriodo] =
+    useState<ConsumoPeriodoResponse | null>(null);
+  useEffect(() => {
+    if (!primaryPet?.id) {
+      setConsumoPeriodo(null);
+      return;
+    }
+    let cancelled = false;
+    authFetch(`/api/pets/${primaryPet.id}/consumo-periodo`)
+      .then((res) =>
+        res.ok ? (res.json() as Promise<ConsumoPeriodoResponse>) : null,
+      )
+      .then((data) => {
+        if (!cancelled) setConsumoPeriodo(data);
+      })
+      .catch(() => {
+        if (!cancelled) setConsumoPeriodo(null);
+      });
+    return () => {
+      cancelled = true;
     };
   }, [primaryPet?.id]);
 
@@ -2721,6 +2767,7 @@ export default function TodayPage() {
           />
 
           <ConsumoKpisCard kpis={hungerBar?.kpis ?? null} />
+          <ConsumoPeriodoCard data={consumoPeriodo} />
         </header>
 
         {state.error ? (

@@ -248,14 +248,21 @@ valores nuevos y `Investigacion/Investigacion_v2/recalibrar_constantes_hunger_ba
 > `servedToEatenRatio`, `appetiteTrendGPerDay`, `noiseEventsPerDayMedian`) + 3 tiles nuevos
 > en `<ConsumoKpisCard>`. `tsc`/`vitest` (15/15 de los dos archivos afectados) limpios.
 
-**Qué queda fuera, a propósito:** "cuánto come por semana/mes" con dato en vivo real —
-`WINDOW_DAYS=10` (`hunger-bar/route.ts`) nunca trae más de 10 días de `readings`, así que
-"por semana" es aproximado (última semana parcial dentro de la ventana) y "por mes" es
-matemáticamente imposible sin subir esa constante (costo: más filas de Supabase leídas y
-procesadas en cada carga de `/today`, on-demand, sin caché más allá de 30s). Decisión de si
-vale la pena ese costo: pendiente, no tomada unilateralmente acá. Mientras tanto, el
-histórico completo (155 días, abril-hoy) queda disponible como referencia offline en
-`Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`, no en la app en vivo.
+> ✅ **Hecho (2026-09-09):** Mauro confirmó que vale el costo. `GET
+> /api/pets/:id/consumo-periodo` (endpoint nuevo, aparte de `/hunger-bar`) trae una ventana
+> de 32 días (`WINDOW_DIAS`/`MAX_PAGES` propios en `fetchHungerBarForDevice()`, generalizada
+> para aceptar overrides) y suma gramos de comidas confirmadas de los últimos 7 y 30 días.
+> Deliberadamente NO es el mismo endpoint que `/hunger-bar` -- ese se pollea cada 5 min desde
+> `today/page.tsx`; recorrer 32 días de `readings` en cada poll sería carísimo para un número
+> que casi no cambia minuto a minuto. El frontend lo pide **una sola vez** al montar la
+> página, con `Cache-Control` de 10 min (vs. 30s del otro). "Semana"/"mes" = últimos 7/30 días
+> rodantes, no semana/mes calendario -- mismo criterio que ya usaba el diseño original de
+> §2.1. `<ConsumoPeriodoCard>` nueva, debajo de `<ConsumoKpisCard>` en `/today`. Si el
+> comedero reporta tan seguido que se llena el tope de páginas (`truncated: true`), la UI
+> avisa que el número es un piso, no el total exacto -- nunca miente en silencio.
+>
+> El histórico completo (155 días, abril-hoy) sigue disponible además como referencia
+> offline en `Investigacion/Investigacion_v2/kpis_historicos_kpcl0034.py`.
 
 ---
 
