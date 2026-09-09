@@ -44,6 +44,7 @@ import "@/lib/charts";
 import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
 import { useHungerBarEventNotifications } from "@/lib/hooks/useHungerBarEventNotifications";
+import { usePushTokenRegistration } from "@/lib/hooks/usePushTokenRegistration";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -1065,6 +1066,11 @@ export default function TodayPage() {
     petName: petLabel,
     events: hungerBar?.events,
   });
+  // Registra el token FCM del celular -- pieza que hace que el aviso de
+  // "comió"/"le sirvieron" también llegue con la app cerrada, vía el cron
+  // server-side (/api/cron/notify-meal-events). Ver
+  // Knowledge/29_Specs/008-push-notifications-fcm/plan.md.
+  usePushTokenRegistration(isAuthed === true);
   const petTypeLabel =
     primaryPet?.type === "dog"
       ? "Perro"

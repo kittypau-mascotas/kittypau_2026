@@ -29,9 +29,11 @@
   },
   "dependencies": {
     "@capacitor/local-notifications": "^8.2.1",
+    "@capacitor/push-notifications": "^8.1.2",
     "@supabase/supabase-js": "^2.106.1",
     "@vercel/analytics": "^2.0.1",
     "chart.js": "^4.5.1",
+    "firebase-admin": "^14.3.0",
     "framer-motion": "^12.42.2",
     "lucide-react": "^0.542.0",
     "mqtt": "^5.10.4",
