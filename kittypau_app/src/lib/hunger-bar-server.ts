@@ -1,6 +1,8 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { computeHungerBar, type ReadingPoint } from "@/lib/hunger-bar";
 import { isFoodDeviceRole } from "@/lib/device-role";
+import { computeConsumoKpis } from "@/lib/consumo-kpis";
+import { chileDateString } from "@/lib/time/chile";
 
 /**
  * Parte server-only de `GET /api/pets/:id/hunger-bar` (resolver el comedero
@@ -73,5 +75,81 @@ export async function fetchHungerBarForDevice(
   return {
     ...computeHungerBar(points, new Date(), device.device_id),
     truncated,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Shaping de respuesta de /today -- extraído de las rutas
+// `GET /api/pets/:id/hunger-bar` y `.../consumo-periodo` para que la ruta
+// autenticada y el endpoint público de la demo (`GET /api/demo/today`,
+// Knowledge/29_Specs/009-demo-today-en-vivo) produzcan EXACTAMENTE el mismo
+// JSON desde la misma función. Cero cambio de lógica -- solo movido.
+// ---------------------------------------------------------------------------
+
+const CONSUMO_PERIODO_WINDOW_DIAS = 32; // 30 días + margen para "mes" completo
+const CONSUMO_PERIODO_MAX_PAGES = 100; // ~100k filas -- margen sobre lo medido en KPCL0034
+
+type OwnerRangePet = {
+  food_normal_min_g?: number | null;
+  food_normal_max_g?: number | null;
+};
+
+/** `{ ...hungerBar, kpis }` -- mismo shape que devuelve `GET /api/pets/:id/hunger-bar`. */
+export async function buildHungerBarPayload(
+  device: FoodDevice,
+  pet: OwnerRangePet,
+) {
+  const result = await fetchHungerBarForDevice(device);
+  const ownerRange =
+    pet.food_normal_min_g != null && pet.food_normal_max_g != null
+      ? { minG: pet.food_normal_min_g, maxG: pet.food_normal_max_g }
+      : null;
+  const kpis = computeConsumoKpis(result.events, new Date(), ownerRange);
+  return { ...result, kpis };
+}
+
+/** `{ status, semana, mes, ventanaDias, truncated }` -- mismo shape que
+ *  `GET /api/pets/:id/consumo-periodo` (status "ok"). */
+export async function buildConsumoPeriodoPayload(device: FoodDevice) {
+  const result = await fetchHungerBarForDevice(device, {
+    windowDays: CONSUMO_PERIODO_WINDOW_DIAS,
+    maxPages: CONSUMO_PERIODO_MAX_PAGES,
+  });
+
+  const comidas = result.events.filter((e) => e.category === "alimentacion");
+  const gramosPorDia = new Map<string, number>();
+  for (const e of comidas) {
+    const dia = chileDateString(new Date(e.startAt));
+    gramosPorDia.set(dia, (gramosPorDia.get(dia) ?? 0) + Math.abs(e.deltaG));
+  }
+
+  function totalUltimosDias(dias: number) {
+    const desde = chileDateString(new Date(Date.now() - dias * 86_400_000));
+    let gramos = 0;
+    let diasConDatos = 0;
+    for (const [dia, g] of gramosPorDia) {
+      if (dia < desde) continue;
+      gramos += g;
+      diasConDatos++;
+    }
+    const comidasEnVentana = comidas.filter(
+      (e) => chileDateString(new Date(e.startAt)) >= desde,
+    ).length;
+    return {
+      gramos: Math.round(gramos),
+      comidas: comidasEnVentana,
+      diasConDatos,
+      diasTotales: dias,
+    };
+  }
+
+  return {
+    status: "ok" as const,
+    semana: totalUltimosDias(7),
+    mes: totalUltimosDias(30),
+    ventanaDias: CONSUMO_PERIODO_WINDOW_DIAS,
+    truncated: result.truncated,
+    // diagnóstico -- no va en la respuesta HTTP, lo usa el logging de la ruta
+    diasConDatosVentana: gramosPorDia.size,
   };
 }

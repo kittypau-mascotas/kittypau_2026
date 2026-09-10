@@ -6,9 +6,8 @@ import {
   startRequestTimer,
 } from "../../../_utils";
 import { supabaseServer } from "@/lib/supabase/server";
-import { computeConsumoKpis } from "@/lib/consumo-kpis";
 import {
-  fetchHungerBarForDevice,
+  buildHungerBarPayload,
   resolveFoodDevice,
 } from "@/lib/hunger-bar-server";
 
@@ -74,9 +73,11 @@ export async function GET(
     });
   }
 
-  let result;
+  // KPIs de consumo (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.2)
+  // -- shaping compartido con `GET /api/demo/today` en @/lib/hunger-bar-server.
+  let payload;
   try {
-    result = await fetchHungerBarForDevice(device);
+    payload = await buildHungerBarPayload(device, pet);
   } catch (err) {
     return apiError(
       req,
@@ -86,28 +87,14 @@ export async function GET(
     );
   }
 
-  // KPIs de consumo (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.2)
-  // -- sobre el mismo `events` que ya calculó computeHungerBar, sin fetch aparte.
-  const ownerRange =
-    pet.food_normal_min_g != null && pet.food_normal_max_g != null
-      ? {
-          minG: pet.food_normal_min_g as number,
-          maxG: pet.food_normal_max_g as number,
-        }
-      : null;
-  const kpis = computeConsumoKpis(result.events, new Date(), ownerRange);
-
   logRequestEnd(req, startedAt, 200, {
     pet_id: petId,
-    events: result.events.length,
-    sample_size: result.sampleSize,
+    events: payload.events.length,
+    sample_size: payload.sampleSize,
   });
-  return NextResponse.json(
-    { ...result, kpis },
-    {
-      headers: {
-        "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
-      },
+  return NextResponse.json(payload, {
+    headers: {
+      "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
     },
-  );
+  });
 }
