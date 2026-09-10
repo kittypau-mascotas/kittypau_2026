@@ -200,3 +200,9 @@ Docs/11_Data/2026/readings_rows.csv
 Docs/09_Investigacion/kpcl0034_kpcl0036_prueba_sincargador.csv
 Docs/11_Data/**/*.csv
 Docs/09_Investigacion/**/*.csv
+# Estado local de Obsidian (UI por máquina, churn constante — no compartir)
+Knowledge/.obsidian/workspace.json
+Knowledge/.obsidian/graph.json
+
+# Datos de trabajo derivados de Investigacion v2 (CSV/JSON/backups regenerables)
+Investigacion/Investigacion_v2/data/
