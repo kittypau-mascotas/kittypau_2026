@@ -44,7 +44,7 @@ const K = {
   recordedAt: "kittypau_demo_recorded_at",
 } as const;
 
-// Claves legado del chatbot-gato / flujos viejos (`/client-demo`, `/test`) --
+// Claves legado del "gato guía" / flujos viejos (`/client-demo`, `/test`) --
 // se limpian siempre que se escribe o se resetea la identidad.
 const LEGACY_KEYS = [
   "kittypau_demo_show_rpg",

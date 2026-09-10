@@ -67,7 +67,7 @@ Layout propio: `(app)/layout.tsx` (13 líneas) — envuelve todo en `<AppDataPro
 |---|---|---|---|
 | `inicio/` | `/inicio` | 20 líneas | **Solo redirect** a `/today` (`router.replace`). No es un dashboard propio — el nombre es heredado, el dashboard real es `today/`. |
 | `today/` | `/today` | 2468 líneas | Pantalla principal: actividad del día, Barras Sims (comida/agua), wellness de plato, timeline día/noche, hunger bar, modo guía. El `page.tsx` más grande de la app después de `admin/`; parcialmente extraído a `today/_components/` y `today/_lib/` (ver [[18_UI/Componentes/README_Componentes]]). |
-| `today/_components/` | — | — | `barras-sims-card.tsx`, `bowl-wellness-card.tsx`, `day-night-timeline-card.tsx`, `onboarding-guide-modal.tsx` — componentes presentacionales extraídos de `today/page.tsx`. Privados a esta ruta (nadie más los importa). |
+| `today/_components/` | — | — | `today-screen.tsx` (el cuerpo entero de la vista, extraído de `page.tsx` — `page.tsx` quedó como wrapper de ~6 líneas; `<TodayScreen mode="authed"\|"demo">` para poder reusar la MISMA vista en `/demo` sin forkear, ver [[29_Specs/009-demo-today-en-vivo/plan]]), `barras-sims-card.tsx`, `bowl-wellness-card.tsx`, `day-night-timeline-card.tsx`, `consumo-kpis-card.tsx`, `consumo-periodo-card.tsx`, `onboarding-guide-modal.tsx`. **`today-screen.tsx` SÍ lo importa `(public)/demo/page.tsx`** (cross-group) — el resto son privados a la ruta. |
 | `today/_lib/` | — | — | `today-format.tsx` — helpers puros de formato (labels de batería/conectividad, `renderTrend`, clases de tono) sin estado, movidos fuera de `page.tsx`. |
 | `bowl/` | `/bowl` | 1825 líneas | Monitoreo en vivo del comedero vía MQTT directo desde el browser (`useMqttLive`) — peso, estado, sin polling. |
 | `pet/` | `/pet` | 907 líneas | Perfil de la mascota (datos, foto, historial de dispositivo asociado). |
@@ -78,7 +78,7 @@ Layout propio: `(app)/layout.tsx` (13 líneas) — envuelve todo en `<AppDataPro
 | `registro/` | `/registro` | 21 líneas | **Solo redirect** a `/login?register=1`. El flujo real de alta de cuenta+mascota+dispositivo (`RegistroFlow`, 4 pasos) vive en `(public)/login/_components/`, no acá — ver nota de reorganización más abajo. |
 | `admin/` | `/admin` | 3799 líneas (bajando — extracción por componentes en curso, ver [[29_Specs/SPEC_02_UIUX_Mejoras]] A-C1) | Panel administrador — sigue siendo el `page.tsx` más grande de toda la app. Dashboard con métricas, salud del sistema, dispositivos, mascotas. |
 | `admin/_components/` | — | — | `section-status-card.tsx`, `avisos-criticos-card.tsx`, `kpi-ejecutivos-card.tsx`, `modelos-negocio-card.tsx` — batch 1 de la extracción de `admin/page.tsx`, mismo patrón que `today/_components/` (cálculo queda en el page.tsx, el componente solo renderiza). |
-| `admin/demo-ingresos/` | `/admin/demo-ingresos` | 148 líneas | Lista de leads capturados desde `/demo` (tabla con email, mascota, primer/último visto, contador). |
+| `admin/demo-ingresos/` | `/admin/demo-ingresos` | ~155 líneas | Lista de leads capturados desde `/demo` (email —o "(sin email)"—, titular, mascota, tipo, source, primer/último visto, contador). Dedup por email o, si el visitante entró sin correo, por `visitor_id` (spec 009 US3). |
 | `admin/javo/` | `/admin/javo` | 368 líneas | Panel interno de seguimiento de proyectos (bridge/firmware/app/docs) — no es data de mascotas, es tracking de trabajo técnico ("Javo" = apodo del proyecto). |
 
 > ⚠️ `admin/alerts`, `admin/analytics`, `admin/devices`, `admin/legacy`, `admin/overview`,
@@ -94,12 +94,12 @@ Sin layout propio — hereda directo del root `layout.tsx`.
 
 | Carpeta | Ruta | `page.tsx` | Función |
 |---|---|---|---|
-| `login/` | `/login` | 1977 líneas | Login + modal de registro (`?register=1`, abre `RegistroFlow`) + demo animada del gato (trial dialog con typing effect, easter egg). El segundo `page.tsx` más grande de la app. |
+| `login/` | `/login` | ~2200 líneas | Login + modal de registro (`?register=1`, abre `RegistroFlow`; precarga dueño/mascota desde `kittypau_demo_*` si viene de "Crear cuenta" en `/demo`) + modal "Personaliza tu demo" (perro/gato + dueño + mascota, sin email) que lleva a `/demo`. El "gato guía" animado (trial dialog IA con typing) se **eliminó** (spec 009 US4). Sigue siendo un monolito grande. |
 | `login/_components/` | — | — | `registro-flow.tsx` — flujo de 4 pasos (cuenta → usuario → mascota → dispositivo). Movido acá el 2026-08-11: es el único consumidor real, `(app)/registro/page.tsx` solo redirige. |
 | `reset/` | `/reset` | 165 líneas | Reset de contraseña (llega desde el link del email de Supabase Auth). |
-| `demo/` | `/demo` | 557 líneas | Demo pública sin login, acepta `?menu=today\|story\|pet\|bowl` para mostrar cada pantalla con datos de ejemplo. Usa `AppNav` (por eso ese componente tuvo que subir a `_components/` top-level). |
-| `client-demo/` | `/client-demo` | 35 líneas | Verificado en vivo: renderiza el mismo contenido que `/demo` (wrapper/alias). |
-| `test/` | `/test` | 41 líneas | Verificado en vivo: igual que `/demo` — no es una página de test real. |
+| `demo/` | `/demo` | ~280 líneas | **Reescrita (spec 009).** Demo pública de UNA vista: pop-up "datos reales de un gato real desde abril 2026" (1×/sesión) → form "Personaliza tu demo" (perro/gato + dueño + mascota, sin email) → **`<TodayScreen mode="demo">`** = espejo EXACTO de `/today` de la mascota de demo con datos reales en vivo, con el nombre/dueño/avatar-gif del visitante encima + CTA "Crear cuenta". Ya NO acepta `?menu=`, ya NO usa `AppNav`, ya NO tiene datos de ejemplo ni gato guía. Lee el bundle de `GET /api/demo/today`. |
+| `client-demo/` | `/client-demo` | 6 líneas | `redirect("/demo")` — alias legado (spec 009 FR-019). |
+| `test/` | `/test` | 6 líneas | `redirect("/demo")` — alias legado (spec 009 FR-019). |
 | `404/` | `/404` | 5 líneas | Ver nota en §1 — alias navegable de `not-found.tsx` para la APK. |
 | `error/` | `/error` | 14 líneas | Ver nota en §1 — alias navegable de `error.tsx`/`global-error.tsx`, acepta `?type=` (`inferKittypauErrorTypeFromError`/`parseKittypauErrorType`). |
 
@@ -153,8 +153,8 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 | `mqtt/webhook/` | Ingesta de lecturas desde el bridge MQTT → Supabase. |
 | `bridge/heartbeat/`, `bridge/health-check/` | Salud del bridge Raspberry. |
 | `admin/access/`, `admin/overview/`, `admin/health-check/`, `admin/demo-ingresos/`, `admin/tests/run-all/`, `admin/finance/kpcl-catalog/` | Backend del panel `/admin`. |
-| `demo/ingreso/` | Captura de leads desde `/demo` (alimenta `admin/demo-ingresos`). |
-| `chatbot-gato/` | Backend del chatbot IA (ver `src/chatbot-gato/`). |
+| `demo/ingreso/` | Captura de leads desde `/demo` (alimenta `admin/demo-ingresos`). Acepta lead sin email (dedup por `visitor_id`), best-effort — si la RPC `record_demo_ingreso_v2` no está aplicada todavía, no rompe. |
+| `demo/today/` | `GET /api/demo/today` — bundle público (sin sesión, solo lectura, rate-limited, scoped a los 2 devices de demo por env) con lo que `<TodayScreen mode="demo">` necesita. Sub-shapes de `hunger-bar` / `consumo-periodo` compartidos con las rutas autenticadas vía `lib/hunger-bar-server.ts`. Spec 009. |
 | `profiles/` | Perfil de usuario/cuenta. |
 
 ---

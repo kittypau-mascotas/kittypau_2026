@@ -90,10 +90,10 @@ la identidad real de Bandida.
 **Independent Test**: en la demo, usar el CTA y verificar que el registro conoce esos valores sin
 re-pedirlos; cerrar y volver a la demo en el mismo navegador y confirmar que no re-pide todo.
 
-- [ ] T020 [US2] Agregar el CTA "Crear cuenta" visible en la vista de demo (en `kittypau_app/src/app/(public)/demo/page.tsx`, junto a `<TodayScreen mode="demo">`), sin alterar el layout espejado
-- [ ] T021 [US2] Cablear el CTA al flujo de registro de `kittypau_app/src/app/(public)/login/page.tsx` llevando `petName` / `ownerName` / `petType` desde `DemoIdentity` — reutilizar el mecanismo de "resume/prefill" existente (`setRegisterPetName` / `setRegisterUserName` / `registerStep="registro"`, ver `login/page.tsx:790-980`); este CTA es **el único lugar** donde se pide el email (FR-009)
-- [ ] T022 [US2] Confirmar persistencia (FR-010): `demo/page.tsx` re-lee `readDemoIdentity()` al montar y saltea el form si hay identidad; sin pérdida a mitad de flujo (si no hay nada recordado, se vuelve a pedir explícitamente)
-- [ ] T023 [US2] Validación manual: quickstart §4 paso 4 + escenarios de aceptación de US2
+- [X] T020 [US2] Agregar el CTA "Crear cuenta" visible en la vista de demo (en `kittypau_app/src/app/(public)/demo/page.tsx`, junto a `<TodayScreen mode="demo">`), sin alterar el layout espejado
+- [X] T021 [US2] Cablear el CTA al flujo de registro de `kittypau_app/src/app/(public)/login/page.tsx` llevando `petName` / `ownerName` / `petType` desde `DemoIdentity` — reutilizar el mecanismo de "resume/prefill" existente (`setRegisterPetName` / `setRegisterUserName` / `registerStep="registro"`, ver `login/page.tsx:790-980`); este CTA es **el único lugar** donde se pide el email (FR-009)
+- [X] T022 [US2] Confirmar persistencia (FR-010): `demo/page.tsx` re-lee `readDemoIdentity()` al montar y saltea el form si hay identidad; sin pérdida a mitad de flujo (si no hay nada recordado, se vuelve a pedir explícitamente)
+- [~] T023 [US2] Validación manual: quickstart §4 paso 4 + escenarios de aceptación de US2
 
 **Checkpoint**: US1 y US2 funcionan de forma independiente.
 
@@ -107,13 +107,13 @@ email vacío hasta el CTA; sin duplicados para el mismo visitante.
 **Independent Test**: usar la demo con datos nuevos sin email → aparece una fila con dueño + tipo,
 email vacío; volver desde el mismo navegador → no se duplica.
 
-- [ ] T024 [US3] **CHECKPOINT Principio III**: obtener OK explícito de Mauro para cambiar el schema de `demo_ingresos`. Si lo niega → activar fallback (omitir T025–T027, mantener `400 MISSING_EMAIL`, anotar en `PENDIENTES_POR_PC.md`) y hacer solo T028 parcial (panel tolera email vacío para leads que sí lo tengan)
-- [ ] T025 [US3] Escribir `supabase/migrations/2026XXXXXXXXXX_demo_ingresos_sin_email.sql` (data-model §3): `email` `drop not null`; `add column visitor_id text`; `add column pet_type text`; `create unique index demo_ingresos_visitor_uniq on public.demo_ingresos (visitor_id) where email is null`; reemplazar el check de formato por `check (email is null or position('@' in email) > 1)`; `create function public.record_demo_ingreso_v2(p_visitor_id text, p_email text, p_owner_name text, p_pet_name text, p_pet_type text, p_source text) returns public.demo_ingresos` con `set search_path = public, pg_temp` y la lógica de upsert por email / por `visitor_id where email is null`
-- [ ] T026 [US3] Aplicar la migración a Supabase (solo tras T024 OK): `supabase db push` o SQL en el dashboard; verificar columnas `visitor_id` / `pet_type`, el índice parcial y la función `record_demo_ingreso_v2`
-- [ ] T027 [US3] Modificar `kittypau_app/src/app/api/demo/ingreso/route.ts` ([contracts/demo-ingreso-api.md](./contracts/demo-ingreso-api.md)): aceptar body sin `email`; exigir `visitor_id` (`400 MISSING_VISITOR_ID` en vez de `MISSING_EMAIL`); parsear y pasar `pet_type`; llamar `record_demo_ingreso_v2`; `audit_events` sin cambios; rate-limit `:demo-ingreso` sin cambios
-- [ ] T028 [US3] Actualizar `kittypau_app/src/app/(app)/admin/demo-ingresos/page.tsx` (y `kittypau_app/src/app/api/admin/demo-ingresos/route.ts` si hace falta el select): mostrar columnas `owner_name` y `pet_type`; tolerar `email` vacío/`null` usando `pet_name` / `owner_name` como etiqueta
-- [ ] T029 [US3] En `kittypau_app/src/app/(public)/demo/page.tsx` (submit del form) y `kittypau_app/src/app/(public)/login/page.tsx` (`recordDemoIngreso` / `startTrial`): mandar `visitor_id` (de `ensureVisitorId()`) y `pet_type` en el beacon; `email` opcional. Cambio quirúrgico — solo el payload del beacon
-- [ ] T030 [US3] Validación manual: quickstart §4 (lead con y sin email, dedupe por `visitor_id`, sin duplicados al reingresar, SC-007)
+- [~] T024 [US3] **CHECKPOINT Principio III**: obtener OK explícito de Mauro para cambiar el schema de `demo_ingresos`. Si lo niega → activar fallback (omitir T025–T027, mantener `400 MISSING_EMAIL`, anotar en `PENDIENTES_POR_PC.md`) y hacer solo T028 parcial (panel tolera email vacío para leads que sí lo tengan)
+- [X] T025 [US3] Escribir `supabase/migrations/2026XXXXXXXXXX_demo_ingresos_sin_email.sql` (data-model §3): `email` `drop not null`; `add column visitor_id text`; `add column pet_type text`; `create unique index demo_ingresos_visitor_uniq on public.demo_ingresos (visitor_id) where email is null`; reemplazar el check de formato por `check (email is null or position('@' in email) > 1)`; `create function public.record_demo_ingreso_v2(p_visitor_id text, p_email text, p_owner_name text, p_pet_name text, p_pet_type text, p_source text) returns public.demo_ingresos` con `set search_path = public, pg_temp` y la lógica de upsert por email / por `visitor_id where email is null`
+- [~] T026 [US3] Aplicar la migración a Supabase (solo tras T024 OK): `supabase db push` o SQL en el dashboard; verificar columnas `visitor_id` / `pet_type`, el índice parcial y la función `record_demo_ingreso_v2`
+- [X] T027 [US3] Modificar `kittypau_app/src/app/api/demo/ingreso/route.ts` ([contracts/demo-ingreso-api.md](./contracts/demo-ingreso-api.md)): aceptar body sin `email`; exigir `visitor_id` (`400 MISSING_VISITOR_ID` en vez de `MISSING_EMAIL`); parsear y pasar `pet_type`; llamar `record_demo_ingreso_v2`; `audit_events` sin cambios; rate-limit `:demo-ingreso` sin cambios
+- [X] T028 [US3] Actualizar `kittypau_app/src/app/(app)/admin/demo-ingresos/page.tsx` (y `kittypau_app/src/app/api/admin/demo-ingresos/route.ts` si hace falta el select): mostrar columnas `owner_name` y `pet_type`; tolerar `email` vacío/`null` usando `pet_name` / `owner_name` como etiqueta
+- [X] T029 [US3] En `kittypau_app/src/app/(public)/demo/page.tsx` (submit del form) y `kittypau_app/src/app/(public)/login/page.tsx` (`recordDemoIngreso` / `startTrial`): mandar `visitor_id` (de `ensureVisitorId()`) y `pet_type` en el beacon; `email` opcional. Cambio quirúrgico — solo el payload del beacon
+- [~] T030 [US3] Validación manual: quickstart §4 (lead con y sin email, dedupe por `visitor_id`, sin duplicados al reingresar, SC-007)
 
 **Checkpoint**: US1, US2 y US3 funcionan de forma independiente.
 
@@ -127,11 +127,11 @@ email vacío; volver desde el mismo navegador → no se duplica.
 **Independent Test**: `grep` de los 7 términos → 0 resultados; `tsc`/`eslint`/`build` limpios;
 login (login, registro, botón Demo App) funciona.
 
-- [ ] T031 [US4] Edición quirúrgica de `kittypau_app/src/app/(public)/login/page.tsx`: quitar imports `@/chatbot-gato/client` / `/login-context` / `/runtime` (~39-41), la llamada `buildChatbotRuntime({ page: "login" })` (~247) + estado/refs asociados, la llamada `fetchChatbotGatoResponse(...)` (~305) + el bloque del easter-egg del gato tipeado, reemplazar `LOGIN_CHATBOT_CONTEXT.modal.primaryCta` (~2347) por copy literal, y quitar `window.localStorage.setItem("kittypau_demo_show_rpg", "1")` (~1431). Nada más del login se toca
-- [ ] T032 [US4] Borrar la carpeta `kittypau_app/src/chatbot-gato/` (13 archivos) y `kittypau_app/src/app/api/chatbot-gato/route.ts`
-- [ ] T033 [US4] Quitar de `kittypau_app/src/app/globals.css` los bloques `.trial-rpg-*`, `@keyframes trial-rpg-*` y `.login-trial-dialog-scene .trial-rpg-*`; **conservar** `.login-trial-overlay` / `.login-trial-modal` / `.login-trial-input` / `.login-trial-submit` / `.login-trial-cancel` (modal "Personaliza tu demo")
-- [ ] T034 [P] [US4] Convertir `kittypau_app/src/app/(public)/client-demo/page.tsx` y `kittypau_app/src/app/(public)/test/page.tsx` en redirects permanentes a `/demo` (`redirect("/demo")` server-side), sin identidad hardcodeada ni `?menu=` (FR-019)
-- [ ] T035 [US4] Verificar SC-009: `grep -rn "chatbot-gato\|TrialRpg\|trial-rpg\|fetchChatbotGatoResponse\|DEMO_SCREEN_CONTEXT\|LOGIN_CHATBOT_CONTEXT\|buildChatbotRuntime" kittypau_app/src` → 0; `npx tsc --noEmit` + `npx eslint src` + `npm run build` limpios; quickstart §7 (login funciona sin el gato) y §8 (alias redirigen)
+- [X] T031 [US4] Edición quirúrgica de `kittypau_app/src/app/(public)/login/page.tsx`: quitar imports `@/chatbot-gato/client` / `/login-context` / `/runtime` (~39-41), la llamada `buildChatbotRuntime({ page: "login" })` (~247) + estado/refs asociados, la llamada `fetchChatbotGatoResponse(...)` (~305) + el bloque del easter-egg del gato tipeado, reemplazar `LOGIN_CHATBOT_CONTEXT.modal.primaryCta` (~2347) por copy literal, y quitar `window.localStorage.setItem("kittypau_demo_show_rpg", "1")` (~1431). Nada más del login se toca
+- [X] T032 [US4] Borrar la carpeta `kittypau_app/src/chatbot-gato/` (13 archivos) y `kittypau_app/src/app/api/chatbot-gato/route.ts`
+- [X] T033 [US4] Quitar de `kittypau_app/src/app/globals.css` los bloques `.trial-rpg-*`, `@keyframes trial-rpg-*` y `.login-trial-dialog-scene .trial-rpg-*`; **conservar** `.login-trial-overlay` / `.login-trial-modal` / `.login-trial-input` / `.login-trial-submit` / `.login-trial-cancel` (modal "Personaliza tu demo")
+- [X] T034 [P] [US4] Convertir `kittypau_app/src/app/(public)/client-demo/page.tsx` y `kittypau_app/src/app/(public)/test/page.tsx` en redirects permanentes a `/demo` (`redirect("/demo")` server-side), sin identidad hardcodeada ni `?menu=` (FR-019)
+- [X] T035 [US4] Verificar SC-009: `grep -rn "chatbot-gato\|TrialRpg\|trial-rpg\|fetchChatbotGatoResponse\|DEMO_SCREEN_CONTEXT\|LOGIN_CHATBOT_CONTEXT\|buildChatbotRuntime" kittypau_app/src` → 0; `npx tsc --noEmit` + `npx eslint src` + `npm run build` limpios; quickstart §7 (login funciona sin el gato) y §8 (alias redirigen)
 
 **Checkpoint**: repo sin chatbot-gato; las 4 historias funcionan.
 
@@ -139,11 +139,11 @@ login (login, registro, botón Demo App) funciona.
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [ ] T036 [P] Actualizar `Knowledge/04_Frontend/ESTRUCTURA_src_app.md`: la `/demo` cambió de concepto (datos de ejemplo → espejo en vivo de `/today`, una sola vista); se fue el chatbot-gato; nuevo `GET /api/demo/today`; seam `<TodayScreen>` + deuda documentada
-- [ ] T037 [P] Actualizar `Knowledge/19_DevOps/PENDIENTES_POR_PC.md`: mover lo hecho a "Completado"; registrar el estado del checkpoint de la migración `demo_ingresos` (aplicada / pendiente con fallback)
-- [ ] T038 [P] Agregar comentarios `ponytail:` marcando la deuda explícita: shape del bundle en `kittypau_app/src/app/api/demo/today/route.ts` y `loadReadings` no-op en `kittypau_app/src/lib/demo/demo-data-source.ts` (FR-016)
-- [ ] T039 Gate completo en `kittypau_app/`: `npx tsc --noEmit`, `npx eslint src`, `npx vitest run`, `npm run build` — todo limpio
-- [ ] T040 Ejecutar quickstart.md §1–§9 end-to-end + "Checklist de release"; seguir el protocolo de 2 PCs de `Knowledge/19_DevOps/README_DevOps.md` antes de `git push`
+- [X] T036 [P] Actualizar `Knowledge/04_Frontend/ESTRUCTURA_src_app.md`: la `/demo` cambió de concepto (datos de ejemplo → espejo en vivo de `/today`, una sola vista); se fue el chatbot-gato; nuevo `GET /api/demo/today`; seam `<TodayScreen>` + deuda documentada
+- [X] T037 [P] Actualizar `Knowledge/19_DevOps/PENDIENTES_POR_PC.md`: mover lo hecho a "Completado"; registrar el estado del checkpoint de la migración `demo_ingresos` (aplicada / pendiente con fallback)
+- [X] T038 [P] Agregar comentarios `ponytail:` marcando la deuda explícita: shape del bundle en `kittypau_app/src/app/api/demo/today/route.ts` y `loadReadings` no-op en `kittypau_app/src/lib/demo/demo-data-source.ts` (FR-016)
+- [~] T039 Gate completo en `kittypau_app/`: `npx tsc --noEmit`, `npx eslint src`, `npx vitest run`, `npm run build` — todo limpio
+- [~] T040 Ejecutar quickstart.md §1–§9 end-to-end + "Checklist de release"; seguir el protocolo de 2 PCs de `Knowledge/19_DevOps/README_DevOps.md` antes de `git push`
 
 ---
 

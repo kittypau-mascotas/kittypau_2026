@@ -36,9 +36,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { Parallax } from "react-scroll-parallax";
-import { fetchChatbotGatoResponse } from "@/chatbot-gato/client";
-import { LOGIN_CHATBOT_CONTEXT } from "@/chatbot-gato/login-context";
-import { buildChatbotRuntime } from "@/chatbot-gato/runtime";
 import { resolveAuthenticatedPath, setTokens } from "@/lib/auth/token";
 import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
@@ -243,26 +240,9 @@ export default function LoginPage() {
     "/audio/agua_2.mp3",
     "/audio/agua_3.mp3",
   ] as const;
-  const loginRuntime = useMemo(
-    () => buildChatbotRuntime({ page: "login" }),
-    [],
-  );
-  const trialDialogRequestKey = useMemo(
-    () =>
-      [
-        "login",
-        showTrialModal ? "open" : "closed",
-        trialOwnerName.trim(),
-        trialPetName.trim(),
-        trialEmail.trim().toLowerCase(),
-      ].join(":"),
-    [showTrialModal, trialEmail, trialOwnerName, trialPetName],
-  );
-  const trialDialogLines =
-    aiTrialDialogReply?.key === trialDialogRequestKey
-      ? aiTrialDialogReply.lines
-      : [];
-  const trialDialogIntro = loginRuntime.intro;
+  // El "gato guía" animado se retiró del proyecto (spec 009 US4). El modal de
+  // prueba conserva su encabezado con este copy fijo.
+  const trialDialogIntro = { title: "Personaliza tu demo", body: "" };
   const randomFrom = (arr: readonly string[]) =>
     arr[Math.floor(Math.random() * arr.length)];
   const playBowlClickSound = (group: "food" | "water") => {
@@ -294,59 +274,6 @@ export default function LoginPage() {
   const handleTrialMuteToggle = useCallback(() => {
     setIsTrialDialogMuted((prevMuted) => !prevMuted);
   }, []);
-
-  useEffect(() => {
-    if (!showTrialModal) {
-      return;
-    }
-
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void fetchChatbotGatoResponse(
-        {
-          page: "login",
-          ownerName: trialOwnerName,
-          petName: trialPetName,
-          email: trialEmail,
-          loginStep: 0,
-        },
-        controller.signal,
-      )
-        .then((reply) => {
-          if (!reply || controller.signal.aborted) return;
-          if (reply.lines.length) {
-            setAiTrialDialogReply({
-              key: trialDialogRequestKey,
-              lines: reply.lines,
-            });
-            return;
-          }
-          setAiTrialDialogReply({
-            key: trialDialogRequestKey,
-            lines: loginRuntime.lines,
-          });
-        })
-        .catch(() => {
-          if (controller.signal.aborted) return;
-          setAiTrialDialogReply({
-            key: trialDialogRequestKey,
-            lines: loginRuntime.lines,
-          });
-        });
-    }, 450);
-
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [
-    loginRuntime.lines,
-    showTrialModal,
-    trialDialogRequestKey,
-    trialEmail,
-    trialOwnerName,
-    trialPetName,
-  ]);
 
   useEffect(() => {
     if (!showTrialModal || !isTrialDialogVisible) return;
@@ -575,49 +502,6 @@ export default function LoginPage() {
     };
   }, [isDialogCatAwake, isTrialDialogVisible, showTrialModal]);
 
-  useEffect(() => {
-    if (!showTrialModal || !isTrialDialogVisible) return;
-    if (trialDialogIndex >= trialDialogLines.length) return;
-
-    const line = trialDialogLines[trialDialogIndex];
-    let pointer = 0;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTrialDialogTypedText("");
-
-    setIsTrialDialogTyping(true);
-
-    const audio = trialDialogAudioRef.current;
-    if (audio && !isTrialDialogMuted) {
-      audio.loop = true;
-      audio.volume = (0.3 + Math.random() * 0.1) * 0.85;
-      audio.currentTime = 0;
-      void audio.play().catch(() => undefined);
-    }
-
-    const typingTimer = window.setInterval(() => {
-      pointer += 1;
-      setTrialDialogTypedText(line.slice(0, pointer));
-      if (pointer >= line.length) {
-        window.clearInterval(typingTimer);
-        stopTrialDialogAudio();
-        setIsTrialDialogTyping(false);
-      }
-    }, 28);
-
-    return () => {
-      window.clearInterval(typingTimer);
-      stopTrialDialogAudio();
-      setIsTrialDialogTyping(false);
-    };
-  }, [
-    isTrialDialogVisible,
-    showTrialModal,
-    trialDialogIndex,
-    trialDialogLines,
-    isTrialDialogMuted,
-    stopTrialDialogAudio,
-  ]);
-
   // 3 posiciones (spec 002 FR-005/FR-007): Usuario, Mascota, y la marca Kittypau en
   // vez del texto "Dispositivo".
   // Una vez que la cuenta ya quedó creada (registerStep === "registro"), los pasos 1 y 2
@@ -754,6 +638,21 @@ export default function LoginPage() {
     const wantsRegister = params.get("register") === "1";
     const verified = params.get("verified") === "1";
     const resetDone = params.get("reset") === "1";
+
+    // Prefill desde la demo (/demo -> "Crear cuenta"): el visitante ya escribió
+    // nombre de dueño y de mascota, no volver a pedirlos (spec 009 FR-009 / US2).
+    if (wantsRegister && typeof window !== "undefined") {
+      try {
+        const demoOwner = window.localStorage.getItem(
+          "kittypau_demo_owner_name",
+        );
+        const demoPet = window.localStorage.getItem("kittypau_demo_pet_name");
+        if (demoOwner) setRegisterUserName((cur) => cur || demoOwner);
+        if (demoPet) setRegisterPetName((cur) => cur || demoPet);
+      } catch {
+        /* localStorage bloqueado -- se pide normal */
+      }
+    }
 
     const timer = window.setTimeout(() => {
       if (verified && wantsRegister) {
@@ -1361,7 +1260,22 @@ export default function LoginPage() {
       petType?: "dog" | "cat" | null;
     }) => {
       if (typeof window === "undefined") return;
+      // visitor_id para dedupear el lead cuando no hay email (spec 009 FR-011).
+      let visitorId: string | null = null;
+      try {
+        visitorId = window.localStorage.getItem("kittypau_demo_visitor_id");
+        if (!visitorId) {
+          visitorId =
+            typeof crypto !== "undefined" && crypto.randomUUID
+              ? crypto.randomUUID()
+              : `v-${Date.now().toString(36)}`;
+          window.localStorage.setItem("kittypau_demo_visitor_id", visitorId);
+        }
+      } catch {
+        /* localStorage bloqueado -- el lead cae en modo email-only */
+      }
       const body = {
+        visitor_id: visitorId,
         owner_name: payload.owner,
         pet_name: payload.pet,
         email: payload.email,
@@ -1428,43 +1342,12 @@ export default function LoginPage() {
         window.localStorage.removeItem("kittypau_demo_email");
       }
       window.localStorage.setItem("kittypau_demo_pet_type", trialPetType);
-      window.localStorage.setItem("kittypau_demo_show_rpg", "1");
-      if (!window.localStorage.getItem("kittypau_demo_device_id")) {
-        window.localStorage.setItem("kittypau_demo_device_id", "KPCL-DEMO");
-      }
       // Reuse the same branded loading overlay (with sound) used after a real login.
       window.sessionStorage.setItem("kittypau_play_login_sound", "1");
     }
     closeTrial();
     router.push("/demo");
   };
-
-  const onTrialDialogAdvance = useCallback(() => {
-    if (!isTrialDialogVisible) return;
-    if (!trialDialogLines.length) return;
-    const lastIndex = trialDialogLines.length - 1;
-    if (isTrialDialogTyping) {
-      setTrialDialogTypedText(trialDialogLines[trialDialogIndex] ?? "");
-      setIsTrialDialogTyping(false);
-      stopTrialDialogAudio();
-      return;
-    }
-    if (trialDialogIndex < lastIndex) {
-      setTrialDialogIndex((prev) => Math.min(lastIndex, prev + 1));
-      return;
-    }
-    window.open(
-      "https://www.instagram.com/kittypau.mascotas/",
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }, [
-    isTrialDialogTyping,
-    isTrialDialogVisible,
-    stopTrialDialogAudio,
-    trialDialogIndex,
-    trialDialogLines,
-  ]);
 
   return (
     <div
@@ -2344,7 +2227,7 @@ export default function LoginPage() {
                     onClick={startTrial}
                     className="login-trial-submit rounded-[var(--radius)] px-4 py-2 text-xs font-semibold"
                   >
-                    {LOGIN_CHATBOT_CONTEXT.modal.primaryCta}
+                    Entrar a prueba
                   </button>
                 </div>
 

@@ -5,9 +5,10 @@ import { authFetch } from "@/lib/auth/auth-fetch";
 
 type DemoIngresoItem = {
   id: string;
-  email: string;
+  email: string | null;
   owner_name: string | null;
   pet_name: string | null;
+  pet_type?: string | null;
   source: string;
   first_seen_at: string;
   last_seen_at: string;
@@ -76,7 +77,8 @@ export default function AdminDemoIngresosPage() {
             Demo Ingresos
           </h1>
           <p className="mt-1 text-sm text-slate-600">
-            Bandeja deduplicada por email (historial completo queda en{" "}
+            Bandeja deduplicada por email, o por visitante si entró sin dejar
+            correo (historial completo queda en{" "}
             <span className="font-mono">audit_events</span>)
           </p>
         </div>
@@ -99,6 +101,7 @@ export default function AdminDemoIngresosPage() {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Titular</th>
                 <th className="px-4 py-3">Mascota</th>
+                <th className="px-4 py-3">Tipo</th>
                 <th className="px-4 py-3">Source</th>
                 <th className="px-4 py-3">Count</th>
                 <th className="px-4 py-3">First</th>
@@ -109,13 +112,18 @@ export default function AdminDemoIngresosPage() {
               {rows.map((row) => (
                 <tr key={row.id} className="hover:bg-slate-50/60">
                   <td className="px-4 py-3 font-mono text-xs text-slate-900">
-                    {row.email}
+                    {row.email ?? (
+                      <span className="text-slate-400">(sin email)</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-800">
                     {row.owner_name ?? "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-800">
                     {row.pet_name ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-800">
+                    {row.pet_type ?? "—"}
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-700">
                     {row.source}
@@ -132,7 +140,7 @@ export default function AdminDemoIngresosPage() {
               {!isLoading && rows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="px-4 py-8 text-center text-sm text-slate-500"
                   >
                     Sin ingresos registrados todavía

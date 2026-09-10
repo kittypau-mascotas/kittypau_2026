@@ -32,6 +32,36 @@ function introSeen(): boolean {
   }
 }
 
+// Lead best-effort para /admin/demo-ingresos (spec 009 US3). Sin email --
+// se dedupea por visitor_id. No bloquea la entrada a la demo si falla.
+function recordDemoIngreso(identity: DemoIdentity) {
+  const payload = JSON.stringify({
+    visitor_id: identity.visitorId,
+    owner_name: identity.ownerName,
+    pet_name: identity.petName,
+    pet_type: identity.petType,
+    source: "demo_app",
+  });
+  try {
+    if (
+      navigator.sendBeacon?.(
+        "/api/demo/ingreso",
+        new Blob([payload], { type: "application/json" }),
+      )
+    ) {
+      return;
+    }
+  } catch {
+    /* cae al fetch */
+  }
+  void fetch("/api/demo/ingreso", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: payload,
+    keepalive: true,
+  }).catch(() => null);
+}
+
 export default function DemoPage() {
   const router = useRouter();
   // Un solo state para la lectura de localStorage al montar -- SSR no puede
@@ -80,15 +110,14 @@ export default function DemoPage() {
       return;
     }
     setError(null);
-    setBoot({
-      ready: true,
-      identity: writeDemoIdentity({
-        ownerName,
-        petName,
-        petType,
-        source: "demo_app",
-      }),
+    const next = writeDemoIdentity({
+      ownerName,
+      petName,
+      petType,
+      source: "demo_app",
     });
+    recordDemoIngreso(next);
+    setBoot({ ready: true, identity: next });
   };
 
   const cancel = () => {
@@ -141,7 +170,7 @@ export default function DemoPage() {
             </p>
             <button
               type="button"
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/login?register=1")}
               className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
             >
               Crear cuenta

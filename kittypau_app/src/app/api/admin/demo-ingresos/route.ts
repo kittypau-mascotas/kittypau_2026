@@ -53,11 +53,11 @@ export async function GET(req: NextRequest) {
     ? Math.min(500, Math.max(1, Math.trunc(limitRaw)))
     : 200;
 
+  // `select("*")` -- tolera que `pet_type` / `visitor_id` (migración
+  // 20260910120000, spec 009) todavía no existan sin romper el panel.
   const { data, error } = await supabaseServer
     .from("demo_ingresos")
-    .select(
-      "id,email,owner_name,pet_name,source,first_seen_at,last_seen_at,count",
-    )
+    .select("*")
     .order("last_seen_at", { ascending: false })
     .limit(limit);
 

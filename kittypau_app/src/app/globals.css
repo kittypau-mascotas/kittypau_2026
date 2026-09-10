@@ -28,15 +28,15 @@
   --radius: 18px;
 
   /* pelaje Nebelung */
-  --fur-dark: #3F474F;
-  --fur-shadow: #363E45;
+  --fur-dark: #3f474f;
+  --fur-shadow: #363e45;
   --fur-light: #465058;
-  --fur-main: #5A646E;
-  --fur-highlight: #8C97A3;
+  --fur-main: #5a646e;
+  --fur-highlight: #8c97a3;
 
   /* ojos */
-  --eye-gold: #C9A227;
-  --eye-highlight: #E1C542;
+  --eye-gold: #c9a227;
+  --eye-highlight: #e1c542;
   --pupil: #000000;
 }
 
@@ -66,8 +66,14 @@ body {
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
-  font-feature-settings: "ss01" 1, "ss02" 1;
+  font-family:
+    var(--font-ui),
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-feature-settings:
+    "ss01" 1,
+    "ss02" 1;
   text-rendering: optimizeLegibility;
   min-height: 100dvh;
   -webkit-text-size-adjust: 100%;
@@ -113,7 +119,10 @@ body {
 }
 
 .surface-card {
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .surface-card:hover {
@@ -267,11 +276,8 @@ body {
 }
 
 .story-card.tone-warn {
-  background: linear-gradient(
-      120deg,
-      rgba(254, 243, 199, 0.6),
-      rgba(255, 255, 255, 0.9)
-    ),
+  background:
+    linear-gradient(120deg, rgba(254, 243, 199, 0.6), rgba(255, 255, 255, 0.9)),
     hsl(var(--card));
   border-color: color-mix(in oklab, hsl(var(--warning)) 30%, transparent);
 }
@@ -297,7 +303,8 @@ body {
 }
 
 .story-card.tone-good {
-  background: linear-gradient(
+  background:
+    linear-gradient(
       120deg,
       rgba(209, 250, 229, 0.55),
       rgba(255, 255, 255, 0.9)
@@ -307,18 +314,19 @@ body {
 }
 
 .story-card.tone-info {
-  background: linear-gradient(
-      120deg,
-      rgba(224, 242, 254, 0.6),
-      rgba(255, 255, 255, 0.9)
-    ),
+  background:
+    linear-gradient(120deg, rgba(224, 242, 254, 0.6), rgba(255, 255, 255, 0.9)),
     hsl(var(--card));
   border-color: color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
 }
 
 .today-wellness-card {
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 48%, rgba(255, 255, 255, 0.99) 100%);
+  background: radial-gradient(
+    circle at top left,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.96) 48%,
+    rgba(255, 255, 255, 0.99) 100%
+  );
 }
 
 .today-wellness-status-chip {
@@ -342,7 +350,11 @@ body {
   padding: 8px;
   border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.26);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(241, 245, 249, 0.92) 100%
+  );
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.72),
     0 12px 22px -18px rgba(15, 23, 42, 0.45);
@@ -381,7 +393,11 @@ body {
   overflow: hidden;
   border-radius: 24px;
   border: 1px solid rgba(148, 163, 184, 0.22);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(241, 245, 249, 0.92) 100%
+  );
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.72),
     0 14px 26px -20px rgba(15, 23, 42, 0.45);
@@ -418,7 +434,13 @@ body {
 }
 
 .today-wellness-bar-fill-food {
-  background: linear-gradient(180deg, #8af59d 0%, #d8eb68 42%, #ffac58 72%, #f25b4a 100%);
+  background: linear-gradient(
+    180deg,
+    #8af59d 0%,
+    #d8eb68 42%,
+    #ffac58 72%,
+    #f25b4a 100%
+  );
 }
 
 .today-wellness-bar-fill-water {
@@ -578,8 +600,16 @@ body {
 .app-shell {
   min-height: 100dvh;
   background:
-    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
-    radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(255, 255, 255, 0.95),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(255, 230, 230, 0.6),
+      transparent 40%
+    ),
     linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
 }
 
@@ -594,7 +624,8 @@ body {
   z-index: 20;
   backdrop-filter: blur(16px);
   background: color-mix(in oklab, white 92%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  border-bottom: 1px solid
+    color-mix(in oklab, hsl(var(--border)) 70%, transparent);
   box-shadow: 0 10px 34px -28px rgba(15, 23, 42, 0.5);
   padding-top: env(safe-area-inset-top);
 }
@@ -606,8 +637,8 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 12px max(24px, env(safe-area-inset-right))
-    12px max(24px, env(safe-area-inset-left));
+  padding: 12px max(24px, env(safe-area-inset-right)) 12px
+    max(24px, env(safe-area-inset-left));
 }
 
 .app-nav-brand {
@@ -817,8 +848,8 @@ body {
       "links links";
     align-items: center;
     gap: 10px 12px;
-    padding: 10px max(12px, env(safe-area-inset-right))
-      10px max(12px, env(safe-area-inset-left));
+    padding: 10px max(12px, env(safe-area-inset-right)) 10px
+      max(12px, env(safe-area-inset-left));
   }
 
   .app-nav-brand {
@@ -920,7 +951,8 @@ body {
     height: 100vh;
     width: clamp(220px, 18vw, 280px);
     border-bottom: none;
-    border-right: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+    border-right: 1px solid
+      color-mix(in oklab, hsl(var(--border)) 70%, transparent);
     box-shadow: 14px 0 36px -32px rgba(15, 23, 42, 0.5);
     background: color-mix(in oklab, white 94%, transparent);
   }
@@ -988,7 +1020,8 @@ body {
     display: grid;
     gap: 6px;
     padding-top: 10px;
-    border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+    border-top: 1px solid
+      color-mix(in oklab, hsl(var(--border)) 75%, transparent);
   }
 
   .app-nav.app-nav-sidebar .app-nav-social-top {
@@ -1061,7 +1094,8 @@ body {
     align-items: center;
     text-align: center;
     gap: 4px;
-    border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 75%, transparent);
+    border-top: 1px solid
+      color-mix(in oklab, hsl(var(--border)) 75%, transparent);
     padding-top: 10px;
     padding-bottom: 8px;
     font-size: 12px;
@@ -1113,8 +1147,16 @@ body {
   min-height: 100dvh;
   height: 100dvh;
   background:
-    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.95), transparent 45%),
-    radial-gradient(circle at 80% 0%, rgba(255, 230, 230, 0.6), transparent 40%),
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(255, 255, 255, 0.95),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(255, 230, 230, 0.6),
+      transparent 40%
+    ),
     linear-gradient(180deg, #f6dbd6 0%, #ffffff 82%, #ffffff 100%);
   overflow-x: hidden;
   /* ponytail: antes era `hidden` — si el contenido (tagline + card + botón
@@ -1124,25 +1166,30 @@ body {
   overflow-y: auto;
 }
 
-.login-ui-font :where(
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  span,
-  label,
-  input,
-  button,
-  textarea,
-  select,
-  a,
-  li,
-  div
-) {
-  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+.login-ui-font
+  :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    span,
+    label,
+    input,
+    button,
+    textarea,
+    select,
+    a,
+    li,
+    div
+  ) {
+  font-family:
+    var(--font-ui),
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .login-ui-font .brand-title {
@@ -1150,7 +1197,11 @@ body {
 }
 
 .login-ui-font .login-hero-title {
-  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-ui),
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .login-ui-font .login-card-brand .brand-title {
@@ -1218,7 +1269,11 @@ body {
   font-size: clamp(1.7rem, 3.25vw, 2.2rem);
   line-height: 1.05;
   font-weight: 950;
-  color: color-mix(in oklab, hsl(var(--foreground)) 82%, hsl(var(--muted-foreground)));
+  color: color-mix(
+    in oklab,
+    hsl(var(--foreground)) 82%,
+    hsl(var(--muted-foreground))
+  );
 }
 
 @keyframes login-hero-scroll {
@@ -1302,9 +1357,14 @@ body {
   min-height: 66px;
   padding: 13px 16px;
   border-radius: 24px;
-  border: 1px solid color-mix(in oklab, hsl(var(--success)) 82%, hsl(var(--border)));
+  border: 1px solid
+    color-mix(in oklab, hsl(var(--success)) 82%, hsl(var(--border)));
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.78) 100%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.78) 100%
+    ),
     linear-gradient(
       135deg,
       color-mix(in oklab, hsl(var(--success)) 66%, #ffffff) 0%,
@@ -1332,9 +1392,17 @@ body {
 }
 
 .kp-trial-button:hover {
-  border-color: color-mix(in oklab, hsl(var(--success)) 96%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--success)) 96%,
+    hsl(var(--border))
+  );
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.82) 100%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.94) 0%,
+      rgba(255, 255, 255, 0.82) 100%
+    ),
     linear-gradient(
       135deg,
       color-mix(in oklab, hsl(var(--success)) 78%, #ffffff) 0%,
@@ -1366,7 +1434,9 @@ body {
   line-height: 1.1;
   min-height: 0.85rem;
   opacity: 0.72;
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .kp-trial-button-note-accent {
@@ -1513,8 +1583,13 @@ body {
 }
 
 @keyframes bowl-hint {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
 }
 .login-hero-bowl-hint {
   animation: bowl-hint 0.75s ease-in-out 1.5s 2 both;
@@ -1545,7 +1620,10 @@ body {
   opacity: 0 !important;
   transform: translateY(8px) scale(0.98) !important;
   visibility: hidden;
-  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 260ms;
+  transition:
+    opacity 220ms ease,
+    transform 260ms ease,
+    visibility 0s linear 260ms;
   pointer-events: none;
 }
 
@@ -1553,7 +1631,10 @@ body {
   opacity: 1 !important;
   transform: translateY(0) scale(1) !important;
   visibility: visible;
-  transition: opacity 220ms ease, transform 260ms ease, visibility 0s linear 0s;
+  transition:
+    opacity 220ms ease,
+    transform 260ms ease,
+    visibility 0s linear 0s;
 }
 
 .login-form-compact {
@@ -1565,8 +1646,7 @@ body {
   height: auto;
   display: block;
   overflow: visible !important;
-  filter:
-    drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58))
+  filter: drop-shadow(0 2px 3px rgba(15, 23, 42, 0.58))
     drop-shadow(0 10px 16px rgba(15, 23, 42, 0.18));
 }
 
@@ -1638,7 +1718,7 @@ body {
 /* Ojos abiertos dorados: sin blanco, pupila negra y brillo blanco */
 .kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(1),
 .kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(4) {
-  fill: #C9A227 !important;
+  fill: #c9a227 !important;
 }
 
 .kp-trial-cat.is-awake .thecat #eyesdown ellipse:nth-of-type(2),
@@ -1654,7 +1734,7 @@ body {
 /* Si hay ojos superiores visibles, tambien dorados (evitar blanco) */
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(1),
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(4) {
-  fill: #C9A227 !important;
+  fill: #c9a227 !important;
 }
 
 .kp-trial-cat .thecat svg > g > ellipse:nth-of-type(2),
@@ -1710,7 +1790,9 @@ body {
 .kp-trial-cat #head,
 .kp-trial-cat #tail,
 .kp-trial-cat #longtail {
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 170ms ease-out;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 170ms ease-out;
 }
 
 .kp-trial-cat.is-awake #lefteyelid,
@@ -1955,7 +2037,7 @@ body {
     transform: translate3d(0.5px, -7.5px, 0) rotate(-44deg);
   }
   78% {
-    transform: translate3d(0.25px, -4.0px, 0) rotate(-28deg);
+    transform: translate3d(0.25px, -4px, 0) rotate(-28deg);
   }
 }
 
@@ -2031,14 +2113,16 @@ body {
 }
 
 .kp-trial-cat.is-standing .thecat svg {
-  animation: kp-cat-stand-rise 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+  animation: kp-cat-stand-rise 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite
+    alternate !important;
   transform-origin: center bottom;
 }
 
 .kp-trial-cat.is-standing #head {
   transform-box: fill-box;
   transform-origin: 52% 55%;
-  animation: kp-cat-stand-head 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+  animation: kp-cat-stand-head 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite
+    alternate !important;
 }
 
 .kp-trial-cat.is-standing #paw-front-left,
@@ -2046,7 +2130,8 @@ body {
 .kp-trial-cat.is-standing #paw-back {
   transform-box: fill-box;
   transform-origin: 50% 30%;
-  animation: kp-cat-stand-paws 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite alternate !important;
+  animation: kp-cat-stand-paws 880ms cubic-bezier(0.2, 0.9, 0.2, 1) infinite
+    alternate !important;
 }
 
 .kp-trial-cat.is-standing #tail,
@@ -2072,16 +2157,16 @@ body {
     transform: translate3d(-0.8px, -1px, 0) rotate(-3.5deg) scaleY(1.02);
   }
   to {
-    transform: translate3d(-2.2px, -6.0px, 0) rotate(-7.5deg) scaleY(1.045);
+    transform: translate3d(-2.2px, -6px, 0) rotate(-7.5deg) scaleY(1.045);
   }
 }
 
 @keyframes kp-cat-stand-head {
   from {
-    transform: translate3d(0, -0.2px, 0) rotate(1.0deg);
+    transform: translate3d(0, -0.2px, 0) rotate(1deg);
   }
   to {
-    transform: translate3d(0.2px, -1.35px, 0) rotate(6.0deg);
+    transform: translate3d(0.2px, -1.35px, 0) rotate(6deg);
   }
 }
 
@@ -2185,8 +2270,8 @@ body {
 .kp-trial-cat.is-walking #longtail {
   transform-box: fill-box;
   transform-origin: 12% 50%;
-  animation: kp-cat-walk-tail calc(520ms * var(--kp-cat-pose-mult, 1)) ease-in-out
-    infinite alternate !important;
+  animation: kp-cat-walk-tail calc(520ms * var(--kp-cat-pose-mult, 1))
+    ease-in-out infinite alternate !important;
 }
 
 @keyframes kp-cat-walk-body {
@@ -2372,7 +2457,9 @@ body {
   border: 1px solid transparent;
   background: hsl(var(--primary));
   color: #ffffff;
-  transition: transform 180ms ease, background-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
 }
 
 .social-link svg {
@@ -2662,7 +2749,9 @@ body {
 
 @media (min-width: 1024px) {
   /* Web only: raise brand block (logo + title + tagline) without affecting native APK flavor */
-  .login-bg:not(.kp-native-apk):not(.kp-flavor-native) .login-auth-column > .login-card-brand {
+  .login-bg:not(.kp-native-apk):not(.kp-flavor-native)
+    .login-auth-column
+    > .login-card-brand {
     top: 4px;
   }
 }
@@ -2714,7 +2803,6 @@ body {
   gap: 10px;
 }
 
-
 .login-stepper {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2748,7 +2836,11 @@ body {
 }
 
 .login-step.active {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 60%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 60%,
+    hsl(var(--border))
+  );
   background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
 }
 
@@ -2771,9 +2863,17 @@ body {
   --kp-modal-subtle: #475569;
   --kp-modal-tint: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
   --kp-modal-tint-2: color-mix(in oklab, hsl(var(--primary)) 6%, #ffffff);
-  --kp-modal-border: color-mix(in oklab, hsl(var(--primary)) 22%, hsl(var(--border)));
+  --kp-modal-border: color-mix(
+    in oklab,
+    hsl(var(--primary)) 22%,
+    hsl(var(--border))
+  );
   --kp-modal-ring: color-mix(in oklab, hsl(var(--primary)) 45%, transparent);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 22%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 22%,
+    hsl(var(--border))
+  );
   box-shadow: 0 30px 80px -64px rgba(15, 23, 42, 0.45);
   max-height: calc(100dvh - 16px);
   display: flex;
@@ -2790,7 +2890,11 @@ body {
 
 .login-register-body-registro {
   padding: 10px 14px 14px;
-  background: linear-gradient(180deg, color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 0%, #ffffff 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 0%,
+    #ffffff 100%
+  );
   /* spec 002 US3: antes solo scrolleaba <640px (mobile) — con columna única (US5) el
      contenido es más alto también en tablet/laptop, así que el scroll de respaldo se
      generaliza a todos los tamaños en vez de cortar contenido fuera de mobile. */
@@ -2801,7 +2905,8 @@ body {
 .kp-scroll {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, hsl(var(--primary)) 70%, #64748b) color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
+  scrollbar-color: color-mix(in oklab, hsl(var(--primary)) 70%, #64748b)
+    color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
 }
 
 .kp-scroll::-webkit-scrollbar {
@@ -2859,13 +2964,15 @@ body {
 
 .login-register-head {
   background: linear-gradient(180deg, var(--kp-modal-tint) 0%, #ffffff 70%);
-  border-top: 3px solid color-mix(in oklab, hsl(var(--primary)) 75%, transparent);
+  border-top: 3px solid
+    color-mix(in oklab, hsl(var(--primary)) 75%, transparent);
 }
 
 .login-register-pill {
   border-radius: 999px;
   padding: 8px 12px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
+  border: 1px solid
+    color-mix(in oklab, hsl(var(--primary)) 28%, hsl(var(--border)));
   background: var(--kp-modal-tint);
   color: var(--kp-modal-subtle);
   letter-spacing: 0.08em;
@@ -2888,7 +2995,11 @@ body {
 }
 
 .login-trial-overlay {
-  background: color-mix(in oklab, hsl(var(--primary)) 24%, rgba(15, 23, 42, 0.64));
+  background: color-mix(
+    in oklab,
+    hsl(var(--primary)) 24%,
+    rgba(15, 23, 42, 0.64)
+  );
   backdrop-filter: blur(6px);
 }
 
@@ -2897,41 +3008,23 @@ body {
   max-height: min(86dvh, 740px);
   overflow-y: auto;
   padding: 20px !important;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
+  border: 1px solid
+    color-mix(in oklab, hsl(var(--primary)) 38%, hsl(var(--border)));
   background: linear-gradient(
     180deg,
     color-mix(in oklab, hsl(var(--primary)) 16%, #fffdfb) 0%,
     color-mix(in oklab, hsl(var(--primary)) 4%, #ffffff) 64%,
     #ffffff 100%
   );
-  box-shadow: 0 28px 64px -42px color-mix(in oklab, hsl(var(--primary)) 54%, rgba(15, 23, 42, 0.5));
-  transition: transform 220ms ease, box-shadow 220ms ease;
+  box-shadow: 0 28px 64px -42px
+    color-mix(in oklab, hsl(var(--primary)) 54%, rgba(15, 23, 42, 0.5));
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
 }
 
 .login-trial-modal-host {
   transition: transform 220ms ease;
-}
-
-.login-trial-modal-host--dialog-open {
-  transform: translateY(-96px);
-}
-
-.login-trial-dialog-scene {
-  width: min(100%, 34rem);
-  height: 214px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
-.login-trial-dialog-scene .trial-rpg-copy {
-  justify-content: flex-start;
-}
-
-.login-trial-dialog-scene .trial-rpg-message {
-  flex: 0 0 auto;
 }
 
 /* Native APK: bottom-sheet feel + better keyboard ergonomics */
@@ -3056,7 +3149,11 @@ body {
 }
 
 .login-trial-input {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 34%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 34%,
+    hsl(var(--border))
+  );
   background: linear-gradient(
     180deg,
     color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 0%,
@@ -3066,8 +3163,13 @@ body {
 }
 
 .login-trial-input:focus {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 72%, hsl(var(--border)));
-  box-shadow: 0 0 0 2px color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 72%,
+    hsl(var(--border))
+  );
+  box-shadow: 0 0 0 2px
+    color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
 }
 
 .login-trial-error {
@@ -3077,7 +3179,11 @@ body {
 }
 
 .login-trial-cancel {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 48%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 48%,
+    hsl(var(--border))
+  );
   background: linear-gradient(
     180deg,
     color-mix(in oklab, hsl(var(--primary)) 8%, #ffffff) 0%,
@@ -3099,689 +3205,11 @@ body {
   background: hsl(var(--primary-strong));
 }
 
-.trial-rpg-modal {
-  width: min(100%, 34rem);
-  --trial-rpg-shell-height: 214px;
-  height: var(--trial-rpg-shell-height);
-  max-height: var(--trial-rpg-shell-height);
-  display: flex;
-  position: relative;
-  z-index: 1;
-  isolation: isolate;
-  flex: 0 0 auto;
-  min-height: 0;
-  overflow: hidden;
-  animation: trial-rpg-pop 220ms ease-out;
-}
-
-/* Native APK: keep RPG dialog above the bottom navbar */
-.kp-native-apk .trial-rpg-modal,
-.kp-flavor-native .trial-rpg-modal {
-  margin-bottom: calc(86px + env(safe-area-inset-bottom));
-}
-
-.trial-rpg-shell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 0;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  box-sizing: border-box;
-  border: 3px solid color-mix(in oklab, hsl(var(--primary)) 58%, #ffffff);
-  border-radius: 0;
-  /* Subtle pixel-cut corners */
-  --trial-rpg-px: 8px;
-  --trial-rpg-pad: 8px;
-  --trial-rpg-controls: 18px;
-  clip-path: polygon(
-    0 var(--trial-rpg-px),
-    var(--trial-rpg-px) 0,
-    calc(100% - var(--trial-rpg-px)) 0,
-    100% var(--trial-rpg-px),
-    100% calc(100% - var(--trial-rpg-px)),
-    calc(100% - var(--trial-rpg-px)) 100%,
-    var(--trial-rpg-px) 100%,
-    0 calc(100% - var(--trial-rpg-px))
-  );
-  padding: 0;
-  overflow: hidden;
-  /* Kittypau pink frame (matches brand). */
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, hsl(var(--primary)) 66%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 42%, #fff4e8) 100%
-  );
-  /* Very light pixel texture */
-  background-image:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, hsl(var(--primary)) 66%, #ffffff) 0%,
-      color-mix(in oklab, hsl(var(--primary)) 42%, #fff4e8) 100%
-    ),
-    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-  background-size: auto, 6px 6px, 6px 6px;
-  background-position: 0 0, 0 0, 0 0;
-  box-shadow:
-    0 16px 30px -24px color-mix(in oklab, hsl(var(--primary-strong)) 40%, rgba(15, 23, 42, 0.55)),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
-    inset 0 0 0 3px rgba(55, 31, 47, 0.12);
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  height: 100%;
-  max-height: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow 160ms ease, transform 160ms ease;
-}
-
-/* NOTE: The photo background should live inside the cat panel (right side),
-   not behind the entire dialog, so the text stays clean and readable. */
-
-.trial-rpg-shell:hover {
-  transform: translateY(-1px);
-}
-
-.trial-rpg-shell:active {
-  transform: translateY(0);
-}
-
-.trial-rpg-topbar {
-  display: none;
-}
-
-.trial-rpg-controls {
-  position: absolute;
-  right: var(--trial-rpg-pad);
-  top: var(--trial-rpg-pad);
-  display: inline-flex;
-  gap: 8px;
-  z-index: 10;
-}
-
-.trial-rpg-body {
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  padding: var(--trial-rpg-pad);
-  /* Top "bar" area: same padding as other sides, plus room for the controls */
-  padding-top: calc(var(--trial-rpg-pad) * 2 + var(--trial-rpg-controls));
-  position: relative;
-  z-index: 1;
-}
-
-.trial-rpg-textpane {
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 100%;
-  min-height: 0;
-  max-height: 100%;
-  border-radius: 0;
-  clip-path: polygon(
-    0 6px,
-    6px 0,
-    calc(100% - 6px) 0,
-    100% 6px,
-    100% calc(100% - 6px),
-    calc(100% - 6px) 100%,
-    6px 100%,
-    0 calc(100% - 6px)
-  );
-  border: 2px solid color-mix(in oklab, hsl(var(--primary-strong)) 24%, rgba(15, 23, 42, 0.38));
-  background: linear-gradient(
-    180deg,
-    rgba(255, 249, 241, 0.95) 0%,
-    rgba(255, 244, 233, 0.9) 100%
-  );
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(255, 249, 241, 0.95) 0%,
-      rgba(255, 244, 233, 0.9) 100%
-    ),
-    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-  background-size: auto, 8px 8px, 8px 8px;
-  background-position: 0 0, 0 0, 0 0;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    inset 0 -1px 0 rgba(71, 33, 64, 0.08),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
-    inset 0 0 0 3px rgba(71, 33, 64, 0.08);
-  padding: 8px 10px;
-  overflow: hidden;
-}
-
-.trial-rpg-copy {
-  min-height: 72px;
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  max-width: 100%;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 4px;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.trial-rpg-message {
-  width: 100%;
-  min-height: 0;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 4px;
-  padding-bottom: 0;
-  overflow: hidden;
-  max-height: 100%;
-}
-
-.trial-rpg-catpane {
-  flex: 0 0 128px;
-  height: 100%;
-  border-radius: 0;
-  clip-path: polygon(
-    0 6px,
-    6px 0,
-    calc(100% - 6px) 0,
-    100% 6px,
-    100% calc(100% - 6px),
-    calc(100% - 6px) 100%,
-    6px 100%,
-    0 calc(100% - 6px)
-  );
-  border: 2px solid color-mix(in oklab, hsl(var(--primary-strong)) 24%, rgba(15, 23, 42, 0.38));
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 247, 241, 0.94) 100%);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  display: grid;
-  place-items: center;
-  padding: 6px 6px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(71, 33, 64, 0.08),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
-    inset 0 0 0 3px rgba(71, 33, 64, 0.08);
-}
-
-.trial-rpg-catpane > * {
-  position: relative;
-  z-index: 1;
-}
-
-.trial-rpg-iconbtn {
-  width: var(--trial-rpg-controls);
-  height: var(--trial-rpg-controls);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 40%, #ffffff);
-  background: color-mix(in oklab, hsl(var(--primary)) 10%, #ffffff);
-  color: color-mix(in oklab, hsl(var(--foreground)) 78%, #000000);
-  box-shadow: 0 10px 18px -16px rgba(15, 23, 42, 0.6);
-  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
-  cursor: pointer;
-}
-
-.trial-rpg-iconbtn.trial-rpg-close {
-  color: #ef4444;
-  border-color: color-mix(in oklab, #ef4444 45%, #ffffff);
-  background: color-mix(in oklab, #ef4444 12%, #ffffff);
-}
-
-.trial-rpg-iconbtn:hover {
-  transform: translateY(-1px);
-  background: color-mix(in oklab, hsl(var(--primary)) 16%, #ffffff);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 52%, #ffffff);
-}
-
-.trial-rpg-iconbtn.trial-rpg-close:hover {
-  background: color-mix(in oklab, #ef4444 16%, #ffffff);
-  border-color: color-mix(in oklab, #ef4444 62%, #ffffff);
-}
-
-.trial-rpg-iconbtn:active {
-  transform: translateY(0);
-}
-
-.trial-rpg-iconbtn svg {
-  width: 12px;
-  height: 12px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.trial-rpg-iconbtn.trial-rpg-close svg {
-  width: 14px;
-  height: 14px;
-}
-
-.trial-rpg-iconbtn.trial-rpg-mute svg {
-  width: 13px;
-  height: 13px;
-}
-
-.trial-rpg-shell:focus-visible {
-  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 56%, transparent);
-  outline-offset: 2px;
-}
-
-.trial-rpg-catpane .trial-rpg-cat {
-  transform: translateY(10px);
-}
-
-.trial-rpg-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-bottom: 2px;
-}
-
-.trial-rpg-speaker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 62px;
-  padding: 2px 8px 2px;
-  border-radius: 5px 10px 5px 10px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary-strong)) 34%, #ffffff);
-  background: color-mix(in oklab, hsl(var(--primary)) 16%, #fffaf5);
-  color: hsl(var(--primary-strong));
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
-}
-
-.trial-rpg-header-line {
-  flex: 1 1 auto;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in oklab, hsl(var(--primary-strong)) 28%, transparent) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 10%, transparent) 100%
-  );
-}
-
-.trial-rpg-line {
-  margin: 0;
-  min-height: 36px;
-  width: 100%;
-  max-width: 100%;
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  text-align: left;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-  color: rgba(15, 23, 42, 0.92);
-}
-
-.trial-rpg-continue-row {
-  margin-top: auto;
-  align-self: flex-end;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  z-index: 3;
-  pointer-events: auto;
-  animation: trial-rpg-continue-row-float 1200ms steps(1) infinite;
-}
-
-.trial-rpg-ellipsis {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 12px;
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: hsl(var(--primary-strong));
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
-  transform: translateY(-1px);
-}
-
-.trial-rpg-caret {
-  display: inline-block;
-  width: 3px;
-  height: 0.95em;
-  margin-left: 4px;
-  vertical-align: -0.1em;
-  color: transparent;
-  background-color: color-mix(in oklab, hsl(var(--primary-strong)) 75%, #334155);
-  animation: trial-rpg-caret-blink 850ms steps(1) infinite;
-}
-
-.trial-rpg-instagram {
-  align-self: center;
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  min-height: 24px;
-  padding: 5px 9px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.trial-rpg-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  min-height: 28px;
-}
-
-.trial-rpg-continue {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary-strong)) 30%, #ffffff);
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, hsl(var(--primary)) 20%, #ffffff) 0%,
-    color-mix(in oklab, hsl(var(--primary)) 12%, #fffaf7) 100%
-  );
-  color: hsl(var(--primary-strong));
-  box-shadow:
-    0 10px 18px -16px rgba(15, 23, 42, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
-  animation:
-    trial-rpg-continue-blink 1100ms steps(1) infinite,
-    trial-rpg-continue-nudge 720ms steps(1) infinite;
-}
-
-.trial-rpg-continue svg {
-  width: 12px;
-  height: 12px;
-  fill: currentColor;
-  shape-rendering: crispEdges;
-}
-
-.trial-rpg-continue:hover {
-  transform: translateY(-1px);
-  background: color-mix(in oklab, hsl(var(--primary)) 24%, #ffffff);
-  border-color: color-mix(in oklab, hsl(var(--primary-strong)) 42%, #ffffff);
-}
-
-.trial-rpg-continue:focus-visible {
-  outline: 2px solid color-mix(in oklab, hsl(var(--primary)) 56%, transparent);
-  outline-offset: 2px;
-}
-
-.trial-rpg-composer-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
-
-.trial-rpg-composer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-}
-
-.trial-rpg-composer-input {
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 22%, rgba(15, 23, 42, 0.28));
-  background: rgba(255, 255, 255, 0.88);
-  color: rgba(15, 23, 42, 0.92);
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  outline: none;
-}
-
-.trial-rpg-composer-input::placeholder {
-  color: rgba(71, 85, 105, 0.72);
-}
-
-.trial-rpg-composer-input:focus {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 48%, rgba(15, 23, 42, 0.28));
-  box-shadow: 0 0 0 2px color-mix(in oklab, hsl(var(--primary)) 16%, transparent);
-}
-
-.trial-rpg-composer-button {
-  flex: 0 0 auto;
-  justify-self: end;
-  white-space: nowrap;
-  height: 32px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 30%, rgba(15, 23, 42, 0.28));
-  background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
-  color: rgba(15, 23, 42, 0.92);
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
-}
-
-.trial-rpg-composer-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  background: color-mix(in oklab, hsl(var(--primary)) 24%, #ffffff);
-}
-
-.trial-rpg-composer-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.trial-rpg-choices {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.trial-rpg-choice {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 24px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, hsl(var(--primary)) 22%, rgba(15, 23, 42, 0.28));
-  background: rgba(255, 255, 255, 0.75);
-  color: rgba(15, 23, 42, 0.88);
-  font-family: "Pixelify Sans", "Silkscreen", "Press Start 2P", ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 700;
-  transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
-  cursor: pointer;
-}
-
-.trial-rpg-choice:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.88);
-  border-color: color-mix(in oklab, hsl(var(--primary)) 36%, rgba(15, 23, 42, 0.28));
-}
-
-.trial-rpg-choice:active {
-  transform: translateY(0);
-}
-
-.trial-rpg-choice-key {
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  border: 1px solid rgba(15, 23, 42, 0.25);
-  background: color-mix(in oklab, hsl(var(--primary)) 14%, #ffffff);
-  color: rgba(15, 23, 42, 0.9);
-}
-
-.trial-rpg-instagram.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.trial-rpg-instagram.is-visible {
-  opacity: 1;
-}
-
-.trial-rpg-cat {
-  width: 96px;
-  height: 86px;
-  align-self: center;
-  margin: 0;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.18));
-}
-
-.trial-rpg-cat::after {
-  content: none;
-}
-
-.trial-rpg-cat.kp-trial-cat {
-  padding: 0;
-}
-
-.trial-rpg-cat.kp-trial-cat .cat {
-  padding-top: 0;
-}
-
-.trial-rpg-cat.kp-trial-cat .sleep-symbol {
-  right: 26px;
-  top: -18px;
-  width: 52px;
-  height: 40px;
-  font-size: 10px;
-}
-
-.trial-rpg-cat.kp-trial-cat .sleep-symbol .z {
-  left: 16px;
-  top: 22px;
-}
-
-.trial-rpg-cat.kp-trial-cat .sleep-symbol .z2 {
-  left: 26px;
-  top: 18px;
-}
-
-.trial-rpg-cat.kp-trial-cat .sleep-symbol .z3 {
-  left: 8px;
-  top: 14px;
-}
-
-.trial-rpg-cat.kp-trial-cat .thecat {
-  position: relative;
-  width: 92px;
-  right: 0;
-  top: 2px;
-  filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.16));
-}
-
-@keyframes trial-rpg-caret-blink {
-  0%,
-  48% {
-    opacity: 1;
-  }
-  49%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes trial-rpg-pop {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes trial-rpg-continue-blink {
-  0%,
-  45% {
-    opacity: 1;
-  }
-  46%,
-  100% {
-    opacity: 0.72;
-  }
-}
-
-@keyframes trial-rpg-continue-nudge {
-  0%,
-  68% {
-    transform: translateX(0);
-  }
-  69%,
-  100% {
-    transform: translateX(1px);
-  }
-}
-
-@keyframes trial-rpg-continue-row-float {
-  0%,
-  50% {
-    transform: translateY(0);
-  }
-  51%,
-  100% {
-    transform: translateY(-1px);
-  }
-}
-
 @media (max-width: 640px) {
   .login-trial-modal {
     width: min(94vw, 372px);
     max-height: min(78dvh, 540px);
     padding: 10px !important;
-  }
-
-  .login-trial-modal-host--dialog-open {
-    transform: translateY(-56px);
-  }
-
-  .login-trial-dialog-scene {
-    height: 204px;
-  }
-
-  .login-trial-dialog-scene .trial-rpg-copy {
-    justify-content: flex-start;
   }
 
   .login-trial-modal .mb-4 {
@@ -3819,113 +3247,6 @@ body {
 
   .login-trial-modal .mt-5 {
     margin-top: 4px;
-  }
-
-  .trial-rpg-shell {
-    border-width: 2px;
-    border-radius: 0;
-    --trial-rpg-px: 6px;
-    --trial-rpg-pad: 7px;
-    --trial-rpg-controls: 16px;
-  }
-
-  .trial-rpg-modal {
-    --trial-rpg-shell-height: 204px;
-  }
-
-  .trial-rpg-topbar {
-    display: none;
-  }
-
-  .trial-rpg-controls {
-    right: var(--trial-rpg-pad);
-    top: var(--trial-rpg-pad);
-    gap: 7px;
-  }
-
-  .trial-rpg-body {
-    gap: 8px;
-    padding: var(--trial-rpg-pad);
-    padding-top: calc(var(--trial-rpg-pad) * 2 + var(--trial-rpg-controls));
-  }
-
-  .trial-rpg-textpane,
-  .trial-rpg-catpane {
-    border-width: 1px;
-    border-radius: 9px;
-  }
-
-  .trial-rpg-catpane {
-    flex-basis: 110px;
-    padding: 5px 5px;
-  }
-
-  .trial-rpg-iconbtn {
-    width: var(--trial-rpg-controls);
-    height: var(--trial-rpg-controls);
-  }
-
-  .trial-rpg-iconbtn svg {
-    width: 11px;
-    height: 11px;
-  }
-
-  .trial-rpg-iconbtn.trial-rpg-close svg {
-    width: 13px;
-    height: 13px;
-  }
-
-  .trial-rpg-iconbtn.trial-rpg-mute svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  .trial-rpg-catpane .trial-rpg-cat {
-    transform: translateY(7px);
-  }
-
-  .trial-rpg-line {
-    min-height: 32px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.35;
-  }
-
-  .trial-rpg-ellipsis {
-    font-size: 11px;
-  }
-
-  .trial-rpg-speaker {
-    min-width: 58px;
-    font-size: 7px;
-    letter-spacing: 0.16em;
-  }
-
-  .trial-rpg-instagram {
-    min-height: 22px;
-    padding: 4px 8px;
-    font-size: 9px;
-  }
-
-  .trial-rpg-cat {
-    width: 84px;
-    height: 76px;
-  }
-
-  .trial-rpg-cat.kp-trial-cat .thecat {
-    width: 84px;
-  }
-
-  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
-    right: 24px;
-    top: -12px;
-    font-size: 9px;
-  }
-
-  .trial-rpg-cat.kp-trial-cat .sleep-symbol {
-    right: 26px;
-    top: -12px;
-    font-size: 10px;
   }
 }
 
@@ -4003,13 +3324,18 @@ body {
 }
 
 .login-step2.active .login-step2-dot {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 55%,
+    hsl(var(--border))
+  );
   background: hsl(var(--primary));
   /* #1f2937 en vez de blanco: el coral pastel de --primary es demasiado claro para
      texto blanco (ratio ~1.8:1, falla WCAG incluso para texto grande) — revisión de
      contraste pedida junto con el resto de la barra de progreso. */
   color: #1f2937;
-  box-shadow: 0 18px 40px -28px color-mix(in oklab, hsl(var(--primary-strong)) 55%, transparent);
+  box-shadow: 0 18px 40px -28px
+    color-mix(in oklab, hsl(var(--primary-strong)) 55%, transparent);
 }
 
 .login-step2.active .login-step2-label {
@@ -4161,7 +3487,6 @@ body {
   .login-bandida {
     width: clamp(96px, 9vw, 130px);
   }
-
 }
 
 @media (max-width: 420px) {
@@ -4171,17 +3496,27 @@ body {
 }
 
 .glass-panel input {
-  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
 .glass-panel input:focus {
-  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 55%,
+    hsl(var(--border))
+  );
   background-color: #ffffff;
 }
 
 .glass-panel button,
 button.bg-primary {
-  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
 }
 
 button.bg-primary:hover,
@@ -4445,7 +3780,11 @@ textarea::placeholder {
 .kp-native-apk .app-shell,
 .kp-flavor-native .app-shell {
   background:
-    radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.9), transparent 40%),
+    radial-gradient(
+      circle at 10% 8%,
+      rgba(255, 255, 255, 0.9),
+      transparent 40%
+    ),
     linear-gradient(180deg, #f7e4e0 0%, #fffaf8 75%, #ffffff 100%);
 }
 
@@ -4517,7 +3856,11 @@ textarea::placeholder {
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-link.is-active,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-link.is-active {
   box-shadow: none;
-  border-color: color-mix(in oklab, hsl(var(--primary)) 55%, hsl(var(--border)));
+  border-color: color-mix(
+    in oklab,
+    hsl(var(--primary)) 55%,
+    hsl(var(--border))
+  );
   background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
 }
 
@@ -4529,7 +3872,8 @@ textarea::placeholder {
   padding-top: env(safe-area-inset-top);
   padding-bottom: 0;
   border-top: none;
-  border-bottom: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
+  border-bottom: 1px solid
+    color-mix(in oklab, hsl(var(--border)) 70%, transparent);
 }
 
 @media (max-width: 430px) {
@@ -4855,4 +4199,3 @@ textarea::placeholder {
   line-height: 1.12;
   margin-top: 4px;
 }
-

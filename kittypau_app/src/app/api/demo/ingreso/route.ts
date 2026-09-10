@@ -9,6 +9,7 @@ import {
 import { checkRateLimit, getRateKeyFromRequest } from "@/app/api/_rate-limit";
 
 type DemoIngresoBody = {
+  visitor_id?: string;
   owner_name?: string;
   pet_name?: string;
   email?: string;
@@ -56,31 +57,55 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const visitorId = asTrimmedString(body?.visitor_id, 64);
   const ownerName = asTrimmedString(body?.owner_name, 120);
   const petName = asTrimmedString(body?.pet_name, 120);
   const email = asTrimmedString(body?.email, 254)?.toLowerCase() ?? null;
   const petType = asTrimmedString(body?.pet_type, 32)?.toLowerCase() ?? null;
   const source = asTrimmedString(body?.source, 64) ?? "demo_app";
 
-  if (!email) {
+  // Spec 009 FR-011: el email ya no es obligatorio -- el lead anónimo se
+  // dedupea por visitor_id (uuid del navegador). Uno de los dos alcanza.
+  if (!email && !visitorId) {
     logRequestEnd(req, startedAt, 400);
-    return apiError(req, 400, "MISSING_EMAIL", "Email is required");
+    return apiError(
+      req,
+      400,
+      "MISSING_VISITOR_ID",
+      "visitor_id or email required",
+    );
   }
 
   const userAgent = req.headers.get("user-agent");
   const referer = req.headers.get("referer");
   const forwardedFor = req.headers.get("x-forwarded-for");
 
-  const { error: leadError } = await supabaseServer.rpc("record_demo_ingreso", {
-    p_email: email,
-    p_owner_name: ownerName,
-    p_pet_name: petName,
-    p_source: source,
-  });
+  // Bandeja de leads. Best-effort: si la RPC v2 no existe todavía (migración
+  // 20260910120000 sin aplicar) o falla, se loguea pero NO se corta -- el
+  // registro inmutable vive en audit_events (abajo), que es lo que importa.
+  const { error: leadError } = await supabaseServer.rpc(
+    "record_demo_ingreso_v2",
+    {
+      p_visitor_id: visitorId,
+      p_email: email,
+      p_owner_name: ownerName,
+      p_pet_name: petName,
+      p_pet_type: petType,
+      p_source: source,
+    },
+  );
 
   if (leadError) {
-    logRequestEnd(req, startedAt, 500);
-    return apiError(req, 500, "SUPABASE_ERROR", leadError.message);
+    // Fallback pre-migración: si hay email, usar la RPC vieja (email-only).
+    if (email) {
+      await supabaseServer.rpc("record_demo_ingreso", {
+        p_email: email,
+        p_owner_name: ownerName,
+        p_pet_name: petName,
+        p_source: source,
+      });
+    }
+    logRequestEnd(req, startedAt, 200, { lead_rpc_error: leadError.message });
   }
 
   const { error: auditError } = await supabaseServer
