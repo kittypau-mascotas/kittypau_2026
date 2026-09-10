@@ -1352,105 +1352,32 @@ body {
   overflow: visible;
 }
 
-.kp-trial-button {
-  min-width: 100%;
-  min-height: 66px;
-  padding: 13px 16px;
-  border-radius: 24px;
-  border: 1px solid
-    color-mix(in oklab, hsl(var(--success)) 82%, hsl(var(--border)));
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.92) 0%,
-      rgba(255, 255, 255, 0.78) 100%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in oklab, hsl(var(--success)) 66%, #ffffff) 0%,
-      color-mix(in oklab, hsl(var(--success)) 48%, #eefbf1) 56%,
-      color-mix(in oklab, hsl(var(--success)) 28%, #ffffff) 100%
-    );
-  color: color-mix(in oklab, hsl(var(--success)) 88%, #0f172a);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 14px 30px -18px rgba(15, 23, 42, 0.14),
-    0 12px 30px -18px rgba(34, 197, 94, 0.56);
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
-  backdrop-filter: blur(10px);
-}
-
-.kp-trial-button:hover {
-  border-color: color-mix(
-    in oklab,
-    hsl(var(--success)) 96%,
-    hsl(var(--border))
-  );
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.94) 0%,
-      rgba(255, 255, 255, 0.82) 100%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in oklab, hsl(var(--success)) 78%, #ffffff) 0%,
-      color-mix(in oklab, hsl(var(--success)) 56%, #eefbf1) 56%,
-      color-mix(in oklab, hsl(var(--success)) 34%, #ffffff) 100%
-    );
-  color: color-mix(in oklab, hsl(var(--success)) 96%, #0f172a);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.85) inset,
-    0 20px 38px -22px rgba(15, 23, 42, 0.28),
-    0 18px 38px -24px rgba(34, 197, 94, 0.72);
-  transform: translateY(-2px) scale(1.015);
-}
-
-.kp-trial-button:active {
-  transform: translateY(0) scale(0.985);
-}
-
-.kp-trial-button-main {
-  font-size: 0.97rem;
+/* Botón "Ingresa a Demo App" del login -- estilo neubrutalista (pedido de Mauro). */
+.btn-neubrutal {
+  width: 100%;
+  padding: 16px 32px;
+  background: #ffde00;
+  color: #000;
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0px #000;
+  border-radius: 0;
   font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.kp-trial-button-note {
-  font-size: 0.76rem;
-  font-weight: 700;
-  line-height: 1.1;
-  min-height: 0.85rem;
-  opacity: 0.72;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
   transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+    transform 120ms ease,
+    box-shadow 120ms ease;
 }
 
-.kp-trial-button-note-accent {
-  color: color-mix(in oklab, hsl(var(--success)) 96%, #0f172a);
+.btn-neubrutal:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 8px 8px 0px #000;
 }
 
-.kp-trial-button-note.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.kp-trial-button-note.is-hidden {
-  opacity: 0.45;
-  transform: translateY(-1px);
+.btn-neubrutal:active {
+  transform: translate(3px, 3px);
+  box-shadow: 3px 3px 0px #000;
 }
 
 .kp-trial-cat .sleep-symbol {

@@ -72,7 +72,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [trialButtonMessageIndex, setTrialButtonMessageIndex] = useState(0);
   const [showRegister, setShowRegister] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -370,16 +369,6 @@ export default function LoginPage() {
     root.classList.remove("kp-login-scrolled");
     return () => {
       root.classList.remove("kp-login-scrolled");
-    };
-  }, []);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setTrialButtonMessageIndex((prev) => (prev + 1) % 2);
-    }, 2600);
-
-    return () => {
-      window.clearInterval(timer);
     };
   }, []);
 
@@ -1665,32 +1654,12 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={openTrial}
-                    className="kp-trial-button"
-                    aria-label="Abrir Demo App. No necesitas registrarte."
+                    className="btn-neubrutal"
+                    aria-label="Ingresa a Demo App. No necesitas registrarte."
                     title="Demo App - No necesitas registrarte"
                     {...catWakeInteractions}
                   >
-                    <span className="kp-trial-button-main brand-title">
-                      Demo App
-                    </span>
-                    <span
-                      className={`kp-trial-button-note ${
-                        trialButtonMessageIndex === 0
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                    >
-                      Pruébala ahora
-                    </span>
-                    <span
-                      className={`kp-trial-button-note kp-trial-button-note-accent ${
-                        trialButtonMessageIndex === 1
-                          ? "is-visible"
-                          : "is-hidden"
-                      }`}
-                    >
-                      No Necesitas Registrarte !!
-                    </span>
+                    Ingresa a Demo App
                   </button>
                 </div>
                 {showReset ? (
