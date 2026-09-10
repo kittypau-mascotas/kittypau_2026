@@ -167,6 +167,7 @@ export default function DemoPage() {
           <DemoNav
             identity={identity}
             onCreateAccount={() => router.push("/login?register=1")}
+            onExit={cancel}
           />
           <div className="app-content">
             <TodayScreen

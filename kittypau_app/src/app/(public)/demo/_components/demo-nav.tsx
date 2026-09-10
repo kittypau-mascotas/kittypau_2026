@@ -15,9 +15,11 @@ const INACTIVE_ITEMS = ["Story", "Mascota", "Plato"] as const;
 export default function DemoNav({
   identity,
   onCreateAccount,
+  onExit,
 }: {
   identity: DemoIdentity;
   onCreateAccount: () => void;
+  onExit: () => void;
 }) {
   return (
     <nav className="app-nav app-nav-main-mode app-nav-sidebar">
@@ -89,6 +91,13 @@ export default function DemoNav({
             className="kp-brand-soft-action mt-1 block w-full rounded-[calc(var(--radius)-6px)] px-3 py-2 text-left text-xs font-semibold"
           >
             Crear cuenta
+          </button>
+          <button
+            type="button"
+            onClick={onExit}
+            className="mt-1 block w-full rounded-[calc(var(--radius)-6px)] border border-slate-200 px-3 py-2 text-left text-xs font-semibold text-slate-500 hover:bg-slate-50"
+          >
+            Salir
           </button>
         </div>
 
