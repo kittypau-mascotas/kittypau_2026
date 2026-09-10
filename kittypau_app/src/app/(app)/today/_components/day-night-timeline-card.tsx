@@ -19,7 +19,6 @@ export default function DayNightTimelineCard({
   chartOptions,
   backgroundPlugin,
   chartLoadError,
-  mqttLiveError,
   isAuthoritativeFoodDevice,
   authoritativeDeviceCode,
 }: {
@@ -31,7 +30,6 @@ export default function DayNightTimelineCard({
   chartOptions: ChartOptions<"line">;
   backgroundPlugin: Plugin<"line">;
   chartLoadError: string | null;
-  mqttLiveError: string | null;
   isAuthoritativeFoodDevice: boolean;
   authoritativeDeviceCode: string;
 }) {
@@ -104,15 +102,16 @@ export default function DayNightTimelineCard({
             {chartLoadError}
           </p>
         ) : null}
-        {mqttLiveError ? (
-          <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-            {mqttLiveError}
-          </p>
-        ) : null}
+        {/* `mqttLiveError` NO se muestra: el error crudo de useMqttLive
+            ("MQTT no configurado: faltan NEXT_PUBLIC_..." / fallos de conexión)
+            es debugging interno y no le dice nada al dueño de la mascota. El
+            gráfico se arma desde readings + audit_events y funciona igual sin
+            las lecturas en vivo, que son solo el punto más fresco. */}
         {!isAuthoritativeFoodDevice ? (
-          <p className="mt-2 w-full text-center text-xs font-medium text-amber-700">
-            Alimentación sin evidencia auditada: solo se confirma comida desde{" "}
-            {authoritativeDeviceCode} con categorías inicio/termino.
+          <p className="mt-2 w-full text-center text-xs font-medium text-slate-500">
+            En este dispositivo todavía no distinguimos comida de servido: se
+            muestran las lecturas de peso sin clasificar. La detección de
+            comidas confirmada está por ahora solo en {authoritativeDeviceCode}.
           </p>
         ) : null}
       </div>

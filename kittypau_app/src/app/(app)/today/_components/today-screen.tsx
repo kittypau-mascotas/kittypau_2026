@@ -673,9 +673,11 @@ export default function TodayScreen({
     [state.devices, selectedDeviceId],
   );
 
-  // Live readings directo desde HiveMQ WebSocket
-  const { reading: liveReading, error: mqttLiveError } =
-    useMqttLive(mqttDeviceId);
+  // Live readings directo desde HiveMQ WebSocket. El `error` del hook es
+  // debugging interno (nombres de env vars, fallos de socket) -- no se muestra
+  // al usuario; si no hay lecturas en vivo el gráfico igual se arma desde
+  // readings + audit_events.
+  const { reading: liveReading } = useMqttLive(mqttDeviceId);
 
   useEffect(() => {
     if (!liveReading || !selectedDeviceId) return;
@@ -1987,6 +1989,13 @@ export default function TodayScreen({
           labels: {
             color: "#334155",
             usePointStyle: true,
+            // Los datasets usan una Image (64px) como pointStyle para los puntos
+            // del gráfico. Chart.js ignora boxWidth/boxHeight con pointStyle de
+            // imagen en la leyenda y la dibuja gigante tapando su texto. Forzar
+            // un círculo chico solo en la leyenda (el color viene de
+            // pointBackgroundColor de cada serie); los puntos del gráfico no se
+            // tocan.
+            pointStyle: "circle",
             padding: 16,
             boxWidth: 14,
             boxHeight: 14,
@@ -2838,7 +2847,6 @@ export default function TodayScreen({
             chartOptions={dayNightChartOptions}
             backgroundPlugin={dayNightBackgroundPlugin}
             chartLoadError={chartLoadError}
-            mqttLiveError={mqttLiveError}
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
