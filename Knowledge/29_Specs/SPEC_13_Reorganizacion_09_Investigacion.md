@@ -301,6 +301,11 @@ de archivos reales (`09_Investigacion/Ciclo_Alpha_v1/fase_4_visualizacion/node_m
 huérfano del §3, y `Postulaciones Fondos/` ya sin el PDF). **`Docs/` queda listo para
 borrarse** en cuanto Mauro lo confirme — este spec ya no encuentra más bloqueantes.
 
+> **Cerrado 2026-09-10:** Mauro confirmó ("soluciona eso y todo lo pendiente" sobre las
+> 172 modificaciones en el working tree). `Docs/` borrada del repo por completo (161
+> archivos: `00_Inicio`→`08_Equipo`, `.obsidian/` viejo, `HOME.md`). Referencia de
+> estructura en `CLAUDE.md` actualizada.
+
 ## 9. Segundo addendum (2026-08-16) — Rename + orden a fondo
 
 > Pedido de Mauro: "renombra estas carpeta y ordena su contenido" sobre

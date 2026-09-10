@@ -160,8 +160,14 @@ kittypau_2026/
 ├── supabase/                    # Migraciones y config Supabase (proyecto principal)
 ├── Knowledge/                   # Vault de conocimiento del dominio — LEER PRIMERO
 │   └── 29_Specs/                # Backlog vivo de specs — qué está pendiente ahora mismo
-└── Docs/                        # Documentación técnica / investigación (fase_0_ruido, etc.)
+├── Investigacion/               # Investigación (Ciclo Alpha v2, fase_0_ruido, notebooks)
+├── 11_Data/                     # Fuente de verdad histórica: readings.csv / readings_rows.csv
+└── Postulaciones_Fondos/        # Postulaciones a fondos y programas
 ```
+
+> `Docs/` fue eliminada (SPEC 13): su contenido está migrado a `Knowledge/`, la investigación
+> salió a `Investigacion/`, los datos históricos a `11_Data/` y las postulaciones a
+> `Postulaciones_Fondos/`.
 
 > Mapa end-to-end de cómo se conectan estas 6 capas (firmware → bridge → 2 DBs Supabase →
 > backend → frontend → app móvil), con citas de código real:
