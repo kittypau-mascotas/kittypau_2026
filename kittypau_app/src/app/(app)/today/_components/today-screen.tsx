@@ -2606,71 +2606,85 @@ export default function TodayScreen({
             <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
               <div className="today-hero-pet flex min-w-0 flex-col items-center gap-2">
                 <div className="flex min-w-0 flex-col items-center gap-2">
-                  <Link
-                    href="/pet"
-                    className="inline-flex"
-                    title="Ajustar foto"
-                    aria-label="Ajustar foto"
-                  >
-                    <Image
-                      src={
-                        isDemo && identity
-                          ? identity.avatarSrc
-                          : primaryPet?.photo_url || "/pet_profile.jpeg"
-                      }
-                      alt={`Foto de ${petLabel}`}
-                      width={160}
-                      height={160}
-                      unoptimized
-                      className="h-32 w-32 rounded-full border border-slate-200 object-cover"
-                    />
-                  </Link>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => void switchPetByOffset(-1)}
-                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                      aria-label="Mascota anterior"
-                      title="Mascota anterior"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
+                  {(() => {
+                    const heroPhoto = (
+                      <Image
+                        src={
+                          isDemo && identity
+                            ? identity.avatarSrc
+                            : primaryPet?.photo_url || "/pet_profile.jpeg"
+                        }
+                        alt={`Foto de ${petLabel}`}
+                        width={160}
+                        height={160}
+                        unoptimized
+                        className="h-32 w-32 rounded-full border border-slate-200 object-cover"
+                      />
+                    );
+                    // En demo la foto no es un link (/pet es ruta con sesión).
+                    return isDemo ? (
+                      <span className="inline-flex">{heroPhoto}</span>
+                    ) : (
+                      <Link
+                        href="/pet"
+                        className="inline-flex"
+                        title="Ajustar foto"
+                        aria-label="Ajustar foto"
                       >
-                        <polyline points="15 18 9 12 15 6" />
-                      </svg>
-                    </button>
+                        {heroPhoto}
+                      </Link>
+                    );
+                  })()}
+                  <div className="flex items-center gap-2">
+                    {!isDemo ? (
+                      <button
+                        type="button"
+                        onClick={() => void switchPetByOffset(-1)}
+                        className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                        aria-label="Mascota anterior"
+                        title="Mascota anterior"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                      </button>
+                    ) : null}
                     <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
                       {petLabel}
                     </h2>
-                    <button
-                      type="button"
-                      onClick={() => void switchPetByOffset(1)}
-                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                      aria-label="Siguiente mascota"
-                      title="Siguiente mascota"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
+                    {!isDemo ? (
+                      <button
+                        type="button"
+                        onClick={() => void switchPetByOffset(1)}
+                        className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                        aria-label="Siguiente mascota"
+                        title="Siguiente mascota"
                       >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </button>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden="true"
+                        >
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </button>
+                    ) : null}
                   </div>
                 </div>
                 {/* Debajo de la foto, con etiqueta ("Origen: Adoptado en refugio")

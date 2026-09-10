@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import TodayScreen from "@/app/(app)/today/_components/today-screen";
+import DemoNav from "./_components/demo-nav";
 import { createDemoFetch } from "@/lib/demo/demo-fetch";
 import {
   clearDemoIdentity,
@@ -160,24 +161,22 @@ export default function DemoPage() {
 
   if (identity && demoFetch) {
     return (
-      <div className="relative">
+      <>
         {introModal}
-        <TodayScreen mode="demo" fetchImpl={demoFetch} identity={identity} />
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-4">
-          <div className="pointer-events-auto flex w-full max-w-md items-center justify-between gap-3 rounded-full border border-white/80 bg-white/95 px-4 py-2.5 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.35)] backdrop-blur">
-            <p className="text-xs font-medium text-slate-600">
-              Estás viendo datos reales en vivo.
-            </p>
-            <button
-              type="button"
-              onClick={() => router.push("/login?register=1")}
-              className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
-            >
-              Crear cuenta
-            </button>
+        <div className="app-shell">
+          <DemoNav
+            identity={identity}
+            onCreateAccount={() => router.push("/login?register=1")}
+          />
+          <div className="app-content">
+            <TodayScreen
+              mode="demo"
+              fetchImpl={demoFetch}
+              identity={identity}
+            />
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
