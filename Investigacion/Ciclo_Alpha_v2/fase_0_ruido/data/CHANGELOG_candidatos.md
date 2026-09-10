@@ -1,2 +1,3 @@
 - 2026-08-16T23:39:40 | KPCL0034 | 916 candidatos | tasa_match=1.0 | gate OK
 - 2026-08-16T23:40:39 | KPCL0034 | 916 candidatos | tasa_match=1.0 | gate OK
+- 2026-08-28T19:09:56 | KPCL0034 | 922 candidatos | tasa_match=1.0 | gate OK
