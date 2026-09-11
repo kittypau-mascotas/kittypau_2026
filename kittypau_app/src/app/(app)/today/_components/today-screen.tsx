@@ -2655,15 +2655,54 @@ export default function TodayScreen({
                     </Link>
                   );
                 })()}
-                {/* Racha ya vive en Consumo (solo KPCL0034) -- acá es la misma
-                    cifra, no una métrica nueva, mostrada sobre el retrato
-                    como pedía la estructura enviada. */}
+                {/* 3 badges sobre el retrato (pedido de Mauro 2026-09-11) --
+                    ningún dato nuevo, todo ya se calcula más arriba en el
+                    componente. Racha y comidas hoy solo existen para
+                    KPCL0034 (el único dispositivo con motor de clasificación
+                    validado); el de agua es deliberadamente sin número --
+                    todavía no hay modelo de detección de trago confirmado
+                    (ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md), así
+                    que mostrar una cifra ahí sería inventar un dato. */}
                 {hungerBar?.kpis ? (
                   <span
                     className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-primary text-[11px] font-bold text-primary-foreground shadow-sm"
                     title="Racha de días seguidos comiendo"
+                    aria-label={`Racha: ${hungerBar.kpis.streakDays} días seguidos comiendo`}
                   >
                     {hungerBar.kpis.streakDays}
+                  </span>
+                ) : null}
+                {hungerBar?.kpis ? (
+                  <span
+                    className="absolute -right-1 -top-1 flex h-7 w-7 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-[10px] font-bold text-white shadow-sm"
+                    title="Comidas de hoy"
+                    aria-label={`Comidas de hoy: ${hungerBar.kpis.mealsToday}`}
+                  >
+                    <Image
+                      src="/illustrations/icono_comida.png"
+                      alt=""
+                      aria-hidden={true}
+                      width={11}
+                      height={11}
+                      className="object-contain"
+                    />
+                    {hungerBar.kpis.mealsToday}
+                  </span>
+                ) : null}
+                {hasWaterDevice ? (
+                  <span
+                    className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-dashed border-sky-300 bg-white shadow-sm"
+                    title="Hidratación: sin modelo de detección de trago confirmado todavía"
+                    aria-label="Hidratación: sin conteo confirmado todavía"
+                  >
+                    <Image
+                      src="/illustrations/icono_agua.png"
+                      alt=""
+                      aria-hidden={true}
+                      width={13}
+                      height={13}
+                      className="object-contain opacity-70"
+                    />
                   </span>
                 ) : null}
               </div>
