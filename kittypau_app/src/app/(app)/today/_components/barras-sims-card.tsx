@@ -57,12 +57,12 @@ export default function BarrasSimsCard({
   const battery = getBatteryStateLabel(batteryState, batteryLevel);
 
   return (
-    <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
+    <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3.5 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
           Barras Sims
         </p>
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
           {deviceId ?? "KPCLXXXX"}
         </span>
       </div>
@@ -107,17 +107,17 @@ export default function BarrasSimsCard({
                   }}
                 />
               </div>
-              <div className="flex flex-col items-center gap-0.5 text-center">
+              <div className="flex flex-col items-center gap-1 text-center">
                 <span
-                  className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                  className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${badgeClass}`}
                 >
                   {statusLabel}
                 </span>
-                <p className={`text-[11px] font-semibold ${labelClass}`}>
+                <p className={`text-[12px] font-semibold ${labelClass}`}>
                   {title} · {valueLabel}
                 </p>
                 <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
-                  <p className="whitespace-pre-line text-[10px] leading-tight text-slate-500">
+                  <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
                     {noteLabel}
                   </p>
                   {mealSizeGramos != null
@@ -141,7 +141,7 @@ export default function BarrasSimsCard({
                               />
                             </div>
                             <p
-                              className={`mt-1 text-[10px] font-medium leading-tight ${info.textClass}`}
+                              className={`mt-1 text-[11px] font-medium leading-snug ${info.textClass}`}
                             >
                               {info.label} — {mealSizeGramos} g (habitual:{" "}
                               {MEDIANA_GRAMOS_COMIDA} g)
@@ -153,7 +153,7 @@ export default function BarrasSimsCard({
                 </div>
                 {noteLabelSecondary ? (
                   <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
-                    <p className="whitespace-pre-line text-[10px] leading-tight text-slate-500">
+                    <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
                       {noteLabelSecondary}
                     </p>
                   </div>
@@ -163,7 +163,7 @@ export default function BarrasSimsCard({
           ),
         )}
       </div>
-      <div className="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
+      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-slate-400">
         <span>{getOperationalLabel(powerState)}</span>
         <span>{battery.text}</span>
       </div>

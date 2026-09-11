@@ -51,7 +51,7 @@ export default function ConsumoPeriodoCard({
   if (!data || data.status !== "ok") return null;
 
   return (
-    <section className="rounded-[calc(var(--radius)-8px)] border border-emerald-100 bg-white p-4 shadow-[0_10px_28px_-22px_rgba(16,185,129,0.5)]">
+    <section className="bg-white p-4">
       <h3 className="text-sm font-semibold text-slate-800">
         Consumo por período
       </h3>

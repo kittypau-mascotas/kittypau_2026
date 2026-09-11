@@ -2605,12 +2605,15 @@ export default function TodayScreen({
               </div>
             );
           })()}
-        <header className="flex flex-col gap-4">
+        {/* No es <header> semántico: agrupa todo el feed de /today (hero +
+            bowls + diagnóstico + chart + consumo), no solo la identidad de
+            la mascota — corregido, antes decía <header> por error. */}
+        <div className="flex flex-col gap-4">
           <section
             id="today-hero"
             role="region"
             aria-label="Hero de mascota"
-            className="today-hero surface-card freeform-rise px-4 py-3 md:px-6 md:py-3"
+            className="today-hero surface-card freeform-rise border-t-4 border-t-primary px-4 py-3 md:px-6 md:py-3"
           >
             <div className="today-hero-top flex flex-wrap items-center justify-between gap-3 md:flex-nowrap md:gap-5">
               <div className="today-hero-pet flex min-w-0 flex-col items-center gap-2">
@@ -2715,7 +2718,7 @@ export default function TodayScreen({
                 </div>
               </div>
 
-              <aside className="today-hero-aside ml-auto flex w-full flex-col items-stretch gap-1 sm:w-auto sm:min-w-[260px]">
+              <aside className="today-hero-aside ml-auto flex w-full flex-col items-stretch gap-1 sm:w-auto sm:min-w-[320px] sm:max-w-[400px]">
                 <p className="today-hero-updated text-[9px] uppercase tracking-[0.12em] text-slate-400/75">
                   Actualizado el {heroUpdatedLabel}
                 </p>
@@ -2735,17 +2738,20 @@ export default function TodayScreen({
                       noteLabel: hungerLastMealLabel,
                       noteLabelSecondary: hungerNextMealLabel,
                       mealSizeGramos: hungerBar?.lastMealGramos ?? null,
+                      // Verde = mismo color de "Alimentación" en #today-bowls (antes
+                      // rosa acá, verde allá — mismo concepto, 2 colores distintos).
+                      // El rojo de alerta se mantiene: es estado (atrasada), no marca.
                       trackClass: hungerBar?.alertActive
                         ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
-                        : "border-rose-100 bg-rose-50",
+                        : "border-emerald-100 bg-emerald-50",
                       fillClass: "",
                       fillStyle: hungerFillColor
                         ? { backgroundColor: hungerFillColor }
                         : undefined,
-                      labelClass: "text-rose-700",
+                      labelClass: "text-emerald-700",
                       badgeClass: hungerBar?.alertActive
                         ? "border-rose-300 bg-rose-100 text-rose-800"
-                        : "border-rose-100 bg-rose-50 text-rose-700",
+                        : "border-emerald-100 bg-emerald-50 text-emerald-700",
                     },
                     {
                       key: "water",
@@ -2758,12 +2764,13 @@ export default function TodayScreen({
                           : "N/D",
                       statusLabel: waterWellness.stateLabel,
                       noteLabel: waterWellness.lastEventLabel,
-                      trackClass: "border-emerald-100 bg-emerald-50",
+                      // Celeste = mismo color de "Hidratación" en #today-bowls.
+                      trackClass: "border-sky-100 bg-sky-50",
                       fillClass:
-                        "bg-[linear-gradient(180deg,rgba(45,212,191,0.95)_0%,rgba(16,185,129,0.95)_100%)]",
+                        "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
                       fillStyle: undefined,
-                      labelClass: "text-emerald-700",
-                      badgeClass: "border-slate-200 bg-slate-50 text-slate-500",
+                      labelClass: "text-sky-700",
+                      badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
                     },
                   ]}
                 />
@@ -2851,9 +2858,17 @@ export default function TodayScreen({
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
 
-          <ConsumoKpisCard kpis={hungerBar?.kpis ?? null} />
-          <ConsumoPeriodoCard data={consumoPeriodo} />
-        </header>
+          {/* Antes 2 cards blancas idénticas apiladas (mismo borde/sombra
+              verde, se leían como bloques repetidos sin relación visible).
+              Un solo contenedor conectado, sin doble sombra — cada card
+              sigue pudiendo ser null de forma independiente. */}
+          {hungerBar?.kpis || consumoPeriodo?.status === "ok" ? (
+            <div className="divide-y divide-emerald-100 overflow-hidden rounded-[calc(var(--radius)-8px)] border border-emerald-100 shadow-[0_10px_28px_-22px_rgba(16,185,129,0.5)]">
+              <ConsumoKpisCard kpis={hungerBar?.kpis ?? null} />
+              <ConsumoPeriodoCard data={consumoPeriodo} />
+            </div>
+          ) : null}
+        </div>
 
         {state.error ? (
           <section className="surface-card freeform-rise px-6 py-6 text-sm text-slate-600">

@@ -78,7 +78,7 @@ export default function ConsumoKpisCard({
           : "Irregular";
 
   return (
-    <section className="rounded-[calc(var(--radius)-8px)] border border-emerald-100 bg-white p-4 shadow-[0_10px_28px_-22px_rgba(16,185,129,0.5)]">
+    <section className="bg-white p-4">
       <h3 className="text-sm font-semibold text-slate-800">
         Consumo de alimento
       </h3>
@@ -147,73 +147,101 @@ export default function ConsumoKpisCard({
               : `${kpis.withinOwnerRange.count} de ${kpis.withinOwnerRange.total} comidas`
           }
         />
-        <Tile
-          label="Duración por comida"
-          value={
-            kpis.avgDurationMin === null
-              ? "—"
-              : `${kpis.avgDurationMin.toFixed(1)} min`
-          }
-          caption="Promedio del período"
-        />
-        <Tile
-          label="Velocidad al comer"
-          value={
-            kpis.avgSpeedGPerMin === null
-              ? "—"
-              : `${kpis.avgSpeedGPerMin.toFixed(1)} g/min`
-          }
-          caption="Promedio del período"
-        />
-        <Tile
-          label="Mayor / menor comida"
-          value={
-            kpis.biggestMealG === null
-              ? "—"
-              : `${Math.round(kpis.biggestMealG)}g / ${Math.round(kpis.smallestMealG ?? 0)}g`
-          }
-          caption="Extremos del período"
-        />
-        <Tile
-          label="Servido vs. comido"
-          value={
-            kpis.servedToEatenRatio === null
-              ? "—"
-              : `${kpis.servedToEatenRatio.toFixed(2)}x`
-          }
-          caption={
-            kpis.servedTotalG === null
-              ? "Sin eventos de servido detectados"
-              : `${Math.round(kpis.servedTotalG)}g servidos en el período`
-          }
-        />
-        <Tile
-          label="Tendencia de apetito"
-          value={
-            kpis.appetiteTrendGPerDay === null
-              ? "—"
-              : `${kpis.appetiteTrendGPerDay >= 0 ? "+" : ""}${kpis.appetiteTrendGPerDay.toFixed(1)} g/día`
-          }
-          caption={
-            kpis.appetiteTrendGPerDay === null
-              ? "Necesita 2+ días con comidas"
-              : Math.abs(kpis.appetiteTrendGPerDay) < 0.5
-                ? "Estable"
-                : kpis.appetiteTrendGPerDay > 0
-                  ? "Subiendo"
-                  : "Bajando"
-          }
-        />
-        <Tile
-          label="Ruido del sensor"
-          value={
-            kpis.noiseEventsPerDayMedian === null
-              ? "—"
-              : `${kpis.noiseEventsPerDayMedian}/día`
-          }
-          caption="Falsas activaciones detectadas, mediana por día"
-        />
       </div>
+
+      {/* Antes 12 tiles idénticos de una — se leía como una planilla.
+          Los 6 de arriba son "hoy/hábito"; el resto (medición fina, más
+          diagnóstico que glanceable) queda colapsado en <details> nativo,
+          sin JS ni estado nuevo. Ningún dato se sacó, solo se reordenó. */}
+      <details className="mt-3 group">
+        <summary className="list-none cursor-pointer select-none text-[11px] font-semibold text-emerald-700/80 [&::-webkit-details-marker]:hidden">
+          <span className="inline-flex items-center gap-1">
+            Ver detalle de medición
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="transition-transform group-open:rotate-180"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </summary>
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <Tile
+            label="Duración por comida"
+            value={
+              kpis.avgDurationMin === null
+                ? "—"
+                : `${kpis.avgDurationMin.toFixed(1)} min`
+            }
+            caption="Promedio del período"
+          />
+          <Tile
+            label="Velocidad al comer"
+            value={
+              kpis.avgSpeedGPerMin === null
+                ? "—"
+                : `${kpis.avgSpeedGPerMin.toFixed(1)} g/min`
+            }
+            caption="Promedio del período"
+          />
+          <Tile
+            label="Mayor / menor comida"
+            value={
+              kpis.biggestMealG === null
+                ? "—"
+                : `${Math.round(kpis.biggestMealG)}g / ${Math.round(kpis.smallestMealG ?? 0)}g`
+            }
+            caption="Extremos del período"
+          />
+          <Tile
+            label="Servido vs. comido"
+            value={
+              kpis.servedToEatenRatio === null
+                ? "—"
+                : `${kpis.servedToEatenRatio.toFixed(2)}x`
+            }
+            caption={
+              kpis.servedTotalG === null
+                ? "Sin eventos de servido detectados"
+                : `${Math.round(kpis.servedTotalG)}g servidos en el período`
+            }
+          />
+          <Tile
+            label="Tendencia de apetito"
+            value={
+              kpis.appetiteTrendGPerDay === null
+                ? "—"
+                : `${kpis.appetiteTrendGPerDay >= 0 ? "+" : ""}${kpis.appetiteTrendGPerDay.toFixed(1)} g/día`
+            }
+            caption={
+              kpis.appetiteTrendGPerDay === null
+                ? "Necesita 2+ días con comidas"
+                : Math.abs(kpis.appetiteTrendGPerDay) < 0.5
+                  ? "Estable"
+                  : kpis.appetiteTrendGPerDay > 0
+                    ? "Subiendo"
+                    : "Bajando"
+            }
+          />
+          <Tile
+            label="Ruido del sensor"
+            value={
+              kpis.noiseEventsPerDayMedian === null
+                ? "—"
+                : `${kpis.noiseEventsPerDayMedian}/día`
+            }
+            caption="Falsas activaciones detectadas, mediana por día"
+          />
+        </div>
+      </details>
     </section>
   );
 }

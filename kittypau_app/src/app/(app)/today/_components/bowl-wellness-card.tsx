@@ -185,7 +185,7 @@ export default function BowlWellnessCard({
 
   return (
     <article
-      className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm transition-transform duration-200 ease-out hover:scale-[1.01] md:p-5`}
+      className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm md:p-5`}
     >
       <div className="flex flex-1 flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
@@ -236,7 +236,7 @@ export default function BowlWellnessCard({
               alt={c.illustrationAlt}
               width={224}
               height={164}
-              className="mx-auto h-48 w-auto object-contain object-center"
+              className="mx-auto h-36 w-auto object-contain object-center"
             />
             {fillPct !== null ? (
               <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
@@ -264,14 +264,17 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 pt-1">
-          <span
-            className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${c.contentChipClass}`}
+        {/* Antes 4 pills de ancho variable que se envolvían de forma
+            impredecible (flex-wrap) -- grid 2x2 de ancho fijo, misma
+            información, más fácil de escanear. */}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <div
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium ${c.contentChipClass}`}
             title={c.contentTitle}
           >
             <svg
-              width="12"
-              height="12"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -279,19 +282,22 @@ export default function BowlWellnessCard({
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
+              className="shrink-0"
             >
               <path d={c.contentIconPath} />
             </svg>
-            {contentValueText}
-            {renderTrend(contentWeightGrams, prevContentWeightGrams)}
-          </span>
-          <span
-            className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-[11px] font-medium text-orange-600"
+            <span className="truncate">
+              {contentValueText}
+              {renderTrend(contentWeightGrams, prevContentWeightGrams)}
+            </span>
+          </div>
+          <div
+            className="flex items-center gap-1.5 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[11px] font-medium text-orange-600"
             title="Temperatura"
           >
             <svg
-              width="12"
-              height="12"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -299,18 +305,19 @@ export default function BowlWellnessCard({
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
+              className="shrink-0"
             >
               <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
             </svg>
-            {tempText}
-          </span>
-          <span
-            className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${c.humidityChipClass}`}
+            <span className="truncate">{tempText}</span>
+          </div>
+          <div
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium ${c.humidityChipClass}`}
             title="Humedad"
           >
             <svg
-              width="12"
-              height="12"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -318,18 +325,19 @@ export default function BowlWellnessCard({
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
+              className="shrink-0"
             >
               <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
             </svg>
-            {humidityText}
-          </span>
-          <span
-            className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500"
+            <span className="truncate">{humidityText}</span>
+          </div>
+          <div
+            className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-[11px] font-medium text-slate-500"
             title="Última lectura"
           >
             <svg
-              width="12"
-              height="12"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -337,12 +345,15 @@ export default function BowlWellnessCard({
               strokeLinecap="round"
               strokeLinejoin="round"
               aria-hidden="true"
+              className="shrink-0"
             >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
-            {formatTimestamp(latestReading?.recorded_at ?? null)}
-          </span>
+            <span className="truncate">
+              {formatTimestamp(latestReading?.recorded_at ?? null)}
+            </span>
+          </div>
         </div>
       </div>
     </article>
