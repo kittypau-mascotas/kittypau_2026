@@ -39,6 +39,10 @@ const CONSISTENCY_LABEL: Record<
   mas_espaciado: "más espaciado que lo típico",
 };
 
+// Panel continuo (spec "Overview & Stats screen" -- investigado 2026-09-11,
+// ver PENDIENTES_POR_PC.md) en vez de tiles sueltos con su propio borde:
+// celdas separadas por líneas finas de 1px, no cada una con su marco.
+// Mismo dato, mismo copy -- solo el contorno de la celda cambia.
 function Tile({
   label,
   value,
@@ -49,7 +53,7 @@ function Tile({
   caption: string;
 }) {
   return (
-    <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+    <div className="bg-white p-3">
       <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
         {label}
       </p>
@@ -86,7 +90,7 @@ export default function ConsumoKpisCard({
         Calculado sobre los últimos 10 días de lecturas — todo con dato real
         detrás, nada estimado.
       </p>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-emerald-100 bg-emerald-100 sm:grid-cols-3">
         <Tile
           label="Comidas hoy"
           value={`${kpis.mealsToday}`}
@@ -173,7 +177,7 @@ export default function ConsumoKpisCard({
             </svg>
           </span>
         </summary>
-        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-emerald-100 bg-emerald-100 sm:grid-cols-3">
           <Tile
             label="Duración por comida"
             value={

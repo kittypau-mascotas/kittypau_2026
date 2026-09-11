@@ -26,9 +26,12 @@ type ConsumoPeriodoResponse =
       truncated: boolean;
     };
 
+// Mismo panel continuo de ConsumoKpisCard (spec "Overview & Stats screen",
+// investigado 2026-09-11) -- celda sin borde propio, el hairline lo pone el
+// contenedor con gap-px + fondo emerald.
 function Tile({ label, periodo }: { label: string; periodo: ConsumoPeriodo }) {
   return (
-    <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+    <div className="bg-white p-3">
       <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
         {label}
       </p>
@@ -59,7 +62,7 @@ export default function ConsumoPeriodoCard({
         Últimos 7 y 30 días — suma de las comidas reales confirmadas en cada
         ventana.
       </p>
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-emerald-100 bg-emerald-100">
         <Tile label="Última semana" periodo={data.semana} />
         <Tile label="Último mes" periodo={data.mes} />
       </div>

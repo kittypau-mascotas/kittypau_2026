@@ -69,7 +69,6 @@ import DayNightTimelineCard from "./day-night-timeline-card";
 import ConsumoKpisCard from "./consumo-kpis-card";
 import ConsumoPeriodoCard from "./consumo-periodo-card";
 import OnboardingGuideModal from "./onboarding-guide-modal";
-import DiagnosticoRapidoCard from "@/app/_components/diagnostico-rapido-card";
 import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
 import type { DemoIdentity } from "@/lib/demo-identity";
 
@@ -2884,25 +2883,73 @@ export default function TodayScreen({
             </div>
           </section>
 
+          {/* HUD compacto en vez del DiagnosticoRapidoCard compartido
+              (3 columnas + lista de acciones en prosa) -- ese componente lo
+              usan /bowl y /pet también, así que este es uno propio de
+              /today, inline, solo acá. Principio de HUD real (investigado
+              2026-09-11): info crítica en 1 línea con ícono+color, no
+              párrafos -- "fast access to critical data", no un ensayo. */}
           {hasFoodDevice || hasWaterDevice ? (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-2">
               {hasFoodDevice ? (
-                <DiagnosticoRapidoCard
-                  title="Diagnóstico rápido · Comedero"
-                  connectionHint={bowlDiagnostics.connectionHint}
-                  batterySummary={bowlDiagnostics.summary}
-                  batteryExtra={bowlDiagnostics.extra}
-                  actionNotes={bowlDiagnostics.actionNotes}
-                />
+                <div className="flex flex-col gap-1 rounded-xl border border-emerald-100 bg-emerald-50/40 px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block h-2 w-2 shrink-0 rounded-full ${
+                        bowlPowerState === "on"
+                          ? "bg-emerald-500"
+                          : bowlPowerState === "off"
+                            ? "bg-amber-500"
+                            : "bg-slate-300"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="text-xs font-semibold text-emerald-700">
+                      Comedero
+                    </span>
+                    <span className="ml-auto text-[11px] text-slate-500">
+                      {bowlDiagnostics.connectionHint}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Batería {bowlDiagnostics.summary}
+                    {bowlDiagnostics.extra ? ` (${bowlDiagnostics.extra})` : ""}
+                    {bowlDiagnostics.actionNotes[0]
+                      ? ` · ${bowlDiagnostics.actionNotes[0]}`
+                      : ""}
+                  </p>
+                </div>
               ) : null}
               {hasWaterDevice ? (
-                <DiagnosticoRapidoCard
-                  title="Diagnóstico rápido · Bebedero"
-                  connectionHint={waterDiagnostics.connectionHint}
-                  batterySummary={waterDiagnostics.summary}
-                  batteryExtra={waterDiagnostics.extra}
-                  actionNotes={waterDiagnostics.actionNotes}
-                />
+                <div className="flex flex-col gap-1 rounded-xl border border-sky-100 bg-sky-50/40 px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block h-2 w-2 shrink-0 rounded-full ${
+                        waterPowerState === "on"
+                          ? "bg-sky-500"
+                          : waterPowerState === "off"
+                            ? "bg-amber-500"
+                            : "bg-slate-300"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="text-xs font-semibold text-sky-700">
+                      Bebedero
+                    </span>
+                    <span className="ml-auto text-[11px] text-slate-500">
+                      {waterDiagnostics.connectionHint}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Batería {waterDiagnostics.summary}
+                    {waterDiagnostics.extra
+                      ? ` (${waterDiagnostics.extra})`
+                      : ""}
+                    {waterDiagnostics.actionNotes[0]
+                      ? ` · ${waterDiagnostics.actionNotes[0]}`
+                      : ""}
+                  </p>
+                </div>
               ) : null}
             </div>
           ) : null}
