@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist_Mono,
-  Fraunces,
-  Inter,
-  Lato,
-  Titan_One,
-  Baloo_2,
-  Manrope,
-} from "next/font/google";
+import { Geist_Mono, Fraunces, Inter, Lato, Titan_One } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import RouteLoadingOverlay from "./_components/route-loading-overlay";
@@ -40,20 +32,6 @@ const geistMono = Geist_Mono({
 const lato = Lato({
   variable: "--font-slider",
   weight: ["400", "700", "900"],
-  subsets: ["latin"],
-});
-
-// Solo para el HUD de /today (spec "Pet Character Status Screen") -- no se
-// usan en ningún otro lado, ver today-hud.module.css.
-const baloo2 = Baloo_2({
-  variable: "--font-hud-display",
-  weight: ["600", "700"],
-  subsets: ["latin"],
-});
-
-const manrope = Manrope({
-  variable: "--font-hud-body",
-  weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
 
@@ -110,7 +88,7 @@ export default function RootLayout({
       className={appFlavor === "native" ? "kp-flavor-native" : "kp-flavor-web"}
     >
       <body
-        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} ${lato.variable} ${baloo2.variable} ${manrope.variable} antialiased app-flavor-${appFlavor}`}
+        className={`${inter.variable} ${fraunces.variable} ${titanOne.variable} ${geistMono.variable} ${lato.variable} antialiased app-flavor-${appFlavor}`}
       >
         <NativeApkMode />
         <NativeThanksNotification />

@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { MEDIANA_GRAMOS_COMIDA } from "@/lib/hunger-bar";
-import { getBatteryStateLabel, mealSizeInfo } from "../_lib/today-format";
-import styles from "./today-hud.module.css";
+import {
+  getBatteryStateLabel,
+  getOperationalLabel,
+  mealSizeInfo,
+} from "../_lib/today-format";
 
 const WELLNESS_BLOCKS = 20;
 
 type BarKind = {
-  key: "food" | "water";
+  key: string;
   title: string;
   iconSrc: string;
   filledBlocks: number;
@@ -20,6 +22,11 @@ type BarKind = {
   // estimada" separado de "última comida" en vez de un solo cuadro con \n.
   // Agua no lo usa (queda undefined, ese cuadro no se renderiza).
   noteLabelSecondary?: string | null;
+  trackClass: string;
+  fillClass: string;
+  fillStyle?: { backgroundColor: string };
+  labelClass: string;
+  badgeClass: string;
   // Gramos de la última comida CONFIRMADA -- pedido de Mauro 2026-09-09:
   // que la barra "¿comió más o menos que lo habitual?" (ya vive en
   // BowlWellnessCard) también aparezca acá. Solo se pasa para la barra de
@@ -28,16 +35,11 @@ type BarKind = {
 };
 
 /**
- * Widget "Barras Sims" del hero de /today -- hoy son 2 barras (Comida/Agua).
+ * Widget "Barras Sims" del hero de /today — hoy son 2 barras (Comida/Agua).
  *
  * ⚠️ Este widget es sensible: Mauro ya pidió revertir 3 veces (ver
  * Knowledge/29_Specs/SPEC_04_Metricas_Today_Investigacion.md) cualquier intento de
  * agregarle cards nuevas. Proponer antes de expandirlo, no asumir que hace falta más.
- *
- * Piel visual "HUD" (spec 2026-09-11): mismo dato, mismo cálculo, mismo copy de
- * estado -- solo cambia cómo se dibuja. El color base es fijo por `key`
- * (comida=esmeralda, agua=celeste, spec §3); "Atrasada" pisa ese color con ámbar
- * porque es un estado real del backend, no una preferencia de marca.
  */
 export default function BarrasSimsCard({
   deviceId,
@@ -54,110 +56,115 @@ export default function BarrasSimsCard({
 }) {
   const battery = getBatteryStateLabel(batteryState, batteryLevel);
 
-  // Único momento de movimiento de la barra: 0% -> valor real al montar
-  // (spec §7). CSS transition no anima el primer paint, así que se necesita
-  // un tick posterior al mount para disparar el cambio de width.
-  const [filled, setFilled] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setFilled(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
   return (
-    <div className={styles.frame}>
-      <div className={styles.protectedTag}>
-        <span className={styles.dot} />
-        Estado actual · no editable
-        <span style={{ marginLeft: "auto" }} className={styles.mono}>
+    <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3.5 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          Barras Sims
+        </p>
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
           {deviceId ?? "KPCLXXXX"}
         </span>
       </div>
-      <div className={styles.resourceRow}>
-        {bars.map((bar) => {
-          const late = bar.statusLabel === "Atrasada";
-          const tone = late ? "late" : bar.key;
-          return (
-            <div key={bar.key} className={styles.resource}>
-              <div className={styles.resourceTop}>
-                <span className={`${styles.iconChip} ${styles[bar.key]}`}>
-                  <Image
-                    src={bar.iconSrc}
-                    alt=""
-                    aria-hidden={true}
-                    width={18}
-                    height={18}
-                  />
-                </span>
-                <div className={styles.resourceLabel}>
-                  <span className={styles.name}>{bar.title}</span>
-                  <span className={styles.value}>{bar.valueLabel}</span>
-                </div>
+      <div className="grid grid-cols-2 gap-3">
+        {bars.map(
+          ({
+            key,
+            title,
+            iconSrc,
+            filledBlocks,
+            valueLabel,
+            statusLabel,
+            noteLabel,
+            noteLabelSecondary,
+            trackClass,
+            fillClass,
+            fillStyle,
+            labelClass,
+            badgeClass,
+            mealSizeGramos,
+          }) => (
+            <div
+              key={key}
+              className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
+            >
+              <div className="flex h-8 items-center justify-center">
+                <Image
+                  src={iconSrc}
+                  alt=""
+                  aria-hidden={true}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain opacity-90"
+                />
               </div>
-
-              <div className={styles.barTrack}>
+              <div className="kp-liquid-track h-36 w-10 border border-slate-100 bg-white">
                 <div
-                  className={`${styles.barFill} ${styles[tone]}`}
+                  className={`kp-liquid-fill ${fillClass}`}
                   style={{
-                    width: filled
-                      ? `${Math.round((bar.filledBlocks / WELLNESS_BLOCKS) * 100)}%`
-                      : "0%",
+                    height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
+                    ...fillStyle,
                   }}
                 />
               </div>
-
-              <div className={styles.resourceMeta}>
-                <span className={styles.note}>
-                  {bar.noteLabel}
-                  {bar.noteLabelSecondary ? `\n${bar.noteLabelSecondary}` : ""}
-                </span>
+              <div className="flex flex-col items-center gap-1 text-center">
                 <span
-                  className={`${styles.statusChip} ${styles[late ? "late" : "ok"]}`}
+                  className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${badgeClass}`}
                 >
-                  {bar.statusLabel}
+                  {statusLabel}
                 </span>
+                <p className={`text-[12px] font-semibold ${labelClass}`}>
+                  {title} · {valueLabel}
+                </p>
+                <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
+                  <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
+                    {noteLabel}
+                  </p>
+                  {mealSizeGramos != null
+                    ? (() => {
+                        const info = mealSizeInfo(mealSizeGramos);
+                        const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
+                        const pct = Math.min(
+                          100,
+                          Math.round((mealSizeGramos / escalaMax) * 100),
+                        );
+                        return (
+                          <div className="mt-1.5">
+                            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className={`h-full rounded-full ${info.barClass}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                              <div
+                                className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <p
+                              className={`mt-1 text-[11px] font-medium leading-snug ${info.textClass}`}
+                            >
+                              {info.label} — {mealSizeGramos} g (habitual:{" "}
+                              {MEDIANA_GRAMOS_COMIDA} g)
+                            </p>
+                          </div>
+                        );
+                      })()
+                    : null}
+                </div>
+                {noteLabelSecondary ? (
+                  <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
+                    <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
+                      {noteLabelSecondary}
+                    </p>
+                  </div>
+                ) : null}
               </div>
-
-              {bar.mealSizeGramos != null
-                ? (() => {
-                    const info = mealSizeInfo(bar.mealSizeGramos as number);
-                    const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
-                    const pct = Math.min(
-                      100,
-                      Math.round(
-                        ((bar.mealSizeGramos as number) / escalaMax) * 100,
-                      ),
-                    );
-                    return (
-                      <div>
-                        <div className={styles.barTrack} style={{ height: 5 }}>
-                          <div
-                            className={`${styles.barFill} ${styles.gold}`}
-                            style={{ width: filled ? `${pct}%` : "0%" }}
-                          />
-                        </div>
-                        <p
-                          className={styles.note}
-                          style={{ marginTop: 4, fontSize: 10 }}
-                        >
-                          {info.label} — {bar.mealSizeGramos} g (habitual:{" "}
-                          {MEDIANA_GRAMOS_COMIDA} g)
-                        </p>
-                      </div>
-                    );
-                  })()
-                : null}
             </div>
-          );
-        })}
+          ),
+        )}
       </div>
-      <div className={styles.deviceFoot}>
-        <span>
-          {powerState === "on"
-            ? "Encendido"
-            : powerState === "off"
-              ? "Apagado"
-              : "Sin telemetría"}
-        </span>
+      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-slate-400">
+        <span>{getOperationalLabel(powerState)}</span>
         <span>{battery.text}</span>
       </div>
     </div>
