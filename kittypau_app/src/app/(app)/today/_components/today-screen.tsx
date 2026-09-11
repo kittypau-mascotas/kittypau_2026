@@ -62,6 +62,7 @@ import {
   chileCompactDatetime,
   chileShortTime,
   chileLongDate,
+  chileDateString,
 } from "@/lib/time/chile";
 import BarrasSimsCard from "./barras-sims-card";
 import BowlWellnessCard from "./bowl-wellness-card";
@@ -2548,6 +2549,45 @@ export default function TodayScreen({
     );
   }, [waterBlockLevelPct]);
 
+  // Gráfico vertical + gamificación (pedido de Mauro 2026-09-11): franja de
+  // 7 barras tipo "racha semanal" (mismo patrón que el calendario de rachas
+  // de Duolingo/Habitica) -- NO es un dato nuevo, son los mismos eventos
+  // `hungerBar.events` (ventana de 10 días, categoría "alimentacion") que ya
+  // arma el gráfico día/noche, solo agrupados por día en vez de graficados
+  // en el tiempo. Días sin comida confirmada quedan en 0 -- no se inventa
+  // asistencia. Solo KPCL0034 (mismo gate que el resto de Consumo).
+  const weeklyMealBars = useMemo(() => {
+    if (!hungerBar?.kpis) return null;
+    const todayKey = chileDateString();
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000);
+      const key = chileDateString(d);
+      return {
+        key,
+        label: new Intl.DateTimeFormat("es-CL", {
+          weekday: "narrow",
+          timeZone: "America/Santiago",
+        }).format(d),
+        grams: 0,
+        isToday: key === todayKey,
+      };
+    });
+    const byKey = new Map(days.map((d) => [d.key, d]));
+    for (const ev of hungerBar.events ?? []) {
+      if (ev.category !== "alimentacion") continue;
+      const bucket = byKey.get(chileDateString(new Date(ev.startAt)));
+      if (bucket) bucket.grams += Math.max(0, ev.deltaG);
+    }
+    const maxGrams = Math.max(1, ...days.map((d) => d.grams));
+    return days.map((d) => ({
+      ...d,
+      // Piso visual de 4% para que un día en 0 siga mostrando una tira fina
+      // (en vez de desaparecer) -- se ve, pero no se confunde con datos.
+      pct:
+        d.grams > 0 ? Math.max(6, Math.round((d.grams / maxGrams) * 100)) : 4,
+    }));
+  }, [hungerBar]);
+
   // Mientras no se resuelve el account type no renderizar nada (evita flicker)
   if (accountType === null) {
     return null;
@@ -2965,6 +3005,57 @@ export default function TodayScreen({
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
+
+          {/* Gráfico vertical + gamificación -- calendario de racha semanal,
+              mismo patrón que Duolingo/Habitica: 7 barras, una por día,
+              altura = gramos comidos ese día (dato real de hungerBar.events,
+              no una barra nueva de Barras Sims). El día de hoy se resalta
+              con el color primario, igual que el badge de racha en la foto
+              -- son la misma racha, dos vistas del mismo dato. */}
+          {weeklyMealBars ? (
+            <section
+              aria-label="Racha semanal"
+              className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-slate-800">
+                  Racha semanal
+                </span>
+                <span className="text-[11px] text-slate-400">
+                  Gramos comidos por día
+                </span>
+              </div>
+              <div className="mt-3 flex items-end justify-between gap-2">
+                {weeklyMealBars.map((day) => (
+                  <div
+                    key={day.key}
+                    className="flex flex-1 flex-col items-center gap-1.5"
+                  >
+                    <div className="flex h-20 w-full items-end justify-center">
+                      <div
+                        className={`w-full max-w-[22px] rounded-t-md transition-[height] duration-500 ${
+                          day.grams > 0 ? "bg-emerald-400" : "bg-slate-100"
+                        } ${day.isToday ? "ring-2 ring-primary ring-offset-1" : ""}`}
+                        style={{ height: `${day.pct}%` }}
+                        title={
+                          day.grams > 0
+                            ? `${Math.round(day.grams)} g`
+                            : "Sin comida confirmada"
+                        }
+                      />
+                    </div>
+                    <span
+                      className={`text-[10px] font-semibold uppercase ${
+                        day.isToday ? "text-primary" : "text-slate-400"
+                      }`}
+                    >
+                      {day.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {/* Antes 2 cards blancas idénticas apiladas (mismo borde/sombra
               verde, se leían como bloques repetidos sin relación visible).
