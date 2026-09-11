@@ -2665,7 +2665,7 @@ export default function TodayScreen({
                     que mostrar una cifra ahí sería inventar un dato. */}
                 {hungerBar?.kpis ? (
                   <span
-                    className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-primary text-[11px] font-bold text-primary-foreground shadow-sm"
+                    className="absolute -bottom-1.5 -right-1.5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-primary text-base font-bold text-primary-foreground shadow-sm"
                     title="Racha de días seguidos comiendo"
                     aria-label={`Racha: ${hungerBar.kpis.streakDays} días seguidos comiendo`}
                   >
@@ -2674,7 +2674,7 @@ export default function TodayScreen({
                 ) : null}
                 {hungerBar?.kpis ? (
                   <span
-                    className="absolute -right-1 -top-1 flex h-7 w-7 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-[10px] font-bold text-white shadow-sm"
+                    className="absolute -right-1.5 -top-1.5 flex h-9 w-9 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-base font-bold text-white shadow-sm"
                     title="Comidas de hoy"
                     aria-label={`Comidas de hoy: ${hungerBar.kpis.mealsToday}`}
                   >
@@ -2682,8 +2682,8 @@ export default function TodayScreen({
                       src="/illustrations/icono_comida.png"
                       alt=""
                       aria-hidden={true}
-                      width={11}
-                      height={11}
+                      width={14}
+                      height={14}
                       className="object-contain"
                     />
                     {hungerBar.kpis.mealsToday}
