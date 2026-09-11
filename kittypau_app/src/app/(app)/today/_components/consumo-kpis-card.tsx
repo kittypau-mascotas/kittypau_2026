@@ -1,13 +1,18 @@
 "use client";
 
+import styles from "./today-hud.module.css";
+
 /**
- * 12 KPIs de consumo de alimento — Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md
+ * 12 KPIs de consumo de alimento -- Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md
  * §2.1/§2.2/§2.3. Sección independiente de "Barras Sims" (widget protegido, no se toca ni se
- * le agrega nada) — mismo criterio que ya define ese spec.
+ * le agrega nada) -- mismo criterio que ya define ese spec.
  *
  * Solo aparece si `kpis` no es null (hoy: solo KPCL0034, ver `MOTOR_NUEVO_DEVICE_CODE` en
- * `@/lib/hunger-bar`). Cada tile con copy honesto — "Sin datos suficientes todavía" en vez
+ * `@/lib/hunger-bar`). Cada tile con copy honesto -- "Sin datos suficientes todavía" en vez
  * de inventar un número cuando la métrica no se puede calcular con lo que hay.
+ *
+ * Piel "HUD" (2026-09-11): 6 tiles "hoy/hábito" siempre visibles + 6 de medición fina
+ * colapsadas en <details> nativo (sin JS de más) -- ningún dato se sacó, solo se reordenó.
  */
 
 type ConsumoKpis = {
@@ -49,14 +54,10 @@ function Tile({
   caption: string;
 }) {
   return (
-    <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-emerald-700/80">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-semibold text-slate-800">{value}</p>
-      <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
-        {caption}
-      </p>
+    <div className={styles.statGridCell}>
+      <span className={styles.label}>{label}</span>
+      <span className={styles.value}>{value}</span>
+      <span className={styles.caption}>{caption}</span>
     </div>
   );
 }
@@ -78,15 +79,13 @@ export default function ConsumoKpisCard({
           : "Irregular";
 
   return (
-    <section className="bg-white p-4">
-      <h3 className="text-sm font-semibold text-slate-800">
-        Consumo de alimento
-      </h3>
-      <p className="mt-0.5 text-[11px] text-slate-500">
-        Calculado sobre los últimos 10 días de lecturas — todo con dato real
+    <div>
+      <span className={styles.sectionLabel}>Consumo de alimento</span>
+      <p className={styles.bowlNote} style={{ marginTop: 4 }}>
+        Calculado sobre los últimos 10 días de lecturas -- todo con dato real
         detrás, nada estimado.
       </p>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className={styles.statGrid}>
         <Tile
           label="Comidas hoy"
           value={`${kpis.mealsToday}`}
@@ -149,31 +148,24 @@ export default function ConsumoKpisCard({
         />
       </div>
 
-      {/* Antes 12 tiles idénticos de una — se leía como una planilla.
-          Los 6 de arriba son "hoy/hábito"; el resto (medición fina, más
-          diagnóstico que glanceable) queda colapsado en <details> nativo,
-          sin JS ni estado nuevo. Ningún dato se sacó, solo se reordenó. */}
-      <details className="mt-3 group">
-        <summary className="list-none cursor-pointer select-none text-[11px] font-semibold text-emerald-700/80 [&::-webkit-details-marker]:hidden">
-          <span className="inline-flex items-center gap-1">
-            Ver detalle de medición
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="transition-transform group-open:rotate-180"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </span>
+      <details className={styles.detailToggle}>
+        <summary className={styles.detailSummary}>
+          Ver detalle de medición
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </summary>
-        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div className={styles.statGrid} style={{ marginTop: 8 }}>
           <Tile
             label="Duración por comida"
             value={
@@ -242,6 +234,6 @@ export default function ConsumoKpisCard({
           />
         </div>
       </details>
-    </section>
+    </div>
   );
 }
