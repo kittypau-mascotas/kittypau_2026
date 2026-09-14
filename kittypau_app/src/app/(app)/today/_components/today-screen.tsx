@@ -1606,15 +1606,13 @@ export default function TodayScreen({
     const cycleDate = formatCycleDate(dayNightWindow.startMs);
     return dayCycleOffsetDays === 0 ? "hoy" : cycleDate;
   }, [dayCycleOffsetDays, dayNightWindow.startMs]);
-  const selectedPetIndex = Math.max(
-    0,
-    state.pets.findIndex((pet) => pet.id === (primaryPet?.id ?? "")),
-  );
-  const switchPetByOffset = async (offset: -1 | 1) => {
-    if (!state.pets.length) return;
-    const nextIndex =
-      (selectedPetIndex + offset + state.pets.length) % state.pets.length;
-    const pet = state.pets[nextIndex];
+  // Antes era switchPetByOffset(-1|1) para las flechas prev/next del hero.
+  // Ahora el selector es un dropdown ("Cambiar mascota", pedido de Mauro
+  // 2026-09-14, estilo Character UI) que elige directo por id -- misma
+  // lógica de resolución de dispositivo, solo cambia cómo se llega al pet.
+  const switchPetTo = async (petId: string) => {
+    const pet = state.pets.find((p) => p.id === petId);
+    if (!pet || pet.id === primaryPet?.id) return;
     const suffix = parsePetNumberSuffix(pet.name);
     const foodCode = suffix ? kpclLabelFromNumber(suffix) : null;
     const nextPetDevices = state.devices.filter(
@@ -2661,44 +2659,47 @@ export default function TodayScreen({
             id="today-hero"
             role="region"
             aria-label="Hero de mascota"
-            className="today-hero surface-card freeform-rise border-t-4 border-t-primary px-4 py-3 md:px-6 md:py-3"
+            className="today-hero surface-card freeform-rise rounded-[24px] border-t-4 border-t-primary bg-primary/5 p-6 md:p-8"
           >
-            {/* Panel de personaje estilo RPG (pedido de Mauro 2026-09-14):
-                retrato a la izquierda, nombre+características a la derecha
-                -- mismo patrón que el header de una ficha de personaje
-                (portrait + stat block), en vez de todo centrado y apilado. */}
-            <div className="flex min-w-0 items-center gap-4">
-              <div className="relative shrink-0">
-                {(() => {
-                  const heroPhoto = (
-                    <Image
-                      src={
-                        isDemo && identity
-                          ? identity.avatarSrc
-                          : primaryPet?.photo_url || "/pet_profile.jpeg"
-                      }
-                      alt={`Foto de ${petLabel}`}
-                      width={160}
-                      height={160}
-                      unoptimized
-                      className="h-24 w-24 rounded-full border-2 border-primary/40 object-cover shadow-sm md:h-28 md:w-28"
-                    />
-                  );
-                  // En demo la foto no es un link (/pet es ruta con sesión).
-                  return isDemo ? (
-                    <span className="inline-flex">{heroPhoto}</span>
-                  ) : (
-                    <Link
-                      href="/pet"
-                      className="inline-flex"
-                      title="Ajustar foto"
-                      aria-label="Ajustar foto"
-                    >
-                      {heroPhoto}
-                    </Link>
-                  );
-                })()}
-                {/* 3 badges sobre el retrato (pedido de Mauro 2026-09-11) --
+            {/* "El Hero no muestra datos; presenta al personaje y su
+                estado" (Character UI, pedido de Mauro 2026-09-14) --
+                columna de identidad (retrato + nombre + selector) y columna
+                de estado (Barras Sims + racha) una al lado de la otra en
+                desktop, apiladas en móvil. */}
+            <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+              {/* Columna: identidad. */}
+              <div className="flex flex-col items-center gap-3 text-center md:w-[240px] md:shrink-0 md:items-start md:text-left">
+                <div className="relative shrink-0">
+                  {(() => {
+                    const heroPhoto = (
+                      <Image
+                        src={
+                          isDemo && identity
+                            ? identity.avatarSrc
+                            : primaryPet?.photo_url || "/pet_profile.jpeg"
+                        }
+                        alt={`Foto de ${petLabel}`}
+                        width={160}
+                        height={160}
+                        unoptimized
+                        className="h-36 w-36 rounded-full border-2 border-primary/40 object-cover shadow-sm md:h-40 md:w-40"
+                      />
+                    );
+                    // En demo la foto no es un link (/pet es ruta con sesión).
+                    return isDemo ? (
+                      <span className="inline-flex">{heroPhoto}</span>
+                    ) : (
+                      <Link
+                        href="/pet"
+                        className="inline-flex"
+                        title="Ajustar foto"
+                        aria-label="Ajustar foto"
+                      >
+                        {heroPhoto}
+                      </Link>
+                    );
+                  })()}
+                  {/* 3 badges sobre el retrato (pedido de Mauro 2026-09-11) --
                     ningún dato nuevo, todo ya se calcula más arriba en el
                     componente. Racha y comidas hoy solo existen para
                     KPCL0034 (el único dispositivo con motor de clasificación
@@ -2706,106 +2707,60 @@ export default function TodayScreen({
                     todavía no hay modelo de detección de trago confirmado
                     (ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md), así
                     que mostrar una cifra ahí sería inventar un dato. */}
-                {hungerBar?.kpis ? (
-                  <span
-                    className="absolute -bottom-1.5 -right-1.5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-primary text-base font-bold text-primary-foreground shadow-sm"
-                    title="Racha de días seguidos comiendo"
-                    aria-label={`Racha: ${hungerBar.kpis.streakDays} días seguidos comiendo`}
-                  >
-                    {hungerBar.kpis.streakDays}
-                  </span>
-                ) : null}
-                {hungerBar?.kpis ? (
-                  <span
-                    className="absolute -right-1.5 -top-1.5 flex h-9 w-9 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-base font-bold text-white shadow-sm"
-                    title="Comidas de hoy"
-                    aria-label={`Comidas de hoy: ${hungerBar.kpis.mealsToday}`}
-                  >
-                    <Image
-                      src="/illustrations/icono_comida.png"
-                      alt=""
-                      aria-hidden={true}
-                      width={14}
-                      height={14}
-                      className="object-contain"
-                    />
-                    {hungerBar.kpis.mealsToday}
-                  </span>
-                ) : null}
-                {hasWaterDevice ? (
-                  <span
-                    className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-dashed border-sky-300 bg-white shadow-sm"
-                    title="Hidratación: sin modelo de detección de trago confirmado todavía"
-                    aria-label="Hidratación: sin conteo confirmado todavía"
-                  >
-                    <Image
-                      src="/illustrations/icono_agua.png"
-                      alt=""
-                      aria-hidden={true}
-                      width={13}
-                      height={13}
-                      className="object-contain opacity-70"
-                    />
-                  </span>
-                ) : null}
-              </div>
-              <div className="flex min-w-0 flex-col items-start gap-1">
-                <div className="flex items-center gap-2">
-                  {!isDemo ? (
-                    <button
-                      type="button"
-                      onClick={() => void switchPetByOffset(-1)}
-                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                      aria-label="Mascota anterior"
-                      title="Mascota anterior"
+                  {hungerBar?.kpis ? (
+                    <span
+                      className="absolute -bottom-1.5 -right-1.5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-primary text-base font-bold text-primary-foreground shadow-sm"
+                      title="Racha de días seguidos comiendo"
+                      aria-label={`Racha: ${hungerBar.kpis.streakDays} días seguidos comiendo`}
                     >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="15 18 9 12 15 6" />
-                      </svg>
-                    </button>
+                      {hungerBar.kpis.streakDays}
+                    </span>
                   ) : null}
-                  <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
-                    {petLabel}
-                  </h2>
-                  {!isDemo ? (
-                    <button
-                      type="button"
-                      onClick={() => void switchPetByOffset(1)}
-                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                      aria-label="Siguiente mascota"
-                      title="Siguiente mascota"
+                  {hungerBar?.kpis ? (
+                    <span
+                      className="absolute -right-1.5 -top-1.5 flex h-9 w-9 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-base font-bold text-white shadow-sm"
+                      title="Comidas de hoy"
+                      aria-label={`Comidas de hoy: ${hungerBar.kpis.mealsToday}`}
                     >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </button>
+                      <Image
+                        src="/illustrations/icono_comida.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={14}
+                        height={14}
+                        className="object-contain"
+                      />
+                      {hungerBar.kpis.mealsToday}
+                    </span>
+                  ) : null}
+                  {hasWaterDevice ? (
+                    <span
+                      className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-dashed border-sky-300 bg-white shadow-sm"
+                      title="Hidratación: sin modelo de detección de trago confirmado todavía"
+                      aria-label="Hidratación: sin conteo confirmado todavía"
+                    >
+                      <Image
+                        src="/illustrations/icono_agua.png"
+                        alt=""
+                        aria-hidden={true}
+                        width={13}
+                        height={13}
+                        className="object-contain opacity-70"
+                      />
+                    </span>
                   ) : null}
                 </div>
+                {/* Nombre grande -- pieza de mayor jerarquía del panel, sin
+                    flechas pegadas al lado (esas se reemplazan por el
+                    selector de abajo). */}
+                <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
+                  {petLabel}
+                </h2>
                 {/* Etiqueta ("Origen: Adoptado en refugio") en vez de valores
                   crudos pegados con · (se truncaba y no decía qué era cada
-                  dato — corregido 2026-08-17). Alineado a la izquierda,
-                  como el bloque de stats de una ficha de personaje. */}
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-left text-xs text-slate-500 md:text-sm">
+                  dato — corregido 2026-08-17). Metadata: no debe competir
+                  con el nombre. */}
+                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-xs text-slate-500 md:justify-start md:text-sm">
                   {petMeta.length ? (
                     petMeta.map((item) => (
                       <span key={item.label}>
@@ -2819,70 +2774,112 @@ export default function TodayScreen({
                     <span>Sin datos de registro</span>
                   )}
                 </div>
+                {/* Selector de mascota -- herramienta secundaria, no un
+                    botón gigante (pedido de Mauro 2026-09-14). Si solo hay
+                    una mascota, directamente no se renderiza. Nativo
+                    <details>/<summary>, sin JS de más para abrir/cerrar. */}
+                {!isDemo && state.pets.length > 1 ? (
+                  <details className="group relative mt-1">
+                    <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-full border border-primary/30 bg-white px-3 py-1 text-xs font-semibold text-slate-600 [&::-webkit-details-marker]:hidden">
+                      Cambiar mascota
+                      <span
+                        className="text-[10px] transition-transform group-open:rotate-180"
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
+                    </summary>
+                    <div className="absolute left-0 z-10 mt-1 w-48 overflow-hidden rounded-xl border border-slate-100 bg-white py-1 shadow-lg">
+                      {state.pets.map((pet) => (
+                        <button
+                          key={pet.id}
+                          type="button"
+                          onClick={(event) => {
+                            void switchPetTo(pet.id);
+                            event.currentTarget
+                              .closest("details")
+                              ?.removeAttribute("open");
+                          }}
+                          className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-50 ${
+                            pet.id === primaryPet?.id
+                              ? "font-semibold text-primary"
+                              : "text-slate-600"
+                          }`}
+                        >
+                          {pet.name}
+                          {pet.id === primaryPet?.id ? (
+                            <span aria-hidden="true">✓</span>
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+
+              {/* Columna: estado -- Barras Sims + racha semanal, tratados
+                  como recursos del personaje (HP/MP), no como gráficos de
+                  datos sueltos. Mismo componente/props/datos que antes,
+                  solo cambia dónde vive dentro del hero. */}
+              <div className="min-w-0 flex-1">
+                <BarrasSimsCard
+                  deviceId={bowlDevice?.device_id}
+                  powerState={bowlPowerState}
+                  batteryState={bowlDevice?.battery_state}
+                  batteryLevel={bowlDevice?.battery_level}
+                  bars={[
+                    {
+                      key: "food",
+                      title: "Comida",
+                      iconSrc: "/illustrations/icono_comida.png",
+                      filledBlocks: hungerFilledBlocks,
+                      valueLabel: hungerValueLabel,
+                      statusLabel: hungerStatusLabel,
+                      noteLabel: hungerLastMealLabel,
+                      noteLabelSecondary: hungerNextMealLabel,
+                      mealSizeGramos: hungerBar?.lastMealGramos ?? null,
+                      // Verde = mismo color de "Alimentación" en #today-bowls (antes
+                      // rosa acá, verde allá — mismo concepto, 2 colores distintos).
+                      // El rojo de alerta se mantiene: es estado (atrasada), no marca.
+                      trackClass: hungerBar?.alertActive
+                        ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
+                        : "border-emerald-100 bg-emerald-50",
+                      fillClass: "",
+                      fillStyle: hungerFillColor
+                        ? { backgroundColor: hungerFillColor }
+                        : undefined,
+                      labelClass: "text-emerald-700",
+                      badgeClass: hungerBar?.alertActive
+                        ? "border-rose-300 bg-rose-100 text-rose-800"
+                        : "border-emerald-100 bg-emerald-50 text-emerald-700",
+                    },
+                    {
+                      key: "water",
+                      title: "Agua",
+                      iconSrc: "/illustrations/icono_agua.png",
+                      filledBlocks: waterFilledBlocks,
+                      valueLabel:
+                        waterContentWeightGrams !== null
+                          ? `${Math.round(waterContentWeightGrams)} mL`
+                          : "N/D",
+                      statusLabel: waterWellness.stateLabel,
+                      noteLabel: waterWellness.lastEventLabel,
+                      // Celeste = mismo color de "Hidratación" en #today-bowls.
+                      trackClass: "border-sky-100 bg-sky-50",
+                      fillClass:
+                        "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
+                      fillStyle: undefined,
+                      labelClass: "text-sky-700",
+                      badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
+                    },
+                  ]}
+                />
               </div>
             </div>
 
-            {/* Recursos (Barras Sims) + racha semanal, adentro del mismo
-                panel que la foto (pedido de Mauro 2026-09-14): "ficha de
-                personaje" única -- retrato, stats y barras juntos, como una
-                pantalla de character status de juego, no repartidos en
-                secciones separadas por la página. Mismo componente/props/
-                datos que antes, solo cambia dónde vive. */}
-            <div className="mt-4 border-t border-slate-100 pt-4">
-              <BarrasSimsCard
-                deviceId={bowlDevice?.device_id}
-                powerState={bowlPowerState}
-                batteryState={bowlDevice?.battery_state}
-                batteryLevel={bowlDevice?.battery_level}
-                bars={[
-                  {
-                    key: "food",
-                    title: "Comida",
-                    iconSrc: "/illustrations/icono_comida.png",
-                    filledBlocks: hungerFilledBlocks,
-                    valueLabel: hungerValueLabel,
-                    statusLabel: hungerStatusLabel,
-                    noteLabel: hungerLastMealLabel,
-                    noteLabelSecondary: hungerNextMealLabel,
-                    mealSizeGramos: hungerBar?.lastMealGramos ?? null,
-                    // Verde = mismo color de "Alimentación" en #today-bowls (antes
-                    // rosa acá, verde allá — mismo concepto, 2 colores distintos).
-                    // El rojo de alerta se mantiene: es estado (atrasada), no marca.
-                    trackClass: hungerBar?.alertActive
-                      ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
-                      : "border-emerald-100 bg-emerald-50",
-                    fillClass: "",
-                    fillStyle: hungerFillColor
-                      ? { backgroundColor: hungerFillColor }
-                      : undefined,
-                    labelClass: "text-emerald-700",
-                    badgeClass: hungerBar?.alertActive
-                      ? "border-rose-300 bg-rose-100 text-rose-800"
-                      : "border-emerald-100 bg-emerald-50 text-emerald-700",
-                  },
-                  {
-                    key: "water",
-                    title: "Agua",
-                    iconSrc: "/illustrations/icono_agua.png",
-                    filledBlocks: waterFilledBlocks,
-                    valueLabel:
-                      waterContentWeightGrams !== null
-                        ? `${Math.round(waterContentWeightGrams)} mL`
-                        : "N/D",
-                    statusLabel: waterWellness.stateLabel,
-                    noteLabel: waterWellness.lastEventLabel,
-                    // Celeste = mismo color de "Hidratación" en #today-bowls.
-                    trackClass: "border-sky-100 bg-sky-50",
-                    fillClass:
-                      "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
-                    fillStyle: undefined,
-                    labelClass: "text-sky-700",
-                    badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
-                  },
-                ]}
-              />
-            </div>
-
+            {/* Racha semanal -- footer del panel, ancho completo debajo de
+                las 2 columnas (identidad / estado), no metida en la columna
+                angosta de recursos. */}
             {weeklyMealBars ? (
               <div className="mt-4 border-t border-slate-100 pt-4">
                 <div className="flex items-center justify-between">
