@@ -2821,67 +2821,109 @@ export default function TodayScreen({
                 </div>
               </div>
             </div>
-          </section>
 
-          {/* "Frame: Resources" de la estructura enviada -- Barras Sims pasa
-              de vivir metido en un aside angosto al lado de la foto a ser su
-              propia sección, ancho completo, mismo nivel que Bowls/Timeline/
-              Consumo. Mismo componente, mismos props, mismos datos. */}
-          {/* Ancho completo -- barras horizontales estilo RPG (HP/MP bar)
-              se leen mejor angostas en altura, anchas en ancho. */}
-          <section aria-label="Estado de recursos" className="w-full">
-            <BarrasSimsCard
-              deviceId={bowlDevice?.device_id}
-              powerState={bowlPowerState}
-              batteryState={bowlDevice?.battery_state}
-              batteryLevel={bowlDevice?.battery_level}
-              bars={[
-                {
-                  key: "food",
-                  title: "Comida",
-                  iconSrc: "/illustrations/icono_comida.png",
-                  filledBlocks: hungerFilledBlocks,
-                  valueLabel: hungerValueLabel,
-                  statusLabel: hungerStatusLabel,
-                  noteLabel: hungerLastMealLabel,
-                  noteLabelSecondary: hungerNextMealLabel,
-                  mealSizeGramos: hungerBar?.lastMealGramos ?? null,
-                  // Verde = mismo color de "Alimentación" en #today-bowls (antes
-                  // rosa acá, verde allá — mismo concepto, 2 colores distintos).
-                  // El rojo de alerta se mantiene: es estado (atrasada), no marca.
-                  trackClass: hungerBar?.alertActive
-                    ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
-                    : "border-emerald-100 bg-emerald-50",
-                  fillClass: "",
-                  fillStyle: hungerFillColor
-                    ? { backgroundColor: hungerFillColor }
-                    : undefined,
-                  labelClass: "text-emerald-700",
-                  badgeClass: hungerBar?.alertActive
-                    ? "border-rose-300 bg-rose-100 text-rose-800"
-                    : "border-emerald-100 bg-emerald-50 text-emerald-700",
-                },
-                {
-                  key: "water",
-                  title: "Agua",
-                  iconSrc: "/illustrations/icono_agua.png",
-                  filledBlocks: waterFilledBlocks,
-                  valueLabel:
-                    waterContentWeightGrams !== null
-                      ? `${Math.round(waterContentWeightGrams)} mL`
-                      : "N/D",
-                  statusLabel: waterWellness.stateLabel,
-                  noteLabel: waterWellness.lastEventLabel,
-                  // Celeste = mismo color de "Hidratación" en #today-bowls.
-                  trackClass: "border-sky-100 bg-sky-50",
-                  fillClass:
-                    "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
-                  fillStyle: undefined,
-                  labelClass: "text-sky-700",
-                  badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
-                },
-              ]}
-            />
+            {/* Recursos (Barras Sims) + racha semanal, adentro del mismo
+                panel que la foto (pedido de Mauro 2026-09-14): "ficha de
+                personaje" única -- retrato, stats y barras juntos, como una
+                pantalla de character status de juego, no repartidos en
+                secciones separadas por la página. Mismo componente/props/
+                datos que antes, solo cambia dónde vive. */}
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              <BarrasSimsCard
+                deviceId={bowlDevice?.device_id}
+                powerState={bowlPowerState}
+                batteryState={bowlDevice?.battery_state}
+                batteryLevel={bowlDevice?.battery_level}
+                bars={[
+                  {
+                    key: "food",
+                    title: "Comida",
+                    iconSrc: "/illustrations/icono_comida.png",
+                    filledBlocks: hungerFilledBlocks,
+                    valueLabel: hungerValueLabel,
+                    statusLabel: hungerStatusLabel,
+                    noteLabel: hungerLastMealLabel,
+                    noteLabelSecondary: hungerNextMealLabel,
+                    mealSizeGramos: hungerBar?.lastMealGramos ?? null,
+                    // Verde = mismo color de "Alimentación" en #today-bowls (antes
+                    // rosa acá, verde allá — mismo concepto, 2 colores distintos).
+                    // El rojo de alerta se mantiene: es estado (atrasada), no marca.
+                    trackClass: hungerBar?.alertActive
+                      ? "border-2 border-rose-500 bg-rose-50 animate-pulse"
+                      : "border-emerald-100 bg-emerald-50",
+                    fillClass: "",
+                    fillStyle: hungerFillColor
+                      ? { backgroundColor: hungerFillColor }
+                      : undefined,
+                    labelClass: "text-emerald-700",
+                    badgeClass: hungerBar?.alertActive
+                      ? "border-rose-300 bg-rose-100 text-rose-800"
+                      : "border-emerald-100 bg-emerald-50 text-emerald-700",
+                  },
+                  {
+                    key: "water",
+                    title: "Agua",
+                    iconSrc: "/illustrations/icono_agua.png",
+                    filledBlocks: waterFilledBlocks,
+                    valueLabel:
+                      waterContentWeightGrams !== null
+                        ? `${Math.round(waterContentWeightGrams)} mL`
+                        : "N/D",
+                    statusLabel: waterWellness.stateLabel,
+                    noteLabel: waterWellness.lastEventLabel,
+                    // Celeste = mismo color de "Hidratación" en #today-bowls.
+                    trackClass: "border-sky-100 bg-sky-50",
+                    fillClass:
+                      "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
+                    fillStyle: undefined,
+                    labelClass: "text-sky-700",
+                    badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
+                  },
+                ]}
+              />
+            </div>
+
+            {weeklyMealBars ? (
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-slate-800">
+                    Racha semanal
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    Gramos comidos por día
+                  </span>
+                </div>
+                <div className="mt-3 flex items-end justify-between gap-2">
+                  {weeklyMealBars.map((day) => (
+                    <div
+                      key={day.key}
+                      className="flex flex-1 flex-col items-center gap-1.5"
+                    >
+                      <div className="flex h-20 w-full items-end justify-center">
+                        <div
+                          className={`w-full max-w-[22px] rounded-t-md transition-[height] duration-500 ${
+                            day.grams > 0 ? "bg-emerald-400" : "bg-slate-100"
+                          } ${day.isToday ? "ring-2 ring-primary ring-offset-1" : ""}`}
+                          style={{ height: `${day.pct}%` }}
+                          title={
+                            day.grams > 0
+                              ? `${Math.round(day.grams)} g`
+                              : "Sin comida confirmada"
+                          }
+                        />
+                      </div>
+                      <span
+                        className={`text-[10px] font-semibold uppercase ${
+                          day.isToday ? "text-primary" : "text-slate-400"
+                        }`}
+                      >
+                        {day.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <section
@@ -3011,57 +3053,6 @@ export default function TodayScreen({
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
             authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
           />
-
-          {/* Gráfico vertical + gamificación -- calendario de racha semanal,
-              mismo patrón que Duolingo/Habitica: 7 barras, una por día,
-              altura = gramos comidos ese día (dato real de hungerBar.events,
-              no una barra nueva de Barras Sims). El día de hoy se resalta
-              con el color primario, igual que el badge de racha en la foto
-              -- son la misma racha, dos vistas del mismo dato. */}
-          {weeklyMealBars ? (
-            <section
-              aria-label="Racha semanal"
-              className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-800">
-                  Racha semanal
-                </span>
-                <span className="text-[11px] text-slate-400">
-                  Gramos comidos por día
-                </span>
-              </div>
-              <div className="mt-3 flex items-end justify-between gap-2">
-                {weeklyMealBars.map((day) => (
-                  <div
-                    key={day.key}
-                    className="flex flex-1 flex-col items-center gap-1.5"
-                  >
-                    <div className="flex h-20 w-full items-end justify-center">
-                      <div
-                        className={`w-full max-w-[22px] rounded-t-md transition-[height] duration-500 ${
-                          day.grams > 0 ? "bg-emerald-400" : "bg-slate-100"
-                        } ${day.isToday ? "ring-2 ring-primary ring-offset-1" : ""}`}
-                        style={{ height: `${day.pct}%` }}
-                        title={
-                          day.grams > 0
-                            ? `${Math.round(day.grams)} g`
-                            : "Sin comida confirmada"
-                        }
-                      />
-                    </div>
-                    <span
-                      className={`text-[10px] font-semibold uppercase ${
-                        day.isToday ? "text-primary" : "text-slate-400"
-                      }`}
-                    >
-                      {day.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
 
           {/* Antes 2 cards blancas idénticas apiladas (mismo borde/sombra
               verde, se leían como bloques repetidos sin relación visible).
