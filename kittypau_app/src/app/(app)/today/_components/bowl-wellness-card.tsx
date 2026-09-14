@@ -42,9 +42,15 @@ const KIND_CONFIG = {
     emptyAlt: "Sin comedero",
     emptyLabel: "Sin comedero asignado",
     addLabel: "Agregar comedero",
-    illustrationFull: "/illustrations/pink_food_full.png",
-    illustrationMedium: "/illustrations/pink_food_medium.png",
-    illustrationEmpty: "/illustrations/pink_empty.png",
+    // *_lg.png -- copias agrandadas (pedido de Mauro 2026-09-14, "agranda
+    // el plato de comida") de los pink_food_*/pink_empty originales.
+    // Archivos dedicados en vez de agrandar los originales in-place porque
+    // esos mismos PNG los usa también el marcador del gráfico día/noche,
+    // login y admin -- agrandar ahí los rompía sin querer (ver commit
+    // 3eeeda3, donde eso pasó por primera vez con el marcador del gráfico).
+    illustrationFull: "/illustrations/pink_food_full_lg.png",
+    illustrationMedium: "/illustrations/pink_food_medium_lg.png",
+    illustrationEmpty: "/illustrations/pink_empty_lg.png",
     illustrationAlt: "Kittypau comedero",
     contentTitle: "Contenido actual",
     // Hueso en vez de las 3 líneas genéricas de antes (pedido de Mauro
