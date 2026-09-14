@@ -190,7 +190,7 @@ export default function BowlWellnessCard({
 
   return (
     <article
-      className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm md:p-5`}
+      className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white px-4 pb-4 pt-2 shadow-sm md:px-5 md:pb-5 md:pt-3`}
     >
       <div className="flex flex-1 flex-col gap-1">
         {/* Título centrado en su propia línea, connectivity/batería debajo
@@ -225,7 +225,7 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="-mt-4 grid items-center">
+        <div className="grid items-center">
           <div className="flex flex-col items-center">
             {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
                 aspect-ratio real, así que con w-auto una quedaba más
@@ -234,7 +234,11 @@ export default function BowlWellnessCard({
                 con object-contain -- pedido de Mauro 2026-09-14, "más
                 grandes y deben medir lo mismo", y después "sube un poco
                 los platos y agranda su tamaño" 2 veces más (sin py-1
-                arriba + h-72, -mt-4 acá arriba). */}
+                arriba + h-72). "Subir" se logra con menos padding-top en
+                la card en vez de -mt- negativo -- ese margen negativo
+                pisaba el texto de conectividad/batería cuando era más
+                largo (ej. "Batería 90%" en Hidratación vs "N/D" en
+                Alimentación), corregido 2026-09-14. */}
             <Image
               src={illustrationSrc}
               alt={c.illustrationAlt}
