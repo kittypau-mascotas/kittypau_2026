@@ -768,6 +768,24 @@ body {
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
 }
 
+/* Ambos bloques ahora renderizan siempre en el JSX (antes uno u otro
+   según useSidebarNav) -- acá se decide cuál se ve según el modo. Por
+   defecto: sidebar de escritorio ve accountActions en texto completo
+   (.app-nav-links-extra), top-mode ve la tuerca (.app-nav-profile-menu).
+   El navbar de abajo de celular/APK pisa esto de nuevo más abajo (scopeado
+   a .app-nav-main-mode). */
+.app-nav-links-extra {
+  display: none;
+}
+
+.app-nav-profile-menu {
+  display: none;
+}
+
+.app-nav.app-nav-top .app-nav-profile-menu {
+  display: block;
+}
+
 /* Tuerca del navbar top-mode (celular/APK, pedido de Mauro 2026-09-14) --
    botón redondo chico en vez del pill de avatar+nombre, mismo menú atrás. */
 .app-nav-gear-trigger {
@@ -870,19 +888,65 @@ body {
       max(12px, env(safe-area-inset-left));
   }
 
-  /* Barra única (pedido de Mauro 2026-09-14, "se ve mal el navbar en
-     celular"): logo+marca a la izquierda, menús al medio (scrolleables si
-     no entran todos), tuerca al final -- reemplaza la grilla de 2 filas de
-     arriba, pero solo para el navbar real (.app-nav-main-mode); el resto
-     de .app-nav-inner (admin, si algún día se usa esa clase) no se toca. */
+  /* Navbar abajo, 3 líneas a la izquierda (pedido de Mauro 2026-09-14,
+     segunda vuelta -- "esta todo amontonado", "debe estar abajo"): dueño /
+     marca+bajada / redes sociales apiladas a la izquierda, menús al medio,
+     tuerca al final -- todo scopeado a .app-nav-main-mode, el resto de
+     .app-nav-inner (admin, si algún día se usa esa clase) no se toca. */
+  .app-nav.app-nav-main-mode {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid
+      color-mix(in oklab, hsl(var(--border)) 74%, transparent);
+    border-bottom: none;
+    box-shadow: 0 -12px 28px -24px rgba(15, 23, 42, 0.45);
+    padding-top: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .app-nav.app-nav-main-mode .app-nav-inner {
-    display: flex;
-    grid-template-columns: none;
-    grid-template-areas: none;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "owner links gear"
+      "brand links gear"
+      "social links gear";
     align-items: center;
-    gap: 10px;
+    column-gap: 10px;
+    row-gap: 1px;
     padding: 8px max(12px, env(safe-area-inset-right)) 8px
       max(12px, env(safe-area-inset-left));
+  }
+
+  /* Cuentas tester/cliente (useSidebarNav) todavía traen su bloque de
+     sidebar -- .app-nav-user-top (avatar+nombre+mascota) y
+     .app-nav-links-extra (Ajustes/Editar perfil/Cerrar sesión en texto
+     completo) -- a este ancho no hay sidebar real (eso recién arranca en
+     min-width:1024px), así que quedaban amontonados al lado de la barra
+     nueva. Se ocultan acá igual que ya se hacía en la APK. */
+  .app-nav.app-nav-main-mode .app-nav-user-top,
+  .app-nav.app-nav-main-mode .app-nav-links-extra {
+    display: none;
+  }
+
+  .app-nav-owner-name {
+    display: none;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-owner-name {
+    grid-area: owner;
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
   }
 
   .app-nav-brand {
@@ -899,6 +963,13 @@ body {
     justify-self: end;
   }
 
+  .app-nav.app-nav-main-mode .app-nav-profile-menu {
+    display: block;
+    grid-area: gear;
+    align-self: center;
+    justify-self: end;
+  }
+
   .app-nav-brand-title {
     font-size: 1.35rem;
   }
@@ -908,11 +979,12 @@ body {
   }
 
   .app-nav.app-nav-main-mode .app-nav-brand-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .app-nav.app-nav-main-mode .app-nav-brand-subtitle {
     font-size: 9px;
+    margin-top: 0;
   }
 
   .app-nav-logo-wrap {
@@ -929,13 +1001,26 @@ body {
   }
 
   .app-nav.app-nav-main-mode .app-nav-logo-wrap {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
   }
 
   .app-nav.app-nav-main-mode .app-nav-logo {
-    width: 24px;
-    height: 24px;
+    width: 21px;
+    height: 21px;
+  }
+
+  .app-nav-social-top {
+    display: none;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-social-top {
+    grid-area: social;
+    display: flex;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-social-top .social-links {
+    gap: 6px;
   }
 
   .app-nav-links {
@@ -953,10 +1038,18 @@ body {
   }
 
   .app-nav.app-nav-main-mode .app-nav-links {
+    grid-area: links;
     width: auto;
-    flex: 1 1 auto;
-    min-width: 0;
-    justify-content: center;
+    align-self: center;
+    /* flex-start, no center -- con scroll horizontal, "center" arranca
+       scrolleado al medio y corta el primer/último link (Hoy/Plato). */
+    justify-content: flex-start;
+  }
+
+  .app-content {
+    /* Deja hueco para el navbar de abajo (3 líneas + menús) -- más alto
+       que el chico de antes, que era 1 sola fila. */
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
   }
 
   .app-nav-inner-admin {
@@ -1002,6 +1095,17 @@ body {
   .app-nav-menu {
     right: max(0px, env(safe-area-inset-right));
     width: min(210px, calc(100vw - 16px));
+  }
+
+  /* El navbar de abajo está pegado al fondo de la pantalla -- el menú con
+     top:100% se abría hacia abajo y quedaba fuera de la pantalla. Se abre
+     hacia arriba en su lugar. */
+  .app-nav.app-nav-main-mode .app-nav-menu {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: 8px;
+    box-shadow: 0 -20px 40px -30px rgba(15, 23, 42, 0.45);
   }
 }
 
@@ -3780,95 +3884,131 @@ textarea::placeholder {
 
 .kp-native-apk .app-content,
 .kp-flavor-native .app-content {
-  padding-top: calc(64px + env(safe-area-inset-top));
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  padding-top: max(14px, env(safe-area-inset-top));
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
 }
 
-/* Navbar único arriba (pedido de Mauro 2026-09-14: "se ve mal el navbar
-   en celular y apk" -- logo+marca a la izquierda, menús al medio, tuerca
-   al final, TODO en una barra). Antes esto era una tab bar abajo con solo
-   los 4 links -- ni el logo ni la tuerca (Ajustes/Editar perfil/Cerrar
-   sesión) se veían nunca en la APK, no había forma de cerrar sesión desde
-   ahí. */
+/* Navbar abajo, 3 líneas a la izquierda (pedido de Mauro 2026-09-14,
+   segunda vuelta -- "esta todo amontonado", "debe estar abajo": dueño /
+   marca+bajada / redes sociales apiladas a la izquierda, menús al medio,
+   tuerca al final). Antes era una tab bar abajo con solo los 4 links --
+   ni el logo ni la tuerca (Ajustes/Editar perfil/Cerrar sesión) se veían
+   nunca en la APK, no había forma de cerrar sesión desde ahí. */
 .kp-native-apk .app-nav.app-nav-main-mode,
 .kp-flavor-native .app-nav.app-nav-main-mode {
   position: fixed;
-  top: 0;
-  bottom: auto;
+  top: auto;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 40;
-  border-top: none;
-  border-bottom: 1px solid
+  border-bottom: none;
+  border-top: 1px solid
     color-mix(in oklab, hsl(var(--border)) 74%, transparent);
-  box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.45);
+  box-shadow: 0 -12px 28px -24px rgba(15, 23, 42, 0.45);
   background: color-mix(in oklab, white 96%, transparent);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: 0;
+  padding-top: 0;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-inner,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-inner {
   max-width: none;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "owner links gear"
+    "brand links gear"
+    "social links gear";
   align-items: center;
-  gap: 8px;
+  column-gap: 8px;
+  row-gap: 1px;
   padding: 8px max(10px, env(safe-area-inset-right)) 8px
     max(10px, env(safe-area-inset-left));
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-user-top,
-.kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-contact,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-links-extra,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-user-top,
-.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-social-top,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-contact,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links-extra {
   display: none;
 }
 
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-owner-name,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-owner-name {
+  grid-area: owner;
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand {
+  grid-area: brand;
   flex-shrink: 0;
   gap: 6px;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-logo-wrap,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-logo-wrap {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-logo,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-logo {
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand-title,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand-title {
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand-subtitle,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand-subtitle {
   font-size: 9px;
-  margin-top: 1px;
+  margin-top: 0;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-social-top {
+  grid-area: social;
+  display: flex;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top .social-links,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-social-top .social-links {
+  gap: 6px;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-profile-menu,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-profile-menu {
+  display: block;
+  grid-area: gear;
+  align-self: center;
+  justify-self: end;
   flex-shrink: 0;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-links,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links {
-  flex: 1 1 auto;
+  grid-area: links;
   min-width: 0;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
+  /* flex-start, no center -- con scroll horizontal, "center" arranca
+     scrolleado al medio y corta el primer/último link (Hoy/Plato). */
+  justify-content: flex-start;
   gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -3900,6 +4040,19 @@ textarea::placeholder {
     hsl(var(--border))
   );
   background: color-mix(in oklab, hsl(var(--primary)) 18%, #ffffff);
+}
+
+/* El navbar de abajo está pegado al fondo de la pantalla -- el menú con
+   top:100% se abría hacia abajo y quedaba fuera de la pantalla. Se abre
+   hacia arriba en su lugar. */
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-menu,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-menu {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 8px;
+  right: max(0px, env(safe-area-inset-right));
+  box-shadow: 0 -20px 40px -30px rgba(15, 23, 42, 0.45);
 }
 
 .kp-native-apk .app-nav.app-nav-admin-mode,

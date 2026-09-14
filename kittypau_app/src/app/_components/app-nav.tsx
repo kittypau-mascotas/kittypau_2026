@@ -372,6 +372,16 @@ export default function AppNav() {
       className={`app-nav app-nav-main-mode ${useSidebarNav ? "app-nav-sidebar" : "app-nav-top"}`}
     >
       <div className="app-nav-inner">
+        {/* Nombre del dueño -- pedido de Mauro 2026-09-14 (navbar de
+            celular/APK abajo, 3 líneas a la izquierda: dueño / marca+
+            bajada / redes). Mismo dato que ya usaba userSummary, acá
+            solo el nombre, sin avatar/mascota/dispositivo. */}
+        <span className="app-nav-owner-name">
+          {demoOwnerName ||
+            profile?.owner_name ||
+            profile?.user_name ||
+            "Kittypau"}
+        </span>
         <div className="app-nav-brand">
           <span className="app-nav-logo-wrap" aria-hidden="true">
             <Image
@@ -389,11 +399,12 @@ export default function AppNav() {
             </span>
           </span>
         </div>
-        {useSidebarNav ? (
-          <div className="app-nav-social-top">
-            <SocialLinks size="sm" />
-          </div>
-        ) : null}
+        {/* Antes solo en sidebar -- ahora también vive en el DOM para
+            top-mode (oculto por defecto, visible en el navbar de abajo de
+            celular/APK vía CSS scopeada a .app-nav-main-mode). */}
+        <div className="app-nav-social-top">
+          <SocialLinks size="sm" />
+        </div>
         {useSidebarNav ? (
           <div className="app-nav-user-top">{userSummary}</div>
         ) : null}
@@ -424,34 +435,37 @@ export default function AppNav() {
             );
           })}
         </div>
-        {useSidebarNav ? (
-          <div className="app-nav-links-extra">{accountActions}</div>
-        ) : null}
+        {/* Antes gateado por useSidebarNav (solo tester/cliente lo veían) --
+            ahora renderiza siempre, la visibilidad la decide el CSS según
+            el modo (sidebar de escritorio vs. barra de abajo de celular/
+            APK). Con el gate viejo, cuentas tester/cliente en celular se
+            quedaban sin forma de llegar a Ajustes/Cerrar sesión, porque
+            tampoco veían la tuerca (esa si estaba gateada al revés).
+            Corregido 2026-09-14. */}
+        <div className="app-nav-links-extra">{accountActions}</div>
 
-        {!useSidebarNav ? (
-          <div ref={menuRef} className="relative app-nav-profile-menu">
-            {/* Tuerca en vez de avatar+nombre completo (pedido de Mauro
-                2026-09-14, navbar de celular/APK "se ve mal") -- mismo
-                menú de siempre (Ajustes/Editar perfil/Cerrar sesión) atrás,
-                solo cambia el disparador a un ícono chico. */}
-            <button
-              type="button"
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="app-nav-user-trigger app-nav-gear-trigger"
-              aria-expanded={menuOpen}
-              aria-haspopup="menu"
-              aria-label="Ajustes de cuenta"
-              title="Ajustes de cuenta"
-            >
-              <Settings className="h-5 w-5" aria-hidden="true" />
-            </button>
-            {menuOpen ? (
-              <div className="app-nav-menu" role="menu">
-                {accountActions}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
+        <div ref={menuRef} className="relative app-nav-profile-menu">
+          {/* Tuerca en vez de avatar+nombre completo (pedido de Mauro
+              2026-09-14, navbar de celular/APK "se ve mal") -- mismo
+              menú de siempre (Ajustes/Editar perfil/Cerrar sesión) atrás,
+              solo cambia el disparador a un ícono chico. */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="app-nav-user-trigger app-nav-gear-trigger"
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            aria-label="Ajustes de cuenta"
+            title="Ajustes de cuenta"
+          >
+            <Settings className="h-5 w-5" aria-hidden="true" />
+          </button>
+          {menuOpen ? (
+            <div className="app-nav-menu" role="menu">
+              {accountActions}
+            </div>
+          ) : null}
+        </div>
         <div className="app-nav-contact">
           <span className="text-center">Kittypau · IoT Chile S.A</span>
           <span className="kp-pettech-tagline">PetTech AIoT</span>
