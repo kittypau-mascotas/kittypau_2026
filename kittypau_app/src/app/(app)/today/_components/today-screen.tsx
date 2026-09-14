@@ -2682,17 +2682,6 @@ export default function TodayScreen({
             className="today-hero surface-card freeform-rise relative border-t-4 border-t-primary p-6 md:p-8"
             style={HERO_DECOR_STYLE}
           >
-            {/* Botón "?" -- ayuda estática del panel, sin popover nuevo:
-                el tooltip nativo del navegador (title) alcanza para una
-                frase, no hace falta infraestructura de modal/popover. */}
-            <button
-              type="button"
-              title="Este panel muestra a tu mascota y su estado de hoy: comida y agua en vivo."
-              aria-label="Ayuda sobre este panel"
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full border border-primary/30 bg-white text-xs font-bold text-primary shadow-sm md:right-6 md:top-6"
-            >
-              ?
-            </button>
             {/* "El Hero no muestra datos; presenta al personaje y su
                 estado" (Character UI, pedido de Mauro 2026-09-14) --
                 columna de identidad (retrato + nombre + selector) y columna
@@ -2731,26 +2720,20 @@ export default function TodayScreen({
                       </Link>
                     );
                   })()}
-                  {/* 3 badges sobre el retrato (pedido de Mauro 2026-09-11) --
-                    ningún dato nuevo, todo ya se calcula más arriba en el
-                    componente. Racha y comidas hoy solo existen para
-                    KPCL0034 (el único dispositivo con motor de clasificación
-                    validado); el de agua es deliberadamente sin número --
-                    todavía no hay modelo de detección de trago confirmado
-                    (ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md), así
+                  {/* 2 badges arriba de la foto (comida/agua, pedido de
+                    Mauro 2026-09-14: "arriba" y "más grandes") + cámara
+                    abajo a la derecha, en el lugar donde antes iba la
+                    racha (sacada -- pedido explícito de Mauro). Ningún dato
+                    nuevo, todo ya se calcula más arriba en el componente.
+                    Comidas hoy solo existe para KPCL0034 (el único
+                    dispositivo con motor de clasificación validado); el de
+                    agua es deliberadamente sin número -- todavía no hay
+                    modelo de detección de trago confirmado (ver
+                    Knowledge/05_API/SPEC_HungerBar_Alimentacion.md), así
                     que mostrar una cifra ahí sería inventar un dato. */}
                   {hungerBar?.kpis ? (
                     <span
-                      className="absolute -bottom-1.5 -right-1.5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-primary text-base font-bold text-primary-foreground shadow-sm"
-                      title="Racha de días seguidos comiendo"
-                      aria-label={`Racha: ${hungerBar.kpis.streakDays} días seguidos comiendo`}
-                    >
-                      {hungerBar.kpis.streakDays}
-                    </span>
-                  ) : null}
-                  {hungerBar?.kpis ? (
-                    <span
-                      className="absolute -right-1.5 -top-1.5 flex h-9 w-9 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-base font-bold text-white shadow-sm"
+                      className="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center gap-0.5 rounded-full border-2 border-white bg-emerald-500 text-base font-bold text-white shadow-sm"
                       title="Comidas de hoy"
                       aria-label={`Comidas de hoy: ${hungerBar.kpis.mealsToday}`}
                     >
@@ -2758,8 +2741,8 @@ export default function TodayScreen({
                         src="/illustrations/icono_comida.png"
                         alt=""
                         aria-hidden={true}
-                        width={14}
-                        height={14}
+                        width={16}
+                        height={16}
                         className="object-contain"
                       />
                       {hungerBar.kpis.mealsToday}
@@ -2767,7 +2750,7 @@ export default function TodayScreen({
                   ) : null}
                   {hasWaterDevice ? (
                     <span
-                      className="absolute -bottom-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-dashed border-sky-300 bg-white shadow-sm"
+                      className="absolute -left-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border-2 border-dashed border-sky-300 bg-white shadow-sm"
                       title="Hidratación: sin modelo de detección de trago confirmado todavía"
                       aria-label="Hidratación: sin conteo confirmado todavía"
                     >
@@ -2775,23 +2758,24 @@ export default function TodayScreen({
                         src="/illustrations/icono_agua.png"
                         alt=""
                         aria-hidden={true}
-                        width={13}
-                        height={13}
+                        width={18}
+                        height={18}
                         className="object-contain opacity-70"
                       />
                     </span>
                   ) : null}
                   {/* Cámara -- puramente decorativa/afordance visual, el
                       click real para ajustar la foto sigue siendo toda la
-                      foto (Link a /pet, ya definido arriba). Esquina libre
-                      (las otras 3 ya tienen racha/comidas/agua). */}
+                      foto (Link a /pet, ya definido arriba). Antes acá iba
+                      la racha (pedido de Mauro 2026-09-14: sacarla y poner
+                      la cámara en su lugar). */}
                   <span
-                    className="absolute -left-1 -top-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm"
+                    className="absolute -bottom-1.5 -right-1.5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm"
                     aria-hidden="true"
                   >
                     <svg
-                      width="14"
-                      height="14"
+                      width="15"
+                      height="15"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
