@@ -40,6 +40,13 @@ type BarKind = {
  * ⚠️ Este widget es sensible: Mauro ya pidió revertir 3 veces (ver
  * Knowledge/29_Specs/SPEC_04_Metricas_Today_Investigacion.md) cualquier intento de
  * agregarle cards nuevas. Proponer antes de expandirlo, no asumir que hace falta más.
+ *
+ * Piel "RPG bar" (pedido de Mauro 2026-09-14): mismo dato, mismo cálculo,
+ * mismos props -- las barras pasan de columnas líquidas verticales (estilo
+ * The Sims, dos al lado de la otra) a barras horizontales apiladas, una por
+ * fila, como una barra de vida/maná de RPG. Nombre "Barras Sims" se
+ * mantiene igual aunque el layout ya no sea el de Sims -- es el nombre que
+ * Mauro le puso al widget, no una descripción del layout.
  */
 export default function BarrasSimsCard({
   deviceId,
@@ -66,7 +73,7 @@ export default function BarrasSimsCard({
           {deviceId ?? "KPCLXXXX"}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="flex flex-col gap-3">
         {bars.map(
           ({
             key,
@@ -86,77 +93,83 @@ export default function BarrasSimsCard({
           }) => (
             <div
               key={key}
-              className={`flex flex-col items-center gap-2 rounded-[16px] border bg-white px-3 py-3 shadow-[0_12px_26px_-24px_rgba(15,23,42,0.25)] ${trackClass}`}
+              className={`rounded-[14px] border bg-white px-3 py-2.5 shadow-[0_10px_22px_-20px_rgba(15,23,42,0.3)] ${trackClass}`}
             >
-              <div className="flex h-8 items-center justify-center">
+              {/* Fila de encabezado: ícono + nombre a la izquierda, %+badge
+                  a la derecha -- mismo orden que una barra de HP de RPG. */}
+              <div className="flex items-center gap-2">
                 <Image
                   src={iconSrc}
                   alt=""
                   aria-hidden={true}
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 object-contain opacity-90"
+                  width={22}
+                  height={22}
+                  className="h-[22px] w-[22px] shrink-0 object-contain"
                 />
+                <p className={`text-[13px] font-semibold ${labelClass}`}>
+                  {title}
+                </p>
+                <span
+                  className={`ml-auto rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}
+                >
+                  {statusLabel}
+                </span>
               </div>
-              <div className="kp-liquid-track h-36 w-10 border border-slate-100 bg-white">
+
+              {/* Barra horizontal -- mismo cálculo de llenado que antes
+                  (filledBlocks/WELLNESS_BLOCKS), solo que ahora el fill
+                  crece de izquierda a derecha en vez de subir. */}
+              <div className="mt-1.5 h-3.5 w-full overflow-hidden rounded-full border border-slate-100 bg-slate-50">
                 <div
-                  className={`kp-liquid-fill ${fillClass}`}
+                  className={`h-full rounded-full transition-[width] duration-500 ${fillClass}`}
                   style={{
-                    height: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
+                    width: `${Math.round((filledBlocks / WELLNESS_BLOCKS) * 100)}%`,
                     ...fillStyle,
                   }}
                 />
               </div>
-              <div className="flex flex-col items-center gap-1 text-center">
-                <span
-                  className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${badgeClass}`}
-                >
-                  {statusLabel}
-                </span>
-                <p className={`text-[12px] font-semibold ${labelClass}`}>
-                  {title} · {valueLabel}
+              <p className="mt-1 text-right text-[11px] font-semibold text-slate-500">
+                {valueLabel}
+              </p>
+
+              <div className="mt-1 flex flex-col gap-1">
+                <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
+                  {noteLabel}
                 </p>
-                <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
-                  <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
-                    {noteLabel}
-                  </p>
-                  {mealSizeGramos != null
-                    ? (() => {
-                        const info = mealSizeInfo(mealSizeGramos);
-                        const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
-                        const pct = Math.min(
-                          100,
-                          Math.round((mealSizeGramos / escalaMax) * 100),
-                        );
-                        return (
-                          <div className="mt-1.5">
-                            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                              <div
-                                className={`h-full rounded-full ${info.barClass}`}
-                                style={{ width: `${pct}%` }}
-                              />
-                              <div
-                                className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
-                                aria-hidden="true"
-                              />
-                            </div>
-                            <p
-                              className={`mt-1 text-[11px] font-medium leading-snug ${info.textClass}`}
-                            >
-                              {info.label} — {mealSizeGramos} g (habitual:{" "}
-                              {MEDIANA_GRAMOS_COMIDA} g)
-                            </p>
+                {mealSizeGramos != null
+                  ? (() => {
+                      const info = mealSizeInfo(mealSizeGramos);
+                      const escalaMax = MEDIANA_GRAMOS_COMIDA * 2;
+                      const pct = Math.min(
+                        100,
+                        Math.round((mealSizeGramos / escalaMax) * 100),
+                      );
+                      return (
+                        <div>
+                          <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                            <div
+                              className={`h-full rounded-full ${info.barClass}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                            <div
+                              className="absolute inset-y-0 left-1/2 w-px bg-slate-400/70"
+                              aria-hidden="true"
+                            />
                           </div>
-                        );
-                      })()
-                    : null}
-                </div>
+                          <p
+                            className={`mt-1 text-[11px] font-medium leading-snug ${info.textClass}`}
+                          >
+                            {info.label} — {mealSizeGramos} g (habitual:{" "}
+                            {MEDIANA_GRAMOS_COMIDA} g)
+                          </p>
+                        </div>
+                      );
+                    })()
+                  : null}
                 {noteLabelSecondary ? (
-                  <div className="w-full rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-left">
-                    <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
-                      {noteLabelSecondary}
-                    </p>
-                  </div>
+                  <p className="whitespace-pre-line text-[11px] leading-snug text-slate-500">
+                    {noteLabelSecondary}
+                  </p>
                 ) : null}
               </div>
             </div>

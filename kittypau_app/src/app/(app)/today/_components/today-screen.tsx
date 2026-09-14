@@ -2663,8 +2663,12 @@ export default function TodayScreen({
             aria-label="Hero de mascota"
             className="today-hero surface-card freeform-rise border-t-4 border-t-primary px-4 py-3 md:px-6 md:py-3"
           >
-            <div className="flex min-w-0 flex-col items-center gap-2">
-              <div className="relative">
+            {/* Panel de personaje estilo RPG (pedido de Mauro 2026-09-14):
+                retrato a la izquierda, nombre+características a la derecha
+                -- mismo patrón que el header de una ficha de personaje
+                (portrait + stat block), en vez de todo centrado y apilado. */}
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="relative shrink-0">
                 {(() => {
                   const heroPhoto = (
                     <Image
@@ -2677,7 +2681,7 @@ export default function TodayScreen({
                       width={160}
                       height={160}
                       unoptimized
-                      className="h-32 w-32 rounded-full border border-slate-200 object-cover"
+                      className="h-24 w-24 rounded-full border-2 border-primary/40 object-cover shadow-sm md:h-28 md:w-28"
                     />
                   );
                   // En demo la foto no es un link (/pet es ruta con sesión).
@@ -2745,73 +2749,76 @@ export default function TodayScreen({
                   </span>
                 ) : null}
               </div>
-              <div className="flex items-center gap-2">
-                {!isDemo ? (
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(-1)}
-                    className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Mascota anterior"
-                    title="Mascota anterior"
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
+              <div className="flex min-w-0 flex-col items-start gap-1">
+                <div className="flex items-center gap-2">
+                  {!isDemo ? (
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(-1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Mascota anterior"
+                      title="Mascota anterior"
                     >
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
-                ) : null}
-                <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
-                  {petLabel}
-                </h2>
-                {!isDemo ? (
-                  <button
-                    type="button"
-                    onClick={() => void switchPetByOffset(1)}
-                    className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
-                    aria-label="Siguiente mascota"
-                    title="Siguiente mascota"
-                  >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                  ) : null}
+                  <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
+                    {petLabel}
+                  </h2>
+                  {!isDemo ? (
+                    <button
+                      type="button"
+                      onClick={() => void switchPetByOffset(1)}
+                      className="px-1 text-base font-semibold text-slate-600 hover:text-slate-900"
+                      aria-label="Siguiente mascota"
+                      title="Siguiente mascota"
                     >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                ) : null}
-              </div>
-              {/* Debajo de la foto, con etiqueta ("Origen: Adoptado en refugio")
-                  en vez de valores crudos pegados con · (se truncaba y no decía
-                  qué era cada dato — corregido 2026-08-17). */}
-              <div className="flex flex-col items-center gap-1 text-center text-xs text-slate-500 md:text-sm">
-                {petMeta.length ? (
-                  petMeta.map((item) => (
-                    <span key={item.label}>
-                      {item.label}:{" "}
-                      <span className="font-medium text-slate-700">
-                        {item.value}
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  ) : null}
+                </div>
+                {/* Etiqueta ("Origen: Adoptado en refugio") en vez de valores
+                  crudos pegados con · (se truncaba y no decía qué era cada
+                  dato — corregido 2026-08-17). Alineado a la izquierda,
+                  como el bloque de stats de una ficha de personaje. */}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-left text-xs text-slate-500 md:text-sm">
+                  {petMeta.length ? (
+                    petMeta.map((item) => (
+                      <span key={item.label}>
+                        {item.label}:{" "}
+                        <span className="font-medium text-slate-700">
+                          {item.value}
+                        </span>
                       </span>
-                    </span>
-                  ))
-                ) : (
-                  <span>Sin datos de registro</span>
-                )}
+                    ))
+                  ) : (
+                    <span>Sin datos de registro</span>
+                  )}
+                </div>
               </div>
             </div>
           </section>
@@ -2820,10 +2827,9 @@ export default function TodayScreen({
               de vivir metido en un aside angosto al lado de la foto a ser su
               propia sección, ancho completo, mismo nivel que Bowls/Timeline/
               Consumo. Mismo componente, mismos props, mismos datos. */}
-          <section
-            aria-label="Estado de recursos"
-            className="mx-auto w-full max-w-md"
-          >
+          {/* Ancho completo -- barras horizontales estilo RPG (HP/MP bar)
+              se leen mejor angostas en altura, anchas en ancho. */}
+          <section aria-label="Estado de recursos" className="w-full">
             <BarrasSimsCard
               deviceId={bowlDevice?.device_id}
               powerState={bowlPowerState}
