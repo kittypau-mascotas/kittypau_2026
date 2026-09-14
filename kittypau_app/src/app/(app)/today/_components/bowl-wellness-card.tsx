@@ -222,18 +222,6 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
-              wellness.stateLabel,
-              kind,
-            )}`}
-          >
-            {wellness.stateLabel}
-          </span>
-          <p className="text-sm text-slate-500">{wellness.lastEventLabel}</p>
-        </div>
-
         <div className="grid items-center gap-3">
           <div className="flex flex-col items-center py-1">
             {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
@@ -247,7 +235,7 @@ export default function BowlWellnessCard({
               alt={c.illustrationAlt}
               width={224}
               height={164}
-              className="mx-auto h-44 w-44 object-contain object-center"
+              className="mx-auto h-56 w-56 object-contain object-center"
             />
             {fillPct !== null ? (
               <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
@@ -365,6 +353,21 @@ export default function BowlWellnessCard({
               {formatTimestamp(latestReading?.recorded_at ?? null)}
             </span>
           </div>
+        </div>
+
+        {/* Badge "Detectado por modelo" / última comida -- movido al fondo
+            de la card (pedido de Mauro 2026-09-14), antes vivía arriba
+            entre el título y la ilustración. */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getWellnessToneClasses(
+              wellness.stateLabel,
+              kind,
+            )}`}
+          >
+            {wellness.stateLabel}
+          </span>
+          <p className="text-sm text-slate-500">{wellness.lastEventLabel}</p>
         </div>
       </div>
     </article>
