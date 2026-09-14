@@ -236,12 +236,18 @@ export default function BowlWellnessCard({
 
         <div className="grid items-center gap-3">
           <div className="flex flex-col items-center py-1">
+            {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
+                aspect-ratio real, así que con w-auto una quedaba más
+                angosta que la otra pese a compartir el alto). Ambas
+                ilustraciones miden exactamente lo mismo ahora, letterboxed
+                con object-contain -- pedido de Mauro 2026-09-14, "más
+                grandes y deben medir lo mismo". */}
             <Image
               src={illustrationSrc}
               alt={c.illustrationAlt}
               width={224}
               height={164}
-              className="mx-auto h-36 w-auto object-contain object-center"
+              className="mx-auto h-44 w-44 object-contain object-center"
             />
             {fillPct !== null ? (
               <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
