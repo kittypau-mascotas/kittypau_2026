@@ -192,7 +192,7 @@ export default function BowlWellnessCard({
     <article
       className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm md:p-5`}
     >
-      <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-1">
         {/* Título centrado en su propia línea, connectivity/batería debajo
             (pedido de Mauro 2026-09-14: "centra los títulos") -- antes era
             una sola fila título-izquierda/batería-derecha. */}
@@ -225,7 +225,7 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="grid items-center">
+        <div className="-mt-2 grid items-center">
           <div className="flex flex-col items-center">
             {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
                 aspect-ratio real, así que con w-auto una quedaba más
@@ -233,7 +233,8 @@ export default function BowlWellnessCard({
                 ilustraciones miden exactamente lo mismo ahora, letterboxed
                 con object-contain -- pedido de Mauro 2026-09-14, "más
                 grandes y deben medir lo mismo", y después "sube un poco
-                los platos y agranda su tamaño" (sin py-1 arriba + h-64). */}
+                los platos y agranda su tamaño" (sin py-1 arriba + h-64,
+                -mt-2 acá arriba). */}
             <Image
               src={illustrationSrc}
               alt={c.illustrationAlt}
@@ -242,8 +243,8 @@ export default function BowlWellnessCard({
               className="mx-auto h-64 w-64 object-contain object-center"
             />
             {fillPct !== null ? (
-              <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-1 flex w-full max-w-[160px] items-center gap-2">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
                   <div
                     className={`h-full rounded-full ${
                       kind === "food" ? "bg-emerald-400" : "bg-sky-400"
@@ -251,7 +252,7 @@ export default function BowlWellnessCard({
                     style={{ width: `${fillPct}%` }}
                   />
                 </div>
-                <span className="text-[10px] font-semibold tabular-nums text-slate-400">
+                <span className="text-sm font-semibold tabular-nums text-slate-500">
                   {fillPct}%
                 </span>
               </div>
@@ -261,7 +262,7 @@ export default function BowlWellnessCard({
                 {wellness.levelLabel}
               </p>
             ) : null}
-            <p className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-slate-300">
+            <p className="mt-0.5 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
               {device?.device_id ?? "KPCLXXXX"}
             </p>
           </div>
