@@ -93,20 +93,23 @@ const HERO_DECOR_STYLE = {
 } as const;
 
 // Mismo truco para #today-bowls (pedido de Mauro 2026-09-14: "modificar el
-// fondo de esa sección, como today [hero]") -- mismo wash + patitas, pero
-// en verde esmeralda (#10B981, mismo tono que los íconos de
-// bowl-wellness-card.tsx) en vez del rosa del hero, porque esta sección ya
-// tiene identidad propia (comida/agua) distinta a la del hero.
+// fondo de esa sección, como today [hero]") -- mismo wash, en verde
+// esmeralda (#10B981, mismo tono que los íconos de bowl-wellness-card.tsx)
+// en vez del rosa del hero. Las siluetas del patrón tampoco se repiten --
+// pidió íconos "relacionados con alimentación e hidratación de mascotas"
+// en vez de las mismas patitas/destello del hero: acá van hueso + pez +
+// gota (paths reales de los íconos Bone/Fish/Droplet de lucide-react,
+// mismos que ya usa bowl-wellness-card.tsx, solo rellenos en vez de trazo).
 const BOWLS_DECOR_STYLE = {
   backgroundColor: "hsl(160 84% 39% / 0.035)",
   backgroundImage: [
     "radial-gradient(circle at 10% 12%, hsl(160 84% 39% / 0.1), transparent 55%)",
     "radial-gradient(circle at 92% 6%, hsl(160 84% 39% / 0.08), transparent 45%)",
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='%2310B981' fill-opacity='0.3'%3E%3Cellipse cx='24' cy='34' rx='10' ry='8'/%3E%3Cellipse cx='12' cy='20' rx='4.5' ry='5.5'/%3E%3Cellipse cx='24' cy='14' rx='4.5' ry='5.5'/%3E%3Cellipse cx='36' cy='20' rx='4.5' ry='5.5'/%3E%3Cpath d='M108 90 L110 100 L120 102 L110 104 L108 114 L106 104 L96 102 L106 100 Z'/%3E%3C/g%3E%3C/svg%3E\")",
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='%2310B981' fill-opacity='0.3'%3E%3Cg transform='translate(16 18) scale(0.85)'%3E%3Cpath d='M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z'/%3E%3C/g%3E%3Cg transform='translate(78 100) scale(0.9)'%3E%3Cpath d='M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z'/%3E%3C/g%3E%3Cg transform='translate(20 108) scale(0.8)'%3E%3Cpath d='M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
   ].join(", "),
   backgroundRepeat: "no-repeat, no-repeat, repeat",
   backgroundPosition: "0 0, 0 0, 0 0",
-  backgroundSize: "auto, auto, 140px 140px",
+  backgroundSize: "auto, auto, 160px 160px",
 } as const;
 
 // Seam de la demo (Knowledge/29_Specs/009-demo-today-en-vivo): este componente
