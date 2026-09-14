@@ -5,11 +5,6 @@ import { MEDIANA_GRAMOS_COMIDA } from "@/lib/hunger-bar";
 import { mealSizeInfo } from "../_lib/today-format";
 
 const WELLNESS_BLOCKS = 20;
-// Segmentos visuales de la barra (pedido de Mauro 2026-09-14, "otro diseño"
-// -- segmentada estilo RPG en vez de la barra lisa con degradé). Puramente
-// visual: no cambia filledBlocks/WELLNESS_BLOCKS, solo cuántos bloques se
-// pintan llenos sobre el mismo % ya calculado.
-const BAR_SEGMENTS = 10;
 
 // Tono del ícono de estado -- deriva de datos reales ya calculados por el
 // caller (alertActive / hasEvidence), nunca de un match de texto sobre
@@ -215,20 +210,18 @@ export default function BarrasSimsCard({ bars }: { bars: [BarKind, BarKind] }) {
                         {title}
                       </p>
                     </div>
-                    <div className="mt-2 flex h-3.5 w-full gap-[3px]">
-                      {Array.from({ length: BAR_SEGMENTS }, (_, i) => {
-                        const filled =
-                          i < Math.round((pct / 100) * BAR_SEGMENTS);
-                        return (
-                          <div
-                            key={i}
-                            className={`h-full flex-1 rounded-[2px] transition-colors duration-500 ${
-                              filled ? fillClass : "bg-slate-100"
-                            }`}
-                            style={filled ? fillStyle : undefined}
-                          />
-                        );
-                      })}
+                    {/* "Líquido con onda" (pedido de Mauro 2026-09-14,
+                        "otro diseño" -- elegido entre 4 opciones con
+                        preview). kp-liquid-track/kp-liquid-fill son el
+                        mismo truco de menisco (círculo sobre el borde,
+                        globals.css) que usaba la versión vertical original
+                        de este widget -- rotado 90° para el borde líquido
+                        quede en el filo derecho (avance), no arriba. */}
+                    <div className="kp-liquid-track mt-2 h-3.5 w-full bg-slate-100">
+                      <div
+                        className={`kp-liquid-fill ${fillClass}`}
+                        style={{ width: `${pct}%`, ...fillStyle }}
+                      />
                     </div>
                     {valueLabel ? (
                       <p className="mt-1 text-[11px] text-slate-400">
