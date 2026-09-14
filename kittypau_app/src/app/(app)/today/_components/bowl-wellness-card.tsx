@@ -225,7 +225,7 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="-mt-2 grid items-center">
+        <div className="-mt-4 grid items-center">
           <div className="flex flex-col items-center">
             {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
                 aspect-ratio real, así que con w-auto una quedaba más
@@ -233,18 +233,18 @@ export default function BowlWellnessCard({
                 ilustraciones miden exactamente lo mismo ahora, letterboxed
                 con object-contain -- pedido de Mauro 2026-09-14, "más
                 grandes y deben medir lo mismo", y después "sube un poco
-                los platos y agranda su tamaño" (sin py-1 arriba + h-64,
-                -mt-2 acá arriba). */}
+                los platos y agranda su tamaño" 2 veces más (sin py-1
+                arriba + h-72, -mt-4 acá arriba). */}
             <Image
               src={illustrationSrc}
               alt={c.illustrationAlt}
-              width={256}
-              height={188}
-              className="mx-auto h-64 w-64 object-contain object-center"
+              width={288}
+              height={212}
+              className="mx-auto h-72 w-72 object-contain object-center"
             />
             {fillPct !== null ? (
-              <div className="mt-1 flex w-full max-w-[160px] items-center gap-2">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-1 flex w-full max-w-[180px] items-center gap-2">
+                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
                   <div
                     className={`h-full rounded-full ${
                       kind === "food" ? "bg-emerald-400" : "bg-sky-400"
@@ -252,7 +252,7 @@ export default function BowlWellnessCard({
                     style={{ width: `${fillPct}%` }}
                   />
                 </div>
-                <span className="text-sm font-semibold tabular-nums text-slate-500">
+                <span className="text-base font-semibold tabular-nums text-slate-500">
                   {fillPct}%
                 </span>
               </div>
@@ -262,7 +262,7 @@ export default function BowlWellnessCard({
                 {wellness.levelLabel}
               </p>
             ) : null}
-            <p className="mt-0.5 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+            <p className="mt-0.5 text-sm font-medium uppercase tracking-[0.14em] text-slate-400">
               {device?.device_id ?? "KPCLXXXX"}
             </p>
           </div>
