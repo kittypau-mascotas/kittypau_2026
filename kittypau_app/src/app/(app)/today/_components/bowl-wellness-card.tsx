@@ -2,6 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import {
+  Bone,
+  Clock,
+  Droplet,
+  Fish,
+  Thermometer,
+  type LucideIcon,
+} from "lucide-react";
 import BatteryStatusIcon from "@/lib/ui/battery-status-icon";
 import {
   getBatteryStateLabel,
@@ -10,6 +18,16 @@ import {
   powerDotStyles,
   renderTrend,
 } from "../_lib/today-format";
+
+// Íconos de la sección (pedido de Mauro 2026-09-14, "que color e íconos
+// podría tener esta sección"): 1 solo color verde muy claro para todos los
+// íconos de #today-bowls -- ya NO el arcoíris por chip (naranja temp,
+// violeta/celeste humedad, gris hora) que había antes. El borde/título de
+// cada card sigue distinguiendo comida (esmeralda) de agua (celeste), pero
+// los íconos en sí son un único acento, y usan siluetas de mascota (hueso,
+// pescado, gota) en vez de los genéricos de antes donde aplica.
+const ICON_CIRCLE_BG = "bg-emerald-50";
+const ICON_COLOR = "text-emerald-600";
 
 type WellnessState = {
   stateLabel: string;
@@ -31,6 +49,7 @@ type BowlReading = { recorded_at?: string | null } | null;
 const KIND_CONFIG = {
   food: {
     title: "Alimentación",
+    titleIcon: Bone,
     accentText: "text-emerald-700",
     accentBorder: "border-emerald-100",
     dashedBorder: "border-emerald-200",
@@ -47,12 +66,11 @@ const KIND_CONFIG = {
     illustrationEmpty: "/illustrations/pink_empty.png",
     illustrationAlt: "Kittypau comedero",
     contentTitle: "Contenido actual",
-    contentIconPath: "M3 6h18M3 12h18M3 18h18",
-    contentChipClass: "bg-emerald-50 text-emerald-700",
-    humidityChipClass: "bg-sky-50 text-sky-600",
+    contentIcon: Fish,
   },
   water: {
     title: "Hidratación",
+    titleIcon: Droplet,
     accentText: "text-sky-700",
     accentBorder: "border-sky-100",
     dashedBorder: "border-sky-200",
@@ -69,11 +87,53 @@ const KIND_CONFIG = {
     illustrationEmpty: "/illustrations/green_water_empty.png",
     illustrationAlt: "Kittypau bebedero",
     contentTitle: "Nivel actual",
-    contentIconPath: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z",
-    contentChipClass: "bg-sky-50 text-sky-700",
-    humidityChipClass: "bg-violet-50 text-violet-600",
+    contentIcon: Droplet,
   },
-} as const;
+} satisfies Record<
+  "food" | "water",
+  {
+    title: string;
+    titleIcon: LucideIcon;
+    accentText: string;
+    accentBorder: string;
+    dashedBorder: string;
+    dashedBg: string;
+    addButtonBorder: string;
+    addButtonText: string;
+    addButtonHover: string;
+    emptyIllustration: string;
+    emptyAlt: string;
+    emptyLabel: string;
+    addLabel: string;
+    illustrationFull: string;
+    illustrationMedium: string;
+    illustrationEmpty: string;
+    illustrationAlt: string;
+    contentTitle: string;
+    contentIcon: LucideIcon;
+  }
+>;
+
+/** Badge redondo de ícono -- mismo patrón que Barras Sims/hero (ícono
+ * dentro de un círculo de color), acá con 1 solo color para toda la
+ * sección en vez de repetir esmeralda/celeste del hero. */
+function IconBadge({
+  icon: Icon,
+  size = "h-6 w-6",
+  iconSize = "h-3.5 w-3.5",
+}: {
+  icon: LucideIcon;
+  size?: string;
+  iconSize?: string;
+}) {
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-full ${ICON_CIRCLE_BG} ${size}`}
+    >
+      <Icon className={`${iconSize} ${ICON_COLOR}`} aria-hidden="true" />
+    </span>
+  );
+}
 
 // Umbrales de qué ilustración de plato mostrar según % de contenido -- pedido
 // explícito de Mauro 2026-09-09: lleno 60-100%, medio 20-59%, vacío 0-19%.
@@ -190,6 +250,7 @@ export default function BowlWellnessCard({
       <div className="flex flex-1 flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
+            <IconBadge icon={c.titleIcon} />
             <p
               className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${c.accentText}`}
             >
@@ -269,87 +330,34 @@ export default function BowlWellnessCard({
             información, más fácil de escanear. */}
         <div className="grid grid-cols-2 gap-2 pt-1">
           <div
-            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium ${c.contentChipClass}`}
+            className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
             title={c.contentTitle}
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="shrink-0"
-            >
-              <path d={c.contentIconPath} />
-            </svg>
+            <IconBadge icon={c.contentIcon} size="h-5 w-5" iconSize="h-3 w-3" />
             <span className="truncate">
               {contentValueText}
               {renderTrend(contentWeightGrams, prevContentWeightGrams)}
             </span>
           </div>
           <div
-            className="flex items-center gap-1.5 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[11px] font-medium text-orange-600"
+            className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
             title="Temperatura"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="shrink-0"
-            >
-              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-            </svg>
+            <IconBadge icon={Thermometer} size="h-5 w-5" iconSize="h-3 w-3" />
             <span className="truncate">{tempText}</span>
           </div>
           <div
-            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium ${c.humidityChipClass}`}
+            className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
             title="Humedad"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="shrink-0"
-            >
-              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-            </svg>
+            <IconBadge icon={Droplet} size="h-5 w-5" iconSize="h-3 w-3" />
             <span className="truncate">{humidityText}</span>
           </div>
           <div
-            className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-[11px] font-medium text-slate-500"
+            className="flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-600"
             title="Última lectura"
           >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="shrink-0"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
+            <IconBadge icon={Clock} size="h-5 w-5" iconSize="h-3 w-3" />
             <span className="truncate">
               {formatTimestamp(latestReading?.recorded_at ?? null)}
             </span>
