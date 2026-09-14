@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Settings } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SocialLinks from "@/app/_components/social-links";
@@ -429,14 +430,20 @@ export default function AppNav() {
 
         {!useSidebarNav ? (
           <div ref={menuRef} className="relative app-nav-profile-menu">
+            {/* Tuerca en vez de avatar+nombre completo (pedido de Mauro
+                2026-09-14, navbar de celular/APK "se ve mal") -- mismo
+                menú de siempre (Ajustes/Editar perfil/Cerrar sesión) atrás,
+                solo cambia el disparador a un ícono chico. */}
             <button
               type="button"
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="app-nav-user-trigger"
+              className="app-nav-user-trigger app-nav-gear-trigger"
               aria-expanded={menuOpen}
               aria-haspopup="menu"
+              aria-label="Ajustes de cuenta"
+              title="Ajustes de cuenta"
             >
-              {userSummary}
+              <Settings className="h-5 w-5" aria-hidden="true" />
             </button>
             {menuOpen ? (
               <div className="app-nav-menu" role="menu">

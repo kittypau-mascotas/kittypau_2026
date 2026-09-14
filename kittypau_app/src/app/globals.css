@@ -768,6 +768,24 @@ body {
   border: 1px solid color-mix(in oklab, hsl(var(--border)) 70%, transparent);
 }
 
+/* Tuerca del navbar top-mode (celular/APK, pedido de Mauro 2026-09-14) --
+   botón redondo chico en vez del pill de avatar+nombre, mismo menú atrás. */
+.app-nav-gear-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: color-mix(in oklab, #ffffff 85%, transparent);
+  color: hsl(var(--foreground));
+}
+
+.app-nav-gear-trigger:hover {
+  background: #ffffff;
+}
+
 .app-nav-user {
   display: inline-flex;
   align-items: center;
@@ -852,9 +870,28 @@ body {
       max(12px, env(safe-area-inset-left));
   }
 
+  /* Barra única (pedido de Mauro 2026-09-14, "se ve mal el navbar en
+     celular"): logo+marca a la izquierda, menús al medio (scrolleables si
+     no entran todos), tuerca al final -- reemplaza la grilla de 2 filas de
+     arriba, pero solo para el navbar real (.app-nav-main-mode); el resto
+     de .app-nav-inner (admin, si algún día se usa esa clase) no se toca. */
+  .app-nav.app-nav-main-mode .app-nav-inner {
+    display: flex;
+    grid-template-columns: none;
+    grid-template-areas: none;
+    align-items: center;
+    gap: 10px;
+    padding: 8px max(12px, env(safe-area-inset-right)) 8px
+      max(12px, env(safe-area-inset-left));
+  }
+
   .app-nav-brand {
     grid-area: brand;
     gap: 8px;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-brand {
+    flex-shrink: 0;
   }
 
   .app-nav-profile-menu {
@@ -870,6 +907,14 @@ body {
     margin-top: 2px;
   }
 
+  .app-nav.app-nav-main-mode .app-nav-brand-title {
+    font-size: 1rem;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-brand-subtitle {
+    font-size: 9px;
+  }
+
   .app-nav-logo-wrap {
     width: 36px;
     height: 36px;
@@ -881,6 +926,16 @@ body {
     object-fit: cover;
     transform: scale(1.06);
     transform-origin: center;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-logo-wrap {
+    width: 30px;
+    height: 30px;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-logo {
+    width: 24px;
+    height: 24px;
   }
 
   .app-nav-links {
@@ -895,6 +950,13 @@ body {
     padding-inline: 2px;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
+  }
+
+  .app-nav.app-nav-main-mode .app-nav-links {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
   }
 
   .app-nav-inner-admin {
@@ -3718,65 +3780,113 @@ textarea::placeholder {
 
 .kp-native-apk .app-content,
 .kp-flavor-native .app-content {
-  padding-top: 8px;
-  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+  padding-top: calc(64px + env(safe-area-inset-top));
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
 }
 
+/* Navbar único arriba (pedido de Mauro 2026-09-14: "se ve mal el navbar
+   en celular y apk" -- logo+marca a la izquierda, menús al medio, tuerca
+   al final, TODO en una barra). Antes esto era una tab bar abajo con solo
+   los 4 links -- ni el logo ni la tuerca (Ajustes/Editar perfil/Cerrar
+   sesión) se veían nunca en la APK, no había forma de cerrar sesión desde
+   ahí. */
 .kp-native-apk .app-nav.app-nav-main-mode,
 .kp-flavor-native .app-nav.app-nav-main-mode {
   position: fixed;
-  top: auto;
-  bottom: 0;
+  top: 0;
+  bottom: auto;
   left: 0;
   right: 0;
   z-index: 40;
-  border-bottom: none;
-  border-top: 1px solid color-mix(in oklab, hsl(var(--border)) 74%, transparent);
-  box-shadow: 0 -12px 28px -24px rgba(15, 23, 42, 0.45);
+  border-top: none;
+  border-bottom: 1px solid
+    color-mix(in oklab, hsl(var(--border)) 74%, transparent);
+  box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.45);
   background: color-mix(in oklab, white 96%, transparent);
-  padding-top: 0;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-inner,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-inner {
   max-width: none;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px max(10px, env(safe-area-inset-right)) 8px
     max(10px, env(safe-area-inset-left));
 }
 
-.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-user-top,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-social-top,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-contact,
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-links-extra,
-.kp-native-apk .app-nav.app-nav-main-mode .app-nav-profile-menu,
-.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-user-top,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-social-top,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-contact,
-.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links-extra,
-.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-profile-menu {
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links-extra {
   display: none;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand {
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-logo-wrap,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-logo-wrap {
+  width: 30px;
+  height: 30px;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-logo,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand-title,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand-title {
+  font-size: 1rem;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-brand-subtitle,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-brand-subtitle {
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-profile-menu,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-profile-menu {
+  flex-shrink: 0;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-links,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
   gap: 6px;
-  overflow: visible;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.kp-native-apk .app-nav.app-nav-main-mode .app-nav-links::-webkit-scrollbar,
+.kp-flavor-native .app-nav.app-nav-main-mode .app-nav-links::-webkit-scrollbar {
+  display: none;
 }
 
 .kp-native-apk .app-nav.app-nav-main-mode .app-nav-link,
 .kp-flavor-native .app-nav.app-nav-main-mode .app-nav-link {
+  white-space: nowrap;
   text-align: center;
-  border-radius: 12px;
-  font-size: 11px;
+  border-radius: 999px;
+  font-size: 12px;
   line-height: 1.2;
-  padding: 9px 4px;
+  padding: 7px 12px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
