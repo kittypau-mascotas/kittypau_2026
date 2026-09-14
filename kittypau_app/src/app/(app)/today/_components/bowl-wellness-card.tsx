@@ -192,8 +192,11 @@ export default function BowlWellnessCard({
     <article
       className={`today-bowl-card flex h-full flex-col rounded-[var(--radius)] border ${c.accentBorder} bg-white p-4 shadow-sm md:p-5`}
     >
-      <div className="flex flex-1 flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-1 flex-col gap-2">
+        {/* Título centrado en su propia línea, connectivity/batería debajo
+            (pedido de Mauro 2026-09-14: "centra los títulos") -- antes era
+            una sola fila título-izquierda/batería-derecha. */}
+        <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
             <p
               className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${c.accentText}`}
@@ -222,20 +225,21 @@ export default function BowlWellnessCard({
           </div>
         </div>
 
-        <div className="grid items-center gap-3">
-          <div className="flex flex-col items-center py-1">
+        <div className="grid items-center">
+          <div className="flex flex-col items-center">
             {/* Caja fija (antes h-36 w-auto -- cada PNG tiene su propio
                 aspect-ratio real, así que con w-auto una quedaba más
                 angosta que la otra pese a compartir el alto). Ambas
                 ilustraciones miden exactamente lo mismo ahora, letterboxed
                 con object-contain -- pedido de Mauro 2026-09-14, "más
-                grandes y deben medir lo mismo". */}
+                grandes y deben medir lo mismo", y después "sube un poco
+                los platos y agranda su tamaño" (sin py-1 arriba + h-64). */}
             <Image
               src={illustrationSrc}
               alt={c.illustrationAlt}
-              width={224}
-              height={164}
-              className="mx-auto h-56 w-56 object-contain object-center"
+              width={256}
+              height={188}
+              className="mx-auto h-64 w-64 object-contain object-center"
             />
             {fillPct !== null ? (
               <div className="mt-1 flex w-full max-w-[140px] items-center gap-1.5">
