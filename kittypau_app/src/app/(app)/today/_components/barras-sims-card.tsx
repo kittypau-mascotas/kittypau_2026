@@ -2,11 +2,7 @@
 
 import Image from "next/image";
 import { MEDIANA_GRAMOS_COMIDA } from "@/lib/hunger-bar";
-import {
-  getBatteryStateLabel,
-  getOperationalLabel,
-  mealSizeInfo,
-} from "../_lib/today-format";
+import { mealSizeInfo } from "../_lib/today-format";
 
 const WELLNESS_BLOCKS = 20;
 
@@ -126,21 +122,7 @@ const STATUS_TONE_CLASS: Record<StatusTone, string> = {
  * cada fila. Nombre "Barras Sims" se mantiene igual aunque el layout ya no
  * sea el de Sims -- es el nombre que Mauro le puso al widget.
  */
-export default function BarrasSimsCard({
-  deviceId,
-  bars,
-  powerState,
-  batteryState,
-  batteryLevel,
-}: {
-  deviceId: string | null | undefined;
-  bars: [BarKind, BarKind];
-  powerState: "on" | "off" | "nodata";
-  batteryState: string | null | undefined;
-  batteryLevel: number | null | undefined;
-}) {
-  const battery = getBatteryStateLabel(batteryState, batteryLevel);
-
+export default function BarrasSimsCard({ bars }: { bars: [BarKind, BarKind] }) {
   return (
     <div className="w-full rounded-[18px] border border-white/80 bg-white/80 p-3.5 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.28)] backdrop-blur-sm">
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -177,9 +159,6 @@ export default function BarrasSimsCard({
             aria-hidden="true"
             title="Datos en vivo"
           />
-        </span>
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-500">
-          {deviceId ?? "KPCLXXXX"}
         </span>
       </div>
       <div className="flex flex-col gap-3">
@@ -302,10 +281,6 @@ export default function BarrasSimsCard({
             );
           },
         )}
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-slate-400">
-        <span>{getOperationalLabel(powerState)}</span>
-        <span>{battery.text}</span>
       </div>
     </div>
   );

@@ -2838,10 +2838,6 @@ export default function TodayScreen({
                   solo cambia dónde vive dentro del hero. */}
               <div className="min-w-0 flex-1">
                 <BarrasSimsCard
-                  deviceId={bowlDevice?.device_id}
-                  powerState={bowlPowerState}
-                  batteryState={bowlDevice?.battery_state}
-                  batteryLevel={bowlDevice?.battery_level}
                   bars={[
                     {
                       key: "food",
