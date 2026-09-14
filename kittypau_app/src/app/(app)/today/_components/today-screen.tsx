@@ -92,6 +92,23 @@ const HERO_DECOR_STYLE = {
   backgroundSize: "auto, auto, 140px 140px",
 } as const;
 
+// Mismo truco para #today-bowls (pedido de Mauro 2026-09-14: "modificar el
+// fondo de esa sección, como today [hero]") -- mismo wash + patitas, pero
+// en verde esmeralda (#10B981, mismo tono que los íconos de
+// bowl-wellness-card.tsx) en vez del rosa del hero, porque esta sección ya
+// tiene identidad propia (comida/agua) distinta a la del hero.
+const BOWLS_DECOR_STYLE = {
+  backgroundColor: "hsl(160 84% 39% / 0.035)",
+  backgroundImage: [
+    "radial-gradient(circle at 10% 12%, hsl(160 84% 39% / 0.1), transparent 55%)",
+    "radial-gradient(circle at 92% 6%, hsl(160 84% 39% / 0.08), transparent 45%)",
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='%2310B981' fill-opacity='0.3'%3E%3Cellipse cx='24' cy='34' rx='10' ry='8'/%3E%3Cellipse cx='12' cy='20' rx='4.5' ry='5.5'/%3E%3Cellipse cx='24' cy='14' rx='4.5' ry='5.5'/%3E%3Cellipse cx='36' cy='20' rx='4.5' ry='5.5'/%3E%3Cpath d='M108 90 L110 100 L120 102 L110 104 L108 114 L106 104 L96 102 L106 100 Z'/%3E%3C/g%3E%3C/svg%3E\")",
+  ].join(", "),
+  backgroundRepeat: "no-repeat, no-repeat, repeat",
+  backgroundPosition: "0 0, 0 0, 0 0",
+  backgroundSize: "auto, auto, 140px 140px",
+} as const;
+
 // Seam de la demo (Knowledge/29_Specs/009-demo-today-en-vivo): este componente
 // ES la vista de `/today`. `/today` lo renderiza sin props (todo default =
 // comportamiento autenticado actual, byte-idéntico). `/demo` lo renderiza con
@@ -2896,6 +2913,7 @@ export default function TodayScreen({
             role="region"
             aria-label="Estado de platos"
             className="surface-card freeform-rise px-4 py-4 md:px-6 md:py-5"
+            style={BOWLS_DECOR_STYLE}
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex flex-col gap-2">
