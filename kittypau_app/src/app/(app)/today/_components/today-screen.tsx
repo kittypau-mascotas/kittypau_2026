@@ -1871,7 +1871,11 @@ export default function TodayScreen({
   const foodPointStyle = useMemo(() => {
     if (typeof window === "undefined") return undefined;
     const img = new window.Image(64, 64);
-    img.src = "/illustrations/pink_food_full.png";
+    // pink_food_marker.png -- copia sin tocar de pink_food_full.png de antes
+    // de agrandarlo (pedido de Mauro 2026-09-14, ese archivo lo usa también
+    // la card de Alimentación y el zoom quedaba raro acá como marcador
+    // chico del gráfico). Mismo bowl, mismo tamaño de siempre en el chart.
+    img.src = "/illustrations/pink_food_marker.png";
     return img;
   }, []);
 
