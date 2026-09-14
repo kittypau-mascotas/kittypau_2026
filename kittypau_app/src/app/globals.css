@@ -3809,40 +3809,6 @@ textarea::placeholder {
     padding: 12px 10px;
   }
 
-  .kp-native-apk #today-hero .today-hero-top,
-  .kp-flavor-native #today-hero .today-hero-top {
-    gap: 10px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-pet img,
-  .kp-flavor-native #today-hero .today-hero-pet img {
-    width: 96px;
-    height: 96px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-pet h2,
-  .kp-flavor-native #today-hero .today-hero-pet h2 {
-    font-size: 1.08rem;
-    line-height: 1.1;
-  }
-
-  .kp-native-apk #today-hero .today-hero-pet p,
-  .kp-flavor-native #today-hero .today-hero-pet p {
-    font-size: 0.78rem;
-    line-height: 1.15rem;
-  }
-
-  .kp-native-apk #today-hero .today-hero-aside,
-  .kp-flavor-native #today-hero .today-hero-aside {
-    gap: 4px;
-  }
-
-  .kp-native-apk #today-hero .today-hero-updated,
-  .kp-flavor-native #today-hero .today-hero-updated {
-    font-size: 8px;
-    letter-spacing: 0.11em;
-  }
-
   .kp-native-apk #today-bowls .today-bowl-card,
   .kp-flavor-native #today-bowls .today-bowl-card {
     padding: 12px;

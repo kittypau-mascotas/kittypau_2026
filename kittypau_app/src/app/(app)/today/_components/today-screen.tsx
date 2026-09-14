@@ -73,6 +73,26 @@ import OnboardingGuideModal from "./onboarding-guide-modal";
 import QaTestMealNotification from "@/app/_components/qa-test-meal-notification";
 import type { DemoIdentity } from "@/lib/demo-identity";
 
+// Fondo decorativo del hero (pedido de Mauro 2026-09-14, "que sea como la
+// foto hero"): wash rosa muy tenue + patitas/destellos, en rosa Kittypau
+// (#EBB7AA, mismo tono que el spec de Mauro). Va por `style` en vez de una
+// clase Tailwind porque `.surface-card` (globals.css) ya fija
+// background/border-radius sin @layer -- una utilidad Tailwind (que sí vive
+// en una @layer) nunca le gana en cascada, así que una clase no alcanzaba.
+// Solo decora #today-hero, no toca el resto de la app.
+const HERO_DECOR_STYLE = {
+  borderRadius: 24,
+  backgroundColor: "hsl(var(--primary) / 0.04)",
+  backgroundImage: [
+    "radial-gradient(circle at 12% 18%, hsl(var(--primary) / 0.16), transparent 55%)",
+    "radial-gradient(circle at 88% 4%, hsl(var(--primary) / 0.12), transparent 45%)",
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='%23EBB7AA' fill-opacity='0.35'%3E%3Cellipse cx='24' cy='34' rx='10' ry='8'/%3E%3Cellipse cx='12' cy='20' rx='4.5' ry='5.5'/%3E%3Cellipse cx='24' cy='14' rx='4.5' ry='5.5'/%3E%3Cellipse cx='36' cy='20' rx='4.5' ry='5.5'/%3E%3Cpath d='M108 90 L110 100 L120 102 L110 104 L108 114 L106 104 L96 102 L106 100 Z'/%3E%3C/g%3E%3C/svg%3E\")",
+  ].join(", "),
+  backgroundRepeat: "no-repeat, no-repeat, repeat",
+  backgroundPosition: "0 0, 0 0, 0 0",
+  backgroundSize: "auto, auto, 140px 140px",
+} as const;
+
 // Seam de la demo (Knowledge/29_Specs/009-demo-today-en-vivo): este componente
 // ES la vista de `/today`. `/today` lo renderiza sin props (todo default =
 // comportamiento autenticado actual, byte-idéntico). `/demo` lo renderiza con
@@ -2659,8 +2679,20 @@ export default function TodayScreen({
             id="today-hero"
             role="region"
             aria-label="Hero de mascota"
-            className="today-hero surface-card freeform-rise rounded-[24px] border-t-4 border-t-primary bg-primary/5 p-6 md:p-8"
+            className="today-hero surface-card freeform-rise relative border-t-4 border-t-primary p-6 md:p-8"
+            style={HERO_DECOR_STYLE}
           >
+            {/* Botón "?" -- ayuda estática del panel, sin popover nuevo:
+                el tooltip nativo del navegador (title) alcanza para una
+                frase, no hace falta infraestructura de modal/popover. */}
+            <button
+              type="button"
+              title="Este panel muestra a tu mascota y su estado de hoy: comida y agua en vivo."
+              aria-label="Ayuda sobre este panel"
+              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full border border-primary/30 bg-white text-xs font-bold text-primary shadow-sm md:right-6 md:top-6"
+            >
+              ?
+            </button>
             {/* "El Hero no muestra datos; presenta al personaje y su
                 estado" (Character UI, pedido de Mauro 2026-09-14) --
                 columna de identidad (retrato + nombre + selector) y columna
@@ -2749,12 +2781,51 @@ export default function TodayScreen({
                       />
                     </span>
                   ) : null}
+                  {/* Cámara -- puramente decorativa/afordance visual, el
+                      click real para ajustar la foto sigue siendo toda la
+                      foto (Link a /pet, ya definido arriba). Esquina libre
+                      (las otras 3 ya tienen racha/comidas/agua). */}
+                  <span
+                    className="absolute -left-1 -top-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-primary text-primary-foreground shadow-sm"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+                      <circle cx="12" cy="13" r="3.2" />
+                    </svg>
+                  </span>
                 </div>
                 {/* Nombre grande -- pieza de mayor jerarquía del panel, sin
                     flechas pegadas al lado (esas se reemplazan por el
-                    selector de abajo). */}
-                <h2 className="text-3xl font-bold text-slate-900 md:text-4xl">
+                    selector de abajo). Florcita decorativa al lado, mismo
+                    rosa de marca -- puro adorno, aria-hidden. */}
+                <h2 className="flex items-center gap-1.5 text-3xl font-bold text-slate-900 md:text-4xl">
                   {petLabel}
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="text-primary"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="6" r="3.4" />
+                    <circle cx="17.5" cy="9.5" r="3.4" />
+                    <circle cx="17.5" cy="15.5" r="3.4" />
+                    <circle cx="12" cy="19" r="3.4" />
+                    <circle cx="6.5" cy="15.5" r="3.4" />
+                    <circle cx="6.5" cy="9.5" r="3.4" />
+                    <circle cx="12" cy="12" r="2.6" fill="white" />
+                  </svg>
                 </h2>
                 {/* Etiqueta ("Origen: Adoptado en refugio") en vez de valores
                   crudos pegados con · (se truncaba y no decía qué era cada
@@ -2850,8 +2921,9 @@ export default function TodayScreen({
                         : undefined,
                       labelClass: "text-emerald-700",
                       badgeClass: hungerBar?.alertActive
-                        ? "border-rose-300 bg-rose-100 text-rose-800"
-                        : "border-emerald-100 bg-emerald-50 text-emerald-700",
+                        ? "bg-rose-500"
+                        : "bg-emerald-500",
+                      statusTone: hungerBar?.alertActive ? "warn" : "ok",
                     },
                     {
                       key: "water",
@@ -2870,7 +2942,8 @@ export default function TodayScreen({
                         "bg-[linear-gradient(180deg,rgba(56,189,248,0.95)_0%,rgba(2,132,199,0.95)_100%)]",
                       fillStyle: undefined,
                       labelClass: "text-sky-700",
-                      badgeClass: "border-sky-100 bg-sky-50 text-sky-700",
+                      badgeClass: "bg-sky-500",
+                      statusTone: waterWellness.hasEvidence ? "ok" : "neutral",
                     },
                   ]}
                 />
