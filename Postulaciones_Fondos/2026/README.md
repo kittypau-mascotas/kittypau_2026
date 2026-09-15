@@ -20,7 +20,8 @@ La fuente madre vive en [`documento_2026/00_DOCUMENTO_MAESTRO_2026.md`](document
 6. [`documento_2026/`](documento_2026/) - narrativa madre, evidencia, negocio y checklist.
 7. [`STARTUPLAB01_2026/`](STARTUPLAB01_2026/) - paquete especifico Start-Up Chile.
 8. [`CORFO_SEMILLA_INICIA_2026/`](CORFO_SEMILLA_INICIA_2026/) - paquete especifico Corfo Semilla Inicia.
-9. [`05_STARTUPLAB01_FORMULARIO_VIVO.md`](05_STARTUPLAB01_FORMULARIO_VIVO.md) - versin viva del formulario Start-Up Chile.
+9. [`CRTIC_LAB_NUNOA_2026/`](CRTIC_LAB_NUNOA_2026/) - paquete especifico CRTIC LAB Ñuñoa (residencias tecnocreativas -- narrativa reformulada, no la misma que CORFO/ANID, ver `00_README.md` del paquete).
+10. [`05_STARTUPLAB01_FORMULARIO_VIVO.md`](05_STARTUPLAB01_FORMULARIO_VIVO.md) - versin viva del formulario Start-Up Chile.
 
 ## Soporte operativo
 - Respuestas de diagnostico para asistencia externa: [`04_RESPUESTAS_DIAGNOSTICO_CLOUDE.md`](04_RESPUESTAS_DIAGNOSTICO_CLOUDE.md)
