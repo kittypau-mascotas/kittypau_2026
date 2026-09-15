@@ -64,10 +64,13 @@ import {
   chileCompactDatetime,
   chileShortTime,
   chileLongDate,
+  chileFormat,
+  CHILE_TZ,
 } from "@/lib/time/chile";
 import BarrasSimsCard from "./barras-sims-card";
 import BowlWellnessCard from "./bowl-wellness-card";
 import DayNightTimelineCard from "./day-night-timeline-card";
+import DayNightTimelineCardWeekly from "./day-night-timeline-card-weekly";
 import ConsumoKpisCard from "./consumo-kpis-card";
 import ConsumoPeriodoCard from "./consumo-periodo-card";
 import OnboardingGuideModal from "./onboarding-guide-modal";
@@ -407,6 +410,35 @@ function formatCycleDate(ts: number) {
   return chileLongDate(ts);
 }
 
+// --- Vista semanal (prueba, day-night-timeline-card-weekly.tsx) ---
+// Mismo criterio de "ciclo diario 06:00-06:00 hora Chile" que ya usa
+// `getDayNightWindow` para la vista de 1 día -- una semana acá es 7 de esos
+// ciclos seguidos, arrancando siempre en el ciclo cuyo día calendario es
+// lunes en Chile (no domingo, que es lo que asumiría cualquier librería de
+// fechas en configuración US default).
+const WEEKDAY_SHORT_EN_MON0 = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function getChileWeekdayIndexMon0(ms: number): number {
+  const label = new Intl.DateTimeFormat("en-US", {
+    timeZone: CHILE_TZ,
+    weekday: "short",
+  }).format(new Date(ms));
+  const idx = WEEKDAY_SHORT_EN_MON0.indexOf(label);
+  return idx === -1 ? 0 : idx;
+}
+
+/** 7 ciclos diarios (06:00 Chile) empezando en lunes, offset en semanas completas hacia atrás. */
+function getChileWeekWindow(now: Date, weekOffsetWeeks: number) {
+  const todayCycle = getChileDayNightWindow(now);
+  const mondayOffsetDays = getChileWeekdayIndexMon0(todayCycle.startMs);
+  const startMs =
+    todayCycle.startMs -
+    mondayOffsetDays * DAY_MS -
+    weekOffsetWeeks * 7 * DAY_MS;
+  return { startMs, endMs: startMs + 7 * DAY_MS };
+}
+
 function isBoundaryHour(value: number) {
   const epsilon = 0.02;
   const boundaries = [0, 6, 12, 18, 24];
@@ -704,6 +736,9 @@ export default function TodayScreen({
     "admin" | "tester" | "client" | null
   >(null);
   const [dayCycleOffsetDays, setDayCycleOffsetDays] = useState(0);
+  // Vista semanal (prueba, day-night-timeline-card-weekly.tsx) -- offset
+  // independiente del diario, en semanas completas hacia atrás.
+  const [weekOffset, setWeekOffset] = useState(0);
   const [deviceAuditEvents, setDeviceAuditEvents] = useState<
     Record<string, AuditEvent[]>
   >({});
@@ -2223,6 +2258,247 @@ export default function TodayScreen({
     [dayNightWindow.startMs, waterIntakeSessions],
   );
 
+  // --- Vista semanal (prueba, day-night-timeline-card-weekly.tsx) ---
+  // Mismo dato ya fetcheado que usa la vista diaria -- hungerBar.events
+  // (ventana server-side de 10 días, hunger-bar-server.ts) y
+  // deviceAuditEvents (lookback hasta 180 días, efecto "Cargar audit_events"
+  // más arriba) -- sin pedidos nuevos al server para esta prueba.
+  const weekWindow = useMemo(
+    () => getChileWeekWindow(new Date(), weekOffset),
+    [weekOffset],
+  );
+  const weekMonthLabel = useMemo(
+    () => chileFormat(weekWindow.startMs, { month: "long" }),
+    [weekWindow.startMs],
+  );
+  const weekRangeLabel = useMemo(() => {
+    const mondayLabel = chileFormat(weekWindow.startMs, { day: "numeric" });
+    const sundayLabel = chileFormat(weekWindow.endMs - DAY_MS, {
+      day: "numeric",
+    });
+    return `Lun ${mondayLabel} – Dom ${sundayLabel}`;
+  }, [weekWindow.startMs, weekWindow.endMs]);
+
+  // Comida: separada en confirmada (isProvisional=false) vs. detectada por
+  // modelo (isProvisional=true, motor de Investigacion_v2) -- campo real de
+  // `hungerBar.events`, no inventado. "Servido" queda fuera de esta prueba
+  // (el pedido original solo pide estos 3 datasets).
+  const weekFoodPoints = useMemo(() => {
+    const confirmada: DayNightLanePoint[] = [];
+    const provisoria: DayNightLanePoint[] = [];
+    if (!bowlEventsPorCategoria) return { confirmada, provisoria };
+    for (const ev of bowlEventsPorCategoria) {
+      if (ev.category !== "alimentacion") continue;
+      const ts = new Date(ev.startAt).getTime();
+      if (Number.isNaN(ts) || ts < weekWindow.startMs || ts >= weekWindow.endMs)
+        continue;
+      const dayIndex = Math.floor((ts - weekWindow.startMs) / DAY_MS);
+      const hourOffset =
+        (ts - (weekWindow.startMs + dayIndex * DAY_MS)) / (60 * 60 * 1000);
+      const point: DayNightLanePoint = {
+        x: hourOffset,
+        y: dayIndex,
+        t: ts,
+        valorReal: ev.deltaG,
+      };
+      (ev.isProvisional ? provisoria : confirmada).push(point);
+    }
+    return { confirmada, provisoria };
+  }, [bowlEventsPorCategoria, weekWindow.startMs, weekWindow.endMs]);
+
+  // Agua: sin modelo de detección de "trago" (ver Knowledge/05_API/SPEC_HungerBar_Alimentacion.md)
+  // -- se usa el evento de auditoría termino_hidratacion como marca de
+  // "hidratación confirmada" en vez de un trazo continuo (no hay lecturas
+  // crudas de toda la semana fetcheadas, solo del día que se está viendo).
+  const weekWaterPoints = useMemo(() => {
+    const points: DayNightLanePoint[] = [];
+    const events = deviceAuditEvents[waterDevice?.id ?? ""] ?? [];
+    for (const ev of events) {
+      if (ev.category !== WATER_END_CATEGORY) continue;
+      const ts = new Date(ev.created_at).getTime();
+      if (Number.isNaN(ts) || ts < weekWindow.startMs || ts >= weekWindow.endMs)
+        continue;
+      const dayIndex = Math.floor((ts - weekWindow.startMs) / DAY_MS);
+      const hourOffset =
+        (ts - (weekWindow.startMs + dayIndex * DAY_MS)) / (60 * 60 * 1000);
+      points.push({ x: hourOffset, y: dayIndex, t: ts, valorReal: null });
+    }
+    return points;
+  }, [
+    deviceAuditEvents,
+    waterDevice?.id,
+    weekWindow.startMs,
+    weekWindow.endMs,
+  ]);
+
+  const weekChartData = useMemo<ChartData<"line", DayNightLanePoint[]>>(
+    () => ({
+      datasets: [
+        {
+          label: `Comida confirmada (${bowlDevice?.device_id ?? "KPCL"})`,
+          data: weekFoodPoints.confirmada,
+          showLine: false,
+          pointStyle: "circle",
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          pointBackgroundColor: "#10b981",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.5,
+        },
+        {
+          label: `Comida detectada por modelo (${bowlDevice?.device_id ?? "KPCL"})`,
+          data: weekFoodPoints.provisoria,
+          showLine: false,
+          pointStyle: "circle",
+          pointRadius: 7,
+          pointHoverRadius: 9,
+          pointBackgroundColor: "rgba(16,185,129,0.4)",
+          pointBorderColor: "#ffffff",
+          pointBorderWidth: 1.5,
+        },
+        {
+          label: `Agua sin confirmar (${waterDevice?.device_id ?? "KPCL"})`,
+          data: weekWaterPoints,
+          showLine: false,
+          pointStyle: "circle",
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: "rgba(14,165,233,0.35)",
+          pointBorderColor: "#0ea5e9",
+          pointBorderWidth: 1.5,
+        },
+      ],
+    }),
+    [
+      weekFoodPoints,
+      weekWaterPoints,
+      bowlDevice?.device_id,
+      waterDevice?.device_id,
+    ],
+  );
+
+  const weekChartOptions = useMemo<ChartOptions<"line">>(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: "nearest", intersect: false },
+      plugins: {
+        legend: {
+          position: "bottom",
+          align: "center",
+          labels: {
+            color: "#334155",
+            usePointStyle: true,
+            pointStyle: "circle",
+            padding: 16,
+            boxWidth: 10,
+            boxHeight: 10,
+            font: {
+              size: 11,
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              weight: 600,
+            },
+          },
+        },
+        tooltip: {
+          backgroundColor: "rgba(15, 23, 42, 0.92)",
+          titleColor: "#f8fafc",
+          bodyColor: "#f8fafc",
+          borderColor: "rgba(148, 163, 184, 0.35)",
+          borderWidth: 1,
+          cornerRadius: 10,
+          padding: 10,
+          displayColors: false,
+          callbacks: {
+            title: (items) => {
+              const point = items[0]?.parsed;
+              if (
+                !point ||
+                typeof point.x !== "number" ||
+                typeof point.y !== "number"
+              )
+                return "";
+              const ts =
+                weekWindow.startMs +
+                Math.round(point.y) * DAY_MS +
+                point.x * 60 * 60 * 1000;
+              return chileCompactDatetime(ts);
+            },
+            label: (context) => {
+              const raw = context.raw as { valorReal?: number | null };
+              const label = String(context.dataset.label ?? "Serie");
+              if (label.startsWith("Agua")) return "Hidratación confirmada";
+              const gramos =
+                typeof raw.valorReal === "number"
+                  ? Math.round(Math.abs(raw.valorReal))
+                  : null;
+              return gramos === null
+                ? label
+                : `${label.split(" (")[0]}: ${gramos} g`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 24,
+          grid: { color: "rgba(244,114,182,0.15)", drawBorder: false },
+          border: { color: "rgba(148,163,184,0.55)" },
+          ticks: {
+            stepSize: 3,
+            color: "#334155",
+            maxRotation: 0,
+            minRotation: 0,
+            callback: (value) => formatHourFromOffset(Number(value)),
+            font: {
+              size: 11,
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              weight: 600,
+            },
+          },
+        },
+        y: {
+          type: "linear",
+          min: -0.5,
+          max: 6.5,
+          // Sin esto Chart.js autogenera ticks en posiciones intermedias
+          // (0.5, 1.5...) y las etiquetas de los días no calzan con las
+          // filas -- pedido explícito, ver instrucciones del componente.
+          afterBuildTicks: (axis) => {
+            axis.ticks = [0, 1, 2, 3, 4, 5, 6].map((value) => ({ value }));
+          },
+          grid: { color: "rgba(148,163,184,0.18)", drawBorder: false },
+          border: { display: false },
+          ticks: {
+            color: "#334155",
+            font: {
+              size: 11,
+              family:
+                "Nunito, Quicksand, system-ui, -apple-system, Segoe UI, sans-serif",
+              weight: 700,
+            },
+            callback: (value) => {
+              const dayIndex = Number(value);
+              if (dayIndex < 0 || dayIndex > 6) return "";
+              const dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+              const dateLabel = chileFormat(
+                weekWindow.startMs + dayIndex * DAY_MS,
+                { day: "numeric" },
+              );
+              return `${dias[dayIndex]} ${dateLabel}`;
+            },
+          },
+        },
+      },
+    }),
+    [weekWindow.startMs],
+  );
+
   const nowMs = useMemo(() => Date.now(), []);
   const monthStartMs = nowMs - 30 * 24 * 60 * 60 * 1000;
   const bowlHistoryPoints = useMemo(
@@ -3054,6 +3330,22 @@ export default function TodayScreen({
             rangeTitle={dayNightRangeTitle}
             chartData={dayNightChartData}
             chartOptions={dayNightChartOptions}
+            backgroundPlugin={dayNightBackgroundPlugin}
+            chartLoadError={chartLoadError}
+            isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
+            authoritativeDeviceCode={AUTHORITATIVE_FOOD_DEVICE_CODE}
+          />
+
+          {/* Copia de prueba -- vista semanal, justo abajo del original
+              para comparar lado a lado (pedido de Mauro). No reemplaza al
+              componente diario de arriba. */}
+          <DayNightTimelineCardWeekly
+            weekOffset={weekOffset}
+            onOffsetChange={setWeekOffset}
+            monthLabel={weekMonthLabel}
+            weekRangeLabel={weekRangeLabel}
+            chartData={weekChartData}
+            chartOptions={weekChartOptions}
             backgroundPlugin={dayNightBackgroundPlugin}
             chartLoadError={chartLoadError}
             isAuthoritativeFoodDevice={isAuthoritativeFoodDevice}
