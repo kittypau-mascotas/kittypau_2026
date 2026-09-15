@@ -194,40 +194,48 @@ Ordenadas por impacto (cierran varias postulaciones a la vez):
 
 ---
 
-## 9) Revisión 2026-09-15 — CRTIC LAB Ñuñoa: Residencias Tecnocreativas (DESCARTADO)
+## 9) Revisión 2026-09-15 — CRTIC LAB Ñuñoa: Residencias Tecnocreativas (ABIERTO — verificar antes de postular)
 
-> Bases completas revisadas (PDF oficial, 8 páginas):
 > [convocatoria](https://hubnunoa.cl/convocatorias/krl6W0BOYa4ccnr7YN66) ·
 > [bases PDF](https://firebasestorage.googleapis.com/v0/b/studio-3360490722-d661e.firebasestorage.app/o/convocatorias%2Fbases%2F1787582288985-CRTIC%20LAB%20HUB%20N%CC%83UN%CC%83OA.pdf)
 
-**Qué es**: programa de la I. Municipalidad de Ñuñoa + Fundación CRTIC (Revolución
-Tecnocreativa). Convoca emprendimientos/colectivos de industrias creativas (artes,
-música, audiovisual, videojuegos, diseño, arquitectura, tecnología y afines). Proceso:
-25 preseleccionados → fase formativa (workshops) → pitch → 5 finalistas → 3 sesiones
-de prototipado en el Laboratorio CRTIC + 5h de mentoría técnica → Demo Day. **No es
-financiamiento directo** — es acceso a infraestructura, mentoría y visibilidad.
+**Corrección (mismo día)**: la primera revisión de esta entrada decía "descartado,
+cierra 9-sep" basada solo en el PDF de bases (mi tool no pudo cargar la página real,
+una SPA en JS — dos intentos fallidos). Mauro pegó el texto real de la página y
+**contradice el PDF**: cierra el **27-sep-2026**, no el 9-sep.
 
-**Por qué se descarta esta edición**:
-- **Cierre real 9-sep-2026 23:59** — ya pasado al momento de esta revisión (15-sep).
-  No hay nada que postular ahora mismo.
-- Encaje temático débil tal como está descrito Kittypau hoy (healthtech/IoT):
-  25% del puntaje de la 1ª evaluación es "integración entre creatividad y tecnología"
-  en sentido tecnocreativo/cultural (XR, proyección, sonido inmersivo, Unreal Engine),
-  no pet-tech aplicado.
+**Inconsistencia real en la propia página de Hub Ñuñoa** (verificar con CRTIC antes
+de confiar 100%): el párrafo "Sobre esta Convocatoria" dice textualmente "cierra el 9
+de septiembre" (texto viejo, sin actualizar) — pero el countdown en vivo, la barra
+"65% del período transcurrido" con fechas explícitas, la sección "Fechas Clave"
+(📅 24 ago → 🏁 **domingo 27 de septiembre, 2026**) y el CTA final ("postula antes del
+27 de septiembre") coinciden en 27-sep. El PDF de bases oficial (el que se lee acá
+arriba) también quedó con la fecha vieja del 9-sep, sin republicar. **4 de 5 elementos
+de la página dicen 27-sep** — es la fecha a usar, pero como las bases oficiales
+descargables no coinciden, conviene confirmar por escrito con
+`desarrollo@crtic.cl` antes de invertir tiempo serio en la postulación.
 
-**Insight a guardar para la próxima ventana** (CRTIC es un programa recurrente —
-CRTIC Day, CRTIC Sur, CRTIC Fest, Coquimbo Tecnocreativo — probable nueva edición
-Ñuñoa u otra sede en 2027): si se vuelve a evaluar, **no postular el Kittypau
-"healthtech" tal cual el paquete CORFO** — reformular como experiencia
-tecnocreativa: *"Kittypau transforma los datos cotidianos de la mascota (IoT → datos
-→ IA → visualización) en una experiencia interactiva de cuidado preventivo, con un
-objeto físico real (el plato) como diferencial — pocos proyectos tecnocreativos
-parten de un dispositivo físico ya funcionando."* El objetivo de la residencia sería
-un prototipo experiencial (visualización/interacción del estado de la mascota), no
-un dashboard más. Mismo dato/motor de siempre, empaquetado distinto — no inventar
-tecnología nueva para la ocasión.
+**Qué es**: programa gratuito de innovación tecnocreativa (I. Municipalidad de Ñuñoa +
+CRTIC). Dirigido a emprendedores/colectivos de artes visuales/escénicas, música,
+audiovisual, videojuegos, diseño, arquitectura o tecnología — responsable con
+residencia o actividad comprobable en Chile. Sin líneas temáticas obligatorias, pero
+privilegia tecnologías emergentes (IA, flujos de trabajo digitales). Proceso: hasta 25
+proyectos a fase formativa (talleres, Unreal Engine, sonido inmersivo, pitch) → pitch
+ante comité → 5 finalistas a prototipado (Laboratorio CRTIC, ≥5h mentoría técnica,
+equipamiento avanzado) → Demo Day público. **No es financiamiento directo** — es
+acceso a infraestructura, mentoría y networking.
 
-**Acción**: vigilar apertura de la próxima edición (sin fecha firme hoy) antes de
-invertir tiempo en investigación más profunda (ej. proyectos ganadores anteriores)
-para esta convocatoria puntual — no tiene sentido hacer "ingeniería inversa" de
-proyectos ganadores para una convocatoria que ya cerró.
+**Encaje temático**: como está descrito hoy (healthtech/IoT), es flojo — el 25% del
+puntaje de la 1ª evaluación es "integración entre creatividad y tecnología" en sentido
+tecnocreativo (XR, proyección, sonido inmersivo), no pet-tech aplicado tal cual. Insight
+de reframing para presentar, si se decide postular: *"Kittypau transforma los datos
+cotidianos de la mascota (IoT → datos → IA → visualización) en una experiencia
+interactiva de cuidado preventivo, con un objeto físico real (el plato) como
+diferencial — pocos proyectos tecnocreativos parten de un dispositivo físico ya
+funcionando."* El objetivo de la residencia sería un prototipo experiencial
+(visualización/interacción del estado de la mascota), no un dashboard más — mismo
+dato/motor de siempre, empaquetado distinto, sin inventar tecnología nueva.
+
+**Acción**: si se decide postular, confirmar la fecha real con CRTIC primero (la
+inconsistencia arriba), y decidir con Mauro si vale la pena — quedan ~12 días desde
+esta revisión (15-sep) hasta el 27-sep.
