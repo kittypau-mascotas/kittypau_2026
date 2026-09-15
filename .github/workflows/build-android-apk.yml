@@ -37,11 +37,16 @@ jobs:
           cache: npm
           cache-dependency-path: kittypau_app/package-lock.json
 
-      - name: Setup JDK 17
+      # JDK 21, no 17: @capacitor/android 8.5.0 (node_modules, no es código
+      # del proyecto) exige source release 21 en su propio build.gradle --
+      # confirmado real en el 4to intento de build ("invalid source release: 21"
+      # con JDK 17). Un JDK 21 igual puede targetear el bytecode 17 que pide
+      # android/app/build.gradle para el módulo :app.
+      - name: Setup JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
           # Cachea ~/.gradle entre corridas -- acelera reintentos si algo
           # falla y hay que volver a disparar el workflow.
           cache: gradle

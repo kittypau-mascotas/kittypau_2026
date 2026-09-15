@@ -40,15 +40,18 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    // AGP 8.13.2 requiere JDK 17 para compilar -- alinear el bytecode de
-    // Kotlin/Java a esa misma versión (antes no estaba declarado, Java-only
-    // corría con el default del toolchain).
+    // JDK 21, no 17: @capacitor/android 8.5.0 (node_modules, dependencia del
+    // proyecto -- módulo :capacitor-android) exige source release 21 en su
+    // propio build.gradle. Confirmado real (2026-09-15, build en CI):
+    // "invalid source release: 21" al intentar compilar con JDK 17. Antes
+    // esto no estaba declarado para :app, Java-only corría con el default
+    // del toolchain.
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     buildFeatures {
         buildConfig true
