@@ -84,7 +84,7 @@ apoyarse en él sin recalcular nada.
 **Goal**: agregar el widget desde un botón dentro de la app (objetivo explícito de Mauro) y
 verlo mostrar foto/barras/círculos/horas reales de la mascota elegida.
 
-**Independent Test** (quickstart.md Paso 3): tocar "Agregar widget" en `/settings`, elegir una
+**Independent Test** (quickstart.md Paso 3): tocar "Agregar widget" al final del feed de `/today`, elegir una
 mascota en la configuration Activity, y comparar cada valor del widget contra `/today` para esa
 misma mascota en el mismo momento.
 
@@ -117,7 +117,7 @@ misma mascota en el mismo momento.
   `kittypau_app/src/lib/hooks/usePushTokenRegistration.ts` (Fase A — se escribe y tipa acá; su
   llamada real al plugin nativo solo funciona en runtime una vez T014 esté compilado)
 - [x] T016 [US1] Agregar botón "Agregar widget a tu pantalla de inicio" a la pantalla
-  `/settings` (ubicar el archivo real de esa ruta en `kittypau_app/src/app/(app)/settings/`),
+  al final del feed de `/today` (`kittypau_app/src/app/(app)/today/_components/today-screen.tsx`), no en `/settings`,
   visible solo en modo APK nativo (mismo criterio `isNativeApkMode` que
   `kittypau_app/src/app/_components/app-nav.tsx`), con el mensaje instructivo de fallback
   cuando `supported: false` (contracts/widget-pin-plugin.md § UI) (Fase A) — depende de T015

@@ -10,7 +10,7 @@ Widget nativo de Android (grilla 2×4) que muestra en vivo el mini-hero de una m
 barra de comida, barra de agua, círculo de comidas de hoy, círculo de agua sin número, últimas
 horas de comida/agua) sin abrir la app, construido con Jetpack Glance sobre datos que ya calcula
 `GET /api/pets/:id/hunger-bar` (extendido con un objeto `water` nuevo). **Además del widget en
-sí, este feature agrega un botón dentro de la APK** (`/settings`) que dispara
+sí, este feature agrega un botón dentro de la APK** (al final del feed de `/today`) que dispara
 `AppWidgetManager.requestPinAppWidget()` a través de un plugin nativo de Capacitor propio, para
 que agregar el widget sea un flujo de un tap desde adentro de la app — objetivo explícito de
 Mauro, no una mejora opcional (ver `research.md` Decisión 2). Selección de mascota al agregar
@@ -60,7 +60,7 @@ tocar `/admin`; sin reescribir `variables.gradle`/config de Gradle-AGP ya resuel
 
 **Scale/Scope**: 1 `AppWidgetProvider`/`GlanceAppWidgetReceiver`, 1 configuration Activity, 1
 `WorkManager` worker, 1 plugin Capacitor propio (1 método), 1 extensión de endpoint existente,
-1 botón nuevo en una pantalla existente (`/settings`). Sin pantallas nuevas del lado web más
+1 botón nuevo en una pantalla existente (`/today`, al final del feed). Sin pantallas nuevas del lado web más
 allá de ese botón.
 
 ## Constitution Check
@@ -107,7 +107,7 @@ kittypau_app/
 │   │   ├── api/pets/[id]/hunger-bar/
 │   │   │   ├── route.ts                 # EXTENDER: agregar objeto `water` a la respuesta
 │   │   │   └── route.test.ts            # EXTENDER: casos nuevos para `water`
-│   │   └── (app)/settings/...           # EXTENDER: botón "Agregar widget" (solo modo APK nativo)
+│   │   └── (app)/today/_components/today-screen.tsx  # EXTENDER: botón "Agregar widget" al final del feed (solo modo APK nativo)
 │   └── lib/
 │       ├── hunger-bar-server.ts         # EXTENDER: resolveWaterDevice() + cálculo de water%
 │       └── hooks/

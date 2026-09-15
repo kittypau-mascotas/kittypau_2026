@@ -73,7 +73,7 @@ simple documentar el gap y dejar la verificación real donde ya se sabe que func
 ## Decisión 2: Botón dentro de la app para agregar el widget (objetivo explícito de Mauro)
 
 **Decisión**: `AppWidgetManager.requestPinAppWidget()` (API 26+), invocado desde un botón nuevo
-en `/settings` ("Agregar widget a tu pantalla de inicio" o similar), a través de un pequeño
+al final del feed de `/today` ("Agregar widget a tu pantalla de inicio" o similar) -- reubicado ahí a pedido de Mauro, no en Ajustes, a través de un pequeño
 plugin nativo de Capacitor propio (no hay plugin comunitario mantenido para esto en el
 ecosistema Capacitor 8) que expone un único método `requestPin()` a JS/TS — mismo patrón ya
 usado por `usePushTokenRegistration.ts` (`kittypau_app/src/lib/hooks/usePushTokenRegistration.ts`):
@@ -95,7 +95,7 @@ queda bindeado — **tanto si el bind ocurrió por `requestPinAppWidget()` como 
 selector manual del sistema**. Es el mismo mecanismo para los dos caminos, documentado en la
 guía oficial de `AppWidgetManager`. Esto significa que **no hace falta un flujo de 2 pasos
 separados** (elegir mascota en la app → recién ahí pedir el pin) — alcanza con:
-1. El botón en `/settings` llama `requestPin()` (nuestro plugin nativo).
+1. El botón al final de `/today` llama `requestPin()` (nuestro plugin nativo).
 2. El plugin invoca `AppWidgetManager.requestPinAppWidget(provider, null, successCallback)`.
 3. Si el launcher soporta el flujo, Android bindea el widget y lanza automáticamente
    `WidgetPetConfigActivity` (nuestra configuration Activity, declarada en el

@@ -45,6 +45,8 @@ import { useMqttLive } from "@/lib/hooks/useMqttLive";
 import { useHungerBarPushAlert } from "@/lib/hooks/useHungerBarPushAlert";
 import { useHungerBarEventNotifications } from "@/lib/hooks/useHungerBarEventNotifications";
 import { usePushTokenRegistration } from "@/lib/hooks/usePushTokenRegistration";
+import { useAddWidgetToHomeScreen } from "@/lib/hooks/useAddWidgetToHomeScreen";
+import { isNativeFlavorEnabled } from "@/lib/runtime/app-flavor";
 import {
   syncSelectedDevice,
   syncSelectedPet,
@@ -1200,6 +1202,24 @@ export default function TodayScreen({
   // server-side (/api/cron/notify-meal-events). Ver
   // Knowledge/29_Specs/008-push-notifications-fcm/plan.md.
   usePushTokenRegistration(!isDemo && isAuthed === true);
+  // Botón "Agregar widget" (010-widget-android-hero) -- pedido de Mauro:
+  // vive al final del feed de /today, no en Ajustes. Mismo criterio
+  // isNativeApkMode que ya usa app-nav.tsx/settings, solo cuenta real
+  // (nunca en /demo, un widget no tiene sentido sin sesión ni mascota real).
+  const [isNativeApkMode] = useState<boolean>(() => {
+    if (isNativeFlavorEnabled()) return true;
+    if (typeof window === "undefined") return false;
+    const cap = (window as Window & { Capacitor?: unknown }).Capacitor as
+      | { isNativePlatform?: () => boolean; getPlatform?: () => string }
+      | undefined;
+    if (!cap) return false;
+    return (
+      (typeof cap.isNativePlatform === "function" && cap.isNativePlatform()) ||
+      (typeof cap.getPlatform === "function" && cap.getPlatform() !== "web")
+    );
+  });
+  const { requestPin, pending: addingWidget } = useAddWidgetToHomeScreen();
+  const [widgetMessage, setWidgetMessage] = useState<string | null>(null);
   const petTypeLabel =
     (isDemo && identity ? identity.petType : primaryPet?.type) === "dog"
       ? "Perro"
@@ -3056,6 +3076,50 @@ export default function TodayScreen({
             Datos en vivo de {bowlDevice?.device_id ?? "KPCL0034"} (comida) y{" "}
             {waterDevice?.device_id ?? "KPCL0035"} (agua).
           </p>
+
+          {/* Botón "Agregar widget" -- al final del feed, pedido de Mauro. */}
+          {!isDemo && isNativeApkMode ? (
+            <section className="surface-card freeform-rise px-6 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Widget de la pantalla de inicio
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Agrega un widget con la foto de tu mascota, la comida y el
+                    agua sin abrir la app.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={addingWidget}
+                  onClick={async () => {
+                    setWidgetMessage(null);
+                    const result = await requestPin();
+                    if (result.kind === "supported") {
+                      setWidgetMessage(
+                        "Confirmá en el diálogo del sistema y elegí tu mascota.",
+                      );
+                    } else if (result.kind === "unsupported") {
+                      setWidgetMessage(
+                        "Tu pantalla de inicio no admite agregarlo con un toque: mantené presionada la pantalla de inicio → Widgets → Kittypau.",
+                      );
+                    } else {
+                      setWidgetMessage(
+                        "No se pudo iniciar el agregado del widget. Probá de nuevo en unos minutos.",
+                      );
+                    }
+                  }}
+                  className="rounded-[var(--radius)] border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                >
+                  {addingWidget ? "Agregando..." : "Agregar widget"}
+                </button>
+              </div>
+              {widgetMessage ? (
+                <p className="mt-3 text-xs text-slate-500">{widgetMessage}</p>
+              ) : null}
+            </section>
+          ) : null}
         </div>
 
         {state.error ? (

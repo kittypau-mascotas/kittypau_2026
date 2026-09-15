@@ -45,7 +45,7 @@ compatibilidad contra `compileSdkVersion 36` (`variables.gradle`) antes de bajar
 
 1. Instalar el APK debug en un dispositivo/emulador real.
 2. Iniciar sesión con la cuenta tester.
-3. Ir a `/settings` (modo APK nativo) → tocar "Agregar widget a tu pantalla de inicio".
+3. Ir a `/today` (modo APK nativo, desplazar hasta el final del feed) → tocar "Agregar widget a tu pantalla de inicio".
 4. **Esperado**: aparece el diálogo nativo de Android pidiendo confirmar el pin — sin haber
    pasado por el selector manual de widgets. Confirmar.
 5. **Esperado**: se abre automáticamente la pantalla de selección de mascota

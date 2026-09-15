@@ -3,7 +3,7 @@
 **Input**: [research.md](../research.md) Decisión 2 · patrón de referencia:
 `kittypau_app/src/lib/hooks/usePushTokenRegistration.ts`
 
-Superficie mínima expuesta de Kotlin → TypeScript para que el botón de `/settings` dispare el
+Superficie mínima expuesta de Kotlin → TypeScript para que el botón al final de `/today` dispare el
 alta del widget sin salir de la app (objetivo explícito de Mauro).
 
 ## Interfaz TypeScript (consumida por un hook nuevo, ej. `useAddWidgetToHomeScreen.ts`)
@@ -62,8 +62,8 @@ Android nativo). Import dinámico del plugin, no-op si `!Capacitor.isNativePlatf
 
 ## UI (referencia, no implementación)
 
-Botón nuevo en `/settings` (`kittypau_app/src/app/(app)/settings/` o donde viva hoy esa
-pantalla — confirmar ruta exacta en `/speckit-tasks`), visible solo en modo APK nativo
+Botón al final del feed de `/today`
+(`kittypau_app/src/app/(app)/today/_components/today-screen.tsx`), visible solo en modo APK nativo
 (mismo criterio que ya usa `isNativeApkMode` en `kittypau_app/src/app/_components/app-nav.tsx`):
 
 - Estado `supported: true` tras el tap → sin mensaje adicional, el diálogo nativo ya se
