@@ -5,7 +5,7 @@ type: architecture
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-14
+updated: 2026-09-15
 tags:
   - arquitectura
   - stack
@@ -35,7 +35,7 @@ related:
 | Lenguaje | TypeScript | 5 |
 | Backend / Auth / DB | Supabase | 2.106.1 |
 | Mensajería IoT | MQTT (HiveMQ WebSocket) | 5.10.4 |
-| Mobile | Capacitor (Android) | 8.2.0 |
+| Mobile | Capacitor (Android) | 8.5.0 (core/android; CLI 7.6.8 por Node <22) |
 | Gráficos | Chart.js + D3 | 4.5.1 / 7.9.0 |
 | Chatbot IA | Hugging Face Llama 3.1 8B | — |
 | Deploy | Vercel | — |
@@ -58,12 +58,22 @@ related:
 [Supabase — PostgreSQL + Auth + Realtime]
       │ query (RLS) vía Next.js API Routes
       ▼
-[App Web / APK Android]
+[App Web / APK Android (WebView)]
+      │
+      ▼ (fuera del WebView, superficie nativa aparte — desde 2026-09-15)
+[Widget de Android — Jetpack Glance]
 ```
 
 > Corregido 2026-08-14: el bridge escribe directo a Supabase con `service_role key`, **no**
 > pasa por las API Routes de Next.js — ese salto no existe. Detalle completo, con las 6
 > capas y las dos bases de datos, en [[02_Arquitectura/ARQ_Pipeline_End_to_End]].
+>
+> **Nuevo 2026-09-15**: el widget de pantalla de inicio de Android (mini-hero de la
+> mascota) NO corre dentro del WebView de Capacitor — es la primera superficie nativa
+> (Kotlin, antes 100% Java) del proyecto, con su propio ciclo de refresco en background
+> (WorkManager) que pega directo a `GET /api/pets/:id/hunger-bar` con un token de Supabase
+> propio, sin depender de que la app esté abierta. Detalle completo:
+> [[29_Specs/010-widget-android-hero/spec]].
 
 ---
 
@@ -82,9 +92,10 @@ related:
 |--------|----------------|
 | `auth/` | auth-fetch, token management |
 | `supabase/` | Clientes browser/server, analytics, user-server |
-| `hooks/` | `useMqttLive` — datos MQTT en tiempo real (browser) |
+| `hooks/` | `useMqttLive` — datos MQTT en tiempo real (browser). `usePushTokenRegistration`, `useAddWidgetToHomeScreen` (2026-09-15, botón in-app para `requestPinAppWidget()`) — solo-APK, import dinámico + no-op en web |
 | `context/` | app-context global state (perfil, mascota activa, KPCL) |
 | `runtime/` | app-flavor (web vs android), selection-sync |
+| `native/` | Puentes tipados a plugins Capacitor propios (no oficiales de `@capacitor/*`) — `kittypau-widget-plugin.ts` (2026-09-15, vía `registerPlugin`) |
 | `time/` | Utilidades timezone Chile (`America/Santiago`) |
 | `charts/` | Componentes Chart.js / D3 |
 | `battery/` | Contrato TypeScript del estado de batería |
@@ -146,3 +157,4 @@ Ver contrato completo en [[05_API/README_API]].
 - [[06_BaseDatos/README_BaseDatos]]
 - [[03_Backend/README_Backend]]
 - [[04_Frontend/README_Frontend]]
+- [[29_Specs/010-widget-android-hero/spec]] — widget nativo de Android, primera superficie fuera del WebView

@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-12
+updated: 2026-09-15
 tags:
   - nextjs
   - app-router
@@ -66,17 +66,17 @@ Layout propio: `(app)/layout.tsx` (13 líneas) — envuelve todo en `<AppDataPro
 | Carpeta | Ruta | `page.tsx` | Función |
 |---|---|---|---|
 | `inicio/` | `/inicio` | 20 líneas | **Solo redirect** a `/today` (`router.replace`). No es un dashboard propio — el nombre es heredado, el dashboard real es `today/`. |
-| `today/` | `/today` | 2468 líneas | Pantalla principal: actividad del día, Barras Sims (comida/agua), wellness de plato, timeline día/noche, hunger bar, modo guía. El `page.tsx` más grande de la app después de `admin/`; parcialmente extraído a `today/_components/` y `today/_lib/` (ver [[18_UI/Componentes/README_Componentes]]). |
-| `today/_components/` | — | — | `today-screen.tsx` (el cuerpo entero de la vista, extraído de `page.tsx` — `page.tsx` quedó como wrapper de ~6 líneas; `<TodayScreen mode="authed"\|"demo">` para poder reusar la MISMA vista en `/demo` sin forkear, ver [[29_Specs/009-demo-today-en-vivo/plan]]), `barras-sims-card.tsx`, `bowl-wellness-card.tsx`, `day-night-timeline-card.tsx`, `consumo-kpis-card.tsx`, `consumo-periodo-card.tsx`, `onboarding-guide-modal.tsx`. **`today-screen.tsx` SÍ lo importa `(public)/demo/page.tsx`** (cross-group) — el resto son privados a la ruta. |
+| `today/` | `/today` | 11 líneas (solo wrapper) | Pantalla principal: actividad del día ("ficha de personaje" con foto/racha/comidas/agua), Barras Sims (comida/agua, track "líquido con onda"), wellness de plato, timeline día/noche (+ copia de prueba en vista semanal, ver abajo), hunger bar, modo guía, botón "Agregar widget a tu pantalla de inicio" al final del feed (solo APK nativa). El grueso real vive en `today-screen.tsx` (ver fila siguiente) — `page.tsx` es puro wrapper. |
+| `today/_components/` | — | — | **`today-screen.tsx` (3467 líneas, 2026-09-15) — ya es el archivo fuente más grande de toda la app, superó a `admin/page.tsx` (3291)**, tras la redisño "gamificado" de la sesión 2026-09-14 + la vista semanal de prueba + el botón del widget (ambos 2026-09-15). Cuerpo entero de la vista, extraído de `page.tsx`; `<TodayScreen mode="authed"\|"demo">` para reusar la MISMA vista en `/demo` sin forkear (spec 009). Además: `barras-sims-card.tsx` (294), `bowl-wellness-card.tsx` (390), `day-night-timeline-card.tsx` (120, vista diaria — carriles fijos por categoría, no timeline temporal continuo), **`day-night-timeline-card-weekly.tsx` (135, NUEVO 2026-09-15)** — copia de prueba en vista semanal (7 filas lunes-domingo, mismo patrón de "carcasa visual" que el diario, chartData/Options se computan en `today-screen.tsx`; se renderiza justo debajo del original, no lo reemplaza — ver `Knowledge/29_Specs/010-widget-android-hero` para el objetivo del botón de widget que también vive acá), `consumo-kpis-card.tsx` (251), `consumo-periodo-card.tsx` (77), `onboarding-guide-modal.tsx` (62). **`today-screen.tsx` SÍ lo importa `(public)/demo/page.tsx`** (cross-group) — el resto son privados a la ruta. |
 | `today/_lib/` | — | — | `today-format.tsx` — helpers puros de formato (labels de batería/conectividad, `renderTrend`, clases de tono) sin estado, movidos fuera de `page.tsx`. |
-| `bowl/` | `/bowl` | 1825 líneas | Monitoreo en vivo del comedero vía MQTT directo desde el browser (`useMqttLive`) — peso, estado, sin polling. |
-| `pet/` | `/pet` | 907 líneas | Perfil de la mascota (datos, foto, historial de dispositivo asociado). |
-| `story/` | `/story` | 708 líneas | Historial y análisis de sesiones/consumo. |
-| `settings/` | `/settings` | 492 líneas | Configuración de cuenta/dispositivo. |
+| `bowl/` | `/bowl` | 1755 líneas | Monitoreo en vivo del comedero vía MQTT directo desde el browser (`useMqttLive`) — peso, estado, sin polling. |
+| `pet/` | `/pet` | **2297 líneas** (corregido 2026-09-15; documentado antes como 907 — creció ~2.6x sin registro de por qué, pendiente investigar) | Perfil de la mascota (datos, foto, historial de dispositivo asociado). |
+| `story/` | `/story` | 718 líneas | Historial y análisis de sesiones/consumo. |
+| `settings/` | `/settings` | 491 líneas | Configuración de cuenta/dispositivo. El botón "Agregar widget" se probó acá primero (2026-09-15) pero Mauro pidió moverlo al final del feed de `/today` — no vive en `settings/` en la versión final, ver fila de `today/_components/`. |
 | `dispositivos/` | — | **sin `page.tsx`** | `/dispositivos` (raíz) da 404 real. Solo existe para agrupar el subpath `nuevo/`. |
-| `dispositivos/nuevo/` | `/dispositivos/nuevo` | 274 líneas | Alta manual de un KPCL a una mascota existente (código `KPCLxxxx`, tipo comida/agua). |
-| `registro/` | `/registro` | 21 líneas | **Solo redirect** a `/login?register=1`. El flujo real de alta de cuenta+mascota+dispositivo (`RegistroFlow`, 4 pasos) vive en `(public)/login/_components/`, no acá — ver nota de reorganización más abajo. |
-| `admin/` | `/admin` | 3799 líneas (bajando — extracción por componentes en curso, ver [[29_Specs/SPEC_02_UIUX_Mejoras]] A-C1) | Panel administrador — sigue siendo el `page.tsx` más grande de toda la app. Dashboard con métricas, salud del sistema, dispositivos, mascotas. |
+| `dispositivos/nuevo/` | `/dispositivos/nuevo` | 258 líneas | Alta manual de un KPCL a una mascota existente (código `KPCLxxxx`, tipo comida/agua). |
+| `registro/` | `/registro` | 22 líneas | **Solo redirect** a `/login?register=1`. El flujo real de alta de cuenta+mascota+dispositivo (`RegistroFlow`, 4 pasos) vive en `(public)/login/_components/`, no acá — ver nota de reorganización más abajo. |
+| `admin/` | `/admin` | 3291 líneas (bajando — extracción por componentes en curso, ver [[29_Specs/SPEC_02_UIUX_Mejoras]] A-C1) | Panel administrador — el `page.tsx` más grande de toda la app (aunque ya no el archivo fuente más grande del repo, ver `today-screen.tsx` arriba). Dashboard con métricas, salud del sistema, dispositivos, mascotas. |
 | `admin/_components/` | — | — | `section-status-card.tsx`, `avisos-criticos-card.tsx`, `kpi-ejecutivos-card.tsx`, `modelos-negocio-card.tsx` — batch 1 de la extracción de `admin/page.tsx`, mismo patrón que `today/_components/` (cálculo queda en el page.tsx, el componente solo renderiza). |
 | `admin/demo-ingresos/` | `/admin/demo-ingresos` | ~155 líneas | Lista de leads capturados desde `/demo` (email —o "(sin email)"—, titular, mascota, tipo, source, primer/último visto, contador). Dedup por email o, si el visitante entró sin correo, por `visitor_id` (spec 009 US3). |
 | `admin/javo/` | `/admin/javo` | 368 líneas | Panel interno de seguimiento de proyectos (bridge/firmware/app/docs) — no es data de mascotas, es tracking de trabajo técnico ("Javo" = apodo del proyecto). |
@@ -109,7 +109,7 @@ Sin layout propio — hereda directo del root `layout.tsx`.
 
 | Archivo | Usado por |
 |---|---|
-| `app-nav.tsx` | `(app)/layout.tsx` **y** `(public)/demo/page.tsx` — cross-group, por eso vive acá y no dentro de `(app)`. |
+| `app-nav.tsx` | `(app)/layout.tsx` **y** `(public)/demo/page.tsx` — cross-group, por eso vive acá y no dentro de `(app)`. Reestructurado 2026-09-14: en celular/APK es una barra fija **abajo** con grid (dueño/marca+bajada/redes sociales a la izquierda, menús al medio, tuerca-solo a la derecha para Ajustes/Editar perfil/Cerrar sesión). La tuerca renderiza siempre (antes gateada a `!useSidebarNav`, invisible para cuentas tester/cliente — bug real encontrado con Playwright); visibilidad la decide el CSS, no el JSX. 479 líneas. |
 | `hunger-bar-card.tsx` | Card de la barra de hambre — ver [[05_API/SPEC_HungerBar_Alimentacion]] para la fórmula. Usada solo en `/pet` (`/today` tiene su propio fetch inline, no reusa este componente). |
 | `diagnostico-rapido-card.tsx` | Panel "Diagnóstico rápido" (Conexión/Energía/Firmware + acciones recomendadas) — nació en `/bowl`, generalizado a `/today` y `/pet` (SPEC_02 U2). Lógica en `@/lib/device-diagnostics`, ver [[18_UI/Componentes/COMP_DiagnosticoRapidoCard]]. |
 | `accessible-modal.tsx` | Modal reutilizable con `role="dialog"`, `aria-modal`, focus trap, Escape-to-close. |
@@ -143,7 +143,7 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 | Carpeta | Dominio |
 |---|---|
 | `devices/`, `devices/[id]/{category,events,interval,sessions,tare,wifi}/` | CRUD y acciones sobre dispositivos KPCL. |
-| `pets/`, `pets/[id]/`, `pets/[id]/hunger-bar/` | CRUD de mascotas + endpoint de la barra de hambre. |
+| `pets/`, `pets/[id]/`, `pets/[id]/hunger-bar/` | CRUD de mascotas + endpoint de la barra de hambre. `hunger-bar/` extendido 2026-09-15 con un objeto `water` (`resolveWaterDevice`/`buildWaterSnapshot` en `hunger-bar-server.ts`) — portó a server el cálculo de % de agua que antes solo vivía client-side en `today-screen.tsx`, para que el widget nativo de Android (sin JS) lo pueda pedir directo. Ver `Knowledge/29_Specs/010-widget-android-hero/contracts/hunger-bar-water-extension.md`. |
 | `readings/`, `readings/bucketed/` | Lecturas crudas y agregadas (paginación anti-cap de Supabase, ver commit `b1995e4`). |
 | `analytics/daily/`, `analytics/sessions/` | Analítica agregada por día/sesión. |
 | `auth/login/` | Login (Supabase Auth). |
@@ -159,7 +159,35 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 
 ---
 
-## 6. Hallazgos de esta pasada (2026-08-11)
+## 6. Fuera de `src/app` pero mismo repo — widget nativo de Android (NUEVO, 2026-09-15)
+
+No es parte del ruteo de Next.js — corre fuera del WebView de Capacitor, como
+superficie nativa aparte del sistema operativo. Documentado acá porque es la primera
+vez que el proyecto tiene código Kotlin (antes 100% Java) y porque varios archivos
+de `src/app`/`src/lib` de arriba existen específicamente para conectarlo. Spec
+completo: [[29_Specs/010-widget-android-hero/spec]].
+
+| Archivo | Función |
+|---|---|
+| `kittypau_app/android/app/src/main/java/com/kittypau/app/widget/KittypauHeroWidget.kt` | Composable Glance (no RemoteViews clásico — justificado contra el ladder de Ponytail, produce menos código para este layout). 4 estados: normal, sin dispositivo, offline con último dato, sesión inválida. |
+| `.../widget/KittypauHeroWidgetReceiver.kt` | `GlanceAppWidgetReceiver` — encola/cancela el refresco (`WidgetRefreshWorker`), limpia config al quitar el widget. |
+| `.../widget/WidgetPetConfigActivity.kt` | Configuration Activity — Android la lanza sola después de bindear el widget (tanto por el selector manual como por `requestPinAppWidget()`), lista de mascotas vía `GET /api/pets`. |
+| `.../widget/WidgetAuthBridge.kt` | Lee el refresh token de `@capacitor/preferences` (storage nativo `"CapacitorStorage"`, plano — verificado contra el código fuente del plugin, NO encriptado, mismas garantías que el `localStorage` de antes), lo canjea contra Supabase Auth. Distingue sin-conexión de sesión-inválida por código HTTP. |
+| `.../widget/WidgetRefreshWorker.kt` | WorkManager, piso real 15 min. |
+| `com/kittypau/app/KittypauWidgetPlugin.kt` | Plugin Capacitor propio — expone `requestPin()` a JS, dispara `AppWidgetManager.requestPinAppWidget()`. Es el botón "Agregar widget" en `/today` (ver §2 arriba) el que lo llama. |
+| `com/kittypau/app/KittypauMessagingService.kt` | Extiende la `MessagingService` de `@capacitor/push-notifications` (no la reemplaza — FCM solo entrega a UNA por app) para disparar refresco inmediato del widget cuando llega push de "comió"/"le sirvieron" (T022, opcional). |
+| `kittypau_app/src/lib/hooks/useAddWidgetToHomeScreen.ts` + `src/lib/native/kittypau-widget-plugin.ts` | Lado JS del puente — mismo patrón de `usePushTokenRegistration.ts` (import dinámico, no-op fuera de la APK). |
+
+**Gap real conocido**: este entorno de desarrollo (Claude Code) no tiene Android
+SDK/JDK — todo el código Kotlin/XML se escribió y revisó por lectura, sin compilar
+acá. Se armó `.github/workflows/build-android-apk.yml` para compilarlo en GitHub
+Actions en su lugar (ver [[19_DevOps/README_DevOps]]). Varios bugs reales de
+compilación ya se encontraron y corrigieron así (namespace XML mal escrito, `--`
+dentro de comentarios XML —inválido—, JDK 17 vs. 21, plugin de Compose faltante).
+
+---
+
+## 7. Hallazgos de esta pasada (2026-08-11)
 
 - **`(public)/register`**: eliminada. Estaba huérfana (cero referencias en código,
   `supabase/` — templates de email, redirect URLs — y Docs). El registro real es
@@ -186,4 +214,6 @@ endpoint en [[05_API/README_API]] — acá solo la relación carpeta ↔ dominio
 - [[04_Frontend/README_Frontend]] — stack, scripts npm, flujo de auth, MQTT
 - [[18_UI/Componentes/README_Componentes]] — doc por componente extraído
 - [[05_API/README_API]] — contratos de cada endpoint
-- [[AUDITORIA_2026_08_11]] — auditoría completa Knowledge vs código en vivo
+- [[29_Specs/010-widget-android-hero/spec]] — spec/plan/tasks completos del widget nativo de Android (§6 arriba)
+- [[AUDITORIA_2026_08_11]] — auditoría anterior, Knowledge vs código en vivo
+- [[AUDITORIA_2026_09_15]] — auditoría vigente, cubre todo lo cambiado desde la anterior (rediseño `/today`, navbar, widget)

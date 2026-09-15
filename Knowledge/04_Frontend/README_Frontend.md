@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-12
+updated: 2026-09-15
 tags:
   - nextjs
   - react
@@ -133,6 +133,12 @@ compilado e instalado**, el deploy web no lo toca. Lección real: un APK viejo i
 falló con `"LocalNotifications" plugin is not implemented on android` pese a que el JS ya
 llamaba a esa API. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16 (targetSdk 36,
 deadline Google Play 31/08/2026), edge-to-edge, plugins recomendados.
+
+**Caso más extremo del mismo problema (2026-09-15)**: el widget de pantalla de inicio
+(`Knowledge/29_Specs/010-widget-android-hero`) no vive ni siquiera dentro del proceso del
+WebView — es una superficie nativa completamente aparte (Jetpack Glance), con su propio
+refresco en background. No hay ningún deploy de Vercel que lo actualice; solo un APK nuevo
+compilado (ver `.github/workflows/build-android-apk.yml`, [[19_DevOps/README_DevOps]]).
 
 ---
 

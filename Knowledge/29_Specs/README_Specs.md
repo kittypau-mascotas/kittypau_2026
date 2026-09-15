@@ -5,7 +5,7 @@ type: spec
 status: active
 owner: Mauro
 created: 2026-08-11
-updated: 2026-08-14
+updated: 2026-09-15
 tags:
   - specs
   - roadmap
@@ -69,8 +69,17 @@ de SPEC 03, pero vive del lado de `Investigacion/` (reorganización de carpetas 
 roadmap de investigación), no del lado de `kittypau_app`. Léelo si el próximo paso es
 "empezar a investigar hidratación", no si el próximo paso es tocar código de producto.
 
+## Nota: serie separada de specs `/speckit-*` (desde 2026-09-10)
+
+Esta tabla cubre solo la serie clásica `SPEC_NN_Nombre.md`. Desde `009-demo-today-en-vivo`
+en adelante, las features nuevas usan el proceso `/speckit-specify` → `/speckit-plan` →
+`/speckit-tasks`, en carpetas `NNN-slug/` con `spec.md`/`plan.md`/`research.md`/
+`tasks.md` propios — ver [[00_HOME]] § "Features spec-kit" para el índice. La más reciente:
+[[29_Specs/010-widget-android-hero/spec]] (widget nativo de Android).
+
 ## Ver también
 
 - [[AUDITORIA_2026_08_11]] — hallazgos fuente de estos 5 specs
+- [[AUDITORIA_2026_09_15]] — qué cambió desde entonces
 - [[18_UI/README_UI]] — recorrido en vivo pantalla por pantalla
 - [[05_API/SPEC_HungerBar_Alimentacion]] — precedente de spec "investigación → producto" ya implementado

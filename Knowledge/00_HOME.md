@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-14
+updated: 2026-09-15
 tags:
   - home
   - navegacion
@@ -85,8 +85,8 @@ está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.*
 - **Cuentas de prueba, project ID Supabase:** [[20_Testing/README_Testing]] § Cuentas de prueba
 - **Estructura de `src/app`, qué hace cada carpeta:** [[04_Frontend/ESTRUCTURA_src_app]]
 - **"Barras Sims" (`/today`) es sensible — no agregar nada sin proponerlo antes** (revertido 3 veces en el historial). Ver [[29_Specs/SPEC_04_Metricas_Today_Investigacion]]
-- **El JS se despliega solo con cada push a `main` (Vercel), los recursos nativos del APK NO** (plugins, íconos, permisos) — necesitan un APK nuevo compilado e instalado. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]]
-- **Los 3 `page.tsx` más grandes** tienen un comentario-mapa al principio del archivo (grepear el nombre de sección, no releer todo): `admin/page.tsx` (~4000 líneas, extracción evaluada y **dejada de lado a propósito**), `today/page.tsx` (~2500), `login/page.tsx` (~1900, sin priorizar)
+- **El JS se despliega solo con cada push a `main` (Vercel), los recursos nativos del APK NO** (plugins, íconos, permisos) — necesitan un APK nuevo compilado e instalado. Ver [[29_Specs/SPEC_06_Mobile_APK_2026]]. Desde 2026-09-15 hay una forma de compilarlo sin la PC de Mauro: `.github/workflows/build-android-apk.yml` (CI manual, `gh workflow run`) — ver [[19_DevOps/README_DevOps]].
+- **Los archivos fuente más grandes ya no son solo `page.tsx`**: `today/_components/today-screen.tsx` (3467 líneas, 2026-09-15) superó a `admin/page.tsx` (3291) — `today/page.tsx` en sí es un wrapper de 11 líneas. `login/page.tsx` (~2200) sigue sin priorizar. Detalle carpeta por carpeta: [[04_Frontend/ESTRUCTURA_src_app]]
 - **Fórmula del Hunger Bar:** [[05_API/SPEC_HungerBar_Alimentacion]] — alertas/push: [[05_API/SPEC_HungerBar_Alertas]]
 - **Correos transaccionales (asunto + cuerpo + variables):** [[05_API/SPEC_Correos_Transaccionales]] — empieza con la confirmación de registro personalizada
 - **Qué queda pendiente ahora mismo:** [[29_Specs/README_Specs]] (backlog vivo, se poda solo con lo ya implementado)
@@ -164,8 +164,9 @@ está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.*
 
 ## Auditorías
 
-- [[AUDITORIA_2026_08_11]] — Auditoría vigente: Knowledge vs código + recorrido en vivo con Playwright (2026-08-11)
-- [[AUDITORIA_2026_06_29]] — Auditoría anterior, histórica (2026-06-29)
+- [[AUDITORIA_2026_09_15]] — Auditoría vigente: qué cambió desde la anterior (rediseño `/today`, navbar, widget de Android) — no es una re-verificación desde cero de todo el proyecto, ver su sección Metodología
+- [[AUDITORIA_2026_08_11]] — Auditoría anterior: Knowledge vs código + recorrido en vivo con Playwright (2026-08-11)
+- [[AUDITORIA_2026_06_29]] — Auditoría más antigua, histórica (2026-06-29)
 - [[18_UI/UX_DIAGNOSTICO_2026_06_30]] — Diagnóstico UX/UI completo (2026-06-30)
 
 ---
@@ -185,6 +186,16 @@ está en la tabla de arriba, agregarla antes de asumir qué es alcanzable o no.*
 - [[29_Specs/SPEC_10_Vinculacion_Dispositivo_Lista_Real]] — vincular dispositivo en el registro debe mostrar la lista real de `devices` (Supabase), no pedir tipear un código — pre-lanzamiento la lista es acotada y conocida
 - [[29_Specs/SPEC_11_Resumen_Consumo_Today]] — totales de comida/agua día/semana/mes en `/today` — ⚠️ premisa en duda: la DB de origen (`pet_sessions`/`pet_daily_summary`) parece eliminada, ver [[02_Arquitectura/ARQ_Pipeline_End_to_End]] §3.2
 - [[29_Specs/SPEC_12_Recrear_Analytics_DB]] — confirmado por Mauro: la DB de analytics se eliminó a propósito (consumía mucho storage) — schema exacto + checklist de reconexión + plan de retención, listo para ejecutar cuando se decida
+
+### Features spec-kit (proceso `/speckit-specify` → `/speckit-plan` → `/speckit-tasks`)
+
+Serie separada de la de arriba — carpetas `NNN-slug/` en vez de `SPEC_NN_Nombre.md`, cada
+una con `spec.md`/`plan.md`/`research.md`/`data-model.md`/`contracts/`/`tasks.md`. Ver
+regla en la constitución de spec-kit (`.specify/memory/constitution.md` § "Convivencia con
+Knowledge/29_Specs/").
+
+- [[29_Specs/009-demo-today-en-vivo/plan]] — `/demo` reescrita como espejo exacto de `/today` con datos reales en vivo, identidad del visitante, CTA "Crear cuenta"
+- [[29_Specs/010-widget-android-hero/spec]] — widget nativo de Android (mini-hero de la mascota) + botón in-app para agregarlo, pedido explícito de Mauro — implementado, pendiente de verificar en dispositivo real (ver [[AUDITORIA_2026_09_15]])
 
 ---
 

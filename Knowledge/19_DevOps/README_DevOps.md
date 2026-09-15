@@ -5,7 +5,7 @@ type: knowledge
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-14
+updated: 2026-09-15
 tags:
   - devops
   - vercel
@@ -19,6 +19,7 @@ related:
   - [[07_MQTT/README_MQTT]]
   - [[29_Specs/SPEC_06_Mobile_APK_2026]]
   - [[29_Specs/SPEC_09_Fix_Bridge_Firmware_DeviceType]]
+  - [[29_Specs/010-widget-android-hero/spec]]
   - [[29_Specs/README_Specs]]
   - [[19_DevOps/PENDIENTES_POR_PC]]
 ---
@@ -275,13 +276,27 @@ pushear nada. En orden:
    cerró, agregá lo nuevo que haya aparecido, antes del push final.
 ```
 
-### CI/CD — actualizado 2026-08-12: ahora sí corre tests
+### CI/CD — actualizado 2026-09-15: 3 workflows
 
 `.github/workflows/pr-quality.yml` corre en cada PR a `main`: lint + **test** (Vitest,
 agregado 2026-08-12) + build de `kittypau_app`, `check_encoding.py`, y un guard que bloquea
 archivos `.env` trackeados por error. `.github/workflows/monthly-fusion-review.yml` corre
 aparte. Ver [[29_Specs/SPEC_05_Optimizacion_Tecnica]] §4 para el resto de la deuda de
 testing (todavía sin tests de integración de API routes ni E2E).
+
+**`.github/workflows/build-android-apk.yml` (nuevo, 2026-09-15)** — `workflow_dispatch`
+manual (`gh workflow run build-android-apk.yml`), NO corre en cada push. Compila el APK
+debug en un runner `ubuntu-latest` de GitHub (que sí tiene JDK 21 + Android SDK
+preinstalados — se sacó `android-actions/setup-android@v3` porque intentaba instalar un
+paquete legado que ya no existe y siempre fallaba). Regenera
+`android/app/debug.keystore` (gitignorado, nunca se commitea) con las credenciales estándar
+de debug del propio `build.gradle` — **ojo**: un APK compilado así queda firmado con OTRO
+keystore que el que pueda tener Mauro localmente; si ya instaló una build debug antes,
+Android rechaza instalar esta encima (mismatch de firma) hasta desinstalar la vieja.
+Requiere 2 secrets del repo: `SUPABASE_URL`/`SUPABASE_ANON_KEY` (`gh secret set`, mismos
+valores públicos que ya usa el WebView — el anon key está diseñado para vivir en
+clientes). Sube el APK como artifact del run. Nace de la necesidad de compilar
+`Knowledge/29_Specs/010-widget-android-hero` sin acceso a una PC con Android SDK.
 
 ---
 
@@ -295,6 +310,11 @@ npm run build          # build Next.js
 npx cap sync android   # sincronizar con Capacitor
 # Luego abrir Android Studio → Build → Generate Signed APK
 ```
+
+**Alternativa sin Android Studio ni SDK local (2026-09-15)**: `gh workflow run
+build-android-apk.yml` compila en GitHub Actions — ver CI/CD arriba. Útil para
+compilar/probar cambios nativos (ej. el widget de `Knowledge/29_Specs/010-widget-android-hero`)
+desde un entorno de desarrollo que no tiene Android SDK/JDK instalados.
 
 ### Configuración Capacitor
 
@@ -346,7 +366,7 @@ npx cap sync android   # sincronizar con Capacitor
 | Item | Descripción |
 |---|---|
 | CI/CD | ✅ Pipeline existe y corre lint+test+build en cada PR (ver arriba). Falta: tests de integración de API routes y E2E — [[29_Specs/SPEC_05_Optimizacion_Tecnica]] |
-| Android | APK no publicada en Play Store — build manual, distribución por WhatsApp/USB. SDK actualizado a 36 pero falta verificar edge-to-edge en dispositivo real — [[29_Specs/SPEC_06_Mobile_APK_2026]] |
+| Android | APK no publicada en Play Store — build manual, distribución por WhatsApp/USB. SDK actualizado a 36 pero falta verificar edge-to-edge en dispositivo real — [[29_Specs/SPEC_06_Mobile_APK_2026]]. Además: primer código Kotlin del proyecto (widget nativo, [[29_Specs/010-widget-android-hero/spec]]) escrito y con varios bugs de compilación ya corregidos vía CI, pero **nunca probado en dispositivo/emulador real** — ver [[AUDITORIA_2026_09_15]] |
 | Ramas obsoletas | 6 ramas locales no mergeadas pendientes de eliminar |
 | Commit limpieza | 608 archivos `D` + 139 `AD` sin commitear (docs legacy → vault) |
 
@@ -358,3 +378,5 @@ npx cap sync android   # sincronizar con Capacitor
 - [[04_Frontend/README_Frontend]] — stack Next.js + Capacitor
 - [[07_MQTT/README_MQTT]] — Bridge Pi y HiveMQ
 - [[29_Specs/SPEC_06_Mobile_APK_2026]] — Android 16, edge-to-edge, plugins recomendados
+- [[29_Specs/010-widget-android-hero/spec]] — widget nativo de Android, primer código Kotlin del proyecto
+- [[AUDITORIA_2026_09_15]] — qué cambió recientemente, incluido el workflow de CI del APK

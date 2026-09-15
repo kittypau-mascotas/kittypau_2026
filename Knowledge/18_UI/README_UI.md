@@ -5,7 +5,7 @@ type: frontend
 status: active
 owner: Mauro
 created: 2026-06-28
-updated: 2026-08-11
+updated: 2026-09-15
 tags:
   - ui
   - ux
@@ -26,42 +26,53 @@ related:
 # UI/UX — KittyPau
 
 > Stack: Next.js 16.1.6 + React 19.2.3 + Tailwind 4. Diagnóstico completo: [[18_UI/UX_DIAGNOSTICO_2026_06_30]]
+>
+> ⚠️ **Las tablas de esta sección quedaron desactualizadas** (predatan el rediseño de
+> `/today` y la extracción a `_components/` de agosto-septiembre 2026) — corregidas en LOC
+> y rutas eliminadas/alias el 2026-09-15, pero el "recorrido en vivo pantalla por pantalla"
+> más abajo en el documento **no se volvió a verificar con Playwright esta pasada** (sería
+> una auditoría visual completa aparte). Para estructura/LOC siempre actualizados,
+> [[04_Frontend/ESTRUCTURA_src_app]] es la fuente más fresca — este archivo es
+> complementario (foco en UX, no en estructura de carpetas).
 
 ---
 
-## Pantallas activas (App Router — 2026-06-30)
+## Pantallas activas (App Router — corregido 2026-09-15)
 
 ### Rutas protegidas `(app)/`
 
 | Ruta | Descripción | Auth | LOC |
 |------|-------------|------|-----|
-| `/today` | Dashboard día: D3 + Chart.js, MQTT live, audit events, analytics | Sí | **5526** ⚠️ |
-| `/bowl` | Lecturas en vivo + config device + 5 gráficos multi-rango | Sí | 1784 |
-| `/pet` | Perfil mascota + edición + devices asociados | Sí | 889 |
-| `/settings` | Perfil usuario + notificaciones | Sí | 466 |
-| `/story` | Historial sesiones clasificadas (free/premium) | Sí | ~600 |
-| `/inicio` | Redirect a `/today` (renderiza `null`) ⚠️ | Sí | 14 |
+| `/today` | Dashboard día: D3 + Chart.js, MQTT live, audit events, analytics | Sí | `page.tsx` es wrapper (11) — el cuerpo real es `today-screen.tsx`, **3467**, ya el archivo fuente más grande de la app (ver [[04_Frontend/ESTRUCTURA_src_app]]) |
+| `/bowl` | Lecturas en vivo + config device + 5 gráficos multi-rango | Sí | 1755 |
+| `/pet` | Perfil mascota + edición + devices asociados | Sí | **2297** ⚠️ (documentado antes como 889 — creció ~2.6x desde la última medición, sin explicación registrada; pendiente investigar qué se agregó) |
+| `/settings` | Perfil usuario + notificaciones | Sí | 491 |
+| `/story` | Historial sesiones clasificadas (free/premium) | Sí | 718 |
+| `/inicio` | Redirect a `/today` (renderiza `null`) ⚠️ | Sí | 20 |
 | `/registro` | Redirect server a `/login?register=1` | Sí | 22 |
-| `/dispositivos/nuevo` | Flujo de alta de nuevo dispositivo | Sí | — |
-| `/admin` | Dashboard admin (protegido por tipo de cuenta) | Admin | — |
-| `/admin/demo-ingresos` | Demo financiero para presentaciones — 🐞 `Missing Authorization header` visible en vivo | Admin | — |
+| `/dispositivos/nuevo` | Flujo de alta de nuevo dispositivo | Sí | 258 |
+| `/admin` | Dashboard admin (protegido por tipo de cuenta) | Admin | 3291 |
+| `/admin/demo-ingresos` | Lista de leads capturados desde `/demo` | Admin | — |
 | `/admin/javo` | Inventario de proyectos de Javier (bridge, firmware, docs) integrados en Kittypau | Admin | — |
 
 > ⚠️ `/admin/alerts`, `/admin/analytics`, `/admin/devices`, `/admin/legacy`,
 > `/admin/overview`, `/admin/pets`, `/admin/settings` son carpetas **vacías** (sin
-> `page.tsx`) → 404 real. Verificado en vivo 2026-08-11. Ver sección de recorrido abajo.
+> `page.tsx`) → 404 real. Verificado en vivo 2026-08-11, no re-verificado esta pasada. Ver
+> sección de recorrido abajo.
 
 ### Rutas públicas `(public)/`
 
 | Ruta | Descripción |
 |------|-------------|
-| `/login` | Login + registro (modal register=1) |
-| `/register` | Registro directo |
+| `/login` | Login + registro (modal `?register=1`, `RegistroFlow` de 4 pasos) + modal "Personaliza tu demo" |
 | `/reset` | Recuperación de contraseña |
-| `/demo` | Demo pública con nav demo |
-| `/client-demo` | Demo para clientes |
-| `/test` | Página de pruebas internas |
+| `/demo` | **Reescrita (spec 009)**: espejo exacto de `/today` con datos reales en vivo + identidad del visitante + CTA "Crear cuenta" |
+| `/client-demo`, `/test` | **Ya NO son páginas propias** — alias legado, ambas `redirect("/demo")` (spec 009 FR-019) |
 | `/404`, `/error` | Páginas de error |
+
+> `(public)/register` **fue eliminada** (huérfana, confirmado con Mauro antes de borrar,
+> ver [[04_Frontend/ESTRUCTURA_src_app]] §6) — el registro real es `RegistroFlow` dentro de
+> `/login`, no una ruta propia. Esta tabla la listaba como "Registro directo"; ya no existe.
 
 ---
 
@@ -69,7 +80,7 @@ related:
 
 | Componente | Descripción |
 |---|---|
-| `app-nav.tsx` | Navegación: sidebar (tester/client) o top-bar (admin/APK) |
+| `app-nav.tsx` | Navegación: sidebar (tester/client, desktop) o **barra fija abajo** en celular/APK (reestructurado 2026-09-14 — antes decía "top-bar", ya no es así: dueño/marca+bajada/redes a la izquierda, menús al medio, tuerca-solo a la derecha para Ajustes/Editar perfil/Cerrar sesión). Admin en desktop mantiene su propio modo. |
 | `alert.tsx` | Componente de alerta con variant error/warn/info |
 | `empty-state.tsx` | Estado vacío estandarizado con título + children + acciones |
 | `operational-actions-card.tsx` | Card de acciones fallback cuando faltan datos |
