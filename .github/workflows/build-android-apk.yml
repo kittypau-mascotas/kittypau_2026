@@ -1,0 +1,90 @@
+name: Build Android APK
+
+# Manual, on-demand: no se corre en cada push (Android no es parte del deploy
+# de Vercel -- ver Knowledge/29_Specs/010-widget-android-hero, research.md
+# Decisión 0, este entorno de desarrollo no tiene Android SDK/JDK para
+# compilar). Disparado a mano (`gh workflow run` o desde la pestaña Actions)
+# cuando hay código nativo nuevo para probar en un dispositivo real.
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Tipo de build"
+        required: false
+        default: debug
+        type: choice
+        options:
+          - debug
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: kittypau_app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: kittypau_app/package-lock.json
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          # Cachea ~/.gradle entre corridas -- acelera reintentos si algo
+          # falla y hay que volver a disparar el workflow.
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Sync Capacitor (copia los cambios nativos al proyecto Android)
+        run: npx cap sync android
+
+      # `android/app/debug.keystore` está en .gitignore (kittypau_app/.gitignore:54,
+      # *.keystore -- nunca se commitea) -- se regenera acá con las mismas
+      # credenciales estándar de debug que ya hardcodea android/app/build.gradle
+      # (storePassword/keyAlias/keyPassword "android"/"androiddebugkey"/"android").
+      # OJO: esto NO es el mismo keystore que Mauro pueda tener localmente --
+      # si ya instaló una build debug firmada con OTRO debug.keystore, Android
+      # va a rechazar instalar esta encima (mismatch de firma). Desinstalar la
+      # app vieja antes de instalar el APK de este workflow si eso pasa.
+      - name: Generate debug keystore
+        working-directory: kittypau_app/android/app
+        run: |
+          keytool -genkey -v \
+            -keystore debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Build debug APK
+        working-directory: kittypau_app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug \
+            -PsupabaseUrl="${{ secrets.SUPABASE_URL }}" \
+            -PsupabaseAnonKey="${{ secrets.SUPABASE_ANON_KEY }}"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kittypau-debug-apk
+          path: kittypau_app/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
