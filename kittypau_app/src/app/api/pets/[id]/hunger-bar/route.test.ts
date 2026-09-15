@@ -11,6 +11,14 @@ const mocks = vi.hoisted(() => ({
   devicesResult: { data: null as unknown, error: null as unknown },
   readingsPages: [] as { data: unknown; error: unknown }[],
   readingsPageIndex: 0,
+  // 010-widget-android-hero: mocks nuevos para `buildWaterSnapshot` --
+  // ver contracts/hunger-bar-water-extension.md. `waterLatestResult` es la
+  // única lectura reciente del bebedero (select→eq→order→limit(1)),
+  // `waterReadingsResult` la ventana para el fallback de `termino_servido`
+  // (select→eq→gte→order→limit), `auditEventsResult` la tabla `audit_events`.
+  waterLatestResult: { data: [] as unknown[], error: null as unknown },
+  waterReadingsResult: { data: [] as unknown[], error: null as unknown },
+  auditEventsResult: { data: [] as unknown[], error: null as unknown },
   authResult: {
     data: { user: null as unknown },
     error: null as unknown,
@@ -46,18 +54,43 @@ vi.mock("@/lib/supabase/server", () => ({
         return {
           select: () => ({
             eq: () => ({
+              // Comida (fetchHungerBarForDevice): eq -> gte -> not -> order -> range
               gte: () => ({
                 not: () => ({
                   order: () => ({
                     range: () => {
-                      const page =
-                        mocks.readingsPages[mocks.readingsPageIndex] ?? {
-                          data: [],
-                          error: null,
-                        };
+                      const page = mocks.readingsPages[
+                        mocks.readingsPageIndex
+                      ] ?? {
+                        data: [],
+                        error: null,
+                      };
                       mocks.readingsPageIndex += 1;
                       return Promise.resolve(page);
                     },
+                  }),
+                }),
+                // Agua, ventana para fallback de termino_servido: eq -> gte -> order -> limit
+                order: () => ({
+                  limit: () => Promise.resolve(mocks.waterReadingsResult),
+                }),
+              }),
+              // Agua, última lectura: eq -> order -> limit(1)
+              order: () => ({
+                limit: () => Promise.resolve(mocks.waterLatestResult),
+              }),
+            }),
+          }),
+        };
+      }
+      if (table === "audit_events") {
+        return {
+          select: () => ({
+            eq: () => ({
+              eq: () => ({
+                gte: () => ({
+                  order: () => ({
+                    limit: () => Promise.resolve(mocks.auditEventsResult),
                   }),
                 }),
               }),
@@ -95,12 +128,23 @@ const FOOD_DEVICE = {
   last_seen: "2026-08-14T12:00:00Z",
 };
 
+const WATER_DEVICE = {
+  id: "dev-2",
+  device_id: "KPCL0035",
+  device_type: "bebedero",
+  plate_weight_grams: 50,
+  last_seen: "2026-08-14T12:00:00Z",
+};
+
 beforeEach(() => {
   mocks.fromCalls.length = 0;
   mocks.petResult = { data: null, error: null };
   mocks.devicesResult = { data: null, error: null };
   mocks.readingsPages = [];
   mocks.readingsPageIndex = 0;
+  mocks.waterLatestResult = { data: [], error: null };
+  mocks.waterReadingsResult = { data: [], error: null };
+  mocks.auditEventsResult = { data: [], error: null };
   mocks.authResult = { data: { user: null }, error: null };
 });
 
@@ -140,7 +184,14 @@ describe("GET /api/pets/[id]/hunger-bar", () => {
     mocks.petResult = { data: { id: "pet-1", user_id: "user-1" }, error: null };
     // Solo un bebedero activo — isFoodDeviceRole real lo descarta.
     mocks.devicesResult = {
-      data: [{ id: "dev-2", device_id: "KPCL0035", device_type: "comedero", last_seen: null }],
+      data: [
+        {
+          id: "dev-2",
+          device_id: "KPCL0035",
+          device_type: "comedero",
+          last_seen: null,
+        },
+      ],
       error: null,
     };
 
@@ -224,5 +275,130 @@ describe("GET /api/pets/[id]/hunger-bar", () => {
     // Se pidieron ambas páginas — si se hubiera cortado en la primera
     // (asumiendo que 1000 == "no hay más"), readingsPageIndex quedaría en 1.
     expect(mocks.readingsPageIndex).toBe(2);
+  });
+
+  // 010-widget-android-hero: contracts/hunger-bar-water-extension.md
+  describe("objeto `water` (010-widget-android-hero)", () => {
+    it("water.status sin_dispositivo si la mascota no tiene bebedero activo", async () => {
+      mocks.authResult = { data: { user: { id: "user-1" } }, error: null };
+      mocks.petResult = {
+        data: { id: "pet-1", user_id: "user-1" },
+        error: null,
+      };
+      // Solo el comedero -- sin otro device activo, el fallback de
+      // resolveWaterDevice tampoco encuentra nada.
+      mocks.devicesResult = { data: [FOOD_DEVICE], error: null };
+      mocks.readingsPages = [
+        {
+          data: [{ recorded_at: "2026-08-14T08:00:00Z", weight_grams: 200 }],
+          error: null,
+        },
+      ];
+
+      const res = await GET(makeRequest("pet-1"), makeParams("pet-1"));
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.water).toEqual({
+        status: "sin_dispositivo",
+        percentage: null,
+        hasEvidence: false,
+        lastEventAt: null,
+      });
+    });
+
+    it("con bebedero activo pero sin evento de hidratación confirmado: hasEvidence false, sin hora inventada", async () => {
+      mocks.authResult = { data: { user: { id: "user-1" } }, error: null };
+      mocks.petResult = {
+        data: { id: "pet-1", user_id: "user-1" },
+        error: null,
+      };
+      mocks.devicesResult = { data: [FOOD_DEVICE, WATER_DEVICE], error: null };
+      mocks.readingsPages = [
+        {
+          data: [{ recorded_at: "2026-08-14T08:00:00Z", weight_grams: 200 }],
+          error: null,
+        },
+      ];
+      mocks.waterLatestResult = {
+        data: [
+          {
+            recorded_at: "2026-08-14T09:00:00Z",
+            weight_grams: 150,
+            water_ml: null,
+          },
+        ],
+        error: null,
+      };
+      // Sin audit_events -- ni termino_servido (percentage) ni el par
+      // inicio/termino_hidratacion (hasEvidence).
+
+      const res = await GET(makeRequest("pet-1"), makeParams("pet-1"));
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.water.status).toBe("ok");
+      expect(body.water.percentage).toBeNull();
+      expect(body.water.hasEvidence).toBe(false);
+      expect(body.water.lastEventAt).toBeNull();
+    });
+
+    it("con termino_servido confirmado y un par inicio/término de hidratación: percentage y lastEventAt reales", async () => {
+      mocks.authResult = { data: { user: { id: "user-1" } }, error: null };
+      mocks.petResult = {
+        data: { id: "pet-1", user_id: "user-1" },
+        error: null,
+      };
+      mocks.devicesResult = { data: [FOOD_DEVICE, WATER_DEVICE], error: null };
+      mocks.readingsPages = [
+        {
+          data: [{ recorded_at: "2026-08-14T08:00:00Z", weight_grams: 200 }],
+          error: null,
+        },
+      ];
+      // Contenido actual: 150 - 50 (tara) = 100 g/mL.
+      mocks.waterLatestResult = {
+        data: [
+          {
+            recorded_at: "2026-08-14T09:00:00Z",
+            weight_grams: 150,
+            water_ml: null,
+          },
+        ],
+        error: null,
+      };
+      mocks.auditEventsResult = {
+        data: [
+          {
+            created_at: "2026-08-14T07:00:00Z",
+            payload: {
+              category: "termino_servido",
+              snapshot: { content_weight_grams: 200 },
+            },
+          },
+          {
+            created_at: "2026-08-14T08:00:00Z",
+            payload: { category: "inicio_hidratacion" },
+          },
+          {
+            created_at: "2026-08-14T08:05:00Z",
+            payload: { category: "termino_hidratacion" },
+          },
+        ],
+        error: null,
+      };
+
+      const res = await GET(makeRequest("pet-1"), makeParams("pet-1"));
+
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.water.status).toBe("ok");
+      // 100 / 200 * 100 = 50%
+      expect(body.water.percentage).toBe(50);
+      expect(body.water.hasEvidence).toBe(true);
+      expect(body.water.lastEventAt).toBe("2026-08-14T08:05:00Z");
+      // Nunca un conteo de "veces que tomó agua" -- FR-006/FR-015.
+      expect(body.water).not.toHaveProperty("timesToday");
+    });
   });
 });

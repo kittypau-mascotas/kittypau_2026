@@ -33,6 +33,35 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Widget de Android -- Knowledge/29_Specs/010-widget-android-hero.
+             `exported="true"` es obligatorio para receivers de AppWidget (el
+             sistema operativo, fuera del proceso de la app, es quien manda
+             el broadcast APPWIDGET_UPDATE). -->
+        <receiver
+            android:name=".widget.KittypauHeroWidgetReceiver"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/kittypau_hero_widget_info" />
+        </receiver>
+
+        <!-- Configuration Activity -- lanzada automático por Android después
+             de bindear el widget (research.md Decisión 2), tanto si vino del
+             selector manual como de requestPinAppWidget() (KittypauWidgetPlugin). -->
+        <activity
+            android:name=".widget.WidgetPetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme"
+            android:label="Elegir mascota para el widget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
     <!-- Permissions -->

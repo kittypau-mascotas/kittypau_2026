@@ -30,15 +30,15 @@ para un equipo de 2 personas); la verificación de la parte nativa es manual, v�
 
 **Purpose**: declarar las dependencias nuevas y la estructura de carpetas, sin lógica todavía.
 
-- [ ] T001 [P] Agregar `@capacitor/preferences` a `kittypau_app/package.json` (research.md
+- [x] T001 [P] Agregar `@capacitor/preferences` a `kittypau_app/package.json` (research.md
   Decisión 4) (Fase A — `npm install` corre acá; el uso real del plugin nativo es Fase B)
-- [ ] T002 [P] Declarar `androidx.glance:glance-appwidget` en
+- [x] T002 [P] Declarar `androidx.glance:glance-appwidget` en
   `kittypau_app/android/app/build.gradle` (research.md Decisión 1) (Fase B)
-- [ ] T003 [P] Verificar si `androidx.work:work-runtime-ktx` ya viene transitiva con
+- [x] T003 [P] Verificar si `androidx.work:work-runtime-ktx` ya viene transitiva con
   `@capacitor/android` 8.5.0 (`./gradlew :app:dependencies` en la PC de Mauro); si no,
   declararla en `kittypau_app/android/app/build.gradle` (research.md § Resumen de
   dependencias) (Fase B)
-- [ ] T004 [P] Crear el paquete `kittypau_app/android/app/src/main/java/com/kittypau/app/widget/`
+- [x] T004 [P] Crear el paquete `kittypau_app/android/app/src/main/java/com/kittypau/app/widget/`
   (estructura vacía para las clases de las fases siguientes) (Fase B)
 
 **Checkpoint**: dependencias declaradas — no bloquea el arranque de Foundational (T005-T008
@@ -53,22 +53,22 @@ antes de que el widget (cualquier historia) pueda leerlo.
 
 **⚠️ CRITICAL**: ninguna user story puede darse por completa sin esta fase.
 
-- [ ] T005 Portar el cálculo de `water%` desde
+- [x] T005 Portar el cálculo de `water%` desde
   `kittypau_app/src/app/(app)/today/_components/today-screen.tsx`
   (`waterContentWeightGrams`/`waterMaxServedContentMl`/`waterWellness`) a
   `kittypau_app/src/lib/hunger-bar-server.ts` como `resolveWaterDevice()` + función de cálculo
   hermana de `resolveFoodDevice()` (data-model.md §3, research.md Decisión 3) (Fase A)
-- [ ] T006 Incluir el objeto `water` (`{ status, percentage, hasEvidence, lastEventLabel,
+- [x] T006 Incluir el objeto `water` (`{ status, percentage, hasEvidence, lastEventLabel,
   lastEventAt }`) en `buildHungerBarPayload()` de `hunger-bar-server.ts`, consumido sin cambios
   adicionales por `kittypau_app/src/app/api/pets/[id]/hunger-bar/route.ts`
   (contracts/hunger-bar-water-extension.md) (Fase A) — depende de T005
-- [ ] T007 [P] Extender
+- [x] T007 [P] Extender
   `kittypau_app/src/app/api/pets/[id]/hunger-bar/route.test.ts` con los casos nuevos de `water`
   (sin dispositivo, sin evidencia, con evento confirmado — contracts/hunger-bar-water-extension.md
   § Testing) (Fase A) — depende de T006
-- [ ] T008 Correr `npm run test` dentro de `kittypau_app` y confirmar que todo pasa, incluidos
+- [x] T008 Correr `npm run test` dentro de `kittypau_app` y confirmar que todo pasa, incluidos
   los casos nuevos de T007 (Fase A) — depende de T007
-- [ ] T009 [P] Registrar en `kittypau_app/android/app/src/main/AndroidManifest.xml` los
+- [x] T009 [P] Registrar en `kittypau_app/android/app/src/main/AndroidManifest.xml` los
   componentes que las fases siguientes van a crear:
   `KittypauHeroWidgetReceiver` (`<receiver>` con `APPWIDGET_UPDATE` + meta-data apuntando al
   XML de T012), `WidgetPetConfigActivity` (`<activity>`), y `KittypauWidgetPlugin` (registro de
@@ -90,38 +90,38 @@ misma mascota en el mismo momento.
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Crear
+- [x] T010 [US1] Crear
   `kittypau_app/android/app/src/main/res/xml/kittypau_hero_widget_info.xml`
   (`AppWidgetProviderInfo`, grilla 2×4, `android:configure` apuntando a
   `WidgetPetConfigActivity` de T013) (Fase B)
-- [ ] T011 [US1] Crear `KittypauHeroWidgetReceiver.kt`
+- [x] T011 [US1] Crear `KittypauHeroWidgetReceiver.kt`
   (`GlanceAppWidgetReceiver`) en `.../widget/`, incluyendo `onDeleted(appWidgetId)` que limpia
   la configuración de `SharedPreferences` (data-model.md §1, Edge Case "quitar y volver a
   agregar") (Fase B) — depende de T009, T010
-- [ ] T012 [US1] Crear `KittypauHeroWidget.kt` (composable Glance): estado normal (foto con
+- [x] T012 [US1] Crear `KittypauHeroWidget.kt` (composable Glance): estado normal (foto con
   fallback, barra de comida esmeralda, barra de agua sky, círculo de comida con número+ícono
   detrás con contraste, círculo de agua solo ícono sin número — FR-006, dos textos chicos de
   última hora con "sin registro hoy" cuando corresponda — FR-015) y estado "sin dispositivo
   asignado" (FR-016, mismo criterio honesto que `/today`) (Fase B) — depende de T011
-- [ ] T013 [US1] Crear `WidgetPetConfigActivity.kt`: lista las mascotas de la cuenta (`GET
+- [x] T013 [US1] Crear `WidgetPetConfigActivity.kt`: lista las mascotas de la cuenta (`GET
   /api/pets`, ya existente), al elegir una guarda `{ petId, petName, petPhotoUrl }` en
   `SharedPreferences` por `appWidgetId` (data-model.md §1) y llama
   `setResult(RESULT_OK)` + `finish()` (Fase B) — depende de T010
-- [ ] T014 [US1] Crear `KittypauWidgetPlugin.kt` (`@CapacitorPlugin`, método `requestPin()` que
+- [x] T014 [US1] Crear `KittypauWidgetPlugin.kt` (`@CapacitorPlugin`, método `requestPin()` que
   chequea `isRequestPinAppWidgetSupported` y llama `requestPinAppWidget()` —
   contracts/widget-pin-plugin.md) en `kittypau_app/android/app/src/main/java/com/kittypau/app/`
   (Fase B) — depende de T009, T011
-- [ ] T015 [US1] Crear `kittypau_app/src/lib/hooks/useAddWidgetToHomeScreen.ts`: import
+- [x] T015 [US1] Crear `kittypau_app/src/lib/hooks/useAddWidgetToHomeScreen.ts`: import
   dinámico de `@capacitor/core`, no-op si `!Capacitor.isNativePlatform()`, llama al plugin de
   T014 y devuelve `{ supported }` — mismo patrón de
   `kittypau_app/src/lib/hooks/usePushTokenRegistration.ts` (Fase A — se escribe y tipa acá; su
   llamada real al plugin nativo solo funciona en runtime una vez T014 esté compilado)
-- [ ] T016 [US1] Agregar botón "Agregar widget a tu pantalla de inicio" a la pantalla
+- [x] T016 [US1] Agregar botón "Agregar widget a tu pantalla de inicio" a la pantalla
   `/settings` (ubicar el archivo real de esa ruta en `kittypau_app/src/app/(app)/settings/`),
   visible solo en modo APK nativo (mismo criterio `isNativeApkMode` que
   `kittypau_app/src/app/_components/app-nav.tsx`), con el mensaje instructivo de fallback
   cuando `supported: false` (contracts/widget-pin-plugin.md § UI) (Fase A) — depende de T015
-- [ ] T017 [US1] `tsc` + `eslint` + `next build` limpios sobre todo lo de Fase A tocado hasta
+- [x] T017 [US1] `tsc` + `eslint` + `next build` limpios sobre todo lo de Fase A tocado hasta
   acá (Fase A) — depende de T016
 
 **Checkpoint**: US1 completa del lado Fase A (verificable acá). Fase B queda como código
@@ -140,19 +140,19 @@ que el widget lo refleja solo, dentro de la ventana de 30 min.
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Crear `WidgetAuthBridge.kt`: lee el refresh token desde
+- [x] T018 [US2] Crear `WidgetAuthBridge.kt`: lee el refresh token desde
   `@capacitor/preferences` (respaldado por `EncryptedSharedPreferences`), lo canjea contra
   `POST {SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, y expone el resultado como uno
   de `Autenticado` / `SinConexión` / `SesiónInválida` según research.md Decisión 6 (Fase B) —
   depende de T004
-- [ ] T019 [US2] Crear `WidgetRefreshWorker.kt` (`CoroutineWorker` + `PeriodicWorkRequest`,
+- [x] T019 [US2] Crear `WidgetRefreshWorker.kt` (`CoroutineWorker` + `PeriodicWorkRequest`,
   piso real de 15 min): para cada `appWidgetId` configurado, usa T018 para obtener un access
   token, pega a `GET /api/pets/:id/hunger-bar` (con el `water` de la Fase Foundational), y
   actualiza el snapshot cacheado (data-model.md §5) o lo limpia si el estado es
   `SesiónInválida` (Fase B) — depende de T012, T018
-- [ ] T020 [US2] Registrar el enqueue de `WidgetRefreshWorker` (único, `KEEP` policy) en
+- [x] T020 [US2] Registrar el enqueue de `WidgetRefreshWorker` (único, `KEEP` policy) en
   `KittypauHeroWidgetReceiver.onUpdate()`/`onEnabled()` (Fase B) — depende de T011, T019
-- [ ] T021 [US2] Actualizar `KittypauHeroWidget.kt` (T012) para pintar el estado "offline,
+- [x] T021 [US2] Actualizar `KittypauHeroWidget.kt` (T012) para pintar el estado "offline,
   último dato conocido" (FR-010, sin marca visual agresiva — sigue siendo el dato real más
   reciente) y el estado neutro "Iniciá sesión para ver a tu mascota" (FR-014) según lo que deja
   `WidgetRefreshWorker` en el snapshot cacheado (Fase B) — depende de T012, T019
@@ -177,11 +177,11 @@ de esa mascota; con sesión inválida → abre el login.
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Agregar la acción de tap en `KittypauHeroWidget.kt` (T012):
+- [x] T023 [US3] Agregar la acción de tap en `KittypauHeroWidget.kt` (T012):
   `actionStartActivity` hacia `MainActivity` con un extra (`petId` + ruta objetivo `/today`)
   cuando el estado es `Autenticado`, o hacia la pantalla de login cuando es `SesiónInválida`
   (Fase B) — depende de T012, T021
-- [ ] T024 [US3] Antes de escribir código nuevo, revisar si `MainActivity`/el plugin `App` de
+- [x] T024 [US3] Antes de escribir código nuevo, revisar si `MainActivity`/el plugin `App` de
   Capacitor ya maneja deep links entrantes (buscar `appUrlOpen`/`android:launchMode` en
   `AndroidManifest.xml` y `MainActivity.java` existentes — ladder Ponytail paso 2). Si no
   existe, agregar el manejo mínimo para navegar el WebView a `/today?petId=...` al recibir el
@@ -198,10 +198,10 @@ en la PC de Mauro para las 3).
 - [ ] T025 [P] Correr `quickstart.md` completo (Pasos 1-6) en la PC de Mauro una vez que la
   Fase B esté compilada, y actualizar `Knowledge/19_DevOps/PENDIENTES_POR_PC.md` con el
   resultado real (qué pasó, qué quedó pendiente)
-- [ ] T026 [P] Actualizar `Knowledge/29_Specs/SPEC_06_Mobile_APK_2026.md` § "Evaluado y
+- [x] T026 [P] Actualizar `Knowledge/29_Specs/SPEC_06_Mobile_APK_2026.md` § "Evaluado y
   descartado por ahora" — el widget dejó de estar pospuesto, reflejar el estado real
   (implementado / en progreso) para que no quede desactualizado
-- [ ] T027 Revisión final de lectura de todo el código Fase B (Kotlin/XML) — sintaxis, imports,
+- [x] T027 Revisión final de lectura de todo el código Fase B (Kotlin/XML) — sintaxis, imports,
   nombres de paquete consistentes con `com.kittypau.app` — antes de que Mauro lo compile por
   primera vez, para minimizar idas y vueltas de errores de compilación triviales
 

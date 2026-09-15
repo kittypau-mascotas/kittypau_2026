@@ -39,24 +39,28 @@ Authorization: Bearer <access_token>
     "status": "ok" | "sin_dispositivo",
     "percentage": number | null,
     "hasEvidence": boolean,
-    "lastEventLabel": string | null,
     "lastEventAt": string | null
   }
 }
 ```
 
+`lastEventAt` viaja como ISO crudo, sin formatear — mismo criterio que ya usa el campo
+`lastMealDetectedAt` del objeto raíz (la hora legible/"hace X" se arma del lado del consumidor,
+no del backend; evita reimplementar formato de fecha en dos lenguajes para el widget nativo).
+
 ### Reglas del objeto `water`
 
 - **MUST** calcularse server-side con la misma fórmula que hoy usa `today-screen.tsx`
   (`waterContentWeightGrams / waterMaxServedContentMl`, tope en 1.0) — no una aproximación
-  nueva. Ver [data-model.md](../data-model.md) §3.
+  nueva. Ver [data-model.md](../data-model.md) §3. Implementado en
+  `src/lib/hunger-bar-server.ts` (`buildWaterSnapshot`).
 - **MUST** devolver `status: "sin_dispositivo"` (con el resto de los campos de `water` en
   `null`/`false`) cuando la mascota no tiene bebedero activo vinculado — mismo criterio que ya
   usa el objeto raíz para el dispositivo de comida (líneas 57-73 del archivo actual).
 - **MUST NOT** incluir un conteo de "veces que tomó agua" en ningún campo — FR-006/FR-015, no
   existe ese dato de forma confirmada (ver spec.md, Pregunta 1).
-- `lastEventAt`/`lastEventLabel` **MUST** ser `null`/"sin registro" cuando no hay evento
-  confirmado — nunca una hora inventada (FR-008, FR-015).
+- `lastEventAt` **MUST** ser `null` cuando no hay un par inicio/término de hidratación
+  confirmado — nunca una hora inventada (FR-008, FR-015); `hasEvidence` es `false` en ese caso.
 
 ### Errores
 

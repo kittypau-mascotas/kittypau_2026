@@ -114,9 +114,11 @@ el producto:
 
 **Evaluado y descartado por ahora** (no encaja con esta app o es demasiado trabajo para el
 valor):
-- Widgets de pantalla de inicio — requiere código nativo Kotlin/Glance por fuera de
-  Capacitor, no hay plugin que lo resuelva; recién tendría sentido si "ver el % del hunger
-  bar sin abrir la app" se vuelve un pedido explícito de usuarios reales.
+- ~~Widgets de pantalla de inicio~~ — el pedido explícito llegó (2026-09-15, Mauro). Ya no
+  está descartado: spec + plan + implementación (Fase A verificada, Fase B escrita pendiente
+  de compilar) en `Knowledge/29_Specs/010-widget-android-hero/`. Confirma lo previsto acá:
+  requirió código nativo Kotlin/Glance por fuera de Capacitor (Jetpack Glance, no
+  RemoteViews clásico — justificado en `010-widget-android-hero/research.md` Decisión 1).
 - Live Activities / Dynamic Island — es iOS-only y la app hoy es Android-only en producción.
 
 ---

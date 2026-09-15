@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+// Widget de Android (Knowledge/29_Specs/010-widget-android-hero/research.md
+// Decisión 1: Jetpack Glance en vez de RemoteViews clásico) -- primer código
+// Kotlin de este módulo, hasta ahora 100% Java (MainActivity.java).
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 configurations.configureEach {
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
@@ -15,11 +20,38 @@ android {
         versionCode 3
         versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Mismos valores públicos que ya usa el WebView vía
+        // NEXT_PUBLIC_SUPABASE_URL/NEXT_PUBLIC_SUPABASE_ANON_KEY (kittypau_app/.env.local,
+        // NUNCA commiteado -- ver CLAUDE.md) -- `WidgetAuthBridge.kt` los
+        // necesita porque corre fuera del WebView/JS, no puede leer
+        // `process.env`. El anon key de Supabase está diseñado para vivir en
+        // clientes (protegido por RLS, no por secreto) -- igual se pasa por
+        // Gradle property (`-PsupabaseUrl=... -PsupabaseAnonKey=...` o
+        // `gradle.properties` local, no commiteado) en vez de hardcodearlo
+        // acá, para no duplicar el valor real a mano ni atarlo a un único
+        // ambiente (dev/staging/prod).
+        buildConfigField "String", "SUPABASE_URL",
+            "\"${project.findProperty('supabaseUrl') ?: ''}\""
+        buildConfigField "String", "SUPABASE_ANON_KEY",
+            "\"${project.findProperty('supabaseAnonKey') ?: ''}\""
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
+    }
+    // AGP 8.13.2 requiere JDK 17 para compilar -- alinear el bytecode de
+    // Kotlin/Java a esa misma versión (antes no estaba declarado, Java-only
+    // corría con el default del toolchain).
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        buildConfig true
     }
     buildTypes {
         debug {
@@ -57,6 +89,17 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // Widget de Android (Knowledge/29_Specs/010-widget-android-hero) --
+    // versiones estables más recientes confirmadas contra el repositorio de
+    // Google al planificar este feature (2026-09-15); reconfirmar si difiere
+    // al compilar por primera vez (research.md § Resumen de dependencias).
+    implementation "androidx.glance:glance-appwidget:1.2.0"
+    // ponytail: puede ya venir transitiva con @capacitor/android 8.5.0/
+    // androidx.core -- declararla explícita igual, es gratis si coincide y
+    // evita depender de una versión transitiva no garantizada para el
+    // refresco periódico del widget (research.md Decisión 5).
+    implementation "androidx.work:work-runtime-ktx:2.11.2"
 }
 
 apply from: 'capacitor.build.gradle'

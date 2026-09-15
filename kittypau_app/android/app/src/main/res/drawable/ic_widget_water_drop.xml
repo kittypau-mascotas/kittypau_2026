@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ponytail: gota genérica (forma estándar tipo Material "water_drop"), NO es
+  el path real de lucide-react "Droplet" que usa el resto de la app (esa
+  sesión no dejó el path exacto documentado en Knowledge/, solo el de "Bone" --
+  ver ic_widget_food_bone.xml). Techo: se ve "una gota", no pixel-perfect
+  contra el ícono web. Upgrade: extraer el path real de
+  node_modules/lucide-react/dist/esm/icons/droplet.js (mismo método ya usado
+  para Bone) y reemplazar este pathData cuando se compile por primera vez.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/vector"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M12,2C12,2 5,10.5 5,15C5,18.87 8.13,22 12,22C15.87,22 19,18.87 19,15C19,10.5 12,2 12,2Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+</vector>

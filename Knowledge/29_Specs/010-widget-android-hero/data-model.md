@@ -52,7 +52,7 @@ Decisión 3).
 |---|---|---|---|
 | `percentage` | `number \| null` | **Nuevo**: extraído de la lógica hoy client-side en `today-screen.tsx` (`waterContentWeightGrams / waterMaxServedContentMl`), portado a `hunger-bar-server.ts` | Barra de agua (FR-004). |
 | `hasEvidence` | `boolean` | **Nuevo**, mismo criterio que ya usa `waterWellness.hasEvidence` en `today-screen.tsx` | Determina si el círculo de agua tiene evidencia real detrás o no — no determina un número (nunca lo hay, FR-006), pero sí puede atenuar el ícono si no hay evidencia, igual que el hero real. |
-| `lastEventLabel` / `lastEventAt` | `string \| string (ISO) \| null` | **Nuevo**, mismo dato que ya calcula `waterWellness.lastEventLabel` | FR-008: texto pequeño de "última agua". `null`/"sin registro" si no hay evento confirmado — nunca inventado. |
+| `lastEventAt` | `string (ISO) \| null` | **Nuevo** — par inicio/término de hidratación confirmado más reciente (mismo criterio que `waterWellness.lastEventLabel`, pero crudo, sin formatear — mismo patrón que `lastMealDetectedAt` del objeto raíz) | FR-008: texto pequeño de "última agua", formateado por el consumidor (widget nativo). `null` si no hay evento confirmado — nunca inventado. |
 
 **Nota de contrato**: estos tres campos viajan dentro de un objeto `water` nuevo agregado a la
 respuesta existente de `GET /api/pets/:id/hunger-bar` (ver [contracts/](contracts/)) — no es un

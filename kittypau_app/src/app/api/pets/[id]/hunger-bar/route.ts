@@ -9,6 +9,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import {
   buildHungerBarPayload,
   resolveFoodDevice,
+  resolveWaterDevice,
 } from "@/lib/hunger-bar-server";
 
 // GET /api/pets/:id/hunger-bar
@@ -70,14 +71,31 @@ export async function GET(
       hoursOverdue: null,
       events: [],
       kpis: null,
+      water: {
+        status: "sin_dispositivo",
+        percentage: null,
+        hasEvidence: false,
+        lastEventAt: null,
+      },
     });
+  }
+
+  // Bebedero activo -- mismo criterio que ya usa `today-screen.tsx`
+  // client-side (Knowledge/29_Specs/010-widget-android-hero/research.md
+  // Decisión 3). No corta la respuesta si falla: el widget/consumidor sigue
+  // recibiendo comida igual, solo sin `water`.
+  let waterDevice;
+  try {
+    waterDevice = await resolveWaterDevice(petId, device.id);
+  } catch {
+    waterDevice = null;
   }
 
   // KPIs de consumo (Knowledge/29_Specs/SPEC_11_Resumen_Consumo_Today.md §2.2)
   // -- shaping compartido con `GET /api/demo/today` en @/lib/hunger-bar-server.
   let payload;
   try {
-    payload = await buildHungerBarPayload(device, pet);
+    payload = await buildHungerBarPayload(device, pet, waterDevice);
   } catch (err) {
     return apiError(
       req,

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Placeholder RemoteViews obligatorio para `android:initialLayout`/
+  `android:previewLayout` del AppWidgetProviderInfo (kittypau_hero_widget_info.xml)
+  -- se ve una fracción de segundo mientras Glance (KittypauHeroWidget.kt)
+  compone y reemplaza el contenido real por primera vez. No lleva datos
+  reales, solo un estado neutro de carga -- "copy honesto", no inventa nada.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBB7AA"
+    android:padding="12dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/app_name"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+</FrameLayout>

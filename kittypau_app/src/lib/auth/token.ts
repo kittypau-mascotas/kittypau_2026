@@ -4,6 +4,40 @@ const ACCESS_TOKEN_KEY = "kp_access_token";
 const REFRESH_TOKEN_KEY = "kp_refresh_token";
 const TOKEN_SKEW_MS = 60_000; // refresh when expiring within 60s
 
+// 010-widget-android-hero (research.md Decisión 4): el widget nativo corre
+// fuera del WebView y no puede leer `window.localStorage` -- necesita el
+// refresh token en un storage nativo. `@capacitor/preferences` (encriptado
+// vía EncryptedSharedPreferences del lado nativo) ya está recomendado para
+// esto en SPEC_06_Mobile_APK_2026.md. Mismo nombre de key que
+// `WidgetAuthBridge.kt` lee del lado Kotlin -- no reinventar el nombre en
+// los dos lenguajes. Best-effort, nunca bloquea el flujo de auth si falla o
+// si no es la APK nativa (import dinámico + no-op, mismo patrón que
+// `usePushTokenRegistration.ts`).
+const NATIVE_REFRESH_TOKEN_KEY = "kp_refresh_token";
+
+function mirrorRefreshTokenToNative(refreshToken: string | null) {
+  if (typeof window === "undefined") return;
+  void (async () => {
+    try {
+      const { Capacitor } = await import("@capacitor/core");
+      if (!Capacitor.isNativePlatform()) return;
+      const { Preferences } = await import("@capacitor/preferences");
+      if (refreshToken) {
+        await Preferences.set({
+          key: NATIVE_REFRESH_TOKEN_KEY,
+          value: refreshToken,
+        });
+      } else {
+        await Preferences.remove({ key: NATIVE_REFRESH_TOKEN_KEY });
+      }
+    } catch {
+      // No es la APK nativa, o el plugin no está disponible todavía --
+      // el widget seguirá mostrando el último dato conocido (FR-010) hasta
+      // que haya un token nativo que leer.
+    }
+  })();
+}
+
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -22,6 +56,7 @@ export function setTokens(params: {
   window.localStorage.setItem(ACCESS_TOKEN_KEY, params.accessToken);
   if (params.refreshToken) {
     window.localStorage.setItem(REFRESH_TOKEN_KEY, params.refreshToken);
+    mirrorRefreshTokenToNative(params.refreshToken);
   }
 }
 
@@ -29,6 +64,7 @@ export function clearTokens() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(ACCESS_TOKEN_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+  mirrorRefreshTokenToNative(null);
 }
 
 function clearSupabaseBrowserSession() {

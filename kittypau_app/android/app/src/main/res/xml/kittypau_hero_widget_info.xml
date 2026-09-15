@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Widget "mini-hero" de la mascota -- Knowledge/29_Specs/010-widget-android-hero.
+  Grilla fija 2 filas x 4 columnas (research.md Decisión 1, Assumptions del
+  spec: sin resizable en esta primera versión). Fórmula de tamaño mínimo
+  estándar de Android: minWidth = 70*cols - 30dp, minHeight = 70*rows - 30dp.
+
+  `updatePeriodMillis="0"`: el refresco NO lo maneja este mecanismo nativo
+  (su piso real de 30 min es más lento e inflexible que lo que necesitamos) --
+  lo maneja `WidgetRefreshWorker` (WorkManager, research.md Decisión 5),
+  encolado desde `KittypauHeroWidgetReceiver.onEnabled()`/`onUpdate()`.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/kittypau_hero_widget_loading"
+    android:configure="com.kittypau.app.widget.WidgetPetConfigActivity"
+    android:resizeMode="none"
+    android:widgetCategory="home_screen"
+    android:description="@string/app_short_description"
+    android:previewLayout="@layout/kittypau_hero_widget_loading" />
