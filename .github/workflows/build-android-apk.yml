@@ -46,9 +46,11 @@ jobs:
           # falla y hay que volver a disparar el workflow.
           cache: gradle
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
+      # Los runners `ubuntu-latest` de GitHub ya traen el SDK de Android
+      # preinstalado (con licencias aceptadas) -- `android-actions/setup-android@v3`
+      # intentaba instalar el paquete legado "tools", que Google ya no
+      # distribuye, y fallaba siempre. AGP descarga solo la plataforma/build-tools
+      # que falten (compileSdk 36) al correr `./gradlew`.
       - name: Install web dependencies
         run: npm ci
 
