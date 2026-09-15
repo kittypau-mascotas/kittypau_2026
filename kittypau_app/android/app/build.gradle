@@ -104,6 +104,14 @@ dependencies {
     // declaración explícita es necesaria, no redundante, para el refresco
     // periódico del widget (research.md Decisión 5).
     implementation "androidx.work:work-runtime-ktx:2.11.2"
+
+    // KittypauMessagingService.kt (T022) extiende la MessagingService de
+    // @capacitor/push-notifications, que ya trae firebase-messaging como
+    // `implementation` -- eso lo oculta del classpath de compilación de
+    // :app (no es `api`). Misma versión que resuelve ese plugin
+    // (node_modules/@capacitor/push-notifications/android/build.gradle,
+    // firebaseMessagingVersion) para no arrastrar 2 versiones distintas.
+    implementation "com.google.firebase:firebase-messaging:25.0.1"
 }
 
 apply from: 'capacitor.build.gradle'

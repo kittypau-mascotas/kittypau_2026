@@ -1,7 +1,7 @@
 package com.kittypau.app.widget
 
+import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,10 +11,14 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.action.Action
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -67,15 +71,15 @@ class KittypauHeroWidget : GlanceAppWidget() {
             when {
                 petId == null -> NeutralState(
                     message = "Tocá para elegir tu mascota",
-                    intent = openAppIntent(context, "/today"),
+                    action = openAppAction(context, "/today"),
                 )
                 !sessionValid -> NeutralState(
                     message = "Iniciá sesión para ver a tu mascota",
-                    intent = openAppIntent(context, "/login"),
+                    action = openAppAction(context, "/login"),
                 )
                 snapshot == null || !snapshot.hasFoodDevice -> NeutralState(
                     message = "${petName ?: "Tu mascota"}: sin dispositivo asignado todavía",
-                    intent = openAppIntent(context, "/today?petId=$petId"),
+                    action = openAppAction(context, "/today?petId=$petId"),
                 )
                 else -> HeroContent(
                     context = context,
@@ -90,13 +94,13 @@ class KittypauHeroWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun NeutralState(message: String, intent: Intent) {
+private fun NeutralState(message: String, action: Action) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
             .background(ColorProvider(Color(0xFFF1F5F9), Color(0xFF1E293B)))
             .padding(12.dp)
-            .clickable(actionStartActivity(intent)),
+            .clickable(action),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -126,7 +130,7 @@ private fun HeroContent(
             .fillMaxSize()
             .background(ColorProvider(Color(0xFFEBB7AA), Color(0xFF3A2A26))) // --primary, FR-012
             .padding(10.dp)
-            .clickable(actionStartActivity(openAppIntent(context, "/today?petId=$petId"))),
+            .clickable(openAppAction(context, "/today?petId=$petId")),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Foto de la mascota -- FR-002. Glance no puede pedir red en el
@@ -189,12 +193,12 @@ private fun HeroContent(
             // Últimas horas -- FR-007/FR-008, texto muy chico, "sin registro" honesto
             Text(
                 text = "Últ. comida: ${formatHourOrUnknown(snapshot.lastMealDetectedAt)}",
-                style = TextStyle(color = ColorProvider(Color.White), fontSize = 9.sp),
+                style = TextStyle(color = ColorProvider(Color.White, Color.White), fontSize = 9.sp),
             )
             if (snapshot.hasWaterDevice) {
                 Text(
                     text = "Últ. agua: ${formatHourOrUnknown(snapshot.lastWaterEventAt)}",
-                    style = TextStyle(color = ColorProvider(Color.White), fontSize = 9.sp),
+                    style = TextStyle(color = ColorProvider(Color.White, Color.White), fontSize = 9.sp),
                 )
             }
         }
@@ -207,27 +211,18 @@ private fun WellnessBar(label: String, percentage: Int?, color: Color) {
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Text(
             text = "$label ${percentage?.let { "$it%" } ?: "N/D"}",
-            style = TextStyle(color = ColorProvider(Color.White), fontSize = 10.sp, fontWeight = FontWeight.Medium),
+            style = TextStyle(color = ColorProvider(Color.White, Color.White), fontSize = 10.sp, fontWeight = FontWeight.Medium),
         )
-        Box(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .height(6.dp)
-                .cornerRadius(3.dp)
-                .background(ColorProvider(Color(0x33FFFFFF), Color(0x33FFFFFF))),
-        ) {
-            Box(
-                modifier = GlanceModifier
-                    // fracción real del ancho disponible -- proporcional sin
-                    // depender de cuánto ancho le toque a la columna en la
-                    // grilla 2x4 real (ver nota de compilación al inicio del
-                    // archivo sobre verificar esta firma contra el SDK).
-                    .fillMaxWidth(fraction = pct.coerceAtLeast(4) / 100f)
-                    .height(6.dp)
-                    .cornerRadius(3.dp)
-                    .background(ColorProvider(color, color)),
-            ) {}
-        }
+        // `GlanceModifier.fillMaxWidth(fraction = ...)` no existe en
+        // glance-appwidget 1.2.0 (verificado contra el jar real al compilar
+        // por primera vez) -- `LinearProgressIndicator` es el componente
+        // nativo del propio SDK para esto, sin reimplementar la barra a mano.
+        LinearProgressIndicator(
+            progress = pct.coerceAtLeast(4) / 100f,
+            modifier = GlanceModifier.fillMaxWidth().height(6.dp).cornerRadius(3.dp),
+            color = ColorProvider(color, color),
+            backgroundColor = ColorProvider(Color(0x33FFFFFF), Color(0x33FFFFFF)),
+        )
     }
 }
 
@@ -251,7 +246,7 @@ private fun WellnessCircle(color: Color, icon: Int, number: Int?, contentDescrip
             Text(
                 text = number.toString(),
                 style = TextStyle(
-                    color = ColorProvider(Color.White),
+                    color = ColorProvider(Color.White, Color.White),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                 ),
@@ -281,11 +276,19 @@ private fun petPhotoImageProvider(context: Context, appWidgetId: Int): ImageProv
     return ImageProvider(R.drawable.pet_profile_fallback)
 }
 
-/** Intent para abrir `MainActivity` en un path dado -- User Story 3, FR-011. */
-private fun openAppIntent(context: Context, path: String): Intent =
-    Intent(context, MainActivity::class.java)
-        .setAction(Intent.ACTION_MAIN)
-        .putExtra(MainActivity.EXTRA_TARGET_PATH, path)
+// `actionStartActivity` en glance-appwidget 1.2.0 no tiene overload de
+// `Intent` (solo `ComponentName`/`Class`+`ActionParameters`, verificado
+// contra el jar real al compilar por primera vez) -- el path viaja como
+// ActionParameters, que Glance mete como extra del Intent real que arma
+// para lanzar la Activity, con el mismo nombre que la Key.
+private val targetPathKey = ActionParameters.Key<String>(MainActivity.EXTRA_TARGET_PATH)
+
+/** Acción para abrir `MainActivity` en un path dado -- User Story 3, FR-011. */
+private fun openAppAction(context: Context, path: String): Action =
+    actionStartActivity(
+        ComponentName(context, MainActivity::class.java),
+        actionParametersOf(targetPathKey to path),
+    )
 
 // ponytail: `java.time` (Instant/LocalDateTime) recién es nativo desde
 // API 26 -- este proyecto tiene minSdkVersion 24 (SPEC_06_Mobile_APK_2026.md),
