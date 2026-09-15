@@ -46,6 +46,14 @@ export async function sendPushToTokens(params: {
   const response = await messaging.sendEachForMulticast({
     tokens: params.tokens,
     notification: { title: params.title, body: params.body },
+    // 010-widget-android-hero (research.md Decisión 5, T022): el único
+    // caller real de esta función hoy es el cron de "comió"/"le sirvieron"
+    // -- el mismo evento que amerita la notificación también amerita
+    // refrescar el widget casi al instante en vez de esperar el próximo
+    // ciclo de WorkManager (15 min). Todos los valores de `data` DEBEN ser
+    // string (contrato de FCM). `KittypauMessagingService.kt` la intercepta
+    // del lado nativo.
+    data: { kittypau_widget_refresh: "1" },
     android: {
       notification: {
         icon: "ic_stat_kittypau",

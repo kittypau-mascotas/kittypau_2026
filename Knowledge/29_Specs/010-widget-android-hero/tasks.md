@@ -35,9 +35,10 @@ para un equipo de 2 personas); la verificación de la parte nativa es manual, v�
 - [x] T002 [P] Declarar `androidx.glance:glance-appwidget` en
   `kittypau_app/android/app/build.gradle` (research.md Decisión 1) (Fase B)
 - [x] T003 [P] Verificar si `androidx.work:work-runtime-ktx` ya viene transitiva con
-  `@capacitor/android` 8.5.0 (`./gradlew :app:dependencies` en la PC de Mauro); si no,
-  declararla en `kittypau_app/android/app/build.gradle` (research.md § Resumen de
-  dependencias) (Fase B)
+  `@capacitor/android` 8.5.0 -- confirmado que NO (grep sin resultados en
+  `node_modules/@capacitor/android/capacitor/build.gradle`, no hace falta esperar a
+  `./gradlew :app:dependencies` en la PC de Mauro para saberlo); declarada en
+  `kittypau_app/android/app/build.gradle` (research.md § Resumen de dependencias) (Fase B)
 - [x] T004 [P] Crear el paquete `kittypau_app/android/app/src/main/java/com/kittypau/app/widget/`
   (estructura vacía para las clases de las fases siguientes) (Fase B)
 
@@ -141,7 +142,8 @@ que el widget lo refleja solo, dentro de la ventana de 30 min.
 ### Implementation for User Story 2
 
 - [x] T018 [US2] Crear `WidgetAuthBridge.kt`: lee el refresh token desde
-  `@capacitor/preferences` (respaldado por `EncryptedSharedPreferences`), lo canjea contra
+  `@capacitor/preferences` (`SharedPreferences` plano, sin encripción -- verificado, research.md
+  Decisión 4), lo canjea contra
   `POST {SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, y expone el resultado como uno
   de `Autenticado` / `SinConexión` / `SesiónInválida` según research.md Decisión 6 (Fase B) —
   depende de T004
@@ -156,11 +158,16 @@ que el widget lo refleja solo, dentro de la ventana de 30 min.
   último dato conocido" (FR-010, sin marca visual agresiva — sigue siendo el dato real más
   reciente) y el estado neutro "Iniciá sesión para ver a tu mascota" (FR-014) según lo que deja
   `WidgetRefreshWorker` en el snapshot cacheado (Fase B) — depende de T012, T019
-- [ ] T022 [P] [US2] (Opcional, no bloqueante para SC-002 — research.md Decisión 5) Extender
-  `kittypau_app/src/app/api/cron/notify-meal-events/route.ts` para mandar, junto al push
-  existente, un mensaje FCM **data-only** que dispare un refresco inmediato de
-  `WidgetRefreshWorker` en vez de esperar el próximo ciclo de 15 min (Fase A el lado servidor;
-  el listener nativo que reacciona al mensaje data-only es Fase B, tarea separada si se prioriza)
+- [x] T022 [P] [US2] (Opcional, no bloqueante para SC-002 — research.md Decisión 5) `src/lib/push/fcm.ts`
+  (`sendPushToTokens`, único caller real: el cron de `notify-meal-events`) manda `data:
+  { kittypau_widget_refresh: "1" }` junto al push existente (Fase A). Del lado nativo,
+  `KittypauMessagingService.kt` extiende la `MessagingService` de `@capacitor/push-notifications`
+  (llama `super.onMessageReceived()` primero -- el push "comió"/"le sirvieron" sigue intacto),
+  chequea ese data-flag y dispara `WidgetRefreshWorker.enqueueImmediate()`; `AndroidManifest.xml`
+  reemplaza el `<service>` del plugin por el propio (mismo `android:name` original removido con
+  `tools:node="remove"`, único `FirebaseMessagingService` permitido por app) (Fase B) — sigue
+  bloqueado por lo mismo que todo el push hoy: credenciales de Firebase de Mauro
+  (`008-push-notifications-fcm/plan.md`), no por este feature
 
 **Checkpoint**: refresco automático completo — SC-002 se cumple solo con T019 (15 min < 30 min
 del criterio), T022 es una mejora de latencia, no un requisito para cerrar la historia.

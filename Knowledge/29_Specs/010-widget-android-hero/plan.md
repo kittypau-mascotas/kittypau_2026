@@ -33,7 +33,8 @@ Capacitor propio sin librería externa (`KittypauWidgetPlugin.kt`).
 
 **Storage**: Supabase (ya existente, sin tablas nuevas — ver `data-model.md`) + `SharedPreferences`
 nativas de Android para configuración/caché por `appWidgetId` + `@capacitor/preferences`
-(respaldado por `EncryptedSharedPreferences`) para el refresh token en background.
+(`SharedPreferences` plano bajo el nombre `"CapacitorStorage"`, sin encripción -- verificado
+contra el código fuente del plugin, research.md Decisión 4) para el refresh token en background.
 
 **Testing**: Vitest para la extensión de `hunger-bar/route.test.ts` (corre en este entorno, ver
 `quickstart.md` Paso 1); verificación manual en dispositivo/emulador para todo lo de Android

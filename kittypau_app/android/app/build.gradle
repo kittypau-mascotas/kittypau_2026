@@ -95,10 +95,11 @@ dependencies {
     // Google al planificar este feature (2026-09-15); reconfirmar si difiere
     // al compilar por primera vez (research.md § Resumen de dependencias).
     implementation "androidx.glance:glance-appwidget:1.2.0"
-    // ponytail: puede ya venir transitiva con @capacitor/android 8.5.0/
-    // androidx.core -- declararla explícita igual, es gratis si coincide y
-    // evita depender de una versión transitiva no garantizada para el
-    // refresco periódico del widget (research.md Decisión 5).
+    // Verificado (2026-09-15): @capacitor/android 8.5.0 NO trae
+    // androidx.work transitiva (grep sin resultados en
+    // node_modules/@capacitor/android/capacitor/build.gradle) -- esta
+    // declaración explícita es necesaria, no redundante, para el refresco
+    // periódico del widget (research.md Decisión 5).
     implementation "androidx.work:work-runtime-ktx:2.11.2"
 }
 

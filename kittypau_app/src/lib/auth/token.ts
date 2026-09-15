@@ -6,13 +6,15 @@ const TOKEN_SKEW_MS = 60_000; // refresh when expiring within 60s
 
 // 010-widget-android-hero (research.md Decisión 4): el widget nativo corre
 // fuera del WebView y no puede leer `window.localStorage` -- necesita el
-// refresh token en un storage nativo. `@capacitor/preferences` (encriptado
-// vía EncryptedSharedPreferences del lado nativo) ya está recomendado para
-// esto en SPEC_06_Mobile_APK_2026.md. Mismo nombre de key que
-// `WidgetAuthBridge.kt` lee del lado Kotlin -- no reinventar el nombre en
-// los dos lenguajes. Best-effort, nunca bloquea el flujo de auth si falla o
-// si no es la APK nativa (import dinámico + no-op, mismo patrón que
-// `usePushTokenRegistration.ts`).
+// refresh token en un storage nativo. `@capacitor/preferences` ya está
+// recomendado para esto en SPEC_06_Mobile_APK_2026.md -- guarda en
+// `SharedPreferences` plano bajo `"CapacitorStorage"` (verificado contra el
+// código fuente del plugin), sin encripción propia; mismas garantías que el
+// `localStorage` que ya usábamos antes de este feature, no es una regresión
+// de seguridad. Mismo nombre de key que `WidgetAuthBridge.kt` lee del lado
+// Kotlin -- no reinventar el nombre en los dos lenguajes. Best-effort, nunca
+// bloquea el flujo de auth si falla o si no es la APK nativa (import
+// dinámico + no-op, mismo patrón que `usePushTokenRegistration.ts`).
 const NATIVE_REFRESH_TOKEN_KEY = "kp_refresh_token";
 
 function mirrorRefreshTokenToNative(refreshToken: string | null) {

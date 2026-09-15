@@ -15,20 +15,23 @@ import java.net.URL
  * directo del storage nativo de `@capacitor/preferences` y lo canjea contra
  * el endpoint estándar de Supabase Auth, sin depender de la app abierta.
  *
- * ⚠️ No compilado en este entorno (research.md Decisión 0). Dos cosas a
- * verificar al compilar por primera vez:
- *  1. `PREFERENCES_STORAGE_NAME` -- nombre real del `SharedPreferences` que
- *     usa la versión instalada de `@capacitor/preferences` en Android
- *     (documentado como "CapacitorStorage" en versiones conocidas del
- *     plugin, pero no verificado contra el código fuente exacto de la
- *     versión que termine instalada -- si difiere, `readRefreshToken`
- *     devuelve null y el widget cae a `SesionInvalida` en vez de
- *     `SinConexion`, hay que corregir el nombre acá).
- *  2. `BuildConfig.SUPABASE_URL`/`SUPABASE_ANON_KEY` -- vienen de
- *     `android/app/build.gradle` (`buildConfigField`, leídos de una Gradle
- *     property `-PsupabaseUrl=...`/`gradle.properties` local, NUNCA
- *     commiteados) -- deben quedar seteados antes de compilar o el widget
- *     nunca logra autenticarse.
+ * ⚠️ No compilado en este entorno (research.md Decisión 0). Una cosa sigue
+ * pendiente de confirmar al compilar por primera vez:
+ *  - `BuildConfig.SUPABASE_URL`/`SUPABASE_ANON_KEY` -- vienen de
+ *    `android/app/build.gradle` (`buildConfigField`, leídos de una Gradle
+ *    property `-PsupabaseUrl=...`/`gradle.properties` local, NUNCA
+ *    commiteados) -- deben quedar seteados antes de compilar o el widget
+ *    nunca logra autenticarse.
+ *
+ * `PREFERENCES_STORAGE_NAME = "CapacitorStorage"` ya está **verificado**
+ * (2026-09-15) contra el código fuente real del plugin
+ * (`ionic-team/capacitor-plugins/preferences/android/.../Preferences.java`,
+ * `PreferencesConfiguration.java`): usa
+ * `context.getSharedPreferences("CapacitorStorage", MODE_PRIVATE)` directo,
+ * sin ninguna capa de `EncryptedSharedPreferences` (research.md Decisión 4
+ * tenía esto documentado mal -- corregido). Mismas garantías que el
+ * `localStorage` que ya usaba `token.ts` antes de este feature, no una
+ * regresión de seguridad.
  */
 sealed class WidgetAuthState {
     data class Authenticated(val accessToken: String) : WidgetAuthState()
@@ -37,7 +40,7 @@ sealed class WidgetAuthState {
 }
 
 object WidgetAuthBridge {
-    // ver nota (1) del comentario de arriba.
+    // Verificado contra el código fuente del plugin -- ver comentario de arriba.
     private const val PREFERENCES_STORAGE_NAME = "CapacitorStorage"
     // Mismo nombre de key que `NATIVE_REFRESH_TOKEN_KEY` en
     // `kittypau_app/src/lib/auth/token.ts` -- no reinventarlo en los dos lenguajes.

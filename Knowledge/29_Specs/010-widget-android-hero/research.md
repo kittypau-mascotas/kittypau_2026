@@ -153,13 +153,25 @@ casos, no se empieza de cero.
 
 **Decisión**: el refresh token de Supabase se guarda con `@capacitor/preferences` (dependencia
 nueva — recomendada explícitamente para este caso en `SPEC_06_Mobile_APK_2026.md` línea 111,
-pero **no instalada todavía**, confirmado por `grep` en `package.json`), respaldado por
-`EncryptedSharedPreferences` del lado nativo (el plugin ya usa esto internamente en Android,
-no hay que implementarlo a mano). El `WidgetRefreshWorker` (Kotlin, corre en background sin el
-WebView) lee el refresh token directo de esas preferences nativas y llama al endpoint estándar
-de Supabase Auth (`POST {SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`) para obtener un
-access token fresco antes de pegarle a `hunger-bar`, sin depender de que la app/WebView esté
-abierta ni de JavaScript.
+instalada en la implementación de este feature, ver `package.json`). El `WidgetRefreshWorker`
+(Kotlin, corre en background sin el WebView) lee el refresh token directo de ese storage nativo
+y llama al endpoint estándar de Supabase Auth (`POST {SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`)
+para obtener un access token fresco antes de pegarle a `hunger-bar`, sin depender de que la
+app/WebView esté abierta ni de JavaScript.
+
+**Corrección (verificado 2026-09-15 contra el código fuente real del plugin,
+`ionic-team/capacitor-plugins/preferences/android/.../Preferences.java`)**: acá se había
+asumido, sin chequear, que `@capacitor/preferences` respalda sus datos con
+`EncryptedSharedPreferences` — **es falso**. El plugin usa
+`context.getSharedPreferences("CapacitorStorage", MODE_PRIVATE)` directo, sin ninguna capa de
+encripción — mismas garantías que el `localStorage` que ya usa `getRefreshToken()` en
+`token.ts` (sandbox de almacenamiento privado por app de Android, no cifrado en reposo). No es
+una regresión de seguridad (el refresh token ya vivía sin cifrar en el WebView antes de este
+feature), pero la documentación de acá y de `plan.md` decía lo contrario — corregido. Si Mauro
+quiere subir el nivel de protección más adelante, el camino real es envolver manualmente ese
+mismo `SharedPreferences` con `androidx.security-crypto` (`EncryptedSharedPreferences`,
+dependencia nueva) desde `WidgetAuthBridge.kt` — no es parte de esta primera versión, es un
+upgrade path a proponer aparte.
 
 **Rationale**: es exactamente el caso de uso para el que `@capacitor/preferences` ya estaba
 recomendado en `SPEC_06` ("storage nativo key-value que sobrevive mejor a limpiezas de WebView
