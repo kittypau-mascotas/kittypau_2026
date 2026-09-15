@@ -15,11 +15,16 @@ buildscript {
         // primer código Kotlin del proyecto (antes solo Java). Versión
         // estable más reciente confirmada contra el Gradle Plugin Portal al
         // planificar este feature (2026-09-15) -- reconfirmar si difiere al
-        // compilar por primera vez. Incluye el plugin del compilador de
-        // Compose (org.jetbrains.kotlin.plugin.compose, aplicado en
-        // app/build.gradle) que Glance necesita para las funciones
-        // @Composable.
+        // compilar por primera vez.
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20'
+        // Plugin del compilador de Compose -- desde Kotlin 2.0 es un
+        // artefacto SEPARADO del kotlin-gradle-plugin de arriba (aunque
+        // comparten versión). Glance lo necesita para las funciones
+        // @Composable (aplicado como org.jetbrains.kotlin.plugin.compose en
+        // app/build.gradle). Faltaba esta línea -- confirmado real
+        // (2026-09-15, primer intento de build en CI): "Plugin with id
+        // 'org.jetbrains.kotlin.plugin.compose' not found".
+        classpath 'org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.4.20'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
