@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Paleta de marca Kittypau portada a recursos nativos de Android -- FR-012
+  Paleta de marca Kittypau portada a recursos nativos de Android — FR-012
   (Knowledge/29_Specs/010-widget-android-hero/spec.md): mismos tokens que
   `kittypau_app/src/app/globals.css`, sin aproximar de memoria.
-    --primary (rosa)      : hsl(12 62% 79%) = #EBB7AA
+    —primary (rosa)      : hsl(12 62% 79%) = #EBB7AA
     emerald-500 (comida)  : #10B981 (Tailwind, ya usado en bowl-wellness-card.tsx)
     sky-500 (agua)        : #0EA5E9 (Tailwind, ya usado en bowl-wellness-card.tsx)
 -->

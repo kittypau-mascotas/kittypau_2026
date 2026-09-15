@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Mismo path real de lucide-react "Bone" ya usado en el chip de "Contenido
-  actual" de bowl-wellness-card.tsx (portado tal cual, no aproximado --
+  actual" de bowl-wellness-card.tsx (portado tal cual, no aproximado —
   extraído de node_modules/lucide-react en la sesión que agregó ese chip).
   Lucide es stroke-only (viewport 24x24, trazo 2, extremos/uniones
-  redondeados) -- se replica igual acá en vez de rellenar, para que se vea
+  redondeados) — se replica igual acá en vez de rellenar, para que se vea
   igual que en la web.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/vector"

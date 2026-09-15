@@ -34,7 +34,7 @@
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Widget de Android -- Knowledge/29_Specs/010-widget-android-hero.
+        <!-- Widget de Android — Knowledge/29_Specs/010-widget-android-hero.
              `exported="true"` es obligatorio para receivers de AppWidget (el
              sistema operativo, fuera del proceso de la app, es quien manda
              el broadcast APPWIDGET_UPDATE). -->
@@ -50,7 +50,7 @@
                 android:resource="@xml/kittypau_hero_widget_info" />
         </receiver>
 
-        <!-- Configuration Activity -- lanzada automático por Android después
+        <!-- Configuration Activity — lanzada automático por Android después
              de bindear el widget (research.md Decisión 2), tanto si vino del
              selector manual como de requestPinAppWidget() (KittypauWidgetPlugin). -->
         <activity
@@ -65,11 +65,11 @@
 
         <!-- Trigger de refresco del widget por push (tasks.md T022, opcional/
              no bloqueante). FCM solo entrega a UN FirebaseMessagingService por
-             app -- se reemplaza el que trae @capacitor/push-notifications
+             app — se reemplaza el que trae @capacitor/push-notifications
              (mismo android:name exacto, ver
              node_modules/@capacitor/push-notifications/android/src/main/AndroidManifest.xml)
              por KittypauMessagingService, que lo EXTIENDE y llama
-             super.onMessageReceived() primero -- el push "comió"/"le sirvieron"
+             super.onMessageReceived() primero — el push "comió"/"le sirvieron"
              existente sigue funcionando igual, solo se agrega el chequeo del
              data-flag nuevo. -->
         <service

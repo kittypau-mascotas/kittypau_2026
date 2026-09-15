@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Path real de lucide-react "Droplet" (v0.542.0, ya instalado como dependencia
-  del proyecto) -- extraído directo de
+  del proyecto) — extraído directo de
   node_modules/lucide-react/dist/esm/icons/droplet.js, mismo método ya usado
   para ic_widget_food_bone.xml. Reemplaza la gota genérica que había acá
   antes (research.md/tasks.md tenían esto marcado como pendiente de
-  verificar -- ya resuelto). Lucide es stroke-only (viewport 24x24, trazo 2,
+  verificar — ya resuelto). Lucide es stroke-only (viewport 24x24, trazo 2,
   extremos/uniones redondeados).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/vector"
