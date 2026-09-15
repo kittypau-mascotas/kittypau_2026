@@ -71,7 +71,7 @@ Escala de estado:
 | 500 Global LATAM | PREPARAR | Preparar cap table + deck en ingles | Por asignar | Q3 2026 |
 | Platanus Ventures | PREPARAR | Definir CTO tecnico y video pitch | Por asignar | Proximo batch |
 | EIC Accelerator | VIGILAR | Buscar socio EU y preparar short proposal | Por asignar | Q3-Q4 2026 |
-| CRTIC LAB Ñuñoa (nuevo, 2026-09-15) | PREPARAR | Confirmar fecha real de cierre con CRTIC (27-sep vs. 9-sep, ver paquete) antes de invertir en portafolio/video | Por asignar | Por confirmar |
+| CRTIC LAB Ñuñoa (nuevo, 2026-09-15) | PREPARAR | Confirmar fecha real con CRTIC (27-sep vs. 9-sep) + conseguir 3ª persona con perfil creativo (equipo exige 3-4 con 4 roles, ver paquete) | Por asignar | Por confirmar |
 | Parallel18 | VIGILAR | Esperar apertura y preparar expansin a US | Por asignar | Por confirmar |
 | CORFO Escalamiento | NO_APLICA_HOY | Consolidar ventas para tramo requerido | Por asignar | 2027+ |
 

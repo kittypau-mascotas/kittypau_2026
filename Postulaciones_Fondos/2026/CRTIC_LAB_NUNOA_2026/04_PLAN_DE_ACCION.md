@@ -1,17 +1,36 @@
 # Plan de acción — CRTIC LAB Ñuñoa
 
-## Paso 0 (bloqueante, hacer primero) — Confirmar la fecha real
+> **El PDF de bases descargable quedó confirmado desactualizado** en 3 puntos reales
+> (fecha de cierre, duración del video, y tamaño de equipo) — ver
+> `05_FORMULARIO_REAL_2026-09-15.md`. De acá en más, el formulario real manda.
+
+## Paso 0a (bloqueante) — Confirmar la fecha real
 
 Mandar un correo corto a `desarrollo@crtic.cl` (contacto oficial, bases §12) y/o a
 `asotop@nunoa.cl` (Adrián Soto Puentes, Director de Emprendimiento, Pymes e
 Innovación de la Municipalidad) preguntando directamente cuál es la fecha de cierre
-vigente — la página dice 27-sep, el PDF de bases descargable dice 9-sep. Sin esta
-confirmación por escrito, cualquier plazo que nos pongamos acá es una suposición.
+vigente — la página dice 27-sep, el PDF de bases descargable dice 9-sep.
 
-No seguir a los pasos siguientes hasta tener esto resuelto, salvo que se decida
-avanzar en paralelo asumiendo el peor caso (27-sep) por las dudas.
+## Paso 0b (bloqueante, decidido 2026-09-15) — Conseguir la 3ª persona
 
-## Paso 1 — Decisión de alcance (con Mauro y Javier)
+El formulario real exige "3 ó 4 personas... para asumir el rol de creativo/a,
+técnico/a, productor/a e investigador/a" (ver `05_FORMULARIO_REAL_2026-09-15.md`).
+Javier cubre técnico/a, Mauro cubre investigador/a (y probablemente productor/a) —
+**falta el rol creativo/a**. Buscar a alguien con perfil artístico/creativo
+comprobable (portafolio propio, no necesariamente con experiencia previa en
+IoT/pet-tech) dispuesto a sumarse a esta postulación puntual, aunque sea como
+colaboración específica para la residencia y no como socio permanente de Kittypau.
+
+Sin esta persona, el PDF de "Antecedentes del equipo" (máx. 10 hojas, campo 12 del
+formulario) no cumple el requisito tal como está redactado — riesgo real de quedar
+fuera en la revisión de admisibilidad (bases §9.1), que es antes de que se evalúe
+cualquier contenido de la propuesta.
+
+No seguir a los pasos siguientes hasta tener 0a y 0b resueltos, salvo que se decida
+avanzar en paralelo asumiendo el peor caso (27-sep, y sin la 3ª persona todavía
+confirmada) por las dudas.
+
+## Paso 1 — Decisión de alcance (con Mauro, Javier, y la 3ª persona una vez sumada)
 
 Elegir UNA de las 3 ideas de prototipo experiencial de
 `01_NARRATIVA_TECNOCREATIVA_CRTIC.md` (recomendación: la visualización generativa,
@@ -21,18 +40,22 @@ de mayor peso (25%).
 
 ## Paso 2 — Redactar el formulario
 
-Usando `01_NARRATIVA_TECNOCREATIVA_CRTIC.md` + `02_MAPEO_RUBRICA_EVALUACION.md` como
-insumo. Longitud real del formulario todavía no verificada (no vista en las bases —
-revisar directo en la Plataforma de postulación al entrar, bases §3.1).
+Usando `01_NARRATIVA_TECNOCREATIVA_CRTIC.md` + `02_MAPEO_RUBRICA_EVALUACION.md` +
+`05_FORMULARIO_REAL_2026-09-15.md` como insumo — este último tiene los campos reales
+tal cual aparecen, incluidos los 2 pendientes de confirmar (opciones completas de
+"industria creativa" y "estado actual del proyecto").
 
-## Paso 3 — Armar portafolio + exportar CVs a PDF
+## Paso 3 — Armar los 2 PDF (project + equipo)
 
-Ver `03_LISTA_DOCUMENTACION_ENVIO.md` ítems 2 y 3.
+Ver `03_LISTA_DOCUMENTACION_ENVIO.md` — "PRESENTACIÓN DE TU PROYECTO" (máx. 5 hojas)
+y "ANTECEDENTES DEL EQUIPO" (máx. 10 hojas, un solo PDF, incluye a la 3ª persona del
+Paso 0b).
 
-## Paso 4 — Video ≤3 min
+## Paso 4 — Video pitch
 
-Ver `03_LISTA_DOCUMENTACION_ENVIO.md` ítem 5. Decidir grabar nuevo vs. recortar/
-readaptar el existente de Start-Up Chile.
+**Sin límite de tiempo** según el formulario real (el PDF de bases decía 3 min —
+descartar ese dato). Igual conviene no irse larguísimo — decidir grabar nuevo vs.
+recortar/readaptar el existente de Start-Up Chile (`../STARTUPLAB01_2026/`).
 
 ## Paso 5 — Definir la acción de retribución a Ñuñoa
 
