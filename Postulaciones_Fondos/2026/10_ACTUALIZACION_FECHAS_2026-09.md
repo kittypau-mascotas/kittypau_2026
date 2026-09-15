@@ -191,3 +191,43 @@ Ordenadas por impacto (cierran varias postulaciones a la vez):
 - FIA Chile — Innovación de Interés Privado 2026 (Líneas TRL): [fia.cl — Línea 1](https://www.fia.cl/convocatorias/convocatoria-nacional-de-proyectos-de-innovacion-de-interes-privado-2026-linea-1trl3-a-trl5/), [fia.cl — Línea 2](https://www.fia.cl/convocatorias/convocatoria-nacional-de-proyectos-de-innovacion-de-interes-privado-2026-linea-2-trl5-a-trl7/), [reporteagricola.cl](https://www.reporteagricola.cl/noticia/noticias/2026/05/fia-inicia-convocatoria-proyectos-de-innovacion-interes-privado-2026)
 - FIA — Bienes Públicos 2026 (cierre 8-oct): [fia.cl — Bienes Públicos 2026](https://www.fia.cl/fia-abre-convocatoria-nacional-de-proyectos-de-innovacion-de-bienes-publicos-2026-para-impulsar-soluciones-de-innovacion-disponibles-para-el-sector-agricola/)
 - Premio Avonni 2026: [ForoInnovación / TVU](https://www.tvu.cl/prensa/2026/04/08/foroinnovacion-lanzo-oficialmente-postulaciones-para-el-premio-nacional-de-innovacion-avonni-2026.html), [Portal Innova](https://portalinnova.cl/hasta-el-10-de-julio-se-extiende-periodo-de-postulacion-al-premio-nacional-de-innovacion-avonni-2026/)
+
+---
+
+## 9) Revisión 2026-09-15 — CRTIC LAB Ñuñoa: Residencias Tecnocreativas (DESCARTADO)
+
+> Bases completas revisadas (PDF oficial, 8 páginas):
+> [convocatoria](https://hubnunoa.cl/convocatorias/krl6W0BOYa4ccnr7YN66) ·
+> [bases PDF](https://firebasestorage.googleapis.com/v0/b/studio-3360490722-d661e.firebasestorage.app/o/convocatorias%2Fbases%2F1787582288985-CRTIC%20LAB%20HUB%20N%CC%83UN%CC%83OA.pdf)
+
+**Qué es**: programa de la I. Municipalidad de Ñuñoa + Fundación CRTIC (Revolución
+Tecnocreativa). Convoca emprendimientos/colectivos de industrias creativas (artes,
+música, audiovisual, videojuegos, diseño, arquitectura, tecnología y afines). Proceso:
+25 preseleccionados → fase formativa (workshops) → pitch → 5 finalistas → 3 sesiones
+de prototipado en el Laboratorio CRTIC + 5h de mentoría técnica → Demo Day. **No es
+financiamiento directo** — es acceso a infraestructura, mentoría y visibilidad.
+
+**Por qué se descarta esta edición**:
+- **Cierre real 9-sep-2026 23:59** — ya pasado al momento de esta revisión (15-sep).
+  No hay nada que postular ahora mismo.
+- Encaje temático débil tal como está descrito Kittypau hoy (healthtech/IoT):
+  25% del puntaje de la 1ª evaluación es "integración entre creatividad y tecnología"
+  en sentido tecnocreativo/cultural (XR, proyección, sonido inmersivo, Unreal Engine),
+  no pet-tech aplicado.
+
+**Insight a guardar para la próxima ventana** (CRTIC es un programa recurrente —
+CRTIC Day, CRTIC Sur, CRTIC Fest, Coquimbo Tecnocreativo — probable nueva edición
+Ñuñoa u otra sede en 2027): si se vuelve a evaluar, **no postular el Kittypau
+"healthtech" tal cual el paquete CORFO** — reformular como experiencia
+tecnocreativa: *"Kittypau transforma los datos cotidianos de la mascota (IoT → datos
+→ IA → visualización) en una experiencia interactiva de cuidado preventivo, con un
+objeto físico real (el plato) como diferencial — pocos proyectos tecnocreativos
+parten de un dispositivo físico ya funcionando."* El objetivo de la residencia sería
+un prototipo experiencial (visualización/interacción del estado de la mascota), no
+un dashboard más. Mismo dato/motor de siempre, empaquetado distinto — no inventar
+tecnología nueva para la ocasión.
+
+**Acción**: vigilar apertura de la próxima edición (sin fecha firme hoy) antes de
+invertir tiempo en investigación más profunda (ej. proyectos ganadores anteriores)
+para esta convocatoria puntual — no tiene sentido hacer "ingeniería inversa" de
+proyectos ganadores para una convocatoria que ya cerró.
